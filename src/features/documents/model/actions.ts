@@ -3,18 +3,11 @@ import z from 'zod';
 
 export const DocumentSchema = z.enum([
   'advertise',
-  'attribution',
   'dvePercenta',
   'exports',
-  'freemap',
-  'garmin',
-  'geocaching',
-  'osm',
   'privacyPolicy',
   'termsOfService',
   'refundPolicy',
-  'premium',
-  'tracking',
 ]);
 
 export type Document = z.infer<typeof DocumentSchema>;

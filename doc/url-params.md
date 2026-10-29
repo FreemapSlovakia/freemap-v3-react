@@ -36,6 +36,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | `tool` | Open tool's toolbar (older spelling) | read-only | read exactly like `tools` |
 | `show` | Open modal / viewer | r/w | `type` or `type/arg` (e.g. `gallery-viewer/123`, `wiki/en:Title`) |
 | `document`, `tip`, `image`, `wmc` | Legacy modal aliases → `show=…` | read-only | id |
+| `manual` | Alias of `show=manual/<chapter>`, for the SEO prerender (nginx serves no query holding a `/`) | read-only | chapter id |
 
 ## Route planner
 

@@ -361,6 +361,21 @@ const messages: Messages = {
         'modal-manual': 'help, guide, documentation, how to, tutorial',
         'manual-getting-started': 'basics, introduction, first steps, help',
         'manual-shortcuts': 'keyboard, keys, hotkeys, chords',
+        'manual-route-planner':
+          'help, navigation, directions, waypoints, plan a route, how to',
+        'manual-drawing': 'help, measure, distance, area, line, polygon, point',
+        'manual-tracks':
+          'help, gpx, kml, track, import, elevation profile, colorize, export',
+        'manual-photos': 'help, gallery, upload, pictures, how to',
+        'manual-tracking':
+          'help, live tracking, share position, device setup, locus, osmand',
+        'manual-offline': 'help, download maps, no connection, cache, offline',
+        'manual-devices':
+          'help, garmin, locus, oruxmaps, geocaching, embed, open in app',
+        'manual-premium':
+          'help, subscription, price, payment, credits, buy, ads, cancel, refund',
+        'manual-about':
+          'openstreetmap, osm, association, community, contribute, mapping, license, licence, attribution, copyright, commercial use',
         'modal-about': 'contact, e-mail, feedback',
         'modal-installed-maps':
           'map manager, map library, uninstall, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',

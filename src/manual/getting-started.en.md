@@ -11,8 +11,8 @@ Freemap is a map for hiking, cycling, skiing and other outdoor activities, built
 ![The Freemap screen](./images/screen.en.webp)
 
 - :FaBars: **Main menu** – at the top left. It holds the tools (:FaRoute: route finder, :MdShapeLine: drawing and data, :PiMountains: panorama, …), :FaRegMap: your maps, exports, :FaUser: your account, :IoLanguage: the language and :FaBook: **Info & help**, where this manual lives.
-- **Search box** – next to the main menu. It finds places, coordinates and also the app's own functions and maps.
-- **Map toolbar** – at the bottom in the middle. It switches maps and holds the zoom buttons and :FaRegDotCircle: **Locate me**.
+- **Search box** – next to the main menu. In it you search for places, coordinates and also the app's own functions and maps.
+- **Map toolbar** – at the bottom in the middle. With it you switch maps, and it holds the zoom buttons and :FaRegDotCircle: **Locate me**.
 - :FaInfoCircle: – at the bottom right. It opens the map legend and the credits of the map being shown.
 
 When a tool is open, its toolbar appears at the top of the screen. You close it with its :FaTimes: button or the <kbd>Esc</kbd> key.
@@ -41,25 +41,25 @@ What the symbols on the map mean is explained in the :FaList: [map legend](#show
 
 ## Finding a place
 
-Type into the search box at the top: a name of a place, a summit, a street, or coordinates. Suggestions appear as you type; pressing <kbd>Enter</kbd> or :FaSearch: asks for a longer list. Pointing at a result shows it on the map, and picking it moves the map there.
+Type into the search box at the top: a name of a place, a summit, a street, or coordinates. Suggestions appear as you type; pressing <kbd>Enter</kbd> or :FaSearch: brings up a longer list. Pointing at a result shows it on the map, and picking it moves the map there.
 
-The same box also finds:
+In the same box you can also find:
 
 - **functions** – type e.g. “export”, “route” or “weather” to open a tool or a dialog without looking for it in the menu,
 - **maps** – type a map's name to switch it on,
 - **types of places** – type e.g. “spring” or “shelter” to show all of them on the map.
 
-![Search finds functions too](./images/search-functions.en.webp)
+![Functions among the search results](./images/search-functions.en.webp)
 
 ## Where am I?
 
-:FaRegDotCircle: **Locate me** in the map toolbar shows your position as a dot with an accuracy circle, and the map follows you as you move. Once you move the map by hand, it stops following; pressing the button again brings the map back to you. Pressing it while the map follows you switches locating off.
+:FaRegDotCircle: **Locate me** in the map toolbar shows your position as a dot with an accuracy circle, and the map stays centred on you as you move. Once you move the map by hand, it no longer stays centred; pressing the button again brings the map back to you. Pressing it while the map is centred on you switches locating off.
 
 The browser asks for permission to use your location the first time.
 
 ## The map context menu
 
-Right-click the map, or press and hold it on a phone, to get a menu of what can be done at that place – for example :FaRuler: find its coordinates and elevation, :FaInfo: show what is there, :FaCamera: show nearby photos, plan a route from or to there, or :MdTimeline: start drawing.
+Right-click the map, or press and hold it on a phone, to get a menu of actions for that place – for example :FaRuler: find its coordinates and elevation, :FaInfo: show what is there, :FaCamera: show nearby photos, plan a route from or to there, or :MdTimeline: start drawing.
 
 ![The map context menu](./images/context-menu.en.webp)
 
@@ -70,4 +70,4 @@ The address in your browser's address bar always describes what you see: the map
 ## More
 
 - :FaRegKeyboard: [Keyboard shortcuts](#show=manual/shortcuts) make many actions faster.
-- Most functions work without an account. :FaSignInAlt: [Logging in](#show=login) lets you save your maps and upload photos.
+- Most functions work without an account. Once :FaSignInAlt: [logged in](#show=login), you can save your maps and upload photos.

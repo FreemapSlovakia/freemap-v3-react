@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -104,9 +104,9 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
           sua posizione se loro il token (può crearlo tramite <FaKey /> ).
         </p>
         <hr />
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Come configurare il dispositivo tracciato
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

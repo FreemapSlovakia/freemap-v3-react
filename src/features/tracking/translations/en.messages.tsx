@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
 
@@ -105,9 +105,9 @@ const en: TrackingMessages = {
 
         <hr />
 
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           How to set up your tracked device
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

@@ -30,7 +30,8 @@ What it generates:
 
   Copy outside `sk`/`en` has not had a native review — the same caveat the POI page copy carries.
 - **Per-feature POI pages** — `objects.ts`, see below.
-- **Document pages** — `layers=X&document=<name>&lang=<lang>` rendered from `src/documents/<key>.<lang>.md`; each document appears only in the languages it has a markdown file for.
+- **Document pages** — `layers=X&document=<name>&lang=<lang>` rendered from `src/documents/<key>.<lang>.md`, and **manual chapters** — `layers=X&manual=<chapter>&lang=<lang>` from `src/manual/<chapter>.<lang>.md`; each appears only in the languages it has a markdown file for. Both go through `markdown-render.js`, the app loader's renderer, so `:FaIcon:` glyphs come out as SVG; images are left out, their URLs being the app bundle's. Their `#show=manual/…` and `#show=document/…` links become these pages' URLs (a crawler fetches no hash link), and the meta description is the page's first paragraph. The homepage lists the chapters written in its language.
+- **Moved documents** — a document turned into a chapter (`src/manual/moved.ts`) keeps a page at its old `layers=X&document=<old>` URL, in every language the manual has: a canonical and a refresh to the chapter (in English where the chapter lacks the language), so the old indexed URL hands its standing on instead of falling back to the homepage. It is not listed in the sitemap.
 - **Sitemaps** — two indexes:
   - `sitemap-index.xml` → freemap.sk: `sitemap-core.txt` (sk/cs homepages, hubs, documents, `llms.txt`) + the `sitemap-feat-<lang>-*.txt` POI shards for sk/cs.
   - `sitemap-index-eu.xml` → freemap.eu: `sitemap-core-eu.txt` (international pages, `llms.txt`) + POI shards for the eu languages.

@@ -15,7 +15,7 @@ Many actions are faster from the keyboard. The keys work anywhere on the page, e
 
 ## Two-key shortcuts
 
-Most shortcuts are two keys pressed one after another within two seconds – for example <kbd>g</kbd>, then <kbd>r</kbd> opens the route finder. The first key says what kind of thing follows:
+Most shortcuts are two keys pressed one after another within two seconds – for example <kbd>g</kbd>, then <kbd>r</kbd> opens the route finder. The first key stands for the kind of thing that follows:
 
 - <kbd>g</kbd> – tools, e.g. <kbd>g</kbd> <kbd>r</kbd> :FaRoute: route finder, <kbd>g</kbd> <kbd>l</kbd> :MdPolyline: line drawing, <kbd>g</kbd> <kbd>c</kbd> :FaEraser: clear the map
 - <kbd>e</kbd> – export and sharing, e.g. <kbd>e</kbd> <kbd>p</kbd> :FaPrint: export the map as an image or document, <kbd>e</kbd> <kbd>a</kbd> :FaUser: your account

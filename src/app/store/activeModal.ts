@@ -5,6 +5,7 @@ import {
 } from '@features/documents/model/actions.js';
 import type { BatchKind } from '@shared/batchProperties.js';
 import z from 'zod';
+import { DOCUMENTS_IN_MANUAL } from '@/manual/moved.js';
 
 const URL_MODAL_IDS = [
   'about',
@@ -65,11 +66,6 @@ const MODAL_RENAMES: Record<string, string> = {
   'buy-credits': 'credits-purchase',
   maps: 'my-maps',
   'premium-switch': 'premium',
-};
-
-/** Documents that became manual chapters, so their old links still open. */
-const DOCUMENTS_IN_MANUAL: Record<string, string> = {
-  shortcuts: 'shortcuts',
 };
 
 /**

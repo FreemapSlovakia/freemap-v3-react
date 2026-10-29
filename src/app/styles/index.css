@@ -326,6 +326,10 @@ button#freemap-logo {
     overflow-wrap: break-word;
   }
 
+  & picture {
+    display: block;
+  }
+
   & img {
     display: block;
     max-width: 100%;

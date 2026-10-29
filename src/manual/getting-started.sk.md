@@ -10,12 +10,12 @@ Freemap je mapa pre turistiku, cyklistiku, lyžovanie a ďalšie aktivity v prí
 
 ![Obrazovka Freemapu](./images/screen.sk.webp)
 
-- :FaBars: **Hlavné menu** – vľavo hore. Nájdete v ňom nástroje (:FaRoute: vyhľadávač trás, :MdShapeLine: kreslenie a dáta, :PiMountains: panoráma, …), :FaRegMap: svoje mapy, exporty, :FaUser: svoj účet, :IoLanguage: jazyk a :FaBook: **Info a pomoc**, kde je aj táto príručka.
-- **Vyhľadávacie pole** – vedľa hlavného menu. Nájde miesta, súradnice, ale aj funkcie a mapy aplikácie.
-- **Lišta máp** – dole v strede. Prepína mapy a sú na nej tlačidlá priblíženia a :FaRegDotCircle: **Kde som?**
+- :FaBars: **Hlavné menu** – vľavo hore. V menu nájdete nástroje (:FaRoute: vyhľadávač trás, :MdShapeLine: kreslenie a dáta, :PiMountains: panoráma, …), :FaRegMap: svoje mapy, exporty, :FaUser: svoj účet, :IoLanguage: jazyk a :FaBook: **Info a pomoc**, kde je aj táto príručka.
+- **Vyhľadávacie pole** – vedľa hlavného menu. Slúži na hľadanie miest, súradníc, ale aj funkcií a máp aplikácie.
+- **Lišta máp** – dole v strede. Slúži na prepínanie máp a nájdete tu aj tlačidlá priblíženia a :FaRegDotCircle: **Kde som?**
 - :FaInfoCircle: – vpravo dole. Otvára legendu mapy a zdroje zobrazenej mapy.
 
-Keď otvoríte nástroj, jeho lišta sa zobrazí hore na obrazovke. Zatvoríte ho tlačidlom :FaTimes: alebo klávesom <kbd>Esc</kbd>.
+Lišta otvoreného nástroja sa zobrazí hore na obrazovke. Zatvoríte ho tlačidlom :FaTimes: alebo klávesom <kbd>Esc</kbd>.
 
 ## Pohyb po mape
 
@@ -27,39 +27,39 @@ Keď otvoríte nástroj, jeho lišta sa zobrazí hore na obrazovke. Zatvoríte h
 
 ![Lišta máp](./images/map-toolbar.sk.webp)
 
-Lišta máp dole ponúka mapy, ktoré používate najčastejšie. Stlačením tlačidla sa na mapu prepnete. Niektoré z nich sú prekrytia – napríklad turistické trasy, fotografie alebo meteoradar – ktoré sa kreslia cez podkladovú mapu a dajú sa kombinovať.
+Na lište máp dole sú mapy, ktoré používate najčastejšie. Stlačením tlačidla sa na mapu prepnete. Niektoré z nich sú prekrytia – napríklad turistické trasy, fotografie alebo meteoradar – ktoré sa kreslia cez podkladovú mapu a dajú sa kombinovať.
 
-- :FaEllipsisV: ponúka ďalšie mapy.
+- :FaEllipsisV: zobrazí ďalšie mapy.
 - :FaLayerGroup: otvára panel **Vrstvy mapy** so zapnutými mapami, kde im môžete zmeniť priehľadnosť alebo ich vypnúť.
 - :FaPlus: a :FaMinus: mapu približujú a odďaľujú.
 - :FaRegDotCircle: **Kde som?** – pozri nižšie.
 - :FaCog: otvára menu so :FaLayerGroup: [správcom máp](#show=installed-maps), kde pridáte mapy z knižnice, odoberiete tie, ktoré nepoužívate, a vyberiete, ktoré sa majú zobrazovať na lište, a tiež s offline mapami a predvoľbami.
 
-Ak mapu nemožno zobraziť tam, kde ste, na jej tlačidle sa objaví žltá ikona: :FaSearchPlus.text-warning:, keď treba mapu priblížiť, :FaGlobeEurope.text-warning:, keď ste mimo jej územia, a :FaSearchLocation.text-warning:, keď platí oboje. Jej stlačením sa mapa presunie tam, kde má obsah.
+Ak mapu nemožno zobraziť tam, kde ste, na tlačidle mapy sa objaví žltá ikona: :FaSearchPlus.text-warning:, keď treba mapu priblížiť, :FaGlobeEurope.text-warning:, keď ste mimo územia mapy, a :FaSearchLocation.text-warning:, keď platí oboje. Stlačením ikony sa mapa presunie tam, kde má obsah.
 
 Čo znamenajú značky na mape, vysvetľuje :FaList: [legenda mapy](#show=legend).
 
 ## Hľadanie miesta
 
-Do vyhľadávacieho poľa hore napíšte názov obce, vrchu, ulice alebo súradnice. Návrhy sa zobrazujú už počas písania, kláves <kbd>Enter</kbd> alebo :FaSearch: vyžiada dlhší zoznam. Ukázaním na výsledok ho uvidíte na mape, jeho výberom sa mapa presunie naň.
+Do vyhľadávacieho poľa hore napíšte názov obce, vrchu, ulice alebo súradnice. Návrhy sa zobrazujú už počas písania, klávesom <kbd>Enter</kbd> alebo :FaSearch: si vyžiadate dlhší zoznam. Ukázaním na výsledok ho uvidíte na mape, výberom výsledku sa mapa presunie na toto miesto.
 
-To isté pole nájde aj:
+V tom istom poli nájdete aj:
 
 - **funkcie** – napíšte napr. „export“, „trasa“ alebo „počasie“ a otvoríte nástroj či dialóg bez hľadania v menu,
 - **mapy** – napíšte názov mapy a zapnete ju,
 - **druhy miest** – napíšte napr. „prameň“ alebo „útulňa“ a na mape sa zobrazia všetky.
 
-![Vyhľadávanie nájde aj funkcie](./images/search-functions.sk.webp)
+![Funkcie medzi výsledkami vyhľadávania](./images/search-functions.sk.webp)
 
 ## Kde som?
 
-:FaRegDotCircle: **Kde som?** na lište máp zobrazí vašu polohu ako bod s kruhom presnosti a mapa vás sleduje počas pohybu. Keď mapu posuniete rukou, sledovanie sa preruší; ďalším stlačením tlačidla sa mapa vráti k vám. Stlačením počas sledovania sa zisťovanie polohy vypne.
+:FaRegDotCircle: **Kde som?** na lište máp zobrazí vašu polohu ako bod s kruhom presnosti a mapa sa počas pohybu posúva s vami. Keď mapu posuniete rukou, prestane sa s vami posúvať; ďalším stlačením tlačidla sa mapa vráti k vám. Stlačením, kým sa mapa posúva s vami, sa zisťovanie polohy vypne.
 
 Pri prvom použití si prehliadač vyžiada povolenie na prístup k polohe.
 
 ## Kontextové menu mapy
 
-Kliknite na mapu pravým tlačidlom myši, alebo na telefóne na ňu podržte prst, a zobrazí sa ponuka toho, čo sa dá na danom mieste robiť – napríklad :FaRuler: zistiť súradnice a nadmorskú výšku, :FaInfo: zistiť detaily v okolí, :FaCamera: ukázať fotky v okolí, naplánovať trasu odtiaľ alebo tam, či :MdTimeline: začať kresliť.
+Kliknite na mapu pravým tlačidlom myši, alebo na telefóne podržte prst na mape, a zobrazí sa ponuka akcií pre toto miesto – napríklad :FaRuler: zistiť súradnice a nadmorskú výšku, :FaInfo: zistiť detaily v okolí, :FaCamera: ukázať fotky v okolí, naplánovať trasu odtiaľ alebo tam, či :MdTimeline: začať kresliť.
 
 ![Kontextové menu mapy](./images/context-menu.sk.webp)
 

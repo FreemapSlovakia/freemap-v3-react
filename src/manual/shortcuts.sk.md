@@ -11,7 +11,7 @@ Mnohé úkony sú rýchlejšie z klávesnice. Klávesy fungujú kdekoľvek na st
 - šípky posúvajú mapu, so stlačeným <kbd>Shift</kbd> po väčších krokoch
 - <kbd>+</kbd> a <kbd>-</kbd> mapu približujú a odďaľujú
 - <kbd>Esc</kbd> zatvorí dialóg alebo otvorený nástroj
-- každá mapa má vlastnú skratku, uvedenú pri nej v ponukách máp
+- každá mapa má vlastnú skratku, uvedenú pri názve mapy v ponukách máp
 
 ## Dvojklávesové skratky
 

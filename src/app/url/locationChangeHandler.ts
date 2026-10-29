@@ -763,19 +763,22 @@ export function handleLocationChange(store: MyStore): void {
 
   {
     // Unified modal/overlay param. Legacy `document=`/`tip=`/`image=`/`wmc=`
-    // links fold into the packed `show=type/arg` form.
+    // links fold into the packed `show=type/arg` form, and so does `manual=`,
+    // which the SEO prerender needs: nginx serves no query holding a `/`.
     const showRaw =
       typeof query['show'] === 'string'
         ? query['show']
         : typeof query['document'] === 'string'
           ? `document/${query['document']}`
-          : typeof query['tip'] === 'string'
-            ? `document/${query['tip']}`
-            : typeof query['image'] === 'string'
-              ? `gallery-viewer/${query['image']}`
-              : typeof query['wmc'] === 'string'
-                ? `wmc/${query['wmc']}`
-                : undefined;
+          : typeof query['manual'] === 'string'
+            ? `manual/${query['manual']}`
+            : typeof query['tip'] === 'string'
+              ? `document/${query['tip']}`
+              : typeof query['image'] === 'string'
+                ? `gallery-viewer/${query['image']}`
+                : typeof query['wmc'] === 'string'
+                  ? `wmc/${query['wmc']}`
+                  : undefined;
 
     const next = showRaw === undefined ? null : decodeActiveModal(showRaw);
 

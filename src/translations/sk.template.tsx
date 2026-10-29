@@ -398,6 +398,23 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-manual': 'pomoc, návod, nápoveda, dokumentácia, manuál, help',
         'manual-getting-started': 'základy, úvod, prvé kroky, pomoc',
         'manual-shortcuts': 'klávesnica, klávesy, skratky',
+        'manual-route-planner':
+          'pomoc, návod, navigácia, trasa, plánovanie trasy, zastávky',
+        'manual-drawing':
+          'pomoc, návod, meranie, vzdialenosť, plocha, čiara, polygón, bod',
+        'manual-tracks':
+          'pomoc, návod, gpx, kml, trasa, import, výškový profil, export',
+        'manual-photos': 'pomoc, návod, fotky, galéria, nahrať fotografie',
+        'manual-tracking':
+          'pomoc, návod, sledovanie, zdieľanie polohy, nastavenie zariadenia, locus, osmand',
+        'manual-offline':
+          'pomoc, návod, stiahnuť mapy, bez pripojenia, vyrovnávacia pamäť',
+        'manual-devices':
+          'pomoc, návod, garmin, locus, oruxmaps, geocaching, vloženie do webu, otvoriť v aplikácii',
+        'manual-premium':
+          'pomoc, predplatné, cena, platba, kredity, kúpiť, reklama, zrušiť, vrátenie peňazí, premium',
+        'manual-about':
+          'openstreetmap, osm, združenie, komunita, mapovanie, prispievanie, licencia, atribúcia, uvedenie zdroja, copyright, komerčné použitie',
         'modal-about': 'kontakt, e-mail, spätná väzba',
         'modal-installed-maps':
           'správca máp, knižnica máp, odinštalovať, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
