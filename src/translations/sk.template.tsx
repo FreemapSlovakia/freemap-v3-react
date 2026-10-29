@@ -423,6 +423,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'pomoc, návod, zmeny osm, sady zmien, mapéri, prispievatelia',
         'manual-my-maps':
           'pomoc, návod, uložené mapy, uložiť mapu, zdieľať mapu, účet, neuložené',
+        'manual-account':
+          'pomoc, návod, prihlásenie, odhlásenie, profil, token, api kľúč, zrušiť účet',
+        'manual-gps-recorder':
+          'pomoc, návod, záznam trasy, nahrávanie, logger, android, na pozadí',
+        'manual-ai':
+          'pomoc, návod, ai, umelá inteligencia, chatgpt, claude, gemini, asistent, agent, webmcp, llms.txt',
         'manual-drawing':
           'pomoc, návod, meranie, vzdialenosť, plocha, čiara, polygón, bod',
         'manual-tracks':

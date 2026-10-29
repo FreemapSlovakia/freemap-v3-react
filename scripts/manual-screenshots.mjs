@@ -406,6 +406,20 @@ const shots = [
     crop: '.fm-toolbar:has(#days)',
   },
   {
+    name: 'account-login',
+    hash: `${MAP}&show=login`,
+    steps: async (page, lang) => {
+      // A fresh profile has no cookie consent, which disables the providers;
+      // the consent toast is hidden, so its button is clicked by event.
+      await page
+        .locator('[class*="Toasts-module__toasts"] button', {
+          hasText: { sk: 'Prijať', en: 'Accept' }[lang],
+        })
+        .dispatchEvent('click');
+    },
+    crop: '.modal-content',
+  },
+  {
     name: 'custom-maps-form',
     hash: `${MAP}&show=installed-maps`,
     // The whole form fits without scrolling inside the modal.

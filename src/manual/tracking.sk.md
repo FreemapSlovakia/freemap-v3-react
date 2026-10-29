@@ -86,9 +86,4 @@ Kliknutím na trasu ju vyberiete a na lište výberu nájdete :FaPencil: **Uprav
 
 ## GPS zaznamenávač
 
-Na Androide slúži :FaCircle: **GPS zaznamenávač** v hlavnom menu na nahrávanie vašej vlastnej trasy pomocou samostatnej aplikácie Freemap GPS Recorder, takže záznam pokračuje, aj keď prehliadač zatvoríte. Ak aplikácia nie je nainštalovaná, môžete ju nainštalovať cez **Nainštalovať zaznamenávač**.
-
-- :FaCircle: **Nahrávať** / :FaPause: **Pozastaviť** spúšťa a pozastavuje záznam.
-- :FaStop: **Ukončiť** presunie trasu do Kreslenia a dát, kde ju môžete upraviť a exportovať.
-- :FaTrash: **Zmazať záznam** ho zahodí.
-- :FaCog: **Nastavenia záznamu** určujú, ako často sa poloha zaznamenáva, ako vyzerá čiara a ďalšie.
+Na Androide slúži :FaCircle: **GPS zaznamenávač** v hlavnom menu na nahrávanie vašej vlastnej trasy pomocou samostatnej aplikácie Freemap GPS Recorder, takže záznam pokračuje, aj keď prehliadač zatvoríte. Popisuje ho kapitola [GPS zaznamenávač](#show=manual/gps-recorder).

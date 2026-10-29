@@ -86,9 +86,4 @@ Clicking a track selects it. Its toolbar has :FaPencil: **Modify**, :FaTrash: **
 
 ## GPS recorder
 
-On Android, :FaCircle: **GPS recorder** in the main menu is for recording your own trip with the separate Freemap GPS Recorder app, so the recording goes on even when the browser is closed. If the app is not installed, you can install it with **Install the recorder**.
-
-- :FaCircle: **Record** / :FaPause: **Pause** start and pause the recording.
-- :FaStop: **Finish** moves the track to Drawing and data, where you can edit and export it.
-- :FaTrash: **Delete recording** throws it away.
-- :FaCog: **Recording settings** set how often a position is taken, how the line looks and more.
+On Android, :FaCircle: **GPS recorder** in the main menu is for recording your own trip with the separate Freemap GPS Recorder app, so the recording goes on even when the browser is closed. It is described in the chapter [GPS recorder](#show=manual/gps-recorder).

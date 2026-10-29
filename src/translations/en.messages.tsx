@@ -386,6 +386,12 @@ const messages: Messages = {
           'help, osm edits, changesets, mappers, contributions, recent changes',
         'manual-my-maps':
           'help, saved maps, save map, share map, account, unsaved',
+        'manual-account':
+          'help, login, sign in, log out, profile, app token, api key, delete account',
+        'manual-gps-recorder':
+          'help, record track, recording, logger, android, background',
+        'manual-ai':
+          'help, ai, llm, chatgpt, claude, gemini, assistant, agent, webmcp, llms.txt',
         'manual-drawing': 'help, measure, distance, area, line, polygon, point',
         'manual-tracks':
           'help, gpx, kml, track, import, elevation profile, colorize, export',
