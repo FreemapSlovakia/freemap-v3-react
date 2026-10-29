@@ -408,6 +408,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'pomoc, návod, tieňovanie, reliéf, terén, výškopis, lidar, dmr',
         'manual-weather-radar':
           'pomoc, návod, dážď, zrážky, počasie, predpoveď, búrka, meteoradar',
+        'manual-panorama': 'pomoc, návod, 360, výhľad, vrcholy, obzor, terén',
+        'manual-viewshed':
+          'pomoc, návod, viditeľnosť, rozhľad, výhľad, čo je odtiaľ vidieť',
+        'manual-toposcope':
+          'pomoc, návod, orientačná ružica, vrcholy, kopce, toposkop, tlač',
+        'manual-map-export':
+          'pomoc, návod, tlač, pdf, png, svg, jpeg, webp, obrázok, plagát, export mapy',
         'manual-drawing':
           'pomoc, návod, meranie, vzdialenosť, plocha, čiara, polygón, bod',
         'manual-tracks':

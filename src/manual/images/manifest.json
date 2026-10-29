@@ -55,6 +55,22 @@
     "width": 488,
     "height": 207
   },
+  "map-export-dialog.en.webp": {
+    "width": 816,
+    "height": 1598
+  },
+  "map-export-dialog.sk.webp": {
+    "width": 816,
+    "height": 1598
+  },
+  "map-export-ready.en.webp": {
+    "width": 816,
+    "height": 350
+  },
+  "map-export-ready.sk.webp": {
+    "width": 816,
+    "height": 350
+  },
   "map-toolbar.en.mobile.webp": {
     "width": 291,
     "height": 64
@@ -118,6 +134,14 @@
   "offline-new-map.sk.webp": {
     "width": 516,
     "height": 859
+  },
+  "panorama-panel.en.webp": {
+    "width": 1013,
+    "height": 487
+  },
+  "panorama-panel.sk.webp": {
+    "width": 1013,
+    "height": 487
   },
   "photos-toolbar.en.mobile.webp": {
     "width": 390,
@@ -231,6 +255,14 @@
     "width": 510,
     "height": 1444
   },
+  "toposcope-dial.en.webp": {
+    "width": 516,
+    "height": 516
+  },
+  "toposcope-dial.sk.webp": {
+    "width": 516,
+    "height": 516
+  },
   "tracking-toolbar.en.mobile.webp": {
     "width": 302,
     "height": 64
@@ -262,6 +294,38 @@
   "tracks-profile.sk.webp": {
     "width": 656,
     "height": 416
+  },
+  "viewshed-map.en.mobile.webp": {
+    "width": 390,
+    "height": 760
+  },
+  "viewshed-map.en.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "viewshed-map.sk.mobile.webp": {
+    "width": 390,
+    "height": 760
+  },
+  "viewshed-map.sk.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "viewshed-toolbar.en.mobile.webp": {
+    "width": 390,
+    "height": 198
+  },
+  "viewshed-toolbar.en.webp": {
+    "width": 617,
+    "height": 199
+  },
+  "viewshed-toolbar.sk.mobile.webp": {
+    "width": 390,
+    "height": 198
+  },
+  "viewshed-toolbar.sk.webp": {
+    "width": 625,
+    "height": 199
   },
   "weather-radar-toolbar.en.mobile.webp": {
     "width": 390,

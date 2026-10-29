@@ -371,6 +371,13 @@ const messages: Messages = {
           'help, hillshade, relief, terrain, sky view, openness, lidar, dem',
         'manual-weather-radar':
           'help, rain, precipitation, weather, forecast, storm, animation',
+        'manual-panorama': 'help, 360, view, peaks, horizon, terrain render',
+        'manual-viewshed':
+          'help, visibility, line of sight, what can be seen, view from',
+        'manual-toposcope':
+          'help, direction dial, peaks, summits, orientation table, print',
+        'manual-map-export':
+          'help, print, pdf, png, svg, jpeg, webp, image, poster, export map',
         'manual-drawing': 'help, measure, distance, area, line, polygon, point',
         'manual-tracks':
           'help, gpx, kml, track, import, elevation profile, colorize, export',

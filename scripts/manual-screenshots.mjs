@@ -30,6 +30,10 @@ const SHADED =
 
 const LAYERS_PANEL = '[class*="MapLayersPanel-module__panel"]';
 
+// From Kráľova hoľa to 20 km; the link computes the viewshed on arrival.
+const VIEWSHED =
+  'map=10/48.8828/20.1393&layers=X~v&viewshed=48.8828,20.1393,20';
+
 // A track from Banská Bystrica north-east, as a drawn line.
 const TRACK_LINE =
   '48.7395/19.1530,48.7520/19.1700,48.7650/19.1850,48.7780/19.1980,48.7905/19.2073';
@@ -246,6 +250,96 @@ const shots = [
         .click();
     },
     crop: `${LAYERS_PANEL}, .dropdown-menu.show`,
+  },
+  {
+    name: 'panorama-panel',
+    // Slavkovský štít, looking north over the High Tatras.
+    hash: 'map=12/49.17/20.10&layers=X&tools=panorama',
+    steps: async (page) => {
+      // A render starts only on an act, not with the page: the viewpoint goes in
+      // after start-up.
+      await page.evaluate(() => {
+        location.hash =
+          'map=12/49.17/20.10&layers=X&tools=panorama&panorama=49.1666,20.1841';
+      });
+
+      await page.waitForSelector('[class*="Panorama-module"] canvas', {
+        timeout: 90_000,
+      });
+
+      await page.waitForFunction(
+        () => !document.querySelector('.spinner-border'),
+        undefined,
+        { timeout: 90_000 },
+      );
+
+      await page.getByText('Ľadový štít', { exact: true }).first().click();
+
+      await page.waitForTimeout(1500);
+    },
+    crop: '[class*="FloatingWindow-module__window"], .leaflet-marker-icon',
+  },
+  {
+    name: 'viewshed-map',
+    hash: VIEWSHED,
+    mobile: true,
+    viewport: { width: 820, height: 520 },
+    steps: async (page) => {
+      // Computed on the terrain server.
+      await page.waitForSelector('img.leaflet-image-layer', {
+        timeout: 120_000,
+      });
+
+      await page.waitForTimeout(1500);
+    },
+  },
+  {
+    name: 'viewshed-toolbar',
+    hash: VIEWSHED,
+    mobile: true,
+    steps: async (page) => {
+      await page.waitForSelector('img.leaflet-image-layer', {
+        timeout: 120_000,
+      });
+
+      // Range and detail; amber without premium, which every shot is.
+      await page.locator('.fm-dropdown-toggle-nocaret.text-warning').click();
+
+      // Away from the toggle, whose tooltip would cover the menu.
+      await page.mouse.move(5, 700);
+
+      await page.waitForTimeout(800);
+    },
+    crop: '.fm-toolbar:has(.fm-dropdown-toggle-nocaret.text-warning), .dropdown-menu.show',
+  },
+  {
+    name: 'toposcope-dial',
+    // A centre at Banská Bystrica with rays to five summits.
+    hash: 'map=10/48.78/19.40&layers=X&tools=toposcope&point=48.738/19.158%1EL%7Blocation%7D%1EIpoi%3Aviewpoint%1EPtoposcope%1Fcenter&point=48.8828/20.1394%1ELKr%C3%A1%C4%BEova%20ho%C4%BEa&point=48.9378/19.6364%1EL%C4%8Eumbier&point=49.1906/19.0314%1ELVe%C4%BEk%C3%BD%20Kriv%C3%A1%C5%88&point=48.4024/18.8778%1ELSitno&point=48.6353/19.4825%1ELPo%C4%BEana',
+    // Tall enough for the square panel to open at 500 px.
+    viewport: { width: 1280, height: 1000 },
+    crop: '[class*="Toposcope-module__toposcope"]',
+  },
+  {
+    name: 'map-export-dialog',
+    hash: `map=13/48.765/19.18&layers=X&line=${TRACK_LINE}&show=map-to-document-export`,
+    // The whole form: the scrollable modal is ~1580 px tall.
+    viewport: { width: 1280, height: 1660 },
+    // Not `.modal-dialog`, which a scrollable modal stretches to the viewport.
+    crop: '.modal-content',
+  },
+  {
+    name: 'map-export-ready',
+    hash: `map=13/48.765/19.18&layers=X&line=${TRACK_LINE}&show=map-to-document-export`,
+    steps: async (page) => {
+      await page.locator('.modal-footer button.btn-primary').first().click();
+
+      // The result's Save split button; a render takes a while.
+      await page
+        .locator('.modal-footer .dropdown-toggle')
+        .waitFor({ timeout: 120_000 });
+    },
+    crop: '.modal-content',
   },
   {
     name: 'custom-maps-form',
