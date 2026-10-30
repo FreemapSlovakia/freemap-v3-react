@@ -67,8 +67,10 @@ export function useButtonGroupFit(): ButtonGroupFit {
     setFill(required >= available * FILL_FROM);
   }, [el]);
 
-  // Every render: labels change with the language, and buttons come and go.
-  useLayoutEffect(measure);
+  // Not on every render: toggling the measuring classes relayouts the group's
+  // neighbours, which ends a range drag in Chrome. The observers below catch
+  // changed labels and buttons.
+  useLayoutEffect(measure, [measure]);
 
   useEffect(() => {
     const parent = el?.parentElement;
