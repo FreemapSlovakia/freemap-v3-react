@@ -27,7 +27,6 @@ import {
   FaAngleRight,
   FaAsterisk,
   FaBan,
-  FaBook,
   FaCamera,
   FaCog,
   FaCreativeCommons,
@@ -40,6 +39,7 @@ import {
   FaPalette,
   FaRegCheckSquare,
   FaRegComment,
+  FaRegImages,
   FaRegSquare,
   FaStar,
   FaTimes,
@@ -368,7 +368,7 @@ export default function GalleryMenu() {
                         disabled={!online}
                         {...props}
                       >
-                        <FaBook />{' '}
+                        <FaRegImages />{' '}
                         <span className={labelClassName}>{label}</span>
                       </Dropdown.Toggle>
                     )}

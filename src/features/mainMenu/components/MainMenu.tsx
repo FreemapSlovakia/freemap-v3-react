@@ -24,7 +24,6 @@ import {
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
-  FaBook,
   FaChevronRight,
   FaCode,
   FaDatabase,
@@ -35,6 +34,7 @@ import {
   FaMobileAlt,
   FaPrint,
   FaRegMap,
+  FaRegQuestionCircle,
   FaSignInAlt,
   FaUser,
 } from 'react-icons/fa';
@@ -223,7 +223,7 @@ export function MainMenu(): ReactElement {
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="submenu-help">
-        <FaBook />
+        <FaRegQuestionCircle />
         <MenuLabel>
           <Text k="mainMenu.help" />
         </MenuLabel>

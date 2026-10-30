@@ -24,6 +24,7 @@ import {
   FaRegQuestionCircle,
   FaUsers,
 } from 'react-icons/fa';
+import { SiOpenstreetmap } from 'react-icons/si';
 import { getDocuments } from '@/documents/index.js';
 
 export function HelpSubmenu(): JSX.Element {
@@ -41,10 +42,10 @@ export function HelpSubmenu(): JSX.Element {
 
   return (
     <>
-      <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
+      <SubmenuHeader icon={<FaRegQuestionCircle />} title={m?.mainMenu.help} />
 
       <Dropdown.Item {...modalMenuItemProps('manual')}>
-        <FaRegQuestionCircle />
+        <FaBook />
         <MenuLabel>
           <Text k="mainMenu.manual" />
         </MenuLabel>
@@ -71,7 +72,7 @@ export function HelpSubmenu(): JSX.Element {
         eventKey="url"
         target="_blank"
       >
-        <FaBook />
+        <SiOpenstreetmap />
         <MenuLabel>
           <Text k="mainMenu.osmWiki" />
         </MenuLabel>

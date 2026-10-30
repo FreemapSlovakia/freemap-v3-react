@@ -10,7 +10,7 @@ Freemap is a map for hiking, cycling, skiing and other outdoor activities, built
 
 ![The Freemap screen](./images/screen.en.webp)
 
-- :FaBars: **Main menu** – at the top left. It holds the tools (:FaRoute: route finder, :MdShapeLine: drawing and data, :PiMountains: panorama, …), :FaRegMap: your maps, exports, :FaUser: your account, :IoLanguage: the language and :FaBook: **Info & help**, where this manual lives.
+- :FaBars: **Main menu** – at the top left. It holds the tools (:FaRoute: route finder, :MdShapeLine: drawing and data, :PiMountains: panorama, …), :FaRegMap: your maps, exports, :FaUser: your account, :IoLanguage: the language and :FaRegQuestionCircle: **Info & help**, where this :FaBook: manual lives.
 - **Search box** – next to the main menu. In it you search for places, coordinates and also the app's own functions and maps.
 - **Map toolbar** – at the bottom in the middle. With it you switch maps, and it holds the zoom buttons and :FaRegDotCircle: **Locate me**.
 - :FaInfoCircle: – at the bottom right. It opens the map legend and the credits of the map being shown.

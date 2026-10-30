@@ -25,6 +25,7 @@ import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
 import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
+  FaBook,
   FaBookOpen,
   FaChartArea,
   FaCode,
@@ -37,7 +38,6 @@ import {
   FaPrint,
   FaRegAddressCard,
   FaRegMap,
-  FaRegQuestionCircle,
   FaSignInAlt,
   FaSlidersH,
   FaUser,
@@ -278,7 +278,7 @@ export function getCommands(ctx: CommandContext): Command[] {
     add({
       id: 'modal-manual',
       kind: 'function',
-      icon: <FaRegQuestionCircle />,
+      icon: <FaBook />,
       label: m.mainMenu.manual,
       href: '#show=manual',
       action: setActiveModal({ type: 'manual' }),
@@ -288,7 +288,7 @@ export function getCommands(ctx: CommandContext): Command[] {
       add({
         id: `manual-${chapter.key}`,
         kind: 'function',
-        icon: chapter.icon ?? <FaRegQuestionCircle />,
+        icon: chapter.icon ?? <FaBook />,
         label: chapter.title,
         href: `#show=manual/${chapter.key}`,
         action: setActiveModal({ type: 'manual', chapter: chapter.key }),

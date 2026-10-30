@@ -6,7 +6,7 @@ The in-app manual: Info & help → Manual, `#show=manual` (first chapter) or `#s
 
 - `src/manual/<chapter>.<lang>.md` — one file per chapter and language; `<chapter>` is kebab-case and is the URL id, so it never changes. Front matter: `title`, `icon` (a react-icons name from `react-icons/<first two letters>`, without the inline icons' numbered-pack fallback), `order` (100 steps).
 - Read by `RspackMarkdownDictPlugin` (the `src/manual` instance in `rspack.config.ts`) into `virtual/manual-dict.js`; `src/manual/index.ts` merges per key with **English fallback**, so a language without a translation shows the English chapter.
-- Rendered by `markdown-render.js` — through `markdown-loader.js` for the app, directly for the SEO prerender, which serves each chapter at `?layers=X&manual=<chapter>&lang=<lang>` (see [seo-prerender.md](./seo-prerender.md)) — and shown by `ManualModal.tsx` (chapter list beside the text, a drop-down on a narrow screen).
+- Rendered by `markdown-render.js` — through `markdown-loader.js` for the app, directly for the SEO prerender, which serves each chapter at `?layers=X&manual=<chapter>&lang=<lang>` (see [seo-prerender.md](./seo-prerender.md)) — and shown by `ManualModal.tsx`: from Bootstrap's `lg` a chapter list beside the text, each scrolling on its own; below it a drop-down in the header and ‹ › in the footer.
 - Every chapter is a search-box row (`commandDefinitions.tsx`) with keywords under `search.commands.keywords['manual-<chapter>']`.
 - Slovak and English are written by hand; other languages fall back. A chapter moved from `src/documents/` keeps the languages it had.
 

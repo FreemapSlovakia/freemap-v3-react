@@ -6,7 +6,7 @@ order: 1000
 
 ## Freemap
 
-Freemap Slovakia je projekt, ktorý združuje slovenskú komunitu OpenStreetMap a prevádzkuje tento portál. Pôsobí pod občianskym združením OZ Freemap Slovakia; adresu a kontaktné osoby združenia nájdete v :FaBook: **Info a pomoc** pod :FaRegAddressCard: [Kontakty](#show=about).
+Freemap Slovakia je projekt, ktorý združuje slovenskú komunitu OpenStreetMap a prevádzkuje tento portál. Pôsobí pod občianskym združením OZ Freemap Slovakia; adresu a kontaktné osoby združenia nájdete v :FaRegQuestionCircle: **Info a pomoc** pod :FaRegAddressCard: [Kontakty](#show=about).
 
 Hlavným cieľom združenia je podpora mapovania a tvorby máp so slobodnou licenciou, najmä:
 
@@ -38,7 +38,7 @@ Prispievať môže každý – pridaním cesty, budovy, cyklotrasy alebo zaujím
 
 ## Komunita
 
-- :FaBook: **Dokumentačný projekt OpenStreetMap** v **Info a pomoc** otvára [WikiProjekt Slovensko](https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko), stránku slovenskej komunity na wiki OpenStreetMap.
+- :SiOpenstreetmap: **Dokumentačný projekt OpenStreetMap** v **Info a pomoc** otvára [WikiProjekt Slovensko](https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko), stránku slovenskej komunity na wiki OpenStreetMap.
 - :FaUsers: **Fórum slovenskej OSM komunity** v tom istom menu vedie do [diskusnej skupiny slovenských mapérov](https://groups.google.com/forum/#!forum/osm_sk), kde sa môžete pýtať a diskutovať.
 
 ## Podpora Freemapu

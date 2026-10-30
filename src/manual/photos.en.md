@@ -42,7 +42,7 @@ Once [logged in](#show=login), you can give a photo one to five stars next to **
 - :FaUpload: **Upload** – uploads your photos, see below.
 - :FaFilter: **Filter** – shows only the photos that match: by tag, author, upload or capture date, rating, license, premium or panorama, and by **Source** (**Freemap** or **Wikimedia Commons**). :FaCheck: **Apply** applies the filter, :FaEraser: **Clear** removes it. The button stays highlighted while a filter is on.
 - :FaPalette: **Colorize by** – colours the marks by author, rating, capture or upload date, season, premium or license; **Differ mine** sets your own photos apart. The button shows the current choice, **None** at first. For most choices, **Legend** in the same menu shows what the colours mean.
-- :FaBook: **View photos** – browse all photos that pass the filter, from the last uploaded, from the newest, from the most rated or from the last comment.
+- :FaRegImages: **View photos** – browse all photos that pass the filter, from the last uploaded, from the newest, from the most rated or from the last comment.
 - :FaTrophy: **Leaderboard** – who has uploaded the most photos, over all time, the last 3 months or the last 30 days, also per country.
 - :FaCog: – :FaLocationArrow: **Show shooting direction** draws on the marks which way the photo was taken. After logging in, it also holds :FaEnvelope: **Notify photos comments via email** and settings for all your photos at once: :FaGem: premium content, :FaDove: access for everyone and :FaCreativeCommons: the license.
 

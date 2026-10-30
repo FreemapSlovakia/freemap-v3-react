@@ -42,7 +42,7 @@ Po [prihlásení](#show=login) môžete fotke dať jednu až päť hviezdičiek 
 - :FaUpload: **Nahrať** – nahrá vaše fotky, pozrite nižšie.
 - :FaFilter: **Filter** – zobrazí len fotky, ktoré vyhovujú zadaným podmienkam: podľa tagu, autora, dátumu nahratia či odfotenia, hodnotenia, licencie, podľa toho, či je fotka prémiová alebo panoráma, a podľa zdroja (**Zdroj**: **Freemap** alebo **Wikimedia Commons**). :FaCheck: **Použiť** filter použije, :FaEraser: **Vyčistiť** ho zruší. Kým je filter zapnutý, tlačidlo zostáva zvýraznené.
 - :FaPalette: **Vyfarbiť podľa** – vyfarbí značky podľa autora, hodnotenia, dátumu odfotenia či nahratia, ročného obdobia, prémiového obsahu alebo licencie; **Odlíšiť moje** odlíši vaše vlastné fotky. Tlačidlo ukazuje aktuálnu voľbu, na začiatku **Žiadne**. Pri väčšine volieb ukáže **Legenda** v tom istom menu, čo farby znamenajú.
-- :FaBook: **Prezerať fotky** – prezeranie všetkých fotiek, ktoré vyhovujú filtru, od poslednej nahranej, od najnovšie odfotenej, od najvyššieho hodnotenia alebo od posledného komentára.
+- :FaRegImages: **Prezerať fotky** – prezeranie všetkých fotiek, ktoré vyhovujú filtru, od poslednej nahranej, od najnovšie odfotenej, od najvyššieho hodnotenia alebo od posledného komentára.
 - :FaTrophy: **Rebríček** – kto nahral najviac fotiek za celý čas, posledné 3 mesiace alebo posledných 30 dní, aj podľa krajín.
 - :FaCog: – :FaLocationArrow: **Zobraziť smer fotenia** vyznačí pri značkách, kam fotka smeruje. Po prihlásení tu nájdete aj :FaEnvelope: **Upozorniť emailom na komentáre k fotkám** a nastavenia pre všetky vaše fotky naraz: :FaGem: prémiový obsah, :FaDove: prístup pre každého a :FaCreativeCommons: licenciu.
 

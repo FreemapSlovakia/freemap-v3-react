@@ -10,7 +10,7 @@ Freemap je mapa pre turistiku, cyklistiku, lyžovanie a ďalšie aktivity v prí
 
 ![Obrazovka Freemapu](./images/screen.sk.webp)
 
-- :FaBars: **Hlavné menu** – vľavo hore. V menu nájdete nástroje (:FaRoute: vyhľadávač trás, :MdShapeLine: kreslenie a dáta, :PiMountains: panoráma, …), :FaRegMap: svoje mapy, exporty, :FaUser: svoj účet, :IoLanguage: jazyk a :FaBook: **Info a pomoc**, kde je aj táto príručka.
+- :FaBars: **Hlavné menu** – vľavo hore. V menu nájdete nástroje (:FaRoute: vyhľadávač trás, :MdShapeLine: kreslenie a dáta, :PiMountains: panoráma, …), :FaRegMap: svoje mapy, exporty, :FaUser: svoj účet, :IoLanguage: jazyk a :FaRegQuestionCircle: **Info a pomoc**, kde je aj táto :FaBook: príručka.
 - **Vyhľadávacie pole** – vedľa hlavného menu. Slúži na hľadanie miest, súradníc, ale aj funkcií a máp aplikácie.
 - **Lišta máp** – dole v strede. Slúži na prepínanie máp a nájdete tu aj tlačidlá priblíženia a :FaRegDotCircle: **Kde som?**
 - :FaInfoCircle: – vpravo dole. Otvára legendu mapy a zdroje zobrazenej mapy.
