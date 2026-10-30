@@ -229,6 +229,7 @@ export type Messages = {
     wikiLink: string;
     status: string;
     language: string;
+    manual: string;
   };
   main: {
     title: string;

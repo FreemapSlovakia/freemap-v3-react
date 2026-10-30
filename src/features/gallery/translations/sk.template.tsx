@@ -59,7 +59,7 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     comments: 'Komentáre',
     newComment: 'Nový komentár',
     addComment: 'Pridať',
-    yourRating: 'Tvoje hodnotenie:',
+    yourRating: 'Vaše hodnotenie:',
     showOnTheMap: 'Ukázať na mape',
     uploaded: ({ username, createdAt }) => (
       <>

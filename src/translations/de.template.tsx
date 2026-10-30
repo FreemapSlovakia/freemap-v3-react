@@ -261,6 +261,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/De:Main_Page',
     status: 'Dienststatus',
     language: 'Sprache',
+    manual: 'Handbuch',
   },
 
   main: {
@@ -368,6 +369,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, einbetten, webseite, html code',
         'modal-support-us': 'spenden, unterstützen, sponsor, geld',
         'modal-legend': 'zeichenerklärung, symbole, kartenlegende',
+        'modal-manual': 'hilfe, anleitung, bedienungsanleitung, dokumentation',
         'modal-about': 'kontakt, e-mail, feedback',
         'modal-installed-maps':
           'kartenverwaltung, kartenbibliothek, deinstallieren, ebenenkonfiguration, ebenen, karten verwalten, symbolleiste, menü, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',

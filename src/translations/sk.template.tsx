@@ -87,7 +87,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toggleObjectType: 'Kliknutím zobrazíte alebo skryjete objekty tohto typu',
     hideObjectType: ({ name }) => <>Skryť typ „{name}“</>,
     copyToDrawing: 'Kopírovať do kreslenia',
-    copyTo: ({ tool }) => <>Kopírovať do {tool}</>,
+    copyTo: ({ tool }) => <>Kopírovať do nástroja {tool}</>,
     convertAllToDrawing: 'Skonvertovať všetko na kreslenie',
     openIn: ({ what }) => <>Otvoriť v {what}</>,
     panoramaFromHere: 'Panoráma odtiaľto',
@@ -258,6 +258,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
     status: 'Stav služieb',
     language: 'Jazyk',
+    manual: 'Príručka',
   },
   main: {
     title: shared.title,
@@ -394,6 +395,55 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, embed, web, html kód, vloženie',
         'modal-support-us': 'darovať, prispieť, podpora, peniaze',
         'modal-legend': 'značky, symboly, vysvetlivky',
+        'modal-manual': 'pomoc, návod, nápoveda, dokumentácia, manuál, help',
+        'manual-getting-started': 'základy, úvod, prvé kroky, pomoc',
+        'manual-shortcuts': 'klávesnica, klávesy, skratky',
+        'manual-route-planner':
+          'pomoc, návod, navigácia, trasa, plánovanie trasy, zastávky',
+        'manual-maps':
+          'pomoc, návod, vrstvy, podkladová mapa, prekrytie, správca máp, knižnica, inštalovať, predvoľba, legenda, priehľadnosť',
+        'manual-custom-maps':
+          'pomoc, návod, vlastná mapa, wms, tms, adresa dlaždíc, pridať mapu',
+        'manual-shading':
+          'pomoc, návod, tieňovanie, reliéf, terén, výškopis, lidar, dmr',
+        'manual-weather-radar':
+          'pomoc, návod, dážď, zrážky, počasie, predpoveď, búrka, meteoradar',
+        'manual-panorama': 'pomoc, návod, 360, výhľad, vrcholy, obzor, terén',
+        'manual-viewshed':
+          'pomoc, návod, viditeľnosť, rozhľad, výhľad, čo je odtiaľ vidieť',
+        'manual-toposcope':
+          'pomoc, návod, orientačná ružica, vrcholy, kopce, toposkop, tlač',
+        'manual-map-export':
+          'pomoc, návod, tlač, pdf, png, svg, jpeg, webp, obrázok, plagát, export mapy',
+        'manual-objects':
+          'pomoc, návod, poi, body záujmu, miesta, kategórie, objekty, osm',
+        'manual-map-details':
+          'pomoc, návod, čo je tu, detaily, prvky, osm prvok, história, wms',
+        'manual-changesets':
+          'pomoc, návod, zmeny osm, sady zmien, mapéri, prispievatelia',
+        'manual-my-maps':
+          'pomoc, návod, uložené mapy, uložiť mapu, zdieľať mapu, účet, neuložené',
+        'manual-account':
+          'pomoc, návod, prihlásenie, odhlásenie, profil, token, api kľúč, zrušiť účet',
+        'manual-gps-recorder':
+          'pomoc, návod, záznam trasy, nahrávanie, logger, android, na pozadí',
+        'manual-ai':
+          'pomoc, návod, ai, umelá inteligencia, chatgpt, claude, gemini, asistent, agent, webmcp, llms.txt',
+        'manual-drawing':
+          'pomoc, návod, meranie, vzdialenosť, plocha, čiara, polygón, bod',
+        'manual-tracks':
+          'pomoc, návod, gpx, kml, trasa, import, výškový profil, export',
+        'manual-photos': 'pomoc, návod, fotky, galéria, nahrať fotografie',
+        'manual-tracking':
+          'pomoc, návod, sledovanie, zdieľanie polohy, nastavenie zariadenia, locus, osmand',
+        'manual-offline':
+          'pomoc, návod, stiahnuť mapy, bez pripojenia, vyrovnávacia pamäť',
+        'manual-devices':
+          'pomoc, návod, garmin, locus, oruxmaps, geocaching, vloženie do webu, otvoriť v aplikácii',
+        'manual-premium':
+          'pomoc, predplatné, cena, platba, kredity, kúpiť, reklama, zrušiť, vrátenie peňazí, premium',
+        'manual-about':
+          'openstreetmap, osm, združenie, komunita, mapovanie, prispievanie, licencia, atribúcia, uvedenie zdroja, copyright, komerčné použitie',
         'modal-about': 'kontakt, e-mail, spätná väzba',
         'modal-installed-maps':
           'správca máp, knižnica máp, odinštalovať, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
@@ -401,7 +451,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'knižnica máp, katalóg, inštalovať, pridať mapy, ďalšie mapy',
         'modal-offline-maps': 'stiahnuté mapy, úložisko',
         'modal-browse-cache': 'vyrovnávacia pamäť, dlaždice, úložisko',
-        'modal-map-preferences': 'nastavenia, voľby, priehľadnosť prekrytia',
+        'modal-map-preferences':
+          'predvoľby, preferencie, voľby, priehľadnosť prekrytia',
         'modal-elevation-settings': 'výškový profil, nadmorská výška, graf',
         'clear-map-features': 'vyčistiť, zmazať všetko, vymazať mapu',
         'layer-X': 'turistika, cyklo, bežky, jazdenie, freemap',
@@ -543,7 +594,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'Načítať po dlaždiciach',
     tiledHelp:
       'WMS sa štandardne vyžiada ako jeden obrázok celého výrezu: jedna požiadavka namiesto desiatok a názvy neprerezané na hraniciach dlaždíc. Dlaždice zapnite pre server, ktorý obmedzuje veľkosť obrázka alebo ktorý dlaždice kešuje — za cenu dávky požiadaviek na každý výrez.',
-    preferences: 'Predvoľby mapy',
+    preferences: 'Nastavenia mapy',
     brightness: 'Jas mapy',
     featuresOpacity: 'Viditeľnosť dátovej vrstvy',
     maxZoom: 'Maximálne priblíženie',

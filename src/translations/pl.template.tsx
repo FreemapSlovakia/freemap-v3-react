@@ -88,7 +88,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toggleObjectType: 'Kliknij, aby pokazać lub ukryć obiekty tego typu',
     hideObjectType: ({ name }) => <>Ukryj typ „{name}”</>,
     copyToDrawing: 'Kopiuj do rysunku',
-    copyTo: ({ tool }) => <>Kopiuj do {tool}</>,
+    copyTo: ({ tool }) => <>Kopiuj do narzędzia {tool}</>,
     convertAllToDrawing: 'Przekształć wszystko na rysunek',
     openIn: ({ what }) => <>Otwórz w {what}</>,
     panoramaFromHere: 'Panorama stąd',
@@ -251,6 +251,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Pl:Main_Page',
     status: 'Stan usług',
     language: 'Język',
+    manual: 'Podręcznik',
   },
   main: {
     infoBars: {},
@@ -354,6 +355,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, osadź, strona www, kod html',
         'modal-support-us': 'wesprzyj, darowizna, wsparcie, pieniądze',
         'modal-legend': 'symbole, legenda mapy',
+        'modal-manual': 'pomoc, instrukcja, poradnik, dokumentacja, help',
         'modal-about': 'kontakt, e-mail, opinie',
         'modal-installed-maps':
           'menedżer map, biblioteka map, odinstaluj, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',

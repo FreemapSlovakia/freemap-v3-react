@@ -70,7 +70,6 @@ Opens a modal to export the map as an image or document. Options:
   - Anything short of the whole map needs a format with transparency (PNG, WebP or SVG); JPEG and PDF are disabled then, and a chosen one gives way to WebP — switched to lossy when it replaces JPEG, so the compression the user picked is kept
 - Own map-feature sources to draw on top (only those with data are selectable, same set as the map data export): found route (always with its start/finish/stop markers), objects (POIs), photos, drawing and data lines/polygons/points, live tracking, highlighted map feature
 - Glow: optional glow/shadow drawn around all own map-feature markers and lines, with configurable color (incl. opacity) and width
-- Marker size: configurable pixel size of own map-feature point markers
 - Labels: configurable color (no opacity), size, and weight of own map-feature labels
 - Drawing order: Topmost or Natural
 - Map decorations, each a toggle: scale bar (bottom left), north arrow (top right), attribution line (bottom right, composed by the renderer from the datasets it drew), and **Legend** — a panel beside the map, widening the image past the chosen paper size at the same DPI, listing in the user's language the outdoor-map symbols the exported area shows, by section; with it the area's pixel limit counts double

@@ -404,6 +404,12 @@ const documentModalFactory = () =>
     '@features/documents/components/DocumentModal.js'
   );
 
+const manualModalFactory = () =>
+  import(
+    /* webpackChunkName: "manual-modal" */
+    '@features/documents/components/ManualModal.js'
+  );
+
 const aboutModalFactory = () =>
   import(
     /* webpackChunkName: "about-modal" */
@@ -1306,6 +1312,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'document'}
         factory={documentModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'manual'}
+        factory={manualModalFactory}
       />
 
       <AsyncModal

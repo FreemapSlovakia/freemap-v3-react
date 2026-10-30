@@ -1,7 +1,7 @@
 import type { OpenInExternalAppMessages } from './OpenInExternalAppMessages.js';
 
 const en: OpenInExternalAppMessages = {
-  openInExternal: 'Share / Open in external app.',
+  openInExternal: 'Share / Open in external app',
   openIn: 'Open in…',
   osm: 'OpenStreetMap',
   oma: 'OMA',

@@ -30,8 +30,8 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     ),
     tiles: (
       <>
-        Aplikácia ako JOSM či Locus načíta turistickú mapu s tokenom v adrese
-        dlaždíc:
+        Aplikácia ako Locus načíta turistickú mapu s tokenom v adrese dlaždíc
+        (JOSM token nepotrebuje):
       </>
     ),
     keepSecret:
@@ -49,11 +49,11 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
       'tracking:read': 'Prezerať moje sledované zariadenia',
       'tracking:write': 'Spravovať moje sledované zariadenia a ich zdieľanie',
       'tiles:outdoor':
-        'Prémiové priblíženia (19+) turistickej mapy v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
+        'Prémiové priblíženia (19+) turistickej mapy v aplikáciách ako Locus, ak máte prémiový prístup',
       'tiles:shading':
-        'Prémiové priblíženia (16+) tieňovaní terénu v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
+        'Prémiové priblíženia (16+) tieňovaní terénu v aplikáciách ako Locus, ak máte prémiový prístup',
       'tiles:aerial':
-        'Prémiové priblíženie (20) slovenskej a českej leteckej mapy v aplikáciách ako JOSM či Locus, ak máte prémiový prístup',
+        'Prémiové priblíženie (20) slovenskej a českej leteckej mapy v aplikáciách ako Locus, ak máte prémiový prístup',
     },
     expiration: 'Platnosť do',
     never: 'Bez obmedzenia',

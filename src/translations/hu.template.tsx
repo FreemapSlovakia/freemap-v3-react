@@ -258,6 +258,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
     status: 'Szolgáltatások állapota',
     language: 'Nyelv',
+    manual: 'Kézikönyv',
     title: 'Főmenü',
     osmWiki: 'OpenStreetMap dokumentáció',
   },
@@ -369,6 +370,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-embed': 'iframe, beágyazás, weboldal, html kód',
         'modal-support-us': 'adományozás, támogatás, pénz',
         'modal-legend': 'jelmagyarázat, jelek, szimbólumok',
+        'modal-manual': 'súgó, segítség, útmutató, dokumentáció, help',
         'modal-about': 'kapcsolat, e-mail, visszajelzés',
         'modal-installed-maps':
           'térképkezelő, térképtár, eltávolítás, rétegek beállítása, rétegek, térképek kezelése, eszköztár, menü, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',

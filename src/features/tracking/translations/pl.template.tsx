@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -6,12 +6,12 @@ import type { TrackingMessages } from './TrackingMessages.js';
 const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
   subscribeNotFound: ({ id }) => (
     <>
-      Beobachtungstoken <i>{id}</i> existiert nicht.
+      Token śledzenia <i>{id}</i> nie istnieje.
     </>
   ),
   subscribeError: ({ id }) => (
     <>
-      Fehler beim Beobachten mit Token <i>{id}</i>.
+      Błąd podczas śledzenia przy użyciu tokenu <i>{id}</i>.
     </>
   ),
   trackedDevices: {
@@ -100,15 +100,15 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: () => (
       <>
         <p>
-          Zarządzaj swoimi urządzeniami, aby inni mogli śledzić moją pozycję,
+          Zarządzaj swoimi urządzeniami, aby inni mogli śledzić ich pozycję,
           jeśli otrzymają token śledzenia (można go utworzyć za pomocą ikony{' '}
           <FaKey />
           ).
         </p>
         <hr />
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Jak skonfigurować śledzone urządzenie
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

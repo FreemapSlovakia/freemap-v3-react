@@ -252,6 +252,7 @@ const messages: Messages = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Services status',
     language: 'Language',
+    manual: 'Manual',
   },
 
   main: {
@@ -357,6 +358,53 @@ const messages: Messages = {
         'modal-embed': 'iframe, website, html code',
         'modal-support-us': 'donate, contribute, sponsor, money',
         'modal-legend': 'symbols, map key',
+        'modal-manual': 'help, guide, documentation, how to, tutorial',
+        'manual-getting-started': 'basics, introduction, first steps, help',
+        'manual-shortcuts': 'keyboard, keys, hotkeys, chords',
+        'manual-route-planner':
+          'help, navigation, directions, waypoints, plan a route, how to',
+        'manual-maps':
+          'help, layers, base map, overlay, map manager, library, install, preset, legend, opacity',
+        'manual-custom-maps':
+          'help, own map, wms, tms, tiles url, add map source',
+        'manual-shading':
+          'help, hillshade, relief, terrain, sky view, openness, lidar, dem',
+        'manual-weather-radar':
+          'help, rain, precipitation, weather, forecast, storm, animation',
+        'manual-panorama': 'help, 360, view, peaks, horizon, terrain render',
+        'manual-viewshed':
+          'help, visibility, line of sight, what can be seen, view from',
+        'manual-toposcope':
+          'help, direction dial, peaks, summits, orientation table, print',
+        'manual-map-export':
+          'help, print, pdf, png, svg, jpeg, webp, image, poster, export map',
+        'manual-objects':
+          'help, poi, points of interest, places, categories, amenities, osm',
+        'manual-map-details':
+          'help, identify, what is here, features, osm element, history, wms',
+        'manual-changesets':
+          'help, osm edits, changesets, mappers, contributions, recent changes',
+        'manual-my-maps':
+          'help, saved maps, save map, share map, account, unsaved',
+        'manual-account':
+          'help, login, sign in, log out, profile, app token, api key, delete account',
+        'manual-gps-recorder':
+          'help, record track, recording, logger, android, background',
+        'manual-ai':
+          'help, ai, llm, chatgpt, claude, gemini, assistant, agent, webmcp, llms.txt',
+        'manual-drawing': 'help, measure, distance, area, line, polygon, point',
+        'manual-tracks':
+          'help, gpx, kml, track, import, elevation profile, colorize, export',
+        'manual-photos': 'help, gallery, upload, pictures, how to',
+        'manual-tracking':
+          'help, live tracking, share position, device setup, locus, osmand',
+        'manual-offline': 'help, download maps, no connection, cache, offline',
+        'manual-devices':
+          'help, garmin, locus, oruxmaps, geocaching, embed, open in app',
+        'manual-premium':
+          'help, subscription, price, payment, credits, buy, ads, cancel, refund',
+        'manual-about':
+          'openstreetmap, osm, association, community, contribute, mapping, license, licence, attribution, copyright, commercial use',
         'modal-about': 'contact, e-mail, feedback',
         'modal-installed-maps':
           'map manager, map library, uninstall, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',

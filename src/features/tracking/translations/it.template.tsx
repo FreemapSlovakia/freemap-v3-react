@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -15,9 +15,9 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     </>
   ),
   trackedDevices: {
-    button: 'Visto',
-    modalTitle: 'Dispositivi visti',
-    desc: 'Gestisca i dispositivi visti per vedere la posizione dei suoi amici.',
+    button: 'Seguiti',
+    modalTitle: 'Dispositivi seguiti',
+    desc: 'Gestisca i dispositivi seguiti per vedere la posizione dei suoi amici.',
     modifyTitle: (name) => (
       <>
         Modifica dispositivo osservato <i>{name}</i>
@@ -32,10 +32,10 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
       "Tenga presente che l'elenco dei dispositivi si riflette solo nell'URL della pagina. Se vuole salvarlo, usi la funzione 'Le mie mappe'.",
   },
   accessToken: {
-    token: 'Watch Token',
+    token: 'Token di osservazione',
     timeFrom: 'Da',
     timeTo: 'A',
-    listingLabel: 'Etichetta inserzione',
+    listingLabel: "Etichetta nell'elenco",
     note: 'Note',
     delete: (token) => (
       <>
@@ -47,12 +47,12 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
   accessTokens: {
     modalTitle: (deviceName) => (
       <>
-        Watch Tokens per <i>{deviceName}</i>
+        Token di osservazione per <i>{deviceName}</i>
       </>
     ),
     desc: (deviceName) => (
       <>
-        Definisca gli watch token per condividere la posizione del suo
+        Definisca i token di osservazione per condividere la posizione del suo
         dispositivo <i>{deviceName}</i> con i suoi amici.
       </>
     ),
@@ -68,22 +68,22 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
   },
   trackedDevice: {
-    token: 'Watch Token',
+    token: 'Token di osservazione',
     label: 'Etichetta',
     fromTime: 'Da',
-    maxAge: 'Durata Massima',
-    maxCount: 'Conteggio massimo',
-    splitDistance: 'Dividi distanza',
-    splitDuration: 'Divita durata',
+    maxAge: 'Età massima',
+    maxCount: 'Numero massimo',
+    splitDistance: 'Distanza di divisione',
+    splitDuration: 'Pausa di divisione',
     color: 'Colore',
     width: 'Larghezza',
   },
   devices: {
     traccarQrCode: 'Codice QR Traccar',
-    button: 'Miei dispositivi',
-    modalTitle: 'Miei dispositivi tracciati',
+    button: 'I miei dispositivi',
+    modalTitle: 'I miei dispositivi tracciati',
     createTitle: 'Nuovo dispositivo di tracciamento',
-    watchTokens: 'Watch token',
+    watchTokens: 'Token di osservazione',
     watchPrivately: 'Guarda privatamente',
     watch: 'Guarda',
     delete: (name) => (
@@ -104,17 +104,17 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
           sua posizione se loro il token (può crearlo tramite <FaKey /> ).
         </p>
         <hr />
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Come configurare il dispositivo tracciato
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },
   device: {
     token: 'Token di traccia',
     name: 'Nome',
-    maxAge: 'Durata massima',
-    maxCount: 'Conteggio massimo',
+    maxAge: 'Età massima',
+    maxCount: 'Numero massimo',
     generatedToken: 'sarà rigenerato al salvataggio',
   },
   visual: {

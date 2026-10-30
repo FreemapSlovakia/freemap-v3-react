@@ -21,6 +21,7 @@ import {
   FaList,
   FaPowerOff,
   FaRegAddressCard,
+  FaRegQuestionCircle,
   FaUsers,
 } from 'react-icons/fa';
 import { getDocuments } from '@/documents/index.js';
@@ -41,6 +42,13 @@ export function HelpSubmenu(): JSX.Element {
   return (
     <>
       <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
+
+      <Dropdown.Item {...modalMenuItemProps('manual')}>
+        <FaRegQuestionCircle />
+        <MenuLabel>
+          <Text k="mainMenu.manual" />
+        </MenuLabel>
+      </Dropdown.Item>
 
       {hasLegend(layers, libraryIndex, customLayers) && (
         <OnlineOnlyItem {...modalMenuItemProps('legend')}>

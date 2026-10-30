@@ -29,8 +29,8 @@ const en: AuthMessages = {
     ),
     tiles: (
       <>
-        An app such as JOSM or Locus takes the outdoor map with the token in the
-        tile URL:
+        An app such as Locus takes the outdoor map with the token in the tile
+        URL (JOSM needs none):
       </>
     ),
     keepSecret:
@@ -47,11 +47,11 @@ const en: AuthMessages = {
       'tracking:read': 'View my tracked devices',
       'tracking:write': 'Manage my tracked devices and their sharing',
       'tiles:outdoor':
-        'Premium zooms (19+) of the outdoor map in apps such as JOSM or Locus, if you have premium',
+        'Premium zooms (19+) of the outdoor map in apps such as Locus, if you have premium',
       'tiles:shading':
-        'Premium zooms (16+) of the terrain shadings in apps such as JOSM or Locus, if you have premium',
+        'Premium zooms (16+) of the terrain shadings in apps such as Locus, if you have premium',
       'tiles:aerial':
-        'Premium zooms (20) of the Slovak and Czech aerial imagery in apps such as JOSM or Locus, if you have premium',
+        'Premium zooms (20) of the Slovak and Czech aerial imagery in apps such as Locus, if you have premium',
     },
     expiration: 'Expires',
     never: 'Never',
