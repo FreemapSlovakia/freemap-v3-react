@@ -37,6 +37,9 @@ const MOON_DARK_FILL = 0.3;
 /** How far under the frame a path is still followed before it is dropped. */
 const BELOW_FRAME_DEG = 2;
 
+/** Half the tick across each end of the day's path. */
+const END_TICK_PX = 6;
+
 /** Smallest a disc is drawn, so a fit view still shows one. */
 const MIN_DISC_PX = 3;
 
@@ -232,6 +235,19 @@ export function PanoramaSky({
       tracks.map((track) => ({
         track,
         segments: segmentsOf(track.samples, altMin),
+        // Each end with its neighbour, which gives the path's direction there.
+        ends: (
+          [
+            [track.samples[0], track.samples[1]],
+            [track.samples.at(-1), track.samples.at(-2)],
+          ] as const
+        ).filter(
+          (pair): pair is [TrackSample, TrackSample] =>
+            pair[0] !== undefined &&
+            pair[1] !== undefined &&
+            pair[0].centreVisible !== null &&
+            pair[0].altitude >= altMin - BELOW_FRAME_DEG,
+        ),
         // Whole minutes from midnight: crossing samples fall between them, and
         // counted from the epoch an old zone's offset with seconds has none.
         hours: track.samples
@@ -354,7 +370,7 @@ export function PanoramaSky({
 
   return (
     <g>
-      {layout.map(({ track, segments, hours, events, nowMoon }, i) => {
+      {layout.map(({ track, segments, ends, hours, events, nowMoon }, i) => {
         const ink = SKY_INK[track.body];
 
         const now = track.now;
@@ -413,6 +429,38 @@ export function PanoramaSky({
                 </g>
               )),
             )}
+
+            {/* The moon's ends don't meet: it comes back ~50 min later a day. */}
+            {ends.map(([end, next]) => {
+              const x = screenX(end.azimuth);
+
+              const y = screenY(end.altitude);
+
+              const dx = screenX(next.azimuth) - x;
+
+              const dy = screenY(next.altitude) - y;
+
+              const length = Math.hypot(dx, dy);
+
+              // A neighbour across the wrap gives no direction.
+              if (length === 0 || Math.abs(dx) > width / 2) {
+                return null;
+              }
+
+              const tx = (-dy / length) * END_TICK_PX;
+
+              const ty = (dx / length) * END_TICK_PX;
+
+              const points = `${x - tx},${y - ty} ${x + tx},${y + ty}`;
+
+              return (
+                <g key={end.time} opacity={end.centreVisible ? 1 : 0.5}>
+                  <polyline points={points} stroke={HALO} strokeWidth={3} />
+
+                  <polyline points={points} stroke={ink} strokeWidth={1.5} />
+                </g>
+              );
+            })}
 
             {hours.map(({ sample, text }) => {
               const x = screenX(sample.azimuth);
