@@ -389,6 +389,11 @@ export type IsWmsLayerDef = HasUrl &
      */
     tiled?: boolean;
     /**
+     * A tile URL template of the server's WMTS with `{layer}` for a layer name:
+     * the picture is then drawn from it, a tile layer per picked layer.
+     */
+    wmts?: string;
+    /**
      * Read capabilities and feature info through the API's proxy straight
      * away: the server sends no CORS headers. Images never need it.
      */
@@ -608,6 +613,7 @@ export const IsWmsLayerDefSchema = z.object({
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
   tiled: z.boolean().optional(),
+  wmts: z.string().optional(),
   proxy: z.boolean().optional(),
 });
 
