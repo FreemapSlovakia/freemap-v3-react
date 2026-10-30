@@ -180,7 +180,7 @@ function LibraryRow({ entry, name, canSave }: LibraryRowProps): ReactElement {
         <LayerKindMark kind={entry.layer} />
       </td>
 
-      <td>{index ? index.icon : catalogIcon(entry.category)}</td>
+      <td>{index ? index.icon : catalogIcon(entry.map ?? entry)}</td>
 
       {/* No max width lets the name truncate instead of widening the table. */}
       <td className="w-100" style={{ maxWidth: 0 }}>

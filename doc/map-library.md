@@ -100,7 +100,9 @@ for each tab, and switching tabs changes
   **Harvesting**) and `curated/curatedCatalog.json`, hand-picked maps ELI lacks
   (Slovak WMS and tile services so far), written by hand with ids of their own
   (`FSK..`; a test keeps them clear of ELI's). A catalog map is image tiles
-  or, with `technology: 'wms'`, a WMS. The modal credits ELI under its
+  or, with `technology: 'wms'`, a WMS. Its icon follows its category, unless
+  it names one (`icon`, from `NAMED_ICONS` in `catalogMap.tsx`; the mobile
+  coverage maps use `signal`). The modal credits ELI under its
   CC BY-SA 3.0.
 - **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
   then (ranked lower) each keyword, country code and name and category on its

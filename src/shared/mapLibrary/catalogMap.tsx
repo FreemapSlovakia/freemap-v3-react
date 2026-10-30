@@ -1,12 +1,32 @@
 import type { MapBody, MapIndexEntry } from '@shared/mapDefinitions.js';
 import type { ReactElement } from 'react';
-import { FaFilm, FaLayerGroup, FaRegMap, FaScroll } from 'react-icons/fa';
+import {
+  FaFilm,
+  FaLayerGroup,
+  FaRegMap,
+  FaScroll,
+  FaSignal,
+} from 'react-icons/fa';
 import { GiMountains } from 'react-icons/gi';
 import { IoAirplaneOutline } from 'react-icons/io5';
 
-/** A catalog map's icon, by its Editor Layer Index category. */
-export function catalogIcon(category: string | undefined): ReactElement {
-  switch (category) {
+// Icons a catalog entry may name (`icon`), as its category can't tell them.
+const NAMED_ICONS: Record<string, () => ReactElement> = {
+  signal: () => <FaSignal />,
+};
+
+/** A catalog map's icon: the one it names, else by its Editor Layer Index category. */
+export function catalogIcon(map: {
+  category?: string;
+  icon?: string;
+}): ReactElement {
+  const named = map.icon ? NAMED_ICONS[map.icon] : undefined;
+
+  if (named) {
+    return named();
+  }
+
+  switch (map.category) {
     case 'photo':
       return <IoAirplaneOutline />;
     case 'historicphoto':
@@ -34,6 +54,8 @@ export type CatalogMap = {
   /** A coverage in parts far apart (France with its overseas departments), a box each. */
   bboxes?: [number, number, number, number][];
   category?: string;
+  /** An icon by name, where the category's would mislead (`NAMED_ICONS`). */
+  icon?: string;
 } & (
   | { technology?: 'tile'; body: MapBody<'tile'> }
   | { technology: 'wms'; body: MapBody<'wms'> }
@@ -49,7 +71,7 @@ export const catalogIndexEntry = (map: CatalogMap): MapIndexEntry => {
     bbox: map.bbox,
     bboxes: map.bboxes,
     category: map.category,
-    icon: catalogIcon(map.category),
+    icon: catalogIcon(map),
     defaultInMenu: true,
   };
 
