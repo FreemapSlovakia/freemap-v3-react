@@ -25,7 +25,7 @@ import {
 } from '@shared/tileAttribution.js';
 import { useTerrainLicenses, useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
-import { type ReactElement, useMemo } from 'react';
+import { Fragment, type ReactElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useTileZoom } from '../hooks/useTileZoom.js';
 import {
@@ -43,6 +43,9 @@ import { coversInBounds, useTileCoverages } from '../tileCoverage.js';
 type Props = { unknown: string };
 
 const PREFIX = '?document=';
+
+// The no-break space keeps the dot on the credit it follows.
+const SEPARATOR = '\u00a0· ';
 
 /**
  * Maps the `state.map.countries` tri-state to the country filter that
@@ -443,44 +446,40 @@ export function useResolvedAttribution(
             type,
             <>
               <Text k={`mapLayers.type.${type}`} />{' '}
-              {attributions.map((a, j) => [
-                j > 0 ? ', ' : '',
-                // Inline blocks: a line breaks between credits, inside one only
-                // when it doesn't fit a line of its own.
-                a.url ? (
-                  <a
-                    key={j}
-                    className="d-inline-block"
-                    href={a.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => {
-                      if (!a.url?.startsWith(PREFIX)) {
-                        return;
-                      }
+              {attributions.map((a, j) => (
+                <Fragment key={j}>
+                  {j > 0 && SEPARATOR}
+                  {a.url ? (
+                    <a
+                      href={a.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => {
+                        if (!a.url?.startsWith(PREFIX)) {
+                          return;
+                        }
 
-                      const doc = DocumentSchema.safeParse(
-                        a.url.slice(PREFIX.length),
-                      );
+                        const doc = DocumentSchema.safeParse(
+                          a.url.slice(PREFIX.length),
+                        );
 
-                      if (!doc.success) {
-                        return;
-                      }
+                        if (!doc.success) {
+                          return;
+                        }
 
-                      e.preventDefault();
+                        e.preventDefault();
 
-                      dispatch(documentShow(doc.data));
-                    }}
-                  >
-                    {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-                  </a>
-                ) : (
-                  <span key={j} className="d-inline-block">
-                    {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-                  </span>
-                ),
-              ])}
-              {esriAttribution?.map((a) => `, ${a}`).join('') ?? ''}
+                        dispatch(documentShow(doc.data));
+                      }}
+                    >
+                      {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
+                    </a>
+                  ) : (
+                    a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])
+                  )}
+                </Fragment>
+              ))}
+              {esriAttribution?.map((a) => SEPARATOR + a).join('') ?? ''}
             </>,
           ] as const,
       );
