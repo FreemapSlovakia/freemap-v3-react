@@ -445,13 +445,19 @@ a failure load explains, and checked to decode as a whole 256 px PNG before
 it is kept. A daily sweep drops tiles past their days and those of maps
 listed without `tileCache`, never those of maps the catalog doesn't list. The
 API answers a transparent PNG outside the map's `bbox`, renders at most 16
-layer tiles at once per upstream host (the rest queued for up to a minute)
-and shares one render among all who ask for it. A composed tile is cached for
-what is left of its oldest layer's days; nginx on fm6
-(`conf.d/wms-tile-cache.conf`) keeps it that long, so a map whose data changes
-under the same layer names wants a short `tileCache`.
+layer tiles at once per upstream host (the rest queued, up to 5000, for up to
+a minute: the queue counts layer renders, and one cold view of a 10-layer map
+brings hundreds) and shares one render among all who ask for it. Composing a set of cached
+tiles is cheap (an 11-layer tile answers in under 0.1 s), so nginx caches
+nothing: its `location /wms-tile/` on fm6 only rate-limits
+(`conf.d/wms-tile-limits.conf`) and waits 150 s, as a miss may queue and
+render for 90. Browsers keep a composed tile for what is left of its oldest
+layer's days, so a map whose data changes under the same layer names wants a
+short `tileCache`.
 `scripts/prerender-wms-tiles.mjs`, run on fm6 against the API past nginx,
-fills the cache with a map's own layers.
+fills the cache with a map's own layers. Its requests (`X-Prerender: 1`, no
+`X-Forwarded-For`) wait behind every user's, and a user's render of a tile it
+has queued takes its place.
 
 The proxy (freemap-v3-api, `src/routers/wmsProxyHandler.ts`) takes the service
 URL from the catalog entry, never from the client, so it can reach nothing but
