@@ -1,4 +1,4 @@
-import { HttpError, httpRequest } from '@app/httpRequest.js';
+import { HttpError, httpRequest, isNetworkError } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -40,7 +40,7 @@ import {
   photonLang,
   photonOsmElementType,
 } from '@shared/types/photonResult.js';
-import { wmsBaseUrl } from '@shared/wms.js';
+import { requestWms, wmsBaseUrl, wmsProxyOf } from '@shared/wms.js';
 import { point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
 import type { FeatureCollection } from 'geojson';
@@ -218,13 +218,17 @@ export async function handle(
           // answering none is left out rather than failing the whole query.
           const remembered = infoFormats.get(def.url);
 
+          const proxy = wmsProxyOf(def);
+
           for (const format of new Set(
             remembered ? [remembered, ...INFO_FORMATS] : INFO_FORMATS,
           )) {
             url.searchParams.set('INFO_FORMAT', format);
 
             try {
-              const res = await httpRequest({ getState, url: url.toString() });
+              const res = await requestWms(url.toString(), proxy, (url) =>
+                httpRequest({ getState, url }),
+              );
 
               const body = decodeFeatureInfo(
                 await res.arrayBuffer(),
@@ -246,11 +250,13 @@ export async function handle(
 
               console.warn(`Feature info from ${name} as ${format}`, err);
 
-              // Failing whatever the format. A 400, a 500 or a network error
-              // (a refusal without CORS headers) may be a refusal, so go on.
+              // Failing whatever the format; a 400 or a 500 may refuse only
+              // this one, so go on. So may a direct refusal without CORS
+              // headers, but through the proxy a network error means it failed.
               if (
-                err instanceof HttpError &&
-                [401, 403, 404, 429, 502, 503, 504].includes(err.status)
+                (proxy && isNetworkError(err)) ||
+                (err instanceof HttpError &&
+                  [401, 403, 404, 429, 502, 503, 504].includes(err.status))
               ) {
                 return undefined;
               }

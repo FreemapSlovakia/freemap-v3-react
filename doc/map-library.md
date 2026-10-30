@@ -85,14 +85,23 @@ for each tab, and switching tabs changes
 `installed-maps`. Built for a catalog of thousands:
 
 - **Catalog** — `src/features/mapLibrary/catalog.ts`: `loadLibraryCatalog()`
-  loads it on first opening. A `CatalogEntry` carries what search and the row
-  need, and either a built-in map's `index` row or a catalog map (`map`). The
-  catalog maps come from `eli/eliCatalog.json` (see **Harvesting**), a chunk of
-  its own (`eli-catalog`), and from `curated/curatedCatalog.json`: hand-picked
-  maps ELI lacks (Slovak WMS and tile services so far), written by hand with
-  ids of their own (`FSK..`; a test keeps them clear of ELI's). A catalog map
-  is image tiles or, with `technology: 'wms'`, a WMS. The modal credits ELI
-  under its CC BY-SA 3.0.
+  loads it from the API (`GET /map-catalog`) on first opening, and
+  `loadCatalogMaps` only the maps of given ids (`?types=`) while the whole
+  catalog isn't loaded. Nothing is kept for offline use: a catalog map is a
+  third party's online service, never downloadable as an offline map, so it
+  can't draw offline anyway. With the API out of reach (`isUnreachable`: a
+  network error, no first byte in 15 s or no whole answer in 120 s, a gateway
+  error from nginx, or a page not labelled JSON) installed maps are asked
+  again quietly once the connection is back; Available maps shows its load
+  error, and asks again when opened again. A `CatalogEntry` carries what
+  search and the row need, and either a built-in map's `index` row or a
+  catalog map (`map`). The catalog
+  lives in freemap-v3-api's `mapCatalog/`: `eli/eliCatalog.json` (see
+  **Harvesting**) and `curated/curatedCatalog.json`, hand-picked maps ELI lacks
+  (Slovak WMS and tile services so far), written by hand with ids of their own
+  (`FSK..`; a test keeps them clear of ELI's). A catalog map is image tiles
+  or, with `technology: 'wms'`, a WMS. The modal credits ELI under its
+  CC BY-SA 3.0.
 - **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
   then (ranked lower) each keyword, country code and name and category on its
   own; targets are normalized once per catalog and language. With no query,
@@ -327,9 +336,9 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
 
 ### Harvesting
 
-`node scripts/harvest-eli.mjs [imagery.geojson] [--reuse-probe]` turns the OSM
-Editor Layer Index, plus the maps found beyond it in
-`scripts/national-sources.json`, into `src/features/mapLibrary/eli/`. A national
+All of it is in freemap-v3-api. `node scripts/harvest-eli.mjs [imagery.geojson]
+[--reuse-probe]` turns the OSM Editor Layer Index, plus the maps found beyond it
+in `mapCatalog/national-sources.json`, into `mapCatalog/eli/`. A national
 source is ELI's properties with a `bbox` for the coverage, a WMS by its base
 `url` and `layers`, and an id `fm:<country>-…`; it goes through the same filters
 and probe. The national sources are researched one country at a time.
@@ -369,8 +378,10 @@ URL without its request parameters, and the layers. ELI files ArcGIS REST
 `export` URLs as `wms`; those are dropped. A WMS is probed with the app's own
 request (1.3.0, a 256 px tile, JPEG for a base map, transparent PNG for an
 overlay), and one answering with anything but an image — a WMS error is an XML
-200 — is dropped; its CORS is recorded but only its layer list in the Map
-layers panel needs it, as the map is plain images. Dropped:
+200 — is dropped. The map is plain images and needs no CORS; for one without
+it the harvest writes `proxy: true`, so its capabilities and feature info go
+through the API's `/wms-proxy` from the start (see **WMS without CORS**).
+Dropped:
 OSMF-hosted (`*.openstreetmap.org`, editing only by its usage policy),
 `*.freemap.sk` (built in), scraped commercial sources (Google, Bing, Yandex,
 2GIS, HERE, Mapbox, Apple, Maxar, Esri basemaps — matched on the ELI id and
@@ -383,8 +394,55 @@ tile map CORS doesn't open to both origins gets `cors: false`. The probe also as
 tile map's tile with the app's `@2x` suffix (then `@3x`, `@4x`) and takes each one whose
 image is that many times wider as `extraScales`; without them, imagery and
 elevation (`photo`, `historicphoto`, `elevation`) get `scaleWithDpi`, as the
-built-in aerials do, and maps with labels neither. `eliCatalog.test.ts` checks
-the ids and templates.
+built-in aerials do, and maps with labels neither. The API's
+`src/mapCatalog.test.ts` checks the ids, templates, WMS URLs and credits.
+
+### WMS without CORS
+
+A WMS map draws as images, which need no CORS, but its layer list (capabilities)
+and feature info are read by the page. `requestWms` in `src/shared/wms.ts`
+makes those requests directly and, for a catalog map, on a `NetworkError` (no
+CORS headers or down — the browser can't tell which; catalog WMS URLs are
+https only, as the map's images aren't proxied)
+again through the API's `GET /wms-proxy/<map id>?<the WMS query>`, after which
+the map goes through the proxy for the page's life. A def with `proxy: true`
+skips the direct attempt. `wmsProxyOf` picks the id: a catalog map's own, or a
+named map's `source`; built-in and custom maps are never proxied. A map is
+pinned only while `navigator.onLine`. In feature info, a network error makes
+a catalog map stop trying formats, as the proxy failed too; a built-in or custom
+map goes on to its next format, as one format may be refused without CORS
+headers. Map and legend images are `<img>` and never proxied either.
+`useWmsLayers` (over `wmsLayers`) keeps one capabilities request per service
+and route for the layer picker and the legend.
+
+The proxy (freemap-v3-api, `src/routers/wmsProxyHandler.ts`) takes the service
+URL from the catalog entry, never from the client, so it can reach nothing but
+the catalog's WMS services; the entry's own parameters win over the client's.
+It asks only with exactly one `service=WMS` and one `request`,
+`GetCapabilities` (with SERVICE, REQUEST and VERSION only) or
+`GetFeatureInfo`. The DNS lookup refuses non-public addresses, should a
+catalog host's name ever point at one. A redirect must keep the host, the port,
+the path and the request, and may only upgrade http to https. It caps a
+response at 10 MB and the content type to XML (GML included), JSON, HTML and
+text — another type is a 415, so feature info tries its next format — the
+upstream wait at 30 s for capabilities and 10 s for feature info, and upstream
+fetches at 8 at once for each of the two; a client that goes away aborts its
+feature-info fetch. Real capabilities documents (not 200 error pages) are
+cached for a day in memory, least recently used evicted first, simultaneous
+misses sharing one download; only they may be cached by browsers, and a
+failure is answered 502 for 5 minutes. A service that can't be reached at all
+(DNS, refused, unreachable) answers feature info 502 for a minute. Per-client
+rate limiting is nginx's (`backend.freemap.sk`, `conf.d/wms-proxy-limits.conf`
+on fm6). The API reads the catalog from `build/` (`copy:assets` copies it), so
+data and code deploy together. `scripts/check-catalog.mjs`, run by
+`remote-deploy.sh` before the build and by the harvest workflow before its
+PR, refuses a catalog that is truncated, malformed, has bad or duplicate ids,
+or a URL the proxy or an https page can't use (unparsable, an IP address, a
+Freemap host, a WMS not on https, with a placeholder, request parameters or
+without layers). The rules live in the API's `src/catalogRules.mjs`, plain JS
+shared by the harvest, the check, the tests and the API's load, which skips a
+map that breaks them. `?types=` takes at most 100 ids; the app asks in
+batches.
 
 ### The registry
 
@@ -454,9 +512,6 @@ the ids and templates.
   non-strict `z.object`, which also strips the key when they save back.
 - `list-map-layers` loads every body to report zooms; fine at 35 maps, needs
   rethinking (index-level zoom/premium fields) at thousands.
-- **Startup with an installed catalog map** loads the whole catalog chunk
-  (~53 KB gzipped) to resolve one id. Splitting an id → map lookup from the
-  list the library searches would fix it once the catalog grows.
 
 ## Next steps
 

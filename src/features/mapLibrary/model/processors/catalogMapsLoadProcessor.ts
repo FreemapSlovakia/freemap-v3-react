@@ -4,7 +4,7 @@ import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { createSelector } from 'reselect';
-import { loadCatalogMaps } from '../../catalog.js';
+import { isUnreachable, loadCatalogMaps } from '../../catalog.js';
 import {
   mapLibraryCatalogMapsLoaded,
   mapLibraryLoadRetry,
@@ -70,14 +70,18 @@ export const catalogMapsLoadProcessor: Processor = {
           asked.delete(type);
         }
 
-        dispatch(
-          toastsAdd({
-            id: 'mapLibrary.catalogError',
-            messageKey: 'general.loadError',
-            messageParams: { err },
-            style: 'danger',
-          }),
-        );
+        // Out of reach (offline, say): asked again quietly, as the maps couldn't
+        // draw without the network anyway.
+        if (!isUnreachable(err)) {
+          dispatch(
+            toastsAdd({
+              id: 'mapLibrary.catalogError',
+              messageKey: 'general.loadError',
+              messageParams: { err },
+              style: 'danger',
+            }),
+          );
+        }
 
         scheduleRetry(dispatch);
       },

@@ -388,6 +388,11 @@ export type IsWmsLayerDef = HasUrl &
      * a burst of requests per view and labels clipped at the tile seams.
      */
     tiled?: boolean;
+    /**
+     * Read capabilities and feature info through the API's proxy straight
+     * away: the server sends no CORS headers. Images never need it.
+     */
+    proxy?: boolean;
   };
 
 type IsMapLibreLayerDef = HasUrl & {
@@ -603,6 +608,7 @@ export const IsWmsLayerDefSchema = z.object({
   maxNativeZoom: z.number().optional(),
   zIndex: z.number().optional(),
   tiled: z.boolean().optional(),
+  proxy: z.boolean().optional(),
 });
 
 export const IsMapLibreLayerDefSchema = z.object({

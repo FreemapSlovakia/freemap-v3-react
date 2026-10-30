@@ -12,7 +12,7 @@ import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapLibraryCatalogMapsLoaded } from '@features/mapLibrary/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import type { Shading } from '@features/parameterizedShading/model/Shading.js';
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer, current, isDraft } from '@reduxjs/toolkit';
 import { isNamedMapDef } from '@shared/mapDefinitions.js';
 import type { CatalogMap } from '@shared/mapLibrary/catalogMap.js';
 import { isUninstalledByDefault } from '@shared/mapLibrary/installed.js';
@@ -538,9 +538,25 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       assignAccountSettings(state, payload);
     })
     .addCase(mapLibraryCatalogMapsLoaded, (state, { payload }) => {
+      // A later answer replaces an earlier one, as the library may hand over a
+      // map the store already knows.
       for (const map of payload) {
-        if (!state.catalogMaps.some((known) => known.type === map.type)) {
+        const i = state.catalogMaps.findIndex(
+          (known) => known.type === map.type,
+        );
+
+        if (i === -1) {
           state.catalogMaps.push(map);
+        } else if (
+          // An unchanged map keeps its identity, so its layer isn't rebuilt. One
+          // pushed earlier in this payload is no draft.
+          JSON.stringify(
+            isDraft(state.catalogMaps[i])
+              ? current(state.catalogMaps[i])
+              : state.catalogMaps[i],
+          ) !== JSON.stringify(map)
+        ) {
+          state.catalogMaps[i] = map;
         }
       }
     })

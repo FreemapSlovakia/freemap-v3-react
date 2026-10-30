@@ -546,6 +546,34 @@ Bugs and feature requests are issues under `area: maps-layers`.
       the `defaultOpacity` a switch-back leaves on a base copy is ignored by
       `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
       switched.
+- [ ] **Harvest bugs (freemap-v3-api `scripts/harvest-eli.mjs`).** Older than
+      the move to the API, found in its review:
+      - A map dropped after its grace period gets a new probe record without
+        `failingSince`; the next run, reading main's `ids.json` where it still
+        has its id, starts a new grace, the catalog matches main again and the
+        workflow closes the PR that dropped it. A dead map is then never
+        removed unless that PR is merged within its week.
+      - `answered()` takes a 404 as alive for a WMS too, though a GetMap gives
+        no 404 for an empty spot: a moved WMS stays without a countdown.
+      - National sources' WMS layer names go into the query unencoded
+        (`LAYERS=${layers.join(',')}`), then are decoded by `URLSearchParams`:
+        a `+`, `&`, `#` or space in a name is mangled.
+      - The probes fetch whatever host ELI or a national source names, from
+        fm5, with plain `fetch`: a name resolving to a private address (or
+        redirecting there) makes fm5 request its own services, and the result
+        lands in the PR report. Give the probe the proxy's public-address
+        lookup (`publicLookup` in the API's `wmsProxyHandler.ts`).
+      - The workflow's "Restore the probe record" always takes fm5's cached
+        `probe.json` over the committed one, even when a hand-run harvest
+        committed a newer one: a recovered map's old `failingSince` comes back
+        and a new failure drops it at once. Restore the newer, or merge by entry.
+      - The PR body is the report verbatim, with ELI's names and attribution:
+        an `@name` or `#123` in them notifies or cross-links on GitHub. Wrap
+        names in backticks in the report.
+      - `toWms` turns every `{placeholder}` into `x` before parsing but drops
+        only the standard WMS parameters, so one in another parameter
+        (`TIME={time}`, `DPI={dpi}`) stays in the base URL as `x`; `toLeaflet`
+        refuses unknown placeholders, `toWms` doesn't.
 - [ ] **Helpers for a map's effective settings.** `effectiveShortcut` in
       `installed.ts` serves `keyboardHandler` and `MapSwitchButton`; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
       `CacheTilesForm` still resolve the shortcut inline, and the menu/toolbar

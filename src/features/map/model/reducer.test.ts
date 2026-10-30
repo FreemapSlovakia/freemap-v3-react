@@ -66,6 +66,44 @@ describe('mapReducer — mapToggleLayer (base layers)', () => {
     expect(next.layers).toEqual(['Z0001', 'xh']);
   });
 
+  it('a later catalog map replaces a changed one, and keeps an unchanged one', () => {
+    const map = {
+      type: 'Z0001',
+      layer: 'base' as const,
+      name: 'Test',
+      body: { url: 'https://example.com/{z}/{x}/{y}.png', attribution: [] },
+    };
+
+    const loaded = mapReducer(
+      mapInitialState,
+      mapLibraryCatalogMapsLoaded([map]),
+    );
+
+    const same = mapReducer(
+      loaded,
+      mapLibraryCatalogMapsLoaded([structuredClone(map)]),
+    );
+
+    expect(same.catalogMaps[0]).toBe(loaded.catalogMaps[0]);
+
+    const changed = mapReducer(
+      loaded,
+      mapLibraryCatalogMapsLoaded([{ ...map, name: 'Renamed' }]),
+    );
+
+    expect(changed.catalogMaps).toHaveLength(1);
+
+    expect(changed.catalogMaps[0].name).toBe('Renamed');
+
+    // The same id twice in one payload: the later copy wins, no throw.
+    const twice = mapReducer(
+      mapInitialState,
+      mapLibraryCatalogMapsLoaded([map, { ...map, name: 'Later' }]),
+    );
+
+    expect(twice.catalogMaps.map((m) => m.name)).toEqual(['Later']);
+  });
+
   it('changes only the settings named', () => {
     const next = mapReducer(
       { ...mapInitialState, layersSettings: { Z0001: { showInMenu: false } } },

@@ -1,3 +1,6 @@
+import { fetchOrNetworkError, isNetworkError } from '@app/httpRequest.js';
+import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+
 export type Layer = {
   title: string | null;
   name: string | null;
@@ -98,18 +101,78 @@ export function parseWmsXml(text: string): Document {
   return dom;
 }
 
-export async function wms(urlString: string) {
+/** A catalog map's WMS, which the API proxies by its id; `always` skips the direct try. */
+export type WmsProxy = { type: string; always?: boolean };
+
+/** Only catalog maps are proxied: the API knows their services. */
+export function wmsProxyOf(def: {
+  type: string;
+  source?: string;
+  proxy?: boolean;
+}): WmsProxy | undefined {
+  // A named map is proxied as the library map it was made from.
+  const type = def.source ?? def.type;
+
+  return isCatalogId(type) ? { type, always: def.proxy } : undefined;
+}
+
+// Maps whose service the page could not reach directly, for the page's life.
+const proxiedTypes = new Set<string>();
+
+/** The API builds the service URL from the catalog; only the query goes along. */
+const wmsProxyUrl = (type: string, url: string) =>
+  `${process.env['API_URL']}/wms-proxy/${type}${new URL(url).search}`;
+
+/**
+ * Requests what the page must read directly, then through the API's proxy on a
+ * `NetworkError`: missing CORS and an outage look alike. Catalog WMS URLs are
+ * https only, as the map's images don't go through the proxy.
+ */
+export async function requestWms<T>(
+  url: string,
+  proxy: WmsProxy | undefined,
+  request: (url: string) => Promise<T>,
+): Promise<T> {
+  if (!proxy) {
+    return request(url);
+  }
+
+  if (proxy.always || proxiedTypes.has(proxy.type)) {
+    return request(wmsProxyUrl(proxy.type, url));
+  }
+
+  try {
+    return await request(url);
+  } catch (err) {
+    // Offline, the proxy is out of reach too, and says nothing about the service.
+    if (!isNetworkError(err) || !navigator.onLine) {
+      throw err;
+    }
+  }
+
+  // The proxy serves only this map's own service, so pinning can't misroute.
+  proxiedTypes.add(proxy.type);
+
+  return request(wmsProxyUrl(proxy.type, url));
+}
+
+export async function wms(urlString: string, proxy?: WmsProxy) {
   const url = new URL(wmsBaseUrl(urlString));
 
   url.searchParams.set('request', 'GetCapabilities');
   url.searchParams.set('service', 'WMS');
   url.searchParams.set('version', '1.3.0');
 
-  const res = await fetch(url.toString());
+  // Throws on an error status, so a failing proxy isn't taken as working.
+  const res = await requestWms(url.toString(), proxy, async (url) => {
+    const res = await fetchOrNetworkError(new Request(url));
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
+    if (!res.ok) {
+      throw new Error(await res.text());
+    }
+
+    return res;
+  });
 
   const dom = parseWmsXml(await res.text());
 
@@ -318,4 +381,28 @@ export async function wms(urlString: string) {
   );
 
   return { title: title ?? '', globalFormats, layersTree };
+}
+
+// Per service, for as long as the page lives; a failed one is asked again.
+const capabilities = new Map<string, Promise<Layer[]>>();
+
+/** A service and its route: a custom map on the same service can't reach the proxy. */
+export const wmsLayersKey = (url: string, proxy?: WmsProxy) =>
+  `${proxy?.type ?? ''} ${url}`;
+
+/** A service's layer tree, fetched once for the layer picker and legend alike. */
+export function wmsLayers(url: string, proxy?: WmsProxy): Promise<Layer[]> {
+  const key = wmsLayersKey(url, proxy);
+
+  let p = capabilities.get(key);
+
+  if (!p) {
+    p = wms(url, proxy).then(({ layersTree }) => layersTree);
+
+    p.catch(() => capabilities.delete(key));
+
+    capabilities.set(key, p);
+  }
+
+  return p;
 }
