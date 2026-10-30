@@ -307,7 +307,8 @@ A catalog map is not in `mapIndex`; it works once the map slice knows it.
 - **`CatalogMap`** (`src/shared/mapLibrary/catalogMap.tsx`) — plain data with
   its own `name`, a `bbox` (a preview's target: `COUNTRY_BBOXES` knows only
   SK and CZ) and a `tile` body; `catalogIndexEntry` makes an index row of it,
-  its body bundled.
+  its body bundled. A body may set an overlay's `defaultOpacity`, as a
+  built-in body does (the RÚ coverage maps: 0.75).
 - **`map.catalogMaps`** — the catalog maps known so far, never persisted.
   `catalogMapsLoadProcessor` loads the ones wanted — installed, on the map, or
   an offline map's source — from the catalog on start and whenever that set
