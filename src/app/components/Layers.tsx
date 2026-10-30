@@ -56,7 +56,7 @@ import {
 } from '@shared/tileUrl.js';
 import { wmsBaseUrl } from '@shared/wms.js';
 import { Fragment, type ReactNode, useEffect } from 'react';
-import { TileLayer, useMap } from 'react-leaflet';
+import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import transparent1x1 from '@/images/1x1-transparent.png';
 import missingTile from '@/images/missing-tile-256x256.png';
@@ -311,30 +311,6 @@ export function Layers(): ReactNode {
       // tile layer's deeper-zoom trick does. `maxNativeZoom` is what bounds it
       // where the source itself runs out of detail.
       const wmsHdpi = effectiveDpr / featureScale > 1.4;
-
-      // The server's tile cache, a tile layer per picked layer in one pane so
-      // they fade as one picture. Past a dozen the requests per view outweigh
-      // one uncached WMS image.
-      if (layerDef.wmts && wmsLayers.length <= 12) {
-        const template = layerDef.wmts;
-
-        return (
-          <PresetPane key={id} zIndex={zIndex} opacity={opacity}>
-            {wmsLayers.map((layer, i) => (
-              <TileLayer
-                // Leaflet reads the zooms once; zIndex keeps the WMS order.
-                key={`${layer}-${layerDef.maxNativeZoom}-${maxZoom}`}
-                url={template.replaceAll('{layer}', encodeURIComponent(layer))}
-                zIndex={i}
-                minZoom={layerDef.minZoom}
-                maxNativeZoom={layerDef.maxNativeZoom}
-                maxZoom={maxZoom}
-                errorTileUrl={transparent1x1}
-              />
-            ))}
-          </PresetPane>
-        );
-      }
 
       if (!layerDef.tiled) {
         return (

@@ -417,14 +417,6 @@ headers. Map and legend images are `<img>` and never proxied either.
 `useWmsLayers` (over `wmsLayers`) keeps one capabilities request per service
 and route for the layer picker and the legend.
 
-A WMS def with `wmts` (a GetTile URL template with `{layer}`, `{z}`, `{x}`,
-`{y}`) draws from the server's tile cache instead: one tile layer per picked
-layer, in one pane sharing the map's opacity. Past 12 picked layers it falls
-back to the WMS image, as the tile requests per view would outweigh one
-uncached render. The picker, legend and feature info stay on the WMS. The RÚ
-coverage maps use it; their GeoServer renders WMS uncached (seconds per image)
-while GeoWebCache answers a hit in tens of milliseconds.
-
 The proxy (freemap-v3-api, `src/routers/wmsProxyHandler.ts`) takes the service
 URL from the catalog entry, never from the client, so it can reach nothing but
 the catalog's WMS services; the entry's own parameters win over the client's.
@@ -449,9 +441,9 @@ data and code deploy together. `scripts/check-catalog.mjs`, run by
 PR, refuses a catalog that is truncated, malformed, has bad or duplicate ids,
 or a URL the proxy or an https page can't use (unparsable, an IP address, a
 Freemap host, a WMS not on https, with a placeholder, request parameters or
-without layers, a WMTS template not on https or without `{layer}`). The rules
-live in the API's `src/catalogRules.mjs`, plain JS shared by the harvest, the
-check, the tests and the API's load, which skips a map that breaks them. `?types=` takes at most 100 ids; the app asks in
+without layers). The rules live in the API's `src/catalogRules.mjs`, plain JS
+shared by the harvest, the check, the tests and the API's load, which skips a
+map that breaks them. `?types=` takes at most 100 ids; the app asks in
 batches.
 
 ### The registry
