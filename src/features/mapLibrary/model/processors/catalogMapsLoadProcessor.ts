@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+import { catalogInstalledByDefault } from '@shared/mapLibrary/installed.js';
 import { createSelector } from 'reselect';
 import { isUnreachable, loadCatalogMaps } from '../../catalog.js';
 import {
@@ -24,6 +25,9 @@ const missingCatalogIdsSelector = createSelector(
       ...new Set([
         ...Object.keys(layersSettings).filter(
           (type) => layersSettings[type].installed,
+        ),
+        ...catalogInstalledByDefault.filter(
+          (type) => layersSettings[type]?.installed !== false,
         ),
         ...layers,
         ...cachedMaps.map((cm) => cm.sourceType),

@@ -54,9 +54,9 @@ import {
   pickSubdomain,
   tileZoomOffset,
 } from '@shared/tileUrl.js';
-import { wmsBaseUrl } from '@shared/wms.js';
+import { wmsBaseUrl, wmsProxyOf } from '@shared/wms.js';
 import { Fragment, type ReactNode, useEffect } from 'react';
-import { useMap } from 'react-leaflet';
+import { TileLayer, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import transparent1x1 from '@/images/1x1-transparent.png';
 import missingTile from '@/images/missing-tile-256x256.png';
@@ -67,6 +67,10 @@ import { PresetPane } from './PresetPane.js';
 import { ScaledTileLayer } from './ScaledTileLayer.js';
 import { WmsImageLayer } from './WmsImageLayer.js';
 import { WmsTileLayer } from './WmsTileLayer.js';
+
+// The API's tile drawing this app expects; a new number is a new tile URL, so
+// cached tiles of the old drawing aren't shown.
+const TILE_DRAWING = 3;
 
 const galleryLayerFactory = () =>
   import(
@@ -312,6 +316,54 @@ export function Layers(): ReactNode {
       // where the source itself runs out of detail.
       const wmsHdpi = effectiveDpr / featureScale > 1.4;
 
+      const notResponding = () => {
+        dispatch(
+          toastsAdd({
+            // Per layer, so a flaky one replaces its own notice rather than
+            // stacking a new one on every failed view.
+            id: `wms-${type}`,
+            style: 'warning',
+            timeout: 5000,
+            messageKey: 'mapLayers.serverNotResponding',
+            messageParams: {
+              // `||`: a custom map saves an empty name when the field is left
+              // blank, which has to fall through like a missing one.
+              name:
+                ('name' in layerDef ? layerDef.name : undefined) ||
+                m?.mapLayers.letters[type] ||
+                `{${type}}`,
+            },
+          }),
+        );
+      };
+
+      const cached = layerDef.tileCache ? wmsProxyOf(layerDef) : undefined;
+
+      // The API's cached tiles, for a server too slow to render per view.
+      if (cached && wmsLayers.length) {
+        return (
+          <TileLayer
+            // Leaflet reads tile size, offset and zooms once.
+            key={[id, wmsHdpi ? 'hdpi' : 'ldpi', maxZoom].join('-')}
+            url={`${process.env['API_URL']}/wms-tile/${cached.type}/{z}/{x}/{y}?layers=${encodeURIComponent(wmsLayers.join(','))}&v=${TILE_DRAWING}.${(layerDef.tileClasses ?? []).map((c) => c.slice(1).toLowerCase()).join('-')}`}
+            // HiDPI takes the next zoom's tiles at half size; the API serves up
+            // to zoom 14.
+            tileSize={wmsHdpi ? 128 : 256}
+            zoomOffset={wmsHdpi ? 1 : 0}
+            maxNativeZoom={Math.min(
+              layerDef.maxNativeZoom ?? Infinity,
+              wmsHdpi ? 13 : 14,
+            )}
+            maxZoom={maxZoom}
+            minZoom={layerDef.minZoom}
+            opacity={opacity}
+            zIndex={zIndex}
+            errorTileUrl={transparent1x1}
+            eventHandlers={{ tileerror: notResponding }}
+          />
+        );
+      }
+
       if (!layerDef.tiled) {
         return (
           <WmsImageLayer
@@ -332,26 +384,7 @@ export function Layers(): ReactNode {
             minZoom={layerDef.minZoom}
             maxNativeZoom={layerDef.maxNativeZoom}
             dpiScale={wmsHdpi ? 2 : 1}
-            onError={() => {
-              dispatch(
-                toastsAdd({
-                  // Per layer, so a flaky one replaces its own notice rather
-                  // than stacking a new one on every failed view.
-                  id: `wms-${type}`,
-                  style: 'warning',
-                  timeout: 5000,
-                  messageKey: 'mapLayers.serverNotResponding',
-                  messageParams: {
-                    // `||`: a custom map saves an empty name when the field is
-                    // left blank, which has to fall through like a missing one.
-                    name:
-                      ('name' in layerDef ? layerDef.name : undefined) ||
-                      m?.mapLayers.letters[type] ||
-                      `{${type}}`,
-                  },
-                }),
-              );
-            }}
+            onError={notResponding}
           />
         );
       }

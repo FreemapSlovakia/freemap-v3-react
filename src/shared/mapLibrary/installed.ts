@@ -19,15 +19,22 @@ const uninstalledByDefault: ReadonlySet<string> = new Set(
     .map(({ type }) => type),
 );
 
+/** Catalog maps installed until the user uninstalls them, on this site. */
+export const catalogInstalledByDefault: readonly string[] =
+  currentSite === 'sk'
+    ? // RÚ mobile coverage, one per operator.
+      ['FSK18', 'FSK19', 'FSK20', 'FSK21']
+    : [];
+
 /** Whether a built-in map starts uninstalled, on this site. */
 export const isUninstalledByDefault = (type: string): boolean =>
   uninstalledByDefault.has(type);
 
 /**
  * Whether the user keeps a library map; uninstalling hides it but its links
- * still work. Built-in maps start installed, catalog maps not; see also
- * `uninstalledByDefault`, whose maps count as installed once the user has
- * set anything for them.
+ * still work. Built-in maps start installed, catalog maps not but for
+ * `catalogInstalledByDefault`; see also `uninstalledByDefault`, whose maps
+ * count as installed once the user has set anything for them.
  */
 export const isLayerInstalled = (
   layersSettings: LayersSettings,
@@ -37,8 +44,9 @@ export const isLayerInstalled = (
 
   return (
     settings?.installed ??
-    (!isCatalogId(type) &&
-      (!uninstalledByDefault.has(type) || settings !== undefined))
+    (isCatalogId(type)
+      ? catalogInstalledByDefault.includes(type)
+      : !uninstalledByDefault.has(type) || settings !== undefined)
   );
 };
 

@@ -417,6 +417,42 @@ headers. Map and legend images are `<img>` and never proxied either.
 `useWmsLayers` (over `wmsLayers`) keeps one capabilities request per service
 and route for the layer picker and the legend.
 
+A catalog WMS overlay with `tileCache: <days>` is drawn from the API's
+`GET /wms-tile/<map id>/{z}/{x}/{y}?layers=<picked, in drawing order>&v=<drawing>`
+(`src/routers/wmsTileHandler.ts`) instead of one image per view; the picker,
+legend and feature info stay on the WMS. Tiles are 256 px web mercator up to
+zoom 14, a HiDPI view asking one zoom deeper, because a server like the RÚ
+GeoServer renders in time out of proportion to pixels (0.9 s at 256 px, 5 s at
+512, a gateway timeout at 2048). `v` is `<TILE_DRAWING>.<tileClasses without
+'#', lower-case, '-'-joined>`: changing the classes, or the app's
+`TILE_DRAWING` in `Layers.tsx` when the API's drawing changes, gives new URLs,
+so nginx and browsers don't keep the old tiles. The API checks the classes
+part and takes any drawing number, so the two can deploy apart.
+
+The API renders and keeps each layer's tile on its own
+(`WMS_TILE_CACHE_DIR`, default `data/wms-tile-cache`, keyed by the service
+URL and layer), so any set the user picks is composed with sharp from cached
+tiles, first layer at the bottom. With `tileClasses` (its legend's colours,
+worst first) each pixel instead takes the best class any picked layer has,
+drawn in the best class's colour (a legend's pale lower classes vanish over a
+map) opaque for the best and evenly fainter below (of two, 50%), and pixels of
+no class (the RÚ "no coverage" white) clear: strength reads as opacity under
+the user's own, and a lower layer's better coverage is never hidden under an
+upper one's worse. A set cached whole is served without the
+capabilities, so it survives an upstream outage; a missing tile is rendered
+only for names the capabilities list as layers, retried after 1 s and 3 s on
+a failure load explains, and checked to decode as a whole 256 px PNG before
+it is kept. A daily sweep drops tiles past their days and those of maps
+listed without `tileCache`, never those of maps the catalog doesn't list. The
+API answers a transparent PNG outside the map's `bbox`, renders at most 16
+layer tiles at once per upstream host (the rest queued for up to a minute)
+and shares one render among all who ask for it. A composed tile is cached for
+what is left of its oldest layer's days; nginx on fm6
+(`conf.d/wms-tile-cache.conf`) keeps it that long, so a map whose data changes
+under the same layer names wants a short `tileCache`.
+`scripts/prerender-wms-tiles.mjs`, run on fm6 against the API past nginx,
+fills the cache with a map's own layers.
+
 The proxy (freemap-v3-api, `src/routers/wmsProxyHandler.ts`) takes the service
 URL from the catalog entry, never from the client, so it can reach nothing but
 the catalog's WMS services; the entry's own parameters win over the client's.
@@ -441,10 +477,11 @@ data and code deploy together. `scripts/check-catalog.mjs`, run by
 PR, refuses a catalog that is truncated, malformed, has bad or duplicate ids,
 or a URL the proxy or an https page can't use (unparsable, an IP address, a
 Freemap host, a WMS not on https, with a placeholder, request parameters or
-without layers). The rules live in the API's `src/catalogRules.mjs`, plain JS
-shared by the harvest, the check, the tests and the API's load, which skips a
-map that breaks them. `?types=` takes at most 100 ids; the app asks in
-batches.
+without layers, a `tileCache` that is not 1–365 days of a WMS overlay,
+`tileClasses` that are not 1–16 `#rrggbb` of such a map). The rules live
+in the API's `src/catalogRules.mjs`, plain JS shared by the harvest, the check,
+the tests and the API's load, which skips a map that breaks them. `?types=`
+takes at most 100 ids; the app asks in batches.
 
 ### The registry
 

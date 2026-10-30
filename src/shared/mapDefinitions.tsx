@@ -393,6 +393,10 @@ export type IsWmsLayerDef = HasUrl &
      * away: the server sends no CORS headers. Images never need it.
      */
     proxy?: boolean;
+    /** Drawn from the API's cache of its tiles, kept for this many days. */
+    tileCache?: number;
+    /** Its classes' colours, worst first, which the API's tiles are drawn in. */
+    tileClasses?: string[];
   };
 
 type IsMapLibreLayerDef = HasUrl & {
@@ -609,6 +613,8 @@ export const IsWmsLayerDefSchema = z.object({
   zIndex: z.number().optional(),
   tiled: z.boolean().optional(),
   proxy: z.boolean().optional(),
+  tileCache: z.number().optional(),
+  tileClasses: z.array(z.string()).optional(),
 });
 
 export const IsMapLibreLayerDefSchema = z.object({
