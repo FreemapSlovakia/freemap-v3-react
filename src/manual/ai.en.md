@@ -4,11 +4,11 @@ icon: FaRobot
 order: 870
 ---
 
-For AI assistants there is a description of Freemap and, in a browser that supports it, a set of tools for working the map directly.
+For AI assistants there is a description of Freemap and, in a browser that supports it, a set of tools for operating the map directly.
 
 ## Asking an assistant about Freemap
 
-At [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) there is a description of Freemap written for AI assistants such as ChatGPT, Claude or Gemini. It links to further parts covering every function, all map layers and the parameters of a Freemap link. With it, an assistant can:
+At [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) there is a description of Freemap written for AI assistants such as ChatGPT, Claude or Gemini. It describes the parameters of a Freemap link and links to further parts covering every function and all map layers. With it, an assistant can:
 
 - explain how to do something in Freemap,
 - build a link that opens Freemap with markers, lines or areas, a planned route, the chosen map layers or a particular place and zoom.
@@ -19,7 +19,7 @@ Give the assistant the address and ask your question, for example:
 
 > Read https://www.freemap.sk/llms.txt and make a Freemap link with markers on the summits of Kriváň, Rysy and Gerlachovský štít over the outdoor map.
 
-The assistant must be able to open web pages. If it can't, copy the text of the page into the conversation instead. Open the link it gives you and check it – an assistant can make mistakes.
+The assistant must be able to open web pages. If it can't, copy the text of the page, and of the parts it links to that your question needs, into the conversation instead. Open the link it gives you and check it – an assistant can make mistakes.
 
 ## Letting an assistant operate the map (WebMCP)
 
@@ -34,7 +34,7 @@ The assistant must be able to open web pages. If it can't, copy the text of the 
 - save what is on the map as GPX, GeoJSON or KML,
 - open a tool or dialog for you to carry on by hand, and clear the map.
 
-What the agent changes with them is what you see on the map, just as if you had clicked it yourself.
+Whatever the agent changes with them appears on the map, just as if you had done it yourself.
 
 ### Enabling WebMCP in Chrome
 

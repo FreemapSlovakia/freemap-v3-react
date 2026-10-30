@@ -56,4 +56,4 @@ The browser's **Back** button undoes your last change.
 
 Your drawing is written into the link in the address bar – copy it and others will see the same. A very large drawing doesn't fit into the link; the toolbar then shows **Unsaved**, and the drawing stays only in this browser. To keep it, choose :FaSave: **Save to my maps** in the :FaEllipsisV: menu (you need to be logged in); your saved maps are in :FaRegMap: [My maps](#show=my-maps).
 
-Importing GPX and other files, the elevation profile, colouring a track and export are described in [Tracks](#show=manual/tracks).
+Importing GPX and other files, the elevation profile, colouring a track and export are described in [Tracks and files](#show=manual/tracks).

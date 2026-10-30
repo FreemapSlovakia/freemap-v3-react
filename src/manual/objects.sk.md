@@ -22,7 +22,7 @@ Kým je zapnutý niektorý typ, hore na obrazovke je lišta :TbMapPins: **Objekt
 
 V ponuke :FaEllipsisV: na lište nájdete:
 
-- :FaPencilAlt: **Skonvertovať všetko na kreslenie** – z objektov na mape urobí body, ktoré môžete upravovať, pozri [Kreslenie](#show=manual/drawing). Typy sa vypnú.
+- :FaPencilAlt: **Skonvertovať všetko na kreslenie** – z objektov na mape urobí body, ktoré môžete upravovať, pozrite [Kreslenie](#show=manual/drawing). Typy sa vypnú.
 - :FaSearch: **Zobraziť všetko ako Nález** – ponechá objekty na mape ako nálezy, rovnaké značky, aké zostávajú po vyhľadávaní, najviac 500 naraz. Typy sa vypnú.
 - :FaPaintBrush: **Štýl značky** – **Tvar značky** (**Špendlík**, **Okrúhla** alebo **Štvorcová**) a **Farba** všetkých objektov a **Zobraziť popis** – kedy sa zobrazujú názvy objektov: **Vždy**, **Pri prejdení myšou**, **Keď je vybraný** alebo **Pri prejdení myšou alebo keď je vybraný**.
 
@@ -33,7 +33,7 @@ Kliknutím na objekt ho vyberiete a otvoria sa podrobnosti o objekte:
 - názov a druhy miesta. Každý druh je tlačidlo, ktoré zobrazí alebo skryje objekty daného typu; :FaChevronRight: pridá **Všeobecnejšie typy**.
 - **Nadmorská výška** podľa modelu terénu,
 - značky (tagy) objektu v OpenStreetMap,
-- :FaHistory: **História** – verzie objektu od najnovšej, každá s dátumom, autorom a komentárom. Kliknutím na komentár uvidíte, čo daná zmena na objekte zmenila.
+- :FaHistory: **História** – verzie objektu od najnovšej, každá s dátumom, autorom a komentárom. Kliknutím na komentár uvidíte, čo sa pri danej zmene na objekte upravilo.
 - **Zdroj** – odkaz na objekt na OpenStreetMap.org.
 
 Tlačidlo × podrobnosti zavrie a objekt zostane vybraný; kliknutím na objekt na mape sa podrobnosti znova otvoria.
@@ -45,7 +45,7 @@ Tlačidlo × podrobnosti zavrie a objekt zostane vybraný; kliknutím na objekt 
 Pri vrchole je v podrobnostiach **Výška vrcholu** nameraná v najvyššom bode terénu blízko značky. Ak je tento bod od značky vzdialený niekoľko metrov alebo viac, riadok pod výškou uvádza vzdialenosť a :FaMapMarkerAlt: bod označí na mape. Ďalej nasleduje:
 
 - **Prominencia** – o koľko sa vrchol dvíha nad najvyššie sedlo, ktoré vrchol spája s vyšším terénom,
-- **Kľúčové sedlo** – toto sedlo; :FaMapMarkerAlt: sedlo označí na mape a presunie mapu k sedlu,
+- **Kľúčové sedlo** – toto sedlo; :FaMapMarkerAlt: sedlo označí na mape, a ak sedlo nie je vidieť, presunie mapu k sedlu,
 - **Izolácia** – vzdialenosť k najbližšiemu vyššiemu terénu,
 - **Zobraziť cestu k vyššiemu terénu** – nakreslí cestu z vrcholu cez kľúčové sedlo k prvému vyššiemu terénu. :FaEllipsisV: vedľa tlačidla skopíruje cestu do kreslenia.
 

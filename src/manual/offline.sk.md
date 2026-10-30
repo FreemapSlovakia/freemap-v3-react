@@ -8,11 +8,11 @@ Freemap môžete používať aj tam, kde nie je signál. Mapy, ktoré budete pot
 
 ## Bez pripojenia
 
-Keď je zariadenie offline, vedľa loga hore sa zobrazí prečiarknutý symbol Wi-Fi :BiWifiOff:. Rovnakým symbolom sú označené všetky funkcie, ktoré potrebujú server – napríklad vyhľadávač trás, prihlásenie, nahrávanie fotografií či exporty – a kým sa pripojenie neobnoví, sú vypnuté. V ponukách máp označuje aj každú mapu, z ktorej nemáte nič stiahnuté.
+Keď je zariadenie offline, vedľa loga hore sa zobrazí prečiarknutý symbol Wi-Fi :BiWifiOff:. Rovnakým symbolom sú označené všetky funkcie, ktoré potrebujú server – napríklad vyhľadávač trás, prihlásenie, nahrávanie fotografií či exporty – a kým sa pripojenie neobnoví, sú vypnuté. V ponukách máp označuje aj každú mapu, ktorá nie je offline mapou.
 
 Naďalej funguje:
 
-- kreslenie a meranie, ako aj trasy a súbory, ktoré otvoríte,
+- kreslenie a meranie, ako aj záznamy trás a súbory, ktoré otvoríte,
 - offline mapy a dlaždice uložené pri prehliadaní,
 - mapy z :FaRegMap: **Moje mapy** označené ako **Dostupné offline v tomto prehliadači**,
 - vyhľadávacie pole pre súradnice; hľadanie podľa názvu potrebuje pripojenie.
@@ -26,9 +26,9 @@ Samotná aplikácia sa v prehliadači uchová, len čo máte niečo uložené na
 Na lište máp stlačte :FaCog: a vyberte :BiWifiOff: **Offline mapy** (skratka <kbd>m</kbd> <kbd>o</kbd>). Dialóg zobrazí vaše offline mapy; novú vytvoríte tlačidlom :FaPlus: **Pridať offline mapu**:
 
 - **Mapa** – mapa, ktorá sa stiahne. Ponúkajú sa len vlastné mapy Freemapu.
-- **Exportovať** – :FaEye: **Viditeľná oblasť** zahŕňa to, čo vidíte na obrazovke, pri :FaDrawPolygon: **Označená oblasť** natiahnete na mape obdĺžnik a potvrdíte ho.
+- **Exportovať** – :FaEye: **Viditeľná oblasť** zahŕňa to, čo vidíte na obrazovke, pri voľbe :FaDrawPolygon: **Označená oblasť** natiahnete na mape obdĺžnik a potvrdíte ho.
 - **Názov** a **Ikona** – ako sa mapa zobrazí v zoznamoch.
-- **Rozsah priblíženia** – čím vyššie posledné priblíženie, tým viac podrobností, no sťahovanie rýchlo narastá. Najpodrobnejšie priblíženia niektorých máp vyžadujú prémiový prístup.
+- **Rozsah priblíženia** – čím vyššie posledné priblíženie, tým viac podrobností, no objem sťahovania rýchlo rastie. Najpodrobnejšie priblíženia niektorých máp vyžadujú prémiový prístup.
 - **Chýbajúce dlaždice sťahovať z internetu** – kým ste online, miesta mimo stiahnutej oblasti či priblížení sa doplnia z internetu. Ak voľbu vypnete, uvidíte len to, čo sa stiahlo.
 - **Zobraziť v lište**, **Zobraziť v menu** a **Klávesová skratka** – kde sa offline mapa objaví medzi ostatnými mapami.
 
@@ -40,11 +40,11 @@ Offline mapa sa uloží len v tomto prehliadači na tomto zariadení. Ak ju chce
 
 Pri každej offline mape v zozname vidíte rozsah priblíženia, počet dlaždíc, veľkosť a stav – **Pripravená**, alebo počas sťahovania nekompletná s percentom. K dispozícii sú tieto akcie:
 
-- :FaEye: **Aktivovať** – zapne mapu a presunie sa na oblasť mapy.
+- :FaEye: **Aktivovať** – zapne mapu a presunie výrez na oblasť mapy.
 - :FaCrosshairs: **Priblížiť na oblasť** – kým mapa ešte nie je kompletná.
 - :FaStop: **Zastaviť** preruší sťahovanie a ponechá, čo sa už stiahlo; :FaPlay: **Pokračovať** neskôr stiahne len chýbajúce dlaždice.
 - :FaPencilAlt: **Upraviť** – zmena názvu, ikony, oblasti alebo rozsahu priblíženia. Pri zväčšení sa stiahnu len chýbajúce dlaždice, pri zmenšení sa nepotrebné zmažú.
-- :FaLayerGroup: **Zobraziť v nainštalovaných mapách** – tam nastavíte priehľadnosť mapy a to, či sa zobrazuje na lište a v menu.
+- :FaLayerGroup: **Zobraziť v nainštalovaných mapách** – tam nastavíte viditeľnosť mapy a to, či sa zobrazuje na lište a v menu.
 - :FaTrash: **Zmazať** – odstráni mapu so všetkými stiahnutými dlaždicami.
 
 Pod zoznamom vidíte, koľko miesta zaberajú všetky offline mapy spolu. Rovnaký súčet je uvedený aj pri položke **Offline mapy** v menu :FaCog:.

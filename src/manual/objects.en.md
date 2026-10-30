@@ -45,7 +45,7 @@ The × closes the details while the object stays selected; clicking the object o
 For a peak, the details show the **Summit elevation**, read at the highest ground near the marker. Where that point lies a few metres or more from the marker, a line below says how far, and :FaMapMarkerAlt: marks the point on the map. Below follow:
 
 - **Prominence** – how high the peak rises above the highest saddle linking it to higher ground,
-- **Key col** – that saddle; :FaMapMarkerAlt: marks it on the map and moves the map to it,
+- **Key col** – that saddle; :FaMapMarkerAlt: marks it on the map, moving the map if it is out of view,
 - **Isolation** – the distance to the nearest higher ground,
 - **Show route to higher ground** – draws the way from the summit over the key col to the first higher ground. :FaEllipsisV: beside it copies the route to drawing.
 

@@ -4,12 +4,12 @@ icon: FaGem
 order: 850
 ---
 
-Freemap is free and will stay so – browsing the maps, search, route planning, drawing and exports are there for everyone. Two optional paid products support its development and running: yearly **premium access** (Freemap Premium) and prepaid **credits**.
+Freemap is free and will stay so – browsing the maps, search, route planning, drawing and most exports are there for everyone. Two optional paid products support its development and running: yearly **premium access** (Freemap Premium) and prepaid **credits**.
 
 ## What premium access adds
 
 - **No advertising** – the ad banner is not shown.
-- **Premium map layers** – the highest zoom levels of the Outdoor map and of the orthophoto maps of Slovakia and Czechia, hi-res detailed shading of Slovakia and Czechia, and various WMS-based maps.
+- **Premium map layers** – the highest zoom levels of the Outdoor map, of the terrain shadings and of the orthophoto maps of Slovakia and Czechia.
 - **Premium photos** – photos their authors made available to premium users only, see [Photos](#show=manual/photos).
 - **More in the route finder** – a different mode of transport for each part of a route, and optimizing the order of its points, see [Route finder](#show=manual/route-planner).
 - **High-resolution elevation data** – detailed national terrain models in many European countries for the elevation profile, colorizing and filling in elevation, see [Tracks and files](#show=manual/tracks). Elsewhere elevation comes from a global model.
@@ -29,11 +29,11 @@ You can cancel the subscription at any time; cancellation takes effect at the en
 
 Credits are a prepaid balance for functions paid by use – currently the [offline maps export](#show=manual/offline). How many credits an export takes depends on the map and the number of tiles.
 
-You buy credits in any amount from **500 credits for €5**, with **Buy credits** in :FaUser: [Account](#show=account) → **Purchases**. Credits don't expire and have no cash value; unused credits can be refunded within 14 days of purchase.
+You buy credits in any amount from **500 credits for €5**, with :FaCoins: **Buy credits** in :FaUser: [Account](#show=account) → **Purchases**. Credits don't expire and have no cash value; unused credits can be refunded within 14 days of purchase.
 
 ## How to buy
 
-Premium access and credits are bought in the app once you are [logged in](#show=login) – with :FaGem.text-warning: [Get premium access](#show=premium) and **Buy credits**. Prices include VAT, and you get a receipt or invoice for each purchase.
+Premium access and credits are bought in the app once you are [logged in](#show=login) – with :FaGem.text-warning: [Get premium access](#show=premium) and :FaCoins: **Buy credits**; besides the usual payment, **Pay with Chrons** is offered there too. Prices include VAT, and you get a receipt or invoice for each purchase.
 
 ## Legal
 

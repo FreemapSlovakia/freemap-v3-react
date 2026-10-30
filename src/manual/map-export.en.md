@@ -21,7 +21,7 @@ The export always draws the Outdoor map, whichever map you are looking at. For a
 - **Scale** and **Print size** (the width in cm, the height follows the area) are one value in two units.
 - **Map resolution** (DPI) and **Image size** (the width in pixels) say how sharp the picture is.
 
-Two of scale, DPI and image size set the third. A value you type gets locked :FaLock:, and the others adjust around it; the lock button :FaLockOpen: unlocks it again, or locks the value shown. An unlocked scale follows the zoom. With a locked scale, a different zoom only makes text and symbols print larger or smaller – a note below the fields gives their size in percent.
+Two of scale, DPI and image size set the third. A value you type gets locked :FaLock:, and the others adjust around it; pressing :FaLock: unlocks it again, and :FaLockOpen: locks the value shown. An unlocked scale follows the zoom. With a locked scale, a different zoom only makes text and symbols print larger or smaller – a note below the fields gives their size in percent.
 
 The file carries its DPI, so it prints at the stated size. A too large area at a high zoom can't be exported; the message says which zoom still fits.
 
@@ -35,7 +35,7 @@ Under **Map**:
 
 Anything short of the whole map needs PNG, WebP or SVG; JPEG and PDF can't be chosen then.
 
-Under **Map data** you pick what of your own to draw over the map – a :FaRoute: **found route**, :TbMapPins: **objects (POIs)**, :FaCamera: **photos**, the lines, polygons and points of your [drawing](#show=manual/drawing), :FaBullseye: **live tracking**. Only what is on the map can be chosen. With :FaRegSun: **Glow** they get an outline of the chosen **Color** and **Width**; under **Labels** you set the color, size and weight of their names.
+Under **Map data** you pick what of your own to draw over the map – a :FaRoute: **found route**, :TbMapPins: **objects (POIs)**, :FaCamera: **photos**, the lines, polygons and points of your [drawing](#show=manual/drawing), :FaBullseye: **live tracking**, :FaSearch: **lookup**. Only what is on the map can be chosen. With :FaRegSun: **Glow** they get an outline of the chosen **Color** and **Width**; under **Labels** you set the colour, size and weight of their names. **Map data placement** – **Natural** fits the data into the map's own layers, **Topmost** draws it over everything.
 
 ## Map decorations
 
@@ -43,7 +43,7 @@ Under **Map data** you pick what of your own to draw over the map – a :FaRoute
 
 ## When the map is ready
 
-Press :FaDownload: **Export**. While it runs, only **Cancel** works. Then the dialog shows **The map is ready** with the file name and size, and the sources to credit when you publish or share the map.
+Press :FaDownload: **Export**. While it runs, only :FaTimes: **Cancel** works. Then the dialog shows **The map is ready** with the file name and size, and the sources to credit when you publish or share the map.
 
 ![The finished export with the sources to credit](./images/map-export-ready.en.webp)
 

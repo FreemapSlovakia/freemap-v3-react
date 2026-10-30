@@ -4,7 +4,7 @@ icon: FaCircle
 order: 610
 ---
 
-The GPS recorder is for recording your own trip on an Android phone. The recording is made by the separate Freemap GPS Recorder app, so it goes on even when the browser is closed; Freemap shows the track live on the map and controls the recording.
+The GPS recorder is for recording your own trip on an Android phone. The recording is made by the separate Freemap GPS Recorder app, so it goes on even when the browser is closed; in Freemap you see the track live on the map and control the recording.
 
 Open it from the :FaBars: main menu as :FaCircle: **GPS recorder**. It is offered only on Android – on other devices the tool is not in the menu, because the recorder app runs only there.
 
@@ -25,7 +25,7 @@ When the recorder app opens, allow what it asks for – precise location, locati
 - :FaChartArea: **Elevation profile** shows the profile of the trip so far, with a break at each pause. It appears once the recording has elevation.
 - :FaCog: **Recording settings** – see below.
 
-The recording is drawn on the map as a line, red unless you change it, with its latest position marked. Clicking the line opens the tool. While recording, :FaRegDotCircle: **Locate me** shows the position taken by the recorder.
+The recording is drawn on the map as a line, red unless you change it, with its latest position marked. Clicking the line opens the tool. While recording, :FaRegDotCircle: **Locate me** shows the position taken by the recorder, unless you switch that off in the settings.
 
 ## Figures
 
@@ -35,11 +35,11 @@ The dot beside the figures is green while the map shows the recording live and g
 
 ## The toolbar during a recording
 
-While recording, the toolbar cannot be closed, only collapsed with :FaAngleLeft: **Collapse**. What is left is a strip with a blinking :FaCircle.text-danger: red dot, so you can see that the phone is recording. Pressing the dot shows the figures, :FaAngleRight: **Expand** brings the whole toolbar back. The strip goes away when you pause or finish the recording.
+While recording, the toolbar cannot be closed, only collapsed with :FaAngleLeft: **Collapse**. What is left is a strip with a blinking :FaCircle.text-danger: red dot, so you can see that the phone is recording. Pressing the dot shows the figures; :FaAngleRight: **Expand** brings the whole toolbar back. When you pause, the dot stops blinking; the strip goes away once nothing is recording and the tool is closed.
 
 ## Finishing a recording
 
-:FaStop: **Finish** asks first, then stops the recording and moves the track to :MdShapeLine: **Drawing and data**, where you can see its elevation profile, colorize it, edit it and export it – see [Tracks and files](#show=manual/tracks). If something is already on the map, you choose whether to **Append** the track or **Replace** what is there.
+:FaStop: **Finish** asks first, then stops the recording and moves the track to :MdShapeLine: **Drawing and data**, where you can see its elevation profile, colorize it, edit it and export it – see [Tracks and files](#show=manual/tracks). If Drawing and data already holds something, you choose whether to **Append** the track or **Replace** what is there.
 
 The recorder app keeps nothing afterwards, so a finished recording cannot be continued and the next one starts a new track.
 
@@ -75,7 +75,7 @@ The problems with the recorder are reported in a message over the map, together 
 
 - **The recorder did not answer — it may not be running.** The app was closed or Android stopped it. Press **Open the recorder**; if the app is not installed, **Install the recorder**.
 - **The recorder cannot record yet — open it and grant what it asks for.** Press **Open the recorder** and allow what it asks for.
-- **The recorder may not survive a long recording**, with a list of what is missing – a permission or the exemption from battery optimization. **Open the recorder** takes you where you can set it.
+- **The recorder may not survive a long recording**, with a list of what is missing – a permission, the exemption from battery optimization, or a step required by the phone maker. **Open the recorder** takes you where you can set it.
 - **Android would not let the recorder start from the background.** Start the recording in the recorder app, or allow the app to run without battery restrictions.
 - **The browser refused access to the local network.** The connection to the recorder app stays inside the phone, but the browser treats it as the local network and asks for permission. Without it the map does not show the recording live, but the recording goes on. Press **Connect** and allow the access.
 - **The recorder is too old for this version of the map.** Press **Update the recorder**.

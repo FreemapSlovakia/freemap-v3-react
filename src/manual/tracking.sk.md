@@ -17,14 +17,14 @@ Otvoríte ho v :FaBars: hlavnom menu ako :FaBullseye: **Sledovanie** alebo kláv
 - :FaRegEye: **Zobrazenie** – trasy sa kreslia ako **Pozície**, **Spojnica** alebo **Spojnica + Pozície**.
 - :FaPalette: **Vyfarbiť podľa** – vyfarbí trasy podľa zaznamenanej hodnoty, napríklad nadmorskej výšky, rýchlosti alebo času. Ponúkajú sa len hodnoty, ktoré trasy obsahujú; niektoré režimy vyžadujú prémiový prístup.
 - :FaChartArea: **Výškový profil** – zobrazí sa, keď trasa obsahuje nadmorskú výšku.
-- :FaEllipsisV: – :MdShapeLine: **Kopírovať do Kreslenie a dáta** vytvorí upraviteľnú kópiu trás, ktorú potom môžete exportovať. Sledovanie pokračuje ďalej.
+- :FaEllipsisV: – :MdShapeLine: **Kopírovať do nástroja Kreslenie a dáta** vytvorí upraviteľnú kópiu trás, ktorú potom môžete exportovať. Sledovanie pokračuje.
 
 ## Zdieľanie vlastnej polohy
 
 1. Prihláste sa a otvorte :FaMobileAlt: **Moje zariadenia**.
 2. Stlačte :FaPlus: **Pridať nové** a zadajte **Názov**. Pole **Token** nechajte prázdne, vygeneruje sa po uložení. **Maximálny počet pozícií** a **Najstaršia pozícia** obmedzujú, koľko pozícií a ako dlho sa uchováva.
 3. Nastavte telefón alebo tracker s tokenom zariadenia – v zozname je uvedený pred názvom zariadenia. Pozrite nasledujúcu časť.
-4. Ak vás má niekto sledovať, v menu zariadenia vyberte :FaKey: **Sledovacie tokeny** a stlačte :FaPlus: **Pridať nové**. **Od** a **Do** obmedzujú obdobie, na ktoré sa token vzťahuje, a **Poznámka** slúži na zaznamenanie toho, komu ste ho dali. Pošlite mu token alebo odkaz skopírovaný tlačidlom :FaClipboard: **Kopírovať URL**, ktorý otvorí mapu s vaším zariadením.
+4. Ak vás má niekto sledovať, v menu zariadenia vyberte :FaKey: **Sledovacie tokeny** a stlačte :FaPlus: **Pridať nové**. **Od** a **Do** obmedzujú obdobie, na ktoré sa token vzťahuje, a **Poznámka** slúži na zaznamenanie toho, komu ste ho dali. Pošlite mu token alebo odkaz, ktorý otvorí mapu s vaším zariadením; odkaz skopírujete tlačidlom :FaClipboard: **Kopírovať URL**.
 
 Token zariadenia si nechajte pre seba – ktokoľvek, kto ho má, môže v mene vášho zariadenia posielať polohy. Zdieľajte radšej sledovacie tokeny: každému môžete vytvoriť samostatný a zmazaním tokenu zdieľanie ukončíte.
 
@@ -60,7 +60,7 @@ Adresa prijíma HTTP `GET` alebo `POST` s týmito parametrami:
 
 ### Traccar
 
-Použite ho s aplikáciou [Traccar Client](https://www.traccar.org/client/), s hardvérovými GPS trackermi (do auta, na majetok, pre zvieratá) alebo s inými aplikáciami kompatibilnými s Traccarom. Pre Locus Map a OsmAnd sa odporúča HTTP protokol Freemapu uvedený vyššie.
+Použite ho s aplikáciou [Traccar Client](https://www.traccar.org/client/), s hardvérovými GPS trackermi (do auta, na sledovanie majetku, pre zvieratá) alebo s inými aplikáciami kompatibilnými s Traccarom. Pre Locus Map a OsmAnd sa odporúča HTTP protokol Freemapu uvedený vyššie.
 
 - **Server:** `traccar.freemap.sk`
 - **Port:** štandardný port protokolu vášho zariadenia (pozrite [zoznam zariadení Traccar](https://www.traccar.org/devices/) – Traccar podporuje viac ako 200 protokolov); pre HTTP alebo HTTPS môžete namiesto 5055 použiť port **80** alebo **443**
@@ -80,7 +80,7 @@ Zoznam sledovaných zariadení je uložený len v adrese stránky. Ak si ho chce
 
 ## Zariadenia na mape
 
-Každé zariadenie sa kreslí svojou farbou, posledná pozícia zariadenia je označená postavičkou a – ak ju zariadenie posiela – kruhom presnosti. Pozície pribúdajú tak, ako ich zariadenie odosiela. Ukázaním na pozíciu sa zobrazí čas pozície a – ak ich zariadenie posiela – nadmorská výška, rýchlosť, signál, batéria a správa.
+Každé zariadenie sa kreslí svojou farbou, posledná pozícia zariadenia je označená postavičkou a – ak zariadenie posiela presnosť – kruhom presnosti. Pozície pribúdajú tak, ako ich zariadenie odosiela. Ukázaním na pozíciu sa zobrazí čas pozície a – ak ich zariadenie posiela – nadmorská výška, rýchlosť, signál, batéria a správa.
 
 Kliknutím na trasu ju vyberiete a na lište výberu nájdete :FaPencil: **Upraviť**, :FaTrash: **Zmazať**, ktorým sledovanie ukončíte, a :FaEllipsisV: na skopírovanie len tejto trasy do Kreslenia a dát.
 

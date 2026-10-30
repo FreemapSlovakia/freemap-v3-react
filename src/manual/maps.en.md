@@ -4,7 +4,7 @@ icon: FaLayerGroup
 order: 150
 ---
 
-Freemap offers many maps – its own outdoor map, aerial imagery, terrain shading, national maps and hundreds more from the library. This chapter shows how to switch between them, combine them and choose which ones you keep at hand.
+Freemap has many maps – its own outdoor map, aerial imagery, terrain shading, national maps and hundreds more from the library. This chapter shows how to switch between them, combine them and choose which ones you keep at hand.
 
 ## Base maps and overlays
 
@@ -55,7 +55,7 @@ A map preset is a combination of maps saved under a name – e.g. aerial imagery
 
 A preset with a base map takes the base map's place; one made only of overlays is added over the base map like an overlay. To change a preset, click its name in the **Map layers** panel: there you set the opacity of each map, drag them, remove them or add another with :FaPlus: **Add map**; every change is kept at once. :FaCopy: **Duplicate** makes a copy to change without touching the original.
 
-A preset holds only maps: photos, Wikipedia, the weather radar and offline maps can't be part of one.
+A preset holds only maps: photos, Wikipedia, the weather radar, the viewshed and offline maps can't be part of one.
 
 ## The map manager
 
@@ -72,7 +72,7 @@ The :FaLayerGroup: **Installed maps** tab lists the maps you have – built-in o
 - :MdOpacity: **Opacity** – the same as in the **Map layers** panel (not on a phone),
 - :FaKeyboard: **Keyboard shortcut** – click it and press the key you want; <kbd>Backspace</kbd> removes the shortcut.
 
-The row's :FaEllipsisV: menu has :FaEye: **Preview on the map**, :FaDownload: **Download for offline use** for maps that can be downloaded, :FaPencilAlt: **Modify** for custom maps and presets, and :FaTrash: **Uninstall** or **Delete**. An uninstalled map disappears from the toolbar, the menus and the search, and can be added again from **Available maps**.
+The row's :FaEllipsisV: menu has :FaEye: **Preview on the map** (**Show on map** for a preset), :FaDownload: **Download for offline use** for maps that can be downloaded, :FaPencilAlt: **Modify** for custom maps, presets and offline maps, and :FaTrash: **Uninstall** or **Delete**. An uninstalled map disappears from the toolbar, the menus and the search, and can be added again from **Available maps**.
 
 Every change takes effect at once. :FaUndo: **Reset to default** in the footer puts the toolbar, menu and shortcut settings and the opacity and layers of every map back to their defaults; installed maps stay installed. When you are logged in, the settings are kept with your account, otherwise in this browser.
 

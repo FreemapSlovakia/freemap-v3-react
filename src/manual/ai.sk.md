@@ -8,7 +8,7 @@ Pre AI asistentov je k dispozícii popis Freemapu a v prehliadači, ktorý to po
 
 ## Otázky asistentovi o Freemape
 
-Na adrese [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) je popis Freemapu určený pre AI asistentov, ako sú ChatGPT, Claude či Gemini. Odkazuje na ďalšie časti, ktoré opisujú všetky funkcie, všetky mapové vrstvy a parametre odkazu na Freemap. Asistent vďaka tomu dokáže:
+Na adrese [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) je popis Freemapu určený pre AI asistentov, ako sú ChatGPT, Claude či Gemini. Opisuje parametre odkazu na Freemap a odkazuje na ďalšie časti, ktoré opisujú všetky funkcie a všetky mapové vrstvy. Asistent vďaka tomu dokáže:
 
 - vysvetliť, ako niečo vo Freemape urobiť,
 - zostaviť odkaz, ktorý otvorí Freemap so značkami, čiarami či plochami, s naplánovanou trasou, so zvolenými mapovými vrstvami alebo na konkrétnom mieste a priblížení.
@@ -19,7 +19,7 @@ Dajte asistentovi adresu a položte otázku, napríklad:
 
 > Prečítaj si https://www.freemap.sk/llms.txt a sprav odkaz na Freemap so značkami na vrcholoch Kriváň, Rysy a Gerlachovský štít nad turistickou mapou.
 
-Asistent musí vedieť otvárať webové stránky. Ak to nevie, skopírujte text stránky do konverzácie. Odkaz, ktorý dostanete, otvorte a skontrolujte – aj asistent sa môže mýliť.
+Asistent musí vedieť otvárať webové stránky. Ak to nevie, skopírujte do konverzácie text stránky a tých častí, na ktoré odkazuje a ktoré vaša otázka potrebuje. Odkaz, ktorý dostanete, otvorte a skontrolujte – aj asistent sa môže mýliť.
 
 ## Ovládanie mapy asistentom (WebMCP)
 

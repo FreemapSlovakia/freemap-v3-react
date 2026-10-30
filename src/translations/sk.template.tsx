@@ -87,7 +87,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toggleObjectType: 'Kliknutím zobrazíte alebo skryjete objekty tohto typu',
     hideObjectType: ({ name }) => <>Skryť typ „{name}“</>,
     copyToDrawing: 'Kopírovať do kreslenia',
-    copyTo: ({ tool }) => <>Kopírovať do {tool}</>,
+    copyTo: ({ tool }) => <>Kopírovať do nástroja {tool}</>,
     convertAllToDrawing: 'Skonvertovať všetko na kreslenie',
     openIn: ({ what }) => <>Otvoriť v {what}</>,
     panoramaFromHere: 'Panoráma odtiaľto',
@@ -451,7 +451,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'knižnica máp, katalóg, inštalovať, pridať mapy, ďalšie mapy',
         'modal-offline-maps': 'stiahnuté mapy, úložisko',
         'modal-browse-cache': 'vyrovnávacia pamäť, dlaždice, úložisko',
-        'modal-map-preferences': 'nastavenia, voľby, priehľadnosť prekrytia',
+        'modal-map-preferences':
+          'predvoľby, preferencie, voľby, priehľadnosť prekrytia',
         'modal-elevation-settings': 'výškový profil, nadmorská výška, graf',
         'clear-map-features': 'vyčistiť, zmazať všetko, vymazať mapu',
         'layer-X': 'turistika, cyklo, bežky, jazdenie, freemap',
@@ -593,7 +594,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'Načítať po dlaždiciach',
     tiledHelp:
       'WMS sa štandardne vyžiada ako jeden obrázok celého výrezu: jedna požiadavka namiesto desiatok a názvy neprerezané na hraniciach dlaždíc. Dlaždice zapnite pre server, ktorý obmedzuje veľkosť obrázka alebo ktorý dlaždice kešuje — za cenu dávky požiadaviek na každý výrez.',
-    preferences: 'Predvoľby mapy',
+    preferences: 'Nastavenia mapy',
     brightness: 'Jas mapy',
     featuresOpacity: 'Viditeľnosť dátovej vrstvy',
     maxZoom: 'Maximálne priblíženie',

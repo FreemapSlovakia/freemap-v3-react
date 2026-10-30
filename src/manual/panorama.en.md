@@ -79,4 +79,4 @@ The terrain model is bare earth: forests and buildings are not in it, so a view 
 - finer **Detail** – without premium a render may cost only so much, so a full turn stays coarse while a narrow slice can be finer,
 - **Max. visible distance** beyond 300 km.
 
-Settings that need premium are marked :FaGem:.
+Settings that need premium are marked :FaGem.text-warning:, and the :TbGridDots: button is yellow without premium.

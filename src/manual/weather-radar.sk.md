@@ -8,17 +8,17 @@ Meteoradar ukazuje, kde prší alebo sneží, ako animáciu posledných hodín n
 
 ## Zapnutie radaru
 
-Meteoradar je prekryvná vrstva, ktorá sa kreslí nad ľubovoľnú podkladovú mapu. Zapnete ho ktorýmkoľvek z týchto spôsobov:
+Meteoradar je prekryvná vrstva, ktorá sa kreslí nad ľubovoľnou podkladovou mapou. Zapnete ho ktorýmkoľvek z týchto spôsobov:
 
-- tlačidlom :FaCloudShowersHeavy: v lište máp dole (prípadne v ponuke :FaEllipsisV:),
-- klávesmi <kbd>Shift</kbd>+<kbd>R</kbd>,
+- tlačidlom :FaCloudShowersHeavy: na lište máp dole (prípadne v ponuke :FaEllipsisV:),
+- klávesmi <kbd>Shift</kbd>+<kbd>r</kbd>,
 - zadaním slova „radar“, „dážď“ alebo „počasie“ do vyhľadávacieho poľa.
 
 Ako sa vo všeobecnosti prepínajú mapy a vrstvy, popisuje kapitola [Mapy](#show=manual/maps).
 
 Meteoradar pokrýva väčšinu Európy: ide o kompozit národných meteorologických radarov EUMETNET OPERA, nad Talianskom o taliansky národný kompozit. Zdroje údajov nájdete pod :FaInfoCircle: vpravo dole.
 
-Radar sa kreslí polopriehľadne, aby mapa pod radarom zostala čitateľná. Priehľadnosť radaru zmeníte v paneli :FaLayerGroup: **Vrstvy mapy**.
+Radar sa kreslí polopriehľadne, aby mapa pod radarom zostala čitateľná. Viditeľnosť radaru zmeníte v paneli :FaLayerGroup: **Vrstvy mapy**.
 
 ## Lišta radaru
 
@@ -29,8 +29,8 @@ Keď je meteoradar zapnutý, hore na obrazovke sa zobrazí lišta radaru.
 - :FaStepBackward: **Predchádzajúca snímka** a :FaStepForward: **Nasledujúca snímka** posunú zobrazenie o jednu snímku; za poslednou snímkou pokračujú od prvej.
 - :FaPlay: **Prehrať** spustí animáciu dookola, :FaPause: **Pozastaviť** ju zastaví.
 - Posuvníkom časovej osi vyberiete snímku priamo. Posunutím posuvníka alebo krokovaním sa animácia zastaví.
-- Vedľa časovej osi je čas zobrazenej snímky a údaj, ako je stará („teraz“, „pred 10 min“), pri snímke predpovede o koľko je vpred („o 20 min“).
-- :FaCog: **Nastavenia radaru** obsahujú položku **Zobraziť predpoveď** – pozri nižšie.
+- Vedľa časovej osi je čas zobrazenej snímky a údaj, ako dávno bola nasnímaná („teraz“, „pred 10 min“), pri snímke predpovede, o koľko neskôr platí („o 20 min“).
+- :FaCog: **Nastavenia radaru** obsahujú položku **Zobraziť predpoveď** – pozrite nižšie.
 - :FaAngleLeft: **Zbaliť** zmenší lištu na samotný názov, :FaAngleRight: **Rozbaliť** ju vráti.
 - :FaTimes: **Zavrieť** meteoradar vypne. Kláves <kbd>Esc</kbd> túto lištu nezatvára.
 

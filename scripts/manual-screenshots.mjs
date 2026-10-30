@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Captures the manual's screenshots from a running dev server into
-// src/manual/images/<name>.<lang>.webp, each language in a fresh profile.
+// src/manual/images/<name>.<lang>.webp, each shot in a fresh profile.
 //
 //   node scripts/manual-screenshots.mjs [name…]
 //
-// Env: FM_URL (default https://local.freemap.sk:9000), CHROMIUM (default
-// /usr/bin/chromium). Needs `cwebp` on PATH.
+// Env: FM_URL (default https://local.freemap.sk:9000), LANGS (default sk,en),
+// CHROMIUM (default /usr/bin/chromium). Needs `cwebp` on PATH.
 
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';

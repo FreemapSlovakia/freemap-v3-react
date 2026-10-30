@@ -27,7 +27,7 @@ The viewpoint is marked by a pin with an eye, and the circle around it shows how
 
 - :FaEye: **Pick on the map** in the toolbar lets you click another viewpoint, which is computed straight away. Under the arrow next to it, :FaRegDotCircle: **Viewshed from my position** uses your GPS position.
 - Drag the pin to move the viewpoint. Dragging does not compute anything: the circle turns dashed, the previous viewpoint stays on the map faded, and :FaSync: **Update** appears in the toolbar.
-- :FaEllipsisV: next to it offers the same actions for the viewpoint as the map's context menu.
+- The :FaEllipsisV: menu next to it holds the same actions for the viewpoint as the map's context menu.
 
 The result is very sensitive to the exact viewpoint: a few metres off a summit can hide whole directions. Place the pin right on the top.
 

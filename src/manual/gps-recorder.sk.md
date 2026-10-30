@@ -4,7 +4,7 @@ icon: FaCircle
 order: 610
 ---
 
-GPS zaznamenávač slúži na nahrávanie vlastnej trasy na telefóne s Androidom. Záznam vytvára samostatná aplikácia Freemap GPS Recorder, takže nahrávanie pokračuje, aj keď prehliadač zatvoríte; Freemap zobrazuje trasu naživo na mape a slúži na ovládanie nahrávania.
+GPS zaznamenávač slúži na nahrávanie vlastnej trasy na telefóne s Androidom. Záznam vytvára samostatná aplikácia Freemap GPS Recorder, takže nahrávanie pokračuje, aj keď prehliadač zatvoríte; vo Freemape vidíte trasu naživo na mape a ovládate nahrávanie.
 
 Otvoríte ho v :FaBars: hlavnom menu ako :FaCircle: **GPS zaznamenávač**. Ponúka sa len na Androide – na iných zariadeniach v menu nie je, pretože aplikácia zaznamenávača beží len tam.
 
@@ -20,12 +20,12 @@ Keď sa aplikácia zaznamenávača otvorí, povoľte, o čo žiada – presnú p
 
 - :FaCircle: **Nahrávať** spustí nahrávanie. Ak aplikácia zaznamenávača nie je spustená, tlačidlo ju otvorí, nahrávanie sa spustí a vrátite sa do prehliadača.
 - :FaPause: **Pozastaviť** nahrávanie pozastaví. Opätovným stlačením :FaCircle: **Nahrávať** pokračuje ten istý záznam novým úsekom, ktorý sa vykreslí s medzerou, nie s priamou čiarou cez prestávku.
-- :FaStop: **Ukončiť** záznam ukončí – pozri nižšie.
+- :FaStop: **Ukončiť** záznam ukončí – pozrite nižšie.
 - :FaTrash: **Zmazať záznam** záznam zahodí. Zobrazí sa, len keď sa práve nenahráva.
 - :FaChartArea: **Výškový profil** zobrazí profil doterajšej trasy s prerušením pri každej prestávke. Objaví sa, keď záznam obsahuje nadmorskú výšku.
-- :FaCog: **Nastavenia záznamu** – pozri nižšie.
+- :FaCog: **Nastavenia záznamu** – pozrite nižšie.
 
-Záznam sa na mape vykreslí ako čiara, červená, kým farbu nezmeníte, s vyznačenou poslednou polohou. Kliknutím na čiaru otvoríte nástroj. Počas nahrávania :FaRegDotCircle: **Kde som?** ukazuje polohu zo zaznamenávača.
+Záznam sa na mape vykreslí ako čiara, červená, kým farbu nezmeníte, s vyznačenou poslednou polohou. Kliknutím na čiaru otvoríte nástroj. Počas nahrávania :FaRegDotCircle: **Kde som?** ukazuje polohu zo zaznamenávača, ak to v nastaveniach nevypnete.
 
 ## Údaje o zázname
 
@@ -35,16 +35,16 @@ Bodka pri údajoch je zelená, kým mapa ukazuje záznam naživo, a sivá, keď 
 
 ## Lišta počas nahrávania
 
-Počas nahrávania sa lišta nástroja nedá zatvoriť, len zbaliť tlačidlom :FaAngleLeft: **Zbaliť**. Z lišty zostane pásik s blikajúcou :FaCircle.text-danger: červenou bodkou, aby bolo vidno, že telefón nahráva. Stlačením bodky zobrazíte údaje o zázname, :FaAngleRight: **Rozbaliť** vráti celú lištu. Pásik zmizne, keď nahrávanie pozastavíte alebo záznam ukončíte.
+Počas nahrávania sa lišta nástroja nedá zatvoriť, len zbaliť tlačidlom :FaAngleLeft: **Zbaliť**. Z lišty zostane pásik s blikajúcou :FaCircle.text-danger: červenou bodkou, aby bolo vidno, že telefón nahráva. Stlačením bodky zobrazíte údaje o zázname, :FaAngleRight: **Rozbaliť** vráti celú lištu. Po pozastavení bodka prestane blikať; pásik zmizne, keď sa nenahráva a nástroj je zatvorený.
 
 ## Ukončenie záznamu
 
-:FaStop: **Ukončiť** sa najprv opýta, potom nahrávanie zastaví a trasu presunie do nástroja :MdShapeLine: **Kreslenie a dáta**, kde si môžete pozrieť výškový profil trasy, vyfarbiť ju, upraviť a vyexportovať – pozri [Trasy a súbory](#show=manual/tracks). Ak už na mape niečo je, zvolíte, či trasu **Pripojiť**, alebo existujúce **Nahradiť**.
+:FaStop: **Ukončiť** sa najprv opýta, potom nahrávanie zastaví a trasu presunie do nástroja :MdShapeLine: **Kreslenie a dáta**, kde si môžete pozrieť výškový profil trasy, vyfarbiť ju, upraviť a vyexportovať – pozrite [Trasy a súbory](#show=manual/tracks). Ak už Kreslenie a dáta niečo obsahujú, zvolíte **Pripojiť** (pridať trasu k existujúcim údajom) alebo **Nahradiť**.
 
 V aplikácii zaznamenávača potom nezostane nič, takže v ukončenom zázname sa už pokračovať nedá a ďalšie nahrávanie začne novú trasu.
 
 - Ak sa časť záznamu na stránku ešte nedostala, nič sa neprevezme ani nezmaže. Počkajte na spojenie a ukončite záznam znova.
-- Ak prehliadač nedokáže trasu spoľahlivo uložiť, trasa je v Kreslení a dátach, ale zostane aj v aplikácii zaznamenávača. Vyexportujte alebo uložte ju a potom záznam zmažte.
+- Ak prehliadač nedokáže trasu spoľahlivo uložiť, trasa je v Kreslení a dátach, ale zostane aj v aplikácii zaznamenávača. Trasu vyexportujte alebo uložte a potom záznam zmažte.
 
 ## Zmazanie záznamu
 
@@ -75,7 +75,7 @@ Problémy so zaznamenávačom sa zobrazia v hlásení nad mapou spolu s tlačidl
 
 - **Zaznamenávač neodpovedal — možno nie je spustený.** Aplikácia bola zatvorená alebo ju zastavil Android. Stlačte **Otvoriť zaznamenávač**; ak aplikácia nie je nainštalovaná, **Nainštalovať zaznamenávač**.
 - **Zaznamenávač zatiaľ nemôže nahrávať — otvorte ho a udeľte, o čo žiada.** Stlačte **Otvoriť zaznamenávač** a povoľte, o čo aplikácia žiada.
-- **Zaznamenávač nemusí prežiť dlhé nahrávanie** so zoznamom toho, čo chýba – povolenie alebo výnimka z optimalizácie batérie. **Otvoriť zaznamenávač** vás dovedie tam, kde to nastavíte.
+- **Zaznamenávač nemusí prežiť dlhé nahrávanie** so zoznamom toho, čo chýba – povolenie, výnimka z optimalizácie batérie alebo krok, ktorý vyžaduje výrobca telefónu. **Otvoriť zaznamenávač** vás dovedie tam, kde to nastavíte.
 - **Android nedovolil zaznamenávaču spustiť sa z pozadia.** Spustite nahrávanie v aplikácii zaznamenávača alebo aplikácii povoľte bežať bez obmedzení batérie.
 - **Prehliadač odmietol prístup k lokálnej sieti.** Spojenie s aplikáciou zaznamenávača vedie len v rámci telefónu, prehliadač ho však považuje za lokálnu sieť a žiada o povolenie. Bez povolenia mapa nezobrazuje záznam naživo, ale nahrávanie pokračuje. Stlačte **Pripojiť** a prístup povoľte.
 - **Zaznamenávač je pre túto verziu mapy príliš starý.** Stlačte **Aktualizovať zaznamenávač**.

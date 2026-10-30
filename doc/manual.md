@@ -4,7 +4,7 @@ The in-app manual: Info & help → Manual, `#show=manual` (first chapter) or `#s
 
 ## Files
 
-- `src/manual/<chapter>.<lang>.md` — one file per chapter and language; `<chapter>` is kebab-case and is the URL id, so it never changes. Front matter: `title`, `icon` (a react-icons name, its pack taken from the prefix), `order` (100 steps).
+- `src/manual/<chapter>.<lang>.md` — one file per chapter and language; `<chapter>` is kebab-case and is the URL id, so it never changes. Front matter: `title`, `icon` (a react-icons name from `react-icons/<first two letters>`, without the inline icons' numbered-pack fallback), `order` (100 steps).
 - Read by `RspackMarkdownDictPlugin` (the `src/manual` instance in `rspack.config.ts`) into `virtual/manual-dict.js`; `src/manual/index.ts` merges per key with **English fallback**, so a language without a translation shows the English chapter.
 - Rendered by `markdown-render.js` — through `markdown-loader.js` for the app, directly for the SEO prerender, which serves each chapter at `?layers=X&manual=<chapter>&lang=<lang>` (see [seo-prerender.md](./seo-prerender.md)) — and shown by `ManualModal.tsx` (chapter list beside the text, a drop-down on a narrow screen).
 - Every chapter is a search-box row (`commandDefinitions.tsx`) with keywords under `search.commands.keywords['manual-<chapter>']`.
@@ -18,7 +18,7 @@ The in-app manual: Info & help → Manual, `#show=manual` (first chapter) or `#s
 - In Slovak, no gendered pronoun for a thing beyond a plain `ho`/`ju` object — no possessive `jeho`/`jej` and no prepositional `naň`, `na ňu`, `v ňom`, `na nej`, `po ňu`, `zaň`, `ním`: name the thing instead. "Kliknutím na bod ho vyberiete a na lište výberu nájdete …", not "Na jeho lište je …"; "súčty až po túto zastávku", not "až po ňu"; "lišta nástroja", "autor fotky", "územie mapy".
 - Say what the reader does and sees, not how it works inside. `llms-*.md` holds the full facts; the manual picks what a user needs.
 - `##` headings split a chapter into sections; keep sections short.
-- Links: `#show=<modal>` and `#show=manual/<chapter>` open in place (`useMarkdownLinks`); `#document=<key>` opens a document. A link with more than one parameter (`#tool=…&show=`) does nothing — don't use them.
+- Links: `#show=<modal>`, `#show=manual/<chapter>` and `#show=document/<key>` open in place (`useMarkdownLinks`); the prerender turns the latter two into page URLs, so don't write `#document=`. A link with more than one parameter (`#tool=…&show=`) does nothing — don't use them.
 - No emoji: they render in colour and differ per platform.
 
 ## Icons
@@ -38,7 +38,7 @@ The in-app manual: Info & help → Manual, `#show=manual` (first chapter) or `#s
 - The full-screen shot is 820 × 520: the narrowest viewport where the bottom bar stays on one row.
 - A shot marked `mobile` is taken a second time on a touch phone (390 × 760) as `<name>.<lang>.mobile.webp`; the renderer then emits a `<picture>` whose phone-width source (below Bootstrap's `sm`) is that file, so a reader on a phone sees the phone UI instead of a shrunken desktop toolbar. Mark every shot of something the phone lays out differently — toolbars, the search box, the full screen. Chapters reference only the desktop file.
 - Toasts (attribution, cookie consent) are hidden by CSS for every shot.
-- Images are written to a temp directory and copied in at the end: writing into `src/` mid-run makes the dev server rebuild, and the next page then asks for chunks that aren't there. For the same reason, edit nothing under `src/` while it runs; a shot that fails with "the app did not start" or a zero-height crop usually caught a rebuild — run it again.
+- Images are written to a temp directory and copied in at the end: writing into `src/` mid-run makes the dev server rebuild, and the next page then asks for chunks that aren't there. For the same reason, edit nothing under `src/` while it runs; a shot that fails with "the app did not start" or "nothing matches" usually caught a rebuild — run it again.
 - In a chapter: `![Alt text](./images/<name>.<lang>.webp)` — each language file names its own language's image. An image named but not yet captured fails the build ("Module not found"), so capture the shot first.
 - WebP quality 85; a full map view costs ~600 KB at 2×, a cropped control 10–40 KB. Images load lazily, when their chapter is opened.
 

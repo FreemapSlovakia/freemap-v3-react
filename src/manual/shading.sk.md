@@ -14,7 +14,7 @@ Tieňovanie terénu zobrazuje reliéf krajiny svetlom a tieňom, takže doliny, 
 - :GiHills: **Detailné tieňovanie terénu** (<kbd>Shift</kbd>+<kbd>h</kbd>) – Slovensko, z leteckého laserového skenovania terénu bez lesa a budov, s detailmi až po priblíženie 20.
 - :GiHills: **Tieňovanie povrchu** – Slovensko, tieňovaný povrch vrátane lesa a budov.
 
-Zapínajú sa ako ktorákoľvek iná mapa – na lište máp, v ponuke ďalších máp alebo cez vyhľadávacie pole, pozri [Mapy](#show=manual/maps).
+Zapínajú sa ako ktorákoľvek iná mapa – na lište máp, v ponuke ďalších máp alebo cez vyhľadávacie pole, pozrite [Mapy](#show=manual/maps).
 
 ## Otvorenie nastavení
 
@@ -40,10 +40,10 @@ Pri niektorých predvoľbách najprv zadáte hodnoty, napríklad výšku najniž
 
 Po výbere vrstvy v zozname sa zobrazia nastavenia vrstvy:
 
-- **Svetlo** – ťahaním bodu na kruhu nastavíte, odkiaľ svetlo prichádza, alebo zadajte hodnoty :MdExplore: **Azimut** a :MdWbTwilight: **Výška** v stupňoch. Zvyčajne svetlo prichádza zo severozápadu.
+- Svetlo – ťahaním bodu na kruhu nastavíte, odkiaľ svetlo prichádza, alebo zadáte hodnoty :MdExplore: **Azimut** a :MdWbTwilight: **Výška** v stupňoch. Zvyčajne svetlo prichádza zo severozápadu.
 - :MdHeight: **Zvýraznenie výšok** – nad 1 vyzerá reliéf strmší, pod 1 plochší.
 - :MdContrast: **Kontrast** a :MdBrightness6: **Jas**.
-- :MdPalette: **Farba** – farba vrstvy. Pri tieňovaní reliéfu a sklone môžete vo výbere farby prepnúť z **Jedna farba** na **Prechod**, aby sa farba menila podľa hodnoty – napr. sivá na miernych svahoch a červená na strmých.
+- :MdPalette: **Farba** – farba vrstvy (:MdGradient: **Farebný prechod** pri farebnom reliéfe a podobných vrstvách). Pri tieňovaní reliéfu a sklone môžete vo výbere farby prepnúť z **Jedna farba** na **Prechod**, aby sa farba menila podľa hodnoty – napr. sivá na miernych svahoch a červená na strmých.
 - Vrstvy **Vrstevnice** majú nastavenia **Interval vrstevníc** (v metroch) a **Hrúbka čiary**.
 - **Výhľad na oblohu / otvorenosť** stmavuje priehlbiny, priekopy a dná dolín bez ohľadu na smer svetla, a tak zvýrazní jemné útvary, napríklad úvozy či staré valy. V položke **Zobraziť** zvolíte, čo sa zobrazí, a :LuRadius: **Polomer** určuje, do akej vzdialenosti od každého bodu sa terén posudzuje.
 
@@ -57,4 +57,4 @@ Tieňovanie, ktoré sa vám páči, si uložíte pod vlastným názvom tlačidlo
 
 ## S prémiovým prístupom
 
-Pri najväčších priblíženiach – od priblíženia 15 – vyžadujú **Parametrické tieňovanie terénu** a **Detailné tieňovanie terénu** [prémiový prístup](#show=premium). Bez prémiového prístupu sa pri týchto priblíženiach na väčšine dlaždíc zobrazí len upozornenie na prémiový prístup.
+Pri najväčších priblíženiach – od priblíženia 16, na obrazovke s vysokým rozlíšením od priblíženia 15 – vyžadujú **Parametrické tieňovanie terénu** a **Detailné tieňovanie terénu** [prémiový prístup](#show=premium). Bez prémiového prístupu sa pri týchto priblíženiach na väčšine dlaždíc zobrazí len upozornenie na prémiový prístup.

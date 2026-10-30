@@ -16,11 +16,11 @@ Stred je miesto, kde ružica stojí. Stlačte **Umiestniť stred**, prvé tlači
 
 Ak sú na mape už nakreslené body, môžete tiež kliknúť na miesto pravým tlačidlom myši, alebo na telefóne podržať prst na mieste, a zvoliť :PiCompassRoseBold: **Orientačná ružica odtiaľto**.
 
-Stred je obyčajný kreslený bod: v nástroji kreslenia ho môžete presunúť, popísať alebo zmeniť štýl bodu. Popis bodu sa vypíše v strede ružice – na začiatku sú to súradnice miesta. Zmazaním stredového bodu ružica zanikne.
+Stred je obyčajný kreslený bod: v nástroji kreslenia ho môžete presunúť, popísať alebo zmeniť štýl bodu. Popis bodu sa vypíše v strede ružice – na začiatku sú to súradnice miesta. Po zmazaní stredového bodu zostane ružica prázdna, kým neumiestnite nový stred.
 
 ## Body na ružici
 
-Z každého ďalšieho kresleného bodu sa stane lúč ružice. Body pridáte nástrojom :MdShapeLine: **Kreslenie a dáta**, napríklad cez :FaMapMarkerAlt: **Bod** (<kbd>g</kbd> <kbd>p</kbd>), pozri [Kreslenie a meranie](#show=manual/drawing). Ružica a nástroj kreslenia môžu byť otvorené naraz, takže lúče pribúdajú hneď, ako pridávate body.
+Z každého ďalšieho kresleného bodu sa stane lúč ružice. Body pridáte nástrojom :MdShapeLine: **Kreslenie a dáta**, napríklad cez :FaMapMarkerAlt: **Bod** (<kbd>g</kbd> <kbd>p</kbd>), pozrite [Kreslenie a meranie](#show=manual/drawing). Ružica a nástroj kreslenia môžu byť otvorené naraz, takže lúče pribúdajú hneď, ako pridávate body.
 
 Nad lúčom je popis bodu, pod lúčom nadmorská výška a vzdialenosť od stredu. Výška sa zobrazí, len ak ju bod má.
 
@@ -36,7 +36,7 @@ Panel presuniete ťahaním za :FaArrowsAlt: a veľkosť zmeníte ťahaním za :L
 
 ## Nastavenia
 
-:FaCog: otvorí nastavenia [Orientačná ružica](#show=toposcope-settings), kde nastavíte:
+:FaCog: otvorí okno nastavení [Orientačná ružica](#show=toposcope-settings), kde nastavíte:
 
 - **Prvý riadok** a **Druhý riadok** – čo sa píše nad lúč a pod lúč; čo v nich môže byť, uvádza nápoveda pod poľami,
 - **Vlastné texty** – štyri texty pozdĺž vonkajšej kružnice, jeden v každej štvrtine; na začiatku je tam zdroj mapy a názov portálu,

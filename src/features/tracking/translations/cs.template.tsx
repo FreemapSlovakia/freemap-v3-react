@@ -74,7 +74,7 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     maxAge: 'Maximální doba',
     maxCount: 'Maximální počet',
     splitDistance: 'Rozdělit po vzdálenosti',
-    splitDuration: 'Rozdělení po době',
+    splitDuration: 'Rozdělit po době',
     color: 'Barva',
     width: 'Šířka',
   },

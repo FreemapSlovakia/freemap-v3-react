@@ -14,7 +14,7 @@ Viditeľnosť sa počíta na serveri z modelu terénu, preto vyžaduje pripojeni
 
 Viditeľnosť je prekryvná vrstva. Zapnete ju ktorýmkoľvek z týchto spôsobov:
 
-- v ponuke máp :FaEllipsisV: na lište máp dole, pozri [Mapy](#show=manual/maps),
+- v ponuke máp :FaEllipsisV: na lište máp dole, pozrite [Mapy](#show=manual/maps),
 - klávesmi <kbd>Shift</kbd>+<kbd>V</kbd>,
 - zadaním slova „viditeľnosť“ alebo „výhľad“ do vyhľadávacieho poľa,
 - priamo z mapy: kliknite na miesto pravým tlačidlom myši, alebo na telefóne podržte prst na mieste, a zvoľte :FaBinoculars: **Viditeľnosť odtiaľto**. Viditeľnosť sa z tohto miesta hneď vypočíta.
@@ -25,9 +25,9 @@ Kým vrstva nemá stanovisko, na mape sa zobrazí výzva **Kliknite do mapy tam,
 
 Stanovisko označuje špendlík s okom a kruh okolo stanoviska ukazuje dosah viditeľnosti.
 
-- :FaEye: **Vybrať v mape** na lište slúži na kliknutie iného stanoviska, z ktorého sa viditeľnosť hneď vypočíta. Pod šípkou vedľa tlačidla je :FaRegDotCircle: **Viditeľnosť z mojej polohy**, ktorá použije vašu polohu z GPS.
+- :FaEye: **Vybrať v mape** na lište slúži na výber iného stanoviska kliknutím do mapy; viditeľnosť sa vypočíta hneď. Pod šípkou vedľa tlačidla je :FaRegDotCircle: **Viditeľnosť z mojej polohy**, ktorá použije vašu polohu z GPS.
 - Ťahaním špendlíka stanovisko presuniete. Presunutím sa nič nepočíta: kruh sa zmení na prerušovaný, predchádzajúce stanovisko zostane na mape vyblednuté a na lište sa zobrazí :FaSync: **Aktualizovať**.
-- :FaEllipsisV: vedľa tlačidla ponúka pre stanovisko tie isté akcie ako kontextová ponuka mapy.
+- V ponuke :FaEllipsisV: vedľa tlačidla sú pre stanovisko tie isté akcie ako v kontextovej ponuke mapy.
 
 Výsledok je na presné stanovisko veľmi citlivý: pár metrov vedľa vrcholu môže zakryť celé svetové strany. Špendlík umiestnite presne na vrchol.
 
@@ -37,8 +37,8 @@ Kým je viditeľnosť zapnutá, hore na obrazovke je lišta viditeľnosti.
 
 ![Lišta viditeľnosti s dosahom a detailom](./images/viewshed-toolbar.sk.webp)
 
-- :TbRulerMeasure: ukazuje dosah a detail ako plochu terénu na jeden pixel. Ponuka tohto tlačidla má dva posuvníky: **Max. viditeľná vzdialenosť** a **Detail**. Jemnejší detail sa počíta dlhšie.
-- :FaCog: **Nastavenia viditeľnosti** otvára ďalšie nastavenia, pozri nižšie.
+- :TbRulerMeasure: ukazuje dosah a detail – koľko metrov terénu pripadá na jeden pixel. Ponuka tohto tlačidla má dva posuvníky: **Max. viditeľná vzdialenosť** a **Detail**. Jemnejší detail sa počíta dlhšie.
+- :FaCog: **Nastavenia viditeľnosti** otvára ďalšie nastavenia, pozrite nižšie.
 - Počas výpočtu lišta ukazuje uplynuté sekundy alebo počet výpočtov pred vami; tlačidlo **Zrušiť** výpočet zastaví.
 - :FaSync: **Aktualizovať** sa zobrazí vždy, keď zafarbená plocha patrí inému stanovisku alebo iným nastaveniam. Zmena dosahu, detailu či nastavení sa prejaví až po stlačení tohto tlačidla.
 - :FaAngleLeft: lištu zbalí, aby nezakrývala mapu, :FaTimes: viditeľnosť vypne.
@@ -63,7 +63,7 @@ Stanovisko a dosah sú súčasťou adresy stránky. Kto odkaz otvorí, uvidí vi
 
 ## S prémiovým prístupom
 
-Bez [prémiového prístupu](#show=premium) je dosah najviac 20 km a detail obmedzuje dosah – pri kratšom dosahu je k dispozícii jemnejší detail. Možnosti, ktoré vyžadujú prémiový prístup, sú označené :FaGem.text-warning: a tlačidlo dosahu je bez prémiového prístupu žlté. Prémiový prístup pridáva:
+Bez [prémiového prístupu](#show=premium) je dosah najviac 20 km a detail je obmedzený dosahom – pri kratšom dosahu je k dispozícii jemnejší detail. Možnosti, ktoré vyžadujú prémiový prístup, sú označené :FaGem.text-warning: a tlačidlo dosahu je bez prémiového prístupu žlté. Prémiový prístup pridáva:
 
 - dosah až 300 km,
 - všetky úrovne detailu pri akomkoľvek dosahu.

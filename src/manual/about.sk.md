@@ -50,4 +50,4 @@ Freemap môžete podporiť cez :FaHeart.text-danger: [Podporiť Freemap](#show=s
 Mnohé mapy môžete použiť vo vlastnej práci, niektoré aj na komerčné účely, ak uvediete zdroje (tzv. _atribúciu_), ako to vyžadujú licencie máp (CC, ODbL). Ktoré zdroje treba uviesť, závisí od toho, čo mapa zobrazuje:
 
 - :FaInfoCircle: vpravo dole na mape → :FaRegCopyright: **Licencia mapy** – zdroje práve zobrazených máp a dát s odkazmi.
-- :FaPrint: [Export mapy do obrázka/dokumentu](#show=map-to-document-export) vie zdroje vpísať priamo do obrázka (**Uvedenie zdroja**) a keď je mapa pripravená, ukáže zdroje, ktoré treba uviesť pri jej zverejnení alebo zdieľaní, spolu s tlačidlom **Kopírovať zdroje**.
+- :FaPrint: [Export mapy do obrázka/dokumentu](#show=map-to-document-export) umožňuje vpísať zdroje priamo do obrázka (**Uvedenie zdroja**) a keď je mapa pripravená, zobrazí zdroje, ktoré treba uviesť pri jej zverejnení alebo zdieľaní, spolu s tlačidlom **Kopírovať zdroje**.

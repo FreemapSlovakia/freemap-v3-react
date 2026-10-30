@@ -8,7 +8,7 @@ Freemap can be used where there is no signal. Download the maps you will need be
 
 ## Without a connection
 
-When the device is offline, a crossed-out Wi-Fi symbol :BiWifiOff: appears beside the logo at the top. The same symbol marks every function that needs the server – such as the route finder, logging in, photo upload or exports – and those functions are disabled until the connection comes back. In the map menus it also marks every map that has nothing downloaded.
+When the device is offline, a crossed-out Wi-Fi symbol :BiWifiOff: appears beside the logo at the top. The same symbol marks every function that needs the server – such as the route finder, logging in, photo upload or exports – and those functions are disabled until the connection comes back. In the map menus it also marks every map that is not an offline map.
 
 What keeps working:
 

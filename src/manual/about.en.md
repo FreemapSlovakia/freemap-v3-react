@@ -50,4 +50,4 @@ You can support Freemap with :FaHeart.text-danger: [Support Freemap](#show=suppo
 Many of the maps may be used in your own work, some even commercially, as long as you credit their sources (_attribution_), as their licences (CC, ODbL) require. Which sources to credit depends on what the map shows:
 
 - :FaInfoCircle: at the bottom right of the map → :FaRegCopyright: **Copyright** lists the sources of the maps and data shown right now, with links.
-- :FaPrint: [Map export to image/document](#show=map-to-document-export) can draw the credits into the image itself (**Attribution**), and once the map is ready it shows the sources to credit when you publish or share it, with **Copy attribution**.
+- :FaPrint: [Map export to image/document](#show=map-to-document-export) lets you draw the credits into the image itself (**Attribution**), and once the map is ready it shows the sources to credit when you publish or share it, with **Copy attribution**.

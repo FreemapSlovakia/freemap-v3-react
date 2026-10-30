@@ -4,13 +4,13 @@ icon: FaLayerGroup
 order: 150
 ---
 
-Freemap ponúka množstvo máp – vlastnú turistickú mapu, letecké snímky, tieňovanie terénu, národné mapy a stovky ďalších z knižnice. Táto kapitola ukazuje, ako medzi mapami prepínať, ako ich kombinovať a ako si vybrať tie, ktoré chcete mať poruke.
+Vo Freemape nájdete množstvo máp – vlastnú turistickú mapu, letecké snímky, tieňovanie terénu, národné mapy a stovky ďalších z knižnice. Táto kapitola ukazuje, ako medzi mapami prepínať, ako ich kombinovať a ako si vybrať tie, ktoré chcete mať poruke.
 
 ## Podkladové mapy a prekrytia
 
 **Podkladová mapa** vypĺňa celú obrazovku; naraz môže byť zapnutá len jedna a výberom inej sa nahradí. **Prekrytie** – turistické trasy, vrstevnice, fotografie, Wikipedia, meteoradar – sa kreslí cez podkladovú mapu a zapnutých môže byť ľubovoľne veľa naraz.
 
-V ponukách má podkladová mapa okrúhly prepínač a prekrytie zaškrtávacie políčko. Väčšinu máp možno použiť oboma spôsobmi – napríklad leteckú mapu ako polopriehľadné prekrytie nad turistickou mapou – pozri prepínač **Základná / Prekryvná** nižšie.
+V ponukách má podkladová mapa okrúhly prepínač a prekrytie zaškrtávacie políčko. Väčšinu máp možno použiť oboma spôsobmi – napríklad leteckú mapu ako polopriehľadné prekrytie nad turistickou mapou – pozrite prepínač **Základná / Prekryvná** nižšie.
 
 ## Prepínanie máp
 
@@ -41,7 +41,7 @@ Ak mapu v aktuálnom výreze nemožno zobraziť, na tlačidle mapy je žltá iko
 - Vzorka viditeľnosti otvára posuvník. Cez vyblednutú podkladovú mapu presvitá pozadie mapy.
 - :FaTrash: **Odstrániť** mapu vypne. Bez podkladovej mapy je pod prekrytiami pozadie mapy.
 
-Niektoré mapy majú ďalšie nastavenia – mapa WMS, napríklad **Kataster**, svoje vrstvy, **Parametrické tieňovanie terénu** svoj vzhľad (pozri [Tieňovanie terénu](#show=manual/shading)), **Jednofarebná plocha** svoju farbu. Otvoríte ich kliknutím na názov mapy v paneli, späť sa vrátite cez :FaArrowLeft:. :FaSave: **Uložiť ako mapu** uloží takto nastavenú mapu pod vlastným názvom, napríklad kataster len s parcelami; :FaUndo: **Obnoviť predvolené** vráti nastavenia mapy na predvolené.
+Niektoré mapy majú ďalšie nastavenia – mapa WMS, napríklad **Kataster**, svoje vrstvy, **Parametrické tieňovanie terénu** svoj vzhľad (pozrite [Tieňovanie terénu](#show=manual/shading)), **Jednofarebná plocha** svoju farbu. Otvoríte ich kliknutím na názov mapy v paneli, späť sa vrátite cez :FaArrowLeft:. :FaSave: **Uložiť ako mapu** uloží takto nastavenú mapu pod vlastným názvom, napríklad kataster len s parcelami; :FaUndo: **Obnoviť predvolené** vráti nastavenia mapy na predvolené.
 
 Nad mapami panel zobrazuje aj to, čo na mapu pridali nástroje – kreslenie, naplánovanú trasu, výsledky vyhľadávania a ďalšie. Kliknutím na položku uvidíte zoznam prvkov; kliknutím na prvok ho vyberiete na mape.
 
@@ -55,7 +55,7 @@ Predvoľba mapy je kombinácia máp uložená pod názvom – napríklad leteck�
 
 Predvoľba s podkladovou mapou nahradí podkladovú mapu; predvoľba len z prekrytí sa pridá nad podkladovú mapu ako prekrytie. Predvoľbu upravíte kliknutím na názov predvoľby v paneli **Vrstvy mapy**: tam nastavíte viditeľnosť jednotlivých máp, presuniete ich, odstránite alebo pridáte ďalšiu cez :FaPlus: **Pridať mapu**; každá zmena sa uloží hneď. :FaCopy: **Duplikovať** vytvorí kópiu, ktorú môžete meniť bez zásahu do pôvodnej predvoľby.
 
-Predvoľba obsahuje iba mapy: fotografie, Wikipedia, meteoradar ani offline mapy do predvoľby zahrnúť nemožno.
+Predvoľba obsahuje iba mapy: fotografie, Wikipedia, meteoradar, viditeľnosť ani offline mapy do predvoľby zahrnúť nemožno.
 
 ## Správca máp
 
@@ -72,7 +72,7 @@ Záložka :FaLayerGroup: **Nainštalované mapy** obsahuje mapy, ktoré máte �
 - :MdOpacity: **Viditeľnosť** – tá istá ako v paneli **Vrstvy mapy** (nie na telefóne),
 - :FaKeyboard: **Klávesová skratka** – kliknite a stlačte požadovaný kláves; <kbd>Backspace</kbd> skratku zruší.
 
-Ponuka :FaEllipsisV: v riadku obsahuje :FaEye: **Ukážka na mape**, :FaDownload: **Stiahnuť na použitie offline** pri mapách, ktoré sa dajú stiahnuť, :FaPencilAlt: **Upraviť** pri vlastných mapách a predvoľbách a :FaTrash: **Odinštalovať** alebo **Zmazať**. Odinštalovaná mapa zmizne z lišty, z ponúk aj z vyhľadávania a znova ju pridáte v záložke **Dostupné mapy**.
+Ponuka :FaEllipsisV: v riadku obsahuje :FaEye: **Ukážka na mape** (**Zobraziť na mape** pri predvoľbe), :FaDownload: **Stiahnuť na použitie offline** pri mapách, ktoré sa dajú stiahnuť, :FaPencilAlt: **Upraviť** pri vlastných mapách, predvoľbách a offline mapách a :FaTrash: **Odinštalovať** alebo **Zmazať**. Odinštalovaná mapa zmizne z lišty, z ponúk aj z vyhľadávania a znova ju pridáte v záložke **Dostupné mapy**.
 
 Každá zmena platí hneď. :FaUndo: **Obnoviť predvolené** v pätičke vráti nastavenie lišty, menu a skratiek aj viditeľnosť a vrstvy všetkých máp na predvolené; nainštalované mapy zostanú nainštalované. Po prihlásení sa nastavenia ukladajú k vášmu účtu, inak v tomto prehliadači.
 
@@ -83,7 +83,7 @@ Záložka :FaBookOpen: **Dostupné mapy** je knižnica: stovky máp, ktoré si m
 - :FaEye: zobrazí mapu najprv na mape. Pohybom po mape si ju prezrite a potom zvoľte :FaPlus: **Nainštalovať**, :FaCheck: **Ponechať na mape** (použiť hneď, bez inštalácie), :FaArrowLeft: **Späť do knižnice** alebo :FaTimes:, ktoré vrátia predchádzajúce mapy.
 - :FaPlus: mapu nainštaluje a mapa sa presunie do záložky **Nainštalované mapy**.
 
-Ak poznáte mapu, ktorá chýba, napíšte na [freemap@freemap.sk](mailto:freemap@freemap.sk). Vlastný server WMS alebo dlaždíc pridáte cez :FaPlus: **Nová vlastná mapa**, pozri [Vlastné mapy](#show=manual/custom-maps).
+Ak poznáte mapu, ktorá chýba, napíšte na [freemap@freemap.sk](mailto:freemap@freemap.sk). Vlastný server WMS alebo dlaždíc pridáte cez :FaPlus: **Nová vlastná mapa**, pozrite [Vlastné mapy](#show=manual/custom-maps).
 
 ## Legenda mapy
 
@@ -96,9 +96,9 @@ Na konci menu :FaCog: sú dva posuvníky:
 - :MdBrightness6: **Jas mapy** stmaví alebo zosvetlí mapy, kým trasy, kresby a záznamy trás zostanú bez zmeny, takže lepšie vyniknú.
 - :MdOpacity: **Viditeľnosť dátovej vrstvy** zoslabí trasy, kresby, záznamy trás a ďalšie prvky na mape, aby bolo vidieť mapu pod týmito prvkami; úplne vľavo sú skryté. <kbd>Shift</kbd>+<kbd>d</kbd> ich rýchlo skryje a znova zobrazí. Kým sú prvky takmer alebo úplne skryté, nedajú sa vybrať kliknutím, na :FaCog: je značka :FaEyeSlash: a po opätovnom načítaní stránky sa znova zobrazia.
 
-## Predvoľby mapy
+## Nastavenia mapy
 
-:FaCog: → :FaSlidersH: **Predvoľby mapy** (<kbd>m</kbd> <kbd>p</kbd>) obsahujú nastavenia vykresľovania mapy:
+:FaCog: → :FaSlidersH: **Nastavenia mapy** (<kbd>m</kbd> <kbd>p</kbd>) obsahujú nastavenia vykresľovania mapy:
 
 - **Maximálne priblíženie** a **Krok priblíženia** – ako ďaleko a po akých krokoch sa mapa približuje,
 - **Škála rozlíšenia** a **Dlaždice presne na pixely** – ostrosť mapy na vašom displeji,

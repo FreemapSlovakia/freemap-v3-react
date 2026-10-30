@@ -18,7 +18,7 @@ Kým je otvorená uložená mapa, hore na obrazovke je lišta s nápisom **Moja 
 
 - :FaRegMap: otvorí dialóg **Moje mapy**.
 - :FaExclamationTriangle.text-warning: sa zobrazí, keď na mape niečo zmeníte – zmeny ešte nie sú uložené.
-- :FaSave: **Uložiť** uloží zmeny do mapy. Na cudzej mape, ktorú upravovať nemôžete, uloží obsah ako novú vlastnú mapu.
+- :FaSave: **Uložiť** uloží zmeny do mapy. Na cudzej mape, ktorú upravovať nemôžete, otvorí formulár novej mapy a obsah uložíte ako novú vlastnú mapu.
 - :FaSync: **Znovu načítať mapu** zahodí neuložené zmeny a otvorí mapu tak, ako bola naposledy uložená.
 - :FaUnlink: **Odpojiť** zatvorí mapu a obsah nechá na obrazovke; :FaEraser: **Odpojiť a vyčistiť** zo šípky vedľa tlačidla obsah aj odstráni.
 
@@ -29,17 +29,17 @@ Neuložené zmeny v tomto prehliadači prežijú aj opätovné načítanie strá
 Dialóg zobrazuje zoznam vašich máp s dátumom vytvorenia a poslednej zmeny; pole navrchu filtruje mapy podľa názvu. Pri každej mape sú:
 
 - :FaCloudDownloadAlt: **Načítať** otvorí mapu s mapovými vrstvami a pozíciou. :FaShapes: **Načítať bez podkladovej mapy a pozície** v šípke vedľa tlačidla pridá iba obsah mapy a aktuálny pohľad nechá tak. Ak už na mape niečo je, zvolíte, či načítanú mapu **Pripojiť**, alebo existujúci obsah **Nahradiť**.
-- :FaEdit: **Upraviť** – zmena položiek **Názov**, **Editori** a **Dostupné offline v tomto prehliadači**.
-- :FaTrash: **Zmazať** mapu po potvrdení odstráni.
+- :FaEdit: **Upraviť** (len pri vlastných mapách) – zmena položiek **Názov**, **Editori** a **Dostupné offline v tomto prehliadači**.
+- :FaTrash: **Zmazať** (len pri vlastných mapách) mapu po potvrdení odstráni.
 
 Na úzkej obrazovke sú niektoré z týchto volieb v ponuke :FaEllipsisV: v riadku mapy.
 
 ## Zdieľanie a editori
 
-Kým je uložená mapa otvorená, odkaz na mapu je v adrese stránky. Každý, kto odkaz otvorí, mapu uvidí, aj bez prihlásenia. Používatelia pridaní v :FaEdit: **Upraviť** medzi **Editori** do mapy môžu ukladať aj svoje zmeny; ostatní si ju môžu uložiť len ako vlastnú mapu.
+Kým je uložená mapa otvorená, odkaz na mapu je v adrese stránky. Každý, kto odkaz otvorí, mapu uvidí, aj bez prihlásenia. Používatelia, ktorých pridáte medzi **Editori** v okne :FaEdit: **Upraviť**, môžu do mapy ukladať aj svoje zmeny; ostatní si ju môžu uložiť len ako vlastnú mapu.
 
 ## Offline
 
-Mapa označená ako **Dostupné offline v tomto prehliadači** sa otvorí aj bez pripojenia a v zozname má značku **Offline**. :FaCog: → :BiWifiOff: **Sprístupniť všetky offline** označí naraz všetky vaše mapy, :FaTimes: **Odstrániť všetky z offline** označenie zruší. Takto sa uchová len obsah mapy – podkladovú mapu treba stiahnuť samostatne, pozri [Používanie offline](#show=manual/offline).
+Mapa označená ako **Dostupné offline v tomto prehliadači** sa otvorí aj bez pripojenia a v zozname má značku **Offline**. :FaCog: → :BiWifiOff: **Sprístupniť všetky offline** označí naraz všetky vaše mapy, :FaTimes: **Odstrániť všetky z offline** označenie zruší. Takto sa uchová len obsah mapy – podkladovú mapu treba stiahnuť samostatne, pozrite [Používanie offline](#show=manual/offline).
 
 **Uložiť** funguje aj offline: zmeny zostanú v tomto prehliadači so značkou **Neodoslané** a odošlú sa, keď sa pripojenie obnoví, alebo cez :FaCog: → :FaCloudUploadAlt: **Odoslať neodoslané zmeny**. Ak sa mapa medzitým zmenila inde, značka ukazuje **Konflikt** a ponuka mapy v zozname obsahuje **Uložiť ako kópiu**, **Prepísať verziu na serveri** alebo **Zahodiť moje zmeny**.

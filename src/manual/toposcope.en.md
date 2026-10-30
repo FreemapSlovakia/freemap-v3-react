@@ -16,7 +16,7 @@ The centre is where the toposcope stands. Press **Place the centre**, the first 
 
 If points are already drawn on the map, you can also right-click a place, or press and hold it on a phone, and choose :PiCompassRoseBold: **Toposcope from here**.
 
-The centre is an ordinary drawn point: you can drag it, label it or restyle it in the drawing tool. Its label is written in the middle of the dial – the coordinates of the place to start with. Deleting the centre point ends the toposcope.
+The centre is an ordinary drawn point: you can drag it, label it or restyle it in the drawing tool. Its label is written in the middle of the dial – the coordinates of the place to start with. Deleting the centre point empties the dial until you place a new centre.
 
 ## Points on the dial
 

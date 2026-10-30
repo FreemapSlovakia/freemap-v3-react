@@ -15,7 +15,7 @@ Freemap je mapa pre turistiku, cyklistiku, lyžovanie a ďalšie aktivity v prí
 - **Lišta máp** – dole v strede. Slúži na prepínanie máp a nájdete tu aj tlačidlá priblíženia a :FaRegDotCircle: **Kde som?**
 - :FaInfoCircle: – vpravo dole. Otvára legendu mapy a zdroje zobrazenej mapy.
 
-Lišta otvoreného nástroja sa zobrazí hore na obrazovke. Zatvoríte ho tlačidlom :FaTimes: alebo klávesom <kbd>Esc</kbd>.
+Lišta otvoreného nástroja sa zobrazí hore na obrazovke. Nástroj zatvoríte tlačidlom :FaTimes: na lište. Kreslenie, vyhľadávač trás a detaily v mape sa zatvárajú aj klávesom <kbd>Esc</kbd>.
 
 ## Pohyb po mape
 
@@ -30,12 +30,12 @@ Lišta otvoreného nástroja sa zobrazí hore na obrazovke. Zatvoríte ho tlači
 Na lište máp dole sú mapy, ktoré používate najčastejšie. Stlačením tlačidla sa na mapu prepnete. Niektoré z nich sú prekrytia – napríklad turistické trasy, fotografie alebo meteoradar – ktoré sa kreslia cez podkladovú mapu a dajú sa kombinovať.
 
 - :FaEllipsisV: zobrazí ďalšie mapy.
-- :FaLayerGroup: otvára panel **Vrstvy mapy** so zapnutými mapami, kde im môžete zmeniť priehľadnosť alebo ich vypnúť.
+- :FaLayerGroup: otvára panel **Vrstvy mapy** so zapnutými mapami, kde im môžete zmeniť viditeľnosť alebo ich vypnúť.
 - :FaPlus: a :FaMinus: mapu približujú a odďaľujú.
-- :FaRegDotCircle: **Kde som?** – pozri nižšie.
-- :FaCog: otvára menu so :FaLayerGroup: [správcom máp](#show=installed-maps), kde pridáte mapy z knižnice, odoberiete tie, ktoré nepoužívate, a vyberiete, ktoré sa majú zobrazovať na lište, a tiež s offline mapami a predvoľbami.
+- :FaRegDotCircle: **Kde som?** – pozrite nižšie.
+- :FaCog: otvára menu. V tomto menu je :FaLayerGroup: [správca máp](#show=installed-maps), kde pridáte mapy z knižnice, odoberiete nepoužívané a vyberiete, ktoré sa zobrazia na lište; ďalej offline mapy a predvoľby.
 
-Ak mapu nemožno zobraziť tam, kde ste, na tlačidle mapy sa objaví žltá ikona: :FaSearchPlus.text-warning:, keď treba mapu priblížiť, :FaGlobeEurope.text-warning:, keď ste mimo územia mapy, a :FaSearchLocation.text-warning:, keď platí oboje. Stlačením ikony sa mapa presunie tam, kde má obsah.
+Ak mapu nemožno zobraziť v aktuálnom výreze, na tlačidle mapy sa objaví žltá ikona: :FaSearchPlus.text-warning:, keď treba mapu priblížiť, :FaGlobeEurope.text-warning:, keď ste mimo územia mapy, a :FaSearchLocation.text-warning:, keď platí oboje. Stlačením ikony sa mapa presunie tam, kde má obsah.
 
 Čo znamenajú značky na mape, vysvetľuje :FaList: [legenda mapy](#show=legend).
 
@@ -65,7 +65,7 @@ Kliknite na mapu pravým tlačidlom myši, alebo na telefóne podržte prst na m
 
 ## Všetko je v odkaze
 
-Adresa v paneli prehliadača vždy popisuje to, čo vidíte: mapu, miesto, nakreslené čiary aj naplánovanú trasu. Skopírujte ju a pošlite niekomu – uvidí to isté. Tlačidlom **Späť** v prehliadači sa tiež vrátite o krok späť.
+Adresa v paneli prehliadača vždy popisuje to, čo vidíte: mapu, miesto, nakreslené čiary aj naplánovanú trasu. Skopírujte ju a pošlite niekomu – uvidí to isté. Tlačidlom **Späť** v prehliadači sa vrátite k predchádzajúcemu stavu.
 
 ## Ďalej
 

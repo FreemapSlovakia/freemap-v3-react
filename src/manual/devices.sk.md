@@ -25,7 +25,7 @@ Bez prihlásenia alebo bez prepojenia účtu s Garminom budete najprv vyzvaní, 
 
 ![Poslanie nakreslenej čiary do Garminu](./images/devices-garmin-export.sk.webp)
 
-Rovnako pošlete aj :FaRoute: **vyhľadanú trasu**, nakreslenú čiaru (:MdTimeline: **kreslenie - čiary**) alebo záznam :FaBullseye: **sledovanie** – vždy jednu čiaru naraz.
+Rovnako pošlete aj :FaRoute: **vyhľadanú trasu**, nakreslenú čiaru (:MdTimeline: **kreslenie - čiary**) alebo záznam zo sledovania (:FaBullseye: **sledovanie**) – vždy jednu čiaru naraz.
 
 ## Súbory pre iné aplikácie
 
@@ -35,7 +35,7 @@ Cez :FaFileExport: [Export mapových dát](#show=map-features-export) môžete u
 
 V :FaMobileAlt: [Mapy pre GPS zariadenia](#show=document/exports) v hlavnom menu nájdete mapy Freemapu pripravené na inštaláciu do aplikácií **Locus Map**, **OruxMaps**, **BackCountry Navigator**, **BikeComputer**, **XCTrack** a ďalších, ktoré čítajú formát Mapsforge, adresy online máp pre aplikácie, do ktorých si môžete pridať vlastnú dlaždicovú mapu, a **Garmin mapu** pre zariadenia Garmin a BaseCamp – každú s postupom inštalácie.
 
-Územie z mapy Freemapu si môžete vziať so sebou aj ako jeden súbor MBTiles alebo SQLiteDB cez :FaDatabase: [Export offline máp](#show=offline-map-export) – pozri [Používanie offline](#show=manual/offline).
+Územie z mapy Freemapu si môžete vziať so sebou aj ako jeden súbor MBTiles alebo SQLiteDB cez :FaDatabase: [Export offline máp](#show=offline-map-export) – pozrite [Používanie offline](#show=manual/offline).
 
 ## Otvorenie miesta v inej mape
 

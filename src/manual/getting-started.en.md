@@ -15,7 +15,7 @@ Freemap is a map for hiking, cycling, skiing and other outdoor activities, built
 - **Map toolbar** – at the bottom in the middle. With it you switch maps, and it holds the zoom buttons and :FaRegDotCircle: **Locate me**.
 - :FaInfoCircle: – at the bottom right. It opens the map legend and the credits of the map being shown.
 
-When a tool is open, its toolbar appears at the top of the screen. You close it with its :FaTimes: button or the <kbd>Esc</kbd> key.
+When a tool is open, its toolbar appears at the top of the screen. You close it with its :FaTimes: button. The drawing tools, the route finder and map details also close with <kbd>Esc</kbd>.
 
 ## Moving around the map
 
@@ -35,7 +35,7 @@ The map toolbar at the bottom lists the maps you use most. Press one to switch t
 - :FaRegDotCircle: **Locate me** – see below.
 - :FaCog: opens a menu with the :FaLayerGroup: [map manager](#show=installed-maps), where you add maps from the library, remove the ones you don't use and choose which appear in the toolbar, as well as offline maps and preferences.
 
-If a map can't be shown where you are, its button gets a yellow icon: :FaSearchPlus.text-warning: when you need to zoom in, :FaGlobeEurope.text-warning: when you are outside the map's area, :FaSearchLocation.text-warning: when both. Pressing it moves the map to where the map has content.
+If a map can't be shown in the current view, its button gets a yellow icon: :FaSearchPlus.text-warning: when you need to zoom in, :FaGlobeEurope.text-warning: when you are outside the map's area, :FaSearchLocation.text-warning: when both. Pressing it moves the map to where the map has content.
 
 What the symbols on the map mean is explained in the :FaList: [map legend](#show=legend).
 

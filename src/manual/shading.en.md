@@ -40,10 +40,10 @@ For a few presets you first enter values, such as the elevations of the bottom a
 
 Select a layer in the list to see its settings:
 
-- **Light** – drag the handle on the dial to set where the light comes from, or type :MdExplore: **Azimuth** and :MdWbTwilight: **Elevation** in degrees. The usual light comes from the north-west.
+- Light – drag the handle on the dial to set where the light comes from, or type :MdExplore: **Azimuth** and :MdWbTwilight: **Elevation** in degrees. The usual light comes from the north-west.
 - :MdHeight: **Height exaggeration** – above 1 the relief looks steeper, below 1 flatter.
 - :MdContrast: **Contrast** and :MdBrightness6: **Brightness**.
-- :MdPalette: **Color** – the layer's colour. A hillshade or slope layer can switch from **Single colour** to **Gradient** in the colour picker, so that its colour changes with the value – e.g. grey on gentle slopes turning red on steep ones.
+- :MdPalette: **Color** – the layer's colour (:MdGradient: **Colour gradient** for colour relief and similar layers). A hillshade or slope layer can switch from **Single colour** to **Gradient** in the colour picker, so that its colour changes with the value – e.g. grey on gentle slopes turning red on steep ones.
 - **Contour lines** have a **Contour interval** in metres and a **Line width**.
 - **Sky view / openness** darkens hollows, ditches and valley floors regardless of where the light comes from, which brings out fine features such as sunken paths or old earthworks. Under **Show** you choose what it shows, and :LuRadius: **Radius** sets how far around each point the terrain is taken into account.
 
@@ -57,4 +57,4 @@ A shading you like can be kept under a name of its own with :FaSave: **Save as m
 
 ## With premium access
 
-At the highest zoom levels – from zoom 15 – **Parametric terrain shading** and **Detailed terrain shading** need [premium access](#show=premium). Without it, most tiles at these zooms show only a note about premium access.
+At the highest zoom levels – from zoom 16, on a high-resolution screen from zoom 15 – **Parametric terrain shading** and **Detailed terrain shading** need [premium access](#show=premium). Without it, most tiles at these zooms show only a note about premium access.

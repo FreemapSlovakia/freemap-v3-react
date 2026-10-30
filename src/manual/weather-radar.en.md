@@ -11,7 +11,7 @@ The weather radar shows where it is raining or snowing, as an animation of the l
 The radar is an overlay, drawn over whichever base map you have. Switch it on in any of these ways:
 
 - press :FaCloudShowersHeavy: in the map toolbar at the bottom (or find it under :FaEllipsisV:),
-- press <kbd>Shift</kbd>+<kbd>R</kbd>,
+- press <kbd>Shift</kbd>+<kbd>r</kbd>,
 - type “radar”, “rain” or “weather” into the search box.
 
 How maps and overlays are switched in general is described in [Maps](#show=manual/maps).
@@ -36,7 +36,7 @@ When the radar is on, its toolbar appears at the top of the screen.
 
 A new frame is published every 10 minutes. While the radar is on, the list of frames is refreshed every two minutes. When the newest frame is shown, the view moves on to each new frame as it arrives; when you choose an older one, that time stays shown.
 
-## Premium access
+## With premium access
 
 Without premium you can view the last **two hours**. [Premium access](#show=premium) adds:
 

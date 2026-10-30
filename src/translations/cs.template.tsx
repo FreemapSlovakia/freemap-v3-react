@@ -88,7 +88,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     toggleObjectType: 'Kliknutím zobrazíte nebo skryjete objekty tohoto typu',
     hideObjectType: ({ name }) => <>Skrýt typ „{name}“</>,
     copyToDrawing: 'Kopírovat do kresby',
-    copyTo: ({ tool }) => <>Kopírovat do {tool}</>,
+    copyTo: ({ tool }) => <>Kopírovat do nástroje {tool}</>,
     convertAllToDrawing: 'Zkonvertovat vše na kreslení',
     openIn: ({ what }) => <>Otevřít v {what}</>,
     panoramaFromHere: 'Panorama odsud',

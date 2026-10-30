@@ -51,12 +51,12 @@ Under **Disconnect**, press a connected provider to remove it, after a confirmat
 
 ## App tokens
 
-An app token lets another application or a script use Freemap as you – for example to show the premium zooms of the Outdoor map in JOSM or Locus, or to work with your photos, maps or devices through the Freemap API. A token can do only what its permissions allow, and nothing with the account itself: it cannot change your personal information, login providers or purchases, nor create other tokens. :FaInfoCircle: **What are app tokens?** in the section shows how an app sends the token.
+An app token lets another application or a script use Freemap as you – for example to show the premium zooms of the Outdoor map in Locus, or to work with your photos, maps or devices through the Freemap API. A token allows only what its permissions allow, and nothing with the account itself: it cannot be used to change your personal information, login providers or purchases, nor to create other tokens. :FaInfoCircle: **What are app tokens?** in the section shows how an app sends the token.
 
 Press :FaPlus: **New token** and fill in:
 
 - **Note** – what the token is for, so you recognize it in the list.
-- **Permissions** – tick only what the app needs: viewing or changing photos, my maps or tracked devices, and the premium zooms of the Outdoor map, the terrain shadings and the Slovak and Czech aerial imagery. The map zooms work in other apps only if you have premium access.
+- **Permissions** – tick only what the app needs: viewing or changing photos, my maps or tracked devices, and the premium zooms of the Outdoor map, the terrain shadings and the Slovak and Czech aerial imagery. The map zooms work in apps other than JOSM only if you have premium access.
 - **Expires** – **Never**, in 30, 90 or 365 days, or **On a date**.
 
 Press :FaCheck: **New token** below the form to create it. The token is shown only once: copy it with :FaClipboard: and store it – later it cannot be read again. Keep the token secret, like a password.

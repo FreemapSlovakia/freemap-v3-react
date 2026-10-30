@@ -4,23 +4,23 @@ icon: MdShapeLine
 order: 400
 ---
 
-Vo Freemape si môžete zobraziť trasy z GPS prístroja, hodiniek či inej aplikácie, pozrieť si ich výškový profil, vyfarbiť ich podľa výšky alebo rýchlosti a opäť ich vyexportovať. Na to všetko slúži nástroj :MdShapeLine: **Kreslenie a dáta** – ten istý, ktorým sa kreslí, pozri [Kreslenie](#show=manual/drawing).
+Vo Freemape si môžete zobraziť trasy z GPS prístroja, hodiniek či inej aplikácie, pozrieť si ich výškový profil, vyfarbiť ich podľa výšky alebo rýchlosti a opäť ich vyexportovať. Na to všetko slúži nástroj :MdShapeLine: **Kreslenie a dáta** – ten istý, ktorým sa kreslí, pozrite [Kreslenie](#show=manual/drawing).
 
 ## Otvorenie súboru
 
 - Pretiahnite súbor kamkoľvek na mapu.
 - Alebo otvorte :FaBars: **Hlavné menu** → :MdShapeLine: **Kreslenie a dáta** (<kbd>g</kbd> <kbd>g</kbd>) a na lište nástroja stlačte :FaUpload: **Nahrať**. V dialógu **Importovať súbor** súbory pustite alebo ich vyberte kliknutím.
 
-Otvoriť môžete súbory GPX, KML, KMZ, TCX a GeoJSON, aj viacero naraz. Ak už na mape niečo je, zvolíte, či nové údaje **Pripojiť**, alebo existujúce **Nahradiť**.
+Otvoriť môžete súbory GPX, KML, KMZ, TCX a GeoJSON, aj viacero naraz. Ak už Kreslenie a dáta niečo obsahujú, zvolíte **Pripojiť** (pridať nové údaje k existujúcim) alebo **Nahradiť**.
 
 ## Čo uvidíte
 
-Trasy sa zobrazia ako čiary – záznam trasy so značkou štartu a cieľa – a trasové body ako body s názvami. Súbor s jedinou trasou sa otvorí s touto trasou vybranou; inú čiaru vyberiete kliknutím. K vybranej čiare sa zobrazí jej lišta:
+Trasy sa zobrazia ako čiary – záznam trasy so značkou štartu a cieľa – a trasové body ako body s názvami. Súbor s jedinou trasou sa otvorí s touto trasou vybranou; inú čiaru vyberiete kliknutím. Pri vybranej čiare sa zobrazí lišta čiary:
 
-- :FaChartArea: **Výškový profil** – pozri nižšie.
+- :FaChartArea: **Výškový profil** – pozrite nižšie.
 - :FaInfoCircle: **Viac info** – vzdialenosť, celkové stúpanie a klesanie, najnižší a najvyšší bod a pri zázname aj čas štartu a príchodu do cieľa, trvanie a priemerná rýchlosť.
 
-Malá trasa sa uchováva v adrese stránky, takže ju zdieľate spolu s odkazom. Veľká zostáva len v tomto prehliadači a na lište sa zobrazí výstraha :FaExclamationTriangle.text-warning:, že trasa nie je uložená; uchováte ju cez :FaEllipsisV: → :FaSave: **Uložiť do mojich máp** (treba byť prihlásený).
+Malá trasa sa uchováva v adrese stránky, takže ju zdieľate spolu s odkazom. Veľká zostáva len v tomto prehliadači a na lište sa zobrazí výstraha :FaExclamationTriangle.text-warning:, že trasa nie je uložená; uchováte ju cez :FaEllipsisV: → :FaSave: **Uložiť do mojich máp** (vyžaduje prihlásenie).
 
 ## Výškový profil
 
@@ -57,4 +57,4 @@ Cez :FaBars: **Hlavné menu** → :FaFileExport: **Export mapových dát** (<kbd
 - **Exportovať** – čo sa má zahrnúť; vybrať sa dá len to, čo je na mape. Keď je vybraný prvok, **Iba vybraný prvok** obmedzí export na tento prvok.
 - **Nadmorská výška** – **Ponechať**, **Doplniť chýbajúcu** alebo **Prepísať všetku** z modelu terénu.
 
-Potom stlačte :FaFileExport: **Exportovať**. Súbor otvorený znova vo Freemape sa vráti s farbami, ikonami aj popismi.
+Potom stlačte :FaFileExport: **Exportovať**. Súbor GPX alebo GeoJSON otvorený znova vo Freemape sa vráti s farbami, ikonami aj popismi.

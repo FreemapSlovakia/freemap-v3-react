@@ -35,7 +35,7 @@ With the second button you choose the mode:
 - :BiShapePolygon: **Roundtrip** – a round trip from the start; in its menu you set the **Approximate distance**, and :FaDiceThree: shows another route.
 - :FaBullseye: **Isochrones** – see below.
 
-With the profiles listed under OSRM the modes are :PiGraph: **Visiting places** and :BiShapePolygon: **Visiting places (roundtrip)** instead, where the route goes through the stops in the best order.
+With the profiles listed under OSRM the modes are :MdTimeline: **Ordered**, :PiGraph: **Visiting places** and :BiShapePolygon: **Visiting places (roundtrip)**; in the last two the route goes through the stops in the best order.
 
 ## Route details
 
@@ -52,7 +52,7 @@ The :FaEllipsisV: menu also holds:
 
 ## Colorizing the route
 
-:FaPalette: **Colorize by** paints the route by **Elevation**, **Steepness**, **Surface**, **Road type**, **Hiking difficulty**, **Waymark color** and more – only what is known for the route is offered. Modes marked :FaGem: need premium. While a mode is on, **Legend** at the top of the menu shows what the colours mean.
+:FaPalette: **Colorize by** paints the route by **Elevation**, **Steepness**, **Surface**, **Road type**, **Hiking difficulty**, **Waymark color** and more – only what is known for the route is offered. Modes marked :FaGem.text-warning: need premium. While a mode is on, **Legend** at the top of the menu shows what the colours mean.
 
 ## Clearing, sharing and exporting
 

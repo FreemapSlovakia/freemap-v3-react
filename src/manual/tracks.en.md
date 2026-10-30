@@ -4,14 +4,14 @@ icon: MdShapeLine
 order: 400
 ---
 
-In Freemap you can view tracks from your GPS device, watch or another app, see their elevation profile, color them by elevation or speed and export them again. All of this lives in the :MdShapeLine: **Drawing and data** tool – the same one you draw with, see [Drawing](#show=manual/drawing).
+In Freemap you can view tracks from your GPS device, watch or another app, see their elevation profile, colour them by elevation or speed and export them again. All of this lives in the :MdShapeLine: **Drawing and data** tool – the same one you draw with, see [Drawing](#show=manual/drawing).
 
 ## Opening a file
 
 - Drop the file anywhere on the map.
 - Or open :FaBars: **Main menu** → :MdShapeLine: **Drawing and data** (<kbd>g</kbd> <kbd>g</kbd>) and press :FaUpload: **Upload** in its toolbar. In the **Import file** dialog, drop the files or click to pick them.
 
-GPX, KML, KMZ, TCX and GeoJSON files are read, and several can be opened at once. When something is already on the map, you choose whether to **Append** the new data or **Replace** what is there.
+GPX, KML, KMZ, TCX and GeoJSON files are read, and several can be opened at once. When Drawing and data already holds something, you choose whether to **Append** the new data or **Replace** what is there.
 
 ## What you see
 
@@ -36,13 +36,13 @@ Below the chart are :FaMapMarkerAlt: **Show waypoints**, :FaCog: **Elevation pre
 
 ## Elevation
 
-The elevation of a drawn line, or of one imported without times, always comes from the terrain model. When a recorded track is missing some elevation, you are asked before it is used in the profile or colors: **Override all** from the terrain model, **Fill missing** only, or **Leave unchanged**.
+The elevation of a drawn line, or of one imported without times, always comes from the terrain model. When a recorded track is missing some elevation, you are asked before it is used in the profile or colours: **Override all** from the terrain model, **Fill missing** only, or **Leave unchanged**.
 
 You can change your mind any time in the toolbar's :FaEllipsisV: menu → :FaMountain: **Update elevation**. With [premium access](#show=premium) the elevation comes from detailed national terrain models where they exist.
 
 ## Colorizing
 
-:FaPalette: **Colorize by** in the toolbar colors the lines – for example by elevation, steepness, speed or heart rate. Choices the track has no data for are greyed out; **Elevation**, **Speed** and **Time** are free, the ones marked :FaGem.text-warning: need [premium access](#show=premium). **Legend** at the top of the list shows the color scale; point at it to read the exact value.
+:FaPalette: **Colorize by** in the toolbar colours the lines – for example by elevation, steepness, speed or heart rate. Choices the track has no data for are greyed out; **Elevation**, **Speed** and **Time** are free, the ones marked :FaGem.text-warning: need [premium access](#show=premium). **Legend** at the top of the list shows the colour scale; point at it to read the exact value.
 
 Surface, road type or hiking difficulty become available once the track has been matched to the path network: :FaEllipsisV: → :FaMagic: **Match to paths** in the line's toolbar. Matching replaces the recorded points, so their times and sensor data are lost.
 
@@ -57,4 +57,4 @@ With :FaBars: **Main menu** → :FaFileExport: **Map data export** (<kbd>e</kbd>
 - **Export** – what to include; only what is on the map can be chosen. With a feature selected, **Only the selected item** narrows it to that one.
 - **Elevation** – **Keep as-is**, **Fill missing** or **Override all** from the terrain model.
 
-Then press :FaFileExport: **Export**. Opened again in Freemap, the file comes back with its colors, icons and labels.
+Then press :FaFileExport: **Export**. A GPX or GeoJSON file opened again in Freemap comes back with its colours, icons and labels.
