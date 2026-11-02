@@ -771,6 +771,7 @@ export default function DataViewerSelection(): ReactElement | null {
                 pointTags={featureOsmTags(feature.properties)}
                 url={`/?point=${lat}/${lon}`}
                 toggleProps={props}
+                selection
                 menuItems={
                   // A MultiPoint has no one point to project from.
                   feature.geometry.type === 'Point' ? (

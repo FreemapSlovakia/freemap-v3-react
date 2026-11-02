@@ -158,6 +158,35 @@ export function useMenuHandler({
 
   const extraHandler = useRef<(eventKey: string) => boolean>(undefined);
 
+  const openExternal = useCallback(
+    (where: ExternalTarget) => {
+      dispatch(
+        openInExternalApp({
+          where,
+          lat,
+          lon,
+          zoom,
+          includePoint,
+          pointTitle,
+          pointTags,
+          pointDescription,
+          imageUrl,
+        }),
+      );
+    },
+    [
+      dispatch,
+      lat,
+      lon,
+      zoom,
+      includePoint,
+      pointTitle,
+      pointTags,
+      pointDescription,
+      imageUrl,
+    ],
+  );
+
   const handleSelect = useCallback(
     (eventKey: string | null, e: React.SyntheticEvent<unknown, Event>) => {
       if (eventKey !== 'url') {
@@ -262,19 +291,7 @@ export function useMenuHandler({
       const where = afterPrefix(key, 'open-');
 
       if (where !== undefined) {
-        dispatch(
-          openInExternalApp({
-            where,
-            lat,
-            lon,
-            zoom,
-            includePoint,
-            pointTitle,
-            pointTags,
-            pointDescription,
-            imageUrl,
-          }),
-        );
+        openExternal(where);
 
         setShow(false);
 
@@ -303,21 +320,7 @@ export function useMenuHandler({
 
       extraHandler.current?.(key);
     },
-    [
-      dispatch,
-      m,
-      confirm,
-      lat,
-      lon,
-      includePoint,
-      pointDescription,
-      pointTitle,
-      pointTags,
-      imageUrl,
-      zoom,
-      openTools,
-      sendGalleryEmails,
-    ],
+    [dispatch, m, confirm, openExternal, openTools, sendGalleryEmails],
   );
 
   const handleMenuToggle = useCallback((nextShow: boolean) => {
@@ -330,6 +333,7 @@ export function useMenuHandler({
 
   return {
     handleSelect,
+    openExternal,
     menuShown,
     handleMenuToggle,
     closeMenu,

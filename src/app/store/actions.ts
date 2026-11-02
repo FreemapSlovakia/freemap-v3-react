@@ -280,11 +280,17 @@ export const openInExternalApp = createAction<{
    */
   imageUrl?: string;
   /**
-   * What JOSM imports instead of the area around the point — an OSM object's
-   * page (a note's): `import` picks JOSM's download task by the URL.
+   * The OSM object the place is (a note, an element): osm.org and iD open it
+   * instead of the position, and JOSM imports its page — `import` picks the
+   * download task by the URL.
    */
-  josmImportUrl?: string;
+  osmObject?: OsmObjectLinks;
 }>('OPEN_IN_EXTERNAL');
+
+export interface OsmObjectLinks {
+  url: string;
+  idUrl: string;
+}
 
 export { applyCookieConsent, setAnalyticCookiesAllowed };
 

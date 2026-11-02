@@ -37,6 +37,7 @@ import {
   userShortcutsSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { mapLayersPanelToggle } from '@features/mapSettings/model/actions.js';
+import { selectionOpener } from '@features/openInExternalApp/selectionOpener.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
@@ -406,6 +407,18 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     }
 
     if ('external' in target) {
+      const open = selectionOpener();
+
+      // Copying the page's address is about the page, selection or not.
+      if (open && target.external !== 'copy') {
+        // No action comes back for the listener to claim the key with.
+        event.preventDefault();
+
+        open(target.external);
+
+        return undefined;
+      }
+
       return openInExternalApp({ where: target.external });
     }
 

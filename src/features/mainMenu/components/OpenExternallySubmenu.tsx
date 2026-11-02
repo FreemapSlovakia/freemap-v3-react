@@ -1,4 +1,5 @@
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
+import { useHasSelectionOpener } from '@features/openInExternalApp/selectionOpener.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -14,6 +15,8 @@ export function OpenExternallySubmenu(): ReactElement {
 
   const oeam = useOpenInExternalAppMessages();
 
+  const selectionOpens = useHasSelectionOpener();
+
   return (
     <Fragment key="openExternally">
       <SubmenuHeader
@@ -26,6 +29,7 @@ export function OpenExternallySubmenu(): ReactElement {
         lon={lon}
         zoom={zoom}
         showKbdShortcut
+        targetKbdShortcut={!selectionOpens}
       />
     </Fragment>
   );

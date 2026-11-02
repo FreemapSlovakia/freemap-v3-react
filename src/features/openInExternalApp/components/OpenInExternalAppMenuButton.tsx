@@ -13,6 +13,7 @@ import type { JSX, ReactElement, ReactNode } from 'react';
 import type { OverlayProps } from 'react-bootstrap';
 import { Dropdown } from 'react-bootstrap';
 import { FaChevronRight, FaExternalLinkAlt } from 'react-icons/fa';
+import { useSelectionOpener } from '../selectionOpener.js';
 import {
   hasPageItems,
   OpenInExternalTargetItems,
@@ -41,6 +42,8 @@ interface Props extends LatLon {
   menuItems?: ReactNode;
   /** Run when one of the shared place actions fires — a modal over the map closes itself here. */
   onAct?: () => void;
+  /** The place is the selection's, so the `j` chords open it. */
+  selection?: boolean;
   children: JSX.Element | JSX.Element[];
 }
 
@@ -57,6 +60,7 @@ export function OpenInExternalAppMenuButton({
   toggleProps,
   menuItems,
   onAct,
+  selection,
   children,
   className,
 }: Props): ReactElement {
@@ -65,18 +69,19 @@ export function OpenInExternalAppMenuButton({
   // `url` deliberately stays out of this: it is what the "New window" item opens, which for a
   // gallery photo is the picture's own address, `hmac` token and all. "Share location" shares the
   // page the user is on instead, which is the address worth passing to someone else.
-  const { handleSelect, menuShown, handleMenuToggle, submenu } = useMenuHandler(
-    {
+  const { handleSelect, openExternal, menuShown, handleMenuToggle, submenu } =
+    useMenuHandler({
       pointTitle,
       pointTags,
       pointDescription,
       imageUrl,
       at: { lat, lon },
       includePoint,
-    },
-  );
+    });
 
   const zoom = useAppSelector((state) => state.map.zoom);
+
+  useSelectionOpener(selection ? openExternal : null);
 
   // Same `share: false` the items get below, or the divider outlives them.
   const pageItems = hasPageItems({ url, imageUrl, share: false });
@@ -119,6 +124,7 @@ export function OpenInExternalAppMenuButton({
               zoom={zoom}
               includePoint={includePoint}
               url={url}
+              showKbdShortcut={selection}
             />
           </>
         ) : (

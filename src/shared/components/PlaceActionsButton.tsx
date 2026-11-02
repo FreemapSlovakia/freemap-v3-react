@@ -1,5 +1,5 @@
+import type { OsmObjectLinks } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import type { OsmObjectLinks } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { ResponsiveActions } from '@shared/components/ResponsiveActions.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { usePlaceActions } from '@shared/hooks/usePlaceActions.js';
@@ -14,6 +14,8 @@ type Props = LatLon & {
   onAct?: () => void;
   /** See `OpenInExternalTargetItems`. */
   osmObject?: OsmObjectLinks;
+  /** See `usePlaceActions`. */
+  selection?: boolean;
   size?: ButtonProps['size'];
   variant?: string;
   className?: string;

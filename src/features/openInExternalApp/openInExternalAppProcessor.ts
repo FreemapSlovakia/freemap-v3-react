@@ -72,7 +72,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       pointDescription,
       url,
       imageUrl,
-      josmImportUrl,
+      osmObject,
     } = action.payload;
 
     // Whole levels only: several of the targets below — `geo:`, ZBGIS,
@@ -112,18 +112,18 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'osm.org':
-        window.open(getOsmUrl(lat, lon, zoom, includePoint));
+        window.open(osmObject?.url ?? getOsmUrl(lat, lon, zoom, includePoint));
 
         break;
 
       case 'osm.org/id':
-        window.open(getIdUrl(lat, lon, zoom));
+        window.open(osmObject?.idUrl ?? getIdUrl(lat, lon, zoom));
 
         break;
 
       case 'josm': {
-        if (josmImportUrl) {
-          josmRemote(dispatch, 'import', { url: josmImportUrl });
+        if (osmObject) {
+          josmRemote(dispatch, 'import', { url: osmObject.url });
 
           break;
         }

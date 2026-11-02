@@ -27,6 +27,7 @@ export default function OsmNoteSelection(): ReactElement | null {
           url: getOsmNoteUrl(note.id),
           idUrl: getIdNoteUrl(note.id),
         }}
+        selection
       />
     </Selection>
   );
