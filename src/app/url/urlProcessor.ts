@@ -16,6 +16,7 @@ import {
   presetByIdSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
+import { selectedOsmNoteId } from '@features/osmNotes/model/selectors.js';
 import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
   serializePanoramaSky,
@@ -682,6 +683,12 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   if (main.selection?.type === 'tracking' && main.selection?.id !== undefined) {
     queryParts.push(['follow', main.selection?.id]);
+  }
+
+  const noteId = selectedOsmNoteId(state);
+
+  if (noteId !== null) {
+    queryParts.push(['osm-note', String(noteId)]);
   }
 
   const sq = mapId ? serializeQuery(historyParts) : undefined;

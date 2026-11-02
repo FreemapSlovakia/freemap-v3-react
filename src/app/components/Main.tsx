@@ -191,6 +191,12 @@ const objectSelectionFactory = () =>
     '@features/objects/components/ObjectSelection.js'
   );
 
+const osmNoteSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "osm-note-selection" */
+    '@features/osmNotes/components/OsmNoteSelection.js'
+  );
+
 const changesetElementSelectionFactory = () =>
   import(
     /* webpackChunkName: "changeset-element-selection" */
@@ -559,6 +565,9 @@ function selectionMenu(type: Selection['type']): ReactNode {
 
     case 'changeset-element':
       return <AsyncComponent factory={changesetElementSelectionFactory} />;
+
+    case 'osm-note':
+      return <AsyncComponent factory={osmNoteSelectionFactory} />;
 
     case 'tracking':
       return <TrackingSelection />;

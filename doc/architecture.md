@@ -40,7 +40,8 @@ elsewhere:
   (`/v1/features/by-id`). Holds Europe only, and only tagged objects — as do
   Photon and GraphHopper, so the app is Europe-wide throughout.
 - **`OSM_API_URL`** — the public OSM API, used only for changeset listings and
-  metadata (`src/features/changesets/model/`). Element geometry comes from the
+  metadata (`src/features/changesets/model/`) and for OSM notes
+  (`src/features/osmNotes/`). Element geometry comes from the
   own API above; a changeset's changes come from OSMCha's public augmented
   diffs (`adiffs.osmcha.org`, hardcoded in `inspectProcessor.ts`).
 - **`PHOTON_URL`** — geocoding; see [photon-geocoder.md](./photon-geocoder.md).

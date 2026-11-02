@@ -76,6 +76,7 @@ import {
   objectsSetStyle,
 } from '@features/objects/model/actions.js';
 import { osmLoad } from '@features/osm/model/osmActions.js';
+import { selectedOsmNoteId } from '@features/osmNotes/model/selectors.js';
 import {
   panoramaClear,
   panoramaPick,
@@ -956,6 +957,18 @@ export function handleLocationChange(store: MyStore): void {
     if ((selection?.type === 'tracking' ? selection?.id : undefined) !== fq) {
       dispatch(selectFeature({ type: 'tracking', id: fq }));
     }
+  }
+
+  const noteId = Number(query['osm-note']);
+
+  const selectedNoteId = selectedOsmNoteId(getState());
+
+  if (Number.isInteger(noteId) && noteId > 0) {
+    if (selectedNoteId !== noteId) {
+      dispatch(selectFeature({ type: 'osm-note', id: noteId }));
+    }
+  } else if (selectedNoteId !== null) {
+    dispatch(selectFeature(null));
   }
 
   handleElevationChart(getState, dispatch, query, restore !== null);

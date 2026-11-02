@@ -376,6 +376,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-d': 'transports en commun, bus, trains, horaires',
         'layer-I': 'images, galerie, photos',
         'layer-w': 'wiki, articles',
+        'layer-n': 'openstreetmap, erreurs, signalements, cartographie, note',
         'layer-R': 'météo, pluie, précipitations, orage, prévisions',
         'layer-v':
           'bassin de visibilité, ligne de vue, champ de vision, relief',
@@ -433,6 +434,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Chemins forestiers NLC (2017)',
       l2: 'Chemins forestiers NLC',
       w: 'Wikipedia',
+      n: 'Notes OSM',
       R: 'Radar météo',
       v: 'Visibilité',
       M: 'Photos de Wikimedia Commons',

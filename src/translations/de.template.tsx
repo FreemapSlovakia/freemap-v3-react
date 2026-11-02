@@ -391,6 +391,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-d': 'öpnv, nahverkehr, busse, züge, fahrpläne',
         'layer-I': 'bilder, galerie, fotos',
         'layer-w': 'wiki, artikel',
+        'layer-n':
+          'openstreetmap, notes, notizen, fehler, meldungen, kartierung',
         'layer-R': 'wetter, regen, niederschlag, gewitter, vorhersage',
         'layer-v':
           'sichtbarkeitsanalyse, sichtfeld, sichtlinie, aussicht, gelände',
@@ -443,6 +445,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Forststraßen NLC (2017)',
       l2: 'Forststraßen NLC',
       w: 'Wikipedia',
+      n: 'OSM-Hinweise',
       R: 'Wetterradar',
       v: 'Sichtbarkeit',
       '6': 'Oberflächenschattierung',

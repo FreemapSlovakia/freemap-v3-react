@@ -2,7 +2,7 @@ import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { wantedKey } from '@features/objects/model/selectors.js';
-import { osmLoad } from '@features/osm/model/osmActions.js';
+import { osmElementOpen } from '@features/osm/model/osmElementOpen.js';
 import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { loadChangesetsMessages } from '../translations/loadChangesetsMessages.js';
 import { changesetsInspect, changesetsShowHistory } from './actions.js';
@@ -32,12 +32,7 @@ export function changesetsEndInspection() {
 
 /** Opens the element as it is now, as its `osm-*` link does. */
 export function changesetElementOpen(element: DiffElement) {
-  const id = osmIdOf(element);
-
-  return [
-    osmLoad({ ids: [id], focus: true, pin: true }),
-    selectFeature({ type: 'search', id }),
-  ];
+  return osmElementOpen(osmIdOf(element));
 }
 
 /**

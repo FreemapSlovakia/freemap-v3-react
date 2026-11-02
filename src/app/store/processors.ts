@@ -136,6 +136,11 @@ import { objectsRouteProcessor } from '@features/objects/model/objectsRouteProce
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
+import {
+  osmNoteSelectionProcessor,
+  osmNotesLayerOffProcessor,
+} from '@features/osmNotes/model/processors/osmNoteSelectionProcessors.js';
+import { osmNotesLayerProcessor } from '@features/osmNotes/model/processors/osmNotesLayerProcessor.js';
 import { panoramaFixProcessor } from '@features/panorama/model/processors/panoramaFixProcessor.js';
 import { panoramaLookAtProcessor } from '@features/panorama/model/processors/panoramaLookAtProcessor.js';
 import {
@@ -315,6 +320,9 @@ export const processors = [
   mapsResolveOutboxProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
+  osmNotesLayerProcessor,
+  osmNoteSelectionProcessor,
+  osmNotesLayerOffProcessor,
   weatherRadarLayerProcessor,
   weatherRadarRefreshProcessor,
   legendProcessor,

@@ -79,6 +79,11 @@ interface PageProps {
   share?: boolean;
 }
 
+export interface OsmObjectLinks {
+  url: string;
+  idUrl: string;
+}
+
 interface TargetProps
   extends LatLon,
     Pick<PageProps, 'url' | 'showKbdShortcut'> {
@@ -90,6 +95,12 @@ interface TargetProps
    * not the same thing as opening the element.
    */
   editors?: boolean;
+  /**
+   * Where the place is an OSM object of its own (a note): its osm.org page and
+   * iD's address for it. JOSM's entry takes the page from the caller's
+   * `onSelect`, as `josmImportUrl`.
+   */
+  osmObject?: OsmObjectLinks;
   /** Targets of the caller's own, standing before the rest. */
   children?: ReactNode;
 }
@@ -194,6 +205,7 @@ export function OpenInExternalTargetItems({
   url,
   showKbdShortcut,
   editors = true,
+  osmObject,
   children,
 }: TargetProps): ReactElement {
   // Whole levels only: several of the targets below — ZBGIS, hiking.sk,
@@ -259,7 +271,7 @@ export function OpenInExternalTargetItems({
 
       {/* The map data itself, and the tools that work on it. */}
       <OnlineOnlyItem
-        href={getOsmUrl(lat, lon, zoom, includePoint)}
+        href={osmObject?.url ?? getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
@@ -290,7 +302,7 @@ export function OpenInExternalTargetItems({
           </Dropdown.Item>
 
           <OnlineOnlyItem
-            href={getIdUrl(lat, lon, zoom)}
+            href={osmObject?.idUrl ?? getIdUrl(lat, lon, zoom)}
             target="_blank"
             eventKey="url"
           >

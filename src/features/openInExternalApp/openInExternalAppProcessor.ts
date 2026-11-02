@@ -1,6 +1,7 @@
 import { openInExternalApp } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { josmRemote } from '@features/openInExternalApp/josmRemote.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { isAbortError } from '@shared/isAbortError.js';
@@ -71,6 +72,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       pointDescription,
       url,
       imageUrl,
+      josmImportUrl,
     } = action.payload;
 
     // Whole levels only: several of the targets below — `geo:`, ZBGIS,
@@ -120,6 +122,12 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'josm': {
+        if (josmImportUrl) {
+          josmRemote(dispatch, 'import', { url: josmImportUrl });
+
+          break;
+        }
+
         let left;
 
         let right;

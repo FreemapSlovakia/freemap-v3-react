@@ -6,6 +6,7 @@ export type LayerKind = 'base' | 'overlay';
 export const DATA_TECHNOLOGIES: ReadonlySet<string> = new Set([
   'gallery',
   'wikipedia',
+  'osmNotes',
   'radar',
   'viewshed',
 ]);

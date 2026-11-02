@@ -675,7 +675,7 @@ const config: Configuration = {
       // Own osm2pgsql-backed API (freemap-osm-api): the objects layer and map
       // details. Europe only.
       FM_OSM_API_URL: process.env['FM_OSM_API_URL'] || 'https://osm.freemap.sk',
-      // Changeset listings only — element geometry comes from the own API.
+      // Changeset listings and OSM notes — element geometry comes from the own API.
       OSM_API_URL:
         process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
       // Self-hosted Photon: forward search and reverse geocoding. Its index

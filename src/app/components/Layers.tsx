@@ -96,6 +96,12 @@ const radarLayerFactory = () =>
     '@features/weatherRadar/components/RadarLayer.js'
   );
 
+const osmNotesLayerFactory = () =>
+  import(
+    /* webpackChunkName: "osm-notes-layer" */
+    '@features/osmNotes/components/OsmNotesLayer.js'
+  );
+
 const viewshedLayerFactory = () =>
   import(
     /* webpackChunkName: "viewshed-layer" */
@@ -254,6 +260,16 @@ export function Layers(): ReactNode {
           opacity={opacity}
           zIndex={zIndex}
           maxZoom={maxZoom}
+        />
+      );
+    }
+
+    if (layerDef.technology === 'osmNotes') {
+      return (
+        <AsyncComponent
+          factory={osmNotesLayerFactory}
+          key={id}
+          opacity={opacity}
         />
       );
     }

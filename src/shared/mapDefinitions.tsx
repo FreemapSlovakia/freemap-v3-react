@@ -356,6 +356,10 @@ type IsWikipediaLayerDef = HasZIndex & {
   technology: 'wikipedia';
 };
 
+type IsOsmNotesLayerDef = HasZIndex & {
+  technology: 'osmNotes';
+};
+
 /**
  * Animated precipitation radar. Its own technology because a frame's timestamp
  * is part of the tile URL, so the layer is a series of tile layers the feature
@@ -544,6 +548,7 @@ export type IsAllTechnologiesLayerDef =
   | IsColorLayerDef
   | IsGalleryLayerDef
   | IsWikipediaLayerDef
+  | IsOsmNotesLayerDef
   | IsRadarLayerDef
   | IsViewshedLayerDef;
 

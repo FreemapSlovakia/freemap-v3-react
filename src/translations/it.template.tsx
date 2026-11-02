@@ -392,6 +392,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-d': 'trasporto pubblico, autobus, treni, orari',
         'layer-I': 'immagini, galleria, foto',
         'layer-w': 'wiki, articoli',
+        'layer-n':
+          'openstreetmap, notes, errori, segnalazioni, mappatura, nota',
         'layer-R': 'meteo, pioggia, precipitazioni, temporale, previsioni',
         'layer-v':
           'analisi di visibilità, bacino visivo, linea di vista, terreno',
@@ -457,6 +459,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Tracce forestali NLC (2017)',
       l2: 'Tracce forestali NLC',
       w: 'Wikipedia',
+      n: 'Note OSM',
       R: 'Radar meteo',
       v: 'Visibilità',
       '6': 'Ombreggiatura della superficie',

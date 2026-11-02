@@ -19,6 +19,15 @@ export function getOsmElementUrl(
   return `https://www.openstreetmap.org/${elementType}/${id}${history ? '/history' : ''}`;
 }
 
+export function getOsmNoteUrl(id: number): string {
+  return `https://www.openstreetmap.org/note/${id}`;
+}
+
+/** The note open in iD on osm.org, as opposed to whatever is at its position. */
+export function getIdNoteUrl(id: number): string {
+  return `https://www.openstreetmap.org/edit?editor=id&note=${id}`;
+}
+
 export function getOsmChangesetUrl(id: number): string {
   return `https://www.openstreetmap.org/changeset/${id}`;
 }
