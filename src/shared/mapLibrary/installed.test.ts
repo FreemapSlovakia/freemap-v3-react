@@ -37,6 +37,14 @@ describe('effectiveShortcut', () => {
     ).toEqual(shiftN);
   });
 
+  it("ignores an uninstalled map's leftover shortcut", () => {
+    const settings = { X: { shortcut: shiftN, installed: false } };
+
+    expect(
+      effectiveShortcut(settings, notes, userShortcuts(settings, [])),
+    ).toEqual(shiftN);
+  });
+
   it('tells modifiers apart', () => {
     const custom = { type: '.1', shortcut: { code: 'KeyN' } };
 

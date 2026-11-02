@@ -306,19 +306,15 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       Boolean(shortcut.alt) === event.altKey &&
       Boolean(shortcut.meta) === event.metaKey;
 
+    const taken = userShortcutsSelector(state);
+
     const layerDef = [
       ...state.map.customLayers,
       ...libraryIndexSelector(state).filter((def) =>
         isLayerInstalled(state.map.layersSettings, def.type),
       ),
     ].find((def) =>
-      pressed(
-        effectiveShortcut(
-          state.map.layersSettings,
-          def,
-          userShortcutsSelector(state),
-        ),
-      ),
+      pressed(effectiveShortcut(state.map.layersSettings, def, taken)),
     );
 
     const layerType =

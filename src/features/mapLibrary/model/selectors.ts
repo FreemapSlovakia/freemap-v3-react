@@ -36,7 +36,6 @@ import {
 import { mapIndex, withBody } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
 
-// As a string, so other setup changes (an opacity drag) leave it equal.
 /** `userShortcuts`' answer, for `effectiveShortcut`. */
 export const userShortcutsSelector = createSelector(
   [
@@ -46,6 +45,7 @@ export const userShortcutsSelector = createSelector(
   userShortcuts,
 );
 
+// As a string, so other setup changes (an opacity drag) leave it equal.
 const kindOverridesKeySelector = createSelector(
   (state: RootState) => state.map.layerSetups,
   (layerSetups) => JSON.stringify(kindOverrides(layerSetups)),

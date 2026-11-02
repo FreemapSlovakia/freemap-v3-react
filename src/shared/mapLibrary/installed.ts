@@ -59,13 +59,18 @@ const sameShortcut = (a: Shortcut, b: Shortcut) =>
 
 export type UserShortcut = { type: string; shortcut: Shortcut };
 
-/** The shortcuts the user gave maps and presets: in their settings, and a custom map's own. */
+/**
+ * The shortcuts the user gave maps and presets: in their settings, and a custom
+ * map's own. Not an uninstalled map's, which keeps its setting but no keys.
+ */
 export const userShortcuts = (
   layersSettings: LayersSettings,
   customLayers: readonly { type: string; shortcut?: Shortcut }[],
 ): UserShortcut[] => [
   ...Object.entries(layersSettings).flatMap(([type, { shortcut }]) =>
-    shortcut ? [{ type, shortcut }] : [],
+    shortcut && isLayerInstalled(layersSettings, type)
+      ? [{ type, shortcut }]
+      : [],
   ),
   ...customLayers.flatMap(({ type, shortcut }) =>
     shortcut && layersSettings[type]?.shortcut === undefined
