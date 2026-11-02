@@ -8,6 +8,7 @@ import {
   openDrawToolSelector,
   trackGeojsonIsSuitableForElevationChart,
 } from '@app/store/selectors.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
@@ -407,6 +408,10 @@ export function DataViewerMenu(): ReactElement {
             counts={batchCounts}
             divided
           />
+
+          <Dropdown.Divider />
+
+          <ManualMenuItem chapter={drawTool ? 'drawing' : 'tracks'} />
         </FmDropdownMenu>
       </Dropdown>
     </ToolMenu>

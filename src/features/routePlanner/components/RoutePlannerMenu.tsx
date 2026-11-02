@@ -3,6 +3,7 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
 } from '@app/store/actions.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -34,6 +35,7 @@ import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { MenuPortal } from '@shared/components/MenuPortal.js';
 import {
   Action,
+  ActionDivider,
   ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
@@ -1053,31 +1055,31 @@ export default function RoutePlannerMenu(): ReactElement {
         />
       )}
 
-      {resultFound && (
-        <ResponsiveActions
-          // The gap the buttons beside it are set in.
-          gap={1}
-          onSelect={handleMoreSelect}
-        >
-          {routeFound && (
-            <Action
-              label={m?.general.elevationProfile}
-              icon={<FaChartArea />}
-              // Breakpoints, not `fit`: this toolbar wraps onto a line of its
-              // own, where measuring what fits has no stable answer.
-              showFrom="lg"
-              showLabelFrom="xl"
-              active={elevationProfileIsVisible}
-              onClick={() => {
-                dispatch(
-                  elevationProfileIsVisible
-                    ? elevationChartClose()
-                    : elevationChartOpen({ type: 'route-planner' }),
-                );
-              }}
-            />
-          )}
+      <ResponsiveActions
+        // The gap the buttons beside it are set in.
+        gap={1}
+        onSelect={handleMoreSelect}
+      >
+        {routeFound && (
+          <Action
+            label={m?.general.elevationProfile}
+            icon={<FaChartArea />}
+            // Breakpoints, not `fit`: this toolbar wraps onto a line of its
+            // own, where measuring what fits has no stable answer.
+            showFrom="lg"
+            showLabelFrom="xl"
+            active={elevationProfileIsVisible}
+            onClick={() => {
+              dispatch(
+                elevationProfileIsVisible
+                  ? elevationChartClose()
+                  : elevationChartOpen({ type: 'route-planner' }),
+              );
+            }}
+          />
+        )}
 
+        {resultFound && (
           <Action
             label={m?.general.convertToDrawing}
             icon={<FaPencilAlt />}
@@ -1086,7 +1088,9 @@ export default function RoutePlannerMenu(): ReactElement {
               void convertRouteToDrawing();
             }}
           />
+        )}
 
+        {resultFound && (
           <Action
             label={rpm?.style.menuItem}
             icon={<FaPaintBrush />}
@@ -1095,19 +1099,21 @@ export default function RoutePlannerMenu(): ReactElement {
               dispatch(setActiveModal({ type: 'route-planner-style' }));
             }}
           />
+        )}
 
-          {/* Only a route that came with the map is not already fresh. */}
-          {storedRouteShowing && (
-            <Action
-              label={rpm?.recompute}
-              icon={<FaSync />}
-              showFrom="never"
-              onClick={() => {
-                dispatch(routePlannerRecompute());
-              }}
-            />
-          )}
+        {/* Only a route that came with the map is not already fresh. */}
+        {resultFound && storedRouteShowing && (
+          <Action
+            label={rpm?.recompute}
+            icon={<FaSync />}
+            showFrom="never"
+            onClick={() => {
+              dispatch(routePlannerRecompute());
+            }}
+          />
+        )}
 
+        {resultFound && (
           <ActionItems>
             {routeFound && (
               <MenuToggleGroup
@@ -1185,8 +1191,14 @@ export default function RoutePlannerMenu(): ReactElement {
               </>
             )}
           </ActionItems>
-        </ResponsiveActions>
-      )}
+        )}
+
+        <ActionDivider />
+
+        <ActionItems>
+          <ManualMenuItem chapter="route-planner" />
+        </ActionItems>
+      </ResponsiveActions>
 
       {hasRoute && <DeleteButton action={routePlannerDelete()} />}
     </ToolMenu>

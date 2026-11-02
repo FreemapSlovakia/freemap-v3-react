@@ -1,8 +1,11 @@
 import { convertToDrawing } from '@app/store/actions.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   Action,
+  ActionDivider,
+  ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -147,8 +150,8 @@ export default function ChangesetsMenu(): ReactElement {
         )}
       </LongPressTooltip>
 
-      {hasChangesets && (
-        <ResponsiveActions toggleLabel={m?.general.actions}>
+      <ResponsiveActions toggleLabel={m?.general.actions}>
+        {hasChangesets && (
           <Action
             icon={<FaPencilAlt />}
             label={m?.general.convertToDrawing}
@@ -157,8 +160,14 @@ export default function ChangesetsMenu(): ReactElement {
             }}
             showFrom="never"
           />
-        </ResponsiveActions>
-      )}
+        )}
+
+        <ActionDivider />
+
+        <ActionItems>
+          <ManualMenuItem chapter="changesets" />
+        </ActionItems>
+      </ResponsiveActions>
     </ToolMenu>
   );
 }

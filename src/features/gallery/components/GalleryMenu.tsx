@@ -1,4 +1,5 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
@@ -12,6 +13,10 @@ import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import {
+  ActionItems,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -504,6 +509,12 @@ export default function GalleryMenu() {
                     )}
                   </FmDropdownMenu>
                 </Dropdown>
+
+                <ResponsiveActions toggleLabel={m?.general.actions}>
+                  <ActionItems>
+                    <ManualMenuItem chapter="photos" />
+                  </ActionItems>
+                </ResponsiveActions>
               </>
             )}
 

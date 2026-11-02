@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
@@ -10,6 +11,10 @@ import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
+import {
+  ActionItems,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
@@ -306,6 +311,12 @@ export default function ViewshedMenu(): ReactElement {
                   </LongPressTooltip>
                 )
               )}
+
+              <ResponsiveActions toggleLabel={gm?.general.actions}>
+                <ActionItems>
+                  <ManualMenuItem chapter="viewshed" />
+                </ActionItems>
+              </ResponsiveActions>
             </>
           )}
 

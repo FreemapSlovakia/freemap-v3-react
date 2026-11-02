@@ -1,4 +1,5 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -7,6 +8,10 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
+import {
+  ActionItems,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -246,6 +251,14 @@ export function MyMapsMenu(): ReactElement {
                 </Dropdown>
               )}
             </LongPressTooltip>
+          )}
+
+          {!hidden && (
+            <ResponsiveActions toggleLabel={m?.general.actions}>
+              <ActionItems>
+                <ManualMenuItem chapter="my-maps" />
+              </ActionItems>
+            </ResponsiveActions>
           )}
 
           <LongPressTooltip

@@ -1,10 +1,12 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
   Action,
   ActionDivider,
+  ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -37,7 +39,7 @@ export default function ObjectsMenu(): ReactElement {
     (state) => state.objects.objects.length > 0,
   );
 
-  const styleAction = [
+  const ownActions = [
     <ActionDivider key="style-divider" />,
 
     <Action
@@ -49,6 +51,12 @@ export default function ObjectsMenu(): ReactElement {
       }}
       showFrom="never"
     />,
+
+    <ActionDivider key="manual-divider" />,
+
+    <ActionItems key="manual">
+      <ManualMenuItem chapter="objects" />
+    </ActionItems>,
   ];
 
   return (
@@ -79,10 +87,10 @@ export default function ObjectsMenu(): ReactElement {
               objects there is nothing to convert, but still something to
               restyle. */}
           {hasObjects ? (
-            <ObjectsConvertMenu>{styleAction}</ObjectsConvertMenu>
+            <ObjectsConvertMenu>{ownActions}</ObjectsConvertMenu>
           ) : (
             <ResponsiveActions toggleLabel={m?.general.actions}>
-              {styleAction}
+              {ownActions}
             </ResponsiveActions>
           )}
 

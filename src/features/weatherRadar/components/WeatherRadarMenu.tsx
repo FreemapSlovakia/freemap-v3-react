@@ -1,3 +1,4 @@
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
@@ -6,6 +7,10 @@ import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
+import {
+  ActionItems,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
@@ -186,6 +191,12 @@ export default function WeatherRadarMenu() {
                   </Dropdown.Item>
                 </FmDropdownMenu>
               </Dropdown>
+
+              <ResponsiveActions toggleLabel={m?.general.actions}>
+                <ActionItems>
+                  <ManualMenuItem chapter="weather-radar" />
+                </ActionItems>
+              </ResponsiveActions>
             </>
           )}
 

@@ -4,7 +4,7 @@ import {
   Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -12,13 +12,15 @@ import { trackingActions } from '../model/actions.js';
 type Props = {
   /** Token of the one watched device to act on. Absent acts on every one. */
   token?: string;
+  /** Further entries for the same menu. */
+  children?: ReactNode;
 };
 
 /**
  * Copies a live track into the map's drawing and data, where it can be edited
  * and exported; the feed goes on. Kept behind the ⋮ toggle as occasional.
  */
-export function TrackingConvertMenu({ token }: Props): ReactElement {
+export function TrackingConvertMenu({ token, children }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -43,6 +45,8 @@ export function TrackingConvertMenu({ token }: Props): ReactElement {
         }}
         showFrom="never"
       />
+
+      {children}
     </ResponsiveActions>
   );
 }

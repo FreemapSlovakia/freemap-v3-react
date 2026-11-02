@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -19,6 +20,11 @@ import {
 import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  ActionDivider,
+  ActionItems,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -116,6 +122,14 @@ export function TrackingMenu(): ReactElement {
     () => hasDrawableSegment(tracks, trackedDevices),
     [tracks, trackedDevices],
   );
+
+  const manual = [
+    <ActionDivider key="manual-divider" />,
+
+    <ActionItems key="manual">
+      <ManualMenuItem chapter="tracking" />
+    </ActionItems>,
+  ];
 
   return (
     <ToolMenu tool="tracking">
@@ -241,7 +255,13 @@ export function TrackingMenu(): ReactElement {
         </LongPressTooltip>
       )}
 
-      {convertible && <TrackingConvertMenu />}
+      {convertible ? (
+        <TrackingConvertMenu>{manual}</TrackingConvertMenu>
+      ) : (
+        <ResponsiveActions toggleLabel={m?.general.actions}>
+          {manual}
+        </ResponsiveActions>
+      )}
     </ToolMenu>
   );
 }

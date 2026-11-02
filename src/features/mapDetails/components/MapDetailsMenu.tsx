@@ -1,3 +1,4 @@
+import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -9,6 +10,10 @@ import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
+import {
+  ActionItems,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerLabel } from '@shared/layerName.js';
@@ -126,6 +131,12 @@ export function MapDetailsMenu(): ReactElement | null {
           ))}
         </FmDropdownMenu>
       </Dropdown>
+
+      <ResponsiveActions toggleLabel={m?.general.actions}>
+        <ActionItems>
+          <ManualMenuItem chapter="map-details" />
+        </ActionItems>
+      </ResponsiveActions>
     </ToolMenu>
   );
 }
