@@ -8,13 +8,13 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import clsx from 'clsx';
 import { Fragment, type ReactElement } from 'react';
-import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { type Changeset, changesetsSetParams } from '../model/actions.js';
 import { DIFF_ACTIONS, DIFF_COLORS } from '../model/changesetDiff.js';
 import { changesetElementSelect } from '../model/inspectorToast.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import classes from './ChangesetDetails.module.css';
+import { LevelActionLink } from './LevelActionLink.js';
 import { useElementName } from './useElementName.js';
 
 type Props = { changeset: Changeset };
@@ -168,13 +168,9 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
         </>
       )}
 
-      <AlertLink
-        href={getOsmChangesetUrl(changeset.id)}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <LevelActionLink href={getOsmChangesetUrl(changeset.id)}>
         <Text m={cm} k="details.openOnOsm" />
-      </AlertLink>
+      </LevelActionLink>
     </>
   );
 }

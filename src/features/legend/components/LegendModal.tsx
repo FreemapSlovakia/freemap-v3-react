@@ -22,7 +22,7 @@ import { layerName } from '@shared/layerName.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo, useState } from 'react';
 import { Accordion, Modal } from 'react-bootstrap';
-import { FaExternalLinkAlt, FaList } from 'react-icons/fa';
+import { FaList } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   EXTERNAL_LEGENDS,
@@ -90,7 +90,7 @@ export default function LegendModal({ show }: Props): ReactElement {
 
     return externalUrl ? (
       <a href={externalUrl} target="_blank" rel="noopener noreferrer">
-        <FaExternalLinkAlt /> <Text m={lm} k="external" />
+        <Text m={lm} k="external" />
       </a>
     ) : variant ? (
       <OutdoorMapLegend key={variant} variant={variant} />

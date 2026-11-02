@@ -495,6 +495,39 @@ button#freemap-logo {
   }
 }
 
+/* Marks every link that opens outside the app. A lone image is skipped;
+   `.fm-no-ext` opts out any other picture or card link. */
+a[target]:not(
+  [target="_self"],
+  :has(> img:only-child),
+  .fm-no-ext,
+  .fm-no-ext *
+)::after {
+  content: "";
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.7em;
+  height: 0.7em;
+  margin-left: 0.3em;
+  background-color: currentColor;
+  opacity: 0.6;
+  mask:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path d='M432,320H400a16,16,0,0,0-16,16V448H64V128H208a16,16,0,0,0,16-16V80a16,16,0,0,0-16-16H48A48,48,0,0,0,0,112V464a48,48,0,0,0,48,48H400a48,48,0,0,0,48-48V336A16,16,0,0,0,432,320ZM488,0h-128c-21.37,0-32.05,25.91-17,41l35.73,35.73L135,320.37a24,24,0,0,0,0,34L157.67,377a24,24,0,0,0,34,0L435.28,133.32,471,169c15,15,41,4.5,41-17V24A24,24,0,0,0,488,0Z'/></svg>")
+    center / contain no-repeat;
+}
+
+/* In a menu row the mark sits after the label, outside its ellipsis, and ahead
+   of the gutter, which `order` moves behind it. */
+.dropdown-item[target]:not([target="_self"]) {
+  &::after {
+    margin-left: 0;
+  }
+
+  & > .text-truncate ~ * {
+    order: 1;
+  }
+}
+
 /* Positioned, so the z-index `MaplibreLayer` sets applies. */
 .leaflet-gl-layer.maplibregl-map {
   position: relative;

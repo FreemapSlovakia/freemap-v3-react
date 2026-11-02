@@ -43,7 +43,12 @@ export function SocialButtons({ closeMenu }: Props): ReactElement {
   }
 
   return (
-    <div className={clsx(classes.row, 'mx-3 d-flex gap-2 fs-5 flex-wrap')}>
+    <div
+      className={clsx(
+        classes.row,
+        'mx-3 d-flex gap-2 fs-5 flex-wrap fm-no-ext',
+      )}
+    >
       <LongPressTooltip label={m?.mainMenu.mastodon}>
         {({ props }) => (
           <a

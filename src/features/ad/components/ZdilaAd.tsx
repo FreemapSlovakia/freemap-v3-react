@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { type ReactElement, useEffect, useRef } from 'react';
 import classes from './ZdilaAd.module.css';
 
@@ -241,7 +242,7 @@ function BinaryField(): ReactElement {
 export function ZdilaAd({ kick, head, sub, meta }: Props): ReactElement {
   return (
     <a
-      className={classes.root}
+      className={clsx(classes.root, 'fm-no-ext')}
       href="https://www.zdila.sk"
       target="_blank"
       rel="noopener noreferrer"

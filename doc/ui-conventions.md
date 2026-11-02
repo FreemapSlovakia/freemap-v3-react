@@ -192,6 +192,22 @@ its one tab. Two kinds stay in the window: links within the app (`#show=…`,
 `#layers=…`) and hand-offs to another app (`intent:`, `geo:`), which leave
 nothing behind to lose.
 
+**Every link with a `target` is marked** by a small, muted square-with-arrow
+after its text, so a link without one reads as staying in the app. The mark
+comes from one rule in `index.css`, not from the call site — don't add a
+`FaExternalLinkAlt` by hand. It holds in dense places too (a tags table, the
+"Open in" menu): marking only some links would make the rest look internal.
+Consequences:
+
+- **`target` means "leaves the app".** A link handled in place (`#show=…`, a
+  `?document=` attribution) must not carry one, even with a `preventDefault`
+  click handler, or it is marked.
+- **In a menu row the mark follows the `MenuLabel`**, outside its ellipsis;
+  everything after the label is reordered behind the mark.
+- **A link that is a lone `<img>`** (a store badge, the MapTiler watermark) is
+  skipped by the rule itself. Any other picture or card link (the social icons,
+  an ad) opts out with `fm-no-ext` on itself or an ancestor.
+
 Whether it looks like a link or a button follows where it sits, not where it
 goes. In running text, a label or a title it is a link; as the action of a
 surface — a toast's action row, a modal footer — it is a `<Button href>`, which

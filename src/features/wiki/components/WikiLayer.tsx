@@ -9,7 +9,7 @@ import { Icon } from 'leaflet';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { createRoot } from 'react-dom/client';
-import { FaExternalLinkAlt, FaWikipediaW } from 'react-icons/fa';
+import { FaWikipediaW } from 'react-icons/fa';
 import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
@@ -125,8 +125,7 @@ export function WikiLayer(): ReactElement {
               }
               target="wikipedia"
             >
-              {effPreview ? effPreview.title : loading?.replace(/.*:/, '')}{' '}
-              <FaExternalLinkAlt />
+              {effPreview ? effPreview.title : loading?.replace(/.*:/, '')}
             </a>
           </Modal.Title>
         </Modal.Header>
