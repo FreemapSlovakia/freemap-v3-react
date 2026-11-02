@@ -1,9 +1,13 @@
 import { selectFeature } from '@app/store/actions.js';
+import {
+  FEATURES_PANE_CLASS,
+  useOwnPaneOpacity,
+} from '@features/map/hooks/featuresPane.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { type ReactElement, useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
 import { FaStickyNote } from 'react-icons/fa';
 import { Pane } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -27,17 +31,11 @@ export default function OsmNotesLayer({ opacity }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  // `Pane` reads its style once; set anew, it would remount every marker.
-  const [pane, setPane] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (pane) {
-      pane.style.opacity = String(opacity);
-    }
-  }, [pane, opacity]);
+  // Faded, or hidden, with the tools' features (⇧D) as well as by its own opacity.
+  const paneRef = useOwnPaneOpacity(opacity);
 
   return (
-    <Pane name="osmNotes" ref={setPane}>
+    <Pane name="osmNotes" className={FEATURES_PANE_CLASS} ref={paneRef}>
       {shown.map((note) => (
         <RichMarker
           key={note.id}
