@@ -56,7 +56,7 @@ import { isToolAvailable, toolDefinitions } from './toolDefinitions.js';
 export type Command = {
   /** Names the row's synonyms in `search.commands.keywords`, and what Matomo records. */
   id: string;
-  kind: 'function' | 'map';
+  kind: 'function' | 'map' | 'manual';
   /** A map row is drawn by `MapLayerItem`, so it carries its marks instead of an icon. */
   layerDef?: MapLayerItemDef;
   icon?: ReactNode;
@@ -287,7 +287,8 @@ export function getCommands(ctx: CommandContext): Command[] {
     for (const chapter of getManualChapters(ctx.language)) {
       add({
         id: `manual-${chapter.key}`,
-        kind: 'function',
+        // Its own caption: a chapter is often named like the function it covers.
+        kind: 'manual',
         icon: chapter.icon ?? <FaBook />,
         label: chapter.title,
         href: `#show=manual/${chapter.key}`,
