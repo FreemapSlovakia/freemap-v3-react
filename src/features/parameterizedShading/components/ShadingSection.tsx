@@ -27,6 +27,7 @@ import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
 import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
 import {
   hasBackground,
+  MAX_SHADING_COMPONENTS,
   type Shading,
   type ShadingComponentType,
 } from '../model/Shading.js';
@@ -251,6 +252,9 @@ export default function ShadingSection({ target }: Props): ReactElement {
       <ShadingToolbar
         canRemove={id !== undefined || showsBackground}
         canAddBackground={!showsBackground}
+        canAddComponent={
+          onServer || shading.components.length < MAX_SHADING_COMPONENTS
+        }
         onAdd={handleAdd}
         onRemove={handleRemove}
         onPreset={handlePreset}
