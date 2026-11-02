@@ -240,8 +240,18 @@ if (process.env['NODE_ENV'] === 'production') {
     });
 }
 
+// Firefox offers on every call, even after a decline (bug 1084425), so it gets
+// one offer per browser; Chromium remembers a decline itself.
 try {
-  window.navigator.registerProtocolHandler?.('geo', '/?geo=%s');
+  if (window.navigator.registerProtocolHandler) {
+    if (!navigator.userAgent.includes('Firefox/')) {
+      window.navigator.registerProtocolHandler('geo', '/?geo=%s');
+    } else if (!localStorage.getItem('fm.geoHandlerOffered')) {
+      localStorage.setItem('fm.geoHandlerOffered', '1');
+
+      window.navigator.registerProtocolHandler('geo', '/?geo=%s');
+    }
+  }
 } catch {
   // browsers can reject; ignore
 }
