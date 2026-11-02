@@ -1,3 +1,4 @@
+import type { OsmObjectLinks } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ResponsiveActions } from '@shared/components/ResponsiveActions.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
@@ -11,6 +12,10 @@ type Props = LatLon & {
   /** Views this place is already the subject of; see `ViewFromHereItems`. */
   omit?: readonly ViewFromHere[];
   onAct?: () => void;
+  /** See `OpenInExternalTargetItems`. */
+  osmObject?: OsmObjectLinks;
+  /** See `usePlaceActions`. */
+  selection?: boolean;
   size?: ButtonProps['size'];
   variant?: string;
   className?: string;

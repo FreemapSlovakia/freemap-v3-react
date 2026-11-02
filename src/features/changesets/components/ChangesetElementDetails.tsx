@@ -14,6 +14,7 @@ import {
 import { changesetElementOpen } from '../model/inspectorToast.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import { ElementTypeIcon } from './ElementTypeIcon.js';
+import { LevelActionLink } from './LevelActionLink.js';
 
 type Props = { element: DiffElement };
 
@@ -182,13 +183,11 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
           </Table>
         ))}
 
-      <AlertLink
+      <LevelActionLink
         href={`https://www.openstreetmap.org/${element.type}/${element.id}/history`}
-        target="_blank"
-        rel="noopener noreferrer"
       >
         <Text m={cm} k="element.history" />
-      </AlertLink>
+      </LevelActionLink>
     </>
   );
 }

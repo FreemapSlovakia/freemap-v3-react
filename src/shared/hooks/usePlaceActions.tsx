@@ -1,5 +1,10 @@
-import { openInExternalApp } from '@app/store/actions.js';
+import {
+  type ExternalTarget,
+  type OsmObjectLinks,
+  openInExternalApp,
+} from '@app/store/actions.js';
 import { OpenInExternalTargetItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
+import { useSelectionOpener } from '@features/openInExternalApp/selectionOpener.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { SelectCallback } from '@restart/ui/types';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
@@ -27,6 +32,10 @@ type Props = {
   omit?: readonly ViewFromHere[];
   /** Run after any of them — a panel over the map closes itself here. */
   onAct?: () => void;
+  /** See `OpenInExternalTargetItems`. */
+  osmObject?: OsmObjectLinks;
+  /** The place is the selection's, so the `j` chords open it. */
+  selection?: boolean;
 };
 
 /**
@@ -35,7 +44,13 @@ type Props = {
  * toolbar's `ResponsiveActions`, whose `onSelect` this also answers — the
  * external-app items act through their `eventKey`.
  */
-export function usePlaceActions({ at, omit, onAct }: Props): {
+export function usePlaceActions({
+  at,
+  omit,
+  onAct,
+  osmObject,
+  selection,
+}: Props): {
   actions: ReactNode[];
   onSelect: SelectCallback;
 } {
@@ -44,6 +59,26 @@ export function usePlaceActions({ at, omit, onAct }: Props): {
   const dispatch = useDispatch();
 
   const zoom = useAppSelector((state) => state.map.zoom);
+
+  const open = (where: ExternalTarget) => {
+    if (!at) {
+      return;
+    }
+
+    dispatch(
+      openInExternalApp({
+        where,
+        ...at,
+        zoom,
+        includePoint: true,
+        osmObject,
+      }),
+    );
+
+    onAct?.();
+  };
+
+  useSelectionOpener(selection && at ? open : null);
 
   const actions: ReactNode[] = [];
 
@@ -62,7 +97,13 @@ export function usePlaceActions({ at, omit, onAct }: Props): {
         label={oeam?.openIn}
         icon={<FaExternalLinkAlt />}
       >
-        <OpenInExternalTargetItems {...at} zoom={zoom} includePoint />
+        <OpenInExternalTargetItems
+          {...at}
+          zoom={zoom}
+          includePoint
+          osmObject={osmObject}
+          showKbdShortcut={selection}
+        />
       </ActionSubmenu>,
     );
   }
@@ -76,10 +117,8 @@ export function usePlaceActions({ at, omit, onAct }: Props): {
           ? undefined
           : afterPrefix(eventKey as EventKey, 'open-');
 
-      if (where !== undefined && at) {
-        dispatch(openInExternalApp({ where, ...at, zoom, includePoint: true }));
-
-        onAct?.();
+      if (where !== undefined) {
+        open(where);
       }
     },
   };

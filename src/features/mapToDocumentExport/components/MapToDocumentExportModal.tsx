@@ -767,7 +767,11 @@ export default function MapToDocumentExportModal({
                   <Fragment key={name}>
                     {i > 0 && ', '}
                     {def.url ? (
-                      <a href={def.url} target="_blank" rel="noopener">
+                      <a
+                        href={def.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {name}
                       </a>
                     ) : (

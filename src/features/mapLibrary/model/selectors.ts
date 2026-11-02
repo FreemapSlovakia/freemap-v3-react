@@ -31,9 +31,19 @@ import { catalogIndexEntry } from '@shared/mapLibrary/catalogMap.js';
 import {
   isLayerInstalled,
   isLayerOffered,
+  userShortcuts,
 } from '@shared/mapLibrary/installed.js';
 import { mapIndex, withBody } from '@shared/mapLibrary/mapIndex.js';
 import { createSelector } from 'reselect';
+
+/** `userShortcuts`' answer, for `effectiveShortcut`. */
+export const userShortcutsSelector = createSelector(
+  [
+    (state: RootState) => state.map.layersSettings,
+    (state: RootState) => state.map.customLayers,
+  ],
+  userShortcuts,
+);
 
 // As a string, so other setup changes (an opacity drag) leave it equal.
 const kindOverridesKeySelector = createSelector(
@@ -165,7 +175,7 @@ export const integratedLayerDefsSelector = createSelector(
 );
 
 // Partly markers and shapes, in panes above every tile overlay.
-const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia']);
+const PINNED_TECHNOLOGIES = new Set(['gallery', 'wikipedia', 'osmNotes']);
 
 /** Whether an overlay of this technology stays on top, out of the reordering. */
 const isPinnedOverlay = (technology: string | undefined): boolean =>

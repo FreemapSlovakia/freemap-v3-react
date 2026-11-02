@@ -2,7 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
-import { cancelRegister } from '@shared/cancelRegister.js';
+import { cancellableDelay } from '@shared/cancelRegister.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import area from '@turf/area';
 import { bboxPolygon } from '@turf/bbox-polygon';
@@ -76,33 +76,9 @@ export const wikiLayerProcessor: Processor = {
     }
 
     // debouncing
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const to = window.setTimeout(
-          () => {
-            cancelRegister.delete(cancelItem);
-
-            resolve();
-          },
-          prevOk0 === ok0 ? 1000 : 0,
-        );
-
-        const cancelItem = {
-          cancelActions: [mapRefocus, mapToggleLayer], // TODO use state
-          cancel: () => {
-            cancelRegister.delete(cancelItem);
-
-            window.clearTimeout(to);
-
-            reject();
-          },
-        };
-
-        cancelRegister.add(cancelItem);
-      });
-    } catch {
-      return;
-    }
+    await cancellableDelay(prevOk0 === ok0 ? 1000 : 0, {
+      cancelActions: [mapRefocus, mapToggleLayer], // TODO use state
+    });
 
     let bb = (await mapPromise).getBounds();
 

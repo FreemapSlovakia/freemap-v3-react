@@ -25,6 +25,7 @@ type Props = {
   canRemove: boolean;
   /** An overlay without a background can have one added. */
   canAddBackground: boolean;
+  canAddComponent: boolean;
   onAdd: (type: string | null) => void;
   onRemove: () => void;
   /** `append` adds the preset's components rather than replacing the shading. */
@@ -37,6 +38,7 @@ type Props = {
 export function ShadingToolbar({
   canRemove,
   canAddBackground,
+  canAddComponent,
   onAdd,
   onRemove,
   onPreset,
@@ -101,7 +103,12 @@ export function ShadingToolbar({
           )}
 
           {SHADING_COMPONENT_TYPES.map((st) => (
-            <Dropdown.Item as="button" key={st} eventKey={st}>
+            <Dropdown.Item
+              as="button"
+              key={st}
+              eventKey={st}
+              disabled={!canAddComponent}
+            >
               <MenuLabel>
                 <Text m={sm} k={`types.${st}`} />
               </MenuLabel>

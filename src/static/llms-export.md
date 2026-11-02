@@ -4,7 +4,7 @@
 
 - Access: Main menu > Share / Open in external app
 
-Opens a submenu:
+Opens a submenu. While a selected feature's toolbar offers "Open in" (a drawn point, a search result, a map object, an OSM note, a route point), the <kbd>j</kbd> chords open that feature instead of the map view, and this submenu stops showing them — for an OSM element or note, OpenStreetMap, JOSM and iD open the element itself. <kbd>j</kbd> <kbd>c</kbd> always copies the page URL.
 
 - Copy page URL <kbd>j</kbd> <kbd>c</kbd>
 - Share location

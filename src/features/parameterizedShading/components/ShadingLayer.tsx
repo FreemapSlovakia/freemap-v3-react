@@ -20,6 +20,7 @@ import {
   type Color,
   MAX_COLOR_STOPS,
   MAX_RADIUS_PX,
+  MAX_SHADING_COMPONENTS,
   radiusPx,
   SHADING_COMPONENT_TYPES,
   type Shading,
@@ -410,7 +411,7 @@ class LShadingLayer extends LGridLayer {
     const shadingBuffer = device.createBuffer({
       size:
         // Header, then per component 12 words and 16 stops of 8 words each.
-        8 * 4 + 8 /* MAX_COMPONENTS */ * 4 * (12 + 16 /* colors len */ * 8),
+        8 * 4 + MAX_SHADING_COMPONENTS * 4 * (12 + MAX_COLOR_STOPS * 8),
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
@@ -461,14 +462,17 @@ class LShadingLayer extends LGridLayer {
         dw.f32(color[3]);
       }
 
-      dw.u32(shading.components.length);
+      // More would overflow the uniform buffer.
+      const components = shading.components.slice(0, MAX_SHADING_COMPONENTS);
+
+      dw.u32(components.length);
       dw.u32(zoom);
       dw.u32(y);
       dw.u32(tileBorder);
 
       writeColor(shading.backgroundColor);
 
-      for (const component of shading.components) {
+      for (const component of components) {
         dw.u32(SHADING_COMPONENT_TYPES.indexOf(component.type));
         dw.f32('azimuth' in component ? component.azimuth : NaN);
         dw.f32('elevation' in component ? component.elevation : NaN);
@@ -555,7 +559,6 @@ class LShadingLayer extends LGridLayer {
         const a = document.createElement('a');
 
         a.href = '#show=premium';
-        a.target = '_blank';
         a.innerText = this._options.premiumOnlyText;
         a.onclick = this.handlePremiumClick;
 

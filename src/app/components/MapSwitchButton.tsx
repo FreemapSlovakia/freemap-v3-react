@@ -14,6 +14,7 @@ import {
   integratedLayerDefsSelector,
   overlayZIndexSelector,
   presetKindsSelector,
+  userShortcutsSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
@@ -330,6 +331,8 @@ export function MapSwitchButton(): ReactElement {
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
+  const takenShortcuts = useAppSelector(userShortcutsSelector);
+
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
   const overlayZIndex = useAppSelector(overlayZIndexSelector);
@@ -567,7 +570,9 @@ export function MapSwitchButton(): ReactElement {
 
         {/* The shortcut sits at the row's edge the way a menu writes it. */}
         {place !== 'toolbar' &&
-          getKbdShortcut(effectiveShortcut(layersSettings, def))}
+          getKbdShortcut(
+            effectiveShortcut(layersSettings, def, takenShortcuts),
+          )}
 
         {/* All but a downloaded map or a colour draw nothing offline.
             Outermost, so a transient badge doesn't shift the shortcut's column. */}

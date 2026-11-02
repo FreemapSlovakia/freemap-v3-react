@@ -1,6 +1,7 @@
 import { openInExternalApp } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { josmRemote } from '@features/openInExternalApp/josmRemote.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
 import { isAbortError } from '@shared/isAbortError.js';
@@ -71,6 +72,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
       pointDescription,
       url,
       imageUrl,
+      osmObject,
     } = action.payload;
 
     // Whole levels only: several of the targets below — `geo:`, ZBGIS,
@@ -110,16 +112,22 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
 
       case 'osm.org':
-        window.open(getOsmUrl(lat, lon, zoom, includePoint));
+        window.open(osmObject?.url ?? getOsmUrl(lat, lon, zoom, includePoint));
 
         break;
 
       case 'osm.org/id':
-        window.open(getIdUrl(lat, lon, zoom));
+        window.open(osmObject?.idUrl ?? getIdUrl(lat, lon, zoom));
 
         break;
 
       case 'josm': {
+        if (osmObject) {
+          josmRemote(dispatch, 'import', { url: osmObject.url });
+
+          break;
+        }
+
         let left;
 
         let right;

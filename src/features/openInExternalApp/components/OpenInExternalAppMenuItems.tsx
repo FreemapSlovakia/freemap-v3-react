@@ -1,4 +1,4 @@
-import type { ExternalTarget } from '@app/store/actions.js';
+import type { ExternalTarget, OsmObjectLinks } from '@app/store/actions.js';
 import { Text } from '@features/l10n/Text.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Chord } from '@shared/components/Chord.js';
@@ -87,9 +87,15 @@ interface TargetProps
   /**
    * Offer the two editors. Off where the caller has editor entries of its own —
    * these open whatever is at the position, which for a selected OSM element is
-   * not the same thing as opening the element.
+   * not the same thing as opening the element. Those entries then carry the
+   * osm.org chord too.
    */
   editors?: boolean;
+  /**
+   * Where the place is an OSM object of its own (a note): its osm.org page and
+   * iD's address for it. JOSM's entry takes it from the caller's `onSelect`.
+   */
+  osmObject?: OsmObjectLinks;
   /** Targets of the caller's own, standing before the rest. */
   children?: ReactNode;
 }
@@ -194,6 +200,7 @@ export function OpenInExternalTargetItems({
   url,
   showKbdShortcut,
   editors = true,
+  osmObject,
   children,
 }: TargetProps): ReactElement {
   // Whole levels only: several of the targets below — ZBGIS, hiking.sk,
@@ -259,7 +266,7 @@ export function OpenInExternalTargetItems({
 
       {/* The map data itself, and the tools that work on it. */}
       <OnlineOnlyItem
-        href={getOsmUrl(lat, lon, zoom, includePoint)}
+        href={osmObject?.url ?? getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
@@ -267,7 +274,7 @@ export function OpenInExternalTargetItems({
         <MenuLabel>
           <Text m={oeam} k="osm" />
         </MenuLabel>
-        {showKbdShortcut && (
+        {showKbdShortcut && editors && (
           <MenuGutter>
             <Chord external="osm.org" />
           </MenuGutter>
@@ -290,7 +297,7 @@ export function OpenInExternalTargetItems({
           </Dropdown.Item>
 
           <OnlineOnlyItem
-            href={getIdUrl(lat, lon, zoom)}
+            href={osmObject?.idUrl ?? getIdUrl(lat, lon, zoom)}
             target="_blank"
             eventKey="url"
           >
@@ -752,16 +759,24 @@ export function OpenInExternalTargetItems({
 }
 
 /** Both halves in one menu, for a menu that is nothing but this. */
-export function OpenInExternalAppDropdownItems(
-  props: TargetProps & PageProps,
-): ReactElement {
+export function OpenInExternalAppDropdownItems({
+  targetKbdShortcut = true,
+  ...props
+}: TargetProps &
+  PageProps & {
+    /** Off while a selection holds the target chords; copying keeps its own. */
+    targetKbdShortcut?: boolean;
+  }): ReactElement {
   return (
     <>
       <SharePageItems {...props} />
 
       {hasPageItems(props) && <Dropdown.Divider />}
 
-      <OpenInExternalTargetItems {...props} />
+      <OpenInExternalTargetItems
+        {...props}
+        showKbdShortcut={props.showKbdShortcut && targetKbdShortcut}
+      />
     </>
   );
 }

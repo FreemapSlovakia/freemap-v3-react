@@ -32,8 +32,12 @@ import {
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
-import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  libraryIndexSelector,
+  userShortcutsSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { mapLayersPanelToggle } from '@features/mapSettings/model/actions.js';
+import { selectionOpener } from '@features/openInExternalApp/selectionOpener.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
@@ -303,12 +307,16 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       Boolean(shortcut.alt) === event.altKey &&
       Boolean(shortcut.meta) === event.metaKey;
 
+    const taken = userShortcutsSelector(state);
+
     const layerDef = [
       ...state.map.customLayers,
       ...libraryIndexSelector(state).filter((def) =>
         isLayerInstalled(state.map.layersSettings, def.type),
       ),
-    ].find((def) => pressed(effectiveShortcut(state.map.layersSettings, def)));
+    ].find((def) =>
+      pressed(effectiveShortcut(state.map.layersSettings, def, taken)),
+    );
 
     const layerType =
       layerDef &&
@@ -399,6 +407,18 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     }
 
     if ('external' in target) {
+      const open = selectionOpener();
+
+      // Copying the page's address is about the page, selection or not.
+      if (open && target.external !== 'copy') {
+        // No action comes back for the listener to claim the key with.
+        event.preventDefault();
+
+        open(target.external);
+
+        return undefined;
+      }
+
       return openInExternalApp({ where: target.external });
     }
 

@@ -62,6 +62,10 @@ export const toposcopePickingCenterSelector = (state: RootState): boolean =>
 export const mapLibraryPreviewingSelector = (state: RootState): boolean =>
   state.mapLibrary.preview !== null;
 
+/** The layers the user has on: during a library preview, those it puts back. */
+export const userLayersSelector = (state: RootState): string[] =>
+  state.mapLibrary.preview?.restore ?? state.map.layers;
+
 export const panoramaPickingSelector = (state: RootState): boolean =>
   state.panorama.picking !== null;
 

@@ -43,14 +43,15 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
   // looked at, and goes when that stops.
   const kept = useAppSelector(activeSearchResultKeptSelector);
 
+  const shown =
+    selectedResult && !selectedResult.loading && !window.fmEmbedded && !hidden;
+
+  // Only a toolbar on screen takes the `j` chords from the map's view.
   const { actions, onSelect } = useObjectActions({
-    result: selectedResult ?? null,
+    result: shown ? selectedResult : null,
   });
 
-  return selectedResult &&
-    !selectedResult.loading &&
-    !window.fmEmbedded &&
-    !hidden ? (
+  return shown ? (
     // The pin and the delete are exclusive: a result being looked at can be
     // kept, a kept one taken off — the latter through `deletable`, before the ×.
     <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>

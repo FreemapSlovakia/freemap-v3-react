@@ -7,7 +7,6 @@ import { trackMatomo } from '@shared/trackMatomo.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { AlertLink, Spinner } from 'react-bootstrap';
-import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsInspect, type HistoryVersion } from '../model/actions.js';
 import { changesetElementSelect } from '../model/inspectorToast.js';
@@ -82,7 +81,7 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
                       inspect(version.changeset),
                     ))}
               >
-                {label} {window.fmEmbedded && <FaExternalLinkAlt />}
+                {label}
               </AlertLink>
             </li>
           );

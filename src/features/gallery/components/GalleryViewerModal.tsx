@@ -995,7 +995,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         <a
                           href={commonsMeta.artistUrl}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                         >
                           {commonsMeta.artist}
                         </a>
@@ -1009,7 +1009,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   <a
                     href={commonsMeta?.descriptionUrl ?? commonsPageUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     Wikimedia Commons
                   </a>
@@ -1113,7 +1113,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       // padding on an inline box moves nothing.
                       <span {...props} className="py-2">
                         <LicenseBadge licenseId={badgeLicense} />{' '}
-                        <a href={licenseUrl} target="license" rel="noreferrer">
+                        <a
+                          href={licenseUrl}
+                          target="license"
+                          rel="noopener noreferrer"
+                        >
                           {licenseName}
                         </a>
                       </span>
@@ -1129,7 +1133,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       <a
                         href={commonsMeta.licenseUrl}
                         target="license"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                       >
                         {commonsMeta.license}
                       </a>

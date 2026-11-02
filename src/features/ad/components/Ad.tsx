@@ -157,7 +157,7 @@ export default function Ad(): ReactElement | null {
           <a
             href="https://nabezky.sk/freemap_t-shirt"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             <img
               className="border rounded w-100"

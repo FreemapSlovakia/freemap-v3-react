@@ -41,6 +41,7 @@ import {
 } from '@shared/mapDefinitions.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { isExportable } from '@shared/mapLibrary/exportedLayer.js';
+import { effectiveShortcut } from '@shared/mapLibrary/installed.js';
 import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
 import type { ReactElement, ReactNode, RefObject } from 'react';
@@ -78,6 +79,7 @@ import {
   overlayZIndexSelector,
   presetKindsSelector,
   resolvedCustomLayersSelector,
+  userShortcutsSelector,
 } from '../model/selectors.js';
 import {
   type DetailPart,
@@ -348,6 +350,8 @@ export function YourMapsList({
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
+  const takenShortcuts = useAppSelector(userShortcutsSelector);
+
   // Of the kind they are switched to, as library maps are listed.
   const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
@@ -405,7 +409,9 @@ export function YourMapsList({
         kind: 'library',
         defaultInMenu: Boolean(def.defaultInMenu),
         defaultInToolbar: Boolean(def.defaultInToolbar),
-        defaultShortcut: def.shortcut,
+        // As it stands with no setting of its own: yielded where taken.
+        defaultShortcut:
+          effectiveShortcut({}, def, takenShortcuts) ?? undefined,
         technology: def.technology,
         category: def.category,
       }),

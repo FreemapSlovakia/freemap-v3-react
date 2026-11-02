@@ -112,6 +112,12 @@ export function syncBrowseCache(getState: () => RootState): Promise<void> {
       written = resolved;
 
       notifyServiceWorker('browse-cache-changed');
+    })
+    .catch((err) => {
+      // IndexedDB refused (site data blocked): there is no browse cache then.
+      if (!(err instanceof DOMException && err.name === 'SecurityError')) {
+        throw err;
+      }
     });
 
   return syncing;

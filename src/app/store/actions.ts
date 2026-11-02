@@ -171,8 +171,15 @@ export interface ChangesetElementSelection {
   id: string;
 }
 
+/** An OSM note; its thread shows in a toast beside the toolbar. */
+export interface OsmNoteSelection {
+  type: 'osm-note';
+  id: number;
+}
+
 export type Selection =
   | ChangesetElementSelection
+  | OsmNoteSelection
   | FeatureSelection
   | VertexSelection
   | ObjectsSelection
@@ -272,7 +279,18 @@ export const openInExternalApp = createAction<{
    * a Wikimedia photo's `url` is its Commons file page.
    */
   imageUrl?: string;
+  /**
+   * The OSM object the place is (a note, an element): osm.org and iD open it
+   * instead of the position, and JOSM imports its page — `import` picks the
+   * download task by the URL.
+   */
+  osmObject?: OsmObjectLinks;
 }>('OPEN_IN_EXTERNAL');
+
+export interface OsmObjectLinks {
+  url: string;
+  idUrl: string;
+}
 
 export { applyCookieConsent, setAnalyticCookiesAllowed };
 

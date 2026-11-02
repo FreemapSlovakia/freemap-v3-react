@@ -10,6 +10,7 @@ Covered here: [button variants](#button-variants),
 [where a hint goes](#where-a-hint-goes),
 [spacing](#spacing-the-container-decides), [modal footers](#modal-footers),
 [ellipsis in labels](#ellipsis-in-labels),
+[external links](#external-links),
 [surfaces over the map](#surfaces-over-the-map),
 [toolbar outlines](#toolbar-outlines).
 
@@ -181,6 +182,36 @@ A label ends in `…` only when the choice that follows completes it: "Open in�
 a dialog is not such a choice — "Save as custom map", like the main-menu items
 that open modals, takes none. Progress messages ("Loading…") are a separate use
 and keep it.
+
+## External links
+
+A link out of the app opens in a new tab — `target="_blank"` — so the map, its
+tools and whatever is drawn stay where they were. A named target (`"wikipedia"`,
+`"license"`) is the variant for a link opened again and again, which then reuses
+its one tab. Two kinds stay in the window: links within the app (`#show=…`,
+`#layers=…`) and hand-offs to another app (`intent:`, `geo:`), which leave
+nothing behind to lose.
+
+**Every link with a `target` is marked** by a small, muted square-with-arrow
+after its text, so a link without one reads as staying in the app. The mark
+comes from one rule in `index.css`, not from the call site — don't add a
+`FaExternalLinkAlt` by hand. It holds in dense places too (a tags table, the
+"Open in" menu): marking only some links would make the rest look internal.
+Consequences:
+
+- **`target` means "leaves the app".** A link handled in place (`#show=…`, a
+  `?document=` attribution) must not carry one, even with a `preventDefault`
+  click handler, or it is marked.
+- **In a menu row the mark follows the `MenuLabel`**, outside its ellipsis;
+  everything after the label is reordered behind the mark.
+- **A link that is a lone `<img>`** (a store badge, the MapTiler watermark) is
+  skipped by the rule itself. Any other picture or card link (the social icons,
+  an ad) opts out with `fm-no-ext` on itself or an ancestor.
+
+Whether it looks like a link or a button follows where it sits, not where it
+goes. In running text, a label or a title it is a link; as the action of a
+surface — a toast's action row, a modal footer — it is a `<Button href>`, which
+renders an `<a>` and so still opens in a new tab on a middle click.
 
 ## Tokens come from Bootstrap
 

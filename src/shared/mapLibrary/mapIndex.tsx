@@ -18,6 +18,7 @@ import {
   FaMap,
   FaPlane,
   FaSkiing,
+  FaStickyNote,
   FaTractor,
   FaTree,
   FaWater,
@@ -37,6 +38,7 @@ import { MdFormatColorFill, MdOutlineTerrain } from 'react-icons/md';
 import { SiOpenstreetmap } from 'react-icons/si';
 import aerialBody from './defs/aerial.js';
 import openStreetMapBody from './defs/openStreetMap.js';
+import osmNotesBody from './defs/osmNotes.js';
 import outdoorBody from './defs/outdoor.js';
 import parametricShadingBody from './defs/parametricShading.js';
 import photosBody from './defs/photos.js';
@@ -282,6 +284,15 @@ export const mapIndex: MapIndexEntry[] = [
   }),
   entry({
     layer: 'overlay',
+    type: 'n',
+    technology: 'osmNotes',
+    defaultInMenu: true,
+    icon: <FaStickyNote />,
+    shortcut: { code: 'KeyN', shift: true },
+    bundled: osmNotesBody,
+  }),
+  entry({
+    layer: 'overlay',
     type: 'R',
     technology: 'radar',
     defaultInMenu: true,
@@ -439,7 +450,7 @@ export const mapIndex: MapIndexEntry[] = [
     category: 'map',
     defaultInMenu: true,
     icon: <FaTractor />,
-    shortcut: { code: 'KeyN', shift: true },
+    shortcut: { code: 'KeyT', shift: true },
     countries: ['sk'],
     load: () => import('./defs/forestTracks.js').then((m) => m.default),
   }),

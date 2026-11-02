@@ -1,6 +1,7 @@
 import type { RootState } from '@app/store/store.js';
 import { drawnEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import {
+  type Document,
   DocumentSchema,
   documentShow,
 } from '@features/documents/model/actions.js';
@@ -43,6 +44,13 @@ import { coversInBounds, useTileCoverages } from '../tileCoverage.js';
 type Props = { unknown: string };
 
 const PREFIX = '?document=';
+
+/** The in-app document a credit links to; anything else opens in a new tab. */
+function documentOf(url: string | undefined): Document | undefined {
+  return url?.startsWith(PREFIX)
+    ? DocumentSchema.safeParse(url.slice(PREFIX.length)).data
+    : undefined;
+}
 
 // The no-break space keeps the dot on the credit it follows.
 const SEPARATOR = '\u00a0· ';
@@ -452,24 +460,18 @@ export function useResolvedAttribution(
                   {a.url ? (
                     <a
                       href={a.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      {...(documentOf(a.url) === undefined && {
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                      })}
                       onClick={(e) => {
-                        if (!a.url?.startsWith(PREFIX)) {
-                          return;
+                        const doc = documentOf(a.url);
+
+                        if (doc !== undefined) {
+                          e.preventDefault();
+
+                          dispatch(documentShow(doc));
                         }
-
-                        const doc = DocumentSchema.safeParse(
-                          a.url.slice(PREFIX.length),
-                        );
-
-                        if (!doc.success) {
-                          return;
-                        }
-
-                        e.preventDefault();
-
-                        dispatch(documentShow(doc.data));
                       }}
                     >
                       {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}

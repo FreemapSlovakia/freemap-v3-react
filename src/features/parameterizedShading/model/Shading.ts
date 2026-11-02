@@ -16,6 +16,9 @@ export const SHADING_COMPONENT_TYPES = [
 /** What the shader holds per component (`NUM_STOPS` in `shading.wgsl`). */
 export const MAX_COLOR_STOPS = 16;
 
+/** What the in-browser shader holds (`components` in `shading.wgsl`). */
+export const MAX_SHADING_COMPONENTS = 8;
+
 /** Curvature's neighbourhood, pixels each way: by default 5×5. */
 export const DEFAULT_CURVATURE_RADIUS = 2;
 

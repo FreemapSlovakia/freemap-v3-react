@@ -81,6 +81,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | Param | Controls | R/W | Format |
 |---|---|---|---|
 | `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
+| `osm-note` | The selected OSM note, its thread in a toast; fetched when the layer hasn't loaded it. Absent, a selected note is let go | r/w | integer id |
 | `changesets-days` | Changesets time window | r/w | integer days |
 | `changesets-author` | Changesets author filter | r/w | username |
 | `changeset` | Changeset whose changes are on the map; opens the changesets tool | r/w | integer id |

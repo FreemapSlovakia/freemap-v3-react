@@ -238,6 +238,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const mapMatches = commands.filter(({ command }) => command.kind === 'map');
 
+  const manualMatches = commands.filter(
+    ({ command }) => command.kind === 'manual',
+  );
+
   const objectsActive = useAppSelector((state) => state.objects.active);
 
   // The POI categories the query names, which switch what the map shows rather
@@ -688,6 +692,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           )}
 
           {mapMatches.map((match) => (
+            <CommandItem key={match.command.id} match={match} />
+          ))}
+
+          {manualMatches.length > 0 && (
+            <div className="dropdown-caption-divider">
+              <Text k="mainMenu.manual" />
+            </div>
+          )}
+
+          {manualMatches.map((match) => (
             <CommandItem key={match.command.id} match={match} />
           ))}
 

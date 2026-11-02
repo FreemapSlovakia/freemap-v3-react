@@ -392,6 +392,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-d': 'tömegközlekedés, buszok, vonatok, menetrendek',
         'layer-I': 'képek, galéria, fotók',
         'layer-w': 'wiki, cikkek',
+        'layer-n':
+          'openstreetmap, notes, hibák, bejelentések, térképezés, jegyzet',
         'layer-R': 'időjárás, eső, csapadék, vihar, előrejelzés',
         'layer-v': 'kilátás, láthatósági elemzés, rálátás, terep',
         'layer-6': 'domborzatárnyékolás, relief, felszín, magasság',
@@ -449,6 +451,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       l1: 'Erdészeti utak NLC (2017)',
       l2: 'Erdészeti utak NLC',
       w: 'Wikipedia',
+      n: 'OSM-jegyzetek',
       R: 'Csapadékradar',
       v: 'Láthatóság',
       '6': 'Felszínárnyékolás',

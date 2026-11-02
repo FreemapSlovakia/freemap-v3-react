@@ -2,6 +2,7 @@ import { isToolOpen } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { listedChangesetsSelector } from '@features/changesets/model/selectors.js';
 import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
+import { OSM_NOTES_LAYER } from '@features/osmNotes/api.js';
 import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
 
 const MAP_FEATURE_IDS = [
@@ -23,10 +24,12 @@ const anyMapFeature = (state: RootState) =>
 /**
  * Whether hiding the features would hide anything: the rows' features, and
  * what `Results` draws with no row — a search preview, a recording with no line
- * yet, tracks, the panorama's marks.
+ * yet, tracks, the panorama's marks — and the OSM notes pins, by the layer
+ * being on rather than by what it loaded, which changes with every pan.
  */
 export const anyFeatureDrawn = (state: RootState) =>
   anyMapFeature(state) ||
+  state.map.layers.includes(OSM_NOTES_LAYER) ||
   state.search.selectedResults.length > 0 ||
   state.tracking.tracks.length > 0 ||
   state.gpsRecorder.points.length > 0 ||

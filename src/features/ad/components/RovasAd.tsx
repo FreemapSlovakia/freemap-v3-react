@@ -11,8 +11,8 @@ export function RovasAd({
     <a
       href="https://rovas.app/freemap-web"
       target="_blank"
-      rel="noreferrer"
-      className="border rounded w-100 px-3 py-2 text-decoration-none bg-body text-body"
+      rel="noopener noreferrer"
+      className="border rounded w-100 px-3 py-2 text-decoration-none bg-body text-body fm-no-ext"
       style={{ maxWidth: '400px' }}
     >
       <div className="d-flex align-items-center gap-3">

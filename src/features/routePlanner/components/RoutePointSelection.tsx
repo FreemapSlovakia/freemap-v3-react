@@ -26,7 +26,7 @@ export default function RoutePointSelection():
         label={rpm?.point.point}
         deletable
       >
-        <PlaceActionsButton lat={point.lat} lon={point.lon} />
+        <PlaceActionsButton lat={point.lat} lon={point.lon} selection />
       </Selection>
     )
   );

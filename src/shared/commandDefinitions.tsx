@@ -21,7 +21,11 @@ import { Chord } from '@shared/components/Chord.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import type { MapLayerItemDef } from '@shared/components/MapLayerItem.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
-import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
+import {
+  effectiveShortcut,
+  isLayerInstalled,
+  userShortcuts,
+} from '@shared/mapLibrary/installed.js';
 import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -56,7 +60,7 @@ import { isToolAvailable, toolDefinitions } from './toolDefinitions.js';
 export type Command = {
   /** Names the row's synonyms in `search.commands.keywords`, and what Matomo records. */
   id: string;
-  kind: 'function' | 'map';
+  kind: 'function' | 'map' | 'manual';
   /** A map row is drawn by `MapLayerItem`, so it carries its marks instead of an icon. */
   layerDef?: MapLayerItemDef;
   icon?: ReactNode;
@@ -287,7 +291,8 @@ export function getCommands(ctx: CommandContext): Command[] {
     for (const chapter of getManualChapters(ctx.language)) {
       add({
         id: `manual-${chapter.key}`,
-        kind: 'function',
+        // Its own caption: a chapter is often named like the function it covers.
+        kind: 'manual',
         icon: chapter.icon ?? <FaBook />,
         label: chapter.title,
         href: `#show=manual/${chapter.key}`,
@@ -314,6 +319,8 @@ export function getCommands(ctx: CommandContext): Command[] {
   }
 
   if (!embedded || !ctx.embedFeatures.includes('noMapSwitch')) {
+    const taken = userShortcuts(ctx.layersSettings, ctx.customLayers);
+
     for (const def of ctx.libraryIndex) {
       const label = layerName(def, m);
 
@@ -325,10 +332,7 @@ export function getCommands(ctx: CommandContext): Command[] {
         continue;
       }
 
-      const shortcut =
-        ctx.layersSettings[def.type]?.shortcut === undefined
-          ? def.shortcut
-          : ctx.layersSettings[def.type].shortcut;
+      const shortcut = effectiveShortcut(ctx.layersSettings, def, taken);
 
       add({
         id: `layer-${def.type}`,
