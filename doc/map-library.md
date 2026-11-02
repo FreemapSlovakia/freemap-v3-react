@@ -38,6 +38,10 @@ menu filter, country flags and coverage hints. Instead:
   a custom map id: those are 6 random lowercase base-36 chars (`makeType()` in
   `CustomMapEditor.tsx`), so e.g. `[0-9A-Z]{5}` with at least one letter is
   safe. Links join ids with `~`, so any id works in `layers=`.
+- **A built-in default shortcut yields to the user's own.** Where the user gave
+  the same keys to another map or preset (in its settings, or a custom map's
+  own), the built-in map has no shortcut until set (`effectiveShortcut`), so a
+  map added or re-keyed in the registry never takes a combination in use.
 - **Definitions stay in TypeScript** (types validate them; icons, `process.env`
   URLs and translated names keep working) and load **per map, lazily**.
 

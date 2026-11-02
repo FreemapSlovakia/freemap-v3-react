@@ -21,7 +21,11 @@ import { Chord } from '@shared/components/Chord.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import type { MapLayerItemDef } from '@shared/components/MapLayerItem.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
-import { isLayerInstalled } from '@shared/mapLibrary/installed.js';
+import {
+  effectiveShortcut,
+  isLayerInstalled,
+  userShortcuts,
+} from '@shared/mapLibrary/installed.js';
 import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -315,6 +319,8 @@ export function getCommands(ctx: CommandContext): Command[] {
   }
 
   if (!embedded || !ctx.embedFeatures.includes('noMapSwitch')) {
+    const taken = userShortcuts(ctx.layersSettings, ctx.customLayers);
+
     for (const def of ctx.libraryIndex) {
       const label = layerName(def, m);
 
@@ -326,10 +332,7 @@ export function getCommands(ctx: CommandContext): Command[] {
         continue;
       }
 
-      const shortcut =
-        ctx.layersSettings[def.type]?.shortcut === undefined
-          ? def.shortcut
-          : ctx.layersSettings[def.type].shortcut;
+      const shortcut = effectiveShortcut(ctx.layersSettings, def, taken);
 
       add({
         id: `layer-${def.type}`,

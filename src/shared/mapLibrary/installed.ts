@@ -2,7 +2,7 @@ import type { LayerSettings } from '@features/map/model/actions.js';
 import { currentSite } from '@shared/sites.js';
 import type { Shortcut } from '@shared/types/common.js';
 import { isCatalogId } from './catalogId.js';
-import { mapIndex } from './mapIndex.js';
+import { mapIndex, mapIndexById } from './mapIndex.js';
 
 type LayersSettings = Readonly<Record<string, LayerSettings>>;
 
@@ -50,14 +50,53 @@ export const isLayerInstalled = (
   );
 };
 
-/** A map's shortcut: the user's own, where cleared (`null`) none, else its default. */
+const sameShortcut = (a: Shortcut, b: Shortcut) =>
+  a.code === b.code &&
+  Boolean(a.shift) === Boolean(b.shift) &&
+  Boolean(a.ctrl) === Boolean(b.ctrl) &&
+  Boolean(a.alt) === Boolean(b.alt) &&
+  Boolean(a.meta) === Boolean(b.meta);
+
+export type UserShortcut = { type: string; shortcut: Shortcut };
+
+/** The shortcuts the user gave maps and presets: in their settings, and a custom map's own. */
+export const userShortcuts = (
+  layersSettings: LayersSettings,
+  customLayers: readonly { type: string; shortcut?: Shortcut }[],
+): UserShortcut[] => [
+  ...Object.entries(layersSettings).flatMap(([type, { shortcut }]) =>
+    shortcut ? [{ type, shortcut }] : [],
+  ),
+  ...customLayers.flatMap(({ type, shortcut }) =>
+    shortcut && layersSettings[type]?.shortcut === undefined
+      ? [{ type, shortcut }]
+      : [],
+  ),
+];
+
+/**
+ * A map's shortcut: the user's own, where cleared (`null`) none, else its
+ * default — but a built-in map's default yields to the same keys the user gave
+ * another map or preset, so a map added with a new default can't take them.
+ */
 export const effectiveShortcut = (
   layersSettings: LayersSettings,
   def: { type: string; shortcut?: Shortcut | null },
+  taken: readonly UserShortcut[],
 ): Shortcut | null | undefined => {
   const own = layersSettings[def.type]?.shortcut;
 
-  return own === undefined ? def.shortcut : own;
+  if (own !== undefined) {
+    return own;
+  }
+
+  const { shortcut } = def;
+
+  return shortcut &&
+    def.type in mapIndexById &&
+    taken.some((t) => t.type !== def.type && sameShortcut(t.shortcut, shortcut))
+    ? null
+    : shortcut;
 };
 
 /** Whether a list should offer a library map: installed, or on the map anyway. */

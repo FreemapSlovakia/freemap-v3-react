@@ -32,7 +32,10 @@ import {
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
-import { libraryIndexSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  libraryIndexSelector,
+  userShortcutsSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { mapLayersPanelToggle } from '@features/mapSettings/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
@@ -308,7 +311,15 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
       ...libraryIndexSelector(state).filter((def) =>
         isLayerInstalled(state.map.layersSettings, def.type),
       ),
-    ].find((def) => pressed(effectiveShortcut(state.map.layersSettings, def)));
+    ].find((def) =>
+      pressed(
+        effectiveShortcut(
+          state.map.layersSettings,
+          def,
+          userShortcutsSelector(state),
+        ),
+      ),
+    );
 
     const layerType =
       layerDef &&
