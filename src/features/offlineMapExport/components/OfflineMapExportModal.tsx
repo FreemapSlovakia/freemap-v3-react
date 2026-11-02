@@ -374,14 +374,18 @@ export default function OfflineMapExportModal({
                 <strong>
                   <Text m={ome} k="usageDesktop" />
                 </strong>{' '}
-                <a href="https://qgis.org/" target="_blank" rel="noopener">
+                <a
+                  href="https://qgis.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   QGIS
                 </a>{' '}
                 (Windows/macOS/Linux),{' '}
                 <a
                   href="https://www.maptiler.com/desktop/"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   MapTiler Desktop
                 </a>
@@ -394,15 +398,15 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://play.google.com/store/apps/details?id=menion.android.locus"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Locus Map
                 </a>
                 ,{' '}
                 <a
-                  href="https://play.google.com/store/apps/details?id=menion.android.locus.pro"
+                  href="https://play.google.com/store/apps/details?id=com.orux.oruxmapsDonate"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   OruxMaps
                 </a>
@@ -410,7 +414,7 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://play.google.com/store/apps/details?id=com.bodunov.galileo"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Guru Maps
                 </a>
@@ -418,7 +422,7 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://play.google.com/store/apps/details?id=net.osmand"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   OsmAnd
                 </a>
@@ -431,15 +435,15 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Guru Maps
                 </a>
                 ,{' '}
                 <a
-                  href="https://apps.apple.com/app/map-plus/id123456789"
+                  href="https://apps.apple.com/app/map-plus/id438868200"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Map Plus
                 </a>
@@ -447,7 +451,7 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://apps.apple.com/us/app/osmand-maps-travel-navigate/id934850257"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   OsmAnd
                 </a>
@@ -461,7 +465,7 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://github.com/consbio/mbtileserver"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   mbtileserver
                 </a>{' '}
@@ -469,7 +473,7 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://github.com/maptiler/tileserver-gl"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   TileServer GL
                 </a>

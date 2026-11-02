@@ -46,7 +46,12 @@ function useLinkify(showOnMap: string | undefined) {
         : null;
 
       parts.push(
-        <AlertLink key={match.index} href={url} target="_blank">
+        <AlertLink
+          key={match.index}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {url}
         </AlertLink>,
       );

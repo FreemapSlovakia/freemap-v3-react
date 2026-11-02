@@ -244,7 +244,7 @@ export function ZdilaAd({ kick, head, sub, meta }: Props): ReactElement {
       className={classes.root}
       href="https://www.zdila.sk"
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
     >
       <BinaryField />
 

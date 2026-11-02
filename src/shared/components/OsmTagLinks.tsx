@@ -14,7 +14,7 @@ export function OsmTagKey({ tag, osm }: Props): ReactNode {
   ) : (
     <a
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       href={`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(tag)}`}
     >
       {tag}
@@ -177,7 +177,7 @@ function link(href: string, text: ReactNode, key: number): ReactNode {
       key={key}
       href={href}
       target={web ? '_blank' : undefined}
-      rel={web ? 'noreferrer' : undefined}
+      rel={web ? 'noopener noreferrer' : undefined}
     >
       {text}
     </a>

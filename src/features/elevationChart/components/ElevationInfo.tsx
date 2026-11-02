@@ -177,8 +177,6 @@ export function ElevationInfo({
               dispatch(searchSetQuery({ query: `${zoom}/${x}/${y}` }));
             }}
             href={`#q=${encodeURIComponent(`${zoom}/${x}/${y}`)}`}
-            target="_blank"
-            rel="noopener"
           >
             {zoom}/{x}/{y}
           </a>
@@ -189,7 +187,11 @@ export function ElevationInfo({
               {tileUrls.map((def, i) => (
                 <Fragment key={def.type}>
                   {i > 0 ? ', ' : null}
-                  <a href={def.tileUrl} target="_blank" rel="noopener">
+                  <a
+                    href={def.tileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {layerName(def, m) ?? def.type}
                   </a>
                 </Fragment>
