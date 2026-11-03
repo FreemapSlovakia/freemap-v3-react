@@ -1,6 +1,7 @@
 import { httpRequest, isNetworkError } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { eventsSave } from '@features/events/model/actions.js';
 import { routePlannerSetSavedRoute } from '@features/routePlanner/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { ensureStaticAssetsCached } from '@shared/offlineStaticCache.js';
@@ -279,6 +280,10 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         !getState().myMaps.offlineIds.includes(meta.id)
       ) {
         dispatch(mapsSetMapOffline({ id: meta.id, offline: true }));
+      }
+
+      if (action.payload?.event) {
+        dispatch(eventsSave({ mapId: meta.id, ...action.payload.event }));
       }
     } catch (err) {
       await toastError(err, loadMyMapsMessages, 'saveError');

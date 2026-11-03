@@ -362,8 +362,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, fiókom, beállítások, kijelentkezés',
         'modal-login': 'bejelentkezés, fiók',
         'modal-my-maps': 'mentett térképek, térkép mentése, térkép megosztása',
-        'modal-events':
-          'események, rendezvény, kirándulás, túra, találkozó, közös túra, naptár, events',
         'modal-map-features-export': 'export, gpx, geojson, adatok letöltése',
         'modal-map-to-document-export':
           'export, nyomtatás, pdf, png, jpeg, webp, svg, kép, poszter',

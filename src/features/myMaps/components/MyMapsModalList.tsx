@@ -1,5 +1,4 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
-import { useEventsMessages } from '@features/events/translations/useEventsMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -9,10 +8,7 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
-import {
-  useConfirm,
-  useConfirmChoice,
-} from '@shared/components/ModalProvider.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {
@@ -51,6 +47,7 @@ import {
   FaUnlink,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useAskLoadMerge } from '../hooks/useAskLoadMerge.js';
 import {
   type BlockedReason,
   canCopy,
@@ -65,7 +62,6 @@ import {
   mapsSetAllOffline,
   mapsSyncOutbox,
 } from '../model/actions.js';
-import { mapHasContentSelector } from '../model/selectors.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 import { MapSyncStatus } from './MapSyncStatus.js';
 
@@ -111,33 +107,15 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
   const mm = useMyMapsMessages();
 
-  const em = useEventsMessages();
-
   const confirm = useConfirm();
 
-  const confirmChoice = useConfirmChoice();
+  const askLoadMerge = useAskLoadMerge();
 
-  const hasContent = useAppSelector(mapHasContentSelector);
-
-  // Asked rather than set beforehand: a load either merges into what's on the
-  // map or replaces it, and on an empty map both do the same thing.
   const handleLoad = async (id: string, inclPosition: boolean) => {
-    let merge = false;
+    const merge = await askLoadMerge();
 
-    if (hasContent) {
-      const choice = await confirmChoice({
-        title: mm?.loadMergeModal.title,
-        message: mm?.loadMergeModal.message,
-        confirmLabel: mm?.loadMergeModal.append,
-        extraLabel: mm?.loadMergeModal.replace,
-        extraStyle: 'danger',
-      });
-
-      if (choice === 'cancel') {
-        return;
-      }
-
-      merge = choice === 'confirm';
+    if (merge === null) {
+      return;
     }
 
     dispatch(
@@ -327,6 +305,12 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         </Badge>
                       )}
                       <MapSyncStatus mapId={map.id} className="ms-1" />
+                      {map.event && (
+                        <Badge bg="info" className="ms-1">
+                          <FaCalendarAlt />{' '}
+                          {dateFormat.format(map.event.startAt)}
+                        </Badge>
+                      )}
                     </div>
 
                     <small className="text-muted">
@@ -418,23 +402,6 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           label={m?.general.modify}
                           requiresOnline
                           onClick={() => onEdit(map)}
-                          showFrom="lg"
-                        />
-                      )}
-
-                      {isOwn && (
-                        <Action
-                          icon={<FaCalendarAlt />}
-                          label={em?.publishAsEvent}
-                          disabled={!online}
-                          onClick={() =>
-                            dispatch(
-                              setActiveModal({
-                                type: 'events',
-                                create: { mapId: map.id },
-                              }),
-                            )
-                          }
                           showFrom="lg"
                         />
                       )}

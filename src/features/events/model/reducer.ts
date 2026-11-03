@@ -1,32 +1,34 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type EventItem,
+  type EventPoint,
   type EventsFilter,
-  type EventsView,
-  eventsSave,
-  eventsSaveDone,
+  eventsOpen,
+  eventsOpenDone,
   eventsSetFilter,
   eventsSetList,
-  eventsSetView,
+  eventsSetPickingStart,
+  eventsSetSelected,
+  eventsStartPicked,
 } from './actions.js';
 
 export interface EventsState {
   list: EventItem[];
   filter: EventsFilter;
-  /**
-   * Which half of the modal is up. In the slice rather than in the component
-   * because the save decides it: the form stays up until the request lands, so
-   * a refused save still has the typed values to retry from.
-   */
-  view: EventsView;
-  saving: boolean;
+  selected: EventItem | null;
+  /** The event whose map is loading, to select again once it has. */
+  opening: string | null;
+  pickingStart: boolean;
+  pickedStart: EventPoint | null;
 }
 
 const initialState: EventsState = {
   list: [],
   filter: {},
-  view: 'list',
-  saving: false,
+  selected: null,
+  opening: null,
+  pickingStart: false,
+  pickedStart: null,
 };
 
 export const eventsReducer = createReducer(initialState, (builder) => {
@@ -37,13 +39,23 @@ export const eventsReducer = createReducer(initialState, (builder) => {
     .addCase(eventsSetFilter, (state, { payload }) => {
       state.filter = payload;
     })
-    .addCase(eventsSetView, (state, { payload }) => {
-      state.view = payload;
+    .addCase(eventsSetSelected, (state, { payload }) => {
+      state.selected = payload;
     })
-    .addCase(eventsSave, (state) => {
-      state.saving = true;
+    .addCase(eventsOpen, (state, { payload }) => {
+      state.opening = payload.mapId;
     })
-    .addCase(eventsSaveDone, (state) => {
-      state.saving = false;
+    .addCase(eventsOpenDone, (state) => {
+      state.opening = null;
+    })
+    .addCase(eventsSetPickingStart, (state, { payload }) => {
+      state.pickingStart = payload;
+    })
+    .addCase(eventsStartPicked, (state, { payload }) => {
+      state.pickedStart = payload;
+
+      if (payload) {
+        state.pickingStart = false;
+      }
     });
 });

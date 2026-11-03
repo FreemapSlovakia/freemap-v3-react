@@ -21,6 +21,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { ChangesetLabel } from '@features/changesets/components/ChangesetLabel.js';
 import { loneInspectionSelector } from '@features/changesets/model/selectors.js';
+import { EventsLayerList } from '@features/events/components/EventsLayerList.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
@@ -745,10 +746,14 @@ function mapHasPage(ref: MapRef | undefined): boolean {
     return true; // Modify, at least
   }
 
-  return (
-    ref?.origin === 'library' &&
-    hasOwnConfig(ref.def?.technology ?? ref.entry.technology)
-  );
+  if (ref?.origin !== 'library') {
+    return false;
+  }
+
+  const technology = ref.def?.technology ?? ref.entry.technology;
+
+  // The events layer's page lists what it shows.
+  return hasOwnConfig(technology) || technology === 'events';
 }
 
 /** The stack: the overlays and overlay presets as they stack, then the base. */
@@ -1073,6 +1078,8 @@ function LayerSettings({
       {technology === 'parametricShading' && (
         <AsyncComponent factory={shadingSectionFactory} target={target} />
       )}
+
+      {technology === 'events' && <EventsLayerList />}
 
       {/* The map's own actions, set off from what its sections edit. */}
       <hr />

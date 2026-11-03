@@ -12,6 +12,7 @@ import {
 } from '@features/dataViewer/model/actions.js';
 import { editableParts } from '@features/dataViewer/vertexEditing.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
+import { eventsSetPickingStart } from '@features/events/model/actions.js';
 import {
   galleryCancelShowOnTheMap,
   galleryClear,
@@ -76,7 +77,8 @@ const isSuspendedModal = (state: RootState) =>
   state.gallery.showPosition ||
   Boolean(state.mapArea.selecting) ||
   Boolean(state.mapLibrary.preview) ||
-  state.toposcope.pickingCenter;
+  state.toposcope.pickingCenter ||
+  state.events.pickingStart;
 
 /** A selected vertex goes only while its line or ring keeps enough of them. */
 function vertexDeletable(state: RootState): boolean {
@@ -117,6 +119,10 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
 
   if (state.gallery.pickingPositionForId) {
     return gallerySetItemForPositionPicking(null);
+  }
+
+  if (state.events.pickingStart) {
+    return eventsSetPickingStart(false);
   }
 
   if (showGalleryViewerSelector(state)) {
@@ -588,7 +594,8 @@ export function handleMapKey(event: KeyboardEvent, state: RootState) {
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition ||
     state.mapArea.selecting ||
-    state.mapLibrary.preview;
+    state.mapLibrary.preview ||
+    state.events.pickingStart;
 
   if (isShowingModal(state) && !suspendedModal) {
     return undefined;

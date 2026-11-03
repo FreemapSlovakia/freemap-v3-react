@@ -211,7 +211,6 @@ const messages: Messages = {
     routePlanner: 'Route finder',
     objects: 'Objects (POIs)',
     photos: 'Photos',
-    events: 'Events',
     drawPoints: 'Point drawing',
     drawLines: 'Line drawing',
     drawPolygons: 'Polygon drawing',
@@ -350,7 +349,6 @@ const messages: Messages = {
           'profile, my account, settings, log out, app token, api key',
         'modal-login': 'sign in, account',
         'modal-my-maps': 'saved maps, save map, share map',
-        'modal-events': 'trips, outings, meetups, group hike, calendar',
         'modal-map-features-export':
           'export, gpx, geojson, download data, save features',
         'modal-map-to-document-export':

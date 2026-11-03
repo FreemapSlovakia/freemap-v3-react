@@ -15,8 +15,8 @@ const URL_MODAL_IDS = [
   'drawing-properties',
   'elevation-settings',
   'embed',
-  'events',
   'file-import',
+  'events-filter',
   'gallery-filter',
   'gallery-leaderboard',
   'gallery-upload',
@@ -120,13 +120,12 @@ export type ActiveModal =
   | {
       type: Exclude<
         ModalId,
-        'tracking-watched' | 'my-maps' | 'map-manager' | 'manual' | 'events'
+        'tracking-watched' | 'my-maps' | 'map-manager' | 'manual'
       >;
     }
   /** Without `chapter`, the first one. */
   | { type: 'manual'; chapter?: string }
   | { type: 'my-maps'; add?: boolean }
-  | { type: 'events'; create?: { mapId?: string } }
   /**
    * The map manager. With `customMap` it shows the form for one; see
    * `CustomMapRequest`. `highlight` picks out that map in the list; `query`
@@ -255,7 +254,6 @@ export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
     case 'map-manager':
-    case 'events':
     case 'tracking-watched':
     case 'manual':
       return { type: modalId };

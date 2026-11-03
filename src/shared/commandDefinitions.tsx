@@ -30,7 +30,6 @@ import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
-  FaCalendarAlt,
   FaChartArea,
   FaCode,
   FaDatabase,
@@ -135,12 +134,6 @@ const modalCommands: ModalCommand[] = [
     id: 'my-maps',
     icon: <FaRegMap />,
     label: (m) => m.tools.myMaps,
-  },
-  {
-    id: 'events',
-    icon: <FaCalendarAlt />,
-    label: (m) => m.tools.events,
-    requiresOnline: true,
   },
   {
     id: 'map-features-export',

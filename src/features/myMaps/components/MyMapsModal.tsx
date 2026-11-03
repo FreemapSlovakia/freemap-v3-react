@@ -44,6 +44,9 @@ export default function MyMapsModal({ show }: Props): ReactElement {
     }
   }, [show, startInAddForm]);
 
+  // Hidden rather than closed, so the form keeps what was typed.
+  const pickingStart = useAppSelector((state) => state.events.pickingStart);
+
   useDocumentTitle(show ? m?.tools.myMaps : undefined);
 
   return (
@@ -53,6 +56,10 @@ export default function MyMapsModal({ show }: Props): ReactElement {
       onHide={close}
       size="lg"
       contentClassName="bg-body-tertiary"
+      className={pickingStart ? 'd-none' : undefined}
+      backdropClassName={pickingStart ? 'd-none' : undefined}
+      enforceFocus={!pickingStart}
+      keyboard={!pickingStart}
     >
       <Modal.Header closeButton>
         <Modal.Title>

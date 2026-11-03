@@ -352,8 +352,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, moj račun, nastavitve, odjava',
         'modal-login': 'prijava, račun',
         'modal-my-maps': 'shranjene karte, shrani karto, deli karto',
-        'modal-events':
-          'dogodki, izlet, pohod, srečanje, skupinski pohod, koledar, events',
         'modal-map-features-export': 'izvoz, gpx, geojson, prenos podatkov',
         'modal-map-to-document-export':
           'izvoz, tiskanje, pdf, png, jpeg, webp, svg, slika, plakat',

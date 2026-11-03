@@ -24,7 +24,6 @@ import {
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
-  FaCalendarAlt,
   FaChevronRight,
   FaCode,
   FaDatabase,
@@ -136,13 +135,6 @@ export function MainMenu(): ReactElement {
         <MenuGutter>
           <Chord modal="my-maps" />
         </MenuGutter>
-      </Dropdown.Item>
-
-      <Dropdown.Item {...modalMenuItemProps('events')}>
-        <FaCalendarAlt />
-        <MenuLabel>
-          <Text k="tools.events" />
-        </MenuLabel>
       </Dropdown.Item>
 
       {toolDefinitions

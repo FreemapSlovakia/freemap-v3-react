@@ -177,9 +177,16 @@ export interface OsmNoteSelection {
   id: number;
 }
 
+/** An event, by its map's id; its details show in a toast beside the toolbar. */
+export interface EventSelection {
+  type: 'event';
+  id: string;
+}
+
 export type Selection =
   | ChangesetElementSelection
   | OsmNoteSelection
+  | EventSelection
   | FeatureSelection
   | VertexSelection
   | ObjectsSelection

@@ -79,6 +79,7 @@ export const viewshedPickingViewpointSelector = (state: RootState): boolean =>
  * list of its own.
  */
 export const pickingModeSelector = (state: RootState): boolean =>
+  state.events.pickingStart ||
   selectingHomeLocationSelector(state) ||
   toposcopePickingCenterSelector(state) ||
   panoramaPickingSelector(state) ||

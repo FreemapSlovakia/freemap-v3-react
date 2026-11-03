@@ -16,12 +16,8 @@ export const EventVisibilitySchema = z.enum(['public', 'unlisted']);
 
 export type EventVisibility = z.infer<typeof EventVisibilitySchema>;
 
-/** A single event as returned by the API. */
-export const EventSchema = z.object({
-  id: z.string(),
-  ownerId: z.number(),
-  mapId: z.string(),
-  title: z.string(),
+/** What a map gains by being an event; at most one per map. */
+export const MapEventSchema = z.object({
   description: z.string().nullable(),
   startAt: IsoDateSchema,
   endAt: IsoDateSchema.nullable(),
@@ -32,15 +28,25 @@ export const EventSchema = z.object({
   difficulty: z.string().nullable(),
   createdAt: IsoDateSchema,
   updatedAt: IsoDateSchema,
+});
+
+export type MapEvent = z.infer<typeof MapEventSchema>;
+
+/** A listed event: its map, titled by the map's name. */
+export const EventSchema = z.object({
+  ...MapEventSchema.shape,
+  mapId: z.string(),
+  name: z.string().nullable(),
+  userId: z.number(),
   canWrite: z.boolean(),
 });
 
 export type EventItem = z.infer<typeof EventSchema>;
 
 /**
- * Panel/layer filter. `inMapArea` restricts the listing to the current map
- * viewport (bbox derived at fetch time); `activityType` is a reserved
- * placeholder that isn't sent to the server yet.
+ * The layer's filter. `inMapArea` restricts the listing to the current map
+ * viewport (bbox derived at fetch time); `activityType` is reserved and isn't
+ * sent to the server yet.
  */
 export interface EventsFilter {
   from?: Date;
@@ -49,24 +55,13 @@ export interface EventsFilter {
   activityType?: string;
 }
 
-/**
- * Where the event's referenced saved map comes from: an existing "My maps"
- * entry, or a new saved map published from the current app state.
- */
-export type EventSaveSource =
-  | { type: 'map'; mapId: string }
-  | { type: 'current'; name: string };
-
 export interface EventSavePayload {
-  /** Present when editing an existing event. */
-  id?: string;
-  source: EventSaveSource;
-  title: string;
-  description?: string | null;
+  mapId: string;
+  description: string | null;
   startAt: string;
-  endAt?: string | null;
-  startPoint?: EventPoint | null;
-  filterLocation?: EventPoint | null;
+  endAt: string | null;
+  startPoint: EventPoint;
+  filterLocation: EventPoint | null;
   visibility: EventVisibility;
 }
 
@@ -76,14 +71,31 @@ export const eventsLoadList = createAction('EVENTS_LOAD_LIST');
 
 export const eventsSetFilter = createAction<EventsFilter>('EVENTS_SET_FILTER');
 
-/** `list` shows the browser; an object opens the create/edit form. */
-export type EventsView = 'list' | { editing?: EventItem; mapId?: string };
-
-export const eventsSetView = createAction<EventsView>('EVENTS_SET_VIEW');
-
+/** Makes a map an event, or replaces its event. */
 export const eventsSave = createAction<EventSavePayload>('EVENTS_SAVE');
 
-/** The save request settled; the form is released either way. */
-export const eventsSaveDone = createAction('EVENTS_SAVE_DONE');
-
+/** Stops the map with this id being an event. */
 export const eventsDelete = createAction<string>('EVENTS_DELETE');
+
+/** The selected event, as its details show it; `null` while none is. */
+export const eventsSetSelected = createAction<EventItem | null>(
+  'EVENTS_SET_SELECTED',
+);
+
+/** Loads an event's map, appended to what is on the map or replacing it. */
+export const eventsOpen = createAction<{ mapId: string; merge: boolean }>(
+  'EVENTS_OPEN',
+);
+
+/** The opened map has loaded, or failed to. */
+export const eventsOpenDone = createAction('EVENTS_OPEN_DONE');
+
+/** Takes the next map click as the start point of the event being edited. */
+export const eventsSetPickingStart = createAction<boolean>(
+  'EVENTS_SET_PICKING_START',
+);
+
+/** The start point clicked on the map, for the form to take; `null` once taken. */
+export const eventsStartPicked = createAction<EventPoint | null>(
+  'EVENTS_START_PICKED',
+);

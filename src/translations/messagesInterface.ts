@@ -189,7 +189,6 @@ export type Messages = {
     routePlanner: string;
     objects: string;
     photos: string;
-    events: string;
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;

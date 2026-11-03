@@ -55,6 +55,12 @@ import { locusInstallProcessor } from '@features/documents/model/locusInstallPro
 import { oruxMapsDownloadProcessor } from '@features/documents/model/oruxMapsDownloadProcessor.js';
 import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
+import {
+  eventSelectionProcessor,
+  eventsLayerOffProcessor,
+  eventsOpenedProcessor,
+  eventsOpenProcessor,
+} from '@features/events/model/processors/eventSelectionProcessors.js';
 import { eventsDeleteProcessor } from '@features/events/model/processors/eventsDeleteProcessor.js';
 import { eventsLoadListProcessor } from '@features/events/model/processors/eventsLoadListProcessor.js';
 import { eventsSaveProcessor } from '@features/events/model/processors/eventsSaveProcessor.js';
@@ -324,6 +330,10 @@ export const processors = [
   eventsLoadListProcessor,
   eventsSaveProcessor,
   eventsDeleteProcessor,
+  eventSelectionProcessor,
+  eventsLayerOffProcessor,
+  eventsOpenProcessor,
+  eventsOpenedProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   osmNotesLayerProcessor,

@@ -1,5 +1,4 @@
 import { httpRequest } from '@app/httpRequest.js';
-import { setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
@@ -18,7 +17,6 @@ import {
 const triggers = [
   eventsLoadList,
   eventsSetFilter,
-  setActiveModal,
   mapToggleLayer,
   mapRefocus,
   authSetUser,
@@ -30,14 +28,7 @@ export const eventsLoadListProcessor: Processor = {
   handle: async ({ getState, dispatch, action, toastError }) => {
     const state = getState();
 
-    // The events are shown by the panel and/or the independent markers layer;
-    // either keeps the list populated, so closing the panel leaves the layer's
-    // last filter in place.
-    const active =
-      state.main.activeModal?.type === 'events' ||
-      state.map.layers.includes(EVENTS_LAYER);
-
-    if (!active) {
+    if (!state.map.layers.includes(EVENTS_LAYER)) {
       if (state.events.list.length) {
         dispatch(eventsSetList([]));
       }

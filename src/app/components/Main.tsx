@@ -5,6 +5,7 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { EventsLayer } from '@features/events/components/EventsLayer.js';
+import { EVENTS_LAYER } from '@features/events/model/actions.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
@@ -264,6 +265,30 @@ const viewshedViewpointPickingMenuFactory = () =>
     '@features/viewshed/components/ViewshedViewpointPickingMenu.js'
   );
 
+const eventsMenuFactory = () =>
+  import(
+    /* webpackChunkName: "events-menu" */
+    '@features/events/components/EventsMenu.js'
+  );
+
+const eventSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "event-selection" */
+    '@features/events/components/EventSelection.js'
+  );
+
+const eventStartPickingFactory = () =>
+  import(
+    /* webpackChunkName: "event-start-picking" */
+    '@features/events/components/EventStartPicking.js'
+  );
+
+const eventStartPickingMenuFactory = () =>
+  import(
+    /* webpackChunkName: "event-start-picking-menu" */
+    '@features/events/components/EventStartPickingMenu.js'
+  );
+
 const adFactory = () =>
   import(
     /* webpackChunkName: "ad" */
@@ -465,12 +490,6 @@ const mapsModalFactory = () =>
     '@features/myMaps/components/MyMapsModal.js'
   );
 
-const eventsModalFactory = () =>
-  import(
-    /* webpackChunkName: "events-modal" */
-    '@features/events/components/EventsModal.js'
-  );
-
 const premiumActivationModalFactory = () =>
   import(
     /* webpackChunkName: "premium-activation-modal" */
@@ -481,6 +500,12 @@ const galleryFilterModalFactory = () =>
   import(
     /* webpackChunkName: "gallery-filter-modal" */
     '@features/gallery/components/GalleryFilterModal.js'
+  );
+
+const eventsFilterModalFactory = () =>
+  import(
+    /* webpackChunkName: "events-filter-modal" */
+    '@features/events/components/EventsFilterModal.js'
   );
 
 const galleryLeaderboardModalFactory = () =>
@@ -575,6 +600,9 @@ function selectionMenu(type: Selection['type']): ReactNode {
 
     case 'osm-note':
       return <AsyncComponent factory={osmNoteSelectionFactory} />;
+
+    case 'event':
+      return <AsyncComponent factory={eventSelectionFactory} />;
 
     case 'tracking':
       return <TrackingSelection />;
@@ -759,6 +787,16 @@ export function Main(): ReactElement {
     state.map.layers.includes(VIEWSHED_LAYER),
   );
 
+  // For browsing events, so not while one's map is open.
+  const showEvents = useAppSelector(
+    (state) =>
+      state.map.layers.includes(EVENTS_LAYER) && !state.myMaps.activeMap?.event,
+  );
+
+  const pickingEventStart = useAppSelector(
+    (state) => state.events.pickingStart,
+  );
+
   const language = useAppSelector((state) => state.l10n.language);
 
   const isUserValidated = useAppSelector((state) => state.auth.validated);
@@ -928,6 +966,12 @@ export function Main(): ReactElement {
         open: showViewshed,
         hidden: inMode,
         node: <AsyncComponent factory={viewshedMenuFactory} />,
+      },
+      {
+        id: 'events',
+        open: showEvents && !window.fmEmbedded,
+        hidden: inMode,
+        node: <AsyncComponent factory={eventsMenuFactory} />,
       },
       // A running recording keeps its toolbar — collapsed to a strip, and told
       // apart by its own gate — for as long as it runs, because nothing else on
@@ -1139,6 +1183,10 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={viewshedViewpointPickingMenuFactory} />
               )}
 
+              {pickingEventStart && (
+                <AsyncComponent factory={eventStartPickingMenuFactory} />
+              )}
+
               {selectingMapArea && (
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
               )}
@@ -1252,6 +1300,10 @@ export function Main(): ReactElement {
 
             {pickingViewshedViewpoint && (
               <AsyncComponent factory={viewshedViewpointPickingFactory} />
+            )}
+
+            {pickingEventStart && (
+              <AsyncComponent factory={eventStartPickingFactory} />
             )}
 
             {selectingMapArea && <MapAreaSelectionResult />}
@@ -1375,11 +1427,6 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal?.type === 'events'}
-        factory={eventsModalFactory}
-      />
-
-      <AsyncModal
         show={activeModal?.type === 'premium'}
         factory={premiumActivationModalFactory}
       />
@@ -1387,6 +1434,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'gallery-filter'}
         factory={galleryFilterModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'events-filter'}
+        factory={eventsFilterModalFactory}
       />
 
       <AsyncModal

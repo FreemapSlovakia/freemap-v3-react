@@ -217,7 +217,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Vyhľadávač trás',
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
-    events: 'Akcie',
     drawPoints: 'Kreslenie bodov',
     drawLines: 'Kreslenie čiar',
     drawPolygons: 'Kreslenie polygónov',
@@ -387,8 +386,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'profil, môj účet, nastavenia, odhlásenie, token, api kľúč',
         'modal-login': 'prihlásenie, účet',
         'modal-my-maps': 'uložené mapy, uložiť mapu, zdieľať mapu',
-        'modal-events':
-          'akcia, podujatie, výlet, túra, stretnutie, spoločná túra, kalendár, events',
         'modal-map-features-export':
           'export, gpx, geojson, stiahnuť dáta, uložiť objekty',
         'modal-map-to-document-export':

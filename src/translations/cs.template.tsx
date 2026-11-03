@@ -359,8 +359,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, můj účet, nastavení, odhlášení',
         'modal-login': 'přihlášení, účet',
         'modal-my-maps': 'uložené mapy, uložit mapu, sdílet mapu',
-        'modal-events':
-          'akce, událost, výlet, túra, setkání, společná túra, kalendář, events',
         'modal-map-features-export':
           'export, gpx, geojson, stáhnout data, uložit objekty',
         'modal-map-to-document-export':

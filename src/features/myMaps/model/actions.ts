@@ -1,6 +1,10 @@
 import type { DataViewerState } from '@features/dataViewer/model/reducer.js';
 import type { Line } from '@features/drawing/model/actions/drawingLineActions.js';
 import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
+import {
+  type EventSavePayload,
+  MapEventSchema,
+} from '@features/events/model/actions.js';
 import type { GalleryFilter } from '@features/gallery/model/actions.js';
 import type { MapState } from '@features/map/model/reducer.js';
 import type { RoutePlannerMapData } from '@features/routePlanner/model/reducer.js';
@@ -19,6 +23,8 @@ export const MapMetaSchema = z.object({
   modifiedAt: IsoDateSchema,
   userId: z.number(),
   writers: z.array(z.number()).optional(),
+  /** Only where the server says; a map's own save answers without it. */
+  event: MapEventSchema.nullish(),
 });
 
 export type MapMeta = z.infer<typeof MapMetaSchema>;
@@ -82,6 +88,8 @@ export const mapsSave = createAction<
        * id yet, so it can't be flagged before the save answers with one.
        */
       offline?: boolean;
+      /** Make the map an event once it exists; same reason as `offline`. */
+      event?: Omit<EventSavePayload, 'mapId'>;
     }
   | undefined
 >('MAPS_SAVE');

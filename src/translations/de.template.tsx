@@ -360,8 +360,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, mein konto, einstellungen, abmelden',
         'modal-login': 'anmelden, konto',
         'modal-my-maps': 'gespeicherte karten, karte speichern, karte teilen',
-        'modal-events':
-          'veranstaltungen, termine, ausflug, tour, treffen, gemeinsame wanderung, kalender, events',
         'modal-map-features-export':
           'export, gpx, geojson, daten herunterladen, objekte speichern',
         'modal-map-to-document-export':

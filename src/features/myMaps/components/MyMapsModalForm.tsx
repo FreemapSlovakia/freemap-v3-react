@@ -1,3 +1,11 @@
+import {
+  fromDraft,
+  isDraftComplete,
+  MapEventFields,
+  toDraft,
+} from '@features/events/components/MapEventFields.js';
+import { eventsDelete, eventsSave } from '@features/events/model/actions.js';
+import { useEventsMessages } from '@features/events/translations/useEventsMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -62,6 +70,16 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
     setWriters(target?.writers ?? []);
   }, [target]);
 
+  const [eventOn, setEventOn] = useState(Boolean(target?.event));
+
+  const [eventDraft, setEventDraft] = useState(() => toDraft(target?.event));
+
+  useEffect(() => {
+    setEventOn(Boolean(target?.event));
+
+    setEventDraft(toDraft(target?.event));
+  }, [target]);
+
   const wasOffline = useAppSelector((state) =>
     target ? state.myMaps.offlineIds.includes(target.id) : false,
   );
@@ -84,6 +102,8 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   const m = useMessages();
 
   const mm = useMyMapsMessages();
+
+  const em = useEventsMessages();
 
   const online = useOnline();
 
@@ -149,15 +169,31 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
     const isEditingActive = target && target.id === activeMap?.id;
 
+    const event = eventOn ? fromDraft(eventDraft) : undefined;
+
+    // The event is its own resource, so it is sent beside the map's save.
+    const applyEvent = (mapId: string) => {
+      if (
+        event &&
+        JSON.stringify(eventDraft) !== JSON.stringify(toDraft(target?.event))
+      ) {
+        dispatch(eventsSave({ mapId, ...event }));
+      } else if (!event && target?.event) {
+        dispatch(eventsDelete(mapId));
+      }
+    };
+
     if (!target) {
-      // The save owns the flag here: the map has no id to flag until it exists.
-      dispatch(mapsSave({ name, writers, asCopy: true, offline }));
+      // The save owns the flag and the event here: the map has no id until it
+      // exists.
+      dispatch(mapsSave({ name, writers, asCopy: true, offline, event }));
       onDone();
       return;
     }
 
     if (isEditingActive) {
       dispatch(mapsSave({ name, writers }));
+      applyEvent(target.id);
       flagOfflineOn();
       onDone();
       return;
@@ -205,6 +241,8 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         );
 
         dispatch(mapsLoadList());
+
+        applyEvent(target.id);
 
         flagOfflineOn();
 
@@ -282,6 +320,23 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
             <HintMark hint={mm?.availableOfflineHint} />
           </Form.Group>
+
+          {canSave && (
+            <Form.Group controlId="isEvent" className="mb-3 d-flex">
+              <Form.Check
+                type="checkbox"
+                label={em?.event}
+                checked={eventOn}
+                onChange={(e) => setEventOn(e.currentTarget.checked)}
+              />
+
+              <HintMark hint={em?.eventHint} />
+            </Form.Group>
+          )}
+
+          {canSave && eventOn && (
+            <MapEventFields value={eventDraft} onChange={setEventDraft} />
+          )}
         </Form>
       </Modal.Body>
 
@@ -289,7 +344,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         {canSave && (
           <FmFooterButton
             onClick={save}
-            disabled={!name || !online}
+            disabled={
+              !name || !online || (eventOn && !isDraftComplete(eventDraft))
+            }
             icon={<FaSave />}
             label={mm?.save}
           />

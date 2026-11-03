@@ -50,13 +50,11 @@ Editing the contents of a loaded map (by hand or via browser back/forward) marks
 
 ### Events
 
-- Access: Main menu > Events
-- URL path: `/#show=events`
+- Access: the **Events** map layer (id `A`)
+- URL: `layers=…~A`
 
-Opens the shared-trips ("events") browser in a modal. An event is a social announcement layered on top of a live saved map (from **My maps**): it references that map, so editing the map changes what participants see. An event carries its own title, description, start/end time, an optional meetup start point, and a visibility (**Public** or **Unlisted** — unlisted events are reachable by link but not shown in listings).
+An event is a saved map published as a shared trip. Any map in **My maps** can be made one, and at most one event belongs to a map: the map's name is the event's title and its contents are what participants see, live. The event adds a description, a start and optional end time, a required start point (typed, picked on the map with **Pick on map**, or taken with **Take from route start**), and a visibility — **Public**, or **Unlisted**, which is reachable by link but not listed. A map that is an event can be opened by anyone with its link, even when the map itself is not public.
 
-The list is filtered by a time window (**From** / **To**), an **Only in the current map area** toggle (restricts to the current map viewport), and an activity-type placeholder (not yet functional). The filter is reflected in the URL via `events-from`, `events-to`, `events-in-map-area` and `events-activity`. Each listed event offers **Open** (loads its underlying saved map, like My maps' Load) and, for the owner, **Edit** and **Delete**.
+A map is made an event in its form in **My maps** — when creating it or with **Modify** — by ticking **Event**, which shows the event fields; unticking it ends the event and keeps the map. A map that is an event carries a badge with the event's start date.
 
-**Create new event** opens a form that either references an existing saved map or publishes the current map state as a new saved map, then sets the title, description, start/end time, start point (with a **Take from route start** button), and visibility. The same form is reachable from a **Publish as event** action on each map in **My maps**.
-
-There is also an **Events** overlay layer (id `A`) that plots one marker per matching event at its start point (falling back to its filter location), driven by the same filter as the panel and independent of whether the panel is open. Clicking a marker shows the event's details with an **Open** button that loads its underlying saved map (the My maps Load path).
+The **Events** layer plots one marker per event at its start point, named in a tooltip. While it is on, and no event's map is open, its toolbar has **Filter**, which opens a dialog filtering the events by a date range and an **Only in the current map area** toggle; the filter is reflected in the URL via `events-from`, `events-to` and `events-in-map-area`. In the **Map layers** panel the layer's row opens a list of the events it shows. Clicking a marker or a listed event selects it: its details (name, dates, description) show in a toast, and its toolbar has **Open**, which loads its map — asking, as My maps' Load does, whether to add it to what is on the map or replace that. The events layer stays on and the event selected once its map is in, and **Back to events** then disconnects and clears the map, leaving the markers.

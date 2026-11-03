@@ -347,8 +347,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, moje konto, ustawienia, wyloguj',
         'modal-login': 'zaloguj się, konto',
         'modal-my-maps': 'zapisane mapy, zapisz mapę, udostępnij mapę',
-        'modal-events':
-          'wydarzenia, wycieczka, wyjście, spotkanie, wspólna wędrówka, kalendarz, events',
         'modal-map-features-export': 'eksport, gpx, geojson, pobierz dane',
         'modal-map-to-document-export':
           'eksport, drukuj, pdf, png, jpeg, webp, svg, obraz, plakat',

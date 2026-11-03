@@ -7,6 +7,7 @@ import {
   cacheTilesProgress,
   cacheTilesStart,
 } from '@features/cachedMaps/model/actions.js';
+import { EVENTS_LAYER } from '@features/events/model/actions.js';
 import { gallerySetFilter } from '@features/gallery/model/actions.js';
 import { processGeoipResult } from '@features/geoip/model/actions.js';
 import { mapLibraryCatalogMapsLoaded } from '@features/mapLibrary/model/actions.js';
@@ -1003,7 +1004,11 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
 
         state.linkPresets = linkPresets;
 
-        state.layers = layers;
+        // An event's map is opened from the events layer, which is the way back.
+        state.layers =
+          state.layers.includes(EVENTS_LAYER) && !layers.includes(EVENTS_LAYER)
+            ? [...layers, EVENTS_LAYER]
+            : layers;
       }
     })
     .addCase(mapSetCustomLayers, (state, action) => {
