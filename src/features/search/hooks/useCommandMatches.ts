@@ -6,9 +6,9 @@ import {
   resolvedCustomLayersSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { type Command, getCommands } from '@shared/commandDefinitions.js';
-import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { matchLabel } from '@shared/labelMatch.js';
 import { unavailableToolsSelector } from '@shared/toolDefinitions.js';
 import { useMemo } from 'react';
 
@@ -19,23 +19,7 @@ export type CommandMatch = {
   score: number;
 };
 
-/** Below this the query is left to the geocoder alone. */
-const minQueryLength = 2;
-
-/**
- * Longer than any label or synonym, so past it nothing can match — and matching
- * costs the query's length against every candidate, which a pasted paragraph
- * would spend on each keystroke.
- */
-const maxQueryLength = 64;
-
 const maxMatches = 6;
-
-/** Per query character; loose matches score less than this. */
-const minScorePerChar = 12;
-
-/** A synonym hit is a weaker one than the label saying the same. */
-const keywordPenalty = 20;
 
 /** The app's own functions and maps the query finds, best first. */
 export function useCommandMatches(query: string): CommandMatch[] {
@@ -104,33 +88,13 @@ export function useCommandMatches(query: string): CommandMatch[] {
   );
 
   return useMemo(() => {
-    const trimmed = query.trim();
-
-    if (trimmed.length < minQueryLength || trimmed.length > maxQueryLength) {
-      return [];
-    }
-
-    const floor = trimmed.replace(/\s/g, '').length * minScorePerChar;
-
     const matches: CommandMatch[] = [];
 
     for (const command of commands) {
-      const hit = fuzzyMatch(trimmed, command.label);
+      const hit = matchLabel(query, command.label, command.keywords);
 
-      let score = hit?.score ?? Number.NEGATIVE_INFINITY;
-
-      // Each synonym is matched on its own, so a query can't be answered by
-      // characters gathered from across the whole list.
-      for (const keyword of command.keywords?.split(',') ?? []) {
-        const kw = fuzzyMatch(trimmed, keyword.trim());
-
-        if (kw) {
-          score = Math.max(score, kw.score - keywordPenalty);
-        }
-      }
-
-      if (score >= floor) {
-        matches.push({ command, score, positions: hit?.positions ?? [] });
+      if (hit) {
+        matches.push({ command, ...hit });
       }
     }
 

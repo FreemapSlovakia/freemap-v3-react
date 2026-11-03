@@ -3,6 +3,7 @@ import type { DocumentsMessages } from './DocumentsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<DocumentsMessages> = {
   errorLoading: 'Errore caricamento documento.',
+  searchManual: 'Cerca nel manuale',
 };
 
 export default it;

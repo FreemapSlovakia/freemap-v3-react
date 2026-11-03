@@ -1,0 +1,12 @@
+/* The search and the chapter list beside the text, from Bootstrap's `lg`;
+   below it the search results in the text's place. */
+.side {
+  min-height: 0;
+}
+
+/* The chapter drop-down and the search side by side in the header below `lg`,
+   one per line where both don't fit. */
+.header-field {
+  flex: 1 1 10rem;
+  min-width: 0;
+}

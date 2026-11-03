@@ -26,6 +26,10 @@ export type FuzzyMatch = {
 
 const WORD_CHAR = /[\p{L}\p{N}]/u;
 
+/** Whether a word starts at `i` of `text`. */
+export const isWordStart = (text: string, i: number): boolean =>
+  i === 0 || !WORD_CHAR.test(text[i - 1]);
+
 const COMBINING = /[̀-ͯ]/g;
 
 /**
@@ -106,8 +110,6 @@ export function fuzzyMatch(
   const slot = (qi: number, ti: number, prev: boolean) =>
     (prev ? (ql + 1) * (tl + 1) : 0) + qi * (tl + 1) + ti;
 
-  const isWordStart = (ti: number) => ti === 0 || !WORD_CHAR.test(t[ti - 1]);
-
   function best(qi: number, ti: number, prev: boolean): number {
     if (qi === ql) {
       return 0;
@@ -127,11 +129,11 @@ export function fuzzyMatch(
 
     let score = best(qi, ti + 1, false) - SKIP_PENALTY;
 
-    if (q[qi] === t[ti] && (prev || isWordStart(ti))) {
+    if (q[qi] === t[ti] && (prev || isWordStart(t, ti))) {
       const bonus =
         MATCH +
         (prev ? CONSECUTIVE_BONUS : 0) +
-        (isWordStart(ti) ? WORD_START_BONUS : 0) +
+        (isWordStart(t, ti) ? WORD_START_BONUS : 0) +
         (ti === 0 ? START_BONUS : 0);
 
       score = Math.max(score, bonus + best(qi + 1, ti + 1, true));

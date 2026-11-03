@@ -3,6 +3,7 @@ import type { DocumentsMessages } from './DocumentsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<DocumentsMessages> = {
   errorLoading: 'Hiba történt a dokumentum betöltésekor.',
+  searchManual: 'Keresés a kézikönyvben',
 };
 
 export default hu;
