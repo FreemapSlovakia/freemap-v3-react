@@ -77,11 +77,12 @@ from the selection toolbar (**Edit**).
 - [ ] 1. Standalone event model: API table and routes, the event form with
       stats from the linked map and **Set the location**, New event from the toolbar and My
       maps, Edit / Delete, **Open in new tab** and **Load here**.
-- [ ] 2. Cover image: one per event, uploaded on its own; the API resizes it
-      (a large version and a thumbnail) and stores it as a file, the event
-      keeps a reference. Not a gallery photo — those are public, CC-licensed
-      and placed — and never inline base64, which no column holds and every
-      listing would carry.
+- [x] 2. Cover image: one per event, uploaded on its own
+      (`PUT`/`DELETE /events/{id}/cover`, after the event's own save); the API
+      writes a 1600 px and a 480 px WebP under `EVENT_COVERS_DIRECTORY`, named
+      by a fresh short UUID so `/events/covers/{name}` is cached immutably, and
+      the event keeps the name. Not a gallery photo — those are public,
+      CC-licensed and placed — and never inline base64.
 - [ ] 3. Rich description: Tiptap in the form, loaded only there; text marks,
       lists, links and headings, no images. Stored as Tiptap JSON of those
       node types, so it can't carry markup, and rendered by a small renderer

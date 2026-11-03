@@ -19,6 +19,7 @@ import {
   type SubmitEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -43,13 +44,16 @@ import {
   FaLink,
   FaRegClock,
   FaRegDotCircle,
+  FaRegImage,
   FaRegMap,
   FaRulerHorizontal,
   FaSave,
+  FaTimes,
 } from 'react-icons/fa';
 import { MdTrendingDown, MdTrendingUp } from 'react-icons/md';
 import { useDispatch, useStore } from 'react-redux';
 import {
+  coverUrl,
   DIFFICULTIES,
   DIFFICULTY_LABELS,
   type Difficulty,
@@ -200,6 +204,9 @@ function toDraft(
 // An input group otherwise stretches its input to fill the row.
 const NARROW = { flex: '0 0 5.5em' };
 
+/** As the API takes it. */
+const MAX_COVER_BYTES = 20 * 1024 * 1024;
+
 const num = (s: string) => (s.trim() === '' ? null : Number(s));
 
 function parsePosition(s: string): EventPoint | null {
@@ -269,6 +276,25 @@ export default function EventFormModal({ show }: Props): ReactElement {
   const [draft, setDraft] = useState(() =>
     toDraft(editing, target?.mapId, language),
   );
+
+  /** A newly chosen cover image; `null` once removed, unset keeps the event's. */
+  const [cover, setCover] = useState<File | null>();
+
+  const coverPreview = useMemo(
+    () => (cover ? URL.createObjectURL(cover) : undefined),
+    [cover],
+  );
+
+  useEffect(
+    () => () => {
+      if (coverPreview) {
+        URL.revokeObjectURL(coverPreview);
+      }
+    },
+    [coverPreview],
+  );
+
+  const coverInput = useRef<HTMLInputElement>(null);
 
   /** What the last fill couldn't take from the map. */
   const [fillNote, setFillNote] = useState<string | null>(null);
@@ -449,6 +475,8 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
     seed(editing);
 
+    setCover(undefined);
+
     setFillNote(null);
 
     if (!target?.id && target?.mapId) {
@@ -469,7 +497,16 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
   const startPoint = parsePosition(draft.position);
 
+  const coverTooLarge = (cover?.size ?? 0) > MAX_COVER_BYTES;
+
+  const shownCover =
+    coverPreview ??
+    (cover === undefined && editing?.cover
+      ? coverUrl(editing.cover, 'thumb')
+      : undefined);
+
   const valid =
+    !coverTooLarge &&
     draft.title.trim() !== '' &&
     draft.startAt !== '' &&
     startPoint !== null &&
@@ -519,6 +556,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
           ascent: num(draft.ascent),
           descent: num(draft.descent),
         },
+        cover: cover === null && !editing?.cover ? undefined : cover,
       }),
     );
   };
@@ -577,6 +615,57 @@ export default function EventFormModal({ show }: Props): ReactElement {
               value={draft.description}
               onChange={(e) => set({ description: e.currentTarget.value })}
             />
+          </Form.Group>
+
+          <Form.Group controlId="eventCover" className="mb-3">
+            <Form.Label>
+              <FaRegImage /> Cover image
+            </Form.Label>
+
+            <InputGroup hasValidation>
+              <Form.Control
+                ref={coverInput}
+                type="file"
+                accept="image/*"
+                isInvalid={coverTooLarge}
+                onChange={(e) => {
+                  const file = (e.currentTarget as HTMLInputElement).files?.[0];
+
+                  // A cancelled file dialog keeps the image shown.
+                  if (file) {
+                    setCover(file);
+                  }
+                }}
+              />
+
+              {shownCover && (
+                <Button
+                  variant="danger"
+                  onClick={() => {
+                    setCover(null);
+
+                    if (coverInput.current) {
+                      coverInput.current.value = '';
+                    }
+                  }}
+                >
+                  <FaTimes /> Remove
+                </Button>
+              )}
+
+              <Form.Control.Feedback type="invalid">
+                The image is larger than 20 MB.
+              </Form.Control.Feedback>
+            </InputGroup>
+
+            {shownCover && (
+              <img
+                src={shownCover}
+                alt=""
+                className="d-block rounded mt-2"
+                style={{ maxWidth: '240px', maxHeight: '135px' }}
+              />
+            )}
           </Form.Group>
 
           <div className="d-flex flex-wrap gap-3 mb-3">

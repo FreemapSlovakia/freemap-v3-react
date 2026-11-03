@@ -78,6 +78,8 @@ export const EventSchema = z.object({
   endAt: IsoDateSchema.nullable(),
   startPoint: EventPointSchema,
   visibility: EventVisibilitySchema,
+  /** The cover image's name; see {@link coverUrl}. */
+  cover: z.string().nullable(),
   ...TripStatsShape,
   ...AttributesShape,
   createdAt: IsoDateSchema,
@@ -86,6 +88,9 @@ export const EventSchema = z.object({
 });
 
 export type EventItem = z.infer<typeof EventSchema>;
+
+export const coverUrl = (name: string, size: 'large' | 'thumb') =>
+  `${process.env['API_URL']}/events/covers/${encodeURIComponent(name)}${size === 'thumb' ? '?size=thumb' : ''}`;
 
 /** What the event form sends; dates as ISO strings. */
 export type EventBody = TripStats &
@@ -105,10 +110,15 @@ export const eventsLoadList = createAction('EVENTS_LOAD_LIST');
 
 export const eventsSetFilter = createAction<EventsFilter>('EVENTS_SET_FILTER');
 
-/** Creates an event, or with `id` updates it. */
-export const eventsSave = createAction<{ id?: string; body: EventBody }>(
-  'EVENTS_SAVE',
-);
+/**
+ * Creates an event, or with `id` updates it; `cover` replaces its cover image,
+ * or `null` removes it.
+ */
+export const eventsSave = createAction<{
+  id?: string;
+  body: EventBody;
+  cover?: File | null;
+}>('EVENTS_SAVE');
 
 /** The save request settled; the form is released either way. */
 export const eventsSaveDone = createAction<{ ok: boolean }>('EVENTS_SAVE_DONE');

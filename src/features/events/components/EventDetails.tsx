@@ -5,7 +5,11 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import type { ReactElement } from 'react';
 import { Badge } from 'react-bootstrap';
 import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
-import { DIFFICULTY_LABELS, type EventItem } from '../model/actions.js';
+import {
+  coverUrl,
+  DIFFICULTY_LABELS,
+  type EventItem,
+} from '../model/actions.js';
 import { iconOfKind } from '../model/transports.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
 
@@ -51,6 +55,26 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
 
   return (
     <div className="d-flex flex-column gap-1">
+      {event.cover && (
+        <a
+          href={coverUrl(event.cover, 'large')}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-1"
+          data-toast-cover
+        >
+          <img
+            src={coverUrl(event.cover, 'thumb')}
+            // The 480 and 1600 px variants the API writes.
+            srcSet={`${coverUrl(event.cover, 'thumb')} 480w, ${coverUrl(event.cover, 'large')} 1600w`}
+            sizes="480px"
+            alt=""
+            className="rounded w-100"
+            style={{ maxHeight: '180px', objectFit: 'cover' }}
+          />
+        </a>
+      )}
+
       <div className="fw-bold">
         {event.title}{' '}
         {event.visibility === 'unlisted' && (

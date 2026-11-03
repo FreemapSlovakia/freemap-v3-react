@@ -9,6 +9,12 @@ const en: EventsMessages = {
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Error loading events', err),
   saveError: ({ err }) => addError(getMessages()!, 'Error saving event', err),
+  coverError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'The event is saved, but not its cover image',
+      err,
+    ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Error deleting event', err),
 };

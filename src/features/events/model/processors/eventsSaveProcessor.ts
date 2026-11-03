@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { selectFeature, setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
@@ -15,10 +16,34 @@ import {
 import { eventsLayerOnSelector, selectedEventId } from '../selectors.js';
 import { showSelectedEvent } from './eventSelectionProcessors.js';
 
+async function saveCover(
+  getState: () => RootState,
+  id: string,
+  cover: File | null,
+) {
+  let body;
+
+  if (cover) {
+    body = new FormData();
+
+    body.append('image', cover);
+  }
+
+  const res = await httpRequest({
+    getState,
+    method: cover ? 'PUT' : 'DELETE',
+    url: `/events/${encodeURIComponent(id)}/cover`,
+    expectedStatus: 200,
+    body,
+  });
+
+  return EventSchema.parse(await res.json());
+}
+
 export const eventsSaveProcessor: Processor<typeof eventsSave> = {
   actionCreator: eventsSave,
   async handle({ getState, dispatch, action, toastError }) {
-    const { id, body } = action.payload;
+    const { id, body, cover } = action.payload;
 
     let ok = false;
 
@@ -47,9 +72,15 @@ export const eventsSaveProcessor: Processor<typeof eventsSave> = {
         dispatch(setActiveModal(null));
       }
 
-      dispatch(eventsLoadList());
+      let event = EventSchema.parse(await res.json());
 
-      const event = EventSchema.parse(await res.json());
+      if (cover !== undefined) {
+        try {
+          event = await saveCover(getState, event.id, cover);
+        } catch (err) {
+          await toastError(err, loadEventsMessages, 'coverError');
+        }
+      }
 
       // In the list before it is selected, or the details would show the copy
       // the list still has from before the edit.
@@ -81,6 +112,11 @@ export const eventsSaveProcessor: Processor<typeof eventsSave> = {
         await toastError(err, loadEventsMessages, 'saveError');
       }
     } finally {
+      // After the cover too, or the reload could answer with the old one.
+      if (ok) {
+        dispatch(eventsLoadList());
+      }
+
       dispatch(eventsSaveDone({ ok }));
     }
   },

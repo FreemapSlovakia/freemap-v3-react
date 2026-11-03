@@ -10,6 +10,12 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, 'Chyba při načítání akcí', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Chyba při ukládání akce', err),
+  coverError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Akce je uložena, ale její titulní obrázek ne',
+      err,
+    ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Chyba při rušení akce', err),
 };

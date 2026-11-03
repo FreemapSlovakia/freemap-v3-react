@@ -11,6 +11,12 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, 'Chyba pri načítavaní akcií', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri ukladaní akcie', err),
+  coverError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Akcia je uložená, ale jej titulný obrázok nie',
+      err,
+    ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri rušení akcie', err),
 };
