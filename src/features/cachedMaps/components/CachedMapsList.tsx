@@ -1,5 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
@@ -96,6 +97,7 @@ export function CachedMapsList(): ReactElement {
         <Modal.Title>
           <BiWifiOff /> <Text k="mapLayers.offlineMaps" />
         </Modal.Title>
+        <ManualHeaderButton chapter="offline" />
       </Modal.Header>
 
       <Modal.Body>

@@ -51,6 +51,27 @@
   }
 }
 
+/* ManualHeaderButton: matched to .btn-close beside it, which takes the
+   auto margin otherwise and would leave the book in the middle */
+.modal-header .fm-modal-manual {
+  margin-left: auto;
+  /* Flex so the glyph has no baseline gap under it, centred like the × */
+  display: flex;
+  border: 0;
+  padding: 0.25em;
+  font-size: 1.25rem;
+  color: var(--bs-body-color);
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  & + .btn-close {
+    margin-left: 0.75rem;
+  }
+}
+
 .accordion > .card > .card-header {
   cursor: pointer;
 }

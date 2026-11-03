@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useState } from 'react';
@@ -62,6 +63,7 @@ export default function MyMapsModal({ show }: Props): ReactElement {
               ? mm?.modifyMapTitle(editTarget.name)
               : m?.tools.myMaps}
         </Modal.Title>
+        <ManualHeaderButton chapter="my-maps" />
       </Modal.Header>
 
       {editTarget !== null ? (

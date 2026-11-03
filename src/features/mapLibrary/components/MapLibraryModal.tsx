@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapLayersSettingsReset } from '@features/map/model/actions.js';
@@ -148,6 +149,9 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
         <Modal.Title>
           <FaLayerGroup /> <Text k="mapLayers.mapManager" />
         </Modal.Title>
+        <ManualHeaderButton
+          chapter={customMapRequest ? 'custom-maps' : 'maps'}
+        />
       </Modal.Header>
 
       {customMapRequest ? (

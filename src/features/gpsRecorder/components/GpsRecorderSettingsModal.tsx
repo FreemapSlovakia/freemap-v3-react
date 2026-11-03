@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { DrawingLineStyleFields } from '@features/drawing/components/DrawingLineStyleFields.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
@@ -100,6 +101,7 @@ export default function GpsRecorderSettingsModal({
           <Modal.Title>
             <FaCog /> <Text m={grm} k="settingsModal.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="gps-recorder" />
         </Modal.Header>
 
         <Modal.Body>

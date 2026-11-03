@@ -1,4 +1,5 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -79,6 +80,7 @@ export default function CurrentDrawingPropertiesModal({
           <Modal.Title>
             <FaCoins /> <Text m={cm} k="buyCredits" />
           </Modal.Title>
+          <ManualHeaderButton chapter="premium" />
         </Modal.Header>
 
         <Modal.Body>

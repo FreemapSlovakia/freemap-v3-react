@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   FmDismissButton,
@@ -118,6 +119,7 @@ export function DrawingStyleSettingsModal({
           <Modal.Title>
             {icon} {title}
           </Modal.Title>
+          <ManualHeaderButton chapter="drawing" />
         </Modal.Header>
 
         <Modal.Body>

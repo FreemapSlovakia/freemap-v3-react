@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -77,6 +78,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
         <Modal.Title>
           <FaGem /> <Text m={prm} k="title" />
         </Modal.Title>
+        <ManualHeaderButton chapter="premium" />
       </Modal.Header>
 
       <Modal.Body>

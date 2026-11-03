@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { DEFAULT_SHADING } from '@features/map/model/layerSetup.js';
@@ -358,6 +359,7 @@ export default function OfflineMapExportModal({
             <FaDatabase /> <Text k="mainMenu.offlineMapExport" />{' '}
             <ExperimentalFunction />
           </Modal.Title>
+          <ManualHeaderButton chapter="offline" />
         </Modal.Header>
 
         <Modal.Body>

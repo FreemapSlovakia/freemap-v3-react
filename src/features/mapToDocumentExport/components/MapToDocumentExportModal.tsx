@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
@@ -747,6 +748,7 @@ export default function MapToDocumentExportModal({
         <Modal.Title>
           <FaPrint /> <Text k="mainMenu.mapToDocumentExport" />
         </Modal.Title>
+        <ManualHeaderButton chapter="map-export" />
       </Modal.Header>
 
       <Modal.Body>

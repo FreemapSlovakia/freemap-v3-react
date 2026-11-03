@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
@@ -137,6 +138,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
         <Modal.Title>
           <FaCamera /> <FaTrophy /> <Text m={gm} k="stats.leaderboard" />
         </Modal.Title>
+        <ManualHeaderButton chapter="photos" />
       </Modal.Header>
       <Modal.Body className={clsx('d-flex', 'flex-column', classes.body)}>
         <OfflineAlert />

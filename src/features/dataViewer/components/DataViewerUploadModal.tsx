@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -60,6 +61,7 @@ export default function DataViewerUploadModal({ show }: Props): ReactElement {
         <Modal.Title>
           <MdShapeLine /> <FaUpload /> <Text m={tvm} k="uploadModal.title" />
         </Modal.Title>
+        <ManualHeaderButton chapter="tracks" />
       </Modal.Header>
 
       <Modal.Body>

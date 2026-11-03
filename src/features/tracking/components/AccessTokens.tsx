@@ -1,3 +1,4 @@
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -46,6 +47,7 @@ export function AccessTokens(): ReactElement {
           <FaBullseye />{' '}
           <Text m={tm}>{(tm) => tm.accessTokens.modalTitle(deviceName)}</Text>
         </Modal.Title>
+        <ManualHeaderButton chapter="tracking" />
       </Modal.Header>
 
       <Modal.Body>

@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useOpenManual } from '@features/documents/hooks/useOpenManual.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -34,6 +35,7 @@ import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Form, InputGroup, ToggleButton } from 'react-bootstrap';
 import {
+  FaBook,
   FaCog,
   FaCompass,
   FaCrosshairs,
@@ -131,6 +133,8 @@ export function PanoramaControls({
   const gm = useMessages();
 
   const dispatch = useDispatch();
+
+  const openManual = useOpenManual('window');
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
@@ -756,6 +760,13 @@ export function PanoramaControls({
           showFrom="xxl"
           disabled={!render}
           onClick={() => void createToposcope()}
+        />
+
+        <Action
+          label={gm?.mainMenu.manual}
+          icon={<FaBook />}
+          showFrom="xl"
+          onClick={() => openManual('panorama')}
         />
       </ResponsiveActions>
     </FloatingWindowControls>

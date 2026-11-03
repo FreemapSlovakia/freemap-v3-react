@@ -1,3 +1,4 @@
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapLayerSettingsChange } from '@features/map/model/actions.js';
@@ -553,6 +554,7 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
             <Text m={cm} k="newOfflineMap" />
           )}
         </Modal.Title>
+        <ManualHeaderButton chapter="offline" />
       </Modal.Header>
 
       <Modal.Body>

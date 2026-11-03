@@ -1,3 +1,4 @@
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
@@ -205,6 +206,7 @@ export function ParameterizedShadingModal({
           <Modal.Title>
             {kind && <Text m={sm} k={`presetNames.${kind}`} />}
           </Modal.Title>
+          <ManualHeaderButton chapter="shading" />
         </Modal.Header>
 
         <Modal.Body>

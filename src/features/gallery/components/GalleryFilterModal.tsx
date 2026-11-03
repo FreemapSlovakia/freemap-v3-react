@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
@@ -330,6 +331,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           <Modal.Title>
             <FaCamera /> <FaFilter /> <Text m={gm} k="filterModal.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="photos" />
         </Modal.Header>
 
         <Modal.Body>

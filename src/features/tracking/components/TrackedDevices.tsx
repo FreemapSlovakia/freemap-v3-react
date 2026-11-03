@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -29,6 +30,7 @@ export function TrackedDevices(): ReactElement {
         <Modal.Title>
           <FaEye /> <Text m={tm} k="trackedDevices.modalTitle" />
         </Modal.Title>
+        <ManualHeaderButton chapter="tracking" />
       </Modal.Header>
 
       <Modal.Body>

@@ -7,6 +7,7 @@ import {
 } from '@features/auth/model/actions.js';
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { loadMyMapsMessages } from '@features/myMaps/translations/loadMyMapsMessages.js';
@@ -133,6 +134,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
         <Modal.Title>
           <FaUser /> <Text k="mainMenu.account" />
         </Modal.Title>
+        <ManualHeaderButton chapter="account" />
       </Modal.Header>
 
       <Modal.Body className="bg-body-tertiary">

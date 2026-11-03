@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { LabelVisibilityField } from '@features/drawing/components/LabelVisibilityField.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -98,6 +99,7 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
           <Modal.Title>
             <FaPaintBrush /> <Text m={om} k="style.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="objects" />
         </Modal.Header>
 
         <Modal.Body>

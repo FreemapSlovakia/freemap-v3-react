@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -77,6 +78,7 @@ export default function RoutePlannerStyleModal({ show }: Props): ReactElement {
           <Modal.Title>
             <FaPaintBrush /> <Text m={rpm} k="style.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="route-planner" />
         </Modal.Header>
 
         <Modal.Body>

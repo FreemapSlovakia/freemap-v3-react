@@ -1,4 +1,5 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -36,6 +37,7 @@ export default function AboutModal({ show }: Props): ReactElement {
         <Modal.Title>
           <FaRegAddressCard /> <Text k="mainMenu.contacts" />
         </Modal.Title>
+        <ManualHeaderButton chapter="about" />
       </Modal.Header>
 
       <Modal.Body>

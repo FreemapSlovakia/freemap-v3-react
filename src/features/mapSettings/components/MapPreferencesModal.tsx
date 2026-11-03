@@ -5,6 +5,7 @@ import {
   saveSettings,
   setActiveModal,
 } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { isCompassSupported } from '@features/location/compass.js';
@@ -259,6 +260,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
           <Modal.Title>
             <FaSlidersH /> <Text k="mapLayers.preferences" />
           </Modal.Title>
+          <ManualHeaderButton chapter="maps" />
         </Modal.Header>
 
         <Modal.Body>

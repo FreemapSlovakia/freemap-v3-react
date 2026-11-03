@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { askingCookieConsentSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
+import { ManualWindowButton } from '@features/documents/components/ManualWindowButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -1573,6 +1574,8 @@ export default function ElevationChart(): ReactElement | null {
             onToggle={toggleFullscreen}
             size="sm"
           />
+
+          <ManualWindowButton chapter="tracks" size="sm" />
         </div>
       </div>
 

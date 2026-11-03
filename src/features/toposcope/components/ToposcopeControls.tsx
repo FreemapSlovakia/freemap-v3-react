@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualWindowButton } from '@features/documents/components/ManualWindowButton.js';
 import {
   FloatingWindowControls,
   FullscreenButton,
@@ -78,11 +79,13 @@ export function ToposcopeControls({
         </LongPressTooltip>
       )}
 
-      <span className="ms-auto">
+      <span className="ms-auto d-flex gap-1">
         <FullscreenButton
           fullscreen={fullscreen}
           onToggle={onToggleFullscreen}
         />
+
+        <ManualWindowButton chapter="toposcope" />
       </span>
     </FloatingWindowControls>
   );

@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
@@ -240,6 +241,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           <Modal.Title>
             <FaCog /> <Text m={m} k="settings.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="panorama" />
         </Modal.Header>
 
         <Modal.Body>

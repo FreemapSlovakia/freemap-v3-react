@@ -1,4 +1,5 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -218,6 +219,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
         <Modal.Title>
           <FaCode /> <Text k="mainMenu.embedMap" />
         </Modal.Title>
+        <ManualHeaderButton chapter="devices" />
       </Modal.Header>
 
       <Modal.Body>

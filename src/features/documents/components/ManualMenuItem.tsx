@@ -1,11 +1,9 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { Text } from '@features/l10n/Text.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
-import { trackMatomo } from '@shared/trackMatomo.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaBook } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { useOpenManual } from '../hooks/useOpenManual.js';
 
 /** A toolbar's ⋮ item opening the manual at the chapter about it. */
 export function ManualMenuItem({
@@ -14,7 +12,7 @@ export function ManualMenuItem({
   /** A `src/manual/<chapter>.<lang>.md` key; an unknown one opens the first. */
   chapter: string;
 }): ReactElement {
-  const dispatch = useDispatch();
+  const openManual = useOpenManual('toolbar');
 
   return (
     <Dropdown.Item
@@ -22,9 +20,7 @@ export function ManualMenuItem({
       onClick={(e) => {
         e.preventDefault();
 
-        trackMatomo(['trackEvent', 'Manual', 'toolbar', chapter]);
-
-        dispatch(setActiveModal({ type: 'manual', chapter }));
+        openManual(chapter);
       }}
     >
       <FaBook />
