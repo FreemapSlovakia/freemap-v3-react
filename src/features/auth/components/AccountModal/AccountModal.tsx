@@ -37,6 +37,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { AppTokensSection } from './AppTokensSection.js';
 import { AuthProvidersSection } from './AuthProvidersSection.js';
+import { HomeLocationField } from './HomeLocationField.js';
 import { PersonalInfoSection } from './PersonalInfoSection.js';
 
 type Props = { show: boolean };
@@ -69,6 +70,11 @@ export default function AccountModal({ show }: Props): ReactElement | null {
   const language = useAppSelector((state) => state.l10n.language);
 
   const unsentCount = useAppSelector((state) => state.myMaps.outbox.length);
+
+  // Hidden rather than closed, so the open section stays open.
+  const pickingHome = useAppSelector(
+    (state) => state.homeLocation.selectingHomeLocation !== false,
+  );
 
   // Logging out drops the queued saves along with everything else this account
   // left in the browser, so work that never reached the server is said out loud
@@ -129,6 +135,10 @@ export default function AccountModal({ show }: Props): ReactElement | null {
       onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
+      className={pickingHome ? 'd-none' : undefined}
+      backdropClassName={pickingHome ? 'd-none' : undefined}
+      enforceFocus={!pickingHome}
+      keyboard={!pickingHome}
     >
       <Modal.Header closeButton>
         <Modal.Title>
@@ -162,6 +172,8 @@ export default function AccountModal({ show }: Props): ReactElement | null {
 
             <Accordion.Body className="bg-body-tertiary">
               <PersonalInfoSection />
+
+              <HomeLocationField />
             </Accordion.Body>
           </Accordion.Item>
 

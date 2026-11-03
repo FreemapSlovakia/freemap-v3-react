@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaRegDotCircle } from 'react-icons/fa';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
 import type { GalleryLicense } from '../licenses.js';
@@ -172,7 +172,7 @@ export function GalleryEditForm({
           />
 
           <Button onClick={onPositionPick}>
-            <FaRegDotCircle /> <Text m={gm} k="editForm.setLocation" />
+            <FaMapMarkerAlt /> <Text m={gm} k="editForm.setLocation" />
           </Button>
         </InputGroup>
       </Form.Group>

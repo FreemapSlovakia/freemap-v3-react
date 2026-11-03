@@ -1207,8 +1207,12 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={adFactory} />
               )}
 
+              {/* Hidden, not unmounted, as the floating panels below. */}
               {showMapLayersPanel && (
-                <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
+                <div
+                  className={inMode ? 'd-none' : undefined}
+                  style={{ flexBasis: '100%', pointerEvents: 'none' }}
+                >
                   <AsyncComponent factory={mapLayersPanelFactory} />
                 </div>
               )}

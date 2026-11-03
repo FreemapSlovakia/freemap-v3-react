@@ -2,13 +2,19 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { ANY, fromAnyValue, withAnyValue } from '@shared/anyToggle.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmDismissButton,
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { parseCoordinates } from '@shared/coordinatesParser.js';
+import { getCurrentPosition, latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import type { LatLon } from '@shared/types/common.js';
 import {
   type ReactElement,
   type ReactNode,
@@ -17,6 +23,8 @@ import {
   useState,
 } from 'react';
 import {
+  Button,
+  Dropdown,
   Form,
   InputGroup,
   Modal,
@@ -29,8 +37,12 @@ import {
   FaDog,
   FaEraser,
   FaFilter,
+  FaHome,
+  FaMapMarkerAlt,
   FaRegClock,
+  FaRegDotCircle,
   FaRulerHorizontal,
+  FaSearchLocation,
 } from 'react-icons/fa';
 import { MdTrendingUp } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
@@ -38,8 +50,18 @@ import {
   DIFFICULTIES,
   DIFFICULTY_LABELS,
   eventsSetFilter,
+  eventsSetPickingStart,
+  eventsSetPickPosition,
+  eventsSetPickRadius,
+  eventsStartPicked,
 } from '../model/actions.js';
-import { isFilterEmpty, type Range } from '../model/filter.js';
+import {
+  isFilterEmpty,
+  MAX_RADIUS,
+  MIN_RADIUS,
+  RADIUS_STOPS,
+  type Range,
+} from '../model/filter.js';
 import { TRANSPORT_KINDS } from '../model/transports.js';
 import { DIFFICULTY_ICON, DIFFICULTY_ICONS } from './difficultyIcons.js';
 
@@ -76,6 +98,17 @@ function fromRangeDraft({ min, max }: RangeDraft): Range | undefined {
 
 // As the event form's, so the two read alike.
 const NARROW = { flex: '0 0 5.5em' };
+
+/** Km, what a place starts with. */
+const DEFAULT_RADIUS = 20;
+
+function parsePlace(s: string): LatLon | null {
+  try {
+    return s.trim() === '' ? null : parseCoordinates(s);
+  } catch {
+    return null;
+  }
+}
 
 function RangeInput({
   id,
@@ -172,7 +205,21 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
   const [to, setTo] = useState('');
 
-  const [inMapArea, setInMapArea] = useState(false);
+  /** The place as typed, in any notation `parseCoordinates` reads. */
+  const [place, setPlace] = useState('');
+
+  const [radius, setRadius] = useState(String(DEFAULT_RADIUS));
+
+  const picked = useAppSelector((state) => state.events.pickedStart);
+
+  const pickedRadius = useAppSelector((state) => state.events.pickRadius);
+
+  // Hidden rather than closed, so the dialog keeps what was set.
+  const picking = useAppSelector((state) => state.events.pickingStart);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const home = useAppSelector((state) => state.homeLocation.homeLocation);
 
   const [transport, setTransport] = useState<string[]>([]);
 
@@ -195,7 +242,9 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
       setTo(toDateInput(filter.to));
 
-      setInMapArea(Boolean(filter.inMapArea));
+      setPlace(filter.near ? latLonToString(filter.near, language) : '');
+
+      setRadius(String(filter.near?.radius ?? DEFAULT_RADIUS));
 
       setTransport(filter.transport ?? []);
 
@@ -211,20 +260,60 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
       setAscent(toRangeDraft(filter.ascent));
     }
-  }, [show, filter]);
+  }, [show, filter, language]);
+
+  useEffect(() => {
+    if (show && picked) {
+      setPlace(latLonToString(picked, language));
+
+      if (pickedRadius !== null) {
+        setRadius(String(pickedRadius));
+      }
+
+      dispatch(eventsStartPicked(null));
+    }
+  }, [show, picked, pickedRadius, dispatch, language]);
 
   useDocumentTitle(show ? 'Events filter' : undefined);
 
   const close = () => dispatch(setActiveModal(null));
 
+  const point = parsePlace(place);
+
+  const radiusKm = Number(radius);
+
+  const radiusValid =
+    radius.trim() !== '' && radiusKm >= MIN_RADIUS && radiusKm <= MAX_RADIUS;
+
+  const valid = place.trim() === '' || (point !== null && radiusValid);
+
+  const takeMyLocation = () => {
+    getCurrentPosition().then(
+      (position) => setPlace(latLonToString(position, language)),
+      () =>
+        dispatch(
+          toastsAdd({
+            id: 'events.gpsError',
+            style: 'warning',
+            timeout: 5000,
+            messageKey: 'main.locationError',
+          }),
+        ),
+    );
+  };
+
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!valid) {
+      return;
+    }
 
     dispatch(
       eventsSetFilter({
         from: fromDateInput(from),
         to: fromDateInput(to),
-        inMapArea: inMapArea || undefined,
+        near: point ? { ...point, radius: radiusKm } : undefined,
         transport: transport.length ? transport : undefined,
         difficulty: difficulty.length ? difficulty : undefined,
         dogs,
@@ -239,7 +328,15 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
   };
 
   return (
-    <Modal show={show} onHide={close} size="lg">
+    <Modal
+      show={show}
+      onHide={close}
+      size="lg"
+      className={picking ? 'd-none' : undefined}
+      backdropClassName={picking ? 'd-none' : undefined}
+      enforceFocus={!picking}
+      keyboard={!picking}
+    >
       <Modal.Header closeButton>
         <Modal.Title>
           <FaFilter /> Events filter
@@ -270,13 +367,89 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
             </InputGroup>
           </Form.Group>
 
-          <Form.Check
-            id="eventsInMapArea"
-            className="mb-3"
-            checked={inMapArea}
-            onChange={(e) => setInMapArea(e.currentTarget.checked)}
-            label="Only in the current map area"
-          />
+          <Form.Group controlId="eventsNear" className="mb-3">
+            <Form.Label>
+              <FaSearchLocation /> Near
+            </Form.Label>
+
+            <InputGroup>
+              <Form.Control
+                placeholder="Anywhere"
+                value={place}
+                isInvalid={place.trim() !== '' && point === null}
+                onChange={(e) => setPlace(e.currentTarget.value)}
+              />
+
+              <InputGroup.Text>within</InputGroup.Text>
+
+              <Form.Control
+                type="number"
+                min={MIN_RADIUS}
+                max={MAX_RADIUS}
+                list="eventsRadii"
+                style={NARROW}
+                value={radius}
+                disabled={point === null}
+                isInvalid={point !== null && !radiusValid}
+                onChange={(e) => setRadius(e.currentTarget.value)}
+              />
+
+              <InputGroup.Text>km</InputGroup.Text>
+
+              <Button
+                onClick={() => {
+                  dispatch(eventsSetPickPosition(point));
+
+                  dispatch(
+                    eventsSetPickRadius(
+                      radiusValid ? radiusKm : DEFAULT_RADIUS,
+                    ),
+                  );
+
+                  dispatch(eventsSetPickingStart(true));
+                }}
+              >
+                <FaMapMarkerAlt /> Set the location
+              </Button>
+
+              {/* In an input group a Dropdown renders no wrapper of its own. */}
+              <Dropdown
+                align="end"
+                onSelect={(key) => {
+                  if (key === 'current') {
+                    takeMyLocation();
+                  } else if (key === 'home' && home) {
+                    setPlace(latLonToString(home, language));
+                  }
+                }}
+              >
+                <Dropdown.Toggle split variant="primary" />
+
+                <FmDropdownMenu>
+                  <Dropdown.Item as="button" type="button" eventKey="current">
+                    <FaRegDotCircle />
+                    <MenuLabel>My location</MenuLabel>
+                  </Dropdown.Item>
+
+                  <Dropdown.Item
+                    as="button"
+                    type="button"
+                    eventKey="home"
+                    disabled={!home}
+                  >
+                    <FaHome />
+                    <MenuLabel>Home position</MenuLabel>
+                  </Dropdown.Item>
+                </FmDropdownMenu>
+              </Dropdown>
+            </InputGroup>
+
+            <datalist id="eventsRadii">
+              {RADIUS_STOPS.map((r) => (
+                <option key={r} value={r} />
+              ))}
+            </datalist>
+          </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label className="d-block">Transport</Form.Label>
@@ -414,6 +587,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
         <FmModalFooter>
           <FmFooterButton
             type="submit"
+            disabled={!valid}
             icon={<FaCheck />}
             label={m?.general.apply}
           />

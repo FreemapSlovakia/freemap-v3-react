@@ -4,13 +4,15 @@ import {
   filterFromQuery,
   filterToQuery,
   filterToRequest,
+  nearestRadiusStop,
+  RADIUS_STOPS,
   sameFilter,
 } from './filter.js';
 
 const full: EventsFilter = {
   from: new Date('2026-11-01'),
   to: new Date('2026-11-30'),
-  inMapArea: true,
+  near: { lat: 48.14816, lon: 17.10674, radius: 25 },
   transport: ['hiking', 'mtb'],
   distance: { min: 5, max: 20 },
   duration: { max: 4 },
@@ -49,6 +51,34 @@ describe('events filter', () => {
     expect(filterToRequest(invalid)).toEqual({});
   });
 
+  it('reads no place from a link without a valid radius or point', () => {
+    expect(filterFromQuery({ 'events-near': '48.1,17.1' })).toEqual({});
+
+    expect(
+      filterFromQuery({ 'events-near': '48.1', 'events-radius': '25' }),
+    ).toEqual({});
+
+    expect(
+      filterFromQuery({ 'events-near': '48.1,17.1', 'events-radius': '0' }),
+    ).toEqual({});
+  });
+
+  it('puts a typed radius on the nearest slider stop', () => {
+    const stopOf = (km: number) => RADIUS_STOPS[nearestRadiusStop(km)];
+
+    expect(stopOf(1)).toBe(10);
+
+    expect(stopOf(25)).toBe(25);
+
+    expect(stopOf(33)).toBe(35);
+
+    expect(stopOf(17)).toBe(18);
+
+    expect(stopOf(260)).toBe(250);
+
+    expect(stopOf(1000)).toBe(1000);
+  });
+
   it('drops unknown difficulties from a link', () => {
     expect(filterFromQuery({ 'events-difficulty': 'easy,impossible' })).toEqual(
       { difficulty: ['easy'] },
@@ -57,6 +87,8 @@ describe('events filter', () => {
 
   it('sends ranges in meters and seconds', () => {
     expect(filterToRequest(full)).toMatchObject({
+      near: '48.14816,17.10674',
+      radius: '25',
       transport: 'hiking,mtb',
       minDistance: '5000',
       maxDistance: '20000',

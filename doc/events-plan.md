@@ -34,9 +34,8 @@ event) and a visibility (public, or unlisted: reachable by link, not listed).
 - Toolbar: _Events_ · **Filter** · **New event** · close; hidden while the
   selected event's map is loaded.
   - Filter dialog: date range, transport, difficulty, dogs, children, length,
-    duration and ascent ranges; **Near** a place within a radius (replacing
-    "only in the current map area"); later _Who_ — Everyone / People I follow /
-    Mine.
+    duration and ascent ranges; **Near** a place within a radius; later _Who_ —
+    Everyone / People I follow / Mine.
 - In the Map layers panel the layer's row lists the events shown; picking one
   selects it.
 
@@ -83,15 +82,15 @@ from the selection toolbar (**Edit**).
       by a fresh short UUID so `/events/covers/{name}` is cached immutably, and
       the event keeps the name. Not a gallery photo — those are public,
       CC-licensed and placed — and never inline base64.
-- [ ] 3. Rich description: Tiptap in the form, loaded only there; text marks,
+- [ ] 3. _Deferred — plain text serves until it doesn't._ Rich description:
+      Tiptap in the form, loaded only there; text marks,
       lists, links and headings, no images. Stored as Tiptap JSON of those
       node types, so it can't carry markup, and rendered by a small renderer
       of our own without Tiptap. The listing drops the description; it is
       fetched when an event is selected.
-- [ ] 4. Near a place: the filter's **Near** — a place (the coordinate field
-      with **Set the location**, or the user's location) and a radius (10 / 25
-      / 50 / 100 km or typed) — replacing "only in the current map area", which
-      adds little over the markers on screen. The API takes
+- [x] 4. Near a place: the filter's **Near** — a place (the coordinate field
+      with **My location** and **Set the location**) and a radius (10 / 25 / 50
+      / 100 km suggested, or typed, up to 1000). The API takes
       `near=lat,lon&radius=km`, narrowing by a bounding box on the start point's
       index before the exact distance; the panel's list shows and sorts by the
       distance.

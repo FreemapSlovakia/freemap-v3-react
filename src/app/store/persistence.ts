@@ -208,6 +208,7 @@ export const PersistedCookieConsentSchema = z
 export const PersistedHomeLocationSchema = z
   .object({
     homeLocation: LatLonSchema.nullable(),
+    unsent: z.boolean(),
   })
   .partial();
 
@@ -613,7 +614,7 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedHomeLocationSchema,
     initial: homeLocationInitialState,
     fallbackKey: 'main',
-    persist: (h) => ({ homeLocation: h.homeLocation }),
+    persist: (h) => ({ homeLocation: h.homeLocation, unsent: h.unsent }),
   }),
   defineEntry({
     key: 'main',

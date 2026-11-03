@@ -52,6 +52,7 @@ The Account modal has four collapsible sections (below); from the buttons at the
 - Profile picture (choose / remove)
 - Name (required) and email address
 - "About me" description
+- **Home position** — set on the map or removed, saved at once (outside the section's Save); offered by the route planner's Start/Finish menus and the events filter's **Near**. Without an account it is kept in the browser only; one set before logging in goes to an account that has none
 
 #### Login providers
 

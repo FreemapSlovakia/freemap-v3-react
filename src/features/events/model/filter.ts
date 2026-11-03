@@ -3,14 +3,14 @@ import { DIFFICULTIES } from './actions.js';
 /** Inclusive; either end may be open. */
 export type Range = { min?: number; max?: number };
 
-/**
- * The events layer's filter. `inMapArea` restricts it to the viewport (the bbox
- * is taken when fetching). Ranges are in km, hours and meters, as typed.
- */
+/** Within `radius` km of a place. */
+export type Near = { lat: number; lon: number; radius: number };
+
+/** The events layer's filter. Ranges are in km, hours and meters, as typed. */
 export interface EventsFilter {
   from?: Date;
   to?: Date;
-  inMapArea?: boolean;
+  near?: Near;
   transport?: string[];
   distance?: Range;
   duration?: Range;
@@ -28,7 +28,7 @@ const isEmptyRange = (r: Range | undefined) =>
 export const isFilterEmpty = (f: EventsFilter): boolean =>
   !f.from &&
   !f.to &&
-  !f.inMapArea &&
+  !f.near &&
   !f.transport?.length &&
   isEmptyRange(f.distance) &&
   isEmptyRange(f.duration) &&
@@ -69,6 +69,57 @@ function parseRange(s: unknown): Range | undefined {
   return isEmptyRange(range) ? undefined : range;
 }
 
+function parseNear(near: unknown, radius: unknown): Near | undefined {
+  if (typeof near !== 'string' || typeof radius !== 'string') {
+    return undefined;
+  }
+
+  const [lat, lon] = near.split(',').map(Number);
+
+  const r = Number(radius);
+
+  return lat !== undefined &&
+    lon !== undefined &&
+    Math.abs(lat) <= 90 &&
+    Math.abs(lon) <= 180 &&
+    r >= MIN_RADIUS &&
+    r <= MAX_RADIUS
+    ? { lat, lon, radius: r }
+    : undefined;
+}
+
+/** Km; the API's own bound. */
+export const MAX_RADIUS = 1000;
+
+/** Km; a smaller circle catches next to no events. */
+export const MIN_RADIUS = 10;
+
+/** One decade of the slider's stops: round numbers about 1.1× apart. */
+const DECADE = [
+  10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 25, 28, 30, 35, 40, 45, 50, 55, 60,
+  70, 80, 90,
+];
+
+/** The radius slider's stops, km, from {@link MIN_RADIUS} to {@link MAX_RADIUS}. */
+export const RADIUS_STOPS = [
+  ...DECADE,
+  ...DECADE.map((km) => km * 10),
+  MAX_RADIUS,
+];
+
+/** The stop nearest to a radius on a log scale, for one typed off the series. */
+export const nearestRadiusStop = (km: number): number =>
+  RADIUS_STOPS.reduce(
+    (best, stop, i) =>
+      Math.abs(Math.log(stop / km)) <
+      Math.abs(Math.log(RADIUS_STOPS[best]! / km))
+        ? i
+        : best,
+    0,
+  );
+
+const formatCoord = (n: number) => String(Math.round(n * 1e5) / 1e5);
+
 /** The filter as URL query parts, `events-*`. */
 export function filterToQuery(f: EventsFilter): [string, string][] {
   const parts: [string, string][] = [];
@@ -85,8 +136,11 @@ export function filterToQuery(f: EventsFilter): [string, string][] {
     parts.push(['events-to', formatDate(to)]);
   }
 
-  if (f.inMapArea) {
-    parts.push(['events-in-map-area', '1']);
+  if (f.near) {
+    parts.push(
+      ['events-near', `${formatCoord(f.near.lat)},${formatCoord(f.near.lon)}`],
+      ['events-radius', String(f.near.radius)],
+    );
   }
 
   if (f.transport?.length) {
@@ -137,7 +191,7 @@ export function filterFromQuery(
   const filter: EventsFilter = {
     from: parseDate(query['events-from']),
     to: parseDate(query['events-to']),
-    inMapArea: query['events-in-map-area'] === '1' || undefined,
+    near: parseNear(query['events-near'], query['events-radius']),
     transport: transport.length ? transport : undefined,
     distance: parseRange(query['events-length']),
     duration: parseRange(query['events-duration']),
@@ -156,9 +210,15 @@ export function filterFromQuery(
 export const sameFilter = (a: EventsFilter, b: EventsFilter): boolean =>
   JSON.stringify(filterToQuery(a)) === JSON.stringify(filterToQuery(b));
 
-/** The filter as `GET /events` parameters, except the viewport's bbox. */
+/** The filter as `GET /events` parameters. */
 export function filterToRequest(f: EventsFilter): Record<string, string> {
   const params: Record<string, string> = {};
+
+  if (f.near) {
+    params['near'] = `${f.near.lat},${f.near.lon}`;
+
+    params['radius'] = String(f.near.radius);
+  }
 
   const from = validDate(f.from);
 

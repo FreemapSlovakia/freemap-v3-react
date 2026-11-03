@@ -27,6 +27,9 @@ export type AuthMessages = {
     picture: string;
     choosePicture: string;
     pictureTooLarge: string;
+    homeLocation: string;
+    homeLocationUnset: string;
+    setHomeLocation: string;
   };
   appTokens: {
     title: string;

@@ -1,8 +1,9 @@
 import { selectFeature } from '@app/store/actions.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
+import { distanceTo } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import type { ReactElement } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { selectedEventId } from '../model/selectors.js';
@@ -14,7 +15,29 @@ export function EventsLayerList(): ReactElement {
 
   const em = useEventsMessages();
 
-  const list = useAppSelector((state) => state.events.list);
+  const events = useAppSelector((state) => state.events.list);
+
+  const near = useAppSelector((state) => state.events.filter.near);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  // Nearest first, near a place; otherwise as listed, by date.
+  const list = useMemo(
+    () =>
+      near
+        ? events
+            .map((event) => ({
+              event,
+              km: distanceTo(near, event.startPoint) / 1000,
+            }))
+            .toSorted((a, b) => a.km - b.km)
+        : events.map((event) => ({ event, km: undefined })),
+    [events, near],
+  );
+
+  const kmFormat = new Intl.NumberFormat(language, {
+    maximumFractionDigits: 1,
+  });
 
   const selectedId = useAppSelector(selectedEventId);
 
@@ -30,7 +53,7 @@ export function EventsLayerList(): ReactElement {
 
   return (
     <ListGroup className="mb-2">
-      {list.map((event) => (
+      {list.map(({ event, km }) => (
         <ListGroup.Item
           key={event.id}
           action
@@ -46,6 +69,7 @@ export function EventsLayerList(): ReactElement {
           <small className="text-truncate d-block">
             {dateFormat.format(event.startAt)}
             {event.endAt && ` – ${dateFormat.format(event.endAt)}`}
+            {km !== undefined && ` · ${kmFormat.format(km)} km`}
           </small>
         </ListGroup.Item>
       ))}

@@ -15,6 +15,9 @@ const en: AuthMessages = {
     picture: 'Profile picture',
     choosePicture: 'Choose picture',
     pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
+    homeLocation: 'Home position',
+    homeLocationUnset: 'Not set',
+    setHomeLocation: 'Set on the map',
   },
   appTokens: {
     title: 'App tokens',

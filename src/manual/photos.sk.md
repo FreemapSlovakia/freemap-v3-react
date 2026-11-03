@@ -54,7 +54,7 @@ Pri každej fotke vyplňte:
 
 - **Názov** a **Popis**,
 - **Dátum a čas fotenia**,
-- **Pozícia** – zadajte súradnice alebo stlačte :FaRegDotCircle: **Nastaviť pozíciu**, kliknite na miesto v mape a potvrďte tlačidlom :FaCheck: **OK**,
+- **Pozícia** – zadajte súradnice alebo stlačte :FaMapMarkerAlt: **Nastaviť pozíciu**, kliknite na miesto v mape a potvrďte tlačidlom :FaCheck: **OK**,
 - **Azimut** – smer fotenia,
 - **Tagy**,
 - **Licencia** – CC BY-SA 4.0, ak nezvolíte inú licenciu Creative Commons.

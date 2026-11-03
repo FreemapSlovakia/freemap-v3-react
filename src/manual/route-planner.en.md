@@ -18,7 +18,7 @@ You can also start from the map: right-click a place, or press and hold it on a 
 
 With the route finder open, click the map: the first click places the start, the next one the finish, and the route appears. Each further click adds a new finish, and the previous one becomes a stop along the way.
 
-- Under :FaPlay.text-success: **Start** and :FaStop.text-danger: **Finish** in the toolbar you choose :FaMapMarkerAlt: **Select on the map**, :FaBullseye: **Your position** or :FaHome: **Home position**. With the :FaCrosshairs: button next to the home position you pick it on the map.
+- Under :FaPlay.text-success: **Start** and :FaStop.text-danger: **Finish** in the toolbar you choose :FaMapMarkerAlt: **Select on the map**, :FaRegDotCircle: **Your position** or :FaHome: **Home position**. With the :FaCrosshairs: button next to the home position you pick it on the map.
 - ⇆ **Swap start and finish** reverses the route.
 - Drag any point to move it. Drag the route line itself to add a stop at that place.
 - Click a point to select it. Its toolbar has :FaEllipsisV: with a menu of actions for that place, and :FaTrash: to remove that point.

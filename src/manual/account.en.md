@@ -43,6 +43,8 @@ Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</k
 
 Press :FaCheck: **Save** to store the changes.
 
+Below them, :FaHome: **Home position** is saved as soon as you set it: :FaMapMarkerAlt: **Set on the map** lets you click it on the map, :FaTimes: **Remove** clears it. The route planner and the events filter offer it as a place.
+
 ## Login providers
 
 Several providers can lead to one Freemap account. Under **Connect**, press a provider you want to add; after you confirm its login, you can log in with it too. If that provider account already belongs to another Freemap account, the two accounts are joined into one.

@@ -16,6 +16,8 @@ type Props = {
   confirmDisabled?: boolean;
   /** Only where Escape really cancels the mode — see `keyboardHandler`. */
   cancelKbd?: string;
+  /** The mode's own controls, between the prompt and the buttons. */
+  children?: ReactNode;
 };
 
 /**
@@ -29,6 +31,7 @@ export function PickingMenu({
   confirmLabel,
   confirmDisabled,
   cancelKbd,
+  children,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -36,6 +39,8 @@ export function PickingMenu({
     <div>
       <Toolbar className="mt-2">
         <div className="px-1">{prompt}</div>
+
+        {children}
 
         {onConfirm && (
           <LongPressTooltip

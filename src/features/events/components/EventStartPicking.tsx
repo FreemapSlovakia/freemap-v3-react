@@ -2,16 +2,23 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
-import { FaFlag } from 'react-icons/fa';
-import { useMapEvent } from 'react-leaflet';
+import { FaFlag, FaMapMarkerAlt } from 'react-icons/fa';
+import { Circle, useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { eventsSetPickPosition } from '../model/actions.js';
 
-/** Places the event's start point: a click puts it there, dragging moves it. */
+const COLOR = '#6f42c1';
+
+/**
+ * Places the event's start point, or the place to filter by with its radius
+ * drawn: a click puts it there, dragging moves it.
+ */
 export default function EventStartPicking(): ReactElement | null {
   const dispatch = useDispatch();
 
   const position = useAppSelector((state) => state.events.pickPosition);
+
+  const radius = useAppSelector((state) => state.events.pickRadius);
 
   useMapEvent(
     'click',
@@ -34,14 +41,25 @@ export default function EventStartPicking(): ReactElement | null {
 
   return (
     position && (
-      <RichMarker
-        draggable
-        pane="fm-active-overlay"
-        position={{ lat: position.lat, lng: position.lon }}
-        color="#6f42c1"
-        faIcon={<FaFlag />}
-        eventHandlers={{ dragend: handleDragEnd }}
-      />
+      <>
+        {radius !== null && (
+          <Circle
+            center={{ lat: position.lat, lng: position.lon }}
+            radius={radius * 1000}
+            interactive={false}
+            pathOptions={{ color: COLOR, weight: 2, fillOpacity: 0.1 }}
+          />
+        )}
+
+        <RichMarker
+          draggable
+          pane="fm-active-overlay"
+          position={{ lat: position.lat, lng: position.lon }}
+          color={COLOR}
+          faIcon={radius === null ? <FaFlag /> : <FaMapMarkerAlt />}
+          eventHandlers={{ dragend: handleDragEnd }}
+        />
+      </>
     )
   );
 }

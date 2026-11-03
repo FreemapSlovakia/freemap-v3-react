@@ -49,8 +49,8 @@ import {
   FaFlag,
   FaGlobeEurope,
   FaLink,
+  FaMapMarkerAlt,
   FaRegClock,
-  FaRegDotCircle,
   FaRegImage,
   FaRegMap,
   FaRulerHorizontal,
@@ -511,8 +511,9 @@ export default function EventFormModal({ show }: Props): ReactElement {
     }
   }, [openKey, editing, target?.id, target?.mapId, fillFromMap, seed]);
 
+  // Only while open: the filter dialog picks a point the same way.
   useEffect(() => {
-    if (picked) {
+    if (show && picked) {
       setDraft((draft) => ({
         ...draft,
         position: latLonToString(picked, language),
@@ -520,7 +521,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
       dispatch(eventsStartPicked(null));
     }
-  }, [picked, dispatch, language]);
+  }, [show, picked, dispatch, language]);
 
   const startPoint = parsePosition(draft.position);
 
@@ -828,7 +829,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
                   dispatch(eventsSetPickingStart(true));
                 }}
               >
-                <FaRegDotCircle /> Set the location
+                <FaMapMarkerAlt /> Set the location
               </Button>
             </InputGroup>
           </Form.Group>

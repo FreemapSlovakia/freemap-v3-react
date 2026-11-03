@@ -82,6 +82,7 @@ import {
   FaPencilAlt,
   FaPlay,
   FaRandom,
+  FaRegDotCircle,
   FaRoute,
   FaStop,
   FaSync,
@@ -876,7 +877,7 @@ export default function RoutePlannerMenu(): ReactElement {
             </Dropdown.Item>
 
             <Dropdown.Item as="button" eventKey="current">
-              <FaBullseye />
+              <FaRegDotCircle />
               <MenuLabel>
                 <Text m={rpm} k="point.current" />
               </MenuLabel>
@@ -968,7 +969,7 @@ export default function RoutePlannerMenu(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item as="button" eventKey="current">
-                  <FaBullseye />
+                  <FaRegDotCircle />
                   <MenuLabel>
                     <Text m={rpm} k="point.current" />
                   </MenuLabel>

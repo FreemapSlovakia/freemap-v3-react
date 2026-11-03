@@ -16,6 +16,9 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     picture: 'Profilový obrázok',
     choosePicture: 'Vybrať obrázok',
     pictureTooLarge: 'Obrázok je príliš veľký. Maximálna veľkosť je 5 MB.',
+    homeLocation: 'Domovská poloha',
+    homeLocationUnset: 'Nenastavená',
+    setHomeLocation: 'Nastaviť v mape',
   },
   appTokens: {
     title: 'Aplikačné tokeny',

@@ -152,6 +152,11 @@ export const eventsSetPickPosition = createAction<EventPoint | null>(
   'EVENTS_SET_PICK_POSITION',
 );
 
+/** Km of the circle around the point being picked; set before picking a place to filter by. */
+export const eventsSetPickRadius = createAction<number | null>(
+  'EVENTS_SET_PICK_RADIUS',
+);
+
 /** Ends picking, handing the placed point to the form. */
 export const eventsConfirmPick = createAction('EVENTS_CONFIRM_PICK');
 

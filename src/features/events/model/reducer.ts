@@ -11,6 +11,7 @@ import {
   eventsSetList,
   eventsSetPickingStart,
   eventsSetPickPosition,
+  eventsSetPickRadius,
   eventsSetSelected,
   eventsStartPicked,
 } from './actions.js';
@@ -27,6 +28,8 @@ export interface EventsState {
   pickPosition: EventPoint | null;
   /** The confirmed pick, until the form takes it. */
   pickedStart: EventPoint | null;
+  /** Km around the point, while picking a place to filter by; kept with the pick. */
+  pickRadius: number | null;
   saving: boolean;
 }
 
@@ -38,6 +41,7 @@ const initialState: EventsState = {
   pickingStart: false,
   pickPosition: null,
   pickedStart: null,
+  pickRadius: null,
   saving: false,
 };
 
@@ -69,10 +73,15 @@ export const eventsReducer = createReducer(initialState, (builder) => {
 
       if (!payload) {
         state.pickPosition = null;
+
+        state.pickRadius = null;
       }
     })
     .addCase(eventsSetPickPosition, (state, { payload }) => {
       state.pickPosition = payload;
+    })
+    .addCase(eventsSetPickRadius, (state, { payload }) => {
+      state.pickRadius = payload;
     })
     .addCase(eventsConfirmPick, (state) => {
       state.pickedStart = state.pickPosition;
@@ -83,5 +92,9 @@ export const eventsReducer = createReducer(initialState, (builder) => {
     })
     .addCase(eventsStartPicked, (state, { payload }) => {
       state.pickedStart = payload;
+
+      if (!payload) {
+        state.pickRadius = null;
+      }
     });
 });

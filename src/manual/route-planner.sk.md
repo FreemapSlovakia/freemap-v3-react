@@ -18,7 +18,7 @@ Začať môžete aj priamo z mapy: kliknite na miesto pravým tlačidlom myši, 
 
 Pri otvorenom nástroji vyhľadávania trás kliknite do mapy: prvé kliknutie umiestni štart, druhé cieľ a zobrazí sa trasa. Každé ďalšie kliknutie pridá nový cieľ a ten predchádzajúci sa stane zastávkou na ceste.
 
-- V ponukách :FaPlay.text-success: **Štart** a :FaStop.text-danger: **Cieľ** na lište si zvolíte :FaMapMarkerAlt: **Vybrať na mape**, :FaBullseye: **Vaša poloha** alebo :FaHome: **Domov**. Tlačidlom :FaCrosshairs: vedľa položky Domov si vyberiete domovskú polohu na mape.
+- V ponukách :FaPlay.text-success: **Štart** a :FaStop.text-danger: **Cieľ** na lište si zvolíte :FaMapMarkerAlt: **Vybrať na mape**, :FaRegDotCircle: **Vaša poloha** alebo :FaHome: **Domov**. Tlačidlom :FaCrosshairs: vedľa položky Domov si vyberiete domovskú polohu na mape.
 - ⇆ **Prehodiť štart a cieľ** otočí smer trasy.
 - Ktorýkoľvek bod môžete presunúť ťahaním. Potiahnutím samotnej čiary trasy pridáte na dané miesto zastávku.
 - Kliknutím na bod ho vyberiete a na lište výberu nájdete :FaEllipsisV: s ponukou akcií pre toto miesto a :FaTrash: na odstránenie tohto bodu.
