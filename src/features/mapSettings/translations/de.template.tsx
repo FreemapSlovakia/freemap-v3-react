@@ -6,7 +6,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Installieren — diese Karte in den Kartenmenüs anbieten',
   searchLibrary: ({ count }) => `${count} Karten durchsuchen`,
-  catalogCredit: 'Die Kartenliste der Bibliothek stützt sich auf den',
+  catalogCredit: 'Die Kartenliste der Bibliothek stützt sich teilweise auf den',
   filters: {
     toggle: 'Filter',
     clear: 'Filter zurücksetzen',

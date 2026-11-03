@@ -6,7 +6,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Zainstaluj — oferuj tę mapę w menu map',
   searchLibrary: ({ count }) => `Szukaj wśród ${count} map`,
-  catalogCredit: 'Lista map biblioteki korzysta z',
+  catalogCredit: 'Lista map biblioteki korzysta częściowo z',
   filters: {
     toggle: 'Filtry',
     clear: 'Wyczyść filtry',

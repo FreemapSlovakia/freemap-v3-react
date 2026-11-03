@@ -397,10 +397,13 @@ export function MapManager({
 
       {ranked.length > 0 && (
         <>
-          <h6 className="text-muted mt-3">
+          <h6 className="text-muted mt-3 mb-1">
             <FaBookOpen /> <Text k="mapLayers.availableMaps" /> ({ranked.length}
             )
           </h6>
+
+          {/* Above the list, which loads more as it is scrolled. */}
+          <CatalogCredit />
 
           <LibraryResults
             key={pagingKey}
@@ -431,8 +434,6 @@ export function MapManager({
           </>
         )
       )}
-
-      <CatalogCredit />
     </>
   );
 }

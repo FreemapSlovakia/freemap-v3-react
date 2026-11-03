@@ -6,7 +6,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Telepítés — a térkép megjelenik a térképmenükben',
   searchLibrary: ({ count }) => `Keresés ${count} térkép között`,
-  catalogCredit: 'A térképtár listájának forrása:',
+  catalogCredit: 'A térképtár listájának egyik forrása:',
   filters: {
     toggle: 'Szűrők',
     clear: 'Szűrők törlése',

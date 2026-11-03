@@ -6,7 +6,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Installa — la mappa verrà proposta nei menu delle mappe',
   searchLibrary: ({ count }) => `Cerca tra ${count} mappe`,
-  catalogCredit: 'L’elenco delle mappe della libreria attinge da',
+  catalogCredit: 'L’elenco delle mappe della libreria attinge in parte da',
   filters: {
     toggle: 'Filtri',
     clear: 'Azzera i filtri',

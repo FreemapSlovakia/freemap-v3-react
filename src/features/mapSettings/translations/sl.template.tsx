@@ -6,7 +6,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Namesti — ponujaj to karto v menijih kart',
   searchLibrary: ({ count }) => `Išči med ${count} kartami`,
-  catalogCredit: 'Seznam kart knjižnice temelji na',
+  catalogCredit: 'Seznam kart knjižnice delno temelji na',
   filters: {
     toggle: 'Filtri',
     clear: 'Počisti filtre',

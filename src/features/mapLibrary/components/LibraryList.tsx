@@ -252,7 +252,7 @@ export function CatalogCredit(): ReactElement {
   const msm = useMapSettingsMessages();
 
   return (
-    <div className="text-muted small mt-3">
+    <div className="text-muted small mb-2">
       <Text m={msm} k="catalogCredit" />{' '}
       <a
         href="https://github.com/osmlab/editor-layer-index"

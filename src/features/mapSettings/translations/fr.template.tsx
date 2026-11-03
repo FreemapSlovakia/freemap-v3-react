@@ -17,7 +17,8 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
     ),
   install: 'Installer — proposer cette carte dans les menus des cartes',
   searchLibrary: ({ count }) => `Rechercher parmi ${count} cartes`,
-  catalogCredit: 'La liste des cartes de la bibliothèque s’appuie sur',
+  catalogCredit:
+    'La liste des cartes de la bibliothèque s’appuie en partie sur',
   filters: {
     toggle: 'Filtres',
     clear: 'Effacer les filtres',

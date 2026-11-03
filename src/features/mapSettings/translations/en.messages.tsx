@@ -5,7 +5,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const en: MapSettingsMessages = {
   install: 'Install — offer this map in the map menus',
   searchLibrary: ({ count }) => `Search ${count} maps`,
-  catalogCredit: 'The library’s map list draws on the',
+  catalogCredit: 'The library’s map list draws partly on the',
   filters: {
     toggle: 'Filters',
     clear: 'Clear filters',

@@ -6,7 +6,7 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Nainstalovat — nabízet tuto mapu v menu map',
   searchLibrary: ({ count }) => `Hledat v ${count} mapách`,
-  catalogCredit: 'Seznam map knihovny čerpá z',
+  catalogCredit: 'Seznam map knihovny čerpá zčásti z',
   filters: {
     toggle: 'Filtry',
     clear: 'Zrušit filtry',
