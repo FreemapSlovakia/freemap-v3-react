@@ -1,23 +1,21 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { userLayersSelector } from '@app/store/selectors.js';
-import type { RootState } from '@app/store/store.js';
 import { mapsLoad, mapsLoaded } from '@features/myMaps/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import type { Dispatch } from 'redux';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import {
-  EVENTS_LAYER,
   type EventItem,
   EventSchema,
   eventsOpen,
   eventsOpenDone,
   eventsSetSelected,
 } from '../actions.js';
-import { selectedEventId } from '../selectors.js';
-
-const layerOn = (state: RootState) =>
-  userLayersSelector(state).includes(EVENTS_LAYER);
+import {
+  eventsLayerOnSelector as layerOn,
+  selectedEventId,
+} from '../selectors.js';
 
 /** Puts the selected event in the store and its details in a toast, which goes with the selection. */
 export const eventSelectionProcessor: Processor = {
@@ -37,7 +35,7 @@ export const eventSelectionProcessor: Processor = {
     }
 
     let event: EventItem | undefined = getState().events.list.find(
-      (e) => e.mapId === id,
+      (e) => e.id === id,
     );
 
     // The filter may have dropped it since it was picked.
@@ -61,21 +59,26 @@ export const eventSelectionProcessor: Processor = {
       }
     }
 
-    dispatch(eventsSetSelected(event));
-
-    dispatch(
-      toastsAdd({
-        id: 'event',
-        style: 'info',
-        messageKey: 'details',
-        messageLoader: loadEventsMessages,
-        messageParams: { event },
-        statePredicate: (state) => selectedEventId(state) !== id,
-        onClose: selectFeature(null),
-      }),
-    );
+    showSelectedEvent(dispatch, event);
   },
 };
+
+/** Puts the event in the store and its details in a toast that goes with the selection. */
+export function showSelectedEvent(dispatch: Dispatch, event: EventItem): void {
+  dispatch(eventsSetSelected(event));
+
+  dispatch(
+    toastsAdd({
+      id: 'event',
+      style: 'info',
+      messageKey: 'details',
+      messageLoader: loadEventsMessages,
+      messageParams: { event },
+      statePredicate: (state) => selectedEventId(state) !== event.id,
+      onClose: selectFeature(null),
+    }),
+  );
+}
 
 /** Turning the layer off lets go of its event. */
 export const eventsLayerOffProcessor: Processor = {
@@ -111,8 +114,8 @@ export const eventsOpenedProcessor: Processor<typeof mapsLoaded> = {
 
     dispatch(eventsOpenDone());
 
-    if (action.payload.meta.id === opening) {
-      dispatch(selectFeature({ type: 'event', id: opening }));
+    if (action.payload.meta.id === opening.mapId) {
+      dispatch(selectFeature({ type: 'event', id: opening.id }));
     }
   },
 };

@@ -199,6 +199,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Prémium',
     source: 'Forrás',
     allSources: 'Mind',
+    anyLicense: 'Bármelyik',
   },
 
   linkToCommons: 'fénykép a Wikimedia Commonson',

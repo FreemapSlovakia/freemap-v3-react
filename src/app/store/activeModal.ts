@@ -80,6 +80,7 @@ const MODAL_RENAMES: Record<string, string> = {
 const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
   'browse-cache',
   'elevation-settings',
+  'event-form',
   'map-manager',
   'map-preferences',
   'offline-maps',
@@ -93,6 +94,7 @@ export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
   'data-viewer-properties',
   'data-viewer-vertex',
+  'event-form',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
@@ -120,12 +122,14 @@ export type ActiveModal =
   | {
       type: Exclude<
         ModalId,
-        'tracking-watched' | 'my-maps' | 'map-manager' | 'manual'
+        'tracking-watched' | 'my-maps' | 'map-manager' | 'manual' | 'event-form'
       >;
     }
   /** Without `chapter`, the first one. */
   | { type: 'manual'; chapter?: string }
   | { type: 'my-maps'; add?: boolean }
+  /** Edits the event `id`; without it a new one, linking `mapId` if given. */
+  | { type: 'event-form'; id?: string; mapId?: string }
   /**
    * The map manager. With `customMap` it shows the form for one; see
    * `CustomMapRequest`. `highlight` picks out that map in the list; `query`
@@ -165,6 +169,12 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
       return `document/${modal.key}`;
     case 'manual':
       return modal.chapter ? `manual/${modal.chapter}` : 'manual';
+    case 'event-form':
+      return modal.id
+        ? `event-form/${modal.id}`
+        : modal.mapId
+          ? `event-form/from/${modal.mapId}`
+          : 'event-form';
     case 'gallery-viewer':
       return `gallery-viewer/${modal.id}`;
     case 'wiki':
@@ -215,6 +225,12 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
     }
     case 'manual':
       return arg ? { type: 'manual', chapter: arg } : { type: 'manual' };
+    case 'event-form':
+      return !arg
+        ? { type: 'event-form' }
+        : arg.startsWith('from/')
+          ? { type: 'event-form', mapId: arg.slice(5) }
+          : { type: 'event-form', id: arg };
     case 'gallery-viewer': {
       const id = Number(arg);
 
@@ -254,6 +270,7 @@ export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
     case 'map-manager':
+    case 'event-form':
     case 'tracking-watched':
     case 'manual':
       return { type: modalId };

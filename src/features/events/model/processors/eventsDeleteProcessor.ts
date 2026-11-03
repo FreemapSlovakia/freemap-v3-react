@@ -1,8 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
+import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { mapsLoadList } from '@features/myMaps/model/actions.js';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import { eventsDelete, eventsLoadList } from '../actions.js';
+import { selectedEventId } from '../selectors.js';
 
 export const eventsDeleteProcessor: Processor<typeof eventsDelete> = {
   actionCreator: eventsDelete,
@@ -15,7 +16,9 @@ export const eventsDeleteProcessor: Processor<typeof eventsDelete> = {
         expectedStatus: 204,
       });
 
-      dispatch(mapsLoadList());
+      if (selectedEventId(getState()) === action.payload) {
+        dispatch(selectFeature(null));
+      }
 
       dispatch(eventsLoadList());
     } catch (err) {

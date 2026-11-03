@@ -2,6 +2,7 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
+import { FaCamera } from 'react-icons/fa';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { gallerySetPickingPosition } from '../model/actions.js';
@@ -57,6 +58,7 @@ export function GalleryResult(): ReactElement {
           draggable
           pane="fm-active-overlay"
           position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
+          faIcon={<FaCamera />}
           eventHandlers={{
             dragend: handlePositionMarkerDragEnd,
           }}
@@ -65,6 +67,7 @@ export function GalleryResult(): ReactElement {
       {showPosition && image && (
         <RichMarker
           position={{ lat: image.lat, lng: image.lon }}
+          faIcon={<FaCamera />}
           interactive={false}
         />
       )}

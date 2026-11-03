@@ -199,6 +199,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Premium',
     source: 'Fonte',
     allSources: 'Tutte',
+    anyLicense: 'Qualsiasi',
   },
 
   noPicturesFound: 'Non è stata trovata nessuna foto in questo posto.',

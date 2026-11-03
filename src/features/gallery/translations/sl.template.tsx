@@ -184,6 +184,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Premium',
     source: 'Vir',
     allSources: 'Vse',
+    anyLicense: 'Katera koli',
   },
   noPicturesFound: 'Na tem mestu ni bilo najdenih nobenih fotografij.',
   linkToWww: 'fotografija na www.freemap.sk',

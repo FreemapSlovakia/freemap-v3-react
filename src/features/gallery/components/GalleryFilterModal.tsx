@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { ANY, fromAnyValue, withAnyValue } from '@shared/anyToggle.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FmDismissButton,
@@ -490,10 +491,21 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
             <ToggleButtonGroup
               type="checkbox"
-              value={license}
-              onChange={(value: GalleryLicense[]) => setLicense(value)}
+              value={withAnyValue(license)}
+              onChange={(value: (GalleryLicense | typeof ANY)[]) =>
+                setLicense(fromAnyValue(value, license))
+              }
               className="d-flex flex-wrap gap-2"
             >
+              <ToggleButton
+                id="filt-lic-any"
+                value={ANY}
+                variant="outline-primary"
+                className="rounded flex-grow-0"
+              >
+                <Text m={gm} k="filterModal.anyLicense" />
+              </ToggleButton>
+
               {PHOTO_LICENSES.map(({ id }) => (
                 <ToggleButton
                   key={id}

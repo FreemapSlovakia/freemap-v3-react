@@ -141,6 +141,9 @@ export const mouseCursorSelector = createSelector(
   toposcopePickingCenterSelector,
   panoramaPickingSelector,
   viewshedPickingViewpointSelector,
+  (state: RootState) =>
+    galleryPickingPositionForIdSelector(state) !== null ||
+    state.events.pickingStart,
   (
     selectingHomeLocation,
     tool,
@@ -151,6 +154,7 @@ export const mouseCursorSelector = createSelector(
     toposcopePickingCenter,
     panoramaPicking,
     viewshedPickingViewpoint,
+    pickingPosition,
   ) => {
     if (galleryShowPosition) {
       return 'auto';
@@ -161,7 +165,8 @@ export const mouseCursorSelector = createSelector(
       showGalleryPicker ||
       toposcopePickingCenter ||
       panoramaPicking ||
-      viewshedPickingViewpoint
+      viewshedPickingViewpoint ||
+      pickingPosition
     ) {
       return 'crosshair';
     }

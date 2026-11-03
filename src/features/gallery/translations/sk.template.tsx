@@ -183,6 +183,7 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Prémiové',
     source: 'Zdroj',
     allSources: 'Všetky',
+    anyLicense: 'Ľubovoľná',
   },
   noPicturesFound: 'Na tomto mieste neboli nájdené žiadne fotky.',
   linkToWww: 'fotografia na www.freemap.sk',

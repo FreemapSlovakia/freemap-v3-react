@@ -164,6 +164,7 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Premium',
     source: 'Quelle',
     allSources: 'Alle',
+    anyLicense: 'Beliebig',
   },
 
   linkToCommons: 'Foto bei Wikimedia Commons',

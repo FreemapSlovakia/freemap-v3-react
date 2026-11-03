@@ -62,7 +62,10 @@ import {
   eventsOpenProcessor,
 } from '@features/events/model/processors/eventSelectionProcessors.js';
 import { eventsDeleteProcessor } from '@features/events/model/processors/eventsDeleteProcessor.js';
-import { eventsLoadListProcessor } from '@features/events/model/processors/eventsLoadListProcessor.js';
+import {
+  eventsLayerOnProcessor,
+  eventsLoadListProcessor,
+} from '@features/events/model/processors/eventsLoadListProcessor.js';
 import { eventsSaveProcessor } from '@features/events/model/processors/eventsSaveProcessor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
@@ -328,6 +331,7 @@ export const processors = [
   mapsOutboxProcessor,
   mapsResolveOutboxProcessor,
   eventsLoadListProcessor,
+  eventsLayerOnProcessor,
   eventsSaveProcessor,
   eventsDeleteProcessor,
   eventSelectionProcessor,

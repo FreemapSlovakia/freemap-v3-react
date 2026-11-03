@@ -1,5 +1,6 @@
 import { localTrack } from '@features/dataViewer/model/localTrack.js';
 import { snapshotKey } from '@features/dataViewer/trackStore.js';
+import { filterToQuery } from '@features/events/model/filter.js';
 import {
   isEmptySetup,
   presetOnlyConfigs,
@@ -44,7 +45,6 @@ import type { RootState } from '../store/store.js';
 import { entryLoading } from './entryContent.js';
 import {
   getMapContentParts,
-  pushDate,
   type QueryPart,
   serializeQuery,
 } from './mapContentParts.js';
@@ -666,17 +666,7 @@ function updateUrl(state: RootState, forced: boolean): void {
   // Which events are listed, not what the map holds — so it stays in the
   // address bar (and thus in a shared link) even under a saved map, and no map
   // document carries it.
-  pushDate(queryParts, 'events-from', eventsFilter.from);
-
-  pushDate(queryParts, 'events-to', eventsFilter.to);
-
-  if (eventsFilter.inMapArea) {
-    queryParts.push(['events-in-map-area', '1']);
-  }
-
-  if (eventsFilter.activityType) {
-    queryParts.push(['events-activity', eventsFilter.activityType]);
-  }
+  queryParts.push(...filterToQuery(eventsFilter));
 
   {
     // The gallery viewer (own + Wikimedia Commons photos) and the Wikipedia

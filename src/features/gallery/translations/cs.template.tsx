@@ -184,6 +184,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Prémiové',
     source: 'Zdroj',
     allSources: 'Vše',
+    anyLicense: 'Libovolná',
   },
   noPicturesFound: 'Na tomto místě nebyly nalezeny žádné fotky.',
   linkToWww: 'fotografie na www.freemap.sk',

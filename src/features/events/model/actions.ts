@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
+import type { EventsFilter } from './filter.js';
 
 /** Map overlay-layer code for the events markers layer. */
 export const EVENTS_LAYER = 'A';
@@ -16,54 +17,87 @@ export const EventVisibilitySchema = z.enum(['public', 'unlisted']);
 
 export type EventVisibility = z.infer<typeof EventVisibilitySchema>;
 
-/** What a map gains by being an event; at most one per map. */
-export const MapEventSchema = z.object({
+/** A trip's stats; meters and seconds. */
+export const TripStatsShape = {
+  /** Kinds the trip suits (see `transports.ts`); empty where unsaid. */
+  transports: z.array(z.string()),
+  distance: z.number().nullable(),
+  duration: z.number().nullable(),
+  ascent: z.number().nullable(),
+  descent: z.number().nullable(),
+};
+
+export type TripStats = {
+  [K in keyof typeof TripStatsShape]: z.infer<(typeof TripStatsShape)[K]>;
+};
+
+export const DIFFICULTIES = [
+  'easy',
+  'moderate',
+  'demanding',
+  'expert',
+] as const;
+
+export const DifficultySchema = z.enum(DIFFICULTIES);
+
+export type Difficulty = z.infer<typeof DifficultySchema>;
+
+export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  easy: 'Easy',
+  moderate: 'Moderate',
+  demanding: 'Demanding',
+  expert: 'Expert',
+};
+
+/** Who and what the trip suits; null where the organizer didn't say. */
+export const AttributesShape = {
+  difficulty: DifficultySchema.nullable(),
+  dogs: z.boolean().nullable(),
+  children: z.boolean().nullable(),
+};
+
+export type Attributes = {
+  [K in keyof typeof AttributesShape]: z.infer<(typeof AttributesShape)[K]>;
+};
+
+export const EventSchema = z.object({
+  id: z.string(),
+  userId: z.number(),
+  /** The organizer, as `UserChip` shows a user. */
+  user: z.object({
+    id: z.number(),
+    name: z.string(),
+    hasPicture: z.boolean(),
+    premium: z.boolean(),
+  }),
+  mapId: z.string().nullable(),
+  mapName: z.string().nullable(),
+  title: z.string(),
   description: z.string().nullable(),
   startAt: IsoDateSchema,
   endAt: IsoDateSchema.nullable(),
-  startPoint: EventPointSchema.nullable(),
-  filterLocation: EventPointSchema.nullable(),
+  startPoint: EventPointSchema,
   visibility: EventVisibilitySchema,
-  activityType: z.string().nullable(),
-  difficulty: z.string().nullable(),
+  ...TripStatsShape,
+  ...AttributesShape,
   createdAt: IsoDateSchema,
   updatedAt: IsoDateSchema,
-});
-
-export type MapEvent = z.infer<typeof MapEventSchema>;
-
-/** A listed event: its map, titled by the map's name. */
-export const EventSchema = z.object({
-  ...MapEventSchema.shape,
-  mapId: z.string(),
-  name: z.string().nullable(),
-  userId: z.number(),
   canWrite: z.boolean(),
 });
 
 export type EventItem = z.infer<typeof EventSchema>;
 
-/**
- * The layer's filter. `inMapArea` restricts the listing to the current map
- * viewport (bbox derived at fetch time); `activityType` is reserved and isn't
- * sent to the server yet.
- */
-export interface EventsFilter {
-  from?: Date;
-  to?: Date;
-  inMapArea?: boolean;
-  activityType?: string;
-}
-
-export interface EventSavePayload {
-  mapId: string;
-  description: string | null;
-  startAt: string;
-  endAt: string | null;
-  startPoint: EventPoint;
-  filterLocation: EventPoint | null;
-  visibility: EventVisibility;
-}
+/** What the event form sends; dates as ISO strings. */
+export type EventBody = TripStats &
+  Attributes & {
+    mapId: string | null;
+    title: string;
+    description: string | null;
+    startAt: string;
+    endAt: string | null;
+    startPoint: EventPoint;
+    visibility: EventVisibility;
+  };
 
 export const eventsSetList = createAction<EventItem[]>('EVENTS_SET_LIST');
 
@@ -71,10 +105,14 @@ export const eventsLoadList = createAction('EVENTS_LOAD_LIST');
 
 export const eventsSetFilter = createAction<EventsFilter>('EVENTS_SET_FILTER');
 
-/** Makes a map an event, or replaces its event. */
-export const eventsSave = createAction<EventSavePayload>('EVENTS_SAVE');
+/** Creates an event, or with `id` updates it. */
+export const eventsSave = createAction<{ id?: string; body: EventBody }>(
+  'EVENTS_SAVE',
+);
 
-/** Stops the map with this id being an event. */
+/** The save request settled; the form is released either way. */
+export const eventsSaveDone = createAction<{ ok: boolean }>('EVENTS_SAVE_DONE');
+
 export const eventsDelete = createAction<string>('EVENTS_DELETE');
 
 /** The selected event, as its details show it; `null` while none is. */
@@ -82,10 +120,12 @@ export const eventsSetSelected = createAction<EventItem | null>(
   'EVENTS_SET_SELECTED',
 );
 
-/** Loads an event's map, appended to what is on the map or replacing it. */
-export const eventsOpen = createAction<{ mapId: string; merge: boolean }>(
-  'EVENTS_OPEN',
-);
+/** Loads an event's linked map into the user's own, appended or replacing it. */
+export const eventsOpen = createAction<{
+  id: string;
+  mapId: string;
+  merge: boolean;
+}>('EVENTS_OPEN');
 
 /** The opened map has loaded, or failed to. */
 export const eventsOpenDone = createAction('EVENTS_OPEN_DONE');
@@ -95,7 +135,15 @@ export const eventsSetPickingStart = createAction<boolean>(
   'EVENTS_SET_PICKING_START',
 );
 
-/** The start point clicked on the map, for the form to take; `null` once taken. */
+/** Where the start point is being placed, by a click or by dragging it. */
+export const eventsSetPickPosition = createAction<EventPoint | null>(
+  'EVENTS_SET_PICK_POSITION',
+);
+
+/** Ends picking, handing the placed point to the form. */
+export const eventsConfirmPick = createAction('EVENTS_CONFIRM_PICK');
+
+/** The start point picked on the map, for the form to take; `null` once taken. */
 export const eventsStartPicked = createAction<EventPoint | null>(
   'EVENTS_START_PICKED',
 );

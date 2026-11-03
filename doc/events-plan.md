@@ -6,95 +6,103 @@ now lives in `src/static/llms-photos-maps.md`.
 
 ## Model
 
-An event is a saved map published as a shared trip: at most one per map, keyed
-by the map's id (`mapEvent` in the API), titled by the map's name and managed
-by whoever can write the map. A map that is an event is readable by its link.
+An event stands on its own: an id, an owner, a title, a description, a start
+and optional end time, a start point (required — it places and filters the
+event) and a visibility (public, or unlisted: reachable by link, not listed).
 
-## The principle
-
-An event is **viewed**, never loaded into the user's own map. Loading it into
-the editors is what made opening one ask about replacing the user's work and
-left its features editable. The only path into the editors is the explicit
-**Copy to my maps**.
+- **Linked map, optional.** An event may link one of its owner's own maps (not
+  one they merely write). A map can be linked by any number of events — the
+  same route on several dates. Deleting the map unlinks it and keeps the event.
+  Maps are readable by their link as they always are; an event grants nothing.
+- **Trip stats, a snapshot.** The transport kinds it suits (any number), length,
+  duration, ascent and descent are the event's own fields, for showing and for
+  filtering on the server. Choosing the linked map computes them in the browser
+  from it — the saved route's chosen alternative and its transport's kind, or
+  the drawn lines' length where there is no route — filling only what is still
+  empty; the owner may type them by hand.
+- **Who it suits.** Difficulty (easy / moderate / demanding / expert), dogs
+  (welcome / not allowed) and children (suitable / not), each optional. Children
+  rather than a minimum age: an age is a rule the organizer would have to
+  enforce; a hard limit goes in the description.
 
 ## Flow
 
 ### 1. Discover — the Events layer
 
-- Markers at start points, clustered when zoomed out, the name in a tooltip.
+- Markers at start points, the title in a tooltip; clustered when zoomed out.
 - Upcoming events by default (from today); the past only through the filter.
-- Toolbar: _Events_ · **Filter** · **Create event** · close.
-  - Filter dialog: date range, current map area, and _Who_ — Everyone / People I
-    follow / Mine (organizing or going).
-  - Create event: My maps' form with **Event** ticked.
+- Toolbar: _Events_ · **Filter** · **New event** · close; hidden while the
+  selected event's map is loaded.
+  - Filter dialog: date range, transport, difficulty, dogs, children, length,
+    duration and ascent ranges; **Near** a place within a radius (replacing
+    "only in the current map area"); later _Who_ — Everyone / People I follow /
+    Mine.
+- In the Map layers panel the layer's row lists the events shown; picking one
+  selects it.
 
-### 2. Click a marker — preview
+### 2. Select an event
 
-The marker gets the selection halo and a preview card shows in the toast slot:
-name, date ("Sat 15 Nov, 9:00 · in 3 days"), organizer, route length and
-ascent, how many are going, and one action: **View event**. Another marker
-swaps the card.
+Halo on the marker, details in a toast (title, dates, description, trip stats,
+linked map), and the selection toolbar:
 
-### 3. View event — event mode
+- **Open in new tab** — the linked map as a full app of its own: profile,
+  colorizing, export, editing as a copy. The user's own map stays untouched in
+  the first tab.
+- **⋮ Load here** — loads the linked map into the user's own, asking to append
+  or replace as My maps' Load does. The layer stays on and the event selected;
+  **Back to events** disconnects and clears the map.
+- **Edit** and **Delete** for the owner.
+- Neither open action without a linked map.
 
-On the map:
+### 3. Create and edit
 
-- The event's content (route, markers, photos) is drawn read-only in a pane of
-  its own, in the event's color; the view fits to it; other events' markers
-  fade.
-- The user's own content — planned route, drawing, data — and the tools'
-  toolbars are hidden while in event mode, as a picking mode hides the chrome.
-  They stay in the store and the URL untouched, and come back exactly as they
-  were on leaving. **⋮ → Show my map too** shows them underneath, faded, for
-  comparing.
-- The events toolbar is replaced by the event's: **← Events** · name ·
-  **Going ✓** · **Share** · **⋮** (Copy to my maps, Navigate to start, Export
-  GPX; the organizer's Edit).
-- **← Events** or Esc goes back to browsing at the view it left.
+An event form (dialog): title, description, start and end; the linked map (one
+of the owner's maps), whose choosing fills the title, start, transports and
+stats that are still empty; the start point — one coordinate field as the gallery's, with
+**Set the location** picking it on the map while the dialog hides; the trip
+stats; visibility. Reached from the events toolbar (**New event**), from a map's
+menu in My maps (**New event**, the map linked and its stats filled), and
+from the selection toolbar (**Edit**).
 
-In a details panel (right-hand drawer on desktop, bottom sheet with snap points
-on phones):
+### 4. Participants, follows, discussion
 
-- Header: name, date and time, organizer with **Follow**.
-- Description.
-- Meeting point: pans there; navigate to it.
-- Route: length, ascent, elevation chart.
-- Going: participants' avatars, going / maybe.
-- Photos: the map's own, and gallery photos taken along the route.
-- Discussion: a comment thread, newest last, composer at the bottom.
-
-Deep link `#event=<mapId>` opens event mode directly; **Share** copies it, and
-it is how an unlisted event is reached.
-
-### 4. Editing
-
-- A participant gets the content into the editors only by **Copy to my maps**,
-  which asks to append or replace as My maps' Load does.
-- The organizer's **Edit** opens the map in My maps, whose form holds the event
-  fields.
-
-### 5. Following
-
-- One-way follow, no approval: events are public or reachable by link anyway.
-- **Follow** on the organizer in the panel and the preview card; a _Following_
-  list in the account.
-- Feeds the _People I follow_ filter now, notifications later (a followed user
-  publishes an event nearby, a reply in a discussion).
-- A _Followers only_ visibility later — the point where one-way versus mutual
-  matters, decided then.
+- Going / maybe, shown in the details and counted on the marker's card.
+- One-way follows, no approval; **Follow** on the organizer; the _People I
+  follow_ filter; a _Followers only_ visibility later.
+- A discussion thread per event.
+- Notifications last.
 
 ## Steps
 
-- [ ] 1. Read-only rendering of a map document: draws a `MapData` without
-      dispatching it into the editing slices. Everything below rests on it.
-- [ ] 2. Event mode and its details panel; hiding and restoring the user's own
-      content; the `#event=` link; **← Events** back to the browsing view;
-      **Copy to my maps** replacing today's Open.
-- [ ] 3. Preview card on marker click; upcoming-by-default; marker clustering.
-- [ ] 4. Participants (going / maybe): API table, the panel's list, **Going ✓**.
-- [ ] 5. Follows: API table, **Follow**, the _Who_ filter.
-- [ ] 6. Discussion: API table, the thread in the panel.
-- [ ] 7. Notifications.
+- [ ] 1. Standalone event model: API table and routes, the event form with
+      stats from the linked map and **Set the location**, New event from the toolbar and My
+      maps, Edit / Delete, **Open in new tab** and **Load here**.
+- [ ] 2. Cover image: one per event, uploaded on its own; the API resizes it
+      (a large version and a thumbnail) and stores it as a file, the event
+      keeps a reference. Not a gallery photo — those are public, CC-licensed
+      and placed — and never inline base64, which no column holds and every
+      listing would carry.
+- [ ] 3. Rich description: Tiptap in the form, loaded only there; text marks,
+      lists, links and headings, no images. Stored as Tiptap JSON of those
+      node types, so it can't carry markup, and rendered by a small renderer
+      of our own without Tiptap. The listing drops the description; it is
+      fetched when an event is selected.
+- [ ] 4. Near a place: the filter's **Near** — a place (the coordinate field
+      with **Set the location**, or the user's location) and a radius (10 / 25
+      / 50 / 100 km or typed) — replacing "only in the current map area", which
+      adds little over the markers on screen. The API takes
+      `near=lat,lon&radius=km`, narrowing by a bounding box on the start point's
+      index before the exact distance; the panel's list shows and sorts by the
+      distance.
+- [ ] 5. Details panel replacing the toast, once participants and discussion
+      need the room; `#event=<id>` deep link.
+- [ ] 6. Upcoming-by-default, marker clustering.
+- [ ] 7. Participants.
+- [ ] 8. Follows and the _Who_ filter.
+- [ ] 9. Discussion.
+- [ ] 10. Notifications.
+- [ ] Later, if the new tab proves clumsy (phones): a read-only view drawing a
+      linked map without loading it into the editors.
 
 New texts stay English-only and may be hardcoded in components while the
 feature is iterated on; they move into the translation files once it settles.

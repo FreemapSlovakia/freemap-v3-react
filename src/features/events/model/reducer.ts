@@ -2,24 +2,32 @@ import { createReducer } from '@reduxjs/toolkit';
 import {
   type EventItem,
   type EventPoint,
-  type EventsFilter,
+  eventsConfirmPick,
   eventsOpen,
   eventsOpenDone,
+  eventsSave,
+  eventsSaveDone,
   eventsSetFilter,
   eventsSetList,
   eventsSetPickingStart,
+  eventsSetPickPosition,
   eventsSetSelected,
   eventsStartPicked,
 } from './actions.js';
+import type { EventsFilter } from './filter.js';
 
 export interface EventsState {
   list: EventItem[];
   filter: EventsFilter;
   selected: EventItem | null;
   /** The event whose map is loading, to select again once it has. */
-  opening: string | null;
+  opening: { id: string; mapId: string } | null;
   pickingStart: boolean;
+  /** The start point being placed while picking. */
+  pickPosition: EventPoint | null;
+  /** The confirmed pick, until the form takes it. */
   pickedStart: EventPoint | null;
+  saving: boolean;
 }
 
 const initialState: EventsState = {
@@ -28,7 +36,9 @@ const initialState: EventsState = {
   selected: null,
   opening: null,
   pickingStart: false,
+  pickPosition: null,
   pickedStart: null,
+  saving: false,
 };
 
 export const eventsReducer = createReducer(initialState, (builder) => {
@@ -43,19 +53,35 @@ export const eventsReducer = createReducer(initialState, (builder) => {
       state.selected = payload;
     })
     .addCase(eventsOpen, (state, { payload }) => {
-      state.opening = payload.mapId;
+      state.opening = { id: payload.id, mapId: payload.mapId };
+    })
+    .addCase(eventsSave, (state) => {
+      state.saving = true;
+    })
+    .addCase(eventsSaveDone, (state) => {
+      state.saving = false;
     })
     .addCase(eventsOpenDone, (state) => {
       state.opening = null;
     })
     .addCase(eventsSetPickingStart, (state, { payload }) => {
       state.pickingStart = payload;
+
+      if (!payload) {
+        state.pickPosition = null;
+      }
+    })
+    .addCase(eventsSetPickPosition, (state, { payload }) => {
+      state.pickPosition = payload;
+    })
+    .addCase(eventsConfirmPick, (state) => {
+      state.pickedStart = state.pickPosition;
+
+      state.pickPosition = null;
+
+      state.pickingStart = false;
     })
     .addCase(eventsStartPicked, (state, { payload }) => {
       state.pickedStart = payload;
-
-      if (payload) {
-        state.pickingStart = false;
-      }
     });
 });

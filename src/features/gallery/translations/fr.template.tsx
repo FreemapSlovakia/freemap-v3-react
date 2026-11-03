@@ -174,6 +174,7 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium: 'Premium',
     source: 'Source',
     allSources: 'Toutes',
+    anyLicense: 'Toutes',
   },
   linkToCommons: 'photo sur Wikimedia Commons',
   allMyPhotos: {

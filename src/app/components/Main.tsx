@@ -5,7 +5,7 @@ import {
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { EventsLayer } from '@features/events/components/EventsLayer.js';
-import { EVENTS_LAYER } from '@features/events/model/actions.js';
+import { eventsLayerOnSelector } from '@features/events/model/selectors.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
@@ -508,6 +508,12 @@ const eventsFilterModalFactory = () =>
     '@features/events/components/EventsFilterModal.js'
   );
 
+const eventFormModalFactory = () =>
+  import(
+    /* webpackChunkName: "event-form-modal" */
+    '@features/events/components/EventFormModal.js'
+  );
+
 const galleryLeaderboardModalFactory = () =>
   import(
     /* webpackChunkName: "gallery-leaderboard-modal" */
@@ -790,7 +796,9 @@ export function Main(): ReactElement {
   // For browsing events, so not while one's map is open.
   const showEvents = useAppSelector(
     (state) =>
-      state.map.layers.includes(EVENTS_LAYER) && !state.myMaps.activeMap?.event,
+      eventsLayerOnSelector(state) &&
+      (!state.events.selected?.mapId ||
+        state.events.selected.mapId !== state.myMaps.activeMap?.id),
   );
 
   const pickingEventStart = useAppSelector(
@@ -1439,6 +1447,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'events-filter'}
         factory={eventsFilterModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'event-form'}
+        factory={eventFormModalFactory}
       />
 
       <AsyncModal

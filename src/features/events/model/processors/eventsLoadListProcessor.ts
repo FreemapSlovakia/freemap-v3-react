@@ -1,34 +1,49 @@
 import { httpRequest } from '@app/httpRequest.js';
+import { init } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authLogout, authSetUser } from '@features/auth/model/actions.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
-import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
+import { mapRefocus } from '@features/map/model/actions.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import z from 'zod';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import {
-  EVENTS_LAYER,
   EventSchema,
   eventsLoadList,
   eventsSetFilter,
   eventsSetList,
 } from '../actions.js';
+import { filterToRequest } from '../filter.js';
+import { eventsLayerOnSelector } from '../selectors.js';
 
 const triggers = [
+  init,
   eventsLoadList,
   eventsSetFilter,
-  mapToggleLayer,
   mapRefocus,
   authSetUser,
   authLogout,
 ];
+
+const layerOn = eventsLayerOnSelector;
+
+/**
+ * However the layer came on or off — a toggle, a link, a loaded map — the list
+ * follows: loaded, or emptied.
+ */
+export const eventsLayerOnProcessor: Processor = {
+  stateChangePredicate: layerOn,
+  handle({ dispatch }) {
+    dispatch(eventsLoadList());
+  },
+};
 
 export const eventsLoadListProcessor: Processor = {
   actionCreator: triggers,
   handle: async ({ getState, dispatch, action, toastError }) => {
     const state = getState();
 
-    if (!state.map.layers.includes(EVENTS_LAYER)) {
+    if (!layerOn(state)) {
       if (state.events.list.length) {
         dispatch(eventsSetList([]));
       }
@@ -44,19 +59,7 @@ export const eventsLoadListProcessor: Processor = {
       return;
     }
 
-    const params: Record<string, string> = {};
-
-    if (filter.from) {
-      params['from'] = filter.from.toISOString();
-    }
-
-    if (filter.to) {
-      // The picker yields UTC midnight, and the bound reads as inclusive of the
-      // day it names — so it goes out as that day's last instant.
-      params['to'] = new Date(
-        filter.to.getTime() + 86_400_000 - 1,
-      ).toISOString();
-    }
+    const params = filterToRequest(filter);
 
     if (filter.inMapArea) {
       // Leaflet's toBBoxString yields "minLon,minLat,maxLon,maxLat".

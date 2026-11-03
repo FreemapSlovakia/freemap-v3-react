@@ -32,11 +32,7 @@ export function serializeQuery(parts: QueryPart[]): string {
  * than writing it empty also keeps a bad date reading the same as no date, so
  * it can't show up as an unsaved change.
  */
-export function pushDate(
-  parts: QueryPart[],
-  key: string,
-  d: Date | undefined,
-): void {
+function pushDate(parts: QueryPart[], key: string, d: Date | undefined): void {
   if (d && isValidDate(d)) {
     parts.push([key, d.toISOString().replace(/T.*/, '')]);
   }

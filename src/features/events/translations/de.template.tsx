@@ -5,7 +5,6 @@ import { EventDetails } from '../components/EventDetails.js';
 import type { EventsMessages } from './EventsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<EventsMessages> = {
-  event: 'Veranstaltung',
   details: ({ event }) => <EventDetails event={event} />,
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Veranstaltungen', err),

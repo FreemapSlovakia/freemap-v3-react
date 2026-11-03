@@ -181,6 +181,7 @@ const en: GalleryMessages = {
     premium: 'Premium',
     source: 'Source',
     allSources: 'All',
+    anyLicense: 'Any',
   },
   noPicturesFound: 'There were no photos found on this place.',
   linkToWww: 'photo at www.freemap.sk',

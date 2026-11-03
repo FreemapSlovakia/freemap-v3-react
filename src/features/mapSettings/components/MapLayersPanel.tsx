@@ -686,17 +686,25 @@ function MapRow({
       }
       onOpen={mapHasPage(ref) ? () => onOpen(target) : undefined}
       kind={
-        <LayerKindButton
-          value={def.layer}
-          onChange={
-            switchable
-              ? (kind) =>
-                  dispatch(mapLayerSetupChange({ ...target, setup: { kind } }))
-              : undefined
-          }
-        />
+        isMapLike(def.technology) && (
+          <LayerKindButton
+            value={def.layer}
+            onChange={
+              switchable
+                ? (kind) =>
+                    dispatch(
+                      mapLayerSetupChange({ ...target, setup: { kind } }),
+                    )
+                : undefined
+            }
+          />
+        )
       }
-      opacity={resolveLayerOpacity(def, setup?.opacity)}
+      opacity={
+        isMapLike(def.technology)
+          ? resolveLayerOpacity(def, setup?.opacity)
+          : undefined
+      }
       onOpacity={(opacity) =>
         dispatch(mapLayerSetupChange({ ...target, setup: { opacity } }))
       }
@@ -739,6 +747,12 @@ function PresetRow({
     />
   );
 }
+
+/**
+ * Whether a layer's row offers a map's kind and opacity. The events' markers
+ * are features rather than a map, so neither says anything about them.
+ */
+const isMapLike = (technology: string) => technology !== 'events';
 
 /** Whether a map has a page: more to set than the row's kind and opacity. */
 function mapHasPage(ref: MapRef | undefined): boolean {
@@ -1055,13 +1069,15 @@ function LayerSettings({
         <LayerKindSwitch target={target} className="mb-2 d-flex" />
       )}
 
-      <LayerOpacitySlider
-        className="mb-2"
-        value={resolveLayerOpacity(def, setup?.opacity)}
-        onChange={(opacity) =>
-          dispatch(mapLayerSetupChange({ ...target, setup: { opacity } }))
-        }
-      />
+      {isMapLike(technology) && (
+        <LayerOpacitySlider
+          className="mb-2"
+          value={resolveLayerOpacity(def, setup?.opacity)}
+          onChange={(opacity) =>
+            dispatch(mapLayerSetupChange({ ...target, setup: { opacity } }))
+          }
+        />
+      )}
 
       {technology === 'wms' && mapOrigin !== 'cached' && (
         <WmsSection def={def as WmsLayerDef} target={target} />

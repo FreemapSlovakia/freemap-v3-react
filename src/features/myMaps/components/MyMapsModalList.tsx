@@ -31,7 +31,7 @@ import {
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
-  FaCalendarAlt,
+  FaCalendarDay,
   FaCloudDownloadAlt,
   FaCloudUploadAlt,
   FaCog,
@@ -305,12 +305,6 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         </Badge>
                       )}
                       <MapSyncStatus mapId={map.id} className="ms-1" />
-                      {map.event && (
-                        <Badge bg="info" className="ms-1">
-                          <FaCalendarAlt />{' '}
-                          {dateFormat.format(map.event.startAt)}
-                        </Badge>
-                      )}
                     </div>
 
                     <small className="text-muted">
@@ -403,6 +397,24 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                           requiresOnline
                           onClick={() => onEdit(map)}
                           showFrom="lg"
+                        />
+                      )}
+
+                      {/* Only a public map can be linked: participants open it. */}
+                      {isOwn && map.public && (
+                        <Action
+                          icon={<FaCalendarDay />}
+                          label="New event"
+                          requiresOnline
+                          onClick={() =>
+                            dispatch(
+                              setActiveModal({
+                                type: 'event-form',
+                                mapId: map.id,
+                              }),
+                            )
+                          }
+                          showFrom="never"
                         />
                       )}
 

@@ -5,7 +5,6 @@ import { EventDetails } from '../components/EventDetails.js';
 import type { EventsMessages } from './EventsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
-  event: 'Esemény',
   details: ({ event }) => <EventDetails event={event} />,
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Hiba az események betöltésekor', err),

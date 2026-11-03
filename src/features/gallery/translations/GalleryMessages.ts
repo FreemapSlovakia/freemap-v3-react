@@ -130,6 +130,7 @@ export type GalleryMessages = {
     premium: string;
     source: string;
     allSources: string;
+    anyLicense: string;
   };
   noPicturesFound: string;
   linkToWww: string;

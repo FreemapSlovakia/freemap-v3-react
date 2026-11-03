@@ -32,20 +32,16 @@ export function EventsLayerList(): ReactElement {
     <ListGroup className="mb-2">
       {list.map((event) => (
         <ListGroup.Item
-          key={event.mapId}
+          key={event.id}
           action
-          active={event.mapId === selectedId}
+          active={event.id === selectedId}
           onClick={() => {
-            dispatch(selectFeature({ type: 'event', id: event.mapId }));
+            dispatch(selectFeature({ type: 'event', id: event.id }));
 
-            const at = event.startPoint ?? event.filterLocation;
-
-            if (at) {
-              void panToUncovered(dispatch, at, { ifHidden: true });
-            }
+            void panToUncovered(dispatch, event.startPoint, { ifHidden: true });
           }}
         >
-          <div className="text-truncate">{event.name}</div>
+          <div className="text-truncate">{event.title}</div>
 
           <small className="text-truncate d-block">
             {dateFormat.format(event.startAt)}

@@ -31,10 +31,8 @@ import {
 import type { ChartRange } from '@features/elevationChart/model/reducer.js';
 import type { ElevationChartTarget } from '@features/elevationChart/model/target.js';
 import { targetsEqual } from '@features/elevationChart/model/target.js';
-import {
-  type EventsFilter,
-  eventsSetFilter,
-} from '@features/events/model/actions.js';
+import { eventsSetFilter } from '@features/events/model/actions.js';
+import { filterFromQuery, sameFilter } from '@features/events/model/filter.js';
 import {
   GALLERY_SOURCES,
   type GallerySource,
@@ -1477,47 +1475,10 @@ function handleEvents(
   dispatch: Dispatch<RootAction>,
   query: Record<string, string | string[]>,
 ) {
-  const qFrom = parseDate(query['events-from']);
+  const next = filterFromQuery(query);
 
-  const qTo = parseDate(query['events-to']);
-
-  const qInMapArea = query['events-in-map-area'] === '1';
-
-  const a = query['events-activity'];
-
-  const qActivity = typeof a === 'string' ? a : undefined;
-
-  const { filter } = getState().events;
-
-  const next: EventsFilter = {};
-
-  if (qFrom) {
-    next.from = qFrom;
-  }
-
-  if (qTo) {
-    next.to = qTo;
-  }
-
-  if (qInMapArea) {
-    next.inMapArea = true;
-  }
-
-  if (qActivity !== undefined) {
-    next.activityType = qActivity;
-  }
-
-  // Only dispatch when the URL-derived filter differs, to avoid a redundant
-  // refetch loop on every hash change.
-  const same =
-    (filter.from ? filter.from.getTime() : undefined) ===
-      (next.from ? next.from.getTime() : undefined) &&
-    (filter.to ? filter.to.getTime() : undefined) ===
-      (next.to ? next.to.getTime() : undefined) &&
-    Boolean(filter.inMapArea) === Boolean(next.inMapArea) &&
-    filter.activityType === next.activityType;
-
-  if (!same) {
+  // Only when it differs: every hash change would otherwise refetch.
+  if (!sameFilter(getState().events.filter, next)) {
     dispatch(eventsSetFilter(next));
   }
 }

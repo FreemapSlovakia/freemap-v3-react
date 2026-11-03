@@ -19,7 +19,10 @@ import { refreshStaleOfflineMaps } from './mapsOfflineProcessor.js';
 export const mapsLoadListProcessor: Processor = {
   actionCreator: [mapsLoadList, authSetUser, authLogout, setActiveModal],
   handle: async ({ getState, dispatch, toastError }) => {
-    if (getState().main.activeModal?.type !== 'my-maps') {
+    // The event form picks its linked map from this list too.
+    const modalType = getState().main.activeModal?.type;
+
+    if (modalType !== 'my-maps' && modalType !== 'event-form') {
       if (getState().myMaps.maps.length) {
         dispatch(mapsSetList([]));
       }
