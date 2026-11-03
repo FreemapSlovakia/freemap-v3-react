@@ -7,5 +7,6 @@ export type EventsMessages = {
   fetchListError: (props: { err: unknown }) => string;
   saveError: (props: { err: unknown }) => string;
   coverError: (props: { err: unknown }) => string;
+  newMapError: (props: { err: unknown }) => string;
   deleteError: (props: { err: unknown }) => string;
 };

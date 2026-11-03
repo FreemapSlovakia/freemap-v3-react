@@ -15,6 +15,12 @@ const en: EventsMessages = {
       'The event is saved, but not its cover image',
       err,
     ),
+  newMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Error saving the new map, so the event is not saved either',
+      err,
+    ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Error deleting event', err),
 };

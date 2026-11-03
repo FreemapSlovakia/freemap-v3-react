@@ -172,7 +172,6 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
       },
       body: JSON.stringify({
         name,
-        public: target.public,
         writers,
       }),
     })

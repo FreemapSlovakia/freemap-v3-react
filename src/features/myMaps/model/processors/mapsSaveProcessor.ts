@@ -186,7 +186,6 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
             : {},
           data: {
             name: metaEdits.name,
-            public: true, // TODO
             writers: metaEdits.writers,
             data: sent,
           },

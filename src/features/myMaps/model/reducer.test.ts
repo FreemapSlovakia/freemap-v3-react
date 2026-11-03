@@ -16,7 +16,7 @@ import { urlMapIdSelector } from './selectors.js';
 
 /** Pure reducer tests for the my-maps slice. */
 
-const meta = (id: string) => ({ id, name: id, public: true }) as MapMeta;
+const meta = (id: string) => ({ id, name: id }) as MapMeta;
 
 const initial = mapsReducer(undefined, { type: '@@INIT' });
 

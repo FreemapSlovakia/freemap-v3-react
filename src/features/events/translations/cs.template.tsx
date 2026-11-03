@@ -16,6 +16,12 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
       'Akce je uložena, ale její titulní obrázek ne',
       err,
     ),
+  newMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Chyba při ukládání nové mapy, akce proto není uložena',
+      err,
+    ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Chyba při rušení akce', err),
 };

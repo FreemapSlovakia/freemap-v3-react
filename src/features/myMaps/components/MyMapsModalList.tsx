@@ -400,8 +400,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         />
                       )}
 
-                      {/* Only a public map can be linked: participants open it. */}
-                      {isOwn && map.public && (
+                      {isOwn && (
                         <Action
                           icon={<FaCalendarDay />}
                           label="New event"

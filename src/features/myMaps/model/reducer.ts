@@ -180,16 +180,14 @@ export const mapsReducer = createReducer(initialState, (builder) =>
     })
     .addCase(authLogout, (state) => ({
       ...initialState,
-      activeMap: state.activeMap?.public
-        ? {
-            ...state.activeMap,
-            canWrite: false,
-            writers: undefined,
-          }
-        : undefined,
+      activeMap: state.activeMap && {
+        ...state.activeMap,
+        canWrite: false,
+        writers: undefined,
+      },
       // Logging out saves nothing: while the map and its edited content stay on
       // screen, so does the comparison that reports them as unsaved.
-      savedFingerprint: state.activeMap?.public ? state.savedFingerprint : null,
-      routeRecomputed: state.activeMap?.public ? state.routeRecomputed : false,
+      savedFingerprint: state.savedFingerprint,
+      routeRecomputed: state.routeRecomputed,
     })),
 );

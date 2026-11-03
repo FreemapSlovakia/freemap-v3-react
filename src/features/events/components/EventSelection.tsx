@@ -3,6 +3,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAskLoadMerge } from '@features/myMaps/hooks/useAskLoadMerge.js';
 import { mapsDisconnect } from '@features/myMaps/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import {
   Action,
@@ -12,7 +13,7 @@ import {
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 import {
   FaArrowLeft,
   FaCalendarDay,
@@ -71,23 +72,6 @@ export default function EventSelection(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {mapId !== null && !loaded && (
-        <LongPressTooltip label="Open in new tab" breakpoint="md">
-          {({ props, label, labelClassName }) => (
-            <Button
-              variant="primary"
-              href={mapUrl(mapId)}
-              target="_blank"
-              rel="noopener"
-              {...props}
-            >
-              <FaExternalLinkAlt />{' '}
-              <span className={labelClassName}>{label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
-
       {((mapId !== null && !loaded) || event.canWrite) && (
         <ResponsiveActions
           gap={1}
@@ -96,17 +80,30 @@ export default function EventSelection(): ReactElement | null {
         >
           {mapId !== null && !loaded && (
             <Action
-              icon={<FaCloudDownloadAlt />}
-              label="Load here"
+              icon={<FaExternalLinkAlt />}
+              label="Open in new tab"
+              variant="primary"
+              href={mapUrl(mapId)}
+              target="_blank"
+              rel="noopener"
+              className="fm-no-ext"
+              showLabelFrom="md"
               requiresOnline
-              onClick={async () => {
-                const merge = await askLoadMerge();
+              menu={
+                <Dropdown.Item
+                  as="button"
+                  onClick={async () => {
+                    const merge = await askLoadMerge();
 
-                if (merge !== null) {
-                  dispatch(eventsOpen({ id: event.id, mapId, merge }));
-                }
-              }}
-              showFrom="never"
+                    if (merge !== null) {
+                      dispatch(eventsOpen({ id: event.id, mapId, merge }));
+                    }
+                  }}
+                >
+                  <FaCloudDownloadAlt />
+                  <MenuLabel>Load here</MenuLabel>
+                </Dropdown.Item>
+              }
             />
           )}
 

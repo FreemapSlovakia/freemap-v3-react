@@ -13,7 +13,6 @@ import z from 'zod';
 export const MapMetaSchema = z.object({
   id: z.string(),
   name: z.string(),
-  public: z.boolean(),
   canWrite: z.boolean(),
   createdAt: IsoDateSchema,
   modifiedAt: IsoDateSchema,

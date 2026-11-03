@@ -3,7 +3,20 @@ import { selectFeature, setActiveModal } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import {
+  MapMetaSchema,
+  mapsLoadList,
+  mapsSetMeta,
+  mapsSetSavedFingerprint,
+} from '@features/myMaps/model/actions.js';
+import {
+  fingerprintState,
+  getMapDataFromState,
+} from '@features/myMaps/model/mapDocument.js';
+import { routePlannerSetSavedRoute } from '@features/routePlanner/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import type { Dispatch } from 'redux';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import {
   EVENTS_LAYER,
@@ -40,20 +53,67 @@ async function saveCover(
   return EventSchema.parse(await res.json());
 }
 
+/** Saves what is on the map as a new map, which becomes the open one. */
+async function createMap(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  name: string,
+) {
+  const data = getMapDataFromState(getState());
+
+  const fingerprint = fingerprintState(getState());
+
+  const res = await httpRequest({
+    getState,
+    method: 'POST',
+    url: '/maps/',
+    expectedStatus: 200,
+    data: { name, data },
+  });
+
+  const meta = MapMetaSchema.parse(await res.json());
+
+  trackMatomo(['trackEvent', 'MyMaps', 'create']);
+
+  dispatch(mapsLoadList());
+
+  dispatch(mapsSetMeta(meta));
+
+  dispatch(mapsSetSavedFingerprint(fingerprint));
+
+  dispatch(routePlannerSetSavedRoute(data.routePlanner?.result ?? null));
+
+  return meta.id;
+}
+
 export const eventsSaveProcessor: Processor<typeof eventsSave> = {
   actionCreator: eventsSave,
   async handle({ getState, dispatch, action, toastError }) {
-    const { id, body, cover } = action.payload;
+    const { id, body, cover, newMap } = action.payload;
 
     let ok = false;
 
     try {
+      let { mapId } = body;
+
+      // A failed event save leaves the map open and saved, which the form
+      // then offers as the map to link, so a retry doesn't create it again.
+      if (newMap !== undefined) {
+        try {
+          mapId = await createMap(getState, dispatch, newMap);
+        } catch (err) {
+          await toastError(err, loadEventsMessages, 'newMapError');
+
+          return;
+        }
+      }
+
       const res = await httpRequest({
         getState,
         method: id ? 'PATCH' : 'POST',
         url: id ? `/events/${encodeURIComponent(id)}` : '/events',
         expectedStatus: 200,
-        data: body,
+        data: { ...body, mapId },
       });
 
       // Saved, whatever comes of reading the answer: a second Save from a form

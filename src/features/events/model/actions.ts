@@ -112,12 +112,14 @@ export const eventsSetFilter = createAction<EventsFilter>('EVENTS_SET_FILTER');
 
 /**
  * Creates an event, or with `id` updates it; `cover` replaces its cover image,
- * or `null` removes it.
+ * or `null` removes it. `newMap` first saves what is on the map as a new map,
+ * named `newMap`, and links that.
  */
 export const eventsSave = createAction<{
   id?: string;
   body: EventBody;
   cover?: File | null;
+  newMap?: string;
 }>('EVENTS_SAVE');
 
 /** The save request settled; the form is released either way. */

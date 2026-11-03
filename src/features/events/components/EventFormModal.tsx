@@ -2,7 +2,13 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { mapsSave } from '@features/myMaps/model/actions.js';
 import { loadMapDocument } from '@features/myMaps/model/loadMapDocument.js';
+import { getMapDataFromState } from '@features/myMaps/model/mapDocument.js';
+import {
+  mapDirtySelector,
+  mapHasContentSelector,
+} from '@features/myMaps/model/selectors.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
@@ -10,6 +16,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { useConfirmChoice } from '@shared/components/ModalProvider.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -217,6 +224,9 @@ function parsePosition(s: string): EventPoint | null {
   }
 }
 
+/** The Linked map choice that saves what is on the map as a new map. */
+const NEW_MAP = '@new';
+
 const isCount = (s: string) =>
   s.trim() === '' || (Number.isFinite(Number(s)) && Number(s) >= 0);
 
@@ -224,6 +234,8 @@ export default function EventFormModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const store = useStore<RootState>();
+
+  const confirmChoice = useConfirmChoice();
 
   const m = useMessages();
 
@@ -263,6 +275,12 @@ export default function EventFormModal({ show }: Props): ReactElement {
   const myUserId = useAppSelector((state) => state.auth.user?.id);
 
   const ownMaps = useAppSelector((state) => state.myMaps.maps);
+
+  const activeMap = useAppSelector((state) => state.myMaps.activeMap);
+
+  const mapDirty = useAppSelector(mapDirtySelector);
+
+  const hasContent = useAppSelector(mapHasContentSelector);
 
   const picked = useAppSelector((state) => state.events.pickedStart);
 
@@ -315,7 +333,16 @@ export default function EventFormModal({ show }: Props): ReactElement {
       fillingFor.current = mapId;
 
       try {
-        const { meta, data } = await loadMapDocument(mapId, store.getState, []);
+        const { activeMap } = store.getState().myMaps;
+
+        // The open map as on screen, unsaved changes included.
+        const { meta, data } =
+          mapId === NEW_MAP || mapId === activeMap?.id
+            ? {
+                meta: mapId === NEW_MAP ? undefined : activeMap,
+                data: getMapDataFromState(store.getState()),
+              }
+            : await loadMapDocument(mapId, store.getState, []);
 
         if (fillingFor.current !== mapId) {
           return;
@@ -326,7 +353,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
         const start = tripStartOf(data);
 
         const filled: Partial<Draft> = {
-          title: meta.name,
+          ...(meta && { title: meta.name }),
           ...(start && { position: latLonToString(start, language) }),
           ...(stats && {
             ...statsDraft(stats),
@@ -520,6 +547,28 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
   const close = () => dispatch(setActiveModal(null));
 
+  // What the server accepts: the user's own maps. A moderator editing
+  // someone else's event can't relink it — these aren't the owner's maps.
+  const myMaps = ownMaps.filter((map) => map.userId === myUserId);
+
+  const othersEvent = editing !== undefined && editing.userId !== myUserId;
+
+  const ownOpenMap = activeMap?.userId === myUserId ? activeMap : undefined;
+
+  // The open map, when what is on screen is already one of those.
+  const savedOpenMap = mapDirty ? undefined : ownOpenMap;
+
+  const canCreateMap = hasContent && !savedOpenMap && !othersEvent;
+
+  const unsavedOpenMap = mapDirty ? ownOpenMap : undefined;
+
+  // Once saved — by a save of this form that failed after it, or from My
+  // maps — the new map is the open one.
+  const mapId =
+    draft.mapId === NEW_MAP && !canCreateMap
+      ? (savedOpenMap?.id ?? '')
+      : draft.mapId;
+
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -537,7 +586,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
       eventsSave({
         id: editing?.id,
         body: {
-          mapId: draft.mapId || null,
+          mapId: mapId === NEW_MAP ? null : mapId || null,
           title: draft.title.trim(),
           description: draft.description.trim() || null,
           startAt: new Date(draft.startAt).toISOString(),
@@ -557,15 +606,10 @@ export default function EventFormModal({ show }: Props): ReactElement {
           descent: num(draft.descent),
         },
         cover: cover === null && !editing?.cover ? undefined : cover,
+        newMap: mapId === NEW_MAP ? draft.title.trim() : undefined,
       }),
     );
   };
-
-  // What the server accepts: the user's own public maps. A moderator editing
-  // someone else's event can't relink it — these aren't the owner's maps.
-  const myMaps = ownMaps.filter((map) => map.userId === myUserId && map.public);
-
-  const othersEvent = editing !== undefined && editing.userId !== myUserId;
 
   return (
     <Modal
@@ -697,10 +741,30 @@ export default function EventFormModal({ show }: Props): ReactElement {
             </Form.Label>
 
             <Form.Select
-              value={draft.mapId}
+              value={mapId}
               disabled={othersEvent}
-              onChange={(e) => {
-                const mapId = e.currentTarget.value;
+              onChange={async (e) => {
+                let mapId = e.currentTarget.value;
+
+                // The open map's own changes go to that map, if asked to.
+                if (mapId === NEW_MAP && unsavedOpenMap) {
+                  const choice = await confirmChoice({
+                    title: 'Unsaved changes',
+                    message: `The open map “${unsavedOpenMap.name}” has unsaved changes. Save them and link it, or save the content as a new map?`,
+                    confirmLabel: `Save “${unsavedOpenMap.name}”`,
+                    extraLabel: 'New map',
+                  });
+
+                  if (choice === 'cancel') {
+                    return;
+                  }
+
+                  if (choice === 'confirm') {
+                    dispatch(mapsSave());
+
+                    mapId = unsavedOpenMap.id;
+                  }
+                }
 
                 set({ mapId });
 
@@ -715,12 +779,22 @@ export default function EventFormModal({ show }: Props): ReactElement {
             >
               <option value="">None</option>
 
-              {/* Kept while not among the listed ones, e.g. still loading. */}
-              {draft.mapId && !myMaps.some((map) => map.id === draft.mapId) && (
-                <option value={draft.mapId}>
-                  {editing?.mapName ?? draft.mapId}
+              {canCreateMap && (
+                <option value={NEW_MAP}>
+                  New map from the current content
                 </option>
               )}
+
+              {/* Kept while not among the listed ones, e.g. still loading. */}
+              {mapId &&
+                mapId !== NEW_MAP &&
+                !myMaps.some((map) => map.id === mapId) && (
+                  <option value={mapId}>
+                    {mapId === activeMap?.id
+                      ? activeMap.name
+                      : (editing?.mapName ?? mapId)}
+                  </option>
+                )}
 
               {myMaps.map((map) => (
                 <option key={map.id} value={map.id}>

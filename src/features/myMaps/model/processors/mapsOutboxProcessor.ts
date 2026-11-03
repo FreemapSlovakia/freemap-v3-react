@@ -195,7 +195,6 @@ async function push(
       },
       data: {
         name: pending.name,
-        public: true, // TODO — as sent by the online save
         writers: pending.writers,
         data: pending.data,
       },
@@ -611,7 +610,6 @@ export const mapsResolveOutboxProcessor: Processor<typeof mapsResolveOutbox> = {
           cancelActions: [],
           data: {
             name: mm.outboxCopyName(pending.name ?? pending.meta.name),
-            public: true, // TODO — as sent by the online save
             data: pending.data,
           },
         });
