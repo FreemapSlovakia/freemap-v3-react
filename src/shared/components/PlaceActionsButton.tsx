@@ -24,6 +24,8 @@ type Props = LatLon & {
    * the place comes before what any menu can.
    */
   children?: ReactNode;
+  /** `Action`s ending the menu, after the place's own (such as Manual). */
+  after?: ReactNode;
 };
 
 /**
@@ -35,6 +37,7 @@ export function PlaceActionsButton({
   variant,
   className,
   children,
+  after,
   lat,
   lon,
   ...props
@@ -45,7 +48,7 @@ export function PlaceActionsButton({
 
   const own = Children.count(children) > 0;
 
-  return actions.length === 0 && !own ? null : (
+  return actions.length === 0 && !own && !after ? null : (
     <ResponsiveActions
       size={size}
       variant={variant}
@@ -58,6 +61,10 @@ export function PlaceActionsButton({
       {own && actions.length > 0 && <ActionDivider />}
 
       {actions}
+
+      {after && <ActionDivider />}
+
+      {after}
     </ResponsiveActions>
   );
 }

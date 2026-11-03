@@ -1,6 +1,7 @@
 import type { RootState } from '@app/store/store.js';
 import { pointToFeature } from '@features/dataViewer/drawingWire.js';
 import { dataViewerAddFeatures } from '@features/dataViewer/model/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapRefocus } from '@features/map/model/actions.js';
@@ -817,6 +818,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           {imageIds ? ` / ${imageIds.length} ` : ''}
           {displayTitle && `· ${displayTitle}`}
         </Modal.Title>
+
+        <ManualHeaderButton chapter="photos" />
       </Modal.Header>
 
       <Modal.Body>

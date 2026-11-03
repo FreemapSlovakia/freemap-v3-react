@@ -46,4 +46,4 @@ Vybraný prvok má vlastnú lištu:
 - :FaThumbtack: **Ponechať na mape** – prvok zostane na mape aj po výbere iného prvku. Ponechaný prvok odstránite tlačidlom :FaTrash: **Zmazať**.
 - V ponuke :FaEllipsisV: nájdete :FaPencilAlt: **Skonvertovať na kreslenie**, ktoré z prvku urobí kreslenie na úpravu (pozrite [Kreslenie](#show=manual/drawing)), akcie pre dané miesto ako v kontextovej ponuke mapy a :FaExternalLinkAlt: **Otvoriť v…** – pri prvku OpenStreetMap **OpenStreetMap.org**, **OpenStreetMap.org (história)** a editory **JOSM** a **iD**, za nimi ďalšie mapy a aplikácie.
 
-:FaFileExport: **Export mapových dát** v hlavnom menu uloží nájdené prvky do súboru GPX alebo iného formátu. Vzhľad prvkov na mape nastavíte v :FaPaintBrush: **Štýl nálezu**, poslednom riadku zoznamu vo vyhľadávacom poli.
+:FaFileExport: **Export mapových dát** v hlavnom menu uloží nájdené prvky do súboru GPX alebo iného formátu. Vzhľad prvkov na mape nastavíte v :FaPaintBrush: **Štýl nálezu** na konci zoznamu vo vyhľadávacom poli.

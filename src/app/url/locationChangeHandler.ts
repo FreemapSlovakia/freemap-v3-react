@@ -783,6 +783,18 @@ export function handleLocationChange(store: MyStore): void {
 
     const next = showRaw === undefined ? null : decodeActiveModal(showRaw);
 
+    const mainNext =
+      next?.type === 'gallery-viewer' || next?.type === 'wiki' ? null : next;
+
+    // First: any `setActiveModal` closes the viewer and the preview, and cancels
+    // a preview's load, so it must not follow the requests below.
+    if (
+      encodeActiveModal(getState().main.activeModal) !==
+      encodeActiveModal(mainNext)
+    ) {
+      dispatch(setActiveModal(mainNext));
+    }
+
     // The gallery viewer and the Wikimedia Commons preview own their own slice
     // state; everything else lives in main.activeModal.
     if (next?.type === 'gallery-viewer') {
@@ -804,16 +816,6 @@ export function handleLocationChange(store: MyStore): void {
       }
     } else if (getState().wiki.preview || getState().wiki.loading) {
       dispatch(wikiSetPreview(null));
-    }
-
-    const mainNext =
-      next?.type === 'gallery-viewer' || next?.type === 'wiki' ? null : next;
-
-    if (
-      encodeActiveModal(getState().main.activeModal) !==
-      encodeActiveModal(mainNext)
-    ) {
-      dispatch(setActiveModal(mainNext));
     }
   }
 

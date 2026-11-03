@@ -1,8 +1,10 @@
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   getIdNoteUrl,
   getOsmNoteUrl,
 } from '@features/openInExternalApp/externalUrlUtils.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
+import { Action } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
@@ -13,6 +15,8 @@ export default function OsmNoteSelection(): ReactElement | null {
   const note = useAppSelector((state) => state.osmNotes.selected);
 
   const m = useOsmNotesMessages();
+
+  const manualAction = useManualAction();
 
   if (!note) {
     return null;
@@ -28,6 +32,7 @@ export default function OsmNoteSelection(): ReactElement | null {
           idUrl: getIdNoteUrl(note.id),
         }}
         selection
+        after={<Action {...manualAction('osm-notes')} />}
       />
     </Selection>
   );

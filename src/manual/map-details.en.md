@@ -46,4 +46,4 @@ The selected feature has its own toolbar:
 - :FaThumbtack: **Keep on the map** – the feature stays on the map when you select another one. A kept feature is removed with :FaTrash: **Delete**.
 - :FaEllipsisV: holds :FaPencilAlt: **Convert to drawing**, which turns the feature into a drawing you can edit (see [Drawing](#show=manual/drawing)), the actions for the place, as in the map's context menu, and :FaExternalLinkAlt: **Open in…** – for an OpenStreetMap element **OpenStreetMap.org**, **OpenStreetMap.org (history)** and the editors **JOSM** and **iD**, followed by other maps and apps.
 
-:FaFileExport: **Map data export** in the main menu saves the found features as GPX or another format. How they are drawn on the map is set in :FaPaintBrush: **Lookup style**, the last row of the search box's list.
+:FaFileExport: **Map data export** in the main menu saves the found features as GPX or another format. How they are drawn on the map is set in :FaPaintBrush: **Lookup style**, near the end of the search box's list.

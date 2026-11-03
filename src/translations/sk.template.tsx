@@ -398,6 +398,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-manual': 'pomoc, návod, nápoveda, dokumentácia, manuál, help',
         'manual-getting-started': 'základy, úvod, prvé kroky, pomoc',
         'manual-shortcuts': 'klávesnica, klávesy, skratky',
+        'manual-search':
+          'pomoc, návod, hľadať, nájsť, súradnice, adresa, miesto, ponechať na mape',
+        'manual-osm-notes':
+          'pomoc, návod, poznámka, hlásenie, chyba, openstreetmap, josm, id',
         'manual-route-planner':
           'pomoc, návod, navigácia, trasa, plánovanie trasy, zastávky',
         'manual-maps':

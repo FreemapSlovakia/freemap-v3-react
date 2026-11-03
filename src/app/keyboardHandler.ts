@@ -228,7 +228,8 @@ const toolChapters: Record<Tool, string> = {
 
 /**
  * The manual chapter F1 opens: the open modal's `ManualHeaderButton` one, else
- * the map-click tool's, else the newest other tool's; undefined opens the first.
+ * a selected note's or search result's, else the map-click tool's, else the
+ * newest other tool's; undefined opens the first.
  */
 export function manualChapterFor(state: RootState): string | undefined {
   const modalChapter =
@@ -242,6 +243,15 @@ export function manualChapterFor(state: RootState): string | undefined {
 
   if (state.gallery.activeImageId) {
     return 'photos';
+  }
+
+  // A selection's toolbar, before the tools' it may sit beside.
+  if (state.osmNotes.selected) {
+    return 'osm-notes';
+  }
+
+  if (state.main.selection?.type === 'search') {
+    return 'search';
   }
 
   // The map-click tool first: a draw tool brings 'import-file' along with it.

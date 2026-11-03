@@ -1,6 +1,4 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { showGalleryViewerSelector } from '@app/store/selectors.js';
-import { galleryClear } from '@features/gallery/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type MouseEvent, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
@@ -10,8 +8,6 @@ export function useBecomePremium() {
   const dispatch = useDispatch();
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
-
-  const showGalleryViewer = useAppSelector(showGalleryViewerSelector);
 
   const becomePremium = useCallback(
     (e?: MouseEvent) => {
@@ -30,14 +26,9 @@ export function useBecomePremium() {
         return;
       }
 
-      // close gallery viewer if open; TODO ugly
-      if (showGalleryViewer) {
-        dispatch(galleryClear());
-      }
-
       dispatch(setActiveModal({ type: 'premium' }));
     },
-    [dispatch, showGalleryViewer],
+    [dispatch],
   );
 
   return premium ? undefined : becomePremium;

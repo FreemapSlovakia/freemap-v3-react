@@ -361,6 +361,10 @@ const messages: Messages = {
         'modal-manual': 'help, guide, documentation, how to, tutorial',
         'manual-getting-started': 'basics, introduction, first steps, help',
         'manual-shortcuts': 'keyboard, keys, hotkeys, chords',
+        'manual-search':
+          'help, find, lookup, geocoding, coordinates, address, place, keep on the map',
+        'manual-osm-notes':
+          'help, report, bug, error, mistake, openstreetmap, josm, id',
         'manual-route-planner':
           'help, navigation, directions, waypoints, plan a route, how to',
         'manual-maps':

@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { useOpenManual } from '@features/documents/hooks/useOpenManual.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
@@ -64,6 +65,7 @@ import {
   InputGroup,
 } from 'react-bootstrap';
 import {
+  FaBook,
   FaCaretDown,
   FaCaretUp,
   FaDrawPolygon,
@@ -170,6 +172,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const modalLink = useModalLink();
 
   const styleLink = modalLink({ type: 'search-result-style' });
+
+  const openManual = useOpenManual('toolbar');
 
   const online = useOnline();
 
@@ -834,6 +838,22 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 <FaPaintBrush />
                 <MenuLabel>
                   <Text k="mapLayers.lookupStyle" />
+                </MenuLabel>
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                href="#show=manual/search"
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  openManual('search');
+
+                  setOpen(false);
+                }}
+              >
+                <FaBook />
+                <MenuLabel>
+                  <Text k="mainMenu.manual" />
                 </MenuLabel>
               </Dropdown.Item>
             </>

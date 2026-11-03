@@ -1,10 +1,12 @@
 import { convertToDrawing } from '@app/store/actions.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { DetailsButton } from '@features/objects/components/DetailsButton.js';
 import { useObjectActions } from '@features/objects/components/useObjectActions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   Action,
+  ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
@@ -36,6 +38,8 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
   const dispatch = useDispatch();
 
   const askConversion = useConvertPrompt();
+
+  const manualAction = useManualAction();
 
   const selectedResult = useAppSelector(activeSearchResultSelector);
 
@@ -108,6 +112,10 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
         />
 
         {actions}
+
+        <ActionDivider />
+
+        <Action {...manualAction('search')} />
       </ResponsiveActions>
     </Selection>
   ) : null;

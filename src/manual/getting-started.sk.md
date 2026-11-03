@@ -51,6 +51,8 @@ V tom istom poli nájdete aj:
 
 ![Funkcie medzi výsledkami vyhľadávania](./images/search-functions.sk.webp)
 
+Všetko, čo pole dokáže, opisuje kapitola [Vyhľadávanie](#show=manual/search).
+
 ## Kde som?
 
 :FaRegDotCircle: **Kde som?** na lište máp zobrazí vašu polohu ako bod s kruhom presnosti a mapa sa počas pohybu posúva s vami. Keď mapu posuniete rukou, prestane sa s vami posúvať; ďalším stlačením tlačidla sa mapa vráti k vám. Stlačením, kým sa mapa posúva s vami, sa zisťovanie polohy vypne.

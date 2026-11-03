@@ -51,6 +51,8 @@ In the same box you can also find:
 
 ![Functions among the search results](./images/search-functions.en.webp)
 
+All the box can do is described in [Search](#show=manual/search).
+
 ## Where am I?
 
 :FaRegDotCircle: **Locate me** in the map toolbar shows your position as a dot with an accuracy circle, and the map stays centred on you as you move. Once you move the map by hand, it no longer stays centred; pressing the button again brings the map back to you. Pressing it while the map is centred on you switches locating off.

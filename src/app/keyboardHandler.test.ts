@@ -75,6 +75,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
       holeFor: null,
     },
     changesetInspector: { inspected: null, history: null },
+    osmNotes: { selected: null },
     ...overrides,
   } as unknown as RootState;
 }
@@ -489,6 +490,18 @@ describe('handleEvent — F1', () => {
         }),
       ),
     ).toEqual(setActiveModal({ type: 'manual', chapter: 'drawing' }));
+  });
+
+  it("opens a selected note's chapter before a tool's", () => {
+    expect(
+      handleEvent(
+        f1(),
+        makeState({
+          main: { activeModal: null, mapTool: 'route-planner', panelTools: [] },
+          osmNotes: { selected: { id: 1 } },
+        }),
+      ),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'osm-notes' }));
   });
 
   it('opens the newest toolbar tool without a map-click one', () => {
