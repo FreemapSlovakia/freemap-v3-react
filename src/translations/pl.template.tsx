@@ -347,6 +347,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, moje konto, ustawienia, wyloguj',
         'modal-login': 'zaloguj się, konto',
         'modal-my-maps': 'zapisane mapy, zapisz mapę, udostępnij mapę',
+        'modal-events':
+          'wydarzenia, wycieczka, wyjście, spotkanie, wspólna wędrówka, kalendarz, events',
         'modal-map-features-export': 'eksport, gpx, geojson, pobierz dane',
         'modal-map-to-document-export':
           'eksport, drukuj, pdf, png, jpeg, webp, svg, obraz, plakat',
@@ -373,6 +375,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-J3': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
         'layer-d': 'komunikacja miejska, autobusy, pociągi, rozkłady',
         'layer-I': 'obrazy, galeria, zdjęcia',
+        'layer-A':
+          'wydarzenia, wycieczka, wyjście, spotkanie, kalendarz, events',
         'layer-w': 'wiki, artykuły',
         'layer-n': 'openstreetmap, notes, błędy, zgłoszenia, mapowanie, uwaga',
         'layer-R': 'pogoda, deszcz, opady, burza, prognoza',

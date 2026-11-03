@@ -352,6 +352,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, moj račun, nastavitve, odjava',
         'modal-login': 'prijava, račun',
         'modal-my-maps': 'shranjene karte, shrani karto, deli karto',
+        'modal-events':
+          'dogodki, izlet, pohod, srečanje, skupinski pohod, koledar, events',
         'modal-map-features-export': 'izvoz, gpx, geojson, prenos podatkov',
         'modal-map-to-document-export':
           'izvoz, tiskanje, pdf, png, jpeg, webp, svg, slika, plakat',
@@ -379,6 +381,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-J3': 'satelitska, ortofoto, letalski posnetki',
         'layer-d': 'javni prevoz, avtobusi, vlaki, vozni redi',
         'layer-I': 'slike, galerija, fotografije',
+        'layer-A': 'dogodki, izlet, pohod, srečanje, koledar, events',
         'layer-w': 'wiki, članki',
         'layer-n': 'openstreetmap, notes, napake, prijave, kartiranje, opomba',
         'layer-R': 'vreme, dež, padavine, nevihta, napoved',

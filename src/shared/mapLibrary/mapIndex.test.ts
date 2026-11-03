@@ -36,7 +36,7 @@ describe('mapIndex', () => {
 
   it('bundles the common maps and the feature layers', () => {
     expect(Object.keys(bundledBodies).sort()).toEqual(
-      ['I', 'O', 'R', 'S', 'X', 'c', 'h', 'n', 'v', 'w'].sort(),
+      ['A', 'I', 'O', 'R', 'S', 'X', 'c', 'h', 'n', 'v', 'w'].sort(),
     );
   });
 

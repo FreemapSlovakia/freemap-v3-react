@@ -359,6 +359,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, můj účet, nastavení, odhlášení',
         'modal-login': 'přihlášení, účet',
         'modal-my-maps': 'uložené mapy, uložit mapu, sdílet mapu',
+        'modal-events':
+          'akce, událost, výlet, túra, setkání, společná túra, kalendář, events',
         'modal-map-features-export':
           'export, gpx, geojson, stáhnout data, uložit objekty',
         'modal-map-to-document-export':
@@ -386,6 +388,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-J3': 'satelitní, ortofoto, snímky',
         'layer-d': 'mhd, autobusy, vlaky, jízdní řády',
         'layer-I': 'obrázky, galerie, fotky',
+        'layer-A': 'akce, událost, výlet, túra, setkání, kalendář, events',
         'layer-w': 'wiki, články',
         'layer-n': 'openstreetmap, chyby, hlášení, mapování, poznámka',
         'layer-R': 'počasí, déšť, srážky, bouřka, předpověď',

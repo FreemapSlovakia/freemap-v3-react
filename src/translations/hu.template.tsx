@@ -362,6 +362,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, fiókom, beállítások, kijelentkezés',
         'modal-login': 'bejelentkezés, fiók',
         'modal-my-maps': 'mentett térképek, térkép mentése, térkép megosztása',
+        'modal-events':
+          'események, rendezvény, kirándulás, túra, találkozó, közös túra, naptár, events',
         'modal-map-features-export': 'export, gpx, geojson, adatok letöltése',
         'modal-map-to-document-export':
           'export, nyomtatás, pdf, png, jpeg, webp, svg, kép, poszter',
@@ -389,6 +391,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-J3': 'műhold, ortofotó, légifotó',
         'layer-d': 'tömegközlekedés, buszok, vonatok, menetrendek',
         'layer-I': 'képek, galéria, fotók',
+        'layer-A':
+          'események, rendezvény, kirándulás, túra, találkozó, naptár, events',
         'layer-w': 'wiki, cikkek',
         'layer-n':
           'openstreetmap, notes, hibák, bejelentések, térképezés, jegyzet',

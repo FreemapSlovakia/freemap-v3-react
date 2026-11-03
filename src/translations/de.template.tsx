@@ -360,6 +360,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-account': 'profil, mein konto, einstellungen, abmelden',
         'modal-login': 'anmelden, konto',
         'modal-my-maps': 'gespeicherte karten, karte speichern, karte teilen',
+        'modal-events':
+          'veranstaltungen, termine, ausflug, tour, treffen, gemeinsame wanderung, kalender, events',
         'modal-map-features-export':
           'export, gpx, geojson, daten herunterladen, objekte speichern',
         'modal-map-to-document-export':
@@ -388,6 +390,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-J3': 'satellit, orthofoto, luftbild',
         'layer-d': 'öpnv, nahverkehr, busse, züge, fahrpläne',
         'layer-I': 'bilder, galerie, fotos',
+        'layer-A':
+          'veranstaltungen, termine, ausflug, tour, treffen, kalender, events',
         'layer-w': 'wiki, artikel',
         'layer-n':
           'openstreetmap, notes, notizen, fehler, meldungen, kartierung',

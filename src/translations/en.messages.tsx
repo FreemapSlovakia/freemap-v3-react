@@ -350,6 +350,7 @@ const messages: Messages = {
           'profile, my account, settings, log out, app token, api key',
         'modal-login': 'sign in, account',
         'modal-my-maps': 'saved maps, save map, share map',
+        'modal-events': 'trips, outings, meetups, group hike, calendar',
         'modal-map-features-export':
           'export, gpx, geojson, download data, save features',
         'modal-map-to-document-export':
@@ -427,6 +428,7 @@ const messages: Messages = {
         'layer-J3': 'satellite, orthophoto, imagery',
         'layer-d': 'transit, buses, trains, timetables',
         'layer-I': 'pictures, gallery, photographs',
+        'layer-A': 'trips, outings, meetups, calendar',
         'layer-w': 'wiki, articles',
         'layer-n': 'openstreetmap, bugs, errors, issues, reports, mapping',
         'layer-R': 'weather, rain, precipitation, storm, forecast',
