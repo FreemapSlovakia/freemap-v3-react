@@ -59,6 +59,7 @@ import {
   selectFeature,
   setActiveModal,
   setSelectingHomeLocation,
+  type Tool,
 } from './store/actions.js';
 import { modalOf } from './store/activeModal.js';
 import { isToolOpen, showGalleryViewerSelector } from './store/selectors.js';
@@ -210,6 +211,49 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
   return undefined;
 }
 
+const toolChapters: Record<Tool, string> = {
+  changesets: 'changesets',
+  'draw-lines': 'drawing',
+  'draw-points': 'drawing',
+  'draw-polygons': 'drawing',
+  'gps-recorder': 'gps-recorder',
+  'import-file': 'tracks',
+  'map-details': 'map-details',
+  objects: 'objects',
+  panorama: 'panorama',
+  'route-planner': 'route-planner',
+  toposcope: 'toposcope',
+  tracking: 'tracking',
+};
+
+/**
+ * The manual chapter F1 opens: the open modal's `ManualHeaderButton` one, else
+ * the map-click tool's, else the newest other tool's; undefined opens the first.
+ */
+export function manualChapterFor(state: RootState): string | undefined {
+  const modalChapter =
+    state.main.activeModal &&
+    document.querySelector<HTMLElement>('.modal.show [data-manual-chapter]')
+      ?.dataset['manualChapter'];
+
+  if (modalChapter) {
+    return modalChapter;
+  }
+
+  if (state.gallery.activeImageId) {
+    return 'photos';
+  }
+
+  // The map-click tool first: a draw tool brings 'import-file' along with it.
+  const tool = state.main.mapTool ?? state.main.panelTools.at(-1);
+
+  if (tool) {
+    return toolChapters[tool];
+  }
+
+  return state.elevationChart.target ? 'tracks' : undefined;
+}
+
 export function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
     event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
@@ -223,6 +267,32 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     return document.querySelector('*[aria-expanded=true]') === null
       ? escapeAction(state)
       : undefined;
+  }
+
+  // Also over a modal and in a field, where it types nothing.
+  if (
+    !window.fmEmbedded &&
+    !withModifiers &&
+    !event.shiftKey &&
+    event.code === 'F1'
+  ) {
+    // A modal paused for picking on the map would be torn down mid-pick.
+    if (state.main.activeModal?.type === 'manual' || suspendedModal) {
+      // Keeps the browser's own help page closed.
+      event.preventDefault();
+
+      return undefined;
+    }
+
+    const chapter = manualChapterFor(state);
+
+    trackMatomo(
+      chapter
+        ? ['trackEvent', 'Manual', 'key', chapter]
+        : ['trackEvent', 'Manual', 'key'],
+    );
+
+    return setActiveModal({ type: 'manual', chapter });
   }
 
   if (
@@ -368,6 +438,12 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
   // By the character, wherever a layout puts it.
   if (!keyTimer && event.key === '.') {
     return mapLayersPanelToggle();
+  }
+
+  if (!window.fmEmbedded && !keyTimer && event.key === '?') {
+    trackMatomo(['trackEvent', 'Manual', 'key', 'shortcuts']);
+
+    return setActiveModal({ type: 'manual', chapter: 'shortcuts' });
   }
 
   if (!window.fmEmbedded && !keyTimer && chordPrefixCodes.has(event.code)) {

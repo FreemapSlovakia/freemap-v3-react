@@ -26,6 +26,8 @@ export function ManualHeaderButton({
           variant="link"
           className="fm-modal-manual"
           href={`#show=manual/${chapter}`}
+          // What F1 opens while this modal is in front.
+          data-manual-chapter={chapter}
           onClick={(e) => {
             e.preventDefault();
 

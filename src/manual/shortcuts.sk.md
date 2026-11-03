@@ -6,6 +6,11 @@ order: 900
 
 Mnohé úkony sú rýchlejšie z klávesnice. Klávesy fungujú kdekoľvek na stránke, okrem písania do poľa a otvoreného dialógu.
 
+## Pomoc
+
+- <kbd>F1</kbd> otvorí príručku na kapitole o otvorenom dialógu alebo nástroji – aj nad dialógom a počas písania
+- <kbd>?</kbd> otvorí túto kapitolu
+
 ## Mapa
 
 - šípky posúvajú mapu, so stlačeným <kbd>Shift</kbd> po väčších krokoch

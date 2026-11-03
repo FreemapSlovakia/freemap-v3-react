@@ -9,6 +9,7 @@ The in-app manual: Info & help → Manual, `#show=manual` (first chapter) or `#s
 - Rendered by `markdown-render.js` — through `markdown-loader.js` for the app, directly for the SEO prerender, which serves each chapter at `?layers=X&manual=<chapter>&lang=<lang>` (see [seo-prerender.md](./seo-prerender.md)) — and shown by `ManualModal.tsx`: from Bootstrap's `lg` a chapter list beside the text, each scrolling on its own; below it a drop-down in the header and ‹ › in the footer.
 - A toolbar's ⋮ menu ends with `ManualMenuItem`, opening the chapter about it; a toolbar with nothing else to put there gets a ⋮ for it alone. A new toolbar gets one too.
 - A modal with a chapter about it has `ManualHeaderButton` in its `Modal.Header`, after the title; it sits beside the close button. A floating window's bottom toolbar ends with a Manual button: `ManualWindowButton`, or an `Action` in panorama's collapsing row.
+- <kbd>F1</kbd> opens the chapter of the open modal, read from its `ManualHeaderButton`'s `data-manual-chapter` in the DOM, else of the map-click tool, else of the newest other tool (`toolChapters` in `keyboardHandler.ts`); <kbd>?</kbd> opens `shortcuts`.
 - Every chapter is a search-box row (`commandDefinitions.tsx`, kind `manual`, under its own **Manual** caption) with keywords under `search.commands.keywords['manual-<chapter>']`.
 - Slovak and English are written by hand; other languages fall back. A chapter moved from `src/documents/` keeps the languages it had.
 

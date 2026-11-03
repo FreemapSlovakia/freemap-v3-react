@@ -6,6 +6,11 @@ order: 900
 
 Many actions are faster from the keyboard. The keys work anywhere on the page, except while you are typing into a field or a dialog is open.
 
+## Help
+
+- <kbd>F1</kbd> opens the manual at the chapter about the open dialog or tool – also over a dialog and while typing
+- <kbd>?</kbd> opens this chapter
+
 ## The map
 
 - the arrow keys move the map, with <kbd>Shift</kbd> in bigger steps

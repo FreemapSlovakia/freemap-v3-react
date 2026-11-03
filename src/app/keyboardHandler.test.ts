@@ -21,7 +21,7 @@ import {
 } from 'leaflet';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { handleEvent, handleMapKey } from './keyboardHandler.js';
-import { closeTool, selectFeature } from './store/actions.js';
+import { closeTool, selectFeature, setActiveModal } from './store/actions.js';
 import type { RootState } from './store/store.js';
 
 /**
@@ -468,5 +468,95 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toEqual(mapAreaSelectCancel());
+  });
+});
+
+describe('handleEvent — F1', () => {
+  const f1 = () => press('F1', { code: 'F1', cancelable: true });
+
+  const withMain = (main: Record<string, unknown>) =>
+    makeState({
+      main: { activeModal: null, mapTool: null, panelTools: [], ...main },
+    });
+
+  it("opens the map-click tool's chapter, not the toolbar drawing brings", () => {
+    expect(
+      handleEvent(
+        f1(),
+        withMain({
+          mapTool: 'draw-lines',
+          panelTools: ['panorama', 'import-file'],
+        }),
+      ),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'drawing' }));
+  });
+
+  it('opens the newest toolbar tool without a map-click one', () => {
+    expect(
+      handleEvent(f1(), withMain({ panelTools: ['map-details', 'panorama'] })),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'panorama' }));
+  });
+
+  it("opens the chapter of the modal's header button", () => {
+    document.body.innerHTML =
+      '<div class="modal show"><a data-manual-chapter="offline"></a></div>';
+
+    try {
+      expect(
+        handleEvent(
+          f1(),
+          withMain({
+            activeModal: { type: 'cached-maps' },
+            mapTool: 'route-planner',
+          }),
+        ),
+      ).toEqual(setActiveModal({ type: 'manual', chapter: 'offline' }));
+    } finally {
+      document.body.innerHTML = '';
+    }
+  });
+
+  it("falls back to the tool's chapter over a modal without one", () => {
+    expect(
+      handleEvent(
+        f1(),
+        withMain({
+          activeModal: { type: 'current-drawing-properties' },
+          mapTool: 'draw-lines',
+        }),
+      ),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'drawing' }));
+  });
+
+  it('leaves a modal paused for picking on the map alone', () => {
+    const event = f1();
+
+    expect(
+      handleEvent(
+        event,
+        makeState({
+          main: { activeModal: { type: 'offline-map-export' } },
+          mapArea: { selecting: 'export' },
+        }),
+      ),
+    ).toBeUndefined();
+
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('opens the first chapter with nothing open', () => {
+    expect(handleEvent(f1(), withMain({}))).toEqual(
+      setActiveModal({ type: 'manual', chapter: undefined }),
+    );
+  });
+
+  it('leaves an open manual where it is, but keeps the browser help shut', () => {
+    const event = f1();
+
+    expect(
+      handleEvent(event, withMain({ activeModal: { type: 'manual' } })),
+    ).toBeUndefined();
+
+    expect(event.defaultPrevented).toBe(true);
   });
 });
