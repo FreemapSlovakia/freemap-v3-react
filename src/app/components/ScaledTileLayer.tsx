@@ -1,7 +1,14 @@
-import { createTileLayerComponent } from '@react-leaflet/core';
+import { createTileLayerComponent, updateGridLayer } from '@react-leaflet/core';
+import { noteTileCodes } from '@shared/tileAttribution.js';
+import {
+  markDrawnTile,
+  pickTileScale,
+  withTileScale,
+} from '@shared/tileUrl.js';
 import {
   type Coords,
   type DoneCallback,
+  type TileEvent,
   TileLayer,
   type TileLayerOptions,
 } from 'leaflet';
@@ -11,27 +18,94 @@ type Props = TileLayerProps & {
   extraScales?: number[];
   forcedScale?: number;
   cors?: boolean;
+  /** Whether this layer's tiles name the datasets they drew; see `loadTile`. */
+  reportsAttribution?: boolean;
   premiumFromZoom?: number;
   premiumOnlyText?: string;
   onPremiumClick?: () => void;
+  /** Leaves the tile at (URL zoom, x, y) empty, without a request. */
+  skipTile?: (z: number, x: number, y: number) => boolean;
+  /**
+   * A URL to load in place of the tile at (URL zoom, x, y) if it fails; not
+   * with `reportsAttribution`, whose fetch handles its own errors.
+   */
+  fallbackUrl?: (z: number, x: number, y: number) => string | undefined;
+  /**
+   * Sent as a bearer token with tiles from this URL zoom up, on the fetch path
+   * only. Lower zooms go without: the header costs a CORS preflight per tile.
+   */
+  tileAuth?: { fromZoom: number; token: string };
 };
+
+/** What one tile's load owns, and how far it has got. */
+type TileLoad = {
+  /** The attempt in flight; a retry swaps it. */
+  controller: AbortController;
+  /** The `@Nx` that attempt asked for, which a decode failure has to know. */
+  scale: number;
+  objectUrl?: string;
+  /** `done` has been called, so the tile is no longer loading. */
+  reported: boolean;
+  /** Unloaded or aborted: nothing wants it any more. */
+  released: boolean;
+};
+
+const loads = new WeakMap<HTMLImageElement, TileLoad>();
+
+/** Per tile, the `fallbackUrl` not tried yet. */
+const fallbacks = new WeakMap<HTMLElement, string>();
+
+function loading(img: HTMLImageElement): boolean {
+  const load = loads.get(img);
+
+  return load !== undefined && !load.reported && !load.released;
+}
+
+function revoke(load: TileLoad): void {
+  if (load.objectUrl) {
+    URL.revokeObjectURL(load.objectUrl);
+
+    load.objectUrl = undefined;
+  }
+}
+
+/** Drops what a tile holds: nothing wants its bytes or its request any more. */
+function release(img: HTMLImageElement): void {
+  const load = loads.get(img);
+
+  if (load) {
+    load.released = true;
+
+    load.controller.abort();
+
+    revoke(load);
+  }
+}
 
 class LScaledTileLayer extends TileLayer {
   private extraScales;
   private forcedScale;
   private cors;
+  private reportsAttribution;
   private premiumFromZoom;
   private premiumOnlyText;
   private onPremiumClick;
+  private skipTile;
+  private fallbackUrl;
+  private tileAuth;
 
   constructor(
     urlTemplate: string,
     extraScales?: number[],
     forcedScale?: number,
     cors = true,
+    reportsAttribution = false,
     premiumFromZoom?: number,
     premiumOnlyText?: string,
     onPremiumClick?: () => void,
+    skipTile?: (z: number, x: number, y: number) => boolean,
+    fallbackUrl?: (z: number, x: number, y: number) => string | undefined,
+    tileAuth?: { fromZoom: number; token: string },
     options?: TileLayerOptions,
   ) {
     super(urlTemplate, options);
@@ -42,13 +116,34 @@ class LScaledTileLayer extends TileLayer {
 
     this.cors = cors;
 
+    this.reportsAttribution = reportsAttribution;
+
     this.premiumFromZoom = premiumFromZoom;
 
     this.premiumOnlyText = premiumOnlyText;
 
     this.onPremiumClick = onPremiumClick;
 
+    this.skipTile = skipTile;
+
+    this.fallbackUrl = fallbackUrl;
+
+    this.tileAuth = tileAuth;
+
     this.handlePremiumClick = this.handlePremiumClick.bind(this);
+
+    // `tileabort` as well as `tileunload`: a zoom away from a tile still
+    // decoding takes Leaflet's abort path, which removes the element without
+    // ever announcing it as unloaded.
+    this.on('tileunload tileabort', (event) => {
+      release((event as TileEvent).tile as HTMLImageElement);
+    });
+  }
+
+  setTileAuth(tileAuth: { fromZoom: number; token: string } | undefined) {
+    this.tileAuth = tileAuth;
+
+    this.redraw();
   }
 
   handlePremiumClick(e: MouseEvent) {
@@ -57,7 +152,177 @@ class LScaledTileLayer extends TileLayer {
     this.onPremiumClick?.();
   }
 
+  /**
+   * Loads a tile through `fetch` rather than by `src`, so the response — and
+   * the datasets it names — can be read; the bytes then reach the element as an
+   * object URL, which decodes exactly as any other image does. The element is
+   * built here rather than by Leaflet, which would set `src` and fetch it twice.
+   *
+   * The fetch is aborted and the object URL revoked on `tileunload` and on
+   * `tileabort`: a pan or a zoom away from a tile still loading must not go on
+   * paying for it.
+   */
+  private loadTile(
+    img: HTMLImageElement,
+    base: string,
+    scale: number,
+    done: DoneCallback,
+    authorization: string | undefined,
+  ): void {
+    const load: TileLoad = {
+      controller: new AbortController(),
+      scale,
+      reported: false,
+      released: false,
+    };
+
+    loads.set(img, load);
+
+    // Leaflet reads `complete` to ask whether a tile is still loading, and an
+    // element given no `src` yet answers that it is not — so a zoom would leave
+    // ours behind rather than dropping them. Answered from the load instead.
+    Object.defineProperty(img, 'complete', {
+      configurable: true,
+      get: () => !loading(img),
+    });
+
+    const finish = (err?: Error) => {
+      if (!load.reported) {
+        load.reported = true;
+
+        done(err, img);
+      }
+    };
+
+    const { referrerPolicy } = this.options;
+
+    const failed = (err: Error, at: number) => {
+      // A provider with no `@Nx` of this tile answers the plain one, as
+      // dropping `srcset` on error used to let the browser do — but not where a
+      // scale was asked for outright, which had no such fallback either, and
+      // where one transient failure would leave the tile blurry for good.
+      if (at > 1 && this.forcedScale === undefined) {
+        attempt(1);
+
+        return;
+      }
+
+      // What Leaflet's `_tileOnError` would have done, the element no longer
+      // loading through it.
+      const { errorTileUrl } = this.options;
+
+      if (errorTileUrl && img.src !== errorTileUrl) {
+        img.src = errorTileUrl;
+      }
+
+      finish(err);
+    };
+
+    const attempt = (at: number) => {
+      const url = markDrawnTile(withTileScale(base, at));
+
+      // The `src` becomes an object URL, so what the tile was fetched from —
+      // the key its codes are remembered under — is kept on the element.
+      img.dataset['tileUrl'] = url;
+
+      const controller = new AbortController();
+
+      load.controller = controller;
+
+      load.scale = at;
+
+      fetch(url, {
+        signal: controller.signal,
+        // a tile is not what anyone is waiting on; the app's own calls are
+        priority: 'low',
+        ...(typeof referrerPolicy === 'string' && { referrerPolicy }),
+        ...(authorization && { headers: { authorization } }),
+      } as RequestInit)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`tile ${response.status}`);
+          }
+
+          if (this.reportsAttribution) {
+            noteTileCodes(url, response.headers);
+          }
+
+          return response.blob();
+        })
+        .then((blob) => {
+          // A body already buffered resolves even after the abort.
+          if (load.controller !== controller || load.released) {
+            return;
+          }
+
+          // a retry's bytes replace the attempt's before them
+          revoke(load);
+
+          load.objectUrl = URL.createObjectURL(blob);
+
+          img.src = load.objectUrl;
+        })
+        .catch((err: Error) => {
+          // Nothing to report on a tile Leaflet has already dropped — and
+          // reporting it would raise `tileerror` for an ordinary pan, which a
+          // native tile never does.
+          if (load.released) {
+            return;
+          }
+
+          if (load.controller !== controller) {
+            finish(err);
+          } else {
+            failed(err, at);
+          }
+        });
+    };
+
+    // Bound once, not per attempt: a retry on the same element would otherwise
+    // leave the first attempt's listeners armed and report the tile twice.
+    img.addEventListener('load', () => finish());
+
+    img.addEventListener('error', () => {
+      // Revoking on release surfaces here too, on a tile nothing wants now.
+      // The attempt's own scale, not the one asked for: the scale-1 retry
+      // failing to decode would otherwise retry at 1 again, without end.
+      if (loading(img)) {
+        failed(new Error('tile did not decode'), load.scale);
+      }
+    });
+
+    attempt(scale);
+  }
+
+  // Leaflet's own error handler, bound per tile in `createTile`; a tile with a
+  // fallback loads that instead, and `_tileOnLoad` then reports it.
+  _tileOnError(done: DoneCallback, tile: HTMLImageElement, e: Error) {
+    const fallback = fallbacks.get(tile);
+
+    if (fallback) {
+      fallbacks.delete(tile);
+
+      tile.dataset['tileUrl'] = fallback;
+
+      tile.src = fallback;
+
+      return;
+    }
+
+    super._tileOnError(done, tile, e);
+  }
+
   createTile(coords: Coords, done: DoneCallback) {
+    const urlZoom = coords.z + (this.options.zoomOffset ?? 0);
+
+    if (this.skipTile?.(urlZoom, coords.x, coords.y)) {
+      const div = document.createElement('div');
+
+      setTimeout(() => done(undefined, div));
+
+      return div;
+    }
+
     const isOnPremiumZoom =
       this.premiumFromZoom !== undefined && coords.z >= this.premiumFromZoom;
 
@@ -70,7 +335,6 @@ class LScaledTileLayer extends TileLayer {
         const a = document.createElement('a');
 
         a.href = '#show=premium';
-        a.target = '_blank';
         a.innerText = this.premiumOnlyText;
         a.onclick = this.handlePremiumClick;
 
@@ -82,7 +346,42 @@ class LScaledTileLayer extends TileLayer {
       return div;
     }
 
+    const authorization =
+      this.tileAuth && urlZoom >= this.tileAuth.fromZoom
+        ? `Bearer ${this.tileAuth.token}`
+        : undefined;
+
+    // What a tile credits is only on its response, which an `<img>` never
+    // exposes, so a reporting layer fetches the bytes and hands the element an
+    // object URL — as does one sending a token. Only those: a fetch's `Accept`
+    // is refused by some providers.
+    if ((this.reportsAttribution || authorization) && this.cors) {
+      const img = document.createElement('img');
+
+      img.alt = '';
+
+      img.classList.toggle('fm-demo-tile', isOnPremiumZoom);
+
+      // `srcset` is what picked the `@Nx` variant by screen density when no
+      // scale is forced; fetching one URL, the density is read here instead.
+      this.loadTile(
+        img,
+        this.getTileUrl(coords),
+        this.forcedScale ?? pickTileScale(this.extraScales),
+        done,
+        authorization,
+      );
+
+      return img;
+    }
+
     const img = super.createTile(coords, done) as HTMLImageElement;
+
+    const fallback = this.fallbackUrl?.(urlZoom, coords.x, coords.y);
+
+    if (fallback) {
+      fallbacks.set(img, fallback);
+    }
 
     img.classList.toggle('fm-demo-tile', isOnPremiumZoom);
 
@@ -92,11 +391,11 @@ class LScaledTileLayer extends TileLayer {
 
     if (this.forcedScale !== undefined) {
       if (this.forcedScale > 1) {
-        img.src += `@${this.forcedScale}x`;
+        img.src = withTileScale(img.src, this.forcedScale);
       }
     } else if (this.extraScales?.length) {
       img.srcset = `${img.src}, ${this.extraScales
-        .map((es) => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
+        .map((es) => `${withTileScale(img.src, es)} ${es}x`) // TODO add support for extensions
         .join(', ')}`;
 
       img.addEventListener(
@@ -108,20 +407,30 @@ class LScaledTileLayer extends TileLayer {
       );
     }
 
+    // One writer for the key the credit is looked up by, as on the fetch path.
+    img.dataset['tileUrl'] = img.src;
+
     return img;
   }
 }
 
-export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
+export const ScaledTileLayer = createTileLayerComponent<
+  LScaledTileLayer,
+  Props
+>(
   (props, context) => {
     const {
       url,
       extraScales,
       forcedScale,
       cors = true,
+      reportsAttribution = false,
       premiumFromZoom,
       premiumOnlyText,
       onPremiumClick,
+      skipTile,
+      fallbackUrl,
+      tileAuth,
       // strict-origin-when-cross-origin (the modern browser default) so tile
       // providers that require a Referer header — e.g. OSM's usage policy —
       // aren't blocked even if a stricter document-level policy is in effect.
@@ -135,9 +444,13 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
         extraScales,
         forcedScale,
         cors,
+        reportsAttribution,
         premiumFromZoom,
         premiumOnlyText,
         onPremiumClick,
+        skipTile,
+        fallbackUrl,
+        tileAuth,
         { ...rest, referrerPolicy },
       ),
       context,
@@ -145,6 +458,14 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
   },
 
   (instance, props, prevProps) => {
+    // The stack order moves a mounted layer's z-index.
+    updateGridLayer(instance, props, prevProps);
+
+    // Logging in or out, or premium starting, changes what the tiles may show.
+    if (JSON.stringify(props.tileAuth) !== JSON.stringify(prevProps.tileAuth)) {
+      instance.setTileAuth(props.tileAuth);
+    }
+
     if (
       (
         [
@@ -152,6 +473,7 @@ export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
           'extraScales',
           'forcedScale',
           'cors',
+          'reportsAttribution',
           'premiumFromZoom',
           'premiumOnlyText',
         ] as const

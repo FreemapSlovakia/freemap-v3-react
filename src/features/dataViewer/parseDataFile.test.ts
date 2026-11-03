@@ -179,6 +179,57 @@ describe('parseDataFile', () => {
     }
   });
 
+  it('keeps a GeoJSON file’s styleUrl, which is its own datum', () => {
+    const geojson = JSON.stringify({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          properties: { styleUrl: '#s' },
+          geometry: { type: 'Point', coordinates: [17, 48] },
+        },
+      ],
+    });
+
+    expect(
+      parseDataFile(geojson, 'x.geojson')?.features[0]?.properties,
+    ).toMatchObject({ styleUrl: '#s' });
+  });
+
+  it('drops KML style references, the style already resolved', () => {
+    const styled = `<?xml version="1.0"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+  <Style id="s"><LineStyle><color>ff0000ff</color><width>3</width></LineStyle></Style>
+  <Placemark><name>Path</name><styleUrl>#s</styleUrl>
+    <LineString><coordinates>17,48 17.1,48.1</coordinates></LineString>
+  </Placemark></Document></kml>`;
+
+    const properties = parseDataFile(styled, 'path.kml')?.features[0]
+      ?.properties;
+
+    expect(properties).not.toHaveProperty('styleUrl');
+
+    expect(properties).not.toHaveProperty('styleHash');
+
+    expect(properties).toHaveProperty('stroke');
+  });
+
+  it('drops a KML icon’s hot spot, so the point can go in a link', () => {
+    const point = `<?xml version="1.0"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+  <Style id="s"><IconStyle><Icon><href>https://x/y.png</href></Icon>
+    <hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/></IconStyle></Style>
+  <Placemark><name>Hut</name><styleUrl>#s</styleUrl>
+    <Point><coordinates>17,48</coordinates></Point>
+  </Placemark></Document></kml>`;
+
+    const properties = parseDataFile(point, 'hut.kml')?.features[0]?.properties;
+
+    expect(properties).not.toHaveProperty('icon-offset');
+
+    expect(properties).not.toHaveProperty('icon-offset-units');
+  });
+
   it('detects KML by content when the extension is generic', () => {
     expect(parseDataFile(KML, 'path.xml')).not.toBeNull();
   });
@@ -316,10 +367,9 @@ describe('parseDataFile drawing extensions', () => {
     expect(props?.['fm_prop']).toBeUndefined();
   });
 
-  it('keeps `<name>` too, which the viewer titles the feature by', () => {
-    // The table is what the conversion reads; `<name>` holds the label
-    // rendered, and is the only thing somebody else's file says.
-    expect(propsOf(OWN_GPX, 'own.gpx')?.['name']).toBe('Dubník 504');
+  it('drops `<name>` under a template, which renders the label again', () => {
+    // Read as data, `<name>` would feed the label back into `{p:name}`.
+    expect(propsOf(OWN_GPX, 'own.gpx')).not.toHaveProperty('name');
   });
 
   it('leaves a file with no extensions of ours alone', () => {
@@ -328,5 +378,34 @@ describe('parseDataFile drawing extensions', () => {
     expect(props?.['name']).toBe('Dubník');
 
     expect(props?.['freemap:props']).toBeUndefined();
+  });
+
+  it('names a templated GeoJSON feature by its rendering, not its property', () => {
+    const geojson = (properties: Record<string, unknown>) =>
+      JSON.stringify({
+        type: 'Feature',
+        properties,
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      });
+
+    expect(
+      propsOf(
+        geojson({
+          name: 'Dubník',
+          title: 'Dubník 504',
+          'freemap:label': '{p:name} {p:ele}',
+          'freemap:props': { name: 'Dubník', ele: '504' },
+        }),
+        'own.geojson',
+      ),
+    ).toMatchObject({ name: 'Dubník 504' });
+
+    // Rendered to nothing: no title, and the property is no label.
+    expect(
+      propsOf(
+        geojson({ name: 'Dubník', 'freemap:label': '[{p:x}]' }),
+        'own.geojson',
+      ),
+    ).not.toHaveProperty('name');
   });
 });

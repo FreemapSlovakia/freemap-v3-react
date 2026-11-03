@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { PanoramaLook } from '../model/settingsReducer.js';
+import type { PanoramaLook, SubLinePart } from '../model/settingsReducer.js';
 
 export type PanoramaMessages = {
   /**
@@ -7,7 +7,13 @@ export type PanoramaMessages = {
    * icon is passed in rather than named, so a locale needs no imports.
    */
   pickHint: (params: { icon: ReactNode }) => ReactNode;
+  /** The panel's own line while a render is on; the spinner says the stage. */
+  preparing: string;
   rendering: string;
+  /** The service's own work is done and it is compressing the picture. */
+  encoding: string;
+  /** Said while this side decodes what arrived — seconds, on a fine render. */
+  decoding: string;
   /** Said while the render waits its turn; `ahead` is how many go first. */
   queued: (params: { ahead: number }) => string;
   cancel: string;
@@ -39,8 +45,6 @@ export type PanoramaMessages = {
     title: string;
     /** Says what the vertical band is, which its name alone does not. */
     tiltHint: string;
-    /** The vertical band given as its two angles rather than by name. */
-    custom: string;
     /** Raises far terrain, unfolding the distance the projection compresses. */
     depthLift: string;
     /** The step that leaves the view true. */
@@ -73,27 +77,44 @@ export type PanoramaMessages = {
     gradientClip: string;
     gradientClipHint: string;
   };
-  /** Marks the fast pass while the detailed one is still rendering. */
-  preview: string;
   quality: {
-    label: string;
-    /** Coarsest to finest; everything past the first is premium's. */
-    superfast: string;
-    fast: string;
-    standard: string;
-    detailed: string;
-    finest: string;
+    /** How fine the picture is, in pixels per degree. */
+    detail: string;
   };
+  /** Names the one control that frames a render: horizontal view and detail. */
+  frame: string;
   tilt: {
     label: string;
     standard: string;
     wide: string;
     flat: string;
+    /** The two sliders under the presets, in degrees from the horizon. */
+    below: string;
+    above: string;
   };
   fov: {
     label: string;
     /** The whole horizon — the only fov with no direction to aim. */
     full: string;
+  };
+  /** The sun's and moon's paths over the picture, and the day they are for. */
+  sky: {
+    title: string;
+    sun: string;
+    moon: string;
+    date: string;
+    /** Says the times are local to the device and the terrain is bare. */
+    dateHint: string;
+    today: string;
+    /** The moon's lit fraction, `percent` already formatted. */
+    lit: (percent: string) => string;
+    /** A path's height above the horizon at the pointer's bearing, `deg` formatted. */
+    elevation: (deg: string) => string;
+    /** How far the body's centre stands above or below the terrain's skyline. */
+    overTerrain: (deg: string) => string;
+    belowTerrain: (deg: string) => string;
+    /** Why the menu is off under an unfolded picture; setting names in italics. */
+    unfolded: ReactNode;
   };
   labels: {
     /** Names the menu the four sliders share. */
@@ -120,10 +141,13 @@ export type PanoramaMessages = {
     /** The step with no falloff and no cut. */
     hazeOff: string;
     hazeHint: string;
-    /** Whether each name carries its summit's height on a second line. */
-    showEle: string;
-    /** Warns that a two-line label leaves room for fewer names. */
-    showEleHint: string;
+    /** Names the toggles that pick what each name's second line says. */
+    subLine: string;
+    /** Says what the parts mean, and that two lines fit fewer names. */
+    subLineHint: string;
+    subLineParts: Record<SubLinePart, string>;
+    /** Prefixes that tell the two parts with no unit of their own apart. */
+    subLineAbbr: { prominence: string; isolation: string };
     /** Whether summits only the unfolding brings into view are named at all. */
     showRevealed: string;
     /** Says what such a summit is, and how its name is marked. */
@@ -156,11 +180,12 @@ export type PanoramaMessages = {
     noData: string;
     failed: string;
   };
+  /**
+   * What the picture does not promise. What the terrain model itself does not
+   * say is `general.terrain`, shared with the viewshed; these two are the
+   * picture's own.
+   */
   caveats: {
-    title: string;
-    /** The big one: the terrain model has no trees or buildings on it. */
-    bareEarth: string;
-    coverage: string;
     viewpoint: string;
     /** Said only while the picture is unfolded, which it takes back. */
     depthLift: string;

@@ -1,9 +1,19 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { User } from '@features/auth/model/types.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
+import { premiumTileAuth } from '@features/premium/premium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { isAbortError } from '@shared/isAbortError.js';
+import { reportsTileCodes } from '@shared/mapDefinitions.js';
+import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
+import { loadIntegratedLayerDef } from '@shared/mapLibrary/mapIndex.js';
 import { cacheStaticAssets } from '@shared/offlineStaticCache.js';
+import {
+  ATTRIBUTION_HEADER,
+  expandCode,
+  readTileCodes,
+} from '@shared/tileAttribution.js';
+import { coverageStale, loadTileCoverage } from '@shared/tileCoverage.js';
 import {
   countCachedOf,
   coverageContains,
@@ -12,6 +22,7 @@ import {
   type TileCoord,
   tileRangeIndex,
 } from '@shared/tileEnumeration.js';
+import { licenseSubset, loadTileLicenses } from '@shared/tileLicenses.js';
 import { buildTileUrl, pickSubdomain, withTileScale } from '@shared/tileUrl.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
@@ -25,6 +36,7 @@ import {
 import {
   type CachedTileMapDef,
   getCachedTileScale,
+  isCachedMapComplete,
   sameCoverage,
 } from '../cachedTileMaps.js';
 import { toCachedLayerUrl } from '../cachedTileUrl.js';
@@ -104,11 +116,16 @@ function updateMeta(
   meta: CachedTileMapDef,
   downloadedCount: number,
   sizeBytes: number,
+  attribution: Pick<
+    CachedTileMapDef,
+    'attributionCodes' | 'attributionLicenses'
+  >,
 ): CachedTileMapDef {
   return {
     ...meta,
     downloadedCount,
     sizeBytes,
+    ...attribution,
   };
 }
 
@@ -255,7 +272,7 @@ async function downloadTiles(
   def: CachedTileMapDef,
   dispatch: Dispatch,
   language: string,
-  user: Pick<User, 'premiumExpiration'> | null,
+  user: Pick<User, 'premiumExpiration' | 'authToken'> | null,
   abortController: AbortController = beginDownload(def.type),
 ) {
   const id = def.type;
@@ -264,14 +281,31 @@ async function downloadTiles(
 
   const { bounds, minZoom, maxZoom } = coverageOf(def);
 
-  // The one place premium zooms are kept out of the cache, whichever path got
-  // here: a map carries the range it was given while the premium access lasted,
-  // and a resume or an edit of it answers to the form's cap no more than a
-  // hand-edited database entry would. A map gated this way stays incomplete —
-  // it is missing tiles, and saying otherwise would be a lie.
-  const premiumLimit = premiumZoomLimit(def.sourceType, user) ?? Infinity;
+  // The one place premium zooms are kept out of the cache, whatever range a
+  // resume or edit carries; a map gated this way stays incomplete. The source
+  // is loaded rather than read from the store, where it may be missing.
+  // Where a stand-in has no data there is no tile to fetch. The loader keeps
+  // the coverage, so offline the map is still credited by it.
+  const [sourceDef, coverage] = await Promise.all([
+    loadIntegratedLayerDef(def.sourceType),
+    def.coverageUrl ? loadTileCoverage(def.coverageUrl) : undefined,
+  ]);
+
+  const premiumLimit =
+    premiumZoomLimit(def.sourceType, user, cachedMapSource(def, sourceDef)) ??
+    Infinity;
+
+  // only by a fresh copy: the one kept from before may lack newer data
+  const skipsByCoverage =
+    def.coverageUrl !== undefined && !coverageStale(def.coverageUrl);
 
   const gatedMaxZoom = Math.min(maxZoom, premiumLimit);
+
+  const tileAuth = premiumTileAuth(
+    def.url,
+    cachedMapSource(def, sourceDef)?.premiumFromZoom,
+    user,
+  );
 
   const gated = gatedMaxZoom < maxZoom;
 
@@ -281,10 +315,50 @@ async function downloadTiles(
   let sizeBytes = def.sizeBytes;
   let lastProgressAt = 0;
 
+  // Only the renderer's own layers report their datasets, and only a pass that
+  // can publish what it finds is worth the reading — a gated one discards it.
+  const capturesAttribution = reportsTileCodes(def) && !gated;
+
+  // A pass that walked every tile and published a union answered for all of
+  // them, so its verdict stands and the stored tiles need not be read back —
+  // which would materialise every tile of a large map on each resume. Anything
+  // else may hold tiles no pass ever published codes for, so it is rebuilt.
+  const settled =
+    def.tileCount > 0 &&
+    def.downloadedCount >= def.tileCount &&
+    def.attributionCodes !== undefined;
+
+  const attributionCodes = new Set(settled ? def.attributionCodes : undefined);
+
+  let attributionLicenses = def.attributionLicenses;
+
+  // Only a map every tile of which reported its datasets may be credited from
+  // them; one tile short and the union would name fewer sources than the map
+  // holds.
+  let attributionKnown = capturesAttribution;
+
+  function noteAttribution(headers: Headers): void {
+    const codes = readTileCodes(headers);
+
+    if (codes) {
+      for (const code of codes) {
+        attributionCodes.add(code);
+      }
+    } else {
+      attributionKnown = false;
+    }
+  }
+
   const tileArray: TileCoord[] = [];
 
   for (const tile of tiles) {
-    tileArray.push(tile);
+    // dropped before batching, so a batch never waits on empty slots;
+    // counted as visited, there being nothing to fetch
+    if (skipsByCoverage && coverage?.(tile[2], tile[0], tile[1]) === 'none') {
+      visited++;
+    } else {
+      tileArray.push(tile);
+    }
   }
 
   // Pin the scale into the metadata: the render side reads it back to ask for
@@ -305,10 +379,22 @@ async function downloadTiles(
   // there, so an interruption can't record a fully cached map as barely begun.
   const cachedCount = () => Math.max(def.downloadedCount, visited);
 
+  // A pass in flight has fetched tiles its predecessor's union never saw, so
+  // that union is already stale — and this one's is only true of the tiles
+  // walked so far. Neither answers for the map, so while it runs the map is
+  // credited from its layer's list; the final commit puts the codes back.
+  const NO_ATTRIBUTION: Pick<
+    CachedTileMapDef,
+    'attributionCodes' | 'attributionLicenses'
+  > = { attributionCodes: undefined, attributionLicenses: undefined };
+
   // tell the store which variant this settled on, so the layer asks for the one
   // that is actually stored instead of guessing from the screen's DPI
   if (meta.tileScale !== def.tileScale) {
-    await commitMeta(dispatch, updateMeta(meta, cachedCount(), sizeBytes));
+    await commitMeta(
+      dispatch,
+      updateMeta(meta, cachedCount(), sizeBytes, NO_ATTRIBUTION),
+    );
   }
 
   for (let i = 0; i < tileArray.length; i += BATCH_SIZE) {
@@ -327,10 +413,15 @@ async function downloadTiles(
 
         const cacheKey = tileCacheKey(meta, [x, y, z], meta.tileScale);
 
-        // skip tiles already in cache (resume support)
+        // skip tiles already in cache (resume support), reading what they
+        // credit only where no settled pass has answered for them already
         const existing = await cache.match(cacheKey);
 
         if (existing) {
+          if (capturesAttribution && !settled) {
+            noteAttribution(existing.headers);
+          }
+
           return;
         }
 
@@ -340,6 +431,10 @@ async function downloadTiles(
           // require a Referer header — e.g. OSM's usage policy — aren't blocked
           // (and 403s aren't silently counted as downloaded) during caching.
           referrerPolicy: 'strict-origin-when-cross-origin',
+          ...(tileAuth &&
+            z >= tileAuth.fromZoom && {
+              headers: { authorization: `Bearer ${tileAuth.token}` },
+            }),
         });
 
         if (response.ok) {
@@ -347,11 +442,16 @@ async function downloadTiles(
 
           sizeBytes += blob.size;
 
+          if (capturesAttribution) {
+            noteAttribution(response.headers);
+          }
+
           await putTileResponse(
             cache,
             cacheKey,
             response.headers.get('content-type'),
             blob,
+            response.headers.get(ATTRIBUTION_HEADER),
           );
         }
       }),
@@ -365,13 +465,37 @@ async function downloadTiles(
     ) {
       lastProgressAt = visited;
 
-      await commitMeta(dispatch, updateMeta(meta, cachedCount(), sizeBytes));
+      await commitMeta(
+        dispatch,
+        updateMeta(meta, cachedCount(), sizeBytes, NO_ATTRIBUTION),
+      );
     }
   }
 
   endDownload(id, abortController);
 
   const stopped = abortController.signal.aborted;
+
+  // A pass that walked every tile of the coverage, and only such a pass, can
+  // say what the whole map credits: one cut short — by a stop, or by a premium
+  // gate that leaves stored tiles above its ceiling unvisited — has seen less
+  // than the cache holds, and publishing its union would credit too few.
+  const answersForTheMap = !stopped && !gated;
+
+  // What the codes mean travels with the map: offline there is nobody to ask.
+  // A map that credits nothing still needs the empty dictionary, or reading it
+  // back would say the meanings are missing rather than that there are none.
+  if (answersForTheMap && attributionKnown) {
+    attributionLicenses =
+      attributionCodes.size === 0
+        ? {}
+        : (licenseSubset(
+            await loadTileLicenses(),
+            [...attributionCodes]
+              .map(expandCode)
+              .filter((code) => code !== null),
+          ) ?? attributionLicenses);
+  }
 
   // Committed even when stopped, so the tiles of the last part-batch — already
   // in the cache, their bytes already counted — aren't lost. A resume skips
@@ -382,6 +506,15 @@ async function downloadTiles(
       meta,
       stopped || gated ? cachedCount() : meta.tileCount,
       sizeBytes,
+      answersForTheMap && attributionKnown
+        ? {
+            attributionCodes: [...attributionCodes].sort(),
+            attributionLicenses,
+          }
+        : // Credited from the layer's own list until a pass answers for all of
+          // it. Not the inherited codes: the cache has grown past what they
+          // were the union of.
+          { attributionCodes: undefined, attributionLicenses: undefined },
     ),
   );
 
@@ -408,9 +541,7 @@ async function downloadTiles(
     // auto-cache static assets on first completed map
     const allMaps = await getCachedTileMaps();
 
-    const completedCount = allMaps.filter(
-      (m) => m.downloadedCount === m.tileCount,
-    ).length;
+    const completedCount = allMaps.filter(isCachedMapComplete).length;
 
     if (completedCount === 1) {
       try {

@@ -2,15 +2,21 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   type TransportType,
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Alert, Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaMagic, FaTimes } from 'react-icons/fa';
+import { Alert, Form, Modal } from 'react-bootstrap';
+import { FaCheck, FaMagic } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { hasPerPointData } from '../matchTrack.js';
 import { dataViewerMatchTrack } from '../model/actions.js';
@@ -74,17 +80,19 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaMagic /> {dvm?.match.title}
+            <FaMagic /> <Text m={dvm} k="match.title" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Text muted className="d-block mb-3">
-            {dvm?.match.help}
+            <Text m={dvm} k="match.help" />
           </Form.Text>
 
           <Form.Group controlId="matchTransport">
-            <Form.Label>{dvm?.match.transport}</Form.Label>
+            <Form.Label>
+              <Text m={dvm} k="match.transport" />
+            </Form.Label>
 
             <Form.Select
               value={transport}
@@ -105,20 +113,22 @@ export default function DataViewerMatchModal({ show }: Props): ReactElement {
 
           {loses && (
             <Alert variant="warning" className="mt-3 mb-0">
-              {dvm?.match.dataLoss}
+              <Text m={dvm} k="match.dataLoss" />
             </Alert>
           )}
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="primary" type="submit" disabled={!active}>
-            <FaCheck /> {dvm?.match.run}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            variant="primary"
+            type="submit"
+            disabled={!active}
+            icon={<FaCheck />}
+            label={dvm?.match.run}
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

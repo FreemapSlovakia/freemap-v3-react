@@ -11,4 +11,5 @@ export const gsmSignalColorizer = coordPropColorizerAbsolute(
   ],
   0,
   100,
+  '%',
 );

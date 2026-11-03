@@ -15,10 +15,12 @@ import {
   toggleLocate,
 } from '@features/location/model/actions.js';
 import type { LayerSettings } from '@features/map/model/actions.js';
+import type { LayerSetup } from '@features/map/model/layerSetup.js';
+import type { MapPreset } from '@features/map/model/mapPreset.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import type { FeatureId, OsmFeatureId } from '@shared/types/featureId.js';
-import type { Feature } from 'geojson';
+import type { Feature, FeatureCollection } from 'geojson';
 import z from 'zod';
 import type { ActiveModal } from './activeModal.js';
 
@@ -30,6 +32,9 @@ export const ToolSchema = z.enum([
   'gps-recorder',
   'import-file',
   'map-details',
+  // Opens nothing — the objects toolbar follows the category filter rather
+  // than a tool. Kept so a `#tools=objects` in an older shared link still
+  // parses instead of being refused.
   'objects',
   'panorama',
   'route-planner',
@@ -75,14 +80,16 @@ export {
 
 type Settings = {
   layersSettings?: Record<string, LayerSettings>;
+  layerSetups?: Record<string, LayerSetup>;
   overlayPaneOpacity?: number;
   customLayers?: CustomLayerDef[];
+  presets?: MapPreset[];
   maxZoom?: number;
   drawing?: Partial<DrawingStyle>;
 };
 
 export const saveSettings = createAction<{
-  settings?: Settings;
+  settings?: Pick<Settings, 'maxZoom'>;
   user?: {
     name?: string;
     email?: string | null;
@@ -91,11 +98,6 @@ export const saveSettings = createAction<{
     picture?: string | null;
   };
   keepOpen?: boolean;
-  /**
-   * When set, the success toast offers an action to activate (display) the
-   * layer of this type, unless it is already active.
-   */
-  activateLayerType?: string;
 }>('SAVE_SETTINGS');
 
 export const applySettings = createAction<
@@ -110,11 +112,30 @@ export const setEmbedFeatures = createAction<string[]>('SET_EMBED_FEATURES');
 
 export const purchase = createAction<Purchase>('PURCHASE');
 
-export const deleteFeature = createAction('DELETE_FEATURE');
+/**
+ * Deletes the selected feature, or `target` where given — then leaving the
+ * selection, renumbered where the deletion shifts it.
+ */
+export const deleteFeature = createAction<Selection | undefined>(
+  'DELETE_FEATURE',
+);
 
-export interface DrawPointSelection {
-  type: 'draw-points';
+/** A point, line or polygon of the map's own features. */
+export interface FeatureSelection {
+  type: 'feature';
+  /** Index into `trackViewer.trackGeojson.features`. */
   id: number;
+  /** A polygon's hole, by ring index, where the hole rather than the shape is meant. */
+  part?: number;
+}
+
+/** One vertex of a feature; see `VertexAddress`. */
+export interface VertexSelection {
+  type: 'vertex';
+  /** Index into `trackViewer.trackGeojson.features`. */
+  id: number;
+  part: number;
+  vertex: number;
 }
 
 export interface ObjectsSelection {
@@ -122,20 +143,10 @@ export interface ObjectsSelection {
   id: OsmFeatureId;
 }
 
-export interface DrawLinePolySelection {
-  type: 'draw-line-poly';
-  id: number;
-}
-
-export interface LinePointSelection {
-  type: 'line-point';
-  lineIndex: number;
-  pointId: number;
-}
-
 export interface TrackingSelection {
   type: 'tracking';
-  id: string | number;
+  /** The device's token. */
+  id: string;
 }
 
 export interface RoutePointSelection {
@@ -154,24 +165,38 @@ export interface SearchSelection {
   id: FeatureId;
 }
 
-export interface DataViewerSelection {
-  type: 'data-viewer';
-  /** Index into `trackViewer.trackGeojson.features`. */
+export interface ChangesetElementSelection {
+  type: 'changeset-element';
+  /** `node/123`, an element of the inspected changeset. */
+  id: string;
+}
+
+/** An OSM note; its thread shows in a toast beside the toolbar. */
+export interface OsmNoteSelection {
+  type: 'osm-note';
   id: number;
 }
 
 export type Selection =
-  | LinePointSelection
-  | DrawPointSelection
+  | ChangesetElementSelection
+  | OsmNoteSelection
+  | FeatureSelection
+  | VertexSelection
   | ObjectsSelection
-  | DrawLinePolySelection
   | TrackingSelection
   | RoutePointSelection
   | RouteSegmentSelection
-  | SearchSelection
-  | DataViewerSelection;
+  | SearchSelection;
 
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
+
+/**
+ * The same feature, re-addressed after a deletion shifted it. Unlike
+ * `selectFeature`, it leaves modes and the details toast as they are.
+ */
+export const selectionRenumbered = createAction<Selection | null>(
+  'SELECTION_RENUMBERED',
+);
 
 /**
  * What the conversion dialog answered about the features' own data; see
@@ -203,35 +228,11 @@ export const convertToDrawing = createAction<
       tolerance?: number;
     }
   | { type: 'planned-route'; tolerance: number }
-  // track: `id` indexes the loaded collection; omitted converts every feature
-  | { type: 'track'; tolerance: number; id?: number; carry?: ConvertCarry }
-  // tracking: `id` is a watched device's token; omitted converts every one of them
-  | { type: 'tracking'; id?: string; tolerance: number }
   | { type: 'search-result'; tolerance: number; carry?: ConvertCarry }
-  | { type: 'changesets' }>('CONVERT_TO_DRAWING');
-
-/** What a conversion to the track viewer takes its features from. */
-export type DataViewerSource =
-  // objects: `id` omitted → every visible object, as points
-  | { type: 'objects'; id?: OsmFeatureId }
-  | { type: 'objects-geometry'; id: OsmFeatureId }
-  | { type: 'planned-route' }
   | { type: 'changesets' }
-  | { type: 'search-result' }
-  | { type: 'drawing-point'; index: number }
-  | { type: 'drawing-line'; index: number };
-
-/**
- * Hands map features to the track viewer ("Tracks and data"), where they become
- * ordinary loaded data — the mirror of {@link convertToDrawing}, and like it the
- * source goes with them. One object is the exception and is copied: objects are
- * live data, refetched on every pan, so a single one cannot be taken away.
- */
-export const convertToDataViewer = createAction<{
-  source: DataViewerSource;
-  /** How it meets what the viewer already holds; see `useDataMergeMode`. */
-  mode: 'append' | 'replace';
-}>('CONVERT_TO_DATA_VIEWER');
+  // geojson: features built by the caller, copied as they are
+  | { type: 'geojson'; geojson: FeatureCollection }
+>('CONVERT_TO_DRAWING');
 
 export type ExternalTarget =
   | 'apple'
@@ -278,7 +279,18 @@ export const openInExternalApp = createAction<{
    * a Wikimedia photo's `url` is its Commons file page.
    */
   imageUrl?: string;
+  /**
+   * The OSM object the place is (a note, an element): osm.org and iD open it
+   * instead of the position, and JOSM imports its page — `import` picks the
+   * download task by the URL.
+   */
+  osmObject?: OsmObjectLinks;
 }>('OPEN_IN_EXTERNAL');
+
+export interface OsmObjectLinks {
+  url: string;
+  idUrl: string;
+}
 
 export { applyCookieConsent, setAnalyticCookiesAllowed };
 

@@ -50,7 +50,7 @@ const handle: ProcessorHandler<typeof authWithFacebook> = async ({
     },
   });
 
-  await handleLoginResponse(res, getState, dispatch);
+  await handleLoginResponse(res, getState, dispatch, 'facebook');
 };
 
 export default handle;

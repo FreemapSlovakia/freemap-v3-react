@@ -16,7 +16,7 @@ const getErrorMarkup = (ticketId?: string) => `
       ? `Błąd został automatycznie zgłoszony pod identyfikatorem <b>${ticketId}</b>.`
       : ''
   }
-  Błąd możesz zgłosić ${
+  Błąd można zgłosić ${
     ticketId ? 'także ' : ''
   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHubie</a>,
   lub wysłać nam szczegóły na adres <a href="mailto:freemap@freemap.sk?subject=Zgłoszenie%20błędu%20na%20www.freemap.sk">freemap@freemap.sk</a>.
@@ -25,7 +25,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Dziękujemy.
 </p>`;
 
-const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
+const outdoorMap = 'Outdoorowa';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -49,8 +49,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     viewpoint: 'Punkt obserwacji',
     eyeHeight: 'Wysokość oczu',
     eyeHeightHint:
-      'Jak wysoko nad ziemią stoisz — wieża albo dron, a nie wysokość nad poziomem morza.',
-    maxVisibleDistance: 'Maksymalna widoczna odległość',
+      'Jak wysoko nad ziemią jest punkt obserwacji — wieża albo dron, a nie wysokość nad poziomem morza.',
+    maxVisibleDistance: 'Maks. widoczna odległość',
+    info: 'Informacje',
+    terrain: {
+      bareEarth:
+        'Model terenu to naga ziemia: nie ma w nim lasów ani budynków, więc teren, który zasłoniłby las, traktowany jest jako odsłonięty. To zdecydowanie największe źródło błędu.',
+      coverage:
+        'Szczegółowość zależy od kraju. Tam, gdzie istnieje krajowy model z lotniczego skaningu laserowego, bliskie otoczenie jest ostre; gdzie indziej odpowiada globalny model 30 m.',
+    },
     copyCode: 'Skopiuj kod',
     loading: 'Ładowanie…',
     ok: 'OK',
@@ -58,6 +65,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Zamknąć okno bez zapisywania zmian?',
     resetToDefaults: 'Przywróć domyślne',
     back: 'Wstecz',
+    valueRange: ({ min, max }) => (
+      <>
+        Podaj wartość z zakresu od {min} do {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Podaj wartość większą niż {min}.</>,
+    invalidUrl: 'Podaj adres URL zaczynający się od http:// lub https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -71,17 +85,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Dodaj nowy',
     clear: 'Wyczyść',
     convertToDrawing: 'Przekształć na rysunek',
+    toggleObjectType: 'Kliknij, aby pokazać lub ukryć obiekty tego typu',
+    hideObjectType: ({ name }) => <>Ukryj typ „{name}”</>,
     copyToDrawing: 'Kopiuj do rysunku',
-    copyTo: ({ tool }) => <>Kopiuj do {tool}</>,
-    convertTo: ({ tool }) => <>Przekształć do {tool}</>,
+    copyTo: ({ tool }) => <>Kopiuj do narzędzia {tool}</>,
     convertAllToDrawing: 'Przekształć wszystko na rysunek',
-    convertAllTo: ({ tool }) => <>Przekształć wszystko do {tool}</>,
     openIn: ({ what }) => <>Otwórz w {what}</>,
     panoramaFromHere: 'Panorama stąd',
     viewshedFromHere: 'Widoczność stąd',
     toposcopeFromHere: 'Tablica panoramiczna stąd',
     lookAtInPanorama: 'Spójrz na to w panoramie',
-    placeActions: 'Co można zrobić z tym miejscem',
     locationActions: 'Akcje dla tego miejsca',
     convert: {
       geometry: 'Geometria',
@@ -133,7 +146,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     unknown: 'Nieznane',
     enablePopup: 'Włącz wyskakujące okna dla tej strony w swojej przeglądarce.',
     broadcastChannelUnsupported:
-      'Ta czynność nie jest obsługiwana w Twojej przeglądarce (BroadcastChannel jest niedostępny, np. w trybie prywatnym lub w przeglądarce wbudowanej w aplikację). Użyj zwykłego okna w nowoczesnej przeglądarce.',
+      'Ta czynność nie jest obsługiwana w tej przeglądarce (BroadcastChannel jest niedostępny, np. w trybie prywatnym lub w przeglądarce wbudowanej w aplikację). Użyj zwykłego okna w nowoczesnej przeglądarce.',
     componentLoadingError:
       'Błąd ładowania komponentu. Sprawdź swoje połączenie z internetem.',
     offline: 'Brak połączenia z internetem.',
@@ -159,6 +172,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Dodaj %value%',
     deleteButtonText: 'Usuń %value% z listy',
     accept: 'Zaakceptować',
+    externalService: 'Usługa zewnętrzna z ograniczeniami użytkowania',
   },
   generic: {
     color: 'Kolor',
@@ -197,7 +211,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Wyszukiwarka tras',
     objects: 'Obiekty (POI)',
     photos: 'Zdjęcia',
-    measurement: 'Rysowanie i pomiar',
     drawPoints: 'Rysowanie punktów',
     drawLines: 'Rysowanie linii',
     drawPolygons: 'Rysowanie wielokątów',
@@ -238,6 +251,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Pl:Main_Page',
     status: 'Stan usług',
     language: 'Język',
+    manual: 'Podręcznik',
   },
   main: {
     infoBars: {},
@@ -247,7 +261,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zamknij',
     closeTool: 'Zamknij narzędzie',
     locateMe: 'Pokaż moją pozycję',
-    pickHomeLocationPrompt: 'Kliknij na mapie miejsce, w którym mieszkasz',
+    pickHomeLocationPrompt: 'Kliknij na mapie miejsce zamieszkania',
     locationError: 'Błąd pobierania pozycji.',
     locationNoSignal: 'Nadal brak sygnału GPS.',
     headingSource: 'Wskaźnik kierunku',
@@ -260,10 +274,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Kierunek ruchu pochodzi z GPS i jest widoczny tylko podczas ruchu. Kompas urządzenia działa też w bezruchu, ale wymaga zgody i bywa niedokładny.',
     bearingLine: 'Odległość i azymut',
     bearingLineHelp:
-      'Podczas lokalizowania rysuje linię między Twoją pozycją a celownikiem na środku mapy, opisaną odległością i azymutem z Twojej pozycji do celownika. Pojawia się, gdy przesuniesz mapę poza swoją pozycję.',
+      'Podczas lokalizowania rysuje linię między bieżącą pozycją a celownikiem na środku mapy, opisaną odległością i azymutem z bieżącej pozycji do celownika. Pojawia się po przesunięciu mapy poza bieżącą pozycję.',
     compassPermissionDenied: 'Odmówiono dostępu do kompasu.',
     compassUnavailable:
-      'Brak danych kompasu. Twoje urządzenie może go nie mieć lub dostęp jest zablokowany.',
+      'Brak danych kompasu. Urządzenie może go nie mieć lub dostęp jest zablokowany.',
     zoomIn: 'Powiększ',
     zoomOut: 'Pomniejsz',
     devInfo: () => (
@@ -283,7 +297,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    showMore: 'Pokaż więcej…',
+    showMore: 'Pokaż więcej',
     offlineHint:
       'Bez połączenia z internetem można znaleźć tylko współrzędne, obszar ograniczający, numery kafelków (z/x/y) lub wklejony GeoJSON.',
     inProgress: 'Wyszukiwanie…',
@@ -318,7 +332,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       caption: 'Funkcje',
       keywords: {
         'tool-route-planner': 'nawigacja, planer tras, trasa, wycieczka, rower',
-        'tool-objects': 'punkty zainteresowania, poi, miejsca, udogodnienia',
         'tool-draw-points': 'rysowanie, znacznik, pinezka, notatka',
         'tool-draw-lines': 'rysowanie, pomiar odległości, długość, linijka',
         'tool-draw-polygons': 'rysowanie, pomiar powierzchni, obszar',
@@ -336,40 +349,39 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-my-maps': 'zapisane mapy, zapisz mapę, udostępnij mapę',
         'modal-map-features-export': 'eksport, gpx, geojson, pobierz dane',
         'modal-map-to-document-export':
-          'eksport, drukuj, pdf, png, jpeg, svg, obraz, plakat',
+          'eksport, drukuj, pdf, png, jpeg, webp, svg, obraz, plakat',
         'modal-offline-map-export':
           'eksport, offline, pobierz kafelki, mbtiles, karta sd',
         'modal-embed': 'iframe, osadź, strona www, kod html',
         'modal-support-us': 'wesprzyj, darowizna, wsparcie, pieniądze',
         'modal-legend': 'symbole, legenda mapy',
+        'modal-manual': 'pomoc, instrukcja, poradnik, dokumentacja, help',
         'modal-about': 'kontakt, e-mail, opinie',
-        'modal-map-layers-config':
-          'warstwy, zarządzanie mapami, kolejność, przezroczystość',
-        'modal-custom-maps': 'własna mapa, wms, tms, dodaj źródło mapy',
+        'modal-map-manager':
+          'zainstalowane mapy, dostępne mapy, biblioteka map, katalog, zainstaluj, odinstaluj, dodaj mapy, więcej map, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
         'modal-offline-maps': 'pobrane mapy, pamięć',
         'modal-browse-cache': 'pamięć podręczna, kafelki, cache',
         'modal-map-preferences': 'ustawienia, opcje, przezroczystość nakładek',
         'modal-elevation-settings': 'profil wysokościowy, wysokość, wykres',
         'clear-map-features': 'usuń wszystko, wyczyść, zresetuj mapę',
-        'layer-X': 'outdoor, turystyka, rower, freemap',
+        'layer-X': 'turystyka, rower, biegówki, jazda konna, freemap',
         'layer-XK': 'szlaki turystyczne, znaki, kst',
         'layer-O': 'osm, mapnik, standardowa',
         'layer-S': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
-        'layer-Z': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
         'layer-J1': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
         'layer-J2': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
+        'layer-J3': 'satelitarna, ortofotomapa, zdjęcia lotnicze',
         'layer-d': 'komunikacja miejska, autobusy, pociągi, rozkłady',
         'layer-I': 'obrazy, galeria, zdjęcia',
         'layer-w': 'wiki, artykuły',
+        'layer-n': 'openstreetmap, notes, błędy, zgłoszenia, mapowanie, uwaga',
         'layer-R': 'pogoda, deszcz, opady, burza, prognoza',
         'layer-v': 'analiza widoczności, zasięg widoku, pole widzenia, teren',
-        'layer-5': 'cieniowanie, rzeźba terenu, teren, wysokość',
         'layer-6': 'cieniowanie, rzeźba, powierzchnia, wysokość',
         'layer-7': 'cieniowanie, rzeźba terenu, teren, wysokość, lidar',
-        'layer-8': 'cieniowanie, rzeźba terenu, teren, wysokość, lidar',
-        'layer-h': 'cieniowanie, rzeźba, nachylenie, ekspozycja, inwersja',
-        'layer-z': 'cieniowanie, rzeźba, nachylenie, ekspozycja, inwersja',
-        'layer-y': 'cieniowanie, rzeźba, nachylenie, ekspozycja, inwersja',
+        'layer-h':
+          'cieniowanie, rzeźba terenu, teren, wysokość, nachylenie, ekspozycja, inwersja',
+        'layer-c': 'kolor, pusta, tło, jednolity, zabarwienie, wypełnienie',
         'layer-l1': 'drogi leśne, nlc',
         'layer-l2': 'drogi leśne, nlc',
         'layer-VO': 'wektorowa',
@@ -381,6 +393,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-WGE': 'geologia, skały',
         'layer-WKA': 'działki, kataster, ewidencja gruntów',
         'layer-wka': 'działki, kataster, ewidencja gruntów',
+        'layer-xs': 'sac, wspinaczka, alpejskie, nakładka',
+        'layer-xq': 'smoothness, stan drogi, dziury, wyboje, nakładka',
+        'layer-xm': 'rower górski, singletrack, enduro, zjazd, nakładka',
+        'layer-xh': 'turystyka, znakowanie, drogowskazy, nakładka',
+        'layer-xb': 'rower, kolarstwo, mtb, nakładka',
+        'layer-xl': 'narty, biegówki, nakładka',
+        'layer-xr': 'jeździectwo, konie, nakładka',
+        'layer-xa':
+          'hybryda, lotnicza, satelita, ortofotomapa, podpisy, nakładka',
+        'layer-xc':
+          'poziomica, warstwice, wysokość, rzeźba terenu, contours, nakładka',
         'layer-WHC': 'chemia wody, hydrologia',
       },
     },
@@ -393,37 +416,43 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Przywrócić wszystkie ustawienia aplikacji do wartości domyślnych i ponownie załadować stronę? Nastąpi wylogowanie.',
     letters: {
       S: 'Lotnicza',
-      Z: 'Lotnicza',
       J1: 'Lotnicza (2017-2019)',
       J2: 'Lotnicza (2020-2022)',
+      J3: 'Lotnicza (2022-2023)',
       O: 'OpenStreetMap',
       d: 'Transport publiczny (ÖPNV)',
       X: outdoorMap,
       XK: 'Szlaki turystyczne KST',
-      i: 'Warstwa danych',
       I: 'Zdjęcia',
       l1: 'Leśne drogi NLC (2017)',
       l2: 'Leśne drogi NLC',
       w: 'Wikipedia',
+      n: 'Uwagi OSM',
       R: 'Radar opadów',
       v: 'Widoczność',
-      '5': 'Cieniowanie terenu',
       '6': 'Cieniowanie powierzchni',
       '7': 'Szczegółowe cieniowanie terenu',
-      '8': 'Szczegółowe cieniowanie terenu',
       VO: 'OpenStreetMap Wektorowa',
       VS: 'Ulice Wektorowa',
       VD: 'Dataviz Wektorowa',
       VT: 'Outdoor Wektorowa',
-      h: 'Parametryczne cieniowanie',
-      z: 'Parametryczne cieniowanie',
-      y: 'Parametryczne cieniowanie',
+      h: 'Parametryczne cieniowanie terenu',
+      c: 'Jednolity kolor',
       M: 'Zdjęcia z Wikimedia Commons',
       WDZ: 'Skład gatunkowy drzewostanu',
       WLT: 'Typy lasów',
       WGE: 'Geologiczna',
       WKA: 'Kataster',
       wka: 'Kataster',
+      xs: 'Trudność szlaków',
+      xq: 'Stan nawierzchni dróg',
+      xm: 'Trudność tras MTB',
+      xh: 'Szlaki turystyczne',
+      xb: 'Szlaki rowerowe',
+      xl: 'Szlaki narciarskie',
+      xr: 'Szlaki konne',
+      xa: 'Outdoorowa mapa bez podkładu',
+      xc: 'Poziomice',
       WHC: 'Hydrochemiczna',
     },
     type: {
@@ -455,11 +484,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     outsideViewWarning: 'Bieżący widok znajduje się poza tą mapą',
     offlineWarning: 'Ta mapa nie jest zapisana do użytku offline',
     customBase: 'Własna mapa',
-    customMaps: 'Mapy własne',
-    addCustomMap: 'Dodaj własną mapę',
+    newCustomMap: 'Nowa własna mapa',
     activate: 'Aktywuj',
-    customMapsEmptyMessage:
-      'Nie zdefiniowano jeszcze żadnych własnych map. Dodaj jedną, aby wyświetlić własne źródło mapy.',
     base: 'Warstwy podstawowe',
     overlay: 'Warstwy nakładkowe',
     url: 'Szablon URL',
@@ -470,8 +496,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'Ładuj w płytkach',
     tiledHelp:
       'Domyślnie WMS jest pobierany jako jeden obraz całego widoku: jedno żądanie zamiast dziesiątek, a etykiety nie są przycinane na granicach płytek. Płytki włącz dla serwera, który ogranicza rozmiar obrazu lub który je buforuje — kosztem serii żądań na każdy widok.',
-    zIndex: 'Z-indeks',
     preferences: 'Preferencje mapy',
+    brightness: 'Jasność mapy',
+    featuresOpacity: 'Przezroczystość warstwy danych',
     maxZoom: 'Maksymalne powiększenie',
     zoomSnap: 'Krok powiększenia',
     zoomSnapFree: 'Swobodnie',
@@ -482,21 +509,32 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automatycznie (domyślna urządzenia)',
     resolutionScaleHelp:
       'Symuluje gęstość pikseli wyświetlacza. Wpływa na to, który wariant kafelków jest pobierany. Jeśli warstwa nie oferuje żądanego wariantu, używany jest najwyższy dostępny.',
+    pixelExact: 'Kafelki co do piksela',
+    pixelExactHelp:
+      'Każdy piksel kafelka trafia dokładnie na jeden piksel ekranu, dzięki czemu kafelki pozostają ostre także na wyświetlaczu o ułamkowym współczynniku pikseli, np. 1,25 lub 1,75. Mapa wygląda wtedy nieco większa lub mniejsza. Zastępuje skalę rozdzielczości i jest dokładne na poziomach powiększenia, na których zatrzymuje się krok powiększenia.',
     featureScale: 'Rozmiar elementów',
     featureScaleHelp:
       'Powiększa renderowane etykiety i linie. Nie ma wpływu na warstwy satelitarne, cieniowania, WMS ani wektorowe (MapLibre).',
+    background: 'Tło mapy',
+    backgroundHelp:
+      'Widoczne wszędzie, gdzie żadna warstwa nie rysuje: bez mapy bazowej, obok mapy bazowej pokrywającej tylko część świata lub przezroczystej oraz tam, gdzie kafelki jeszcze się wczytują.',
+    backgroundCheckerboard: 'Szachownica',
     layer: {
       layer: 'Warstwa',
       base: 'Podstawowa',
       overlay: 'Nakładka',
     },
     showMore: 'Pokaż więcej map',
-    layersConfiguration: 'Konfiguracja warstw',
+    mapManager: 'Menedżer map',
+    installedMaps: 'Zainstalowane mapy',
+    availableMaps: 'Dostępne mapy',
+    allMatchesInManager: 'Wszystkie wyniki w menedżerze map',
     technologies: {
       tile: 'Płytki obrazów (TMS, XYZ)',
       maplibre: 'Wektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Cieniowanie parametryczne',
+      color: 'Kolor',
     },
     technology: 'Typ',
     loadWmsLayers: 'Wczytaj warstwy',
@@ -515,6 +553,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
+    layersPanel: 'Warstwy mapy',
   },
 
   elevationChart: {
@@ -535,13 +574,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Szczegółowe krajowe modele terenu, dostępne w niektórych krajach, są zwykle dostosowane do hydrologii: przy każdym przepuście przecinają drogę rowem. Zagłębienia węższe niż ta wartość są wypełniane; szersze pozostają, bo to rzeczywisty teren. Zero wyłącza tę funkcję i nic nie zmienia tam, gdzie używany jest model globalny.',
     gradeWindow: 'Okno nachylenia',
     gradeWindowHelp:
-      'Gdy wskażesz profil wysokości, miejsce zostaje zaznaczone na mapie wraz z panującym tam nachyleniem. Nachylenie jest uśredniane na odcinku tej długości wokół danego punktu, aby kilka metrów szumu GPS nie wyglądało jak ściana. Zero mierzy je między sąsiednimi punktami profilu.',
+      'Po wskazaniu profilu wysokości miejsce zostaje zaznaczone na mapie wraz z panującym tam nachyleniem. Nachylenie jest uśredniane na odcinku tej długości wokół danego punktu, aby kilka metrów szumu GPS nie wyglądało jak ściana. Zero mierzy je między sąsiednimi punktami profilu.',
   },
 
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
-        Możesz spróbować:
+        Można spróbować:
       </p>
       <ul>
         <li><a href="">ponownie załadować ostatnią stronę</a></li>

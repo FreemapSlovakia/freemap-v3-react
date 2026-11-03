@@ -3,17 +3,21 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Turystyka, Rower, Biegówki, Jazda konna';
+const outdoorMap = () => getMessages()?.mapLayers.letters['X'];
 
 const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) => addError(getMessages()!, 'Błąd eksportu mapy', err),
   cancelExportTitle: 'Anuluj eksport',
   labelTitle: 'Etykiety',
-  cancelExportQuestion: 'Czy na pewno chcesz anulować trwający eksport?',
+  cancelExportQuestion: 'Czy na pewno anulować trwający eksport?',
+  discardExportTitle: 'Odrzuć eksport',
+  discardExportQuestion:
+    'Wyeksportowana mapa nie została jeszcze zapisana. Odrzucić ją?',
   area: 'Obszar eksportu',
   format: 'Format',
   layersTitle: 'Opcjonalne warstwy',
   mapDataTitle: 'Dane mapy',
+  mapTitle: 'Mapa',
   layers: {
     contours: 'Poziomice',
     shading: 'Cieniowanie rzeźby terenu',
@@ -21,8 +25,39 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Trasy rowerowe',
     skiTrails: 'Trasy narciarskie',
     horseTrails: 'Szlaki konne',
+    sacScale: 'Trudność szlaków',
+    mtbScale: 'Trudność tras MTB',
+    smoothness: 'Stan nawierzchni dróg',
+    waymarking: 'Drogowskazy',
   },
+  baseMap: 'Mapa podkładowa',
+  noBaseMapHint:
+    'Rysowane są tylko wybrane warstwy, reszta jest przezroczysta.',
+  omitTitle: 'Pomiń',
+  omit: {
+    groundCover: 'Pokrycie terenu',
+    buildings: 'Budynki',
+  },
+  omitHint:
+    'Przezroczysta tam, gdzie coś pominięto — do nałożenia na zdjęcie lotnicze, które pokazuje to lepiej.',
+  lossless: 'Bezstratna',
+  lossy: 'Stratna',
+  quality: 'Jakość',
+  sizeTitle: 'Rozmiar i szczegółowość',
+  zoom: 'Poziom powiększenia',
+  printScale: 'Skala',
   mapScale: 'Rozdzielczość mapy',
+  printSize: 'Rozmiar wydruku',
+  imageSize: 'Rozmiar obrazu',
+  lock: 'Zablokuj',
+  unlock: 'Odblokuj',
+  scaleFollowsZoom: 'Niezablokowana skala podąża za powiększeniem.',
+  symbolSize: ({ percent }) =>
+    `Teksty i symbole zostaną wydrukowane w ${percent} % zwykłego rozmiaru`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'Obszar jest za duży do eksportu. Wyeksportuj mniejszy obszar.'
+      : `Obszar jest za duży dla tego poziomu powiększenia. Zmniejsz powiększenie do ${zoom} lub wyeksportuj mniejszy obszar.`,
   customLayerOrder: 'Umiejscowienie danych mapy',
   orders: {
     natural: 'Naturalna',
@@ -32,22 +67,25 @@ const pl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Podziałka',
   northArrow: 'Strzałka północy',
   attribution: 'Atrybucja',
+  legend: 'Legenda',
+  legendWidens:
+    'Legenda jest obok mapy, więc dokument będzie szerszy niż wybrany papier.',
+  webpTooLarge:
+    'WebP pozwala na najwyżej 16383 px na bok, co ten eksport może przekroczyć. Wybierz PNG lub niższe DPI.',
   northArrowLetter: 'N',
   glow: 'Poświata',
-  alert: (licence) => (
+  ready: 'Mapa jest gotowa',
+  readyCredits: 'Publikując lub udostępniając mapę, podaj następujące źródła:',
+  readyCreditsNone: 'Renderer nie zgłosił, których źródeł użył.',
+  readyUnknownSources: 'Źródła, których nie udało się nazwać:',
+  copyCredits: 'Kopiuj źródła',
+  openInNewTab: 'Otwórz w nowej karcie',
+  savedCredits: ({ credits }) =>
+    `Mapa zapisana. Publikując ją lub udostępniając, podaj: ${credits}`,
+  alert: () => (
     <>
-      Uwagi:
-      <ul>
-        <li>
-          Eksportowana będzie mapa <i>{outdoorMap}</i>.
-        </li>
-        <li>Eksport mapy może potrwać kilkadziesiąt sekund.</li>
-        <li>
-          Udostępniając wyeksportowaną mapę, należy podać następującą licencję:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>
+      Eksportowana będzie <i>{outdoorMap()}</i> mapa. Może to potrwać
+      kilkadziesiąt sekund.
     </>
   ),
 };

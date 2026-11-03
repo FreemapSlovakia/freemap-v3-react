@@ -114,7 +114,15 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při hledání trasy', err),
   manualTooltip: 'Propojit následující segment přímou čarou',
-  default: 'Výchozí',
+  transportScope: {
+    title: 'Použít na',
+    route: 'Celou trasu',
+    lastSection: 'Poslední část',
+    next: 'Nové úseky',
+    leg: 'Tento úsek',
+    section: 'Celou část',
+    sameTransport: 'Stejný druh dopravy',
+  },
   leg: 'Úsek trasy',
   stop: 'Zastávka',
   transportTypeLabel: 'Druh dopravy',

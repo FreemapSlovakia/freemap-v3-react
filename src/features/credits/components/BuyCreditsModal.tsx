@@ -1,6 +1,13 @@
 import { purchase, setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -14,7 +21,7 @@ import {
   InputGroup,
   Modal,
 } from 'react-bootstrap';
-import { FaCheck, FaCoins, FaStopwatch, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaCoins, FaStopwatch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useCreditsMessages } from '../translations/useCreditsMessages.js';
 import { CreditsAlert } from './CredistAlert.js';
@@ -71,8 +78,9 @@ export default function CurrentDrawingPropertiesModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCoins /> {cm?.buyCredits}
+            <FaCoins /> <Text m={cm} k="buyCredits" />
           </Modal.Title>
+          <ManualHeaderButton chapter="premium" />
         </Modal.Header>
 
         <Modal.Body>
@@ -81,7 +89,9 @@ export default function CurrentDrawingPropertiesModal({
           <CreditsAlert explainCredits />
 
           <Form.Group controlId="amount">
-            <Form.Label className="required">{cm?.amount}</Form.Label>
+            <Form.Label className="required">
+              <Text m={cm} k="amount" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -94,24 +104,27 @@ export default function CurrentDrawingPropertiesModal({
               />
 
               <InputGroup.Text>
-                {cm?.credits} = {nf.format(Number(credits) / 100)} €
+                <Text m={cm} k="credits" /> = {nf.format(Number(credits) / 100)}{' '}
+                €
               </InputGroup.Text>
             </InputGroup>
           </Form.Group>
 
           <hr className="mt-4" />
 
-          <p className="mt-3 mb-0 text-body-secondary">{cm?.chronsHint}</p>
+          <p className="mt-3 mb-0 text-body-secondary">
+            <Text m={cm} k="chronsHint" />
+          </p>
         </Modal.Body>
 
-        <Modal.Footer>
+        <FmModalFooter>
           <Dropdown as={ButtonGroup}>
             <Button
               variant="primary"
               disabled={invalidCredits || !online}
               onClick={buyPolar}
             >
-              <FaCheck /> {cm?.buy}
+              <FaCheck /> <Text m={cm} k="buy" />
             </Button>
 
             <Dropdown.Toggle
@@ -125,19 +138,19 @@ export default function CurrentDrawingPropertiesModal({
               <Dropdown.Item
                 as="button"
                 type="button"
-                className="text-nowrap"
                 disabled={invalidCredits || !online}
                 onClick={buyWithChrons}
               >
-                <FaStopwatch /> {cm?.payWithChrons}
+                <FaStopwatch />
+                <MenuLabel>
+                  <Text m={cm} k="payWithChrons" />
+                </MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

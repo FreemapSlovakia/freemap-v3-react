@@ -1,15 +1,15 @@
 .dropdown-menu {
   z-index: 10000;
+
+  /* Rows don't wrap, so this bounds a menu. Popper sizes it from the viewport's
+     left edge before shifting it; the gap is `fixedPopperConfig`'s padding. */
+  max-width: calc(100vw - 2 * var(--fm-space-2));
 }
 
 /* Popper writes the real `position` only on its second render — its instance is
-   created in an effect — so the menu spends its first frame on Bootstrap's
-   `position: absolute`. Inside a `.fm-toolbar`, which is `inline-flex`, Chromium
-   folds that frame's box into the toolbar's intrinsic width and doesn't
-   re-measure once popper flips the menu to `fixed`, so the toolbar stays wider
-   for as long as the menu is open. Opening out of flow from the start keeps the
-   menu out of that measurement. Only for menus popper positions with
-   `strategy: 'fixed'` — `fm-dropdown-fixed` marks those. */
+   created in an effect — so without this the menu spends its first frame on
+   Bootstrap's `position: absolute`, sized by whatever it sits in. Only for menus
+   popper positions with `strategy: 'fixed'` — `fm-dropdown-fixed` marks those. */
 .dropdown-menu.fm-dropdown-fixed {
   position: fixed;
 }
@@ -23,6 +23,12 @@
 .dropdown-menu:not(.fm-dropdown-with-scroller) {
   max-height: var(--fm-menu-available-height);
   overflow-y: var(--fm-menu-scroll, visible);
+}
+
+/* Room for a final ť or ď: its caron overhangs the letter's box, and the
+   clipping would cut it off. */
+.text-truncate {
+  padding-inline-end: 0.15em;
 }
 
 /* a <form> that wraps Modal.Header/Body/Footer must be transparent to the
@@ -42,6 +48,27 @@
       width: auto !important;
       display: inline-block;
     }
+  }
+}
+
+/* ManualHeaderButton: matched to .btn-close beside it, which takes the
+   auto margin otherwise and would leave the book in the middle */
+.modal-header .fm-modal-manual {
+  margin-left: auto;
+  /* Flex so the glyph has no baseline gap under it, centred like the × */
+  display: flex;
+  border: 0;
+  padding: 0.25em;
+  font-size: 1.25rem;
+  color: var(--bs-body-color);
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 0.75;
+  }
+
+  & + .btn-close {
+    margin-left: 0.75rem;
   }
 }
 
@@ -111,20 +138,18 @@ kbd {
 }
 
 /* A menu row decides the rhythm between the icon, the label and the badges that
-   follow it, so nothing in the row carries a margin of its own. It still wraps
-   on a narrow screen: `white-space: normal` lets a long label wrap inside its own
-   flex item, and the row wraps between items. */
+   follow it, so nothing in the row carries a margin of its own. It is one line:
+   a label too long for it ends in an ellipsis, which takes a `MenuLabel` — bare
+   text in a flex row can't carry one. */
 .dropdown-item {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--fm-space-1);
-  white-space: normal;
 
   /* A glyph in the row never gives up width to the label — a squashed icon
-     reads as a different icon. */
-  & > svg,
-  & > img {
+     reads as a different icon. At any depth: a row may group a glyph with its
+     label in a flex span of its own. */
+  & :is(svg, img) {
     flex-shrink: 0;
   }
 
@@ -133,6 +158,12 @@ kbd {
     --bs-dropdown-item-padding-y: var(--fm-space-2);
     --bs-dropdown-item-padding-x: var(--fm-space-4);
   }
+}
+
+/* A block, unlike a row, so its own text takes the ellipsis. */
+.dropdown-header {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 legend {
@@ -238,4 +269,23 @@ legend {
    in whole sentences. Bounded by the viewport so a phone keeps it on screen. */
 .tooltip {
   --bs-tooltip-max-width: min(24rem, calc(100vw - 2rem));
+  /* Over `.dropdown-menu`, whose hints would otherwise open behind it. */
+  --bs-tooltip-zindex: 10001;
+}
+
+.tooltip-inner {
+  text-align: start;
+}
+
+/* A list row just saved or asked for, picked out for a moment. */
+@keyframes fm-flash {
+  0%,
+  40% {
+    background-color: var(--bs-warning-bg-subtle);
+  }
+}
+
+tr.fm-flash > td,
+.list-group-item.fm-flash {
+  animation: fm-flash 6s ease-out;
 }

@@ -47,12 +47,20 @@ export const PROM_DOUBTED_TRUST = 0.7;
  * agreeing out to 400 m — so the farthest matches are the corroborated ones,
  * and fading them out would discard the better evidence for being far.
  */
-function matchTrust({ prominence, promDistM }: PanoramaLabel): number {
-  return prominence === undefined
+function matchTrust(label: PanoramaLabel): number {
+  return label.prominence === undefined
     ? 0
-    : (promDistM ?? Infinity) <= PROM_TRUSTED_M
-      ? 1
-      : PROM_DOUBTED_TRUST;
+    : matchDoubted(label)
+      ? PROM_DOUBTED_TRUST
+      : 1;
+}
+
+/**
+ * Whether the summit's prominence and isolation come from a match far enough
+ * off to doubt — discounted in the rank, marked `~` on the label.
+ */
+export function matchDoubted({ promDistM }: PanoramaLabel): boolean {
+  return (promDistM ?? Infinity) > PROM_TRUSTED_M;
 }
 
 /**
@@ -170,6 +178,7 @@ export function labelsFromPeaks(peaks: Peak[]): PanoramaLabel[] {
       // "unknown", and a mountain nobody could match is not a flat one.
       ...(peak.prominence == null ? {} : { prominence: peak.prominence }),
       ...(peak.prom_dist_m == null ? {} : { promDistM: peak.prom_dist_m }),
+      ...(peak.isolation_m == null ? {} : { isolation: peak.isolation_m }),
       revealed: peak.revealed,
     }));
 }

@@ -8,6 +8,7 @@ import { EventsLayer } from '@features/events/components/EventsLayer.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
+import { isUploadablePicture } from '@features/gallery/galleryUtils.js';
 import { usePictureDropHandler } from '@features/gallery/hooks/usePictureDropHandler.js';
 import {
   type GalleryItem,
@@ -23,6 +24,13 @@ import { useMap } from '@features/map/hooks/useMap.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { MapAreaSelectionResult } from '@features/mapArea/components/MapAreaSelectionResult.js';
 import { MapDetailsMenu } from '@features/mapDetails/components/MapDetailsMenu.js';
+import { drawnTypesSelector } from '@features/mapLibrary/model/selectors.js';
+import {
+  useFollowInspectedChangeset,
+  useForgetEmptiedFeaturePage,
+  useMapLayersPanel,
+  useRevealEditableMaps,
+} from '@features/mapSettings/mapLayersPanelStore.js';
 import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
 import { isPremium } from '@features/premium/premium.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
@@ -42,8 +50,6 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
-import { isDrawTool } from '@shared/toolDefinitions.js';
 import fmLogoEu from '@/images/freemap-logo-eu.svg';
 import fmLogoSk from '@/images/freemap-logo-sk.svg';
 import 'leaflet/dist/leaflet.css';
@@ -88,9 +94,12 @@ import { Layers } from './Layers.js';
 // `SingleCopyCssPlugin` in `rspack.config.ts` fails the build for any shared
 // stylesheet that lacks an importer here.
 import '@shared/components/FloatingWindow.module.css';
+import { useStackedBar } from '../hooks/useStackedBar.js';
+import { LocationResult } from './LocationResult.js';
 import classes from './Main.module.css';
 import { MapContextMenu } from './MapContextMenu.js';
 import { MapControls } from './MapControls.js';
+import { MapScale } from './MapScale.js';
 import { Results } from './Results.js';
 import { Tools } from './Tools.js';
 import { useHtmlMeta } from './useHtmlMeta.js';
@@ -165,40 +174,34 @@ const gpsRecorderNoticesFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderNotices.js'
   );
 
-const drawingMenuFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-menu" */
-    '@features/drawing/components/DrawingMenu.js'
-  );
-
-const drawingLineSelectionFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-line-selection" */
-    '@features/drawing/components/DrawingLineSelection.js'
-  );
-
-const drawingLinePointSelectionFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-line-point-selection" */
-    '@features/drawing/components/DrawingLinePointSelection.js'
-  );
-
-const drawingPointSelectionFactory = () =>
-  import(
-    /* webpackChunkName: "drawing-point-selection" */
-    '@features/drawing/components/DrawingPointSelection.js'
-  );
-
 const dataViewerSelectionFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-selection" */
     '@features/dataViewer/components/DataViewerSelection.js'
   );
 
+const dataViewerVertexSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-vertex-selection" */
+    '@features/dataViewer/components/DataViewerVertexSelection.js'
+  );
+
 const objectSelectionFactory = () =>
   import(
     /* webpackChunkName: "object-selection" */
     '@features/objects/components/ObjectSelection.js'
+  );
+
+const osmNoteSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "osm-note-selection" */
+    '@features/osmNotes/components/OsmNoteSelection.js'
+  );
+
+const changesetElementSelectionFactory = () =>
+  import(
+    /* webpackChunkName: "changeset-element-selection" */
+    '@features/changesets/components/ChangesetElementSelection.js'
   );
 
 const galleryPositionPickingMenuFactory = () =>
@@ -223,6 +226,12 @@ const mapAreaSelectionMenuFactory = () =>
   import(
     /* webpackChunkName: "map-area-selection-menu" */
     '@features/mapArea/components/MapAreaSelectionMenu.js'
+  );
+
+const mapLibraryPreviewMenuFactory = () =>
+  import(
+    /* webpackChunkName: "map-library-preview-menu" */
+    '@features/mapLibrary/components/MapLibraryPreviewMenu.js'
   );
 
 const galleryMenuFactory = () =>
@@ -261,10 +270,10 @@ const adFactory = () =>
     '@features/ad/components/Ad.js'
   );
 
-const shadingControlFactory = () =>
+const mapLayersPanelFactory = () =>
   import(
-    /* webpackChunkName: "shading-control" */
-    '@features/parameterizedShading/components/ShadingControl.js'
+    /* webpackChunkName: "map-layers-panel" */
+    '@features/mapSettings/components/MapLayersPanel.js'
   );
 
 const elevationChartFactory = () =>
@@ -324,6 +333,12 @@ const toposcopeSettingsModalFactory = () =>
     '@features/toposcope/components/ToposcopeSettingsModal.js'
   );
 
+const viewshedSettingsModalFactory = () =>
+  import(
+    /* webpackChunkName: "viewshed-settings-modal" */
+    '@features/viewshed/components/ViewshedSettingsModal.js'
+  );
+
 const trackingModalFactory = () =>
   import(
     /* webpackChunkName: "tracking-modal" */
@@ -354,16 +369,10 @@ const browseCacheModalFactory = () =>
     '@features/cachedMaps/components/BrowseCacheModal.js'
   );
 
-const mapLayersConfigModalFactory = () =>
+const mapLibraryModalFactory = () =>
   import(
-    /* webpackChunkName: "map-layers-config-modal" */
-    '@features/mapSettings/components/MapLayersConfigModal.js'
-  );
-
-const customMapsModalFactory = () =>
-  import(
-    /* webpackChunkName: "custom-maps-modal" */
-    '@features/mapSettings/components/CustomMapsModal.js'
+    /* webpackChunkName: "map-library-modal" */
+    '@features/mapLibrary/components/MapLibraryModal.js'
   );
 
 const mapPreferencesModalFactory = () =>
@@ -402,6 +411,12 @@ const documentModalFactory = () =>
     '@features/documents/components/DocumentModal.js'
   );
 
+const manualModalFactory = () =>
+  import(
+    /* webpackChunkName: "manual-modal" */
+    '@features/documents/components/ManualModal.js'
+  );
+
 const aboutModalFactory = () =>
   import(
     /* webpackChunkName: "about-modal" */
@@ -426,10 +441,10 @@ const legendModalFactory = () =>
     '@features/legend/components/LegendModal.js'
   );
 
-const currentDrawingPropertiesModalFactory = () =>
+const dataViewerBatchPropertiesModalFactory = () =>
   import(
-    /* webpackChunkName: "current-drawing-properties-modal" */
-    '../../features/drawing/components/CurrentDrawingPropertiesModal.js'
+    /* webpackChunkName: "data-viewer-batch-properties-modal" */
+    '@features/dataViewer/components/DataViewerBatchPropertiesModal.js'
   );
 
 const dataViewerUploadModalFactory = () =>
@@ -486,22 +501,34 @@ const gpsRecorderSettingsModalFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderSettingsModal.js'
   );
 
-const dataViewerStyleModalFactory = () =>
-  import(
-    /* webpackChunkName: "data-viewer-style-modal" */
-    '@features/dataViewer/components/DataViewerStyleModal.js'
-  );
-
 const dataViewerMatchModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-match-modal" */
     '@features/dataViewer/components/DataViewerMatchModal.js'
   );
 
+const dataViewerOsmUploadModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-osm-upload-modal" */
+    '@features/dataViewer/components/DataViewerOsmUploadModal.js'
+  );
+
 const dataViewerPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "data-viewer-properties-modal" */
     '@features/dataViewer/components/DataViewerPropertiesModal.js'
+  );
+
+const dataViewerTraceModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-trace-modal" */
+    '@features/dataViewer/components/DataViewerTraceModal.js'
+  );
+
+const dataViewerVertexModalFactory = () =>
+  import(
+    /* webpackChunkName: "data-viewer-vertex-modal" */
+    '@features/dataViewer/components/DataViewerVertexModal.js'
   );
 
 const dataViewerElevationPromptModalFactory = () =>
@@ -534,20 +561,20 @@ function selectionMenu(type: Selection['type']): ReactNode {
     case 'search':
       return <SearchSelection />;
 
-    case 'draw-line-poly':
-      return <AsyncComponent factory={drawingLineSelectionFactory} />;
-
-    case 'line-point':
-      return <AsyncComponent factory={drawingLinePointSelectionFactory} />;
-
-    case 'draw-points':
-      return <AsyncComponent factory={drawingPointSelectionFactory} />;
-
-    case 'data-viewer':
+    case 'feature':
       return <AsyncComponent factory={dataViewerSelectionFactory} />;
+
+    case 'vertex':
+      return <AsyncComponent factory={dataViewerVertexSelectionFactory} />;
 
     case 'objects':
       return <AsyncComponent factory={objectSelectionFactory} />;
+
+    case 'changeset-element':
+      return <AsyncComponent factory={changesetElementSelectionFactory} />;
+
+    case 'osm-note':
+      return <AsyncComponent factory={osmNoteSelectionFactory} />;
 
     case 'tracking':
       return <TrackingSelection />;
@@ -570,22 +597,15 @@ function selectionMenu(type: Selection['type']): ReactNode {
  */
 function toolMenu(tool: Tool): ReactNode {
   switch (tool) {
-    case 'objects':
-      return <AsyncComponent factory={objectsMenuFactory} />;
-
     case 'route-planner':
       return <AsyncComponent factory={routePlannerMenuFactory} />;
 
+    // The draw tools are modes of this one's toolbar, which opens with them.
     case 'import-file':
       return <AsyncComponent factory={dataViewerMenuFactory} />;
 
     case 'changesets':
       return <AsyncComponent factory={changesetsMenuFactory} />;
-
-    case 'draw-lines':
-    case 'draw-points':
-    case 'draw-polygons':
-      return <AsyncComponent factory={drawingMenuFactory} />;
 
     case 'map-details':
       return <MapDetailsMenu />;
@@ -603,7 +623,23 @@ export function Main(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
+
+  // Where the embedder hides the map switcher, its button and panel go too.
+  const layersPanelAllowed = useAppSelector(
+    (state) =>
+      !window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'),
+  );
+
+  const { open: layersPanelOpen } = useMapLayersPanel();
+
+  const showMapLayersPanel = layersPanelAllowed && layersPanelOpen;
+
+  useRevealEditableMaps(layersPanelAllowed);
+
+  useForgetEmptiedFeaturePage();
+
+  useFollowInspectedChangeset();
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
@@ -614,6 +650,10 @@ export function Main(): ReactElement {
   const openTools = useAppSelector(openToolsSelector);
 
   const gpsRecorderAvailable = useAppSelector(gpsRecorderAvailableSelector);
+
+  const objectsFiltered = useAppSelector(
+    (state) => state.objects.active.length > 0,
+  );
 
   const gpsRecorderRecording = useAppSelector(
     (state) => state.gpsRecorder.status?.recording ?? false,
@@ -697,13 +737,15 @@ export function Main(): ReactElement {
     Boolean(state.tracking.tracks.length),
   );
 
+  const previewingLibraryMap = useAppSelector(
+    (state) => state.mapLibrary.preview !== null,
+  );
+
   const selectingMapArea = useAppSelector(
     (state) => state.mapArea.selecting !== null,
   );
 
-  const showResults = useAppSelector(
-    (state) => !state.map.layers.includes('i'),
-  );
+  const showResults = useAppSelector((state) => state.map.featuresOpacity > 0);
 
   const showPictures = useAppSelector((state) =>
     state.map.layers.includes('I'),
@@ -773,9 +815,7 @@ export function Main(): ReactElement {
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const pictureFiles = acceptedFiles.filter(
-        (file) => file.type === 'image/jpeg',
-      );
+      const pictureFiles = acceptedFiles.filter(isUploadablePicture);
 
       if (pictureFiles.length) {
         dispatch(setActiveModal({ type: 'gallery-upload' })); // if no user then it displays valuable error
@@ -807,6 +847,8 @@ export function Main(): ReactElement {
   const scLogo = useScrollClasses('horizontal');
 
   const scMapControls = useScrollClasses('horizontal');
+
+  const [setBottomBar, bottomBarLayout] = useStackedBar();
 
   const elevationChartTarget = useAppSelector(
     (state) => state.elevationChart.target?.type,
@@ -900,15 +942,21 @@ export function Main(): ReactElement {
         hidden: inMode,
         node: <AsyncComponent factory={gpsRecorderMenuFactory} />,
       },
-      // The three draw-* tools share one menu, so they share one id too: keying
-      // them apart would unmount and re-mount it on every switch between them,
-      // and its lazy chunk re-renders as nothing until the import settles — a
-      // toolbar that blinks away for a frame.
+      // Up exactly while a category filter is on, as the markers themselves
+      // are: nothing about it is opened or closed.
+      {
+        id: 'objects',
+        // Not in an embed: its ⋮ converts and its × clears, neither of which
+        // belongs to a visitor of the host's configured map.
+        open: objectsFiltered && !window.fmEmbedded,
+        hidden: inMode,
+        node: <AsyncComponent factory={objectsMenuFactory} />,
+      },
       ...openTools.map((tool) => {
         const node = toolMenu(tool);
 
         return {
-          id: isDrawTool(tool) ? 'drawing' : tool,
+          id: tool,
           open: node !== null,
           hidden: inMode,
           node,
@@ -972,7 +1020,7 @@ export function Main(): ReactElement {
               <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
                 <div />
 
-                <Toolbar className="mt-2">
+                <Toolbar className="mt-2 fm-toolbar-fit">
                   <button
                     type="button"
                     id="freemap-logo"
@@ -1095,17 +1143,17 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={mapAreaSelectionMenuFactory} />
               )}
 
+              {previewingLibraryMap && (
+                <AsyncComponent factory={mapLibraryPreviewMenuFactory} />
+              )}
+
               {showAds && !askingCookieConsent && !showElevationChart && (
                 <AsyncComponent factory={adFactory} />
               )}
 
-              {layers.some(
-                (layer) =>
-                  integratedLayerDefMap[layer]?.technology ===
-                  'parametricShading',
-              ) && (
+              {showMapLayersPanel && (
                 <div style={{ flexBasis: '100%', pointerEvents: 'none' }}>
-                  <AsyncComponent factory={shadingControlFactory} />
+                  <AsyncComponent factory={mapLayersPanelFactory} />
                 </div>
               )}
             </div>
@@ -1123,8 +1171,19 @@ export function Main(): ReactElement {
             </div>
           </div>
 
-          <div className={classes.typeZoomControl}>
-            <div>
+          <div
+            ref={setBottomBar}
+            className={
+              bottomBarLayout === 'stacked'
+                ? `${classes.typeZoomControl} ${classes.stacked}`
+                : bottomBarLayout === 'scale-up'
+                  ? `${classes.typeZoomControl} ${classes.scaleUp}`
+                  : classes.typeZoomControl
+            }
+          >
+            <MapScale className={classes.scale} />
+
+            <div className={classes.controls}>
               <div
                 className="fm-ib-scroller fm-ib-scroller-bottom"
                 ref={scMapControls}
@@ -1135,7 +1194,9 @@ export function Main(): ReactElement {
               </div>
             </div>
 
-            <CopyrightButton />
+            <div className={classes.credits}>
+              <CopyrightButton />
+            </div>
           </div>
 
           <MapContextMenu />
@@ -1167,11 +1228,11 @@ export function Main(): ReactElement {
 
             <Tools />
 
-            {/* Features always render; in dedicated map modes (picking a
-                home/photo location, showing a photo location, selecting an
-                export/cache area) they stay visible but non-interactive — see
-                pickingModeSelector / Map.tsx / leaflet.css. */}
+            {/* Faded to nothing, not rendered; in a picking mode visible but
+                non-interactive (pickingModeSelector, Map.tsx, leaflet.css). */}
             {showResults && <Results />}
+
+            <LocationResult />
 
             <WikiLayer />
 
@@ -1234,13 +1295,8 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal?.type === 'map-layers-config'}
-        factory={mapLayersConfigModalFactory}
-      />
-
-      <AsyncModal
-        show={activeModal?.type === 'custom-maps'}
-        factory={customMapsModalFactory}
+        show={activeModal?.type === 'map-manager'}
+        factory={mapLibraryModalFactory}
       />
 
       <AsyncModal
@@ -1274,6 +1330,11 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
+        show={activeModal?.type === 'manual'}
+        factory={manualModalFactory}
+      />
+
+      <AsyncModal
         show={activeModal?.type === 'about'}
         factory={aboutModalFactory}
       />
@@ -1294,8 +1355,8 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal?.type === 'current-drawing-properties'}
-        factory={currentDrawingPropertiesModalFactory}
+        show={activeModal?.type === 'data-viewer-batch-properties'}
+        factory={dataViewerBatchPropertiesModalFactory}
       />
 
       <AsyncModal
@@ -1344,18 +1405,28 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={activeModal?.type === 'track-viewer-style'}
-        factory={dataViewerStyleModalFactory}
-      />
-
-      <AsyncModal
         show={activeModal?.type === 'track-viewer-match'}
         factory={dataViewerMatchModalFactory}
       />
 
       <AsyncModal
+        show={activeModal?.type === 'track-viewer-osm-upload'}
+        factory={dataViewerOsmUploadModalFactory}
+      />
+
+      <AsyncModal
         show={activeModal?.type === 'data-viewer-properties'}
         factory={dataViewerPropertiesModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'data-viewer-trace'}
+        factory={dataViewerTraceModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'data-viewer-vertex'}
+        factory={dataViewerVertexModalFactory}
       />
 
       {/* Not in the tool's panel: the selection toolbar asks for elevation too,
@@ -1378,6 +1449,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'toposcope-settings'}
         factory={toposcopeSettingsModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'viewshed-settings'}
+        factory={viewshedSettingsModalFactory}
       />
 
       <AsyncModal

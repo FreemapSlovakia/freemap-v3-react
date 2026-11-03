@@ -5,7 +5,10 @@ const sl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Izberi na zemljevidu',
   locate: 'Vidnost z mojega položaja',
   pickViewpointPrompt: 'Kliknite na zemljevid tja, od koder želite gledati',
-  detail: 'Kakovost / hitrost',
+  extent: 'Doseg in podrobnost',
+  rangeHint:
+    'Pogled dlje od 20 km je funkcija premija: razdalja vidnost stane največ — žarkov je več z obsegom in vsak teče do roba.',
+  detail: 'Podrobnost',
   details: {
     superfast: 'Najnižja / najhitrejša',
     fast: 'Nizka / hitra',
@@ -25,6 +28,10 @@ const sl: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Najmanjša prekrivnost',
   minOpacityHint:
     'Kako močno je izrisano vidno površje, tudi če ga vidite skoraj od strani. Pri 100 % je sloj le šablona: vidno ali ne, nič vmes.',
+  caveats: {
+    viewpoint:
+      'Vidnost je na natančno razgledišče veliko bolj občutljiva kot panorama: nekaj metrov stran od vrha lahko odvzame cele kvadrante.',
+  },
   update: 'Posodobi',
   outdated: 'Sloj je s prejšnjega razgledišča.',
   queued: ({ ahead }) =>

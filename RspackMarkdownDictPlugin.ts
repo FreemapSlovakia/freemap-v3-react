@@ -37,7 +37,7 @@ export class RspackMarkdownDictPlugin {
       const fullPath = path.join(this.options.dir, file);
       const { data } = matter(fs.readFileSync(fullPath, 'utf-8'));
 
-      const match = /^(\w+)\.(\w\w)\.md$/.exec(file);
+      const match = /^([\w-]+)\.(\w\w)\.md$/.exec(file);
 
       if (!match) {
         throw new Error(`invalid filename ${file}`);

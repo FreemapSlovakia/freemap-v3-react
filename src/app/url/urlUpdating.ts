@@ -19,3 +19,22 @@ export function setUrlUpdatingEnabled(value: boolean) {
 export function isUrlUpdatingEnabled() {
   return enabled;
 }
+
+let replaceNext = false;
+
+/**
+ * Has the URL writes `write` causes replace the entry rather than add one:
+ * content that arrives for the entry shown, as an import of its `track-uid=`.
+ */
+export function replacingEntry(write: () => void) {
+  replaceNext = true;
+
+  try {
+    write();
+  } finally {
+    replaceNext = false;
+  }
+}
+
+/** Whether the write being made is to replace the entry. */
+export const isReplacingEntry = () => replaceNext;

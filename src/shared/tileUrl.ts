@@ -19,6 +19,18 @@ export function pickSubdomain(
   return tileSubdomains(subdomains)[0];
 }
 
+/**
+ * How many zooms deeper than the view a tile layer fetches: one for a
+ * `scaleWithDpi` layer on a dense screen, fewer for an enlarged feature scale.
+ */
+export function tileZoomOffset(
+  scaleWithDpi: boolean,
+  dpr: number,
+  featureScale: number,
+): number {
+  return scaleWithDpi && dpr > 1.4 ? 1 : -Math.log2(featureScale);
+}
+
 export function buildTileUrl(
   urlTemplate: string,
   x: number,
@@ -27,10 +39,10 @@ export function buildTileUrl(
   subdomain = 'a',
 ): string {
   return urlTemplate
-    .replace('{x}', String(x))
-    .replace('{y}', String(y))
-    .replace('{z}', String(z))
-    .replace('{s}', subdomain);
+    .replaceAll('{x}', String(x))
+    .replaceAll('{y}', String(y))
+    .replaceAll('{z}', String(z))
+    .replaceAll('{s}', subdomain);
 }
 
 /**
@@ -64,4 +76,36 @@ export const TILE_SCALE_SUFFIX = String.raw`@\d+(?:\.\d+)?x`;
 /** Strips the `@Nx` suffix, giving the URL of the same tile at scale 1. */
 export function stripTileScale(url: string): string {
   return url.replace(new RegExp(`${TILE_SCALE_SUFFIX}$`), '');
+}
+
+/**
+ * Marks a tile the map is drawing, as against one a download or the size
+ * sampler asked for — all three fetch the same URL, and nothing else tells the
+ * service worker which is which. See `doc/tile-attribution.md`.
+ */
+export const TILE_DRAW_PARAM = 'fm-draw';
+
+export function markDrawnTile(url: string): string {
+  // ahead of any fragment, or the query it is added to is not one
+  const hash = url.indexOf('#');
+
+  const base = hash < 0 ? url : url.slice(0, hash);
+
+  return `${base}${base.includes('?') ? '&' : '?'}${TILE_DRAW_PARAM}=1${
+    hash < 0 ? '' : url.slice(hash)
+  }`;
+}
+
+/**
+ * The same tile without the marker. Everything a cache keys by goes through
+ * this: a tile browsed and a tile downloaded are one tile, and a key carrying
+ * the marker would orphan everything stored before it existed.
+ */
+export function unmarkDrawnTile(url: string): string {
+  return url.replace(
+    new RegExp(`([?&])${TILE_DRAW_PARAM}=1(&|(?=#)|$)`),
+    // Textual, so a protocol-relative template survives it — `new URL` would
+    // not take one.
+    (_, before: string, after: string) => (after ? before : ''),
+  );
 }

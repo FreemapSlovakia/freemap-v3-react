@@ -3,13 +3,13 @@ import type { ToposcopeMessages } from './ToposcopeMessages.js';
 
 const de: DeepPartialWithRequiredObjects<ToposcopeMessages> = {
   pickCenterHint:
-    'Setze die Mitte der Tafel mit der Schaltfläche ◎ in der Werkzeugleiste.',
+    'Setzen Sie die Mitte der Tafel mit der Schaltfläche ◎ in der Werkzeugleiste.',
   addCenter: 'Mitte setzen',
   moveCenter: 'Mitte verschieben',
   centerAtMyPosition: 'Auf meinen Standort zentrieren',
-  pickCenterPrompt: 'Klicke auf die Karte, wo die Tafel steht',
+  pickCenterPrompt: 'Klicken Sie auf die Karte, wo die Tafel steht',
   addPointsHint:
-    'Zeichne Punkte ein; aus jedem wird ein Strahl der Tafel. Auch die Mitte ist ein gezeichneter Punkt — beschriftet und verschoben wird sie im Zeichenwerkzeug.',
+    'Zeichnen Sie Punkte ein; aus jedem wird ein Strahl der Tafel. Auch die Mitte ist ein gezeichneter Punkt — beschriftet und verschoben wird sie im Zeichenwerkzeug.',
   downloadAsSvg: 'Als SVG herunterladen',
   osmAttribution: '© OpenStreetMap-Mitwirkende',
   credit: ({ site }) => `Panoramatafel von ${site}`,

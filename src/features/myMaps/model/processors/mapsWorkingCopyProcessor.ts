@@ -1,7 +1,12 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { entryLoading } from '@app/url/entryContent.js';
 import { isUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { authLogout } from '@features/auth/model/actions.js';
+import {
+  completeCollection,
+  featuresInLink,
+} from '@features/dataViewer/model/urlForm.js';
 import {
   clearMapRecords,
   deleteMapRecord,
@@ -14,8 +19,8 @@ import { fingerprintState, UNKNOWN_FINGERPRINT } from '../mapDocument.js';
  * Sets the digest a loaded map is compared against, and keeps the browser's
  * working copy of the active map up to date so a reload can continue from it.
  *
- * The copy holds the track, the one part of a map the URL can't carry; the rest
- * is restored from the URL, which is written on every dispatch and so is never
+ * The copy holds the features where the URL can't carry them; the rest is
+ * restored from the URL, which is written on every dispatch and so is never
  * stale. It is keyed by map id, so another map — or another tab — can't stand in
  * for this one.
  */
@@ -78,8 +83,9 @@ function persist(state: RootState): void {
   // for that whole pass the screen belongs to no single map. Writing then would
   // file the torn state under the map being left, and a dirty map's track has
   // nowhere else to come back from. URL updating is suspended for exactly that
-  // window (and for a drag, which likewise commits at its end).
-  if (!isUrlUpdatingEnabled()) {
+  // window (and for a drag, which likewise commits at its end), and an entry
+  // whose content is still being read is torn the same way.
+  if (!isUrlUpdatingEnabled() || entryLoading()) {
     return;
   }
 
@@ -126,7 +132,16 @@ function persist(state: RootState): void {
     return;
   }
 
-  const { trackGeojson: track, trackUID, gpxUrl } = state.trackViewer;
+  const { trackUID, gpxUrl } = state.trackViewer;
+
+  // Features the URL carries come back with it; one still being drawn would
+  // fail the record's validation and take the whole copy with it.
+  const { trackGeojson } = state.trackViewer;
+
+  const track =
+    !trackGeojson || featuresInLink(state.trackViewer)
+      ? null
+      : completeCollection(trackGeojson);
 
   if (
     written &&

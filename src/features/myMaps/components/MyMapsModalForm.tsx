@@ -1,12 +1,18 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaSave, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaSave } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
 import z from 'zod';
@@ -121,7 +127,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   };
 
   const handleWriterDelete = (index: number) => {
-    setWriters((writers) => writers.filter((_, i) => i !== index));
+    setWriters((writers) => writers.toSpliced(index, 1));
   };
 
   const save = () => {
@@ -222,7 +228,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         <Form>
           {isOwnMap && (
             <Form.Group controlId="mapName" className="mb-3">
-              <Form.Label className="required">{m?.general.name}</Form.Label>
+              <Form.Label className="required">
+                <Text k="general.name" />
+              </Form.Label>
 
               <Form.Control
                 disabled={!online}
@@ -234,7 +242,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
           {isOwnMap && (
             <Form.Group controlId="writers" className="mb-3">
-              <Form.Label>{mm?.writers}</Form.Label>
+              <Form.Label>
+                <Text m={mm} k="writers" />
+              </Form.Label>
 
               <ReactTags
                 placeholderText={mm?.addWriter}
@@ -275,17 +285,18 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
         </Form>
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {canSave && (
-          <Button onClick={save} disabled={!name || !online}>
-            <FaSave /> {mm?.save}
-          </Button>
+          <FmFooterButton
+            onClick={save}
+            disabled={!name || !online}
+            icon={<FaSave />}
+            label={mm?.save}
+          />
         )}
 
-        <Button variant="dark" onClick={onDone}>
-          <FaTimes /> {m?.general.cancel}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.cancel} onClick={onDone} />
+      </FmModalFooter>
     </>
   );
 }

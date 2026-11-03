@@ -1,0 +1,16 @@
+/* The Map layers button, while it holds settings of a map just turned on. */
+.attention {
+  animation: attention 0.6s ease-in-out 4;
+}
+
+@keyframes attention {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .attention {
+    animation: none;
+  }
+}

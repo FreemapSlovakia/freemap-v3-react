@@ -3,14 +3,14 @@ import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   purchases: 'Vásárlások',
-  premiumExpired: (at) => <>A prémium hozzáférésed lejárt ekkor: {at}</>,
+  premiumExpired: (at) => <>A prémium hozzáférése lejárt ekkor: {at}</>,
   date: 'Dátum',
   item: 'Tétel',
-  notPremiumYet: 'Még nincs prémium hozzáférésed.',
+  notPremiumYet: 'Még nincs prémium hozzáférése.',
   awaitingBankPayment:
     'Várjuk a banki átutalás visszaigazolását. A prémium a fizetés beérkezése után aktiválódik.',
   bankPaymentFailed:
-    'Néhány banki átutalás elutasításra került vagy lejárt. Ha úgy gondolod, hogy ez tévedés, vedd fel a kapcsolatot az ügyfélszolgálattal.',
+    'Néhány banki átutalás elutasításra került vagy lejárt. Ha úgy gondolja, hogy ez tévedés, vegye fel a kapcsolatot az ügyfélszolgálattal.',
   bankIntentStatus: {
     pending_settlement: 'A banki átutalás létrejött, és elszámolásra vár.',
     manual_review:
@@ -27,7 +27,7 @@ const hu: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   credits: (amount) => <>Kreditek ({amount})</>,
   managePayments: 'Fizetések kezelése',
   managePaymentsHint:
-    'Megnyitja a Polar fizetési szolgáltatónk ügyfélportálját, ahol lemondhatod az előfizetést, módosíthatod a fizetési módot és letöltheted a számlákat. Csak arra vonatkozik, amit a Polaron keresztül fizettél, a Rovason keresztül nem.',
+    'Megnyitja a Polar fizetési szolgáltatónk ügyfélportálját, ahol lemondhatja az előfizetést, módosíthatja a fizetési módot és letöltheti a számlákat. Csak arra vonatkozik, amit a Polaron keresztül fizetett, a Rovason keresztül nem.',
 };
 
 export default hu;

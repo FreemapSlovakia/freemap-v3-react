@@ -19,7 +19,7 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   point: {
     pick: 'Auf der Karte auswählen',
-    current: 'Deine Position',
+    current: 'Ihre Position',
     home: 'Heimatposition',
     fromStart: 'Startposition',
     fromFinish: 'Zielposition',
@@ -103,18 +103,26 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     </>
   ),
   noHomeAlert: {
-    msg: 'Du musst zuerst deine Startposition in den Einstellungen setzen.',
+    msg: 'Sie müssen zuerst Ihre Startposition in den Einstellungen setzen.',
     setHome: 'Setzen',
   },
   showMidpointHint:
-    'Ziehe ein Routensegment, um einen Zwischenpunkt hinzuzufügen.',
-  gpsError: 'Fehler beim Ermitteln deiner aktuellen Position.',
+    'Ziehen Sie ein Routensegment, um einen Zwischenpunkt hinzuzufügen.',
+  gpsError: 'Fehler beim Ermitteln Ihrer aktuellen Position.',
   routeNotFound:
-    'Keine Route gefunden. Versuche, die Parameter zu ändern oder die Punkte zu verschieben.',
+    'Keine Route gefunden. Versuchen Sie, die Parameter zu ändern oder die Punkte zu verschieben.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Finden der Route', err),
   manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',
-  default: 'Standard',
+  transportScope: {
+    title: 'Anwenden auf',
+    route: 'Ganze Route',
+    lastSection: 'Letzter Teil',
+    next: 'Neue Abschnitte',
+    leg: 'Dieser Abschnitt',
+    section: 'Ganzer Teil',
+    sameTransport: 'Gleiches Verkehrsmittel',
+  },
   leg: 'Routenabschnitt',
   stop: 'Halt',
   transportTypeLabel: 'Verkehrsmittel',

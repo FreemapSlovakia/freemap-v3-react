@@ -43,6 +43,19 @@ export function isNetworkError(err: unknown): boolean {
   return err instanceof NetworkError;
 }
 
+/**
+ * `fetch` of an already built `Request`, which then rejects with a `TypeError`
+ * only on a transport failure (offline, DNS, refused, CORS): that becomes a
+ * `NetworkError`, anything else (e.g. an `AbortError`) propagates as is.
+ */
+export async function fetchOrNetworkError(request: Request): Promise<Response> {
+  try {
+    return await fetch(request);
+  } catch (err) {
+    throw err instanceof TypeError ? new NetworkError(err) : err;
+  }
+}
+
 interface HttpRequestParams
   extends Omit<RequestInit, 'signal'>,
     CancelTriggers {
@@ -152,16 +165,7 @@ export async function httpRequest({
       init,
     );
 
-    let response: Response;
-
-    try {
-      response = await fetch(request);
-    } catch (err) {
-      // A valid request only rejects with a `TypeError` on a transport failure
-      // (offline, DNS, refused, CORS); surface it as a typed `NetworkError`.
-      // Anything else (e.g. an `AbortError`) propagates as-is.
-      throw err instanceof TypeError ? new NetworkError(err) : err;
-    }
+    const response = await fetchOrNetworkError(request);
 
     const { status } = response;
 

@@ -1,0 +1,43 @@
+import { Text } from '@features/l10n/Text.js';
+import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  type LabelVisibility,
+  LabelVisibilitySchema,
+} from '@shared/labelVisibility.js';
+import type { ReactElement } from 'react';
+import { Form, ToggleButton } from 'react-bootstrap';
+import { useDrawingMessages } from '../translations/useDrawingMessages.js';
+
+type Props = {
+  value: LabelVisibility;
+  onChange: (value: LabelVisibility) => void;
+};
+
+export function LabelVisibilityField({ value, onChange }: Props): ReactElement {
+  const dm = useDrawingMessages();
+
+  return (
+    <Form.Group className="mt-3">
+      <Form.Label className="d-block">
+        <Text m={dm} k="edit.showLabel" />
+      </Form.Label>
+
+      <FitButtonGroup>
+        {LabelVisibilitySchema.options.map((option) => (
+          <ToggleButton
+            key={option}
+            id={`labelVisibility-${option}`}
+            type="radio"
+            name="labelVisibility"
+            variant="outline-primary"
+            value={option}
+            checked={value === option}
+            onChange={() => onChange(option)}
+          >
+            <Text m={dm} k={`edit.labelVisibility.${option}`} />
+          </ToggleButton>
+        ))}
+      </FitButtonGroup>
+    </Form.Group>
+  );
+}

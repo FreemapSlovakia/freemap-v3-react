@@ -5,7 +5,10 @@ const de: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Auf der Karte wählen',
   locate: 'Sichtbarkeit von meinem Standort',
   pickViewpointPrompt: 'Klicken Sie auf die Karte, von wo aus Sie schauen',
-  detail: 'Qualität / Geschwindigkeit',
+  extent: 'Reichweite und Detail',
+  rangeHint:
+    'Weiter als 20 km zu schauen ist eine Premium-Funktion: Entfernung kostet eine Sichtbarkeitsanalyse am meisten — die Strahlen wachsen mit dem Umfang und jeder läuft bis zum Rand.',
+  detail: 'Detail',
   details: {
     superfast: 'Niedrigste / schnellste',
     fast: 'Niedrige / schnelle',
@@ -25,6 +28,10 @@ const de: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Geringste Deckkraft',
   minOpacityHint:
     'Wie kräftig sichtbares Gelände erscheint, auch wenn es fast von der Seite gesehen wird. Bei 100 % ist die Ebene eine reine Schablone: sichtbar oder nicht, nichts dazwischen.',
+  caveats: {
+    viewpoint:
+      'Eine Sichtbarkeitsanalyse reagiert weit empfindlicher auf den genauen Standort als ein Panorama: wenige Meter neben dem Gipfel können ganze Quadranten kosten.',
+  },
   update: 'Aktualisieren',
   outdated: 'Die Ebene zeigt den vorherigen Blickpunkt.',
   queued: ({ ahead }) =>

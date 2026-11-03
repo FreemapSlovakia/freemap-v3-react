@@ -29,6 +29,8 @@ const sk: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   formatSqlitedb: 'SQLiteDB',
   formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
   formatSqlitedbTooltip: 'OsmAnd, Locus Map',
+  outsideCoverage: (countries) =>
+    `Táto mapa sa exportuje len pre krajiny: ${countries}. Zvyšok oblasti zostane prázdny.`,
 };
 
 export default sk;

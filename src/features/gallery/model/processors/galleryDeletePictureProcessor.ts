@@ -41,16 +41,16 @@ export const galleryDeletePictureProcessor: Processor = {
     const { imageIds, activeImageId } = getState().gallery;
 
     if (imageIds && activeImageId) {
-      const idx = imageIds.indexOf(activeImageId);
+      const idx = imageIds.indexOf(id);
 
       if (idx !== -1) {
-        const newImageIds = imageIds.filter((imgId) => imgId !== activeImageId);
+        const newImageIds = imageIds.filter((imgId) => imgId !== id);
 
         dispatch(gallerySetImageIds(newImageIds));
 
         if (!newImageIds.length) {
           dispatch(galleryClear());
-        } else {
+        } else if (activeImageId === id) {
           const newActiveImageId =
             newImageIds.length > idx ? newImageIds[idx] : newImageIds.at(-1)!;
 

@@ -12,7 +12,7 @@ const cs: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   reloadConfirm: 'Zahodit neuložené změny a znovu načíst uloženou mapu?',
   unsaved: 'Neuložené změny',
   unsavedTooltip:
-    'Mapa má neuložené změny, které se neodrážejí v odkazu. Uložte mapu, abyste je zachovali.',
+    'Mapa má neuložené změny, které se neodrážejí v adrese stránky (URL). Uložte mapu, abyste je zachovali.',
   disconnect: 'Odpojit',
   disconnectAndClear: 'Odpojit a vyčistit',
   deleteConfirm: (name) => (
@@ -21,6 +21,12 @@ const cs: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Smazání mapy',
+  newMapTitle: 'Nová mapa',
+  modifyMapTitle: (name) => (
+    <>
+      Upravit mapu <i>{name}</i>
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       Mapa <i>{name}</i> byla uložena mezi vaše mapy.

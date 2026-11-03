@@ -3,16 +3,23 @@ import { ensureCompassPermission } from '@features/location/ensureCompassPermiss
 import { useMap } from '@features/map/hooks/useMap.js';
 import { type MapViewState, mapRefocus } from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
+import { useMapLayersPanel } from '@features/mapSettings/mapLayersPanelStore.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import {
+  toggleFullscreen,
+  useFullscreen,
+} from '@shared/hooks/useFullscreen.js';
+import clsx from 'clsx';
+import { type ReactElement, useCallback } from 'react';
 import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
-import { FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
+import { FaLayerGroup, FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
-import { useMediaQuery } from 'react-responsive';
 import { toggleLocate } from '../store/actions.js';
+import { mapLibraryPreviewingSelector } from '../store/selectors.js';
+import classes from './MapControls.module.css';
 import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
 
@@ -51,6 +58,9 @@ export function MapControls(): ReactElement | null {
       state.mapArea.selecting !== null,
   );
 
+  // A preview puts the earlier layers back when it ends, so it allows no switch.
+  const previewing = useAppSelector(mapLibraryPreviewingSelector);
+
   const handleLocateClick = useCallback(() => {
     // Locating on but not following — the user panned away from the position.
     // Pressing the button then means "take me back", not "stop locating"; only
@@ -84,49 +94,35 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
-  // An installed app has no browser chrome to escape, so the button would win
-  // nothing. Deliberately not `(display-mode: fullscreen)` as well: that also
-  // matches while the Fullscreen API is active, which would take the button
-  // away at the moment it is needed to leave again.
-  const installed = useMediaQuery({ query: '(display-mode: standalone)' });
-
   const map = useMap();
 
-  const handleFullscreenClick = useCallback(() => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    } else {
-      try {
-        // Some WebViews advertise the API but reject (or throw synchronously)
-        // with "Fullscreen is not supported"; swallow both.
-        document.body.requestFullscreen().catch(() => {});
-      } catch {
-        // ignore
-      }
-    }
-  }, []);
+  const layersPanel = useMapLayersPanel();
 
-  const [fullscreen, setFullscreen] = useState(() =>
-    Boolean(document.fullscreenElement),
-  );
-
-  useEffect(() => {
-    function handler() {
-      setFullscreen(Boolean(document.fullscreenElement));
-    }
-
-    document.addEventListener('fullscreenchange', handler);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handler);
-    };
-  }, []);
+  const fullscreen = useFullscreen();
 
   return !map ? null : (
-    <Toolbar className="m-2">
-      {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
-        <MapSwitchButton />
-      )}
+    // No top margin: only the wrapped credits button sits above, with its own.
+    <Toolbar className="mx-2 mb-2">
+      {!previewing &&
+        (!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
+          <>
+            <MapSwitchButton />
+
+            <LongPressTooltip label={m?.mapLayers.layersPanel} kbd=".">
+              {({ props }) => (
+                <Button
+                  variant={layersPanel.attention ? 'primary' : 'secondary'}
+                  className={clsx(layersPanel.attention && classes.attention)}
+                  active={layersPanel.open}
+                  onClick={() => layersPanel.setOpen(!layersPanel.open)}
+                  {...props}
+                >
+                  <FaLayerGroup />
+                </Button>
+              )}
+            </LongPressTooltip>
+          </>
+        )}
 
       <ButtonGroup>
         <LongPressTooltip label={m?.main.zoomIn}>
@@ -179,17 +175,22 @@ export function MapControls(): ReactElement | null {
         </LongPressTooltip>
       )}
 
-      {document.fullscreenEnabled && !installed && (
+      {/* Elsewhere it is in the main menu, which an embed lacks. */}
+      {window.fmEmbedded && fullscreen.available && (
         <LongPressTooltip
-          label={fullscreen ? m?.general.exitFullscreen : m?.general.fullscreen}
+          label={
+            fullscreen.active
+              ? m?.general.exitFullscreen
+              : m?.general.fullscreen
+          }
         >
           {({ props }) => (
-            <Button
-              variant="secondary"
-              onClick={handleFullscreenClick}
-              {...props}
-            >
-              {fullscreen ? <RiFullscreenExitLine /> : <RiFullscreenLine />}
+            <Button variant="secondary" onClick={toggleFullscreen} {...props}>
+              {fullscreen.active ? (
+                <RiFullscreenExitLine />
+              ) : (
+                <RiFullscreenLine />
+              )}
             </Button>
           )}
         </LongPressTooltip>
@@ -199,7 +200,9 @@ export function MapControls(): ReactElement | null {
           acting on it. Never in an embed: the layer table, the custom maps and
           the caches behind it belong to the visitor's own account and browser,
           not to the page the map is embedded in. */}
-      {!window.fmEmbedded && !restrictToMapSwitching && <MapManageButton />}
+      {!window.fmEmbedded && !restrictToMapSwitching && !previewing && (
+        <MapManageButton />
+      )}
     </Toolbar>
   );
 }

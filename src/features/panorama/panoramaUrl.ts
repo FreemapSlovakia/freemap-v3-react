@@ -6,7 +6,9 @@ import {
   PANORAMA_TILTS,
   type PanoramaSettingsState,
   type PanoramaTilt,
+  panoramaSettingsInitialState,
 } from './model/settingsReducer.js';
+import { localDay, localToday, MIN_SKY_YEAR } from './sky/track.js';
 
 /** Digits `panorama=` is written with, which is also what it is compared at. */
 const COORD_DIGITS = 6;
@@ -99,4 +101,62 @@ export function parsePanoramaTilt(
   return Object.hasOwn(PANORAMA_TILTS, param)
     ? { tilt: param as PanoramaTilt }
     : null;
+}
+
+type PanoramaSky = Pick<PanoramaSettingsState, 'showSun' | 'showMoon'>;
+
+/** What a link without `panorama-sky=` shows. */
+export const DEFAULT_PANORAMA_SKY: PanoramaSky = {
+  showSun: panoramaSettingsInitialState.showSun,
+  showMoon: panoramaSettingsInitialState.showMoon,
+};
+
+/**
+ * `panorama-sky=` — which of the sun's and the moon's paths are drawn: `sun`,
+ * `moon`, `sun,moon` or `none`. Not written for the default, which an absent
+ * param means — like `panorama-fov=`, so Back and a shared link both restore it.
+ */
+export function serializePanoramaSky({
+  showSun,
+  showMoon,
+}: PanoramaSky): string | null {
+  if (
+    showSun === DEFAULT_PANORAMA_SKY.showSun &&
+    showMoon === DEFAULT_PANORAMA_SKY.showMoon
+  ) {
+    return null;
+  }
+
+  return (
+    [showSun && 'sun', showMoon && 'moon'].filter(Boolean).join(',') || 'none'
+  );
+}
+
+export function parsePanoramaSky(param: string): PanoramaSky | null {
+  const bodies = param.split(',');
+
+  if (
+    param !== 'none' &&
+    bodies.some((body) => body !== 'sun' && body !== 'moon')
+  ) {
+    return null;
+  }
+
+  return { showSun: bodies.includes('sun'), showMoon: bodies.includes('moon') };
+}
+
+/**
+ * `panorama-date=YYYY-MM-DD` — the day the sky paths are drawn for; absent is
+ * the reader's today. `null` for anything that is not a real calendar day.
+ */
+export function parsePanoramaDate(param: string): string | null {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(param) ||
+    Number(param.slice(0, 4)) < MIN_SKY_YEAR
+  ) {
+    return null;
+  }
+
+  // A day that doesn't exist (02-31) rolls over and comes back different.
+  return localToday(new Date(localDay(param)[0])) === param ? param : null;
 }

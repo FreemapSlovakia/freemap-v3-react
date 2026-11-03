@@ -28,6 +28,8 @@ const en: OfflineMapExportMessages = {
   formatSqlitedb: 'SQLiteDB',
   formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
   formatSqlitedbTooltip: 'OsmAnd, Locus Map',
+  outsideCoverage: (countries) =>
+    `This map is exported only for ${countries}; the rest of the area will be empty.`,
 };
 
 export default en;

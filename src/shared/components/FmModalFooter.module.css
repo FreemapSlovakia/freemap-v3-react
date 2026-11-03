@@ -1,0 +1,16 @@
+/* Measuring states: added and removed within one task, so they never paint.
+   `.measure` shows every collapsible label, so the reading can't depend on what
+   it decides. The doubled class outweighs `.d-none`, which is `!important` too. */
+.measure {
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+}
+
+/* A full-width line (a summary above the buttons) is a row of its own. */
+.measure > :global(.w-100) {
+  display: none !important;
+}
+
+.measure .label.label {
+  display: inline !important;
+}

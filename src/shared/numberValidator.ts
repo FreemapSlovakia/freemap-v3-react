@@ -1,3 +1,22 @@
+/**
+ * A decimal number, as `<input type="number">` reports one: a point, never a
+ * comma (`1,000` would be a thousand or one) and no `0x10`.
+ */
+export function parseDecimal(text: string): number | undefined {
+  const n = /^\s*[+-]?(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?\s*$/i.test(text)
+    ? Number(text)
+    : NaN;
+
+  return Number.isFinite(n) ? n : undefined;
+}
+
+/**
+ * Whether `<input type="number">` shows the text as it is: no spaces, no `+`,
+ * no trailing `.`. It blanks anything else, so the value goes unseen.
+ */
+export const isInputNumber = (text: string) =>
+  /^-?(\d+(\.\d+)?|\.\d+)(e[+-]?\d+)?$/i.test(text);
+
 function parseInt10(value: string) {
   return /^\s*[+-]?(0|\d+)\s*$/.test(value) ? parseInt(value, 10) : NaN;
 }

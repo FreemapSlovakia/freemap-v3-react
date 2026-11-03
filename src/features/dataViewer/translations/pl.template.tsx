@@ -5,21 +5,20 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Domyślny styl',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Podziel',
     pick: 'Kliknij ślad w miejscu podziału',
     here: 'Podziel tutaj',
-    segments: 'Podziel na odcinki',
   },
   join: {
     action: 'Połącz',
     asLine: 'Połącz w jedną linię',
     asSegments: 'Połącz z zachowaniem odcinków',
-    pick: 'Kliknij ślad, z którym połączyć',
+    pick: 'Kliknij ślad, który chcesz dołączyć',
+    pickEnd: 'Wybierz punkt do połączenia linii',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Dopasuj do dróg',
     title: 'Dopasuj do dróg',
@@ -33,7 +32,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     brokenSequence:
       'Ślad gdzieś opuszcza sieć zmapowanych dróg, więc nie można go dopasować. Spróbuj innego środka transportu albo zostaw ślad bez zmian.',
     offNetwork:
-      'Dopasowana trasa wyszła znacznie dłuższa niż ślad, co oznacza, że ślad nie prowadził po zmapowanych drogach — na przykład przez łąkę. Dopasowanie może odpowiedzieć tylko istniejącymi drogami, więc wynik nie byłby tam, gdzie szedłeś. Ślad pozostaje bez zmian.',
+      'Dopasowana trasa wyszła znacznie dłuższa niż ślad, co oznacza, że ślad nie prowadził po zmapowanych drogach — na przykład przez łąkę. Dopasowanie może odpowiedzieć tylko istniejącymi drogami, więc wynik nie byłby tam, gdzie prowadzi ślad. Ślad pozostaje bez zmian.',
     partial:
       'Niektórych części śladu nie udało się dopasować — pozostają takie, jakie zostały zapisane. Ślad zmieniający środek transportu w połowie (wędrówka, a potem powrót samochodem) trzeba najpierw podzielić.',
   },
@@ -65,21 +64,54 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Dołącz',
     replace: 'Zastąp',
   },
-  elevationFill: {
-    title: 'Dane wysokości',
-    introNone: 'Ten ślad nie zawiera danych o wysokości.',
-    introPartial: 'W niektórych punktach tego śladu brakuje wysokości.',
-    introFull:
-      'Ten ślad ma już dane wysokości, ale model terenu jest często ' +
-      'dokładniejszy.',
-    premiumHiRes: (premiumLink) => (
+  trace: {
+    streams: 'Wyznaczanie cieków wodnych',
+    forests: 'Wyznaczanie lasów',
+    streamsHelp:
+      'Służy do wyznaczania linii cieków wodnych z wysokorozdzielczego modelu terenu w wybranym wielokącie. Przydatne do mapowania w OpenStreetMap.',
+    forestsHelp:
+      'Służy do wyznaczania obszarów pokrytych wybranymi klasami punktów LiDAR w zaznaczonym wielokącie. Przydatne zwłaszcza do mapowania pokrycia terenu w OpenStreetMap.',
+    pixelSize: 'Rozmiar piksela',
+    pixelSizeHint: 'Puste – własna rozdzielczość modelu terenu.',
+    threshold: 'Minimalna powierzchnia zlewni',
+    minLength: 'Minimalna długość cieku',
+    simplify: 'Tolerancja upraszczania',
+    classes: 'Klasy punktów',
+    classNames: {
+      lowVegetation: 'Niska roślinność',
+      mediumVegetation: 'Średnia roślinność',
+      highVegetation: 'Wysoka roślinność',
+      building: 'Budynki',
+      water: 'Woda',
+    },
+    output: 'Wynik',
+    outputJosm: 'Otwórz w JOSM',
+    outputOsm: 'Pobierz jako OSM XML',
+    outputGeojson: 'Pobierz jako GeoJSON',
+    tooBig: ({ max }) => `Wielokąt jest za duży; limit wynosi ${max}.`,
+    run: 'Wyznacz',
+    legacy: ({ phrase, item }) => (
       <>
-        Z {premiumLink('dostępem premium')} wysokość w obsługiwanych krajach
-        jest próbkowana z krajowego modelu w wysokiej rozdzielczości — na razie
-        Słowacja (DMR 5.0: ÚGKK SR), kolejne wkrótce.
+        Zamiast <i>easter egga</i> <code>{phrase}</code> należy użyć pozycji{' '}
+        <i>{item}</i> w menu ⋮ zaznaczonego wielokąta.
       </>
     ),
-    question: 'Co chcesz zrobić?',
+  },
+  elevationFill: {
+    title: 'Dane wysokości',
+    introNone: 'Brak jeszcze danych o wysokości.',
+    introPartial: 'W niektórych punktach brakuje wysokości.',
+    introFull:
+      'Dane wysokości są już dostępne, ale model terenu jest często ' +
+      'dokładniejszy.',
+    premiumHiRes: (premiumLink, countries) => (
+      <>
+        Z {premiumLink('dostępem premium')} wysokość w{' '}
+        {countries('wielu krajach europejskich')} jest próbkowana z krajowych
+        modeli terenu w wysokiej rozdzielczości.
+      </>
+    ),
+    question: 'Co zrobić?',
     overrideAll: 'Zastąp wszystkie',
     overrideAllDesc:
       'zastąp każdy punkt modelem terenu — gładki, spójny profil',
@@ -91,18 +123,18 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'użyj wysokości zapisanej w śladzie',
     add: 'Dodaj wysokość',
     update: 'Zaktualizuj wysokość',
-    updateConfirm: 'Zastąpić wysokość śladu modelem terenu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Brakująca wysokość została uzupełniona.'
-        : 'Wysokość została nadpisana.',
+        : mode === 'clear'
+          ? 'Wysokość została usunięta.'
+          : 'Wysokość została nadpisana.',
   },
   upload: 'Prześlij',
   unnamedTrack: ({ n }) => `Ślad ${n}`,
-  convertLossWarning:
-    'Konwersja na rysunek zastępuje ślad i odrzuca jego zarejestrowane dane (wysokość, tętno, prędkość, czas).',
   simplifyAll: 'Uprość wszystko',
   moreInfo: 'Więcej informacji',
+  breakApart: 'Rozdziel na części',
   saveAsMap: 'Zapisz w moich mapach',
   loginToSaveMap: 'Zaloguj się, aby zapisać trasę w swoich mapach.',
   fetchingError: ({ err }) =>
@@ -119,7 +151,7 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Nie udało się wczytać niektórych plików: ${names}.`,
   unsaved: 'Niezapisane',
   unsavedTooltip:
-    'Ten ślad nie znajduje się w żadnej zapisanej mapie ani nie jest częścią odnośnika – pozostaje tylko w tej przeglądarce, więc udostępnienie odnośnika go nie udostępni. Zapisz go w swoich mapach, aby go zachować.',
+    'Tych danych nie da się umieścić w adresie strony (URL) i nie ma ich w żadnej zapisanej mapie – zostają tylko w tej przeglądarce. Zapisz je w swoich mapach, aby je zachować.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Wystąpił błąd podczas dopasowywania śladu', err),
 };

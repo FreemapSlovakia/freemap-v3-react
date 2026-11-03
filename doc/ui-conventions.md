@@ -8,7 +8,11 @@ Covered here: [button variants](#button-variants),
 [tokens](#tokens-come-from-bootstrap), [icon sizes](#icon-sizes),
 [touch targets](#touch-targets-and-the-marker-primitive),
 [where a hint goes](#where-a-hint-goes),
-[spacing](#spacing-the-container-decides), [toolbar outlines](#toolbar-outlines).
+[spacing](#spacing-the-container-decides), [modal footers](#modal-footers),
+[ellipsis in labels](#ellipsis-in-labels),
+[external links](#external-links),
+[surfaces over the map](#surfaces-over-the-map),
+[toolbar outlines](#toolbar-outlines).
 
 ## Button variants
 
@@ -18,7 +22,7 @@ a floating toolbar over the map.
 
 | Role | Variant | Use for |
 | --- | --- | --- |
-| **Dismiss** | `dark` | The close / cancel / hide button — the one with `<FaTimes />` that closes a modal (`onClick={close}`, often `+ <kbd>Esc</kbd>`) or dismisses a map-overlay toolbar (`setActiveModal(null)`, `selectFeature(null)`, …). This is what makes the close button read as "the X". |
+| **Dismiss** | `dark` | The close / cancel / hide button — the one with `<FaTimes />` that closes a modal (`onClick={close}`, often `+ <kbd>Esc</kbd>`) or dismisses a map-overlay toolbar (`setActiveModal(null)`, `selectFeature(null)`, …). This is what makes the close button read as "the X". A floating panel that only closes — the Map layers panel, a toast — takes Bootstrap's `CloseButton` in its corner instead. |
 | **Primary action** | `primary` | The one main confirm / submit / CTA of a form or footer. At most one prominent per surface (e.g. a `type="submit"` Save). |
 | **Neutral action** | `secondary` | Everything else: secondary actions, `Dropdown.Toggle`, action buttons in selection/drawing toolbars, the default for `ResponsiveActions`. When in doubt, this is the default. |
 | **Destructive** | `danger` | Delete / Remove / Cancel-download and other irreversible actions. **Solid, not `outline-danger`.** Also turns the packed `ResponsiveActions` dropdown item red. |
@@ -59,20 +63,35 @@ many of them can be on, so it follows the selection, never the layout:
   `d-flex flex-wrap gap-2`, each independently rounded (see
   `ExportablesSelector`). The gaps say "each of these on its own".
 
+**Inside an `InputGroup`, use plain `<Button active>`s instead** — the pair that
+precedes the WebP quality, say. A `ToggleButton` renders a hidden `btn-check`
+`<input>` before its label, and the input group's seam rules key off
+`:first-child`, so that hidden input takes the left rounding off the button
+beside it. The input group joins its children itself, so nothing is lost.
+Both take `outline-primary` with `active` doing the work, as a `ToggleButton`
+group does — **not** the lone toggle's `primary`-when-active rule, whose
+`--bs-btn-active-bg` is a step darker and reads as a second kind of "selected"
+beside the group next to it.
+
 ### When a joined group doesn't fit
 
-`.btn-group` is `flex-wrap: nowrap` with no shrink, so a group too wide for its
-container pushes the whole surface wider instead of adapting — on a phone that
-means a modal wider than the viewport, with the last options cut off. Two ways
-out, and the label lengths decide which:
+`.btn-group` is `flex-wrap: nowrap`, so a group too wide for its container makes
+each button wrap its own label instead — two ragged lines of text inside a box
+sized for one. Two ways out, and the label lengths decide which:
 
-- **A few options** → keep it joined and stack it: `<ButtonGroup vertical={!sm}>`
-  with `sm` from `useBreakpointMatches`. `.btn-group-vertical` carries its own
-  seam rules, so the joining, the corner rounding and the collapsed borders all
-  stay right, and every option stays visible. Don't reach for the `flex-column`
-  utilities instead — they flip the axis but leave `.btn-group`'s horizontal
-  seam rules in place, which staggers the buttons by a pixel and rounds the
-  wrong corners.
+- **A few options** → keep it joined and stack it: use `FitButtonGroup` /
+  `FitToggleButtonGroup` (`@shared/components/FitButtonGroup`, over
+  `useButtonGroupFit`) for every joined group that is a form field on its own
+  line. Leave plain `ButtonGroup` to toolbars, where a group shares its row and
+  stacking would break it. It measures what one row would need against what the line
+  offers, so a group stacks exactly when it has to — which a breakpoint cannot
+  tell, since the label lengths change with the language and the room with the
+  surface. The group has to be alone on its line and its parent a block.
+  `.btn-group-vertical` carries its own seam rules, so the joining, the corner
+  rounding and the collapsed borders all stay right, and every option stays
+  visible. Don't reach for the `flex-column` utilities instead — they flip the
+  axis but leave `.btn-group`'s horizontal seam rules in place, which staggers
+  the buttons by a pixel and rounds the wrong corners.
 - **Many or long options** → it was the wrong control. Use a `Form.Select`
   (a bare `<option value="" />` for "none"), which is a single-choice idiom too,
   so the rule above still holds.
@@ -88,13 +107,121 @@ or options that differ only near the end, it stops being readable.
 
 A joined group is `inline-flex`, so it takes its content's width and no more —
 which is what a group of short options (`1×`, `2×`, `4×`) should do. Don't add
-`d-flex` to stretch one across the surface: `.btn-group > .btn` is
+`d-flex` to stretch one across the surface by hand: `.btn-group > .btn` is
 `flex: 1 1 auto`, so that stretches every option too, and a two-character label
-in a full-width button reads as a mistake. A `<Form.Label>` above it then needs
-`d-block` of its own, since `label` is `inline-block` and the group no longer
-forces the break.
+in a full-width button reads as a mistake. A `<Form.Label>` above a group needs
+`d-block` of its own, since `label` is `inline-block` and the group doesn't
+force the break.
+
+### Nearly filling the line is worse than filling it
+
+Between "fits" and "doesn't fit" there is a band where a group leaves a sliver
+of its line empty, and that sliver reads as a misalignment against the
+full-width fields above and below rather than as a deliberate width. So
+`useButtonGroupFit` gives a group **the whole line once it wants 85% of it**,
+and every option widens alike. Three outcomes, all from one measurement per
+render: room to spare → its own width; nearly filling → `d-flex`; no longer
+fitting → stacked, and `d-flex` too, since `.btn-group-vertical > .btn` is
+already `width: 100%`.
+
+Neither reading depends on the outcome — the measuring classes force
+`max-content` and `width: auto` — so a group can't chase itself across the
+threshold. The 85% is what separates a group that nearly fills its modal from
+one of two short options, which lands nowhere near it.
+
+**This is about joined groups, not about controls in general.** A number input's
+content is bounded, so its natural width is a width it can actually justify:
+give it `calc(<digits>ch + 3rem)` — the digits in the control's own font, plus
+the padding, border and spinner — and never `size`, which the HTML spec defines
+only for the text-ish input types and which browsers ignore on `type="number"`.
+Inside an `.input-group` that needs `flex-grow-0` beside it (the group grows its
+control) and `min-width: 0` (`index.css` floors one at 100px), and the group
+itself needs `d-inline-flex w-auto` or it stays a block-level flex box filling
+the line.
+
+Two short fields side by side are the other case where filling wins: with
+natural widths, unequal label lengths leave a gap after the shorter field. Give
+them a `<Row className="align-items-end gx-*">` of `<Col xs={12} sm={6}>`
+instead — equal halves, stacking on a phone, and end-aligned because the longer
+label wraps to two lines (see `CustomMapForm`'s zoom fields,
+`BrowseCacheSettings`). The `gx-*` is not optional: a `Row`'s own gutter is
+`1.5rem`, wider than any `gap-*` the rest of the form is spaced by, so it has to
+be set to whichever step its neighbours use.
+
+## Modal footers
+
+A footer's buttons sit in a `flex-wrap: wrap` row, so on a phone — and in a
+confirm dialog, which is narrow whatever the screen — the last one drops to a
+line of its own and sits there right-aligned, reading as a bug rather than as a
+layout. Every modal footer is an `FmModalFooter`, which measures the row and
+drops labels to their `LongPressTooltip`s one priority at a time, only as far
+as the row needs:
+
+1. `FmDismissButton` first — `dark` + `<FaTimes />` + last position already
+   name it.
+2. Then each `FmFooterButton` (and `ResetToDefaultsButton`, built on it) by its
+   `priority`: 0 by default, 1 for a `primary` button. Raise it on the button
+   that matters most in its footer when that isn't the `primary` one — the Map
+   manager's New custom map, say.
+
+So a footer button is an `FmFooterButton` with `icon` and `label` (and `kbd`
+for an `Enter` chip), never a `<Button>` with the icon written inside it. A
+button with no icon, a split or dropdown button, or a `link` button has nothing
+to collapse to and stays a plain one; if those alone overflow, the row wraps.
+
+The measured rows show every collapsible label, so what it reads never depends
+on what it decides. A `w-100` child — a summary line above the buttons — is a
+row of its own and is left out of the measurement. The `kbd` chips cost nothing
+to leave in: they are already hidden outside `(hover: hover) and (pointer: fine)`
+(`bootstrap-override.css`).
+
+## Ellipsis in labels
+
+A label ends in `…` only when the choice that follows completes it: "Open in…"
+(which app), "Add overlay…" (which layer), "Choose icon…" (which icon). Opening
+a dialog is not such a choice — "Save as custom map", like the main-menu items
+that open modals, takes none. Progress messages ("Loading…") are a separate use
+and keep it.
+
+## External links
+
+A link out of the app opens in a new tab — `target="_blank"` — so the map, its
+tools and whatever is drawn stay where they were. A named target (`"wikipedia"`,
+`"license"`) is the variant for a link opened again and again, which then reuses
+its one tab. Two kinds stay in the window: links within the app (`#show=…`,
+`#layers=…`) and hand-offs to another app (`intent:`, `geo:`), which leave
+nothing behind to lose.
+
+**Every link with a `target` is marked** by a small, muted square-with-arrow
+after its text, so a link without one reads as staying in the app. The mark
+comes from one rule in `index.css`, not from the call site — don't add a
+`FaExternalLinkAlt` by hand. It holds in dense places too (a tags table, the
+"Open in" menu): marking only some links would make the rest look internal.
+Consequences:
+
+- **`target` means "leaves the app".** A link handled in place (`#show=…`, a
+  `?document=` attribution) must not carry one, even with a `preventDefault`
+  click handler, or it is marked.
+- **In a menu row the mark follows the `MenuLabel`**, outside its ellipsis;
+  everything after the label is reordered behind the mark.
+- **A link that is a lone `<img>`** (a store badge, the MapTiler watermark) is
+  skipped by the rule itself. Any other picture or card link (the social icons,
+  an ad) opts out with `fm-no-ext` on itself or an ancestor.
+
+Whether it looks like a link or a button follows where it sits, not where it
+goes. In running text, a label or a title it is a link; as the action of a
+surface — a toast's action row, a modal footer — it is a `<Button href>`, which
+renders an `<a>` and so still opens in a new tab on a middle click.
 
 ## Tokens come from Bootstrap
+
+**A utility class before a CSS rule.** Spacing (negative margins included —
+`$enable-negative-margins` is on), borders, radius, colour, display and flex
+belong on the element as Bootstrap utilities, where they can be read without
+opening a stylesheet. A rule in a module or `index.css` is for what no utility
+can say — a `:has()` or `:hover` state, a component's own size — and is then
+written in Bootstrap's variables (`--bs-*`) or the tokens below, never in
+literals. When a change touches a custom rule a utility now covers, replace it.
 
 Bootstrap keeps its scales in Sass, and the app's own rules are plain CSS, so
 `index.scss` **republishes them as custom properties** rather than letting a
@@ -288,8 +415,15 @@ These containers own the gap; nothing inside them carries a margin:
 | --- | --- | --- |
 | `.fm-toolbar` | `0.25rem` | `index.css` |
 | `.btn-toolbar` | `0.25rem` | `bootstrap-override.css` — a `gap-*` utility overrides it where a toolbar wants more air (see `Toast`) |
-| `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a wrapping flex row, so a long label still wraps inside its own item |
+| `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a one-line flex row, its label text in a `MenuLabel` so that it, and only it, ends in an ellipsis where the row doesn't fit |
 | `ResponsiveActions` | `gap` prop | its own `d-inline-flex` |
+| A button row in a floating panel | `gap-1` | the panel's header, toolbar and footer rows (`MapLayersPanel`) — a panel over the map takes the toolbars' rhythm, not a modal's |
+
+The gap between buttons follows the **surface**: whatever floats over the map
+(toolbars, the Map layers panel) spaces its buttons by `0.25rem`; modals and
+their forms keep Bootstrap's roomier `0.5rem` (`.modal-footer`, `gap-2`). Groups
+within a row are set apart by structure — `ms-auto`, or a toolbar of their own
+— never by a wider gap between every button.
 
 **One gap vocabulary: Bootstrap's `gap-*` utilities.** The project's own
 `f-gap-1` / `f-gap-2` are gone; don't reintroduce a parallel set.
@@ -328,6 +462,20 @@ gap. Don't mix the two separators in one line.
 This is about UI text. What an export writes into a file (`geojsonToKml`,
 `gpxExportProcessorHandler`) answers to that format, not to this.
 
+## Surfaces over the map
+
+Everything that floats over the map — toolbars, the Map layers panel, floating
+windows such as the panorama — is one surface: `--fm-frosted-bg` over a 6px
+backdrop blur, from the `.fm-frosted` rule in `index.css`. `.fm-toolbar` takes
+it on its own; any other panel adds `fm-frosted` and a transparent background of
+its own (a `Card` paints one). Modals keep Bootstrap's opaque body background.
+
+The blur sits on a `::before`, not on the box: `backdrop-filter` makes its
+element the containing block of the `position: fixed` dropdowns inside, which
+then position against the panel instead of the viewport. So the box needs `position` other than `static`, and nothing
+else on it may use `::before`. A surface that covers the whole screen drops the
+blur, which there is pure cost (see `FloatingWindow`'s fullscreen rule).
+
 ## Toolbar outlines
 
 Several toolbars share the top of the screen at once, so an outline on one says
@@ -350,7 +498,7 @@ what it is, not merely that it is there. Two exist, both 2px with
   `secondary`. The toggle pattern is `isSelected ? 'secondary' : 'outline-secondary'`
   (see `IconPicker`) or `outline-primary` on `ToggleButton` groups.
 - **Avoid `success` / `info` / `light` for buttons.** They exist as a couple of
-  deliberate one-offs (e.g. the green "add shading" `DropdownButton`, the
+  deliberate one-offs (e.g. the green "add shading" dropdown, the
   input-like key field in `ShortcutRecorder`); don't reach for them for ordinary
   actions. `success` / `info` are fine on `<Alert>`.
 - A `dark` button is occasionally used for a non-dismiss navigation that visually

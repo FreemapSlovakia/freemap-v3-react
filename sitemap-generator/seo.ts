@@ -123,6 +123,35 @@ export const featuresLabel: Record<Lang, string> = {
   fr: 'Fonctions et couches de la carte',
 };
 
+/** Section heading for the manual's chapters: the app's own `mainMenu.manual`. */
+export const manualLabel: Record<Lang, string> = {
+  sk: 'Príručka',
+  en: 'Manual',
+  cs: 'Příručka',
+  hu: 'Kézikönyv',
+  it: 'Manuale',
+  de: 'Handbuch',
+  pl: 'Podręcznik',
+  sl: 'Priročnik',
+  fr: 'Manuel',
+};
+
+/** A manual chapter as the homepage lists it. */
+export type ChapterLink = { key: string; title: string };
+
+/**
+ * Turns the in-app links of rendered markdown into prerendered URLs, so a
+ * crawler follows them; a hash link is never fetched. Other `#show=` targets
+ * have no page of their own and stay as they are.
+ */
+export function crawlableLinks(bodyHtml: string, lang: Lang): string {
+  return bodyHtml.replace(
+    /href="#show=(manual|document)\/([\w-]+)"/g,
+    (_, kind: string, key: string) =>
+      `href="${appUrl(`layers=X&${kind}=${key}`, lang)}"`,
+  );
+}
+
 /** Clean app URL (the canonical, bot-rewritten to a prerender) for a given query + language. */
 export function appUrl(param: string, lang: Lang): string {
   return `${langBase(lang)}/?${param}&lang=${lang}`;
@@ -250,7 +279,7 @@ export function renderHub(hub: Hub, lang: Lang): string {
 }
 
 /** Render the homepage for one language. */
-export function renderHome(lang: Lang): string {
+export function renderHome(lang: Lang, chapters: ChapterLink[]): string {
   const { description } = homeMeta[lang];
 
   const title = expandNames(homeMeta[lang].title, lang);
@@ -314,32 +343,79 @@ export function renderHome(lang: Lang): string {
               </li>`,
           )}
         </ul>
+
+        <h2>${manualLabel[lang]}</h2>
+
+        <ul>
+          ${chapters.map(
+            (c) =>
+              html`<li>
+                <a href=${appUrl(`layers=X&manual=${c.key}`, lang)}>
+                  ${c.title}
+                </a>
+              </li>`,
+          )}
+        </ul>
       </body>
     </html>`
   );
 }
 
 /**
- * Render a document page (`src/documents/<key>.<lang>.md`). `langs` is the set
- * of languages the document is available in (for `hreflang`); `bodyHtml` is the
- * already-rendered markdown. The URL param is the bare key — language comes from
- * `&lang=`, matching how the SPA resolves `<key>.<lang>.md`.
+ * The page left at a moved document's old URL: its canonical is the chapter
+ * that took it over, so a search engine carries the old page's standing there,
+ * and a visitor is sent on.
+ */
+export function renderMoved(opts: { lang: Lang; target: string }): string {
+  const { lang, target } = opts;
+
+  return (
+    '<!doctype html>\n' +
+    html`<html lang=${lang}>
+      <head>
+        <title>${siteName(lang)}</title>
+        <link rel="canonical" href=${target} />
+        <meta http-equiv="refresh" content=${`0; url=${target}`} />
+      </head>
+
+      <body>
+        <p><a href=${target}>${target}</a></p>
+      </body>
+    </html>`
+  );
+}
+
+/**
+ * Render a document or manual-chapter page (`src/{documents,manual}/<key>.<lang>.md`).
+ * `param` is its URL query without the language, which comes from `&lang=`,
+ * matching how the SPA resolves `<key>.<lang>.md`. `langs` is the set of
+ * languages the page is available in (for `hreflang`); `bodyHtml` is the
+ * already-rendered markdown.
  */
 export function renderDocument(opts: {
-  key: string;
+  param: string;
   lang: Lang;
   langs: Lang[];
   xDefaultLang: Lang;
   title: string;
   bodyHtml: string;
 }): string {
-  const { key, lang, langs, xDefaultLang, title, bodyHtml } = opts;
-
-  const param = `layers=X&document=${key}`;
+  const { param, lang, langs, xDefaultLang, title, bodyHtml } = opts;
 
   const url = appUrl(param, lang);
 
-  const description = homeMeta[lang].description;
+  // The page's own opening for its search snippet, the site's where it has none.
+  const firstParagraph = /<p>([\s\S]*?)<\/p>/
+    .exec(bodyHtml)?.[1]
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const description = firstParagraph
+    ? firstParagraph.length > 160
+      ? `${firstParagraph.slice(0, 157).replace(/\s+\S*$/, '')}…`
+      : firstParagraph
+    : homeMeta[lang].description;
 
   return (
     '<!doctype html>\n' +
@@ -366,7 +442,9 @@ export function renderDocument(opts: {
           <a href=${appUrl('layers=X', lang)}>${siteName(lang)}</a>
         </nav>
 
-        <article dangerouslySetInnerHTML=${{ __html: bodyHtml }}></article>
+        <article
+          dangerouslySetInnerHTML=${{ __html: crawlableLinks(bodyHtml, lang) }}
+        ></article>
       </body>
     </html>`
   );

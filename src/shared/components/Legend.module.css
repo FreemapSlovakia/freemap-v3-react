@@ -1,0 +1,50 @@
+/* Where the pointer reads the bar. */
+.marker {
+  width: 2px;
+  margin-left: -1px;
+  background-color: var(--bs-body-color);
+  pointer-events: none;
+}
+
+/* The legend takes what its content needs: the bar's width, or a row of swatches. */
+.fit-width {
+  width: fit-content;
+}
+
+/* Deep enough for the labels drawn over the bar, and about a button tall. A
+   `width` rather than a `flex-basis`, as only it counts towards `fit-content`. */
+.bar {
+  height: 34px;
+  width: 200px;
+  min-width: 0;
+}
+
+.bar-wide {
+  width: 260px;
+}
+
+/* The labels are outlined in the page background so they read over both ends of
+   the gradient. */
+.bar-labels {
+  paint-order: stroke;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: var(--bs-body-bg);
+}
+
+/* Centred on the position the caller sets as `left`, so the outermost labels
+   sit centred on the bar's edges and overhang it; the bar measures by how much. */
+.tick {
+  transform: translateX(-50%);
+}
+
+/* `.tick-inside` is an end label set within the bar, for a word too wide to
+   centre; it is not measured, as it does not overhang. */
+.tick,
+.tick-inside {
+  top: 16%;
+}
+
+.chip {
+  width: 1em;
+  height: 1em;
+}

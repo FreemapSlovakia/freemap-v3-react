@@ -23,23 +23,22 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import type { Submenu } from '@features/mainMenu/components/submenu.js';
-import { mapRefocus } from '@features/map/model/actions.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Language } from '@shared/langUtils.js';
 import type { LatLon } from '@shared/types/common.js';
-import storage from 'local-storage-fallback';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { afterPrefix } from '../types/typeUtils.js';
+import { toggleFullscreen } from './useFullscreen.js';
 
 export type EventKey =
   | 'url'
   | 'drawing'
   | 'clear-map-features'
+  | 'fullscreen'
   | 'reset-app'
   | 'close'
-  | 'gallery'
   | 'galEmails'
   | `submenu-${NonNullable<Submenu> | ''}`
   | `document-${Document}`
@@ -101,8 +100,6 @@ export function useMenuHandler({
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
-  const layers = useAppSelector((state) => state.map.layers);
-
   const openTools = useAppSelector(openToolsSelector);
 
   const [menuShown, setShow] = useState(false);
@@ -160,6 +157,35 @@ export function useMenuHandler({
   );
 
   const extraHandler = useRef<(eventKey: string) => boolean>(undefined);
+
+  const openExternal = useCallback(
+    (where: ExternalTarget) => {
+      dispatch(
+        openInExternalApp({
+          where,
+          lat,
+          lon,
+          zoom,
+          includePoint,
+          pointTitle,
+          pointTags,
+          pointDescription,
+          imageUrl,
+        }),
+      );
+    },
+    [
+      dispatch,
+      lat,
+      lon,
+      zoom,
+      includePoint,
+      pointTitle,
+      pointTags,
+      pointDescription,
+      imageUrl,
+    ],
+  );
 
   const handleSelect = useCallback(
     (eventKey: string | null, e: React.SyntheticEvent<unknown, Event>) => {
@@ -219,18 +245,16 @@ export function useMenuHandler({
         return;
       }
 
-      if (key === 'drawing') {
-        const parsed = ToolSchema.safeParse(storage.getItem('fm.drawingTool'));
-
-        dispatch(openTool(parsed.success ? parsed.data : 'draw-points'));
+      if (key === 'clear-map-features') {
+        dispatch(clearMapFeatures());
 
         setShow(false);
 
         return;
       }
 
-      if (key === 'clear-map-features') {
-        dispatch(clearMapFeatures());
+      if (key === 'fullscreen') {
+        toggleFullscreen();
 
         setShow(false);
 
@@ -267,33 +291,7 @@ export function useMenuHandler({
       const where = afterPrefix(key, 'open-');
 
       if (where !== undefined) {
-        dispatch(
-          openInExternalApp({
-            where,
-            lat,
-            lon,
-            zoom,
-            includePoint,
-            pointTitle,
-            pointTags,
-            pointDescription,
-            imageUrl,
-          }),
-        );
-
-        setShow(false);
-
-        return;
-      }
-
-      if (key === 'gallery') {
-        dispatch(
-          mapRefocus({
-            layers: layers.includes('I')
-              ? layers.filter((o) => o !== 'I')
-              : [...layers, 'I'],
-          }),
-        );
+        openExternal(where);
 
         setShow(false);
 
@@ -312,6 +310,8 @@ export function useMenuHandler({
             user: {
               sendGalleryEmails: !sendGalleryEmails,
             },
+            // Not from a modal, so none to close.
+            keepOpen: true,
           }),
         );
 
@@ -320,22 +320,7 @@ export function useMenuHandler({
 
       extraHandler.current?.(key);
     },
-    [
-      dispatch,
-      m,
-      confirm,
-      lat,
-      lon,
-      includePoint,
-      pointDescription,
-      pointTitle,
-      pointTags,
-      imageUrl,
-      zoom,
-      layers,
-      openTools,
-      sendGalleryEmails,
-    ],
+    [dispatch, m, confirm, openExternal, openTools, sendGalleryEmails],
   );
 
   const handleMenuToggle = useCallback((nextShow: boolean) => {
@@ -348,6 +333,7 @@ export function useMenuHandler({
 
   return {
     handleSelect,
+    openExternal,
     menuShown,
     handleMenuToggle,
     closeMenu,

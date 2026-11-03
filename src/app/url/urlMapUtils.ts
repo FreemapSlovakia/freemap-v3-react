@@ -1,9 +1,9 @@
 import type { MapViewState } from '@features/map/model/actions.js';
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { resolveLayerAliases } from '@shared/mapDefinitions.js';
+import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+import { knownLayerIds, mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 
-const LAYERS_RE = new RegExp(
-  `^(${Object.keys(integratedLayerDefMap).join('|')})|[.:]\\d`,
-);
+const LAYERS_RE = new RegExp(`^(${knownLayerIds().join('|')})|[.:]\\d`);
 
 // How precisely `map=` carries the zoom. Two decimals put roughly 140 steps
 // between the widest and the closest view — finer than any gesture can be
@@ -19,7 +19,10 @@ export function serializeZoom(zoom: number): string {
   return String(Number(zoom.toFixed(ZOOM_DECIMALS)));
 }
 
-export function getMapStateFromUrl(): Partial<MapViewState> {
+/** `isCustomType`: whether `layers=` may name this id as a custom map. */
+export function getMapStateFromUrl(
+  isCustomType: (id: string) => boolean = () => false,
+): Partial<MapViewState> {
   const query = new URLSearchParams(
     (location.hash || location.search).slice(1),
   );
@@ -45,7 +48,7 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
   const zoom = undefineNaN(parseFloat(zoomFrag ?? ''));
 
-  let layersStr = query.get('layers');
+  const layersStr = query.get('layers');
 
   let layers: string[] | undefined;
 
@@ -53,14 +56,16 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
     // nothing
   } else if (layersStr.includes('~')) {
     layers = layersStr.split('~');
-  } else if (layersStr in integratedLayerDefMap) {
+  } else if (knownLayerIds().includes(layersStr)) {
     layers = [layersStr];
   } else {
     // backward compatibility
     layers = [];
 
-    while (layersStr.length) {
-      const m = LAYERS_RE.exec(layersStr);
+    let rest = layersStr;
+
+    while (rest.length) {
+      const m = LAYERS_RE.exec(rest);
 
       if (!m?.[1]) {
         break;
@@ -68,17 +73,31 @@ export function getMapStateFromUrl(): Partial<MapViewState> {
 
       layers.push(m[1]);
 
-      layersStr = layersStr.slice(m[1].length);
+      rest = rest.slice(m[1].length);
+    }
+
+    // What the legacy parse can't read whole may be one catalog id; it would
+    // otherwise take `Z0003` for the alias `Z`.
+    if (rest && isCatalogId(layersStr)) {
+      layers = [layersStr];
     }
   }
 
-  layers = layers?.filter((layer) => layer in integratedLayerDefMap);
+  layers = layers && resolveLayerAliases(layers);
 
-  if (
-    layers &&
-    !layers.some((layer) => integratedLayerDefMap[layer]?.layer === 'base')
-  ) {
-    layers.push('X'); // fallback
+  // A catalog id is kept unchecked: the catalog loads after the link is read.
+  // `@<n>` is a preset the link carries in `p.<n>` params.
+  layers = layers?.filter(
+    (layer) =>
+      layer in mapIndexById ||
+      isCatalogId(layer) ||
+      isCustomType(layer) ||
+      /^@\d+$/.test(layer),
+  );
+
+  // Nothing it names is known here: rather the map as it is than an empty one.
+  if (layers?.length === 0) {
+    layers = undefined;
   }
 
   return {
@@ -153,10 +172,6 @@ export function getMapStateDiffFromUrl(
 
   if (layers && layers.join('\n') !== state2.layers.join('\n')) {
     changes.layers = layers;
-
-    if (state2.layers.includes('i')) {
-      changes.layers.push('i');
-    }
   }
 
   if (lat !== undefined && Math.abs(lat - state2.lat) > 0.00001) {

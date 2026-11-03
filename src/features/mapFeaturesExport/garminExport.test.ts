@@ -66,8 +66,9 @@ describe('garmin exportables', () => {
       features: [multiLineFeature(loopParts)],
     };
 
-    const result = getExportables().import?.({
+    const result = getExportables().drawingLines?.({
       trackViewer: { trackGeojson },
+      main: { selection: null },
     } as unknown as RootState);
 
     expect(result).toHaveProperty('coordinates');

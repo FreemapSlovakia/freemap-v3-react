@@ -5,9 +5,13 @@ import {
   CACHED_TILE_PATH_PREFIX,
   parseCachedTilePath,
 } from '@features/cachedMaps/cachedTileUrl.js';
+import { COVERAGE_CACHE_NAME } from '@shared/coverageCache.js';
+import { isStaticCacheReady, SHELL_URL } from '@shared/offlineStaticCache.js';
 import {
   stripTileScale,
+  TILE_DRAW_PARAM,
   tileSubdomains,
+  unmarkDrawnTile,
   withTileScale,
 } from '@shared/tileUrl.js';
 import { get } from 'idb-keyval';
@@ -36,6 +40,18 @@ const TILE_CACHE_PREFIX = 'tiles-';
 const TILE_SCALES = [1, 2, 3, 4];
 
 const CACHED_TILE_MAPS_KEY = 'cachedTileMaps';
+
+// how long the app's page may take before the cached one is served instead
+const SHELL_TIMEOUT_MS = 3000;
+
+// how long the loading page's "start the saved version" holds for its reload
+const SHELL_FROM_CACHE_MS = 10_000;
+
+// The page whose next load skips the network, and until when; see index.ejs.
+let shellFromCache: { url: string; until: number } | null = null;
+
+// a build's content-hashed file name, as the nginx `immutable` rule matches it
+const HASHED_ASSET_RE = /\.[a-z0-9]{16}\.[^/]+$/;
 
 // how soon an unknown map id may send us back to the database
 const RELOAD_MS = 5000;
@@ -93,17 +109,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // `destination` keeps the browse cache to tiles a map is actually drawing: an
-  // offline-map download and the size sampler ask for the very same URLs through
-  // `fetch`, and answering those from — or copying them into — that cache would
-  // both duplicate the download and, in `cache-only` mode, hand the downloader
-  // 404s it would record as tiles it had fetched. Only cross-origin images may
-  // wait for settings that haven't been read yet: the app's own assets are never
-  // tiles, and a same-origin tile layer (nothing ships one) would lose only the
-  // first screenful.
-  if (event.request.destination === 'image') {
+  // The browse cache is for tiles a map is drawing. An offline download and the
+  // size sampler ask for the very same URLs, and answering those from — or
+  // copying them into — that cache would both duplicate the download and, in
+  // `cache-only` mode, hand the downloader 404s it would record as tiles it had
+  // fetched. An `<img>` says which it is by being one; a tile the map fetches
+  // says so with {@link TILE_DRAW_PARAM}.
+  if (
+    event.request.destination === 'image' ||
+    url.searchParams.has(TILE_DRAW_PARAM)
+  ) {
     refreshBrowseState();
 
+    // Waiting on settings not read yet is for cross-origin tiles alone: the
+    // app's own assets are never tiles, and anything else held for the full
+    // timeout would be held for nothing.
     const browsed = browseTileResponse(event, !isSameOrigin);
 
     if (browsed) {
@@ -114,7 +134,11 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isStaticAssetRequest(url)) {
-    event.respondWith(serveStaticAsset(event));
+    event.respondWith(
+      event.request.mode === 'navigate' && url.pathname === '/'
+        ? serveShell(event)
+        : serveStaticAsset(event),
+    );
   }
 });
 
@@ -125,22 +149,114 @@ function isStaticAssetRequest(url: URL): boolean {
   );
 }
 
-async function serveStaticAsset(event: FetchEvent): Promise<Response> {
-  // Online: pass through to the network. The offline-static cache is owned
-  // entirely by the app's offlineStaticCache (populated only when offline
-  // content exists, refreshed on redeploy), so the SW never writes it — it's a
-  // pure reader when the network is gone.
+/**
+ * The app's page from the offline-static cache, if that holds a complete build —
+ * the app advances the cached page only once every chunk it names is cached.
+ */
+async function cachedShell(): Promise<Response | undefined> {
   try {
-    return await fetch(event.request);
+    return (await isStaticCacheReady())
+      ? // served with `Vary: Accept-Language`, which a bare URL can't satisfy
+        await caches.match(SHELL_URL, {
+          cacheName: STATIC_CACHE_NAME,
+          ignoreVary: true,
+        })
+      : undefined;
   } catch {
+    return undefined;
+  }
+}
+
+/**
+ * The app's page from the network, or the cached one where the network is gone
+ * or slower than {@link SHELL_TIMEOUT_MS}: a weak signal stalls rather than
+ * fails, and would otherwise keep the app from starting at all.
+ */
+async function serveShell(event: FetchEvent): Promise<Response> {
+  if (
+    shellFromCache &&
+    Date.now() < shellFromCache.until &&
+    // a reload's request keeps the page's `#…`; the page sends its URL without
+    shellFromCache.url === event.request.url.split('#')[0]
+  ) {
+    shellFromCache = null;
+
+    const cached = await cachedShell();
+
+    if (cached) {
+      return cached;
+    }
+  }
+
+  const network = fetch(event.request);
+
+  // the cached page may have answered already; this one then has no taker
+  network.catch(() => {});
+
+  const cached = await cachedShell();
+
+  if (!cached) {
+    return serveStaticAsset(event, network);
+  }
+
+  if (!navigator.onLine) {
+    return cached;
+  }
+
+  try {
+    return (
+      (await Promise.race([
+        network,
+        new Promise<undefined>((resolve) =>
+          setTimeout(resolve, SHELL_TIMEOUT_MS),
+        ),
+      ])) ?? cached
+    );
+  } catch {
+    return cached;
+  }
+}
+
+async function serveStaticAsset(
+  event: FetchEvent,
+  network?: Promise<Response>,
+): Promise<Response> {
+  // A hashed file never changes under its name, so a cached copy is always the
+  // right one. The offline-static cache is written only by the app's
+  // offlineStaticCache (kept while offline content exists, pruned on redeploy).
+  if (HASHED_ASSET_RE.test(new URL(event.request.url).pathname)) {
+    const cached = await caches
+      .match(event.request, { cacheName: STATIC_CACHE_NAME })
+      .catch(() => undefined);
+
+    if (cached) {
+      return cached;
+    }
+  }
+
+  try {
+    if (network) {
+      return await network;
+    }
+
+    return await fetch(event.request);
+  } catch (err) {
+    // A refresh bypassing caches — offlineStaticCache's — must fail rather than
+    // be handed the stale copy, which it would store as the new one.
+    if (
+      event.request.cache === 'reload' ||
+      event.request.cache === 'no-store'
+    ) {
+      throw err;
+    }
+
     const cached = await caches
       .open(STATIC_CACHE_NAME)
-      .then((cache) =>
-        cache.match(
-          new URL(event.request.url).pathname === '/'
-            ? 'index.html'
-            : event.request,
-        ),
+      .then(async (cache) =>
+        new URL(event.request.url).pathname === '/'
+          ? ((await cache.match(SHELL_URL, { ignoreVary: true })) ??
+            cache.match('index.html'))
+          : cache.match(event.request),
       );
 
     if (cached) {
@@ -259,7 +375,10 @@ function tileOrigins(
 }
 
 async function serveCachedTile(event: FetchEvent): Promise<Response> {
-  const url = new URL(event.request.url);
+  // the map fetches its tiles marked, the download stored them bare
+  const requestUrl = unmarkDrawnTile(event.request.url);
+
+  const url = new URL(requestUrl);
 
   const parsed = parseCachedTilePath(url.pathname);
 
@@ -277,7 +396,7 @@ async function serveCachedTile(event: FetchEvent): Promise<Response> {
   //
   // ignoreVary: the entries are keyed by a bare URL with no headers, so any
   // `Vary` on the stored response can never match the tile <img> request's own.
-  for (const variant of scaleVariants(event.request.url)) {
+  for (const variant of scaleVariants(requestUrl)) {
     const altCached = await cache.match(variant, { ignoreVary: true });
 
     if (altCached) {
@@ -354,6 +473,7 @@ self.addEventListener('activate', (event) => {
           cacheName !== FALLBACK_CACHE_NAME &&
           cacheName !== STATIC_CACHE_NAME &&
           cacheName !== BROWSE_CACHE_NAME &&
+          cacheName !== COVERAGE_CACHE_NAME &&
           !cacheName.startsWith(TILE_CACHE_PREFIX)
             ? caches.delete(cacheName)
             : undefined,
@@ -364,9 +484,30 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  const type = (event.data as { type?: string } | undefined)?.type;
+  const data = event.data as
+    | { type?: string; main?: unknown; url?: unknown }
+    | undefined;
 
-  if (type === 'browse-cache-changed') {
+  const type = data?.type;
+
+  if (type === 'cached-shell-differs') {
+    // the loading page asks whether a build other than its own is held
+    const main = data?.main;
+
+    event.waitUntil(
+      cachedShell()
+        .then((cached) => cached?.text())
+        .then((html) =>
+          event.ports[0]?.postMessage(
+            typeof main === 'string' &&
+              main !== '' &&
+              html !== undefined &&
+              !html.includes(main),
+          ),
+        )
+        .catch(() => event.ports[0]?.postMessage(false)),
+    );
+  } else if (type === 'browse-cache-changed') {
     event.waitUntil(applyBrowseState());
   } else if (type === 'browse-cache-cleared') {
     dropIndex();
@@ -374,5 +515,10 @@ self.addEventListener('message', (event) => {
     tileSources = new Map();
 
     tileSourcesReadAt = 0;
+  } else if (type === 'shell-from-cache' && typeof data?.url === 'string') {
+    shellFromCache = { url: data.url, until: Date.now() + SHELL_FROM_CACHE_MS };
+
+    // the page reloads on this answer, so the flag is set before it navigates
+    event.ports[0]?.postMessage(true);
   }
 });

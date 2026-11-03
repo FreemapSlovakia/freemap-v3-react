@@ -1,12 +1,18 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { DateTime } from '@shared/components/DateTime.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaBullseye, FaCheck, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaBullseye, FaCheck } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
@@ -75,24 +81,32 @@ export function AccessTokenForm(): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <FaBullseye />{' '}
-          {accessToken
-            ? tm?.accessTokens.modifyTitle({
-                token: accessToken.token,
-                deviceName,
-              })
-            : tm?.accessTokens.createTitle(deviceName)}
+          <Text m={tm}>
+            {(tm) =>
+              accessToken
+                ? tm.accessTokens.modifyTitle({
+                    token: accessToken.token,
+                    deviceName,
+                  })
+                : tm.accessTokens.createTitle(deviceName)
+            }
+          </Text>
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         <Form.Group controlId="timeFrom" className="mb-3">
-          <Form.Label>{tm?.accessToken.timeFrom}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="accessToken.timeFrom" />
+          </Form.Label>
 
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </Form.Group>
 
         <Form.Group controlId="timeTo" className="mb-3">
-          <Form.Label>{tm?.accessToken.timeTo}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="accessToken.timeTo" />
+          </Form.Label>
 
           <DateTime value={timeTo} onChange={setTimeTo} />
         </Form.Group>
@@ -107,26 +121,30 @@ export function AccessTokenForm(): ReactElement {
         </Form.Group> */}
 
         <Form.Group controlId="note" className="mb-3">
-          <Form.Label>{tm?.accessToken.note}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="accessToken.note" />
+          </Form.Label>
 
           <Form.Control value={note} onChange={setNote} maxLength={255} />
         </Form.Group>
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button type="submit" disabled={!online}>
-          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
-        </Button>
+      <FmModalFooter>
+        <FmFooterButton
+          type="submit"
+          disabled={!online}
+          icon={<FaCheck />}
+          label={m?.general.save}
+          kbd="Enter"
+        />
 
-        <Button
-          variant="dark"
+        <FmDismissButton
+          label={m?.general.cancel}
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(undefined));
           }}
-        >
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        />
+      </FmModalFooter>
     </Form>
   );
 }

@@ -1,7 +1,7 @@
 import type { OpenInExternalAppMessages } from './OpenInExternalAppMessages.js';
 
 const en: OpenInExternalAppMessages = {
-  openInExternal: 'Share / Open in external app.',
+  openInExternal: 'Share / Open in external app',
   openIn: 'Open in…',
   osm: 'OpenStreetMap',
   oma: 'OMA',
@@ -13,6 +13,7 @@ const en: OpenInExternalAppMessages = {
   josm: 'JOSM',
   id: 'iD',
   window: 'New window',
+  geoApp: 'Map app',
   url: 'Share location',
   image: 'Share photo',
 };

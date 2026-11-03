@@ -2,23 +2,19 @@ import { useSyncExternalStore } from 'react';
 import type { PanoramaDepth } from './depth.js';
 
 /**
- * The two parts of a render the store can't hold: an object URL that has to be
- * revoked when it is replaced, and a distance buffer of several megabytes.
+ * The two parts of a render the store can't hold: a decoded bitmap that has to
+ * be closed when it is replaced, and a distance buffer of several megabytes.
  * `PanoramaRenderInfo.id` says which render the store's copy describes, so a
  * stale component can tell it is looking at one that has since been replaced.
  */
 export interface PanoramaRenderData {
   id: number;
-  imageUrl: string;
-  depth: PanoramaDepth | null;
   /**
-   * The element the picture was decoded through, kept alive only so the decode
-   * is. A decoded frame belongs to the browser's cache rather than to the URL,
-   * and that cache is evicted under pressure — dropping the last reference
-   * invites the decode to be thrown away before the background is painted, and
-   * paid for again on the paint path, which is what decoding early avoids.
+   * What the viewer blits. Four bytes a pixel and up to 10 Mpx, so the one it
+   * replaces is closed rather than left to the collector.
    */
-  image?: HTMLImageElement;
+  bitmap: ImageBitmap | null;
+  depth: PanoramaDepth | null;
 }
 
 let current: PanoramaRenderData | null = null;
@@ -76,8 +72,8 @@ export function usePanoramaRenderData(): PanoramaRenderData | null {
 
 /** Keeps one render's data, releasing whatever it replaces. */
 export function setPanoramaRenderData(data: PanoramaRenderData): void {
-  if (current && current.imageUrl !== data.imageUrl) {
-    URL.revokeObjectURL(current.imageUrl);
+  if (current?.bitmap && current.bitmap !== data.bitmap) {
+    current.bitmap.close();
   }
 
   current = data;
@@ -90,7 +86,7 @@ export function clearPanoramaRenderData(): void {
   generation++;
 
   if (current) {
-    URL.revokeObjectURL(current.imageUrl);
+    current.bitmap?.close();
 
     current = null;
 

@@ -3,7 +3,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import { addError } from '@/translations/messagesInterface.js';
 import type { MapToDocumentExportMessages } from './MapToDocumentExportMessages.js';
 
-const outdoorMap = 'Pohodništvo, Kolesarjenje, Smučanje, Jahanje';
+const outdoorMap = () => getMessages()?.mapLayers.letters['X'];
 
 const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   exportError: ({ err }) =>
@@ -11,10 +11,14 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   cancelExportTitle: 'Prekliči izvoz',
   labelTitle: 'Oznake',
   cancelExportQuestion: 'Ali res želite preklicati potekajoči izvoz?',
+  discardExportTitle: 'Zavrzi izvoz',
+  discardExportQuestion:
+    'Izvožen zemljevid še ni bil shranjen. Ali ga želite zavreči?',
   area: 'Izvozi območje',
   format: 'Format',
   layersTitle: 'Izbirni sloji',
   mapDataTitle: 'Podatki zemljevida',
+  mapTitle: 'Zemljevid',
   layers: {
     contours: 'Plastnice',
     shading: 'Senčen relief',
@@ -22,8 +26,38 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
     bicycleTrails: 'Kolesarske poti',
     skiTrails: 'Smučarske proge',
     horseTrails: 'Konjeniške poti',
+    sacScale: 'Zahtevnost poti',
+    mtbScale: 'Zahtevnost MTB poti',
+    smoothness: 'Stanje cestišča',
+    waymarking: 'Smerokazi',
   },
+  baseMap: 'Osnovni zemljevid',
+  noBaseMapHint: 'Izrišejo se samo izbrane plasti, ostalo je prosojno.',
+  omitTitle: 'Izpusti',
+  omit: {
+    groundCover: 'Pokrovnost tal',
+    buildings: 'Stavbe',
+  },
+  omitHint:
+    'Prosojen tam, kjer je kaj izpuščeno — za prekrivanje letalskega posnetka, ki to pokaže bolje.',
+  lossless: 'Brez izgub',
+  lossy: 'Z izgubami',
+  quality: 'Kakovost',
+  sizeTitle: 'Velikost in podrobnost',
+  zoom: 'Stopnja povečave',
+  printScale: 'Merilo',
   mapScale: 'Ločljivost zemljevida',
+  printSize: 'Velikost natisa',
+  imageSize: 'Velikost slike',
+  lock: 'Zakleni',
+  unlock: 'Odkleni',
+  scaleFollowsZoom: 'Nezaklenjeno merilo sledi povečavi.',
+  symbolSize: ({ percent }) =>
+    `Besedila in znaki se natisnejo v ${percent} % običajne velikosti`,
+  tooLarge: ({ zoom }) =>
+    zoom === null
+      ? 'Območje je za izvoz preveliko. Izvozite manjše območje.'
+      : `Območje je za to stopnjo povečave preveliko. Zmanjšajte povečavo na ${zoom} ali izvozite manjše območje.`,
   customLayerOrder: 'Postavitev podatkov zemljevida',
   orders: {
     natural: 'Naravno',
@@ -33,22 +67,25 @@ const sl: DeepPartialWithRequiredObjects<MapToDocumentExportMessages> = {
   scaleBar: 'Merilo',
   northArrow: 'Smerna puščica',
   attribution: 'Navedba vira',
+  legend: 'Legenda',
+  legendWidens:
+    'Legenda je ob zemljevidu, zato bo dokument širši od izbranega papirja.',
+  webpTooLarge:
+    'WebP dovoli največ 16383 px na stranico, kar lahko ta izvoz preseže. Izberite PNG ali nižji DPI.',
   northArrowLetter: 'S',
   glow: 'Sij',
-  alert: (licence) => (
+  ready: 'Zemljevid je pripravljen',
+  readyCredits: 'Pri objavi ali deljenju zemljevida navedite te vire:',
+  readyCreditsNone: 'Izrisovalnik ni sporočil, katere vire je uporabil.',
+  readyUnknownSources: 'Viri, ki jih ni bilo mogoče poimenovati:',
+  copyCredits: 'Kopiraj vire',
+  openInNewTab: 'Odpri v novem zavihku',
+  savedCredits: ({ credits }) =>
+    `Zemljevid je shranjen. Pri objavi ali deljenju navedite: ${credits}`,
+  alert: () => (
     <>
-      Opombe:
-      <ul>
-        <li>
-          Izvožen bo zemljevid <i>{outdoorMap}</i>.
-        </li>
-        <li>Izvoz zemljevida lahko traja tudi več deset sekund.</li>
-        <li>
-          Pri objavi zemljevida je treba navesti njegovo licenco:
-          <br />
-          <em>{licence}</em>
-        </li>
-      </ul>
+      Izvožen bo zemljevid <i>{outdoorMap()}</i>. To lahko traja tudi več deset
+      sekund.
     </>
   ),
 };

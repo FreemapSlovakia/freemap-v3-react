@@ -41,22 +41,11 @@ describe('elevationChartReducer', () => {
 
   it('keeps the profile when re-aimed at what it already charts', () => {
     const state = elevationChartReducer(
-      shown({ type: 'drawing', lineId: 7 }),
-      elevationChartOpen({ type: 'drawing', lineId: 7 }),
+      shown({ type: 'tracking', token: 'a' }),
+      elevationChartOpen({ type: 'tracking', token: 'a' }),
     );
 
     expect(state.elevationProfilePoints).toHaveLength(1);
-  });
-
-  it('starts clean when aimed at another line of the same feature', () => {
-    const state = elevationChartReducer(
-      shown({ type: 'drawing', lineId: 7 }),
-      elevationChartOpen({ type: 'drawing', lineId: 8 }),
-    );
-
-    expect(state.target).toEqual({ type: 'drawing', lineId: 8 });
-
-    expect(state.elevationProfilePoints).toBeNull();
   });
 
   it('identifies a tracking target by device, not by position', () => {
@@ -76,7 +65,6 @@ describe('elevationChartReducer', () => {
     const targets: ElevationChartTarget[] = [
       { type: 'route-planner' },
       { type: 'track-viewer' },
-      { type: 'drawing', lineId: 1 },
       { type: 'tracking', token: 'tok-1' },
     ];
 
@@ -100,8 +88,7 @@ describe('elevationChartReducer', () => {
   it('closes on close and on clearing the map', () => {
     for (const action of [elevationChartClose(), clearMapFeatures()]) {
       expect(
-        elevationChartReducer(shown({ type: 'drawing', lineId: 1 }), action)
-          .target,
+        elevationChartReducer(shown({ type: 'track-viewer' }), action).target,
       ).toBeNull();
     }
   });

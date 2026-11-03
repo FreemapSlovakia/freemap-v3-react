@@ -32,6 +32,17 @@ export type Messages = {
     eyeHeightHint: string;
     /** How far such a view reaches. */
     maxVisibleDistance: string;
+    /** Names a mark that opens what there is to say, rather than saying it. */
+    info: string;
+    /**
+     * What the terrain model itself does and does not say, which is true of
+     * every view rendered from it — the panorama's and the viewshed's alike.
+     */
+    terrain: {
+      /** The big one: no trees and no buildings are in the model. */
+      bareEarth: string;
+      coverage: string;
+    };
     copyCode: string;
     loading: string;
     ok: string;
@@ -39,6 +50,12 @@ export type Messages = {
     closeWithoutSaving: string;
     resetToDefaults: string;
     back: string;
+    /** Why a number field is refusing what is typed: the bounds it accepts. */
+    valueRange: (props: { min: ReactNode; max: ReactNode }) => JSX.Element;
+    /** The same, where only a lower bound is refused and it is exclusive. */
+    valueAbove: (props: { min: ReactNode }) => JSX.Element;
+    /** Why a URL field is refusing what is typed. */
+    invalidUrl: string;
     internalError: ({ ticketId }: { ticketId?: string }) => JSX.Element;
     processorError: (props: Err) => string;
     seconds: string;
@@ -50,11 +67,11 @@ export type Messages = {
     add: string;
     clear: string;
     convertToDrawing: string;
+    toggleObjectType: string;
+    hideObjectType: (props: { name: ReactNode }) => JSX.Element;
     copyToDrawing: string;
     copyTo: (props: { tool: ReactNode }) => JSX.Element;
-    convertTo: (props: { tool: ReactNode }) => JSX.Element;
     convertAllToDrawing: string;
-    convertAllTo: (props: { tool: ReactNode }) => JSX.Element;
     /** Names an app the feature is handed to, where nothing else says so. */
     openIn: (props: { what: ReactNode }) => JSX.Element;
     panoramaFromHere: string;
@@ -63,7 +80,6 @@ export type Messages = {
     /** Turns the panorama already on screen to face this place. */
     lookAtInPanorama: string;
     /** Names the ⋮ menu a panel carries for the place it is about. */
-    placeActions: string;
     locationActions: string;
     convert: {
       geometry: string;
@@ -98,6 +114,8 @@ export type Messages = {
     deleted: string;
     visual: string;
     drawingTool: string;
+    /** The drawing tool's choice that draws nothing: clicks select instead. */
+    noDrawingTool: string;
     copyOk: string;
     noCookies: () => JSX.Element;
     name: string;
@@ -172,7 +190,6 @@ export type Messages = {
     objects: string;
     photos: string;
     events: string;
-    measurement: string;
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;
@@ -213,6 +230,7 @@ export type Messages = {
     wikiLink: string;
     status: string;
     language: string;
+    manual: string;
   };
   main: {
     title: string;
@@ -286,11 +304,15 @@ export type Messages = {
       routing: string;
     };
     attr: Record<string, ReactNode>;
-    layersConfiguration: string;
-    customMaps: string;
-    addCustomMap: string;
+    mapManager: string;
+    installedMaps: string;
+    availableMaps: string;
+    /** Ends the map menu's filtered list: its query, in the map manager. */
+    allMatchesInManager: string;
+    newCustomMap: string;
     activate: string;
-    customMapsEmptyMessage: string;
+    /** The panel listing what is on the map, and its toolbar button. */
+    layersPanel: string;
     base: string;
     overlay: string;
     technology: string;
@@ -299,6 +321,7 @@ export type Messages = {
       maplibre: string;
       wms: string;
       parametricShading: string;
+      color: string;
     };
     url: string;
     minZoom: string;
@@ -312,8 +335,11 @@ export type Messages = {
       base: string;
       overlay: string;
     };
-    zIndex: string;
     preferences: string;
+    /** Darker or lighter map layers, under the features. */
+    brightness: string;
+    /** Of the tools' features drawn over the map. */
+    featuresOpacity: string;
     maxZoom: string;
     zoomSnap: string;
     zoomSnapFree: string;
@@ -322,8 +348,13 @@ export type Messages = {
     resolutionScale: string;
     resolutionScaleAuto: string;
     resolutionScaleHelp: string;
+    pixelExact: string;
+    pixelExactHelp: string;
     featureScale: string;
     featureScaleHelp: string;
+    background: string;
+    backgroundHelp: string;
+    backgroundCheckerboard: string;
     lookupStyle: string;
     resetApp: string;
     resetAppConfirm: string;
@@ -371,17 +402,18 @@ export type Messages = {
 };
 
 export function addError(
-  dpMessages: DeepPartial<Messages>,
+  dpMessages: DeepPartial<Messages> | undefined,
   message: string,
   err: unknown,
 ): string {
-  const messages = dpMessages as Messages; // our message compiler will make it non-partial
+  // The compiler makes them non-partial; undefined only before the global bundle loads.
+  const messages = dpMessages as Messages | undefined;
 
   return (
     message +
     ': ' +
     (err instanceof HttpError
-      ? (messages.errorStatus[err.status] ?? err.status) +
+      ? (messages?.errorStatus[err.status] ?? err.status) +
         (err.body ? `: ${err.body}` : '')
       : !(err instanceof Error)
         ? String(err)
@@ -392,8 +424,8 @@ export function addError(
           // `TypeError` mislabeled here is cosmetic, never a logic error.)
           err instanceof NetworkError || err instanceof TypeError
           ? ((window.navigator.onLine === false
-              ? messages.general.offline
-              : messages.general.connectionError) ?? err.message)
+              ? messages?.general.offline
+              : messages?.general.connectionError) ?? err.message)
           : err.message)
   );
 }

@@ -27,7 +27,8 @@ declare global {
     fmHeadless?: {
       searchResultStyle?: PathOptions;
     };
-    Sentry?: typeof Sentry;
+    Sentry?: Pick<typeof Sentry, 'captureException' | 'captureMessage'>;
+    fmStarted?: boolean;
     applyTheme: (theme?: 'dark' | 'light' | 'auto') => void;
     localStorageFallback?: StorageFallback;
   }
@@ -112,6 +113,15 @@ export type Leaves<T, D extends number = 10> = [D] extends [never]
     : '';
 
 export type MessagePaths = Leaves<Messages>;
+
+/** Like `Leaves`, but only paths ending at a string. */
+export type StringLeaves<T, D extends number = 10> = [D] extends [never]
+  ? never
+  : T extends string
+    ? ''
+    : T extends Record<string, unknown>
+      ? { [K in keyof T]-?: Join<K, StringLeaves<T[K], Prev[D]>> }[keyof T]
+      : never;
 
 export interface OffscreenCanvas extends EventTarget {
   getContext: (contextId: '2d') => CanvasRenderingContext2D;

@@ -1,6 +1,5 @@
 import { convertToDrawing } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { fetchOsmFullGeojson } from '@features/osm/model/fetchOsmFullGeojson.js';
 import type { SelectCallback } from '@restart/ui/types';
@@ -13,7 +12,6 @@ import { convertibleLines } from '@shared/simplifyTolerance.js';
 import type { Feature } from 'geojson';
 import type { ReactElement, ReactNode } from 'react';
 import { FaPencilAlt, FaSearch } from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
 import { useDispatch, useStore } from 'react-redux';
 import type { ObjectsResult } from '../model/actions.js';
 import { objectsShowAsLookup } from '../model/actions.js';
@@ -24,6 +22,8 @@ type Props = {
   object?: ObjectsResult;
   /** Further `Action`s for the same menu — what the one object can do. */
   children?: ReactNode;
+  /** `Action`s above the menu's own, for what is done oftenest. */
+  leading?: ReactNode;
   onSelect?: SelectCallback;
 };
 
@@ -42,6 +42,7 @@ type Props = {
 export function ObjectsConvertMenu({
   object,
   children,
+  leading,
   onSelect,
 }: Props): ReactElement {
   const m = useMessages();
@@ -51,8 +52,6 @@ export function ObjectsConvertMenu({
   const dispatch = useDispatch();
 
   const store = useStore<RootState>();
-
-  const convertToDataViewer = useConvertToDataViewer();
 
   const askConversion = useConvertPrompt();
 
@@ -64,10 +63,6 @@ export function ObjectsConvertMenu({
   const drawingLabel = object
     ? m?.general.copyToDrawing
     : m?.general.convertAllToDrawing;
-
-  const dataViewerLabel = (
-    object ? m?.general.copyTo : m?.general.convertAllTo
-  )?.({ tool: m?.tools.dataViewer });
 
   const convertToDrawingWithChoices = () => {
     const targets = object ? [object] : store.getState().objects.objects;
@@ -113,6 +108,8 @@ export function ObjectsConvertMenu({
 
   return (
     <ResponsiveActions onSelect={onSelect} toggleLabel={m?.general.actions}>
+      {leading}
+
       <Action
         icon={<FaPencilAlt />}
         label={drawingLabel}
@@ -121,20 +118,8 @@ export function ObjectsConvertMenu({
       />
 
       <Action
-        icon={<MdShapeLine />}
-        label={dataViewerLabel}
-        onClick={() => {
-          convertToDataViewer(
-            { type: 'objects', id },
-            { geometry, title: dataViewerLabel },
-          );
-        }}
-        showFrom="never"
-      />
-
-      <Action
         icon={<FaSearch />}
-        label={om?.showAsLookup}
+        label={object ? om?.showAsLookup : om?.showAllAsLookup}
         onClick={() => {
           dispatch(objectsShowAsLookup({ id }));
         }}

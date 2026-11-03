@@ -28,7 +28,6 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
                   detailné tieňovanie reliéfu Slovenska a Česka vo vysokom
                   rozlíšení
                 </li>
-                <li>mapy založené na WMS</li>
               </ul>
             }
           >
@@ -51,7 +50,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">Freemap zostáva bezplatný a otvorený.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'Anglicko' },
+  dtmAreaNames: { en: 'Anglicko', wls: 'Wales' },
   purchaseAfterLogin: (
     <>
       Zvolením poskytovateľa prihlásenia sa prihlásite alebo si vytvoríte

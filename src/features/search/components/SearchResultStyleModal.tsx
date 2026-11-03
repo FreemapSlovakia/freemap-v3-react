@@ -3,7 +3,10 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { searchSetResultStyle } from '../model/actions.js';
+import {
+  searchSetLabelVisibility,
+  searchSetResultStyle,
+} from '../model/actions.js';
 import { searchSettingsInitialState } from '../model/settingsReducer.js';
 
 type Props = { show: boolean };
@@ -13,6 +16,10 @@ export default function SearchResultStyleModal({ show }: Props): ReactElement {
 
   const style = useAppSelector((state) => state.searchSettings.resultStyle);
 
+  const labelVisibility = useAppSelector(
+    (state) => state.searchSettings.labelVisibility,
+  );
+
   const dispatch = useDispatch();
 
   return (
@@ -21,7 +28,13 @@ export default function SearchResultStyleModal({ show }: Props): ReactElement {
       title={m?.mapLayers.lookupStyle}
       current={style}
       defaults={searchSettingsInitialState.resultStyle}
-      onSave={(s) => dispatch(searchSetResultStyle(s))}
+      currentLabelVisibility={labelVisibility}
+      defaultLabelVisibility={searchSettingsInitialState.labelVisibility}
+      onSave={(s, lv) => {
+        dispatch(searchSetResultStyle(s));
+
+        dispatch(searchSetLabelVisibility(lv));
+      }}
     />
   );
 }

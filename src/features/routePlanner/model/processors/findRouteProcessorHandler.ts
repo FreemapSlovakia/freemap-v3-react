@@ -31,6 +31,7 @@ import {
   type Leg,
   type RoutePoint,
   routeKey,
+  routePlannerChangeTransport,
   routePlannerRecompute,
   routePlannerRestoreSavedRoute,
   routePlannerSetFinish,
@@ -252,6 +253,14 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   // What is about to be routed, recorded with the result so a save can tell
   // whether the waypoints have moved past it since.
   const key = routeKey({ points, mode, transportType, roundtripParams });
+
+  // A transport change that left every leg as it was; see the reducer.
+  if (
+    routePlannerChangeTransport.match(action) &&
+    getState().routePlanner.resultKey === key
+  ) {
+    return;
+  }
 
   const clearResultAction = routePlannerSetResult({
     timestamp: Date.now(),

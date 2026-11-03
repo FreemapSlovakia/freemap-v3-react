@@ -33,3 +33,24 @@ export function duringProgrammaticMove<T>(fn: () => T): T {
 export function isProgrammaticMove(): boolean {
   return programmaticDepth > 0;
 }
+
+/**
+ * Marks the store catching up with where the map already is. The refocus
+ * processor must not echo that back: a drag may have moved the map on by the
+ * time it runs, and its animated `setView` would then fight the drag.
+ */
+let mapSyncDepth = 0;
+
+export function duringMapSync<T>(fn: () => T): T {
+  mapSyncDepth++;
+
+  try {
+    return fn();
+  } finally {
+    mapSyncDepth--;
+  }
+}
+
+export function isMapSync(): boolean {
+  return mapSyncDepth > 0;
+}

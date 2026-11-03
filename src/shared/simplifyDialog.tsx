@@ -1,5 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   type ModalAnswer,
   type ModalBodyProps,
@@ -122,7 +123,7 @@ export function SimplifyFields({
   return (
     <>
       <Form.Label htmlFor="simplify-deviation">
-        {m?.general.simplify.deviation}
+        <Text k="general.simplify.deviation" />
       </Form.Label>
 
       <Form.Range
@@ -139,10 +140,14 @@ export function SimplifyFields({
         </span>
 
         <span className="text-body-secondary">
-          {m?.general.simplify.vertices({
-            from: nf.format(before),
-            to: nf.format(after),
-          })}
+          <Text>
+            {(m) =>
+              m.general.simplify.vertices({
+                from: nf.format(before),
+                to: nf.format(after),
+              })
+            }
+          </Text>
         </span>
       </div>
     </>

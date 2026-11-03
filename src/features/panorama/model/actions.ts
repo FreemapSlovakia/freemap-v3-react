@@ -1,8 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import type {
-  TerrainErrorCode,
-  TerrainProgress,
-} from '@shared/terrainService.js';
+import type { TerrainErrorCode } from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PanoramaRenderInfo } from './reducer.js';
 import type { PanoramaSettingsState } from './settingsReducer.js';
@@ -114,20 +111,16 @@ export const panoramaSetError =
   createAction<TerrainErrorCode>('PANORAMA_SET_ERROR');
 
 /**
- * How far the render in flight has got, as the service reports it. Only ever
- * dispatched with something to say; what makes it stale — a pass ending, an
- * error, the panel closing — clears it in the reducer.
- */
-export const panoramaSetProgress = createAction<TerrainProgress>(
-  'PANORAMA_SET_PROGRESS',
-);
-
-/**
  * Where a press in the picture landed on the map, read off the distance
  * buffer, or `null` to take the mark away.
  */
 export const panoramaSetProbe = createAction<PanoramaProbe | null>(
   'PANORAMA_SET_PROBE',
+);
+
+/** The day the sky paths are drawn for, `YYYY-MM-DD`; `null` is today. */
+export const panoramaSetSkyDate = createAction<string | null>(
+  'PANORAMA_SET_SKY_DATE',
 );
 
 export const panoramaSetSettings = createAction<Partial<PanoramaSettingsState>>(

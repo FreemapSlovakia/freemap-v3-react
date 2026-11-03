@@ -28,6 +28,36 @@ export interface CancelItem extends CancelTriggers {
 export const cancelRegister = new Set<CancelItem>();
 
 /**
+ * Waits `ms`, or rejects with an `AbortError` — a processor's silent
+ * cancellation — when a trigger fires first: a debounce.
+ */
+export function cancellableDelay(
+  ms: number,
+  triggers: CancelTriggers,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const item: CancelItem = {
+      ...triggers,
+      cancel: () => {
+        cancelRegister.delete(item);
+
+        window.clearTimeout(timer);
+
+        reject(new DOMException('Superseded', 'AbortError'));
+      },
+    };
+
+    const timer = window.setTimeout(() => {
+      cancelRegister.delete(item);
+
+      resolve();
+    }, ms);
+
+    cancelRegister.add(item);
+  });
+}
+
+/**
  * Combines the supplied condition results (skipping `undefined`/absent ones)
  * with the given operation; `OR` (any) by default, matching cancellation's
  * "stop as soon as something invalidates the request" intent.

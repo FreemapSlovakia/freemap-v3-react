@@ -1,15 +1,34 @@
-import { saveSettings } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import { mapLayerSettingsChange } from '@features/map/model/actions.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
-import { LayerVisibilityFields } from '@features/mapSettings/components/LayerVisibilityFields.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefMapSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import {
+  type LayerVisibility,
+  LayerVisibilityFields,
+} from '@features/mapSettings/components/LayerVisibilityFields.js';
+import { OutsideCoverageAlert } from '@features/offlineMapExport/components/OutsideCoverageAlert.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { premiumTileAuth } from '@features/premium/premium.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { useExportPrices } from '@shared/exportPrices.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -18,11 +37,17 @@ import { useFreeStorage } from '@shared/hooks/useFreeStorage.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
-import {
-  type IntegratedLayerDef,
-  type IsTileLayerDef,
-  integratedLayerDefs,
+import { layerLabel, layerName } from '@shared/layerName.js';
+import type {
+  IntegratedLayerDef,
+  IsTileLayerDef,
 } from '@shared/mapDefinitions.js';
+import {
+  cachedMapSource,
+  exportedAs,
+  exportedLayer,
+} from '@shared/mapLibrary/exportedLayer.js';
+import { isLayerOffered } from '@shared/mapLibrary/installed.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
   countCachedOf,
@@ -40,18 +65,15 @@ import {
 } from 'react';
 import {
   Alert,
-  Button,
   Dropdown,
   Form,
   InputGroup,
   Modal,
   Spinner,
   ToggleButton,
-  ToggleButtonGroup,
 } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import { FaChevronLeft, FaSave } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   type CachedTileMapDef,
@@ -90,9 +112,11 @@ const LARGE_DOWNLOAD_SECONDS = 5 * 60;
 type Props = {
   /** The map being modified; absent when a new one is being added. */
   editing?: CachedTileMapDef;
+  /** A new map's preselected source. */
+  source?: string;
 };
 
-export function CacheTilesForm({ editing }: Props): ReactElement {
+export function CacheTilesForm({ editing, source }: Props): ReactElement {
   const m = useMessages();
 
   const ome = useOfflineMapExportMessages();
@@ -101,13 +125,35 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const dispatch = useDispatch();
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
+
+  const layers = useAppSelector(drawnTypesSelector);
+
+  const prices = useExportPrices();
+
+  // not the whole map, which a running download replaces at every progress step
+  const editedSourceType = editing?.sourceType;
+
+  const editedExportType = editing?.exportType;
+
   const mapDefs = useMemo(() => {
-    const integrated = integratedLayerDefs
-      .filter((def): def is CacheableLayerDef => def.technology === 'tile')
+    // Only what the offline export would hand out too: tiles of ours. A map
+    // being edited keeps the source it was downloaded from, whatever it was.
+    const integrated = Object.values(integratedLayerDefMap)
+      .flatMap((def): CacheableLayerDef[] => {
+        const offered =
+          def.type === editedSourceType
+            ? cachedMapSource({ exportType: editedExportType }, def)
+            : isLayerOffered(layersSettings, layers, def.type)
+              ? exportedLayer(def, prices)
+              : undefined;
+
+        return offered?.technology === 'tile' ? [offered] : [];
+      })
       .map((layer) => {
         const url = layer.url.startsWith('//')
           ? `https:${layer.url}`
@@ -121,6 +167,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     // for per-tile `?…&BBOX=…` URLs that are not in the cache. See TODO.md.
     const custom = customLayers
       .filter((def) => def.technology === 'tile')
+      .filter((def) => def.type === editedSourceType)
       .map((def) => ({
         ...def,
         icon: undefined as ReactElement | undefined,
@@ -130,16 +177,26 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
       }));
 
     return [...integrated, ...custom];
-  }, [customLayers]);
+  }, [
+    integratedLayerDefMap,
+    customLayers,
+    layersSettings,
+    layers,
+    editedSourceType,
+    editedExportType,
+    prices,
+  ]);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const [pickedType, setMapType] = useState<string>();
 
-  const [mapType, setMapType] = useState(
+  // Derived until picked: the maps on the map may still be loading.
+  const mapType =
+    pickedType ??
     editing?.sourceType ??
-      mapDefs.find((def) => layers.includes(def.type))?.type ??
-      mapDefs[0]?.type ??
-      '',
-  );
+    mapDefs.find((def) => def.type === source)?.type ??
+    mapDefs.find((def) => layers.includes(def.type))?.type ??
+    mapDefs[0]?.type ??
+    '';
 
   const mapDef = useMemo(
     () => mapDefs.find((def) => def.type === mapType),
@@ -157,7 +214,13 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const user = useAppSelector((state) => state.auth.user);
 
-  const premiumLimit = premiumZoomLimit(editing?.sourceType ?? mapType, user);
+  const sourceType = editing?.sourceType ?? mapType;
+
+  const sourceDef = editing
+    ? cachedMapSource(editing, integratedLayerDefMap[sourceType])
+    : exportedAs(integratedLayerDefMap[sourceType]);
+
+  const premiumLimit = premiumZoomLimit(sourceType, user, sourceDef);
 
   // The field keeps the range a map was given while premium: capping it below
   // what is already downloaded would make even a rename delete tiles. Growing it
@@ -180,9 +243,6 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
   const [iconSpec, setIconSpec] = useState(editing?.iconSpec);
 
-  /** Whether the icon is the user's to keep rather than the source layer's. */
-  const iconChanged = useRef(editing !== undefined);
-
   const [minZoom, setMinZoom] = useState(String(editing?.minZoom ?? 0));
 
   const [maxZoom, setMaxZoom] = useState(String(editing?.maxNativeZoom ?? 0));
@@ -194,31 +254,40 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     String(editing ? getCachedTileScale(editing) : 1),
   );
 
-  const { area, setArea, bbox, startSelecting } = useMapAreaSelection(
-    editing?.bounds,
-  );
+  const { area, setArea, bbox, startSelecting, selecting } =
+    useMapAreaSelection(editing?.bounds);
 
   const [networkFallback, setNetworkFallback] = useState(
     editing?.networkFallback !== false,
   );
 
-  const [showInMenu, setShowInMenu] = useState(
-    editing ? (layersSettings[editing.type]?.showInMenu ?? true) : true,
-  );
+  const [visibility, setVisibility] = useState<LayerVisibility>(() => {
+    const s = editing ? layersSettings[editing.type] : undefined;
 
-  const [showInToolbar, setShowInToolbar] = useState(
-    editing ? (layersSettings[editing.type]?.showInToolbar ?? false) : false,
-  );
+    return {
+      showInMenu: s?.showInMenu ?? true,
+      showInToolbar: s?.showInToolbar ?? false,
+      shortcut: s?.shortcut ?? null,
+    };
+  });
 
-  // Where the two toggles started, so a save can tell whether they were touched:
-  // they are the only part of this form kept on the server, and everything else
-  // about a cached map — its name, icon, area, zoom range — is the browser's own.
-  const initialVisibility = useRef({ showInMenu, showInToolbar }).current;
+  // Where they started, so a save can tell whether they were touched: they are
+  // the only part of this form kept on the server, and everything else about a
+  // cached map — its name, icon, area, zoom range — is the browser's own.
+  const initialVisibility = useRef(visibility).current;
+
+  // `mapDef` is rebuilt on every body load and layer toggle; defaults apply
+  // once per map and limit so they don't overwrite what the user typed.
+  const defaultsFor = useRef<string>(undefined);
 
   useEffect(() => {
-    if (editing || !mapDef) {
+    const key = `${mapDef?.type}:${limitMaxZoom}`;
+
+    if (editing || !mapDef || defaultsFor.current === key) {
       return;
     }
+
+    defaultsFor.current = key;
 
     // scales are per-layer; default to what this screen would display
     setScale(String(pickTileScale(mapDef.extraScales)));
@@ -235,13 +304,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     );
   }, [mapDef, editing, limitMaxZoom]);
 
-  // A copy of a custom map starts out with that map's own icon, so the offline
-  // one is recognizable the same way.
-  useEffect(() => {
-    if (!iconChanged.current) {
-      setIconSpec(mapDef && 'iconSpec' in mapDef ? mapDef.iconSpec : undefined);
-    }
-  }, [mapDef]);
+  const mapDefName = mapDef?.name;
 
   useEffect(() => {
     setName((prev) => {
@@ -249,11 +312,11 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         return prev;
       }
 
-      const layerName = m?.mapLayers.letters[mapType] ?? mapType;
+      const name = layerName({ type: mapType, name: mapDefName }, m) ?? mapType;
 
-      return cm?.namePrefix ? `${cm.namePrefix} ${layerName}` : layerName;
+      return cm?.namePrefix ? `${cm.namePrefix} ${name}` : name;
     });
-  }, [m, cm, mapType, nameChanged]);
+  }, [m, cm, mapType, mapDefName, nameChanged]);
 
   const tileCount = useMemo(() => {
     if (!bbox) {
@@ -375,6 +438,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     tileCount,
     estimateForCount: tilesToAdd,
     scale: Number(scale),
+    tileAuth: premiumTileAuth(urlTemplate, sourceDef?.premiumFromZoom, user),
     enabled: !invalidMinZoom && !invalidMaxZoom,
   });
 
@@ -439,7 +503,9 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         experimental: _e,
         layerPreview: _lp,
         premiumFromZoom: _p,
+        detail: _detail,
         bbox: _bbox,
+        creditsPerMTile: _c,
         ...rest
       } = mapDef as Record<string, unknown> & typeof mapDef;
 
@@ -465,55 +531,47 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
     }
 
     // A new map has no entry yet, so it always writes one; an edit writes only
-    // when the toggles moved. Without this an offline rename would fail on a
+    // when the fields moved. Without this an offline rename would fail on a
     // settings request it never needed.
     if (
       !editing ||
-      showInMenu !== initialVisibility.showInMenu ||
-      showInToolbar !== initialVisibility.showInToolbar
+      JSON.stringify(visibility) !== JSON.stringify(initialVisibility)
     ) {
-      dispatch(
-        saveSettings({
-          settings: {
-            layersSettings: {
-              ...layersSettings,
-              [type]: {
-                ...(layersSettings[type] ?? {}),
-                showInMenu,
-                showInToolbar,
-              },
-            },
-          },
-          keepOpen: true,
-        }),
-      );
+      dispatch(mapLayerSettingsChange({ type, settings: visibility }));
     }
   };
-
-  function getItem(def: (typeof mapDefs)[number]) {
-    return <MapLayerItem def={def} />;
-  }
 
   return (
     <form onSubmit={handleSubmit} className="d-contents">
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> {editing ? cm?.modifyOfflineMap : cm?.cacheOfflineMap}
+          <BiWifiOff />{' '}
+          {editing ? (
+            <Text m={cm}>
+              {(cm) => cm.modifyOfflineMap(layerLabel(editing, m))}
+            </Text>
+          ) : (
+            <Text m={cm} k="newOfflineMap" />
+          )}
         </Modal.Title>
+        <ManualHeaderButton chapter="offline" />
       </Modal.Header>
 
       <Modal.Body>
         <Alert variant="info">
-          <BiWifiOff /> {cm?.deviceOnly} <HintMark hint={cm?.deviceOnlyHint} />
+          <BiWifiOff /> <Text m={cm} k="deviceOnly" />{' '}
+          <HintMark hint={cm?.deviceOnlyHint} />
         </Alert>
 
         <Form.Group controlId="mapType">
-          <Form.Label>{ome?.map}</Form.Label>
+          <Form.Label>
+            <Text m={ome} k="map" />
+          </Form.Label>
 
           {editing ? (
             <div className="form-control-plaintext mb-3">
               {mapDef ? (
-                getItem(mapDef)
+                <MapLayerItem def={mapDef} />
               ) : (
                 <MapLayerItem
                   def={{
@@ -527,7 +585,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
           ) : (
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
               <Dropdown.Toggle as={SelectToggle} className="w-100">
-                {mapDef ? getItem(mapDef) : '???'}
+                {mapDef ? <MapLayerItem def={mapDef} /> : '???'}
               </Dropdown.Toggle>
 
               <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
@@ -538,7 +596,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
                     key={def.type}
                     eventKey={def.type}
                   >
-                    {getItem(def)}
+                    <MapLayerItem def={def} truncate />
                   </Dropdown.Item>
                 ))}
               </FmDropdownMenu>
@@ -547,7 +605,9 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="downloadArea">
-          <Form.Label className="d-block">{ome?.downloadArea}</Form.Label>
+          <Form.Label className="d-block">
+            <Text m={ome} k="downloadArea" />
+          </Form.Label>
 
           <MapAreaToggle
             className="mb-3"
@@ -557,9 +617,17 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
           />
         </Form.Group>
 
+        <OutsideCoverageAlert
+          mapDef={mapDef}
+          bbox={bbox}
+          active={online && !selecting}
+        />
+
         <div className="d-flex gap-3 align-items-end mb-3">
           <Form.Group controlId="name" className="flex-grow-1 min-w-0">
-            <Form.Label>{m?.general.name}</Form.Label>
+            <Form.Label>
+              <Text k="general.name" />
+            </Form.Label>
 
             <Form.Control
               type="text"
@@ -573,18 +641,14 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
           <Form.Group>
             <Form.Label className="d-block" htmlFor="cachedMapIcon">
-              {m?.general.icon}
+              <Text k="general.icon" />
             </Form.Label>
 
             <IconPicker
               id="cachedMapIcon"
               selected={iconSpec}
-              placeholder={<MdDashboardCustomize />}
-              onSelect={(spec) => {
-                iconChanged.current = true;
-
-                setIconSpec(spec);
-              }}
+              placeholder={<CustomMapGlyph kind="cached" />}
+              onSelect={setIconSpec}
             />
           </Form.Group>
         </div>
@@ -592,7 +656,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         {urlTemplate && (
           <Form.Group controlId="zoomRange" className="mb-3">
             <Form.Label className="required">
-              {ome?.zoomRange}
+              <Text m={ome} k="zoomRange" />
 
               {/* the range stops short of the layer's premium zooms; the gem
                   says why, there being no checkerboard on a cached map */}
@@ -628,7 +692,9 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         {editing
           ? editing.tileScale !== undefined && (
               <Form.Group className="mb-3">
-                <Form.Label>{ome?.scale}</Form.Label>
+                <Form.Label>
+                  <Text m={ome} k="scale" />
+                </Form.Label>
 
                 <div className="form-control-plaintext">
                   {editing.tileScale}×
@@ -637,9 +703,11 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             )
           : scales && (
               <Form.Group controlId="scale" className="mb-3">
-                <Form.Label className="d-block">{ome?.scale}</Form.Label>
+                <Form.Label className="d-block">
+                  <Text m={ome} k="scale" />
+                </Form.Label>
 
-                <ToggleButtonGroup
+                <FitToggleButtonGroup
                   type="radio"
                   name="scale"
                   value={scale}
@@ -655,7 +723,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
                       {s}×
                     </ToggleButton>
                   ))}
-                </ToggleButtonGroup>
+                </FitToggleButtonGroup>
               </Form.Group>
             )}
 
@@ -674,12 +742,8 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
         <Form.Group>
           <LayerVisibilityFields
             disabled={!canSaveSettings}
-            showInMenu={showInMenu}
-            showInToolbar={showInToolbar}
-            onChange={(v) => {
-              setShowInMenu(v.showInMenu);
-              setShowInToolbar(v.showInToolbar);
-            }}
+            value={visibility}
+            onChange={setVisibility}
           />
         </Form.Group>
 
@@ -691,24 +755,32 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
               {/* the quota alert says the same thing more urgently */}
               {largeDownload && !overQuota && (
                 <Alert variant="warning" className="mt-3 mb-0">
-                  {cm?.largeDownload({
-                    tiles: cnf.format(tilesToAdd),
-                    size: sampling ? (
-                      <Spinner animation="border" size="sm" />
-                    ) : (
-                      formatSize(estimatedSize!)
-                    ),
-                  })}
+                  <Text m={cm}>
+                    {(cm) =>
+                      cm.largeDownload({
+                        tiles: cnf.format(tilesToAdd),
+                        size: sampling ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : (
+                          formatSize(estimatedSize!)
+                        ),
+                      })
+                    }
+                  </Text>
                 </Alert>
               )}
 
               {/* only once measured — the fallback is too crude to alarm with */}
               {overQuota && !sampling && (
                 <Alert variant="danger" className="mt-3 mb-0">
-                  {cm?.notEnoughSpace({
-                    size: formatSize(estimatedSize!),
-                    free: formatSize(freeSpace!),
-                  })}
+                  <Text m={cm}>
+                    {(cm) =>
+                      cm.notEnoughSpace({
+                        size: formatSize(estimatedSize!),
+                        free: formatSize(freeSpace!),
+                      })
+                    }
+                  </Text>
                 </Alert>
               )}
             </>
@@ -716,7 +788,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
 
         {premiumWiden && (
           <Alert variant="warning" className="mt-3 mb-0">
-            {cm?.premiumWiden}
+            <Text m={cm} k="premiumWiden" />
           </Alert>
         )}
 
@@ -725,25 +797,30 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             {/* A new map is nothing but a download, so the narrowing advice
                 the edit form gives would make no sense here. */}
             <BiWifiOff />{' '}
-            {editing ? cm?.offlineWiden : m?.general.offlineNotice}
+            {editing ? (
+              <Text m={cm} k="offlineWiden" />
+            ) : (
+              <Text k="general.offlineNotice" />
+            )}
           </Alert>
         )}
       </Modal.Body>
 
-      <Modal.Footer className="flex-wrap">
+      <FmModalFooter className="flex-wrap">
         {tileCount !== undefined && (
           <div className="w-100 text-end">
-            {cm?.tiles}: <b>{cnf.format(tileCount)}</b>
+            <Text m={cm} k="tiles" />: <b>{cnf.format(tileCount)}</b>
             {editing && tilesToAdd !== undefined && (
               <>
                 {' '}
-                | {cm?.toDownload}: <b>{cnf.format(tilesToAdd)}</b>
+                | <Text m={cm} k="toDownload" />:{' '}
+                <b>{cnf.format(tilesToAdd)}</b>
               </>
             )}
             {estimatedSize !== undefined && (
               <>
                 {' '}
-                | {cm?.estSize}:{' '}
+                | <Text m={cm} k="estSize" />:{' '}
                 {sampling ? (
                   <Spinner animation="border" size="sm" />
                 ) : (
@@ -754,7 +831,7 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
           </div>
         )}
 
-        <Button
+        <FmFooterButton
           variant="primary"
           type="submit"
           disabled={
@@ -766,18 +843,18 @@ export function CacheTilesForm({ editing }: Props): ReactElement {
             tileCount === Infinity ||
             !name.trim()
           }
-        >
-          <FaSave /> {editing ? m?.general.save : cm?.startCaching}{' '}
-          <kbd>Enter</kbd>
-        </Button>
+          icon={<FaSave />}
+          label={editing ? m?.general.save : cm?.startCaching}
+          kbd="Enter"
+        />
 
-        <Button
+        <FmFooterButton
           variant="dark"
           onClick={() => dispatch(cachedMapsSetView('list'))}
-        >
-          <FaChevronLeft /> {m?.general.back}
-        </Button>
-      </Modal.Footer>
+          icon={<FaChevronLeft />}
+          label={m?.general.back}
+        />
+      </FmModalFooter>
     </form>
   );
 }

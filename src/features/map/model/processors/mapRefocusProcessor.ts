@@ -1,6 +1,7 @@
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { mapPromise } from '../../hooks/leafletElementHolder.js';
-import { duringProgrammaticMove } from '../../moveOrigin.js';
+import { duringProgrammaticMove, isMapSync } from '../../moveOrigin.js';
+import { mapZoomOf } from '../../shiftZoomGrid.js';
 import { mapRefocus } from '../actions.js';
 
 export const mapRefocusProcessor: Processor = {
@@ -8,6 +9,9 @@ export const mapRefocusProcessor: Processor = {
   stateChangePredicate: ({ map: { lat, lon, zoom } }) =>
     `${lat},${lon},${zoom}`,
   handle: async ({ dispatch, getState }) => {
+    // Read before the await, while the dispatch that raised this is on the stack.
+    const fromMap = isMapSync();
+
     const { zoom, lat, lon } = getState().map;
 
     const map = await mapPromise;
@@ -29,8 +33,15 @@ export const mapRefocusProcessor: Processor = {
       fixedLon -= 360;
     }
 
+    if (fromMap && lon === fixedLon) {
+      return;
+    }
+
+    // The store's zoom is a whole level where Leaflet's is shifted.
+    const mapZoom = mapZoomOf(map, zoom);
+
     if (
-      map.getZoom() !== zoom ||
+      Math.abs(map.getZoom() - mapZoom) > 1e-9 ||
       map.getCenter().lat !== lat ||
       map.getCenter().lng !== fixedLon
     ) {
@@ -44,7 +55,7 @@ export const mapRefocusProcessor: Processor = {
       duringProgrammaticMove(() =>
         map.setView(
           [lat, fixedLon],
-          zoom,
+          mapZoom,
           fixing ? { animate: false } : undefined,
         ),
       );

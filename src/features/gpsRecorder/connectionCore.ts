@@ -92,7 +92,7 @@ export const SYNC_CLAIM_MS = 10_000;
  * a recorder dying immediately afterwards also reaches, and rewinding on any
  * of them lets such a recorder be retried at the shortest delay forever.
  */
-export const STREAM_PROVEN_MS = RETRY_DELAYS[RETRY_DELAYS.length - 1];
+export const STREAM_PROVEN_MS = RETRY_DELAYS.at(-1)!;
 
 /**
  * How often the connection looks at itself when nothing is expected to speak
@@ -455,14 +455,11 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       delayIndex++;
     }
 
-    retryTimer = setTimeout(
-      () => {
-        retryTimer = null;
+    retryTimer = setTimeout(() => {
+      retryTimer = null;
 
-        reconcile();
-      },
-      delay ?? RETRY_DELAYS[RETRY_DELAYS.length - 1],
-    );
+      reconcile();
+    }, delay ?? RETRY_DELAYS.at(-1)!);
   }
 
   /**
@@ -620,18 +617,16 @@ export function createRecorderConnectionCore(deps: RecorderConnectionDeps) {
       run = null;
     }
 
+    const { promise, resolve } = Promise.withResolvers<SyncOutcome | null>();
+
     const entry: Run = {
       quiet,
       settled: false,
       outcome: null,
       controller: new AbortController(),
-      promise: Promise.resolve(null),
-      resolve: () => {},
+      promise,
+      resolve,
     };
-
-    entry.promise = new Promise<SyncOutcome | null>((resolve) => {
-      entry.resolve = resolve;
-    });
 
     run = entry;
 

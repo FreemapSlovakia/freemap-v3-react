@@ -163,11 +163,17 @@ describe('map tools', () => {
       lat: 48.7,
       lon: 19.1,
       zoom: 12,
-      layers: ['X', 'I'],
+      layers: ['X', 'I', '@p'],
       bounds: [18, 48, 20, 49],
       customLayers: [],
       cachedMaps: [],
+      catalogMaps: [],
+      layersSettings: {},
+      layerSetups: {},
+      presets: [{ id: 'p', name: 'P', layers: [{ type: 'w', setup: {} }] }],
+      linkPresets: [],
     },
+    mapLibrary: { bodies: {} },
   };
 
   it('reports the view', async () => {
@@ -179,7 +185,7 @@ describe('map tools', () => {
       center: { lat: 48.7, lon: 19.1 },
       zoom: 12,
       bounds: { west: 18, south: 48, east: 20, north: 49 },
-      layers: ['X', 'I'],
+      layers: ['X', 'I', '@p'],
     });
   });
 
@@ -195,7 +201,7 @@ describe('map tools', () => {
     });
   });
 
-  it('turns off an overlay that is on and refuses an unknown code', async () => {
+  it('turns off the overlays and overlay presets on, and refuses an unknown code', async () => {
     const { store, dispatched } = fakeStore(state);
 
     const tool = mapTools.find((t) => t.name === 'set-map-layers')!;
@@ -204,6 +210,7 @@ describe('map tools', () => {
 
     expect(dispatched).toEqual([
       { type: 'MAP_TOGGLE_LAYER', payload: { type: 'I', enable: false } },
+      { type: 'MAP_PRESET_TOGGLE', payload: { id: 'p', enable: false } },
     ]);
 
     expect((await tool.execute({ base: 'nope' }, ctx(store))).isError).toBe(
@@ -265,41 +272,47 @@ describe('search-places', () => {
 });
 
 describe('get-app-guide', () => {
-  const llms = readFileSync('src/static/llms.txt', 'utf8');
-
   const tool = guideTools[0];
 
-  it('lists the sections of the real llms.txt', async () => {
-    vi.stubGlobal('fetch', async () => new Response(llms));
+  // The real llms.txt and the reference files it lists, served off disk.
+  const serveStatic = () =>
+    vi.stubGlobal(
+      'fetch',
+      async (url: URL) =>
+        new Response(readFileSync(`src/static${url.pathname}`, 'utf8')),
+    );
+
+  it('lists the sections of the real llms.txt and its reference files', async () => {
+    serveStatic();
 
     const listing = JSON.parse(
       text(await tool.execute({}, ctx({} as MyStore))),
     );
 
     expect(listing.sections).toContain('In-page agent tools (WebMCP)');
+    expect(listing.sections).toContain('Panorama');
     expect(listing.summary).toContain('Freemap.sk');
   });
 
   it('returns one section with its subsections', async () => {
-    vi.stubGlobal('fetch', async () => new Response(llms));
+    serveStatic();
 
     const body = text(
-      await tool.execute({ section: 'Deep links' }, ctx({} as MyStore)),
+      await tool.execute({ section: 'Map Layers' }, ctx({} as MyStore)),
     );
 
-    expect(body).toContain('## Deep links (building map URLs)');
-    expect(body).not.toContain('## Map Layers');
+    expect(body).toContain('### Layer registry');
+    expect(body).not.toContain('## In-page agent tools');
   });
 });
 
 describe('drawing tools', () => {
   const state = {
     drawingSettings: { style: { color: '#f00', markerType: 'pin', width: 3 } },
-    drawingPoints: { points: [{ coords: { lat: 1, lon: 2 } }] },
-    drawingLines: { lines: [] },
+    trackViewer: { trackGeojson: null },
   };
 
-  it('adds a marker after the ones already drawn, in the default style', async () => {
+  it('adds a marker in the default style', async () => {
     const { store, dispatched } = fakeStore(state);
 
     const tool = drawingTools.find((t) => t.name === 'add-marker')!;
@@ -307,18 +320,23 @@ describe('drawing tools', () => {
     await tool.execute({ lat: 48.1, lon: 17.1, label: 'here' }, ctx(store));
 
     expect(dispatched[0]).toMatchObject({
-      type: 'DRAWING_POINT_ADD',
+      type: 'DATA_VIEWER_ADD_FEATURES',
       payload: {
-        coords: { lat: 48.1, lon: 17.1 },
-        label: 'here',
-        color: '#f00',
-        markerType: 'pin',
-        id: 1,
+        features: [
+          {
+            geometry: { type: 'Point', coordinates: [17.1, 48.1] },
+            properties: {
+              name: 'here',
+              'freemap:color': '#f00',
+              'freemap:markerType': 'pin',
+            },
+          },
+        ],
       },
     });
   });
 
-  it('numbers the points of a drawn line', async () => {
+  it('draws a line through the points given', async () => {
     const { store, dispatched } = fakeStore(state);
 
     const tool = drawingTools.find((t) => t.name === 'draw-line')!;
@@ -334,12 +352,18 @@ describe('drawing tools', () => {
     );
 
     expect(dispatched[0]).toMatchObject({
-      type: 'DRAWING_LINE_ADD',
+      type: 'DATA_VIEWER_ADD_FEATURES',
       payload: {
-        type: 'line',
-        points: [
-          { lat: 1, lon: 2, id: 0 },
-          { lat: 3, lon: 4, id: 1 },
+        features: [
+          {
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [2, 1],
+                [4, 3],
+              ],
+            },
+          },
         ],
       },
     });
@@ -350,7 +374,7 @@ describe('drawing tools', () => {
 
     const tool = drawingTools.find((t) => t.name === 'remove-drawing')!;
 
-    const result = await tool.execute({ kind: 'line', index: 0 }, ctx(store));
+    const result = await tool.execute({ index: 0 }, ctx(store));
 
     expect(result.isError).toBe(true);
     expect(text(result)).toContain('there are 0');
@@ -391,6 +415,45 @@ describe('objectCategories', () => {
         name: 'Building',
         key: 'building',
         tags: [{ key: 'building' }],
+      },
+    ]);
+  });
+
+  it('takes a key with any value as a category only under another tag', () => {
+    expect(
+      objectCategories({
+        osmTagToNameMapping: {
+          natural: {
+            spring: {
+              water_characteristic: { '*': 'Mineral spring' },
+              information: { '*': 'Spring {}' },
+            },
+          },
+          office: { '*': 'Office' },
+        },
+      } as never),
+    ).toEqual([
+      {
+        name: 'Mineral spring',
+        key: 'natural=spring,water_characteristic',
+        tags: [
+          { key: 'natural', value: 'spring' },
+          { key: 'water_characteristic' },
+        ],
+      },
+    ]);
+  });
+
+  it('leaves out a value the mapping deliberately silences', () => {
+    expect(
+      objectCategories({
+        osmTagToNameMapping: { bridge: { yes: 'Bridge', no: '' } },
+      } as never),
+    ).toEqual([
+      {
+        name: 'Bridge',
+        key: 'bridge=yes',
+        tags: [{ key: 'bridge', value: 'yes' }],
       },
     ]);
   });
@@ -546,11 +609,11 @@ describe('show-objects', () => {
     );
 
     // the categories are checked first, so the dispatches land a tick later
-    await vi.waitFor(() => expect(dispatched).toHaveLength(3));
+    await vi.waitFor(() => expect(dispatched).toHaveLength(2));
 
-    // the filter is dropped and set again, so the fetch is edge-triggered anew
+    // the filter is dropped and set again, so the fetch is edge-triggered anew.
+    // No tool is opened: the objects toolbar follows the filter.
     expect(dispatched.map((a) => (a as { type: string }).type)).toEqual([
-      'OPEN_TOOL',
       'OBJECTS_SET_FILTER',
       'OBJECTS_SET_FILTER',
     ]);
@@ -576,7 +639,15 @@ describe('show-objects', () => {
 describe('set-map-layers', () => {
   it('refuses a base map named as an overlay', async () => {
     const { store } = fakeStore({
-      map: { layers: ['X'], customLayers: [], cachedMaps: [] },
+      map: {
+        layers: ['X'],
+        customLayers: [],
+        cachedMaps: [],
+        catalogMaps: [],
+        layersSettings: {},
+        layerSetups: {},
+      },
+      mapLibrary: { bodies: {} },
     });
 
     const tool = mapTools.find((t) => t.name === 'set-map-layers')!;

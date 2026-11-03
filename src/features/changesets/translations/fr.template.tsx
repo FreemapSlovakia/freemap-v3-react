@@ -1,11 +1,44 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetDetails } from '../components/ChangesetDetails.js';
+import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
-  detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+  inspector: () => <ChangesetInspector />,
+  history: {
+    title: 'Historique',
+    error: ({ err }) =>
+      addError(
+        getMessages()!,
+        "Erreur lors de la récupération de l'historique",
+        err,
+      ),
+  },
+  inspectError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Erreur lors de la récupération des modifications de l’ensemble',
+      err,
+    ),
+  actions: {
+    create: 'créés',
+    modify: 'modifiés',
+    delete: 'supprimés',
+  },
+  element: {
+    onlyNodesMoved: 'Seuls ses nœuds ont été déplacés.',
+    geometryChanged: 'Géométrie modifiée.',
+    tagsUnchanged: 'Attributs inchangés.',
+    key: 'Clé',
+    before: 'Avant',
+    after: 'Après',
+    value: 'Valeur',
+    members: ({ added, removed }) =>
+      `Membres : ${added} ajoutés, ${removed} retirés.`,
+    history: 'Historique sur osm.org',
+  },
+  changeset: 'Ensemble de modifications',
   allAuthors: 'Tous les auteurs',
   refresh:
     'Télécharger les ensembles de modifications pour la vue actuelle de la carte',
@@ -25,11 +58,11 @@ const fr: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
     description: 'Description :',
     noDescription: 'sans description',
     closedAt: 'Heure :',
-    moreDetailsOn: ({ osmLink, achaviLink }) => (
-      <>
-        Plus de détails sur {osmLink} ou {achaviLink}.
-      </>
-    ),
+    openOnOsm: 'Ouvrir sur osm.org',
+    tooBig:
+      "OSMCha n'a pas cet ensemble, et il est trop grand pour être reconstitué depuis l'API OSM ; ses modifications sont sur osm.org.",
+    rebuilt:
+      "Reconstitué depuis l'API OSM, car OSMCha n'a pas cet ensemble : les nœuds non modifiés des chemins sont à leur position actuelle, et les chemins dont seuls les nœuds ont bougé manquent.",
   },
 };
 

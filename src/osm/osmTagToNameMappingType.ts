@@ -60,7 +60,13 @@ export type OsmTagToNameMapping = {
     car_rental: string;
     car_wash: string;
     casino: string;
-    charging_station: string;
+    charging_station: {
+      '*': string;
+      bicycle: { yes: string };
+      motorcar: { yes: string };
+      motorcycle: { yes: string };
+      scooter: { yes: string };
+    };
     childcare: string;
     cinema: string;
     clinic: string;
@@ -182,6 +188,7 @@ export type OsmTagToNameMapping = {
     vending_machine: {
       '*': string;
       vending: {
+        animal_feed: string;
         bicycle_tube: string;
         bread: string;
         bottle_return: string;
@@ -233,24 +240,42 @@ export type OsmTagToNameMapping = {
     block: string;
     bollard: string;
     border_control: string;
+    bus_trap: string;
     cable_barrier: string;
+    cattle_grid: string;
     chain: string;
+    chicane: string;
     city_wall: string;
+    cycle_barrier: string;
     ditch: string;
     entrance: string;
     fence: string;
+    'full-height_turnstile': string;
     gate: string;
     guard_rail: string;
+    hampshire_gate: string;
     handrail: string;
     hedge: string;
+    height_restrictor: string;
+    jersey_barrier: string;
     kerb: string;
+    kissing_gate: string;
     lift_gate: string;
+    log: string;
+    motorcycle_barrier: string;
+    planter: string;
     retaining_wall: string;
     rope: string;
+    sally_port: string;
     sliding_gate: string;
+    spikes: string;
+    stile: string;
     swing_gate: string;
+    toll_booth: string;
     turnstile: string;
     wall: string;
+    wicket_gate: string;
+    yes: string;
   };
   boundary: {
     '*': string;
@@ -289,6 +314,10 @@ export type OsmTagToNameMapping = {
   'abandoned:building': {
     '*': string;
   };
+  'abandoned:man_made': {
+    adit: string;
+    mineshaft: string;
+  };
   changing_table: {
     yes: string;
     limited: string;
@@ -311,6 +340,182 @@ export type OsmTagToNameMapping = {
   };
   'disused:building': {
     '*': string;
+  };
+  genus: {
+    Abies: string;
+    Acer: string;
+    Actinidia: string;
+    Aesculus: string;
+    Ailanthus: string;
+    Albizia: string;
+    Alnus: string;
+    Amelanchier: string;
+    Aronia: string;
+    Berberis: string;
+    Betula: string;
+    Buxus: string;
+    Camellia: string;
+    Carpinus: string;
+    Castanea: string;
+    Catalpa: string;
+    Cedrus: string;
+    Celtis: string;
+    Cercis: string;
+    Chaenomeles: string;
+    Chamaecyparis: string;
+    Citrus: string;
+    Clematis: string;
+    Cornus: {
+      '*': string;
+      species: {
+        'Cornus mas': string;
+      };
+    };
+    Corylus: string;
+    Cotoneaster: string;
+    Crataegus: string;
+    Cupressus: string;
+    Cydonia: string;
+    Diospyros: string;
+    Eucalyptus: string;
+    Euonymus: string;
+    Fagus: string;
+    Ficus: string;
+    Forsythia: string;
+    Fraxinus: string;
+    Ginkgo: string;
+    Gleditsia: string;
+    Hedera: string;
+    Hibiscus: string;
+    Hippophae: string;
+    Humulus: string;
+    Hydrangea: string;
+    Ilex: string;
+    Juglans: string;
+    Juniperus: string;
+    Koelreuteria: string;
+    Laburnum: string;
+    Lagerstroemia: string;
+    Larix: string;
+    Laurus: string;
+    Lavandula: string;
+    Ligustrum: string;
+    Liquidambar: string;
+    Liriodendron: string;
+    Lonicera: string;
+    Magnolia: string;
+    Mahonia: string;
+    Malus: string;
+    Melia: string;
+    Mespilus: string;
+    Metasequoia: string;
+    Morus: string;
+    Nerium: string;
+    Olea: string;
+    Ostrya: string;
+    Parrotia: string;
+    Paulownia: string;
+    Philadelphus: string;
+    Phoenix: string;
+    Picea: string;
+    Pinus: {
+      '*': string;
+      species: {
+        'Pinus mugo': string;
+        'Pinus pinea': string;
+      };
+    };
+    Platanus: string;
+    Populus: string;
+    Prunus: {
+      '*': string;
+      species: {
+        'Prunus armeniaca': string;
+        'Prunus avium': string;
+        'Prunus cerasifera': string;
+        'Prunus cerasus': string;
+        'Prunus domestica': string;
+        'Prunus dulcis': string;
+        'Prunus laurocerasus': string;
+        'Prunus padus': string;
+        'Prunus persica': string;
+        'Prunus serrulata': string;
+        'Prunus spinosa': string;
+      };
+    };
+    Pseudotsuga: string;
+    Pterocarya: string;
+    Punica: string;
+    Pyracantha: string;
+    Pyrus: string;
+    Quercus: {
+      '*': string;
+      species: {
+        'Quercus ilex': string;
+        'Quercus suber': string;
+      };
+    };
+    Rhododendron: string;
+    Ribes: {
+      '*': string;
+      species: {
+        'Ribes alpinum': string;
+        'Ribes nigrum': string;
+        'Ribes rubrum': string;
+        'Ribes sanguineum': string;
+        'Ribes uva-crispa': string;
+      };
+    };
+    Robinia: string;
+    Rosa: {
+      '*': string;
+      species: {
+        'Rosa canina': string;
+      };
+    };
+    Rubus: {
+      '*': string;
+      species: {
+        'Rubus fruticosus': string;
+        'Rubus idaeus': string;
+      };
+    };
+    Salix: {
+      '*': string;
+      species: {
+        'Salix babylonica': string;
+      };
+    };
+    Sambucus: string;
+    Sequoiadendron: string;
+    Sorbus: {
+      '*': string;
+      species: {
+        'Sorbus aria': string;
+      };
+    };
+    Spiraea: string;
+    Styphnolobium: string;
+    Syringa: string;
+    Taxus: string;
+    Thuja: string;
+    Tilia: string;
+    Tipuana: string;
+    Trachycarpus: string;
+    Ulmus: string;
+    Vaccinium: {
+      '*': string;
+      species: {
+        'Vaccinium myrtillus': string;
+        'Vaccinium vitis-idaea': string;
+      };
+    };
+    Viburnum: string;
+    Vitis: string;
+    Weigela: string;
+    Wisteria: string;
+    Yucca: string;
+    Zelkova: string;
   };
   healthcare: {
     '*': string;
@@ -387,6 +592,37 @@ export type OsmTagToNameMapping = {
   };
   'ruins:building': {
     '*': string;
+  };
+  ruins: {
+    yes: string;
+  };
+  sac_scale: {
+    hiking: string;
+    mountain_hiking: string;
+    demanding_mountain_hiking: string;
+    alpine_hiking: string;
+    demanding_alpine_hiking: string;
+    difficult_alpine_hiking: string;
+  };
+  smoothness: {
+    excellent: string;
+    good: string;
+    intermediate: string;
+    bad: string;
+    very_bad: string;
+    horrible: string;
+    very_horrible: string;
+    impassable: string;
+  };
+  'mtb:scale': {
+    '*': string;
+    '0': string;
+    '1': string;
+    '2': string;
+    '3': string;
+    '4': string;
+    '5': string;
+    '6': string;
   };
   building: {
     '*': {
@@ -753,6 +989,7 @@ export type OsmTagToNameMapping = {
     memorial: string;
     milestone: string;
     mine: string;
+    mine_adit: string;
     mine_shaft: string;
     monastery: string;
     monument: string;
@@ -813,7 +1050,31 @@ export type OsmTagToNameMapping = {
     meadow: string;
     military: string;
     mine_spoils: string;
-    orchard: string;
+    orchard: {
+      '*': string;
+      trees: {
+        almond_trees: string;
+        apple_trees: string;
+        apricot_trees: string;
+        blueberry_plants: string;
+        cherry_trees: string;
+        chestnut_trees: string;
+        christmas_trees: string;
+        fig_trees: string;
+        hazel_plants: string;
+        hop_plants: string;
+        kiwi_plants: string;
+        lemon_trees: string;
+        oak_trees: string;
+        olive_trees: string;
+        orange_trees: string;
+        peach_trees: string;
+        pear_trees: string;
+        pistachio_trees: string;
+        plum_trees: string;
+        walnut_trees: string;
+      };
+    };
     paddock: string;
     peat_cutting: string;
     pedestrian: string;
@@ -969,6 +1230,7 @@ export type OsmTagToNameMapping = {
     };
     monitoring_station: string;
     nesting_site: string;
+    obelisk: string;
     observatory: string;
     pier: string;
     pipeline: {
@@ -989,7 +1251,13 @@ export type OsmTagToNameMapping = {
     street_cabinet: string;
     surveillance: string;
     survey_point: string;
-    telescope: string;
+    telescope: {
+      '*': string;
+      'telescope:type': {
+        optical: string;
+        radio: string;
+      };
+    };
     tower: {
       '*': string;
       'tower:type': {
@@ -1009,6 +1277,11 @@ export type OsmTagToNameMapping = {
         radar: string;
         siren: string;
         watchtower: string;
+      };
+      'tower:construction': {
+        dish: string;
+        dome: string;
+        lattice: string;
       };
     };
     tunnel: string;
@@ -1110,6 +1383,14 @@ export type OsmTagToNameMapping = {
       };
       water_characteristic: {
         '*': string;
+        sulfuric: string;
+        sulfurous: string;
+        chalybeate: string;
+        ferruginous: string;
+        fresh: string;
+        freshwater: string;
+        intermittent: string;
+        resurgence: string;
       };
     };
     stone: string;
@@ -1883,7 +2164,14 @@ export type OsmTagToNameMapping = {
       information: {
         '*': string;
         board: string;
-        guidepost: string;
+        guidepost: {
+          '*': string;
+          hiking: { yes: string };
+          bicycle: { yes: string };
+          mtb: { yes: string };
+          ski: { yes: string };
+          horse: { yes: string };
+        };
         map: string;
         office: string;
         route_marker: string;
@@ -2047,5 +2335,18 @@ export type OsmTagToNameMapping = {
     bad: string;
     horrible: string;
     no: string;
+  };
+  zoo: {
+    aquarium: string;
+    aviary: string;
+    birds: string;
+    butterfly: string;
+    enclosure: string;
+    falconry: string;
+    petting_zoo: string;
+    reptile: string;
+    safari_park: string;
+    terrarium: string;
+    wildlife_park: string;
   };
 };

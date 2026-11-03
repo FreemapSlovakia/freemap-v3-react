@@ -12,7 +12,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         rozszerza aplikację.
       </p>
       <p className="mb-1">
-        Za <b>{price} €</b> rocznie otrzymasz:
+        Za <b>{price} €</b> rocznie:
       </p>
       <ul>
         <li>usunięcie banera reklamowego</li>
@@ -21,7 +21,6 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>najwyższe poziomy powiększenia mapy Outdoor</li>
-                <li>mapy oparte na WMS</li>
                 <li>
                   najwyższe poziomy powiększenia map ortofoto Słowacji i Czech
                 </li>
@@ -54,11 +53,11 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">Freemap pozostaje bezpłatny i otwarty.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'Anglia' },
+  dtmAreaNames: { en: 'Anglia', wls: 'Walia' },
   purchaseAfterLogin: (
     <>
-      Wybierając dostawcę logowania, zalogujesz się lub utworzysz bezpłatne
-      konto Freemap. Następnie przejdziesz do płatności za{' '}
+      Wybór dostawcy logowania loguje do konta Freemap lub tworzy bezpłatne
+      konto. Potem nastąpi przejście do płatności za{' '}
       <strong>Freemap Premium</strong>.
     </>
   ),
@@ -66,31 +65,31 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
   becomePremium: 'Uzyskaj dostęp premium',
   youArePremium: (date) => (
     <>
-      Masz dostęp premium do <b>{date}</b>.
+      Dostęp premium do <b>{date}</b>.
     </>
   ),
   premiumOnly: 'Dostępne tylko z dostępem premium.',
-  noPremium: 'Nie masz dostępu premium.',
+  noPremium: 'Brak dostępu premium.',
   clickToActivate: 'Kliknij, aby aktywować.',
   higherPrecisionElevation:
     'Dokładniejsze dane wysokości dostępne z dostępem premium.',
   higherDetail: 'Dokładniejsze szczegóły dostępne z dostępem premium.',
-  alreadyPremium: 'Masz już dostęp premium.',
-  alreadySubscribed: 'Masz już aktywną subskrypcję.',
+  alreadyPremium: 'Dostęp premium jest już aktywny.',
+  alreadySubscribed: 'Subskrypcja jest już aktywna.',
   premiumUser: 'Użytkownik z dostępem premium',
   payOnce: 'Zapłać jednorazowo za jeden rok',
   paySubscription: 'Subskrypcja roczna (odnawia się automatycznie)',
   payWithChrons: 'Zapłać chronami',
   chronsHint: (
     <>
-      Jeśli chcesz uzyskać dostęp premium za pracę wolontariacką zgłoszoną w{' '}
+      Aby uzyskać dostęp premium za pracę wolontariacką zgłoszoną w{' '}
       <RovasLink>Rovas</RovasLink>, wybierz płatność chronami.
     </>
   ),
   subscriptionReassurance: ({ price }) =>
-    `Cena ${price}\xa0€ rocznie pozostanie tak długo, jak subskrypcja będzie aktywna. Możesz ją anulować w każdej chwili — dostęp premium działa wtedy do końca opłaconego roku.`,
+    `Cena ${price}\xa0€ rocznie pozostanie tak długo, jak subskrypcja będzie aktywna. Można ją anulować w każdej chwili — dostęp premium działa wtedy do końca opłaconego roku.`,
   youArePremiumRenews: (
-    <>Masz dostęp premium. Subskrypcja odnawia się automatycznie.</>
+    <>Dostęp premium jest aktywny. Subskrypcja odnawia się automatycznie.</>
   ),
 };
 

@@ -1,5 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { Emoji } from '@shared/components/Emoji.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { JSX } from 'react';
@@ -21,7 +23,9 @@ export function LanguageSubmenu(): JSX.Element {
         eventKey="lang-"
         active={chosenLanguage === null}
       >
-        {m?.mainMenu.automaticLanguage}
+        <MenuLabel>
+          <Text k="mainMenu.automaticLanguage" />
+        </MenuLabel>
       </Dropdown.Item>
 
       {languageItems.map(({ code, name, flag }) => (
@@ -31,7 +35,8 @@ export function LanguageSubmenu(): JSX.Element {
           eventKey={`lang-${code}`}
           active={chosenLanguage === code}
         >
-          <Emoji>{flag}</Emoji>&ensp;{name}
+          <Emoji>{flag}</Emoji>
+          <MenuLabel>{name}</MenuLabel>
         </Dropdown.Item>
       ))}
     </>

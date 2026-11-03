@@ -1,15 +1,16 @@
 import dict, { type MarkdownEntry } from 'virtual/markdown-dict.js';
 
-export function getDocuments(lang: string) {
+/** One entry per key in `lang`, English where `lang` has none, by `order`. */
+export function localizeEntries(entries: MarkdownEntry[], lang: string) {
   const map = new Map<string, MarkdownEntry>();
 
-  for (const doc of dict) {
+  for (const doc of entries) {
     if (doc.lang === 'en') {
       map.set(doc.key, doc);
     }
   }
 
-  for (const doc of dict) {
+  for (const doc of entries) {
     if (doc.lang === lang) {
       map.set(doc.key, { ...(map.get(doc.key) ?? {}), ...doc });
     }
@@ -18,4 +19,8 @@ export function getDocuments(lang: string) {
   return [...map.values()].sort(
     (a, b) => (a.order ?? 1_000_000) - (b.order ?? 1_000_000),
   );
+}
+
+export function getDocuments(lang: string) {
+  return localizeEntries(dict, lang);
 }

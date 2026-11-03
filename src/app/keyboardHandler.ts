@@ -1,12 +1,16 @@
 import { hasRole } from '@features/auth/model/types.js';
 import {
+  changesetsInspect,
+  changesetsShowHistory,
+} from '@features/changesets/model/actions.js';
+import { historyHosted } from '@features/changesets/model/inspectorToast.js';
+import {
+  dataViewerCutHole,
+  dataViewerDrawStop,
   dataViewerSetJoining,
   dataViewerSetSplitting,
 } from '@features/dataViewer/model/actions.js';
-import {
-  drawingLineJoinStart,
-  drawingLineStopDrawing,
-} from '@features/drawing/model/actions/drawingLineActions.js';
+import { editableParts } from '@features/dataViewer/vertexEditing.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import {
   galleryCancelShowOnTheMap,
@@ -17,15 +21,35 @@ import {
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
 } from '@features/gallery/model/actions.js';
+import { toggledFeaturesOpacity } from '@features/map/featuresOpacity.js';
 import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
-import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
+import {
+  mapPresetToggle,
+  mapRefocus,
+  mapSetFeaturesOpacity,
+  mapToggleLayer,
+} from '@features/map/model/actions.js';
 import { steppedZoom } from '@features/map/zoomStep.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
+import {
+  libraryIndexSelector,
+  userShortcutsSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import { mapLayersPanelToggle } from '@features/mapSettings/model/actions.js';
+import { selectionOpener } from '@features/openInExternalApp/selectionOpener.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
+import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
+import type { UnknownAction } from '@reduxjs/toolkit';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import {
+  effectiveShortcut,
+  isLayerInstalled,
+} from '@shared/mapLibrary/installed.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import type { Shortcut } from '@shared/types/common.js';
 import {
   clearMapFeatures,
   closeTool,
@@ -35,6 +59,7 @@ import {
   selectFeature,
   setActiveModal,
   setSelectingHomeLocation,
+  type Tool,
 } from './store/actions.js';
 import { modalOf } from './store/activeModal.js';
 import { isToolOpen, showGalleryViewerSelector } from './store/selectors.js';
@@ -45,112 +70,239 @@ let keyTimer: number | null = null;
 /** The key that started a chord, while the next one is awaited. */
 let initCode: string | null = null;
 
+const isSuspendedModal = (state: RootState) =>
+  state.homeLocation.selectingHomeLocation !== false ||
+  Boolean(state.gallery.pickingPositionForId) ||
+  state.gallery.showPosition ||
+  Boolean(state.mapArea.selecting) ||
+  Boolean(state.mapLibrary.preview) ||
+  state.toposcope.pickingCenter;
+
+/** A selected vertex goes only while its line or ring keeps enough of them. */
+function vertexDeletable(state: RootState): boolean {
+  const { selection } = state.main;
+
+  if (selection?.type !== 'vertex') {
+    return true;
+  }
+
+  const feature = state.trackViewer.trackGeojson?.features[selection.id];
+
+  const vertices = feature && editableParts(feature.geometry)?.[selection.part];
+
+  return (
+    vertices !== undefined &&
+    vertices.length > (feature?.geometry.type === 'Polygon' ? 3 : 2)
+  );
+}
+
+// Overlays that own their open-state outside main.activeModal: the gallery
+// viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
+// while loading or once previewed). The picking/selecting overlays are tracked
+// by `isSuspendedModal` instead.
+const isShowingModal = (state: RootState) =>
+  Boolean(state.main.activeModal) ||
+  Boolean(state.gallery.activeImageId) ||
+  Boolean(state.wiki.preview) ||
+  Boolean(state.wiki.loading);
+
+/**
+ * What Escape does now: the one action, of all the controls offering a way
+ * out, that it dispatches — and so the one control to show it on.
+ */
+export function escapeAction(state: RootState): UnknownAction | undefined {
+  const suspendedModal = isSuspendedModal(state);
+
+  const showingModal = isShowingModal(state);
+
+  if (state.gallery.pickingPositionForId) {
+    return gallerySetItemForPositionPicking(null);
+  }
+
+  if (showGalleryViewerSelector(state)) {
+    return state.gallery.editModel ? galleryEditPicture() : galleryClear();
+  }
+
+  // A modal in the foreground closes itself on its own listener, which fires
+  // only while this handler (registered first) leaves the key unclaimed. The
+  // picking overlays hide theirs and leave the map live, so they go on.
+  if (showingModal && !suspendedModal) {
+    return undefined;
+  }
+
+  // Before the panels and the selection: the map is in a mode of its own,
+  // and leaving it is what Escape is for here.
+  if (state.toposcope.pickingCenter) {
+    return toposcopeSetPickingCenter(false);
+  }
+
+  if (state.panorama.picking) {
+    return panoramaSetPicking(null);
+  }
+
+  if (state.viewshed.pickingViewpoint) {
+    return viewshedSetPickingViewpoint(false);
+  }
+
+  // Before the chart and the panels below it: a mode waiting on a click has
+  // put them away, so Escape has to be about the mode itself.
+  if (state.trackViewer.joinWith) {
+    return dataViewerSetJoining(null);
+  }
+
+  if (state.trackViewer.splitting) {
+    return dataViewerSetSplitting(false);
+  }
+
+  if (state.mapArea.selecting) {
+    return mapAreaSelectCancel();
+  }
+
+  if (state.mapLibrary.preview) {
+    return mapLibraryPreviewEnd({ keep: false });
+  }
+
+  if (state.homeLocation.selectingHomeLocation !== false) {
+    return setSelectingHomeLocation(false);
+  }
+
+  if (state.elevationChart.target) {
+    return elevationChartClose();
+  }
+
+  // Waiting for a hole to be drawn is a mode of its own — no line is being
+  // drawn yet — so leaving it must not fall through to clearing the
+  // selection, which would drop the polygon the hole was meant for.
+  if (state.trackViewer.drawing) {
+    return dataViewerDrawStop();
+  }
+
+  if (state.trackViewer.holeFor !== null) {
+    return dataViewerCutHole(null);
+  }
+
+  if (state.gallery.showPosition) {
+    return galleryCancelShowOnTheMap();
+  }
+
+  const { inspected } = state.changesetInspector;
+
+  // Listed in its element's details, a history closes before they do; not one
+  // they no longer show, their object reloaded out of the layer.
+  if (!showingModal && !suspendedModal && !inspected && historyHosted(state)) {
+    return changesetsShowHistory(null);
+  }
+
+  if (!showingModal && !suspendedModal && state.main.selection) {
+    return selectFeature(null);
+  }
+
+  // Only the tool that owns map clicks, the one holding the map in a mode; the
+  // toolbar-only tools close by their own button.
+  if (!showingModal && !suspendedModal && state.main.mapTool) {
+    return closeTool(state.main.mapTool);
+  }
+
+  // An inspection, after its selected element and the map-click tool beside it.
+  if (!showingModal && !suspendedModal && inspected) {
+    return changesetsInspect(null);
+  }
+
+  return undefined;
+}
+
+const toolChapters: Record<Tool, string> = {
+  changesets: 'changesets',
+  'draw-lines': 'drawing',
+  'draw-points': 'drawing',
+  'draw-polygons': 'drawing',
+  'gps-recorder': 'gps-recorder',
+  'import-file': 'tracks',
+  'map-details': 'map-details',
+  objects: 'objects',
+  panorama: 'panorama',
+  'route-planner': 'route-planner',
+  toposcope: 'toposcope',
+  tracking: 'tracking',
+};
+
+/**
+ * The manual chapter F1 opens: the open modal's `ManualHeaderButton` one, else
+ * a selected note's or search result's, else the map-click tool's, else the
+ * newest other tool's; undefined opens the first.
+ */
+export function manualChapterFor(state: RootState): string | undefined {
+  const modalChapter =
+    state.main.activeModal &&
+    document.querySelector<HTMLElement>('.modal.show [data-manual-chapter]')
+      ?.dataset['manualChapter'];
+
+  if (modalChapter) {
+    return modalChapter;
+  }
+
+  if (state.gallery.activeImageId) {
+    return 'photos';
+  }
+
+  // A selection's toolbar, before the tools' it may sit beside.
+  if (state.osmNotes.selected) {
+    return 'osm-notes';
+  }
+
+  if (state.main.selection?.type === 'search') {
+    return 'search';
+  }
+
+  // The map-click tool first: a draw tool brings 'import-file' along with it.
+  const tool = state.main.mapTool ?? state.main.panelTools.at(-1);
+
+  if (tool) {
+    return toolChapters[tool];
+  }
+
+  return state.elevationChart.target ? 'tracks' : undefined;
+}
+
 export function handleEvent(event: KeyboardEvent, state: RootState) {
   const withModifiers =
     event.ctrlKey || event.altKey || event.metaKey || event.isComposing;
 
-  const suspendedModal =
-    state.homeLocation.selectingHomeLocation !== false ||
-    state.gallery.pickingPositionForId ||
-    state.gallery.showPosition ||
-    state.mapArea.selecting ||
-    state.toposcope.pickingCenter;
+  const suspendedModal = isSuspendedModal(state);
 
-  // Overlays that own their open-state outside main.activeModal: the gallery
-  // viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
-  // while loading or once previewed). The picking/selecting overlays are tracked
-  // by `suspendedModal` instead.
-  const showingModal =
-    Boolean(state.main.activeModal) ||
-    Boolean(state.gallery.activeImageId) ||
-    Boolean(state.wiki.preview) ||
-    Boolean(state.wiki.loading);
+  const showingModal = isShowingModal(state);
 
   if (!withModifiers && event.code === 'Escape') {
-    if (document.querySelector('*[aria-expanded=true]') !== null) {
+    // An open dropdown closes itself on Escape.
+    return document.querySelector('*[aria-expanded=true]') === null
+      ? escapeAction(state)
+      : undefined;
+  }
+
+  // Also over a modal and in a field, where it types nothing.
+  if (
+    !window.fmEmbedded &&
+    !withModifiers &&
+    !event.shiftKey &&
+    event.code === 'F1'
+  ) {
+    // A modal paused for picking on the map would be torn down mid-pick.
+    if (state.main.activeModal?.type === 'manual' || suspendedModal) {
+      // Keeps the browser's own help page closed.
+      event.preventDefault();
+
       return undefined;
     }
 
-    if (state.gallery.pickingPositionForId) {
-      return gallerySetItemForPositionPicking(null);
-    }
+    const chapter = manualChapterFor(state);
 
-    if (showGalleryViewerSelector(state)) {
-      return state.gallery.editModel ? galleryEditPicture() : galleryClear();
-    }
+    trackMatomo(
+      chapter
+        ? ['trackEvent', 'Manual', 'key', chapter]
+        : ['trackEvent', 'Manual', 'key'],
+    );
 
-    // A modal in the foreground owns Escape: it closes itself on its own
-    // document listener, which only fires while the key is not already claimed
-    // — and this handler, registered first, would claim it. The picking
-    // overlays hide their modal and leave the map live, so they keep the
-    // dismissals below.
-    if (showingModal && !suspendedModal) {
-      return undefined;
-    }
-
-    // Before the panels and the selection: the map is in a mode of its own,
-    // and leaving it is what Escape is for here.
-    if (state.toposcope.pickingCenter) {
-      return toposcopeSetPickingCenter(false);
-    }
-
-    if (state.panorama.picking) {
-      return panoramaSetPicking(null);
-    }
-
-    // Before the chart and the panels below it: a mode waiting on a click has
-    // put them away, so Escape has to be about the mode itself.
-    if (state.drawingLines.joinWith) {
-      return drawingLineJoinStart(undefined);
-    }
-
-    if (state.trackViewer.joinWith) {
-      return dataViewerSetJoining(null);
-    }
-
-    if (state.trackViewer.splitting) {
-      return dataViewerSetSplitting(false);
-    }
-
-    if (state.mapArea.selecting) {
-      return mapAreaSelectCancel();
-    }
-
-    if (state.homeLocation.selectingHomeLocation !== false) {
-      return setSelectingHomeLocation(false);
-    }
-
-    if (state.elevationChart.target) {
-      return elevationChartClose();
-    }
-
-    // Waiting for a hole to be drawn is a mode of its own — no line is being
-    // drawn yet — so leaving it must not fall through to clearing the
-    // selection, which would drop the polygon the hole was meant for.
-    if (
-      state.drawingLines.drawing ||
-      state.drawingLines.holeFor !== undefined
-    ) {
-      return drawingLineStopDrawing();
-    }
-
-    if (state.gallery.showPosition) {
-      return galleryCancelShowOnTheMap();
-    }
-
-    if (!showingModal && !suspendedModal && state.main.selection) {
-      return selectFeature(null);
-    }
-
-    // Only the tool that owns map clicks: it is the one holding the map in a
-    // mode, and Escape is for leaving a mode. The toolbar-only tools sit there
-    // passively, several at a time, and are closed by their own button — one of
-    // them going on an Escape aimed at something else would be a surprise.
-    if (!showingModal && !suspendedModal && state.main.mapTool) {
-      return closeTool(state.main.mapTool);
-    }
-
-    return undefined;
+    return setActiveModal({ type: 'manual', chapter });
   }
 
   if (
@@ -203,28 +355,47 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     }
   }
 
+  // Before the maps' shortcuts, which a user could otherwise bind it to.
   if (
     !keyTimer &&
     (!showingModal || suspendedModal) &&
+    event.code === 'KeyD' &&
+    event.shiftKey &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !event.metaKey
+  ) {
+    const opacity = toggledFeaturesOpacity(state.map.featuresOpacity);
+
+    trackMatomo(['trackEvent', 'MapSettings', 'featuresOpacity', opacity]);
+
+    return mapSetFeaturesOpacity(opacity);
+  }
+
+  if (
+    !keyTimer &&
+    (!showingModal || suspendedModal) &&
+    // A preview puts the earlier layers back, so it takes no map switch.
+    !state.mapLibrary.preview &&
     (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
   ) {
-    const layerDef = [...state.map.customLayers, ...integratedLayerDefs].find(
-      (def) => {
-        let shortcut = state.map.layersSettings[def.type]?.shortcut;
+    const pressed = (shortcut: Shortcut | null | undefined) =>
+      shortcut &&
+      shortcut.code === event.code &&
+      Boolean(shortcut.shift) === event.shiftKey &&
+      Boolean(shortcut.ctrl) === event.ctrlKey &&
+      Boolean(shortcut.alt) === event.altKey &&
+      Boolean(shortcut.meta) === event.metaKey;
 
-        if (shortcut === undefined) {
-          shortcut = def.shortcut;
-        }
+    const taken = userShortcutsSelector(state);
 
-        return (
-          shortcut &&
-          shortcut.code === event.code &&
-          Boolean(shortcut.shift) === event.shiftKey &&
-          Boolean(shortcut.ctrl) === event.ctrlKey &&
-          Boolean(shortcut.alt) === event.altKey &&
-          Boolean(shortcut.meta) === event.metaKey
-        );
-      },
+    const layerDef = [
+      ...state.map.customLayers,
+      ...libraryIndexSelector(state).filter((def) =>
+        isLayerInstalled(state.map.layersSettings, def.type),
+      ),
+    ].find((def) =>
+      pressed(effectiveShortcut(state.map.layersSettings, def, taken)),
     );
 
     const layerType =
@@ -238,11 +409,18 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     if (layerType) {
       return mapToggleLayer({ type: layerType });
     }
+
+    const preset = state.map.presets.find(({ id }) =>
+      pressed(state.map.layersSettings[id]?.shortcut),
+    );
+
+    if (preset) {
+      return mapPresetToggle({ id: preset.id });
+    }
   }
 
   if (
     event.code === 'Delete' &&
-    state.drawingLines.joinWith === undefined &&
     // An armed mode has no toolbar of its own to delete from, so the key would
     // take away the very track it is aimed at.
     state.trackViewer.joinWith === null &&
@@ -250,12 +428,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     !keyTimer &&
     !showingModal &&
     !suspendedModal &&
-    (state.main.selection?.type !== 'line-point' ||
-      state.drawingLines.lines[state.main.selection.lineIndex].points.length >
-        (state.drawingLines.lines[state.main.selection.lineIndex].type ===
-        'line'
-          ? 2
-          : 3))
+    vertexDeletable(state)
   ) {
     return deleteFeature();
   }
@@ -270,6 +443,17 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     }
 
     return undefined;
+  }
+
+  // By the character, wherever a layout puts it.
+  if (!keyTimer && event.key === '.') {
+    return mapLayersPanelToggle();
+  }
+
+  if (!window.fmEmbedded && !keyTimer && event.key === '?') {
+    trackMatomo(['trackEvent', 'Manual', 'key', 'shortcuts']);
+
+    return setActiveModal({ type: 'manual', chapter: 'shortcuts' });
   }
 
   if (!window.fmEmbedded && !keyTimer && chordPrefixCodes.has(event.code)) {
@@ -309,6 +493,18 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     }
 
     if ('external' in target) {
+      const open = selectionOpener();
+
+      // Copying the page's address is about the page, selection or not.
+      if (open && target.external !== 'copy') {
+        // No action comes back for the listener to claim the key with.
+        event.preventDefault();
+
+        open(target.external);
+
+        return undefined;
+      }
+
       return openInExternalApp({ where: target.external });
     }
 
@@ -391,15 +587,10 @@ export function handleMapKey(event: KeyboardEvent, state: RootState) {
     state.homeLocation.selectingHomeLocation !== false ||
     state.gallery.pickingPositionForId ||
     state.gallery.showPosition ||
-    state.mapArea.selecting;
+    state.mapArea.selecting ||
+    state.mapLibrary.preview;
 
-  const showingModal =
-    Boolean(state.main.activeModal) ||
-    Boolean(state.gallery.activeImageId) ||
-    Boolean(state.wiki.preview) ||
-    Boolean(state.wiki.loading);
-
-  if (showingModal && !suspendedModal) {
+  if (isShowingModal(state) && !suspendedModal) {
     return undefined;
   }
 

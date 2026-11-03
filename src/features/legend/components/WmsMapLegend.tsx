@@ -1,7 +1,8 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useWmsLayers } from '@shared/hooks/useWmsLayers.js';
 import type { IsWmsLayerDef, LayerDef } from '@shared/mapDefinitions.js';
-import { type Layer, wms } from '@shared/wms.js';
-import { Fragment, type ReactElement, useEffect, useState } from 'react';
+import type { Layer } from '@shared/wms.js';
+import { Fragment, type ReactElement } from 'react';
 import { Alert, Spinner } from 'react-bootstrap';
 
 type Props = {
@@ -9,23 +10,9 @@ type Props = {
 };
 
 export function WmsMapLegend({ def }: Props) {
-  const [layers, setLayers] = useState<Layer[]>();
-
-  const [error, setError] = useState('');
+  const { layers, error } = useWmsLayers(def);
 
   const scale = useAppSelector((state) => leafletZoomToScale(state.map.zoom));
-
-  useEffect(() => {
-    wms(def.url).then(
-      (data) => {
-        console.log(data);
-        setLayers(data.layersTree);
-      },
-      (err) => {
-        setError(String(err));
-      },
-    );
-  }, [def.url]);
 
   return error ? (
     <Alert variant="danger">{error}</Alert>

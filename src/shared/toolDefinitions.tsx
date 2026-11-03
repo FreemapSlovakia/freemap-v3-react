@@ -1,4 +1,4 @@
-import type { Tool } from '@app/store/actions.js';
+import { type Tool, ToolSchema } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { gpsRecorderAvailableSelector } from '@features/gpsRecorder/support.js';
 import type { ReactElement } from 'react';
@@ -13,7 +13,6 @@ import {
 } from 'react-icons/fa';
 import { MdPolyline, MdShapeLine } from 'react-icons/md';
 import { PiCompassRoseBold, PiMountains } from 'react-icons/pi';
-import { TbMapPins } from 'react-icons/tb';
 import type { Messages } from '../translations/messagesInterface.js';
 
 export interface ToolDefinition {
@@ -48,9 +47,16 @@ export interface ToolDefinition {
  * action the way a fresh array would.
  */
 export function unavailableToolsSelector(state: RootState): string {
-  return `|${toolDefinitions
-    .filter((td) => td.available && !td.available(state))
-    .map((td) => `${td.tool}|`)
+  return `|${ToolSchema.options
+    .filter((tool) => {
+      const td = toolDefinitions.find((item) => item.tool === tool);
+
+      // No definition means no toolbar — a `#tools=` naming it would open
+      // something nothing could ever close, and the URL would carry it from
+      // then on. `objects` is such a tool: its toolbar follows the filter.
+      return !td || (td.available && !td.available(state));
+    })
+    .map((tool) => `${tool}|`)
     .join('')}`;
 }
 
@@ -85,13 +91,6 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: <FaRoute />,
     msgKey: 'routePlanner',
     kbd: 'KeyR',
-    requiresOnline: true,
-  },
-  {
-    tool: 'objects',
-    icon: <TbMapPins />,
-    msgKey: 'objects',
-    kbd: 'KeyO',
     requiresOnline: true,
   },
   {

@@ -1,0 +1,67 @@
+map $http_origin $cors_skhires {
+    default    "";
+    "~*^https?://(.*\.freemap\.(sk|eu)(:\d+)?|mapcomplete\.org|every-door\.app|www\.systemed\.net(:\d+)?|preview\.ideditor\.com(:\d+)?|ideditor\.openstreetmap\.org(:\d+)?)$"  $http_origin;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name sk-hires-shading.tiles.freemap.sk;
+
+    access_log /var/log/nginx/access_sk-hires.log shading_combined;
+    error_log /var/log/nginx/error_sk-hires.log warn;
+
+    location = / {
+        rewrite .* https://www.freemap.sk/?map=8/48.705463/19.497986&layers=4 redirect;
+    }
+
+    expires 30d;
+    add_header Cache-Control "public, no-transform";
+    add_header Alt-Svc 'h3=":443"; ma=86400' always;
+
+    # Premium zooms (16+): see conf.d/shading-tile-gate.conf.
+    include snippets/shading-tile-auth.conf;
+
+    location / {
+        # The web app's premium tiles carry Authorization, which preflights.
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin $cors_skhires;
+            add_header Vary Origin always;
+            add_header Access-Control-Allow-Headers "Authorization";
+            add_header Access-Control-Max-Age 86400;
+            return 204;
+        }
+
+        auth_request /_shading-auth;
+        error_page 401 403 = @shading_premium_zoom;
+
+        add_header Cache-Control "public, no-transform";
+        add_header Access-Control-Allow-Origin $cors_skhires always;
+        add_header Vary Origin always;
+        add_header Alt-Svc 'h3=":443"; ma=86400' always;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_pass http://localhost:4455/services/sk-dmr-hires/tiles/;
+
+        proxy_hide_header Access-Control-Allow-Origin;
+        proxy_hide_header Vary;
+    }
+
+    http2 on;
+
+    listen 443 quic;
+    listen [::]:443 quic;
+
+    listen [::]:443 ssl; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/sk-hires-shading.tiles.freemap.sk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/sk-hires-shading.tiles.freemap.sk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+

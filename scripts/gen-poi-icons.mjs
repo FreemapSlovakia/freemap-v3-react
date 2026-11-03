@@ -697,6 +697,36 @@ function cleanIcon(root, prefix) {
     });
   })(svg);
 
+  // Elements that paint nothing. The Carto shop icons carry a hidden
+  // full-canvas rect, which resvg would otherwise measure as the drawing.
+  (function dropInvisible(node) {
+    node.children = node.children.filter((child) => {
+      if (child.text !== undefined) {
+        return true;
+      }
+
+      const decls = child.attrs.style ? parseStyle(child.attrs.style) : [];
+
+      const prop = (k) =>
+        decls.findLast(([p]) => p === k)?.[1] ?? child.attrs[k];
+
+      // Anything still referenced paints through the reference, whatever it
+      // says here; and `visibility` is inherited but overridable, so a hidden
+      // subtree may still have ink in it — only a hidden leaf is certainly gone.
+      const hidden =
+        prop('display') === 'none' ||
+        (prop('visibility') === 'hidden' && !child.children.length);
+
+      if (hidden && !hasReferencedId(child, refs)) {
+        return false;
+      }
+
+      dropInvisible(child);
+
+      return true;
+    });
+  })(svg);
+
   let colored = false;
 
   (function rewrite(node) {
@@ -817,6 +847,25 @@ function viewport(attrs) {
     : null;
 }
 
+/**
+ * The cleaned drawing as a standalone document. resvg resolves neither
+ * `currentColor` nor CSS variables, so the values the light theme lands on
+ * stand in for them.
+ */
+function measurable(body, vp) {
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vp.x} ${vp.y} ${vp.w} ${vp.h}"` +
+    ` width="${vp.w}" height="${vp.h}" fill="#000">` +
+    body.replaceAll(KNOCKOUT_PAINT, '#fff').replaceAll('currentColor', '#000') +
+    `</svg>`
+  );
+}
+
+// Consumers place the drawing in a nested <svg viewBox={vb}>, which clips at
+// its edge, so every canvas is grown by this share of its longer side — enough
+// that antialiasing along an edge-touching drawing survives.
+const CANVAS_PAD = 0.08;
+
 // -------------------------------------------------------------------- collect
 
 const ok = [];
@@ -858,23 +907,35 @@ function collect(abs, source) {
       throw new Error('no viewport (viewBox/width/height)');
     }
 
-    // loadSystemFonts:false skips scanning the system font dirs on every
-    // instance (these icons have no text) — that scan dominated the runtime.
-    const bbox = new Resvg(src, { font: { loadSystemFonts: false } }).getBBox();
+    // Measured from the cleaned drawing rather than the source, so what paints
+    // nothing doesn't count. loadSystemFonts:false skips scanning the system
+    // font dirs on every instance (these icons have no text) — that scan
+    // dominated the runtime.
+    const bbox = new Resvg(measurable(body, vp), {
+      font: { loadSystemFonts: false },
+    }).getBBox();
 
     if (!bbox || !(bbox.width > 0) || !(bbox.height > 0)) {
       throw new Error('empty bbox');
     }
+
+    const pad = Math.max(vp.w, vp.h) * CANVAS_PAD;
 
     ok.push({
       path: source.prefix + path,
       name,
       body,
       mono: !colored,
-      vb: [r(vp.x), r(vp.y), r(vp.w), r(vp.h)],
+      vb: [r(vp.x - pad), r(vp.y - pad), r(vp.w + 2 * pad), r(vp.h + 2 * pad)],
       ppu: r(vp.ppu),
-      bbox: [r(bbox.x - vp.x), r(bbox.y - vp.y), r(bbox.width), r(bbox.height)],
+      bbox: [
+        r(bbox.x - vp.x + pad),
+        r(bbox.y - vp.y + pad),
+        r(bbox.width),
+        r(bbox.height),
+      ],
       src,
+      vp,
     });
   } catch (e) {
     failed.push({ abs, error: String(e.message ?? e).trim() });
@@ -901,13 +962,8 @@ if (VERIFY) {
   const drift = [];
 
   for (const icon of ok) {
-    // resvg resolves neither `currentColor` nor CSS variables, so stand in the
-    // values the light theme lands on.
-    const rebuilt = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${icon.vb.join(
-      ' ',
-    )}" width="${icon.vb[2]}" height="${icon.vb[3]}" fill="#000">${icon.body
-      .replaceAll(KNOCKOUT_PAINT, '#fff')
-      .replaceAll('currentColor', '#000')}</svg>`;
+    // The unpadded viewport, so the two renders are the same size.
+    const rebuilt = measurable(icon.body, icon.vp);
 
     let a;
     let b;

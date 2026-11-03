@@ -1,0 +1,350 @@
+import { Text } from '@features/l10n/Text.js';
+import {
+  mapLayerSetupChange,
+  mapSetShadingDraft,
+  mapSetShadingOnServer,
+  type SetupTarget,
+} from '@features/map/model/actions.js';
+import { DEFAULT_SHADING, setupKey } from '@features/map/model/layerSetup.js';
+import {
+  useTargetDef,
+  useTargetSetup,
+} from '@features/mapSettings/layerTarget.js';
+import { PanelHeaderSlotContext } from '@features/mapSettings/panelHeaderSlot.js';
+import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { SHADING_SOURCE } from '@shared/mapDefinitions.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import { produce } from 'immer';
+import { type ReactElement, useContext, useState } from 'react';
+import { Button, ToggleButton } from 'react-bootstrap';
+import { createPortal } from 'react-dom';
+import { FaCheck, FaCloud, FaDesktop, FaUndo } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
+import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
+import {
+  hasBackground,
+  MAX_SHADING_COMPONENTS,
+  type Shading,
+  type ShadingComponentType,
+} from '../model/Shading.js';
+import {
+  isParameterized,
+  type ParameterizedPreset,
+  type PresetParams,
+  type ShadingPreset,
+  shadingPreset,
+} from '../model/shadingPresets.js';
+import { useShadingMessages } from '../translations/useShadingMessages.js';
+import { ParameterizedShadingModal } from './ParameterizedShadingModal.js';
+import { ShadingColorPicker } from './ShadingColorPicker.js';
+import {
+  MANAGEABLE_TYPES,
+  ShadingComponentControl,
+} from './ShadingComponentControl.js';
+import { ShadingComponentList } from './ShadingComponentList.js';
+import { ShadingComponentParams } from './ShadingComponentParams.js';
+import { ShadingToolbar } from './ShadingToolbar.js';
+
+// Out of the component, where the compiler takes it for a call during render.
+const newComponentId = () => Math.random();
+
+const hasWebGpu = 'gpu' in navigator;
+
+type Props = {
+  /** The shading map whose setup this edits: its own, or a preset's copy. */
+  target: SetupTarget;
+};
+
+/** The shading editor, for a shading map's setup. */
+export default function ShadingSection({ target }: Props): ReactElement {
+  const sm = useShadingMessages();
+
+  const applied = useTargetSetup(target)?.shading ?? DEFAULT_SHADING;
+
+  // The map's own, whichever drawing of it is edited.
+  const draft = useAppSelector((state) => state.map.shadingDrafts[target.type]);
+
+  // Unique among the panel's controls.
+  const type = setupKey(target);
+
+  const onServer = useAppSelector((state) => state.map.shadingOnServer);
+
+  const headerSlot = useContext(PanelHeaderSlotContext);
+
+  const shading = draft ?? applied;
+
+  const showsBackground = hasBackground(shading);
+
+  const isBase = useTargetDef(target)?.layer === 'base';
+
+  // Whether a preset keeps an optional background, or gets a white one; a base
+  // map's would otherwise show the map background through.
+  // A choice holds only for the kind it was made for.
+  const [backgroundChoice, setBackgroundChoice] = useState<{
+    isBase: boolean;
+    value: boolean;
+  }>();
+
+  const withBackground =
+    backgroundChoice?.isBase === isBase ? backgroundChoice.value : isBase;
+
+  const setWithBackground = (value: boolean) =>
+    setBackgroundChoice({ isBase, value });
+
+  // Every shading map draws the terrain of the one built-in source.
+  const colorReliefMax = colorReliefMaxElevation([SHADING_SOURCE]);
+
+  const dispatch = useDispatch();
+
+  const apply = (next: Shading) =>
+    dispatch(mapLayerSetupChange({ ...target, setup: { shading: next } }));
+
+  // Rendered on the server, edits wait for Apply; in the browser they show as made.
+  function setShading(next: Shading) {
+    if (onServer) {
+      dispatch(mapSetShadingDraft({ ...target, shading: next }));
+    } else {
+      apply(next);
+    }
+  }
+
+  const [pickedId, setId] = useState<number>();
+
+  // Only while the shading being edited has it: a revert can drop it.
+  const selectedComponent = shading.components.find(
+    (component) => component.id === pickedId,
+  );
+
+  const id = selectedComponent?.id;
+
+  // The preset whose values the modal is asking for.
+  const [pending, setPending] = useState<{
+    preset: ParameterizedPreset;
+    append: boolean;
+  } | null>(null);
+
+  function handleAdd(type0: string | null) {
+    trackMatomo(['trackEvent', 'MapShading', 'add', type0 ?? undefined]);
+
+    if (type0 === 'background') {
+      setShading({ ...shading, backgroundColor: [255, 255, 255, 1] });
+
+      setId(undefined);
+
+      return;
+    }
+
+    const newId = newComponentId();
+
+    setShading(
+      produce(shading, (draft) => {
+        draft.components.push(
+          createDefaultShadingComponent(
+            type0 as ShadingComponentType,
+            newId,
+            colorReliefMax,
+          ),
+        );
+      }),
+    );
+
+    setId(newId);
+  }
+
+  function handleRemove() {
+    const [r, g, b] = shading.backgroundColor;
+
+    // With no component picked it is the background that is selected; a
+    // transparent one stands for none.
+    setShading(
+      id === undefined
+        ? { ...shading, backgroundColor: [r, g, b, 0] }
+        : produce(shading, (draft) => {
+            draft.components = draft.components.filter(
+              (component) => component.id !== id,
+            );
+          }),
+    );
+
+    setId(undefined);
+  }
+
+  function handlePreset(preset: ShadingPreset, append: boolean) {
+    trackMatomo([
+      'trackEvent',
+      'MapShading',
+      append ? 'preset-append' : 'preset',
+      preset,
+    ]);
+
+    if (isParameterized(preset)) {
+      setPending({ preset, append });
+    } else {
+      applyPreset(preset, append);
+    }
+  }
+
+  function applyPreset(
+    preset: ShadingPreset,
+    append: boolean,
+    params?: PresetParams,
+  ) {
+    const next = shadingPreset(preset, newComponentId, params, withBackground);
+
+    if (append) {
+      // An edit like Add, so it waits for Apply where edits do.
+      setShading({
+        ...shading,
+        components: [...shading.components, ...next.components],
+      });
+    } else {
+      // Applied at once, even where edits otherwise wait for Apply.
+      apply(next);
+    }
+
+    setId(undefined);
+  }
+
+  return (
+    <>
+      <FitToggleButtonGroup
+        type="radio"
+        name={`shading-renderer-${type}`}
+        className="d-flex"
+        value={onServer ? 'server' : 'browser'}
+        onChange={(value) =>
+          dispatch(mapSetShadingOnServer(value === 'server'))
+        }
+      >
+        <ToggleButton
+          id={`shading-renderer-server-${type}`}
+          value="server"
+          variant="outline-primary"
+          className="flex-grow-1 text-nowrap"
+        >
+          <FaCloud /> <Text m={sm} k="onServer" />
+        </ToggleButton>
+
+        <ToggleButton
+          id={`shading-renderer-browser-${type}`}
+          value="browser"
+          variant="outline-primary"
+          className="flex-grow-1 text-nowrap"
+          disabled={!hasWebGpu}
+        >
+          <FaDesktop /> <Text m={sm} k="inBrowser" /> <ExperimentalFunction />
+        </ToggleButton>
+      </FitToggleButtonGroup>
+
+      <hr />
+
+      <ShadingComponentList
+        shading={shading}
+        showBackground={showsBackground}
+        selectedId={id}
+        onSelect={setId}
+      />
+
+      <ShadingToolbar
+        canRemove={id !== undefined || showsBackground}
+        canAddBackground={!showsBackground}
+        canAddComponent={
+          onServer || shading.components.length < MAX_SHADING_COMPONENTS
+        }
+        onAdd={handleAdd}
+        onRemove={handleRemove}
+        onPreset={handlePreset}
+        withBackground={withBackground}
+        onWithBackgroundChange={setWithBackground}
+      />
+
+      <hr />
+
+      {shading.components.some(
+        (component) => MANAGEABLE_TYPES[component.type],
+      ) && (
+        <div className="d-flex justify-content-center">
+          <ShadingComponentControl
+            components={shading.components}
+            background={showsBackground ? shading.backgroundColor : undefined}
+            onChange={(components) => setShading({ ...shading, components })}
+            selectedId={id}
+            onSelect={setId}
+          />
+        </div>
+      )}
+
+      {selectedComponent && (
+        <ShadingComponentParams
+          shading={shading}
+          component={selectedComponent}
+          onChange={setShading}
+        />
+      )}
+
+      {(selectedComponent || showsBackground) && (
+        <ShadingColorPicker
+          // Fresh per layer: the picker remembers its last colour and gradient.
+          key={id ?? 'background'}
+          shading={shading}
+          selectedId={id}
+          component={selectedComponent}
+          colorReliefMax={colorReliefMax}
+          onChange={setShading}
+        />
+      )}
+
+      {/* In the panel's header, so they stay in view however far it scrolls. */}
+      {onServer &&
+        draft &&
+        headerSlot &&
+        createPortal(
+          <>
+            <LongPressTooltip label={sm?.apply}>
+              {({ props }) => (
+                <Button
+                  variant="primary"
+                  className="flex-shrink-0"
+                  onClick={() => apply(draft)}
+                  {...props}
+                >
+                  <FaCheck />
+                </Button>
+              )}
+            </LongPressTooltip>
+
+            <LongPressTooltip label={sm?.revert}>
+              {({ props }) => (
+                <Button
+                  variant="secondary"
+                  className="flex-shrink-0"
+                  onClick={() => dispatch(mapSetShadingDraft(target))}
+                  {...props}
+                >
+                  <FaUndo />
+                </Button>
+              )}
+            </LongPressTooltip>
+          </>,
+          headerSlot,
+        )}
+
+      <ParameterizedShadingModal
+        kind={pending?.preset ?? null}
+        colorReliefMax={colorReliefMax}
+        onClose={() => setPending(null)}
+        onApply={(params) => {
+          if (pending) {
+            applyPreset(pending.preset, pending.append, params);
+          }
+
+          setPending(null);
+        }}
+      />
+    </>
+  );
+}

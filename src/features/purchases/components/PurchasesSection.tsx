@@ -5,7 +5,7 @@ import {
   PurchasesResponseSchema,
 } from '@features/auth/model/types.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { subscriptionAutoRenews } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
@@ -36,8 +36,6 @@ export function PurchasesSection(): ReactElement | null {
   const user = useAppSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
-
-  const m = useMessages();
 
   const online = useOnline();
 
@@ -292,7 +290,7 @@ export function PurchasesSection(): ReactElement | null {
             disabled={!online}
             onClick={becomePremium}
           >
-            <FaGem /> {prm?.becomePremium}
+            <FaGem /> <Text m={prm} k="becomePremium" />
           </Button>
         </Alert>
       ) : (
@@ -315,7 +313,7 @@ export function PurchasesSection(): ReactElement | null {
           case 'error':
             return (
               <Alert variant="danger">
-                {m?.general.loadError({ err: state.error })}
+                <Text>{(m) => m.general.loadError({ err: state.error })}</Text>
               </Alert>
             );
           case 'success':
@@ -323,13 +321,14 @@ export function PurchasesSection(): ReactElement | null {
               <>
                 {showAwaitingBankPayment && (
                   <Alert variant="info">
-                    <FaShoppingBasket /> {pm?.awaitingBankPayment}
+                    <FaShoppingBasket /> <Text m={pm} k="awaitingBankPayment" />
                   </Alert>
                 )}
 
                 {showBankPaymentFailed && (
                   <Alert variant="danger">
-                    <FaExclamationTriangle /> {pm?.bankPaymentFailed}
+                    <FaExclamationTriangle />{' '}
+                    <Text m={pm} k="bankPaymentFailed" />
                   </Alert>
                 )}
 
@@ -348,8 +347,12 @@ export function PurchasesSection(): ReactElement | null {
                 <Table>
                   <thead>
                     <tr>
-                      <th>{pm?.date}</th>
-                      <th>{pm?.item}</th>
+                      <th>
+                        <Text m={pm} k="date" />
+                      </th>
+                      <th>
+                        <Text m={pm} k="item" />
+                      </th>
                     </tr>
                   </thead>
 
@@ -357,7 +360,7 @@ export function PurchasesSection(): ReactElement | null {
                     {state.result.purchases.length === 0 ? (
                       <tr key="empty">
                         <td colSpan={2} className="text-center">
-                          {pm?.noPurchases}
+                          <Text m={pm} k="noPurchases" />
                         </td>
                       </tr>
                     ) : (
@@ -383,11 +386,11 @@ export function PurchasesSection(): ReactElement | null {
                       ) : (
                         <FaExternalLinkAlt />
                       )}{' '}
-                      {pm?.managePayments}
+                      <Text m={pm} k="managePayments" />
                     </Button>
 
                     <small className="text-body-secondary">
-                      {pm?.managePaymentsHint}
+                      <Text m={pm} k="managePaymentsHint" />
                     </small>
                   </div>
                 )}

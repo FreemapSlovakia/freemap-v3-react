@@ -58,17 +58,17 @@ export async function downloadSvg(
   clone.style.fontFamily = cs.fontFamily;
   clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
-  // Opaque backdrop so the transparent margins aren't see-through in viewers.
-  // Drawn in the SVG's own user units, which a `viewBox` can scale away from the
-  // pixel size the element is laid out at; without one they are the same thing.
-  const box = clone.viewBox.baseVal;
+  // Opaque backdrop for the see-through margins, in the SVG's user units (which
+  // a `viewBox` scales away from the laid-out pixel size). Firefox gives `null`
+  // rather than an empty rect when there is no `viewBox`.
+  const box = clone.viewBox.baseVal as DOMRect | null;
 
   const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
 
-  bg.setAttribute('x', String(box.width ? box.x : 0));
-  bg.setAttribute('y', String(box.height ? box.y : 0));
-  bg.setAttribute('width', String(box.width || svg.width.baseVal.value));
-  bg.setAttribute('height', String(box.height || svg.height.baseVal.value));
+  bg.setAttribute('x', String(box?.width ? box.x : 0));
+  bg.setAttribute('y', String(box?.height ? box.y : 0));
+  bg.setAttribute('width', String(box?.width || svg.width.baseVal.value));
+  bg.setAttribute('height', String(box?.height || svg.height.baseVal.value));
   bg.setAttribute('fill', resolveVar('var(--bs-body-bg)'));
 
   clone.insertBefore(bg, clone.firstChild);

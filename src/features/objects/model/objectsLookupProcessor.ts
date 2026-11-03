@@ -1,4 +1,3 @@
-import { closeTool } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import {
   type SearchResult,
@@ -81,7 +80,5 @@ export const objectsLookupProcessor: Processor<typeof objectsShowAsLookup> = {
     dispatch(searchKeepResults(objects.map(toResult)));
 
     dispatch(objectsSetFilter([]));
-
-    dispatch(closeTool('objects'));
   },
 };

@@ -5,21 +5,20 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Standardstil',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Teilen',
-    pick: 'Klicke auf die Spur an der Trennstelle',
+    pick: 'Klicken Sie auf die Spur an der Trennstelle',
     here: 'Hier teilen',
-    segments: 'In Abschnitte teilen',
   },
   join: {
     action: 'Verbinden',
     asLine: 'Zu einer Linie verbinden',
     asSegments: 'Verbinden, Abschnitte behalten',
-    pick: 'Klicke auf die Spur zum Verbinden',
+    pick: 'Klicken Sie auf die Spur, die angehängt werden soll',
+    pickEnd: 'Punkt zum Verbinden der Linien wählen',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'An Wege anpassen',
     title: 'An Wege anpassen',
@@ -65,18 +64,52 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Anhängen',
     replace: 'Ersetzen',
   },
+  trace: {
+    streams: 'Gewässerverfolgung',
+    forests: 'Waldverfolgung',
+    streamsHelp:
+      'Dient dazu, im gewählten Polygon Gewässerlinien aus dem hochauflösenden Geländemodell abzuleiten. Geeignet zum Erfassen in OpenStreetMap.',
+    forestsHelp:
+      'Dient dazu, im gewählten Polygon die Flächen nachzuzeichnen, die die ausgewählten LiDAR-Punktklassen bedecken. Geeignet vor allem zum Erfassen der Bodenbedeckung in OpenStreetMap.',
+    pixelSize: 'Pixelgröße',
+    pixelSizeHint: 'Leer für die eigene Auflösung des Geländemodells.',
+    threshold: 'Minimale Einzugsgebietsfläche',
+    minLength: 'Minimale Gewässerlänge',
+    simplify: 'Vereinfachungstoleranz',
+    classes: 'Punktklassen',
+    classNames: {
+      lowVegetation: 'Niedrige Vegetation',
+      mediumVegetation: 'Mittlere Vegetation',
+      highVegetation: 'Hohe Vegetation',
+      building: 'Gebäude',
+      water: 'Wasser',
+    },
+    output: 'Ergebnis',
+    outputJosm: 'In JOSM öffnen',
+    outputOsm: 'Als OSM XML herunterladen',
+    outputGeojson: 'Als GeoJSON herunterladen',
+    tooBig: ({ max }) =>
+      `Das Polygon ist zu groß; die Grenze liegt bei ${max}.`,
+    run: 'Nachzeichnen',
+    legacy: ({ phrase, item }) => (
+      <>
+        Verwenden Sie statt des <i>Easter Eggs</i> <code>{phrase}</code> den
+        Eintrag <i>{item}</i> im ⋮-Menü des ausgewählten Polygons.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Höhendaten',
-    introNone: 'Diese Spur enthält keine Höhendaten.',
-    introPartial: 'Bei einigen Punkten dieser Spur fehlt die Höhe.',
+    introNone: 'Es sind noch keine Höhendaten vorhanden.',
+    introPartial: 'Bei einigen Punkten fehlt die Höhe.',
     introFull:
-      'Diese Spur hat bereits Höhendaten, aber ein Geländemodell ist oft ' +
+      'Höhendaten sind bereits vorhanden, aber ein Geländemodell ist oft ' +
       'genauer.',
-    premiumHiRes: (premiumLink) => (
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        Mit {premiumLink('Premium-Zugang')} werden die Höhendaten in
-        unterstützten Ländern aus einem hochauflösenden nationalen Modell
-        abgetastet — derzeit Slowakei (DMR 5.0: ÚGKK SR), weitere folgen.
+        Mit {premiumLink('Premium-Zugang')} werden die Höhendaten in{' '}
+        {countries('vielen europäischen Ländern')} aus hochauflösenden
+        nationalen Geländemodellen abgetastet.
       </>
     ),
     question: 'Was möchten Sie tun?',
@@ -92,21 +125,21 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'die in der Spur gespeicherte Höhe verwenden',
     add: 'Höhe ergänzen',
     update: 'Höhe aktualisieren',
-    updateConfirm: 'Die Höhe der Spur durch das Geländemodell ersetzen?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Fehlende Höhe wurde ergänzt.'
-        : 'Die Höhe wurde überschrieben.',
+        : mode === 'clear'
+          ? 'Die Höhe wurde entfernt.'
+          : 'Die Höhe wurde überschrieben.',
   },
   upload: 'Hochladen',
   unnamedTrack: ({ n }) => `Track ${n}`,
-  convertLossWarning:
-    'Beim Umwandeln in eine Zeichnung wird der Track ersetzt und seine aufgezeichneten Daten (Höhe, Herzfrequenz, Geschwindigkeit, Zeit) verworfen.',
   simplifyAll: 'Alles vereinfachen',
   moreInfo: 'Mehr Infos',
+  breakApart: 'In Teile zerlegen',
   saveAsMap: 'In meinen Karten speichern',
   loginToSaveMap:
-    'Melde dich zuerst an, um die Strecke in deinen Karten zu speichern.',
+    'Melden Sie sich zuerst an, um die Strecke in Ihren Karten zu speichern.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Streckendaten', err),
   matchingError: ({ err }) =>
@@ -118,7 +151,7 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Einige Dateien konnten nicht geladen werden: ${names}.`,
   unsaved: 'Nicht gespeichert',
   unsavedTooltip:
-    'Dieser Track ist in keiner gespeicherten Karte enthalten und nicht Teil des Links – er bleibt nur in diesem Browser, das Teilen des Links gibt ihn also nicht weiter. Speichern Sie ihn in Ihren Karten, um ihn zu behalten.',
+    'Diese Daten passen nicht in die Seitenadresse (URL) und sind in keiner gespeicherten Karte – sie bleiben nur in diesem Browser. Speichern Sie sie in Ihren Karten, um sie zu behalten.',
 };
 
 export default de;

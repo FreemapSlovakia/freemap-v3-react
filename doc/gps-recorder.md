@@ -703,7 +703,7 @@ Android's "clear storage", or a delete from another page.
 **One route: it becomes the track viewer's track.** `handOverTrack` gives
 `recorderSegmentsToFeatureCollection` to `dataViewerSetData`, after which the
 recording is an ordinary loaded track — elevation, colorize, the elevation
-chart, "more info", convert-to-drawing and every export target work on it
+chart, "more info", vertex editing and every export target work on it
 without knowing the recorder exists.
 
 Two actions take that route, and the difference is ownership. **Save** copies:

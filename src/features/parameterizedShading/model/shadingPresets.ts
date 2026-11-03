@@ -1,0 +1,640 @@
+import {
+  type Color,
+  DEFAULT_CURVATURE_RADIUS,
+  isOpaqueShading,
+  type Shading,
+  type ShadingComponent,
+  type SkyMode,
+} from './Shading.js';
+
+export const MAP_PRESETS = [
+  'classic',
+  'outdoor',
+  'shadow',
+  'multidirectional',
+  'plastic',
+  'swiss',
+  'slope',
+  'hypsometric',
+  'aspect',
+  'lidar',
+  'microRelief',
+  'ridgesValleys',
+  'skyView',
+  'openness',
+  'archaeological',
+  'contourLines',
+  'contour',
+  'fog',
+] as const;
+
+export const ARTISTIC_PRESETS = [
+  'metallic',
+  'sepia',
+  'night',
+  'moonlight',
+  'golden',
+  'glacier',
+  'snow',
+  'mars',
+  'ink',
+  'blueprint',
+  'neon',
+  'watercolor',
+  'autumn',
+] as const;
+
+export const SHADING_PRESETS = [...MAP_PRESETS, ...ARTISTIC_PRESETS] as const;
+
+export type ShadingPreset = (typeof SHADING_PRESETS)[number];
+
+/** Presets built from what the user enters in a form. */
+export const PARAMETERIZED_PRESETS = [
+  'contour',
+  'fog',
+  'hypsometric',
+  'metallic',
+] as const satisfies readonly ShadingPreset[];
+
+export type ParameterizedPreset = (typeof PARAMETERIZED_PRESETS)[number];
+
+export const isParameterized = (
+  preset: ShadingPreset,
+): preset is ParameterizedPreset =>
+  (PARAMETERIZED_PRESETS as readonly ShadingPreset[]).includes(preset);
+
+export type PresetParams = {
+  elevation: number;
+  bandWidth: number;
+  /** Contour's colour, fog's below colour, metallic's highlight. */
+  color: Color;
+  /** Fog's colour above the band. */
+  aboveColor: Color;
+  /** Where hypsometric tints start from their bottom colour. */
+  minElevation: number;
+  /** Where hypsometric tints reach their top colour. */
+  maxElevation: number;
+  /** Metallic's colour between the highlights. */
+  darkColor: Color;
+  /** Metallic's highlights around the compass. */
+  repeats: number;
+};
+
+export const DEFAULT_PRESET_PARAMS: PresetParams = {
+  elevation: 500,
+  bandWidth: 10,
+  color: [255, 255, 255, 1],
+  aboveColor: [0xe6, 0xe6, 0xe6, 0],
+  minElevation: 0,
+  maxElevation: 3000,
+  darkColor: [0, 0, 0, 1],
+  repeats: 3,
+};
+
+const deg = (d: number) => d * (Math.PI / 180);
+
+const levels = { contrast: 1, brightness: 0 };
+
+/**
+ * `azimuth` is where the light comes from; this Igor darkens the slopes facing
+ * its own azimuth, so it gets the opposite one.
+ */
+const igor = (azimuth: number, color: Color): ShadingComponent => ({
+  id: 0,
+  type: 'hillshade-igor',
+  ...levels,
+  azimuth: deg((azimuth + 180) % 360),
+  exaggeration: 1,
+  colorStops: [{ value: 0, color }],
+});
+
+/** Light at 315°, 45°: `color` lit, `background` in shadow. */
+const classic = (background: Color, color: Color): Shading => ({
+  backgroundColor: background,
+  components: [
+    {
+      id: 0,
+      type: 'hillshade-classic',
+      ...levels,
+      azimuth: deg(315),
+      elevation: deg(45),
+      exaggeration: 1,
+      colorStops: [{ value: 0, color }],
+    },
+  ],
+});
+
+const relief = (stops: [number, Color][]): ShadingComponent => ({
+  id: 0,
+  type: 'color-relief',
+  ...levels,
+  colorStops: stops.map(([value, color]) => ({ value, color })),
+});
+
+const slope = (color: Color): ShadingComponent => ({
+  id: 0,
+  type: 'slope-igor',
+  ...levels,
+  exaggeration: 1,
+  colorStops: [{ value: 0, color }],
+});
+
+/** Slope coloured by stops over its steepness in degrees. */
+const slopeRamp = (stops: [number, Color][]): ShadingComponent => ({
+  ...slope([0, 0, 0, 1]),
+  colorStops: stops.map(([value, color]) => ({ value, color })),
+});
+
+/** `ridge` on convex ground, `hollow` on concave, clear from `gap` to -`gap`. */
+const curvature = (
+  extent: number,
+  gap: number,
+  ridge: Color,
+  hollow: Color,
+): ShadingComponent => ({
+  id: 0,
+  type: 'curvature',
+  ...levels,
+  exaggeration: 1,
+  radius: DEFAULT_CURVATURE_RADIUS,
+  radiusUnit: 'px',
+  colorStops: [
+    { value: -extent, color: ridge },
+    { value: -gap, color: [ridge[0], ridge[1], ridge[2], 0] },
+    { value: gap, color: [hollow[0], hollow[1], hollow[2], 0] },
+    { value: extent, color: hollow },
+  ],
+});
+
+/** A sky view walked out `radius` pixels, coloured by stops over its value. */
+const skyView = (
+  skyMode: SkyMode,
+  radius: number,
+  stops: [number, Color][],
+): ShadingComponent => ({
+  id: 0,
+  type: 'sky-view',
+  ...levels,
+  skyMode,
+  exaggeration: 1,
+  radius,
+  radiusUnit: 'px',
+  colorStops: stops.map(([value, color]) => ({ value, color })),
+});
+
+const contours = (
+  interval: number,
+  lineWidth: number,
+  color: Color,
+): ShadingComponent => ({
+  id: 0,
+  type: 'contours',
+  ...levels,
+  interval,
+  lineWidth,
+  colorStops: [{ value: 0, color }],
+});
+
+/**
+ * Light from `azimuth`: `shadow` on the slopes facing away, `light` on those
+ * facing it.
+ */
+const lit = (
+  background: Color,
+  azimuth: number,
+  shadow: Color,
+  light: Color,
+): Shading => ({
+  backgroundColor: background,
+  components: [igor(azimuth, shadow), igor((azimuth + 180) % 360, light)],
+});
+
+function buildOwn(preset: ShadingPreset, p: PresetParams): Shading {
+  switch (preset) {
+    case 'classic':
+      return classic([0, 0, 0, 1], [255, 255, 255, 1]);
+
+    case 'sepia':
+      return classic([0x40, 0x2c, 0x18, 1], [0xff, 0xee, 0xcc, 1]);
+
+    case 'night':
+      return classic([0x0e, 0x12, 0x1c, 1], [0xb0, 0xc4, 0xde, 1]);
+
+    case 'shadow':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [igor(315, [0, 0, 0, 1])],
+      };
+
+    case 'plastic':
+      return lit(
+        [0x80, 0x80, 0x80, 1],
+        315,
+        [0, 0, 0, 0.8],
+        [255, 255, 255, 0.8],
+      );
+
+    case 'slope':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [slope([0, 0, 0, 1])],
+      };
+
+    case 'moonlight':
+      return {
+        backgroundColor: [0x10, 0x18, 0x30, 1],
+        components: [igor(135, [0xd8, 0xe4, 0xff, 0.9])],
+      };
+
+    // A low sun from the south-west: violet shadows, orange light.
+    case 'golden':
+      return lit(
+        [0xf6, 0xe7, 0xcf, 1],
+        225,
+        [0x4a, 0x2c, 0x6e, 0.8],
+        [0xff, 0x9a, 0x3c, 0.6],
+      );
+
+    case 'glacier':
+      return lit(
+        [0xff, 0xff, 0xff, 1],
+        315,
+        [0x1e, 0x5a, 0x8c, 0.9],
+        [0xe0, 0xf4, 0xff, 0.6],
+      );
+
+    case 'mars':
+      return lit(
+        [0xc8, 0x6b, 0x3c, 1],
+        315,
+        [0x4a, 0x16, 0x0a, 0.9],
+        [0xff, 0xd0, 0x90, 0.5],
+      );
+
+    case 'ink':
+      return {
+        backgroundColor: [0xf5, 0xf0, 0xe6, 1],
+        components: [slope([0x1a, 0x1a, 0x1a, 0.9]), igor(315, [0, 0, 0, 0.5])],
+      };
+
+    case 'blueprint':
+      return {
+        backgroundColor: [0x0b, 0x3d, 0x91, 1],
+        components: [slope([255, 255, 255, 1])],
+      };
+
+    case 'neon':
+      return {
+        backgroundColor: [0x14, 0x0a, 0x28, 1],
+        components: [
+          slope([0xff, 0x2e, 0xa6, 1]),
+          igor(315, [0x2e, 0xe6, 0xff, 0.7]),
+        ],
+      };
+
+    case 'watercolor':
+      return {
+        backgroundColor: [0xfb, 0xf7, 0xee, 1],
+        components: [
+          relief([
+            [0, [0x9f, 0xd8, 0xcb, 0.45]],
+            [400, [0xf7, 0xe1, 0xa0, 0.45]],
+            [1200, [0xf4, 0xa6, 0x8c, 0.45]],
+            [2500, [0xc9, 0xa7, 0xe0, 0.45]],
+          ]),
+          igor(315, [0x3c, 0x4a, 0x7a, 0.5]),
+        ],
+      };
+
+    case 'autumn':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          relief([
+            [0, [0x6b, 0x8e, 0x23, 1]],
+            [300, [0xc8, 0xa0, 0x28, 1]],
+            [700, [0xd2, 0x69, 0x1e, 1]],
+            [1200, [0x8b, 0x25, 0x00, 1]],
+            [2000, [0x5a, 0x3a, 0x2a, 1]],
+            [3000, [0xf4, 0xf0, 0xe8, 1]],
+          ]),
+          igor(315, [0, 0, 0, 0.7]),
+        ],
+      };
+
+    // The outdoor map's tiles: freemap-outdoor-map scripts/lib/shading.nu.
+    case 'outdoor':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          igor(240, [0x20, 0x30, 0x60, 0.8]),
+          igor(60, [0xff, 0xee, 0x00, 0.7]),
+          igor(315, [0, 0, 0, 1]),
+        ],
+      };
+
+    case 'multidirectional':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [225, 270, 315, 360].map((az) => igor(az, [0, 0, 0, 0.4])),
+      };
+
+    // Blue-grey shadows, warm light on the slopes facing the sun.
+    case 'swiss':
+      return lit(
+        [0xf2, 0xef, 0xe4, 1],
+        315,
+        [0x2c, 0x3e, 0x6b, 0.8],
+        [0xff, 0xe6, 0x80, 0.5],
+      );
+
+    // Metres for 0–3000 m, scaled to `minElevation`–`maxElevation`; closer
+    // together low down where most land is.
+    case 'hypsometric': {
+      const at = (metres: number) =>
+        Math.round(
+          p.minElevation + (metres / 3000) * (p.maxElevation - p.minElevation),
+        );
+
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          relief([
+            [at(0), [0x5a, 0x9e, 0x5a, 1]],
+            [at(200), [0xa8, 0xc8, 0x78, 1]],
+            [at(500), [0xe8, 0xdc, 0x96, 1]],
+            [at(1000), [0xd4, 0xa8, 0x68, 1]],
+            [at(1600), [0xb0, 0x7c, 0x54, 1]],
+            [at(2300), [0x96, 0x82, 0x78, 1]],
+            [at(3000), [0xff, 0xff, 0xff, 1]],
+          ]),
+          igor(315, [0, 0, 0, 0.8]),
+        ],
+      };
+    }
+
+    case 'contour': {
+      const [r, g, b] = p.color;
+
+      const from = p.elevation - p.bandWidth / 2;
+
+      const to = p.elevation + p.bandWidth / 2;
+
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          relief([
+            [from, [r, g, b, 0]],
+            [from, p.color],
+            [to, p.color],
+            [to, [r, g, b, 0]],
+          ]),
+        ],
+      };
+    }
+
+    case 'fog':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          relief([
+            [p.elevation - p.bandWidth / 2, p.color],
+            [p.elevation + p.bandWidth / 2, p.aboveColor],
+          ]),
+        ],
+      };
+
+    // Alternating dark and light by aspect, like brushed metal; an odd stop
+    // count makes north dark on both ends, so there is no seam.
+    case 'metallic':
+      return {
+        backgroundColor: p.color,
+        components: [
+          {
+            id: 0,
+            type: 'aspect',
+            ...levels,
+            colorStops: Array.from({ length: 2 * p.repeats + 1 }, (_, i) => ({
+              value: (i / (2 * p.repeats)) * 2 * Math.PI,
+              color: i % 2 ? p.color : p.darkColor,
+            })),
+          },
+        ],
+      };
+
+    // Micro-relief: hollows teal and ridges cream whichever way they face,
+    // valley floors teal where the sky closes in, moderate slopes brown and
+    // steep ones red.
+    case 'lidar':
+      return {
+        backgroundColor: [0x9e, 0x95, 0x91, 1],
+        components: [
+          slopeRamp([
+            [0, [0x9e, 0x95, 0x91, 0]],
+            [5, [0xa8, 0x7a, 0x60, 0.35]],
+            [15, [0xa0, 0x60, 0x3a, 0.65]],
+            [30, [0x8a, 0x1e, 0x06, 0.95]],
+          ]),
+          skyView('svf', 16, [
+            [0.75, [0x2e, 0x58, 0x66, 0.8]],
+            [0.97, [0x2e, 0x58, 0x66, 0]],
+          ]),
+          curvature(
+            0.07,
+            0.007,
+            [0xee, 0xd6, 0xb0, 0.85],
+            [0x2e, 0x58, 0x66, 1],
+          ),
+          igor(315, [0x2e, 0x58, 0x66, 0.25]),
+        ],
+      };
+
+    // The sky-view factor as archaeology shows it: the less sky, the darker.
+    // Most lowland lies above 0.8, mountains far below, hence the bend.
+    case 'skyView':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          skyView('svf', 16, [
+            [0.4, [0, 0, 0, 0.95]],
+            [0.8, [0, 0, 0, 0.6]],
+            [0.995, [0, 0, 0, 0]],
+          ]),
+        ],
+      };
+
+    // Positive openness: hollows dark and ridges light, on any slope.
+    case 'openness':
+      return {
+        backgroundColor: [0xa0, 0xa0, 0xa0, 1],
+        components: [
+          skyView('pos', 16, [
+            [78, [0, 0, 0, 0.85]],
+            [89, [0, 0, 0, 0]],
+            [91, [255, 255, 255, 0]],
+            [100, [255, 255, 255, 0.9]],
+          ]),
+        ],
+      };
+
+    // After the Visualization for Archaeological Topography: slope, sky view,
+    // openness and a hillshade blended in grey.
+    case 'archaeological':
+      return {
+        backgroundColor: [255, 255, 255, 1],
+        components: [
+          slopeRamp([
+            [0, [0, 0, 0, 0]],
+            [60, [0, 0, 0, 0.45]],
+          ]),
+          skyView('svf', 16, [
+            [0.6, [0, 0, 0, 0.5]],
+            [1, [0, 0, 0, 0]],
+          ]),
+          skyView('pos', 8, [
+            [75, [0, 0, 0, 0.35]],
+            [90, [0, 0, 0, 0]],
+            [105, [255, 255, 255, 0.5]],
+          ]),
+          igor(315, [0, 0, 0, 0.2]),
+        ],
+      };
+
+    // Blue where the sky closes in, as shade on snow.
+    case 'snow':
+      return {
+        backgroundColor: [255, 255, 255, 1],
+        components: [
+          skyView('svf', 16, [
+            [0.4, [0x2a, 0x4a, 0x7a, 0.95]],
+            [0.8, [0x2a, 0x4a, 0x7a, 0.6]],
+            [0.995, [0x2a, 0x4a, 0x7a, 0]],
+          ]),
+          igor(315, [0x6a, 0x8a, 0xb4, 0.4]),
+        ],
+      };
+
+    // A local relief model as in archaeology: ridges light, hollows dark.
+    case 'microRelief':
+      return {
+        backgroundColor: [0xb4, 0xb4, 0xb4, 1],
+        components: [
+          curvature(0.12, 0.005, [255, 255, 255, 0.9], [0, 0, 0, 0.9]),
+          slope([0, 0, 0, 0.4]),
+        ],
+      };
+
+    // Ridge lines orange, the drainage network blue.
+    case 'ridgesValleys':
+      return {
+        backgroundColor: [0xf4, 0xf0, 0xe6, 1],
+        components: [
+          curvature(
+            0.25,
+            0.02,
+            [0xc8, 0x64, 0x1e, 0.8],
+            [0x1e, 0x5a, 0xb4, 0.8],
+          ),
+          igor(315, [0, 0, 0, 0.4]),
+        ],
+      };
+
+    // Index lines every 100 m over 20 m ones.
+    case 'contourLines':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          igor(315, [0, 0, 0, 0.6]),
+          contours(20, 0.75, [0x8b, 0x5a, 0x2b, 0.7]),
+          contours(100, 1.5, [0x8b, 0x5a, 0x2b, 0.9]),
+        ],
+      };
+
+    case 'aspect':
+      return {
+        backgroundColor: [0, 0, 0, 0],
+        components: [
+          {
+            id: 0,
+            type: 'aspect',
+            ...levels,
+            colorStops: [
+              [255, 0, 0],
+              [255, 255, 0],
+              [0, 255, 0],
+              [0, 255, 255],
+              [0, 0, 255],
+              [255, 0, 255],
+              [255, 0, 0],
+            ].map(([r, g, b], i) => ({
+              value: (i / 6) * 2 * Math.PI,
+              color: [r, g, b, 0.6],
+            })),
+          },
+          {
+            id: 0,
+            type: 'slope-igor',
+            ...levels,
+            exaggeration: 1,
+            colorStops: [{ value: 0, color: [0, 0, 0, 0.6] }],
+          },
+        ],
+      };
+  }
+}
+
+/** Presets whose background is only paper under them, so they work without it. */
+const OPTIONAL_BACKGROUND: ReadonlySet<ShadingPreset> = new Set([
+  'plastic',
+  'swiss',
+  'golden',
+  'glacier',
+  'ink',
+  'watercolor',
+  'ridgesValleys',
+  'openness',
+  'archaeological',
+  'snow',
+]);
+
+/** Whether the preset covers what is beneath even without a background asked for. */
+export const isOpaquePreset = (preset: ShadingPreset) =>
+  isOpaqueShading(build(preset, DEFAULT_PRESET_PARAMS, false));
+
+function build(
+  preset: ShadingPreset,
+  params: PresetParams,
+  withBackground: boolean,
+): Shading {
+  const shading = buildOwn(preset, params);
+
+  const opaque = isOpaqueShading(shading);
+
+  if (opaque && !OPTIONAL_BACKGROUND.has(preset)) {
+    return shading;
+  }
+
+  if (!withBackground) {
+    return { ...shading, backgroundColor: [0, 0, 0, 0] };
+  }
+
+  return opaque ? shading : { ...shading, backgroundColor: [255, 255, 255, 1] };
+}
+
+/**
+ * The preset's shading, its components numbered by `newId`. `withBackground`
+ * keeps an optional background, or puts white under a preset that has none.
+ */
+export function shadingPreset(
+  preset: ShadingPreset,
+  newId: () => number,
+  params = DEFAULT_PRESET_PARAMS,
+  withBackground = false,
+): Shading {
+  const shading = build(preset, params, withBackground);
+
+  return {
+    ...shading,
+    components: shading.components.map((c) => ({ ...c, id: newId() })),
+  };
+}

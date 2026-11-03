@@ -1,6 +1,8 @@
 import { LineCompatSchema } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingPointCompatSchema } from '@features/drawing/model/actions/drawingPointActions.js';
 import { GalleryFilterSchema } from '@features/gallery/model/actions.js';
+import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
+import { MapPresetArrayCompatSchema } from '@features/map/model/mapPreset.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import {
   PickModeSchema,
@@ -10,7 +12,11 @@ import {
 } from '@features/routePlanner/model/actions.js';
 import { SavedSearchResultSchema } from '@features/search/model/actions.js';
 import { TrackedDeviceSchema } from '@features/tracking/model/types.js';
-import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import {
+  CustomLayerDefArrayCompatSchema,
+  resolveLayerAliases,
+  SHADING_SOURCE,
+} from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import z from 'zod';
 import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
@@ -94,14 +100,25 @@ const MapMapDataCompatSchema = z.preprocess(
 
     return v;
   },
-  z.object({
-    lat: z.number().optional(),
-    lon: z.number().optional(),
-    zoom: z.number().optional(),
-    layers: z.array(z.string()).optional(),
-    customLayers: CustomLayerDefArrayCompatSchema.optional(),
-    shading: ShadingSchema.optional(),
-  }),
+  z
+    .object({
+      lat: z.number().optional(),
+      lon: z.number().optional(),
+      zoom: z.number().optional(),
+      layers: z.array(z.string()).transform(resolveLayerAliases).optional(),
+      customLayers: CustomLayerDefArrayCompatSchema.optional(),
+      layerSetups: LayerSetupsCompatSchema.optional(),
+      // Copies of the presets on the map, each `@<id>` in `layers`.
+      presets: MapPresetArrayCompatSchema.optional(),
+      // A document from before setups: the shared shading, the shading map's.
+      shading: ShadingSchema.optional(),
+    })
+    .transform(({ shading, ...rest }) => ({
+      ...rest,
+      layerSetups:
+        rest.layerSetups ??
+        (shading ? { [SHADING_SOURCE]: { shading } } : undefined),
+    })),
 );
 
 // Colorize is a global display preference (`trackViewerSettings`), not part of
@@ -111,6 +128,11 @@ const DataViewerMapDataSchema = z.object({
   trackGeojson: GeoJSONFeatureCollectionSchema.nullable().optional(),
   trackUID: z.string().nullable().optional(),
   gpxUrl: z.string().nullable().optional(),
+  /**
+   * Where each feature stood on the map, taken in document order — `points`,
+   * then `lines`, then `trackGeojson`. Absent when that order is the map's.
+   */
+  order: z.array(z.number().int().nonnegative()).optional(),
 });
 
 export const MapsLoadResponseSchema = z.object({

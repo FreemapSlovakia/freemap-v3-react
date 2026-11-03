@@ -22,7 +22,7 @@ const de: DeepPartialWithRequiredObjects<CreditsMessages> = {
   ),
   purchase: {
     success: ({ amount }) => (
-      <>Dein Guthaben wurde um {nf00.format(amount)} erhöht.</>
+      <>Ihr Guthaben wurde um {nf00.format(amount)} erhöht.</>
     ),
   },
   youHaveCredits: (amount, explainCredits) => (

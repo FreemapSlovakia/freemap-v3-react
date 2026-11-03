@@ -1,6 +1,7 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import type { RootAction } from '@app/store/rootAction.js';
 import type { RootState } from '@app/store/store.js';
+import { toEpochMs } from '@shared/dateUtils.js';
 import {
   creditedAttributions,
   fetchElevations,
@@ -45,16 +46,6 @@ interface ResolvedProfile {
   points: ElevationProfilePoint[];
   times: (number | undefined)[];
   attributions: AttributionDef[];
-}
-
-function toEpoch(value: unknown): number | undefined {
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  const t = Date.parse(value);
-
-  return Number.isFinite(t) ? t : undefined;
 }
 
 /** Computes the profile for an already-resolved line and puts it on screen. */
@@ -252,7 +243,7 @@ function resolveElevationProfilePointsLocally(
         climbDown,
       });
 
-      times.push(toEpoch(segTimes[j]));
+      times.push(toEpochMs(segTimes[j]));
 
       prevPt = pt;
     }

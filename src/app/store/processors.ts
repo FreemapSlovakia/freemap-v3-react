@@ -20,26 +20,39 @@ import {
   cacheTilesStopProcessor,
 } from '@features/cachedMaps/model/cacheTilesProcessor.js';
 import {
+  changesetsHistoryProcessor,
+  changesetsHistorySelectionProcessor,
+  changesetsReturnToHistoryProcessor,
+} from '@features/changesets/model/historyProcessor.js';
+import { changesetInspectorProcessor } from '@features/changesets/model/inspectorToast.js';
+import { changesetsInspectProcessor } from '@features/changesets/model/inspectProcessor.js';
+import {
   changesetsProcessor,
   changesetsTrackProcessor,
 } from '@features/changesets/model/processor.js';
 import { cookieConsentProcessor } from '@features/cookieConsent/model/processor.js';
 import { dataViewerDeleteFeatureProcessor } from '@features/dataViewer/model/processors/dataViewerDeleteFeatureProcessor.js';
-import { dataViewerDensifyProcessor } from '@features/dataViewer/model/processors/dataViewerDensifyProcessor.js';
-import { dataViewerDownloadTrackProcessor } from '@features/dataViewer/model/processors/dataViewerDownloadTrackProcessor.js';
-import { dataViewerGpxLoadProcessor } from '@features/dataViewer/model/processors/dataViewerGpxLoadProcessor.js';
+import { dataViewerDrawSelectProcessor } from '@features/dataViewer/model/processors/dataViewerDrawSelectProcessor.js';
 import { dataViewerJoinTracksProcessor } from '@features/dataViewer/model/processors/dataViewerJoinTracksProcessor.js';
 import { dataViewerMatchTrackProcessor } from '@features/dataViewer/model/processors/dataViewerMatchTrackProcessor.js';
+import { dataViewerRenderProcessor } from '@features/dataViewer/model/processors/dataViewerRenderProcessor.js';
 import { dataViewerResolveElevationPromptProcessor } from '@features/dataViewer/model/processors/dataViewerResolveElevationPromptProcessor.js';
 import { dataViewerSelectProcessor } from '@features/dataViewer/model/processors/dataViewerSelectProcessor.js';
-import { dataViewerSetTrackDataProcessor } from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
 import {
-  dataViewerForgetStoredProcessor,
-  dataViewerRestoreStoredProcessor,
-  dataViewerStoreProcessor,
-} from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
+  dataViewerAddFeaturesProcessor,
+  dataViewerSetTrackDataProcessor,
+} from '@features/dataViewer/model/processors/dataViewerSetTrackDataProcessor.js';
+import { dataViewerSplitSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerSplitSelectionProcessor.js';
+import { dataViewerStaleSelectionProcessor } from '@features/dataViewer/model/processors/dataViewerStaleSelectionProcessor.js';
+import { dataViewerStoreProcessor } from '@features/dataViewer/model/processors/dataViewerStoreProcessors.js';
 import { dataViewerToggleElevationChartProcessor } from '@features/dataViewer/model/processors/dataViewerToggleElevationChartProcessor.js';
-import { drawingDiscardPartialLineProcessor } from '@features/drawing/model/processors/drawingDiscardPartialLineProcessor.js';
+import {
+  dataViewerCheckOsmAuthorizationProcessor,
+  dataViewerUploadToOsmProcessor,
+} from '@features/dataViewer/model/processors/dataViewerUploadToOsmProcessor.js';
+import { dataViewerVertexEditProcessor } from '@features/dataViewer/model/processors/dataViewerVertexEditProcessor.js';
+import { locusInstallProcessor } from '@features/documents/model/locusInstallProcessor.js';
+import { oruxMapsDownloadProcessor } from '@features/documents/model/oruxMapsDownloadProcessor.js';
 import { elevationChartPendingTargetProcessor } from '@features/elevationChart/model/pendingTargetProcessor.js';
 import { elevationChartProcessor } from '@features/elevationChart/model/processor.js';
 import { eventsDeleteProcessor } from '@features/events/model/processors/eventsDeleteProcessor.js';
@@ -82,8 +95,20 @@ import { locateProcessor } from '@features/location/model/locateProcessor.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
+import { mapSettingsSaveProcessor } from '@features/map/model/processors/mapSettingsSaveProcessor.js';
 import { mapTypeGaProcessor } from '@features/map/model/processors/mapTypeGaProcessor.js';
+import { overlayPlacementProcessor } from '@features/map/model/processors/overlayPlacementProcessor.js';
 import { exportMapFeaturesProcessor } from '@features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.js';
+import { catalogMapsLoadProcessor } from '@features/mapLibrary/model/processors/catalogMapsLoadProcessor.js';
+import { mapLibraryLoadProcessor } from '@features/mapLibrary/model/processors/mapLibraryLoadProcessor.js';
+import {
+  mapLibraryPreviewEndProcessor,
+  mapLibraryPreviewGoneProcessor,
+  mapLibraryPreviewModalProcessor,
+  mapLibraryPreviewStartProcessor,
+} from '@features/mapLibrary/model/processors/previewProcessors.js';
+import { featuresHiddenResetProcessor } from '@features/mapSettings/model/featuresHiddenResetProcessor.js';
+import { mapLayersPanelToggleProcessor } from '@features/mapSettings/model/mapLayersPanelToggleProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
@@ -100,15 +125,25 @@ import {
 import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
 import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
-import { objectDetailsProcessor } from '@features/objects/model/objectDetailsProcessor.js';
+import {
+  objectDetailsProcessor,
+  objectsTerrainOverlayProcessor,
+} from '@features/objects/model/objectDetailsProcessor.js';
 import {
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
+  objectsReleaseProcessor,
 } from '@features/objects/model/objectsFetchProcessor.js';
 import { objectsLookupProcessor } from '@features/objects/model/objectsLookupProcessor.js';
+import { objectsRouteProcessor } from '@features/objects/model/objectsRouteProcessor.js';
 import { downloadMapProcessor } from '@features/offlineMapExport/model/downloadMapProcessor.js';
 import { openInExternalAppProcessor } from '@features/openInExternalApp/openInExternalAppProcessor.js';
 import { osmLoadProcessor } from '@features/osm/model/processors/osmLoadProcessor.js';
+import {
+  osmNoteSelectionProcessor,
+  osmNotesLayerOffProcessor,
+} from '@features/osmNotes/model/processors/osmNoteSelectionProcessors.js';
+import { osmNotesLayerProcessor } from '@features/osmNotes/model/processors/osmNotesLayerProcessor.js';
 import { panoramaFixProcessor } from '@features/panorama/model/processors/panoramaFixProcessor.js';
 import { panoramaLookAtProcessor } from '@features/panorama/model/processors/panoramaLookAtProcessor.js';
 import {
@@ -154,7 +189,6 @@ import {
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
 import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
-import { convertToDataViewerProcessor } from '@/processors/convertToDataViewerProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
 import { errorProcessor } from '@/processors/errorProcessor.js';
@@ -169,11 +203,19 @@ export const processors = [
   errorProcessor,
   toastsCancelTypeProcessor,
   cancelProcessor,
+  mapLibraryLoadProcessor,
+  catalogMapsLoadProcessor,
+  mapSettingsSaveProcessor,
+  mapLayersPanelToggleProcessor,
+  featuresHiddenResetProcessor,
+  mapLibraryPreviewStartProcessor,
+  mapLibraryPreviewEndProcessor,
+  mapLibraryPreviewModalProcessor,
+  mapLibraryPreviewGoneProcessor,
   openToolProcessor,
   deleteProcessor,
   geoipProcessor,
   convertToDrawingProcessor,
-  convertToDataViewerProcessor,
   cookieConsentProcessor,
   authLogoutProcessor,
   authDisconnectProcessor,
@@ -191,38 +233,49 @@ export const processors = [
   followLocationProcessor,
   saveSettingsProcessor,
   resetAppProcessor,
-  drawingDiscardPartialLineProcessor,
+  dataViewerDrawSelectProcessor,
+  dataViewerStaleSelectionProcessor,
+  dataViewerVertexEditProcessor,
   measurementProcessor,
   changesetsProcessor,
   changesetsTrackProcessor,
+  changesetsInspectProcessor,
+  changesetInspectorProcessor,
+  changesetsHistoryProcessor,
+  changesetsHistorySelectionProcessor,
+  changesetsReturnToHistoryProcessor,
   authInitProcessor,
   authTrackProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
   elevationChartPendingTargetProcessor,
   objectsFetchProcessor,
+  objectsReleaseProcessor,
   objectsChangePredicateProcessor,
   objectDetailsProcessor,
+  objectsTerrainOverlayProcessor,
+  objectsRouteProcessor,
   objectsLookupProcessor,
   osmLoadProcessor,
   mapTypeGaProcessor,
+  overlayPlacementProcessor,
   toastsAddProcessor,
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
   dataViewerSetTrackDataProcessor,
+  dataViewerAddFeaturesProcessor,
   dataViewerStoreProcessor,
-  dataViewerForgetStoredProcessor,
-  dataViewerRestoreStoredProcessor,
-  dataViewerDownloadTrackProcessor,
-  dataViewerGpxLoadProcessor,
   dataViewerMatchTrackProcessor,
+  dataViewerUploadToOsmProcessor,
+  dataViewerCheckOsmAuthorizationProcessor,
   dataViewerToggleElevationChartProcessor,
   dataViewerResolveElevationPromptProcessor,
   dataViewerSelectProcessor,
   dataViewerDeleteFeatureProcessor,
+  dataViewerSplitSelectionProcessor,
   dataViewerJoinTracksProcessor,
-  dataViewerDensifyProcessor,
+  dataViewerRenderProcessor,
   routePlannerFindRouteProcessor,
   routePlannerOptimizeOrderProcessor,
   galleryDeletePictureProcessor,
@@ -273,6 +326,9 @@ export const processors = [
   eventsDeleteProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
+  osmNotesLayerProcessor,
+  osmNoteSelectionProcessor,
+  osmNotesLayerOffProcessor,
   weatherRadarLayerProcessor,
   weatherRadarRefreshProcessor,
   legendProcessor,
@@ -293,6 +349,8 @@ export const processors = [
   exportMapFeaturesProcessor,
   ...authProcessors,
   downloadMapProcessor,
+  locusInstallProcessor,
+  oruxMapsDownloadProcessor,
   purchaseProcessor,
   cacheTilesStartProcessor,
   cacheTilesRestartProcessor,

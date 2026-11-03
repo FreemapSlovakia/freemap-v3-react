@@ -26,7 +26,7 @@ function resolveMessage(
   messageKey: string,
   messageParams?: Record<string, unknown>,
 ): ReactNode {
-  const v = getMessageByKey(m as Messages | undefined, messageKey);
+  const v = getMessageByKey(m, messageKey);
 
   if (typeof v === 'string') {
     return v;

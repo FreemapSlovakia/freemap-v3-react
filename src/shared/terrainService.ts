@@ -1,6 +1,7 @@
 import { HttpError, httpRequest, isNetworkError } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
+import { AttributionListSchema } from '@shared/elevation.js';
 import z from 'zod';
 
 /**
@@ -39,6 +40,36 @@ export function terrainErrorCode(err: unknown): TerrainErrorCode {
   return 'failed';
 }
 
+/**
+ * The credits a render's `meta.sources` carries, flattened: the service names
+ * the models it was answered from and what to display for each, so nothing here
+ * keeps a copy of the licence text. Empty only from a service too old to report
+ * them, and then nothing is credited — there is no list here to stand in.
+ *
+ * Datasets of one model carry the same line (each of Spain's three zones), so
+ * a line is kept once per name and url.
+ */
+export const TerrainCreditsSchema = z
+  .array(z.looseObject({ attributions: z.unknown() }))
+  .catch([])
+  .transform((sources) => {
+    const seen = new Set<string>();
+
+    return sources
+      .flatMap((source) => AttributionListSchema.parse(source.attributions))
+      .filter((credit) => {
+        const key = JSON.stringify([credit.name, credit.url]);
+
+        if (seen.has(key)) {
+          return false;
+        }
+
+        seen.add(key);
+
+        return true;
+      });
+  });
+
 const ProgressSchema = z.object({
   phase: z.enum(['queued', 'rendering', 'encoding', 'done']),
   /** Renders that must finish before this one starts; `0` means next. */
@@ -50,8 +81,14 @@ const ProgressSchema = z.object({
 /**
  * How far along a render is. The picture arrives all at once at the end, so
  * this comes over a side channel — see the service's `docs/API.md`.
+ *
+ * `decoding` is not one of the service's: it is what happens after its last
+ * word, and it is seconds of the wait on a fine render, so whoever is showing
+ * progress has to be told about it too.
  */
-export type TerrainProgress = z.infer<typeof ProgressSchema>;
+export type TerrainProgress = Omit<z.infer<typeof ProgressSchema>, 'phase'> & {
+  phase: z.infer<typeof ProgressSchema>['phase'] | 'decoding';
+};
 
 /**
  * Rejects the service's `unknown` phase along with anything malformed: the
@@ -141,8 +178,8 @@ export async function requestTerrainRender(
       ...cancel,
       getState,
       method: 'POST',
-      // Absolute, so `httpRequest` adds no credentials of its own; the terrain
-      // service clamps quality per account and needs the token to do it.
+      // Absolute, so `httpRequest` adds no credentials of its own; the bearer
+      // token goes on explicitly instead.
       url: `${process.env['TERRAIN_URL']}${path}`,
       data: request,
       headers: {
@@ -159,13 +196,13 @@ export async function requestTerrainRender(
 
 /**
  * The two parts every render answers with: its JSON `meta`, parsed by the
- * endpoint's own schema, and the picture as an object URL. A `depth` part, where
- * one was asked for, is the caller's to take out of the same form.
+ * endpoint's own schema, and the picture itself. A `depth` part, where one was
+ * asked for, is the caller's to take out of the same form.
  */
 export function terrainParts<T>(
   form: FormData,
   schema: { parse: (data: unknown) => T },
-): { meta: T; imageUrl: string } {
+): { meta: T; image: Blob } {
   const metaPart = form.get('meta');
 
   if (typeof metaPart !== 'string') {
@@ -178,8 +215,5 @@ export function terrainParts<T>(
     throw new Error('missing terrain image');
   }
 
-  return {
-    meta: schema.parse(JSON.parse(metaPart)),
-    imageUrl: URL.createObjectURL(imagePart),
-  };
+  return { meta: schema.parse(JSON.parse(metaPart)), image: imagePart };
 }

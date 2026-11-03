@@ -1,17 +1,29 @@
 import { useMouseCursor } from '@app/hooks/useMouseCursor.js';
 import { pickingModeSelector } from '@app/store/selectors.js';
+import { brightnessFilter } from '@features/map/brightness.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
+import {
+  FEATURES_PANE_CLASS,
+  useOwnPaneOpacity,
+} from '@features/map/hooks/featuresPane.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { useMap } from '@features/map/hooks/useMap.js';
+import { shiftZoomGrid } from '@features/map/shiftZoomGrid.js';
+import { snapToDevicePixels } from '@features/map/snapToDevicePixels.js';
 import { initialWheelPxPerZoomLevel } from '@features/map/wheelZoomCalibration.js';
+import { zoomGridOffset } from '@features/map/zoomGrid.js';
 import { HALO_OPACITY, HALO_PANE, HALO_PANE_Z } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 // Imported for its side effect, before any layer can bind a tooltip.
 import '../leafletTooltipFocusFix.js';
+// Imported for its side effect, before any tile layer can redraw.
+import '../leafletTileZoomFix.js';
 // Imported for its side effect: registers the `doubleTapDragZoom` map handler.
 import '../doubleTapDragZoom.js';
 import 'leaflet/dist/leaflet.css';
 import { type ReactElement, type ReactNode, useEffect } from 'react';
-import { MapContainer, Pane, ScaleControl } from 'react-leaflet';
+import { MapContainer, Pane } from 'react-leaflet';
 import './leaflet.css';
 
 type Props = {
@@ -45,6 +57,59 @@ export function TheMap({ children }: Props): ReactElement {
       .classList.toggle('fm-features-noninteractive', featuresNonInteractive);
   }, [map, featuresNonInteractive]);
 
+  const backgroundColor = useAppSelector((state) => state.map.backgroundColor);
+
+  const checkerboard = useAppSelector(
+    (state) => state.map.backgroundCheckerboard,
+  );
+
+  // Whatever no layer covers: no base map, or a transparent one.
+  useEffect(() => {
+    if (map) {
+      const { style } = map.getContainer();
+
+      style.backgroundColor = backgroundColor;
+
+      // The second square is pulled towards grey, so it shows on any colour.
+      style.backgroundImage = checkerboard
+        ? `repeating-conic-gradient(${backgroundColor} 0 25%, color-mix(in srgb, ${backgroundColor} 80%, #808080) 0 50%)`
+        : '';
+
+      style.backgroundSize = checkerboard ? '16px 16px' : '';
+    }
+  }, [map, backgroundColor, checkerboard]);
+
+  const brightness = useAppSelector((state) => state.map.brightness);
+
+  // `tilePane` holds every map layer, and only them: the features on top keep
+  // their own colours.
+  useEffect(() => {
+    const pane = map?.getPane('tilePane');
+
+    if (pane) {
+      pane.style.filter = brightnessFilter(brightness);
+    }
+  }, [map, brightness]);
+
+  const featuresOpacity = useAppSelector((state) => state.map.featuresOpacity);
+
+  useEffect(() => {
+    const container = map?.getContainer();
+
+    container?.style.setProperty(
+      '--fm-features-opacity',
+      String(featuresOpacity),
+    );
+
+    // Too faint to see, too faint to take a click meant for the map.
+    container?.classList.toggle(
+      'fm-features-faint',
+      areFeaturesHidden(featuresOpacity),
+    );
+  }, [map, featuresOpacity]);
+
+  const haloRef = useOwnPaneOpacity(HALO_OPACITY);
+
   // Leaflet consults `zoomSnap` on each gesture rather than at construction, so
   // the live map can be retuned in place. Only react-leaflet's own props are
   // fixed at creation, and remounting to change one would refetch every tile and
@@ -54,6 +119,18 @@ export function TheMap({ children }: Props): ReactElement {
       map.options.zoomSnap = zoomSnap;
     }
   }, [map, zoomSnap]);
+
+  const zoomOffset = zoomGridOffset(
+    useAppSelector((state) => state.map.pixelExact),
+    useDevicePixelRatio(),
+  );
+
+  useEffect(
+    () => (map ? shiftZoomGrid(map, zoomOffset) : undefined),
+    [map, zoomOffset],
+  );
+
+  useEffect(() => (map ? snapToDevicePixels(map) : undefined), [map]);
 
   return (
     <MapContainer
@@ -74,8 +151,6 @@ export function TheMap({ children }: Props): ReactElement {
       // One-finger zoom: double-tap, hold the second tap and drag.
       doubleTapDragZoom
     >
-      <ScaleControl imperial={false} position="bottomleft" />
-
       {/* Holds the interactive handles of the active selection mode (export/cache
           rectangle, photo-location marker); exempt from fm-features-noninteractive
           so it stays grabbable while everything else is click-through. */}
@@ -85,7 +160,9 @@ export function TheMap({ children }: Props): ReactElement {
           group. Declared before the features, which name it. */}
       <Pane
         name={HALO_PANE}
-        style={{ zIndex: HALO_PANE_Z, opacity: HALO_OPACITY }}
+        ref={haloRef}
+        className={FEATURES_PANE_CLASS}
+        style={{ zIndex: HALO_PANE_Z }}
       />
 
       {children}

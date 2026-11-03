@@ -1,9 +1,9 @@
-<svg width="12" height="17" version="1.1"
-  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-
-
+<svg
+   width="9"
+   height="14"
+   xmlns="http://www.w3.org/2000/svg">
   <path
-    d="M 5.5,1.5 L 3.87,10.5 H 1.5 V 11.5 H 2.5 V 14.5 H 1.5 V 15.5 H 10.5 V 14.5 H 9.5 V 11.5 H 10.5 V 10.5 H 8.14 L 6.5,1.5 Z"
-    fill="#030303" fill-rule="evenodd"
-  />
+     d="M 4,0 2.37,9 H 0 v 1 h 1 v 3 H 0 v 1 H 9 V 13 H 8 V 10 H 9 V 9 H 6.64 L 5,0 Z"
+     fill="#030303"
+     fill-rule="evenodd" />
 </svg>

@@ -16,22 +16,22 @@ const it: DeepPartialWithRequiredObjects<CreditsMessages> = {
   payWithChrons: 'Paga con i Chron',
   chronsHint: (
     <>
-      Se desideri ottenere crediti per il lavoro di volontariato segnalato in{' '}
-      <RovasLink>Rovas</RovasLink>, scegli di pagare con i Chron.
+      Se desidera ottenere crediti per il lavoro di volontariato segnalato in{' '}
+      <RovasLink>Rovas</RovasLink>, scelga di pagare con i Chron.
     </>
   ),
   purchase: {
     success: ({ amount }) => (
-      <>Il tuo credito è stato aumentato di {nf00.format(amount)}.</>
+      <>Il suo credito è stato aumentato di {nf00.format(amount)}.</>
     ),
   },
   youHaveCredits: (amount, explainCredits) => (
     <>
-      Hai {amount}{' '}
+      Ha {amount}{' '}
       {explainCredits ? (
         <CreditsText
           credits="crediti"
-          help="Puoi usare i crediti per [l'esportazione delle mappe offline]."
+          help="Può usare i crediti per [l'esportazione delle mappe offline]."
         />
       ) : (
         'crediti'

@@ -5,14 +5,14 @@ import type { AdMessages } from './AdMessages.js';
 
 const it: DeepPartialWithRequiredObjects<AdMessages> = {
   self: {
-    head: 'Qui può esserci la tua pubblicità',
-    sub: "Raggiungi chi sta programmando il proprio tempo all'aria aperta — direttamente nella mappa.",
-    cta: 'Scopri la nostra offerta',
+    head: 'Qui può esserci la sua pubblicità',
+    sub: "Raggiunga chi sta programmando il proprio tempo all'aria aperta — direttamente nella mappa.",
+    cta: 'Scopra la nostra offerta',
   },
   rovas: () => (
     <RovasAd rovasDesc="un’economia che premia il lavoro">
-      Registra la tua attività di volontariato, falla verificare dalla community
-      e guadagna chron.
+      Registri la sua attività di volontariato, la faccia verificare dalla
+      community e guadagni chron.
     </RovasAd>
   ),
   zdilaAuthorship: () => (

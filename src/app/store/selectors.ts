@@ -50,13 +50,21 @@ export const galleryShowPositionSelector = (state: RootState): boolean =>
   state.gallery.showPosition;
 
 export const drawingLineSelector = (state: RootState): boolean =>
-  state.drawingLines.drawing;
+  state.trackViewer.drawing !== null;
 
 export const mapAreaSelectingSelector = (state: RootState): boolean =>
   state.mapArea.selecting !== null;
 
 export const toposcopePickingCenterSelector = (state: RootState): boolean =>
   state.toposcope.pickingCenter;
+
+/** A library map is previewed; unlike the picks, it switches no other map. */
+export const mapLibraryPreviewingSelector = (state: RootState): boolean =>
+  state.mapLibrary.preview !== null;
+
+/** The layers the user has on: during a library preview, those it puts back. */
+export const userLayersSelector = (state: RootState): string[] =>
+  state.mapLibrary.preview?.restore ?? state.map.layers;
 
 export const panoramaPickingSelector = (state: RootState): boolean =>
   state.panorama.picking !== null;
@@ -77,7 +85,8 @@ export const pickingModeSelector = (state: RootState): boolean =>
   viewshedPickingViewpointSelector(state) ||
   galleryPickingPositionForIdSelector(state) !== null ||
   galleryShowPositionSelector(state) ||
-  mapAreaSelectingSelector(state);
+  mapAreaSelectingSelector(state) ||
+  mapLibraryPreviewingSelector(state);
 
 /**
  * True while the map is given over to a click on a *feature* — joining two
@@ -86,11 +95,10 @@ export const pickingModeSelector = (state: RootState): boolean =>
  * The armed mode's own toolbar says what it wants and cancels it.
  */
 export const armedModeSelector = (state: RootState): boolean =>
-  state.drawingLines.joinWith !== undefined ||
-  // The data viewer's toolbar rides its selection, so a mode can never take
-  // the chrome away without it.
-  (state.main.selection?.type === 'data-viewer' &&
-    (state.trackViewer.joinWith !== null || state.trackViewer.splitting));
+  // The feature's toolbar rides its selection, so a mode can never take the
+  // chrome away without it.
+  state.main.selection?.type === 'feature' &&
+  (state.trackViewer.joinWith !== null || state.trackViewer.splitting);
 
 /** Whether the map is in a mode of its own, whichever kind. */
 export const mapModeSelector = (state: RootState): boolean =>
@@ -128,7 +136,7 @@ export const mouseCursorSelector = createSelector(
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
   galleryShowPositionSelector,
-  (state: RootState) => state.drawingLines.drawing,
+  drawingLineSelector,
   toposcopePickingCenterSelector,
   panoramaPickingSelector,
   viewshedPickingViewpointSelector,
@@ -190,7 +198,7 @@ export const trackingTracksSelector = (state: RootState): Track[] =>
 
 export const trackingActiveTrackIdSelector = (
   state: RootState,
-): string | number | undefined =>
+): string | undefined =>
   state.main.selection?.type === 'tracking'
     ? state.main.selection.id
     : undefined;
@@ -210,7 +218,7 @@ export const selectingModeSelector = (state: RootState): boolean => {
   return (
     !window.fmEmbedded &&
     !pickingModeSelector(state) &&
-    !state.drawingLines.drawing &&
+    state.trackViewer.drawing === null &&
     // selection works when no map-click tool captures the click, except a
     // route-planner that is actively picking points
     (mode === null ||
@@ -229,7 +237,7 @@ export const drawingLinePolys = (state: RootState): boolean => {
     tool === 'draw-polygons' ||
     // A picking mode owns the map, so an in-progress drawing must go inert there
     // too — mirror the masking `activeMapToolSelector` already applies.
-    (state.drawingLines.drawing && !pickingModeSelector(state))
+    (state.trackViewer.drawing !== null && !pickingModeSelector(state))
   );
 };
 
@@ -249,8 +257,6 @@ export const askingCookieConsentSelector = (state: RootState): boolean =>
 // user-visible features on the map.
 export const hasClearableMapFeaturesSelector = (state: RootState): boolean =>
   state.main.selection !== null ||
-  state.drawingPoints.points.length > 0 ||
-  state.drawingLines.lines.length > 0 ||
   state.routePlanner.points.length > 0 ||
   state.objects.objects.length > 0 ||
   state.changesets.changesets.length > 0 ||

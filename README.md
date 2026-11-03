@@ -74,6 +74,7 @@ The production nginx site configs are checked into this repo under [`etc/nginx/s
 
 - [`www.freemap.sk`](./etc/nginx/sites-available/www.freemap.sk) — the main site.
 - [`www.freemap.eu`](./etc/nginx/sites-available/www.freemap.eu) — the `.eu` mirror (additionally allows CORS for the GlitchTip/Sentry origin).
+- [`mta-sts.freemap.sk`](./etc/nginx/sites-available/mta-sts.freemap.sk) — serves the [MTA-STS policy](./etc/mta-sts/.well-known/mta-sts.txt) ([RFC 8461](https://www.rfc-editor.org/rfc/rfc8461)) from `/var/www/mta-sts`. The policy is in `enforce` mode, so **senders refuse to deliver mail to an MX that falls outside its `mx:` patterns or fails TLS hostname validation**. Before changing `freemap.sk`'s MX records, widen the policy first and bump `id=` in the `_mta-sts.freemap.sk` TXT record (senders otherwise keep the cached copy for `max_age`, a week). Failure reports go to the `_smtp._tls` TLS-RPT address.
 
 Both serve the static build from `/home/freemap/www` and share the same **cache-header policy**, which is critical to get right — mismatched headers pin users to stale hashed asset names and break the layout after a deploy:
 
@@ -128,7 +129,7 @@ Deeper reference docs live in [`doc/`](./doc/):
 
 - [Drawing feature export/import format mapping](./doc/drawing-export-mapping.md) — how points, lines and polygons round-trip through GPX and GeoJSON, including the curated icon mappings for Garmin / OsmAnd / Locus.
 
-[`src/static/llms.txt`](./src/static/llms.txt) is a hand-maintained, user-facing description of the application (its functions, modals and map layers) for AI assistants, served at [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) per the [llmstxt.org](https://llmstxt.org) convention. Keep it in sync when changing user-visible behavior — see [CLAUDE.md](./CLAUDE.md).
+[`src/static/llms.txt`](./src/static/llms.txt) is a hand-maintained, user-facing description of the application (its functions, modals and map layers) for AI assistants, served at [www.freemap.sk/llms.txt](https://www.freemap.sk/llms.txt) per the [llmstxt.org](https://llmstxt.org) convention. It indexes the `src/static/llms-*.md` files that carry the detail. Keep it in sync when changing user-visible behavior — see [CLAUDE.md](./CLAUDE.md).
 
 Contributor notes for Claude Code (workflow, conventions): [CLAUDE.md](./CLAUDE.md).
 

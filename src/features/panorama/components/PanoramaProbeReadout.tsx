@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
@@ -87,7 +88,7 @@ export function PanoramaProbeReadout({ probe }: Props): ReactElement {
           model answered and the title carries. */}
       {!probe.peak && probe.ele !== undefined && (
         <div>
-          ~{nfEle.format(probe.ele)} {gm?.general.masl}
+          ~{nfEle.format(probe.ele)} <Text k="general.masl" />
         </div>
       )}
     </>

@@ -17,18 +17,20 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'Bild ist zu groß. Maximale Größe beträgt 5 MB.',
     description: 'Über mich',
   },
+  appTokens: { scopeNames: {} },
   connectLabel: 'Verbinden',
-  connectSuccess: 'Verbunden',
+  connectSuccess: ({ provider }) =>
+    `Ihr ${provider}-Konto wurde mit Ihrem Freemap-Konto verbunden. Sie können sich jetzt auch damit anmelden.`,
   disconnectLabel: 'Trennen',
   disconnectSuccess: 'Getrennt',
-  logInWith: 'Wähle einen Anmeldeanbieter',
-  logInSuccess: 'Du wurdest erfolgreich angemeldet.',
+  logInWith: 'Wählen Sie einen Anmeldeanbieter',
+  logInSuccess: 'Sie wurden erfolgreich angemeldet.',
   logInError: ({ err }) =>
     addError(getMessages()!, 'Fehler bei der Anmeldung', err),
   logInError2: 'Fehler bei der Anmeldung.',
   verifyError: ({ err }) =>
     addError(getMessages()!, 'Fehler bei der Authentifizierungsprüfung', err),
-  logOutSuccess: 'Du wurdest erfolgreich abgemeldet.',
+  logOutSuccess: 'Sie wurden erfolgreich abgemeldet.',
   logOutError: ({ err }) =>
     addError(getMessages()!, 'Fehler bei der Abmeldung', err),
 };

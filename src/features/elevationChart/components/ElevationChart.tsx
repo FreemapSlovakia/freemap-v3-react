@@ -1,10 +1,13 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { askingCookieConsentSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
+import { ManualWindowButton } from '@features/documents/components/ManualWindowButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
-  GENEROUS_MARGIN_PX,
-  panToUncovered,
+  endKeep,
+  type KeepGesture,
+  keepUncovered,
 } from '@features/map/panToUncovered.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
@@ -560,6 +563,8 @@ export default function ElevationChart(): ReactElement | null {
     if (point) {
       dispatch(elevationChartSetActivePoint(point));
     }
+
+    return point;
   };
 
   // Zoom about a place rather than about the middle: whatever is under the
@@ -624,8 +629,7 @@ export default function ElevationChart(): ReactElement | null {
 
   const travelRef = useRef(0);
 
-  /** Whether a second finger ever joined, which makes the gesture a pinch. */
-  const pinchedRef = useRef(false);
+  const keepGestureRef = useRef<KeepGesture>({});
 
   /**
    * The distance the far end of a marking gesture is anchored at — the edge
@@ -690,14 +694,19 @@ export default function ElevationChart(): ReactElement | null {
 
       setDraftRange(null);
 
-      pinchedRef.current = true;
+      // Nor does the map follow the finger left behind once the pinch ends.
+      endKeep(keepGestureRef.current);
+
+      keepGestureRef.current = { done: true };
 
       return;
     }
 
     travelRef.current = 0;
 
-    pinchedRef.current = false;
+    endKeep(keepGestureRef.current);
+
+    keepGestureRef.current = {};
 
     const distance = distanceAt(e.clientX);
 
@@ -736,8 +745,14 @@ export default function ElevationChart(): ReactElement | null {
       }, LONG_PRESS_MS);
     }
 
-    // A finger has no hover, so the press is what reads the profile.
-    scrub(e.clientX);
+    // A finger has no hover, so the press is what reads the profile. The panel
+    // usually sits over the place, so the press also brings it into view —
+    // unless zoomed in, where the press may start a slide; a tap does it then.
+    const point = scrub(e.clientX);
+
+    if (point && e.button === 0 && view.to - view.from >= 1) {
+      keepUncovered(dispatch, point, keepGestureRef.current);
+    }
   };
 
   const handlePointerMove = (e: ReactPointerEvent<SVGRectElement>) => {
@@ -800,10 +815,16 @@ export default function ElevationChart(): ReactElement | null {
 
     // Zoomed in, a drag slides the window along the profile; at full width
     // there is nothing to slide, so it reads the profile as a hover does.
+    // Unlike a hover, a pressed scrub holds its place still on the map.
     if (view.to - view.from < 1) {
       panBy(dx);
     } else {
-      scrub(e.clientX);
+      const point = scrub(e.clientX);
+
+      // Past the slop, so a finger's jitter doesn't cut short the press's glide.
+      if (point && e.buttons & 1 && travelRef.current > CLICK_SLOP_PX) {
+        keepUncovered(dispatch, point, keepGestureRef.current, true);
+      }
     }
   };
 
@@ -840,24 +861,19 @@ export default function ElevationChart(): ReactElement | null {
       if (marked) {
         dispatch(elevationChartSetRange(marked));
       }
-
-      return;
-    }
-
-    // A press that went nowhere asks to see the place it marks, and the panel
-    // is usually sitting over it — so the map brings it out into the open. One
-    // already well in view stays put: reading along a profile is a lot of
-    // presses, and the map sliding under each of them helps nobody.
-    if (travelRef.current <= CLICK_SLOP_PX && !pinchedRef.current) {
+    } else if (
+      e.button === 0 &&
+      view.to - view.from < 1 &&
+      travelRef.current <= CLICK_SLOP_PX
+    ) {
       const point = pointAt(e.clientX);
 
       if (point) {
-        panToUncovered(dispatch, point, {
-          ifHidden: true,
-          margin: GENEROUS_MARGIN_PX,
-        });
+        keepUncovered(dispatch, point, keepGestureRef.current);
       }
     }
+
+    endKeep(keepGestureRef.current);
   };
 
   // A gesture the system took away (an OS gesture, a call arriving) completed
@@ -872,6 +888,8 @@ export default function ElevationChart(): ReactElement | null {
     cancelLongPress();
 
     setDraftRange(null);
+
+    endKeep(keepGestureRef.current);
   };
 
   const handlePointerOut = (e: ReactPointerEvent<SVGRectElement>) => {
@@ -1434,7 +1452,8 @@ export default function ElevationChart(): ReactElement | null {
               Number.isFinite(rangeStats.min) && (
                 <>
                   ▴ {nf0.format(rangeStats.min)}–{nf0.format(rangeStats.max)}
-                  &nbsp;{gm?.general.masl}
+                  &nbsp;
+                  <Text k="general.masl" />
                 </>
               ),
 
@@ -1465,8 +1484,8 @@ export default function ElevationChart(): ReactElement | null {
           typeof climbUp === 'number' &&
           typeof climbDown === 'number' && (
             <p className="m-0">
-              {m?.uphill}: {nf0.format(climbUp)}&nbsp;m, {m?.downhill}:{' '}
-              {nf0.format(climbDown)}&nbsp;m
+              <Text m={m} k="uphill" />: {nf0.format(climbUp)}&nbsp;m,{' '}
+              <Text m={m} k="downhill" />: {nf0.format(climbDown)}&nbsp;m
             </p>
           )
         )}
@@ -1475,17 +1494,17 @@ export default function ElevationChart(): ReactElement | null {
           // Pushed against the buttons at the right end of its line, so the one
           // auto margin belongs here rather than to them.
           <p className="m-0 ms-auto small text-body-secondary">
-            {m?.elevationSource}:{' '}
+            <Text m={m} k="elevationSource" />:{' '}
             {tooMany ? (
               <Button
                 variant="link"
                 // `.btn` sets an absolute font size, which beats a `small` class
                 // on the same element — inherit the paragraph's instead.
                 style={{ fontSize: 'inherit' }}
-                className="p-0 align-baseline link-body-emphasis"
+                className="p-0 align-baseline"
                 onClick={showSources}
               >
-                {m?.showAllSources} ({sources.length})
+                <Text m={m} k="showAllSources" /> ({sources.length})
               </Button>
             ) : (
               <ElevationSourcesInline sources={sources} />
@@ -1555,6 +1574,8 @@ export default function ElevationChart(): ReactElement | null {
             onToggle={toggleFullscreen}
             size="sm"
           />
+
+          <ManualWindowButton chapter="tracks" size="sm" />
         </div>
       </div>
 

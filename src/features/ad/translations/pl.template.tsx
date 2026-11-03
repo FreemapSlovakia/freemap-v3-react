@@ -5,7 +5,7 @@ import type { AdMessages } from './AdMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<AdMessages> = {
   self: {
-    head: 'Tu może być Twoja reklama',
+    head: 'Tu może być Państwa reklama',
     sub: 'Dotrzyj do osób planujących czas na świeżym powietrzu — bezpośrednio w mapie.',
     cta: 'Zobacz naszą ofertę',
   },

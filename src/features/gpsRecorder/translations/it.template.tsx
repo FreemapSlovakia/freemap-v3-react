@@ -58,7 +58,7 @@ const it: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     title: 'Eliminare la registrazione?',
     message:
       'Il registratore scarta l’intera traccia. L’operazione non può essere ' +
-      'annullata. Se vuoi conservarla, termina invece la registrazione.',
+      'annullata. Se vuole conservarla, termini invece la registrazione.',
     confirm: 'Elimina',
   },
   setup: {
@@ -91,22 +91,22 @@ const it: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'Il browser ha negato l’accesso alla rete locale, quindi la vista in ' +
       'diretta non è disponibile. La registrazione in sé non ne risente.',
     setupNeeded:
-      'Il registratore non può ancora registrare — aprilo e concedi ciò che chiede.',
-    recording: 'Ferma la registrazione prima di eliminarne la traccia.',
+      'Il registratore non può ancora registrare — lo apra e conceda ciò che chiede.',
+    recording: 'Fermi la registrazione prima di eliminarne la traccia.',
     incomplete:
       'Una parte della registrazione non è ancora arrivata a questa pagina, ' +
-      'quindi non è stato preso né eliminato nulla. Riconnettiti e termina di nuovo.',
+      'quindi non è stato preso né eliminato nulla. Si riconnetta e termini di nuovo.',
     notStored:
       'Non è stato possibile salvare la registrazione in questo browser, ' +
-      'quindi è rimasta sul registratore. La trovi nelle tue tracce — ' +
-      'esportala o salvala da lì.',
+      'quindi è rimasta sul registratore. La trova nelle sue tracce — ' +
+      'la esporti o la salvi da lì.',
     notPersisted:
       'Questo browser non ha garantito di conservare la propria memoria, ' +
-      'quindi la registrazione è rimasta sul registratore. La trovi nelle tue ' +
-      'tracce — esportala o salvala, poi elimina la registrazione.',
+      'quindi la registrazione è rimasta sul registratore. La trova nelle sue ' +
+      'tracce — la esporti o la salvi, poi elimini la registrazione.',
     needsForeground:
       'Android non ha permesso al registratore di avviarsi dal background. ' +
-      'Aprilo e avvia da lì, oppure consentigli di funzionare senza ' +
+      'Lo apra e lo avvii da lì, oppure gli consenta di funzionare senza ' +
       'restrizioni della batteria per poterlo avviare da qui.',
     outdated:
       'Il registratore è troppo vecchio per questa versione della mappa.',
@@ -129,7 +129,7 @@ const it: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     sourceFused: 'Combinata (GPS, wifi e sensori)',
     sourceHint:
       'Il ricevitore misura la quota a ogni rilevazione; l’origine combinata ' +
-      'ti colloca meglio tra gli edifici e sotto gli alberi, ma ripete la ' +
+      'localizza meglio tra gli edifici e sotto gli alberi, ma ripete la ' +
       'stessa quota anche per alcuni secondi.',
     priority: 'Precisione',
     priorityHigh: 'Massima (GPS, più batteria)',

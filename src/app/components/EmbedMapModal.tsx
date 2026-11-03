@@ -1,5 +1,12 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -12,8 +19,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal, ToggleButton } from 'react-bootstrap';
-import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
+import { Form, InputGroup, Modal, ToggleButton } from 'react-bootstrap';
+import { FaClipboard, FaCode } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { setActiveModal } from '../store/actions.js';
@@ -34,6 +41,12 @@ function identity<T>(value: T): T {
 const toWidth = (value: string | null) => value ?? '640';
 
 const toHeight = (value: string | null) => value ?? '480';
+
+const SIZE_MIN = 100;
+
+const WIDTH_MAX = 1600;
+
+const HEIGHT_MAX = 1200;
 
 export default function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
@@ -164,9 +177,9 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
     allow.push('geolocation');
   }
 
-  const invalidWidth = isInvalidInt(width, true, 100, 1600);
+  const invalidWidth = isInvalidInt(width, true, SIZE_MIN, WIDTH_MAX);
 
-  const invalidHeight = isInvalidInt(width, true, 100, 1200);
+  const invalidHeight = isInvalidInt(height, true, SIZE_MIN, HEIGHT_MAX);
 
   const cookiesEnabled = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult !== null,
@@ -204,8 +217,9 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCode /> {m?.mainMenu.embedMap}
+          <FaCode /> <Text k="mainMenu.embedMap" />
         </Modal.Title>
+        <ManualHeaderButton chapter="devices" />
       </Modal.Header>
 
       <Modal.Body>
@@ -214,42 +228,72 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
           className="mb-3"
           style={{ maxWidth: '542px' }}
         >
-          <Form.Label className="required">{lm?.dimensions}</Form.Label>
+          <Form.Label className="required">
+            <Text m={lm} k="dimensions" />
+          </Form.Label>
 
           <div className="d-flex gap-2">
-            <InputGroup>
-              <InputGroup.Text>{lm?.width}</InputGroup.Text>
+            <InputGroup hasValidation>
+              <InputGroup.Text>
+                <Text m={lm} k="width" />
+              </InputGroup.Text>
 
               <Form.Control
                 type="number"
                 value={width}
-                min={100}
-                max={1600}
+                min={SIZE_MIN}
+                max={WIDTH_MAX}
                 step={10}
                 isInvalid={invalidWidth}
                 required
                 onChange={setWidth}
               />
+
+              <Form.Control.Feedback type="invalid">
+                <Text>
+                  {(m) =>
+                    m.general.valueRange({
+                      min: `${SIZE_MIN}\u00a0px`,
+                      max: `${WIDTH_MAX}\u00a0px`,
+                    })
+                  }
+                </Text>
+              </Form.Control.Feedback>
             </InputGroup>
 
-            <InputGroup>
-              <InputGroup.Text>{lm?.height}</InputGroup.Text>
+            <InputGroup hasValidation>
+              <InputGroup.Text>
+                <Text m={lm} k="height" />
+              </InputGroup.Text>
 
               <Form.Control
                 type="number"
                 value={height}
-                min={100}
-                max={1200}
+                min={SIZE_MIN}
+                max={HEIGHT_MAX}
                 step={10}
                 isInvalid={invalidHeight}
                 required
                 onChange={setHeight}
               />
+
+              <Form.Control.Feedback type="invalid">
+                <Text>
+                  {(m) =>
+                    m.general.valueRange({
+                      min: `${SIZE_MIN}\u00a0px`,
+                      max: `${HEIGHT_MAX}\u00a0px`,
+                    })
+                  }
+                </Text>
+              </Form.Control.Feedback>
             </InputGroup>
           </div>
         </Form.Group>
 
-        <Form.Label className="d-block">{lm?.enableFeatures}</Form.Label>
+        <Form.Label className="d-block">
+          <Text m={lm} k="enableFeatures" />
+        </Form.Label>
 
         <div className="d-flex flex-wrap gap-2">
           <ToggleButton
@@ -260,7 +304,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('search')}
             onChange={handleFeaturesChange}
           >
-            {lm?.enableSearch}
+            <Text m={lm} k="enableSearch" />
           </ToggleButton>
 
           <ToggleButton
@@ -271,7 +315,7 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('mapSwitch')}
             onChange={handleFeaturesChange}
           >
-            {lm?.enableMapSwitch}
+            <Text m={lm} k="enableMapSwitch" />
           </ToggleButton>
 
           <ToggleButton
@@ -282,13 +326,15 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
             checked={features.has('locateMe')}
             onChange={handleFeaturesChange}
           >
-            {lm?.enableLocateMe}
+            <Text m={lm} k="enableLocateMe" />
           </ToggleButton>
         </div>
 
         <hr />
 
-        <Form.Label>{lm?.code}</Form.Label>
+        <Form.Label>
+          <Text m={lm} k="code" />
+        </Form.Label>
 
         <Form.Control
           ref={setFormControl}
@@ -307,7 +353,9 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
 
         {!(invalidWidth || invalidHeight) && (
           <div className="mt-3">
-            <Form.Label>{lm?.example}</Form.Label>
+            <Form.Label>
+              <Text m={lm} k="example" />
+            </Form.Label>
 
             <div style={{ overflowX: 'auto' }}>
               <iframe
@@ -329,18 +377,16 @@ export default function EmbedMapModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           onClick={handleCopyClick}
           disabled={invalidWidth || invalidHeight}
-        >
-          <FaClipboard /> {m?.general.copyCode}
-        </Button>
+          icon={<FaClipboard />}
+          label={m?.general.copyCode}
+        />
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

@@ -1,8 +1,10 @@
 import {
   PATH_DETAILS_PROP,
   type PathDetails,
+  readPathDetailsParts,
   remapPathDetails,
 } from '@shared/colorizers/colorize.js';
+import { featureLabel, withPlainLabel } from '@shared/featureProperties.js';
 import {
   cumulativeDistances,
   distanceTo,
@@ -42,6 +44,9 @@ export function canJoinTracks(
 interface Side {
   segments: Position[][];
   channels: Channel[];
+  /** One entry per segment as read; never turned round. */
+  parts: PathDetails[] | undefined;
+  /** The parts laid end to end on the axis of {@link Side.distances}. */
   details: PathDetails | undefined;
   properties: Record<string, unknown>;
   /** Distance to each vertex, segment gaps excluded; empty unless measured. */
@@ -56,9 +61,6 @@ interface Run {
   segment: number;
 }
 
-const pathDetailsOf = (feature: TrackLine) =>
-  feature.properties?.[PATH_DETAILS_PROP] as PathDetails | undefined;
-
 /** The first recorded time, which is what orders two timed tracks. */
 function startTimeOf(feature: TrackLine): number | undefined {
   const first = firstTrackTime(feature);
@@ -72,12 +74,23 @@ function startTimeOf(feature: TrackLine): number | undefined {
 function readSide(feature: TrackLine, measure: boolean): Side {
   const segments = lineSegments(feature.geometry);
 
+  const distances = measure ? segmentDistances(segments) : [];
+
+  const parts = readPathDetailsParts(feature);
+
   return {
     segments,
     channels: readChannels(feature),
-    details: pathDetailsOf(feature),
+    parts,
+    details: measure
+      ? parts?.reduce<PathDetails | undefined>(
+          (merged, part, i) =>
+            mergePathDetails(merged, part, distances[i]?.[0] ?? 0),
+          undefined,
+        )
+      : undefined,
     properties: feature.properties ?? {},
-    distances: measure ? segmentDistances(segments).flat() : [],
+    distances: distances.flat(),
     startTime: startTimeOf(feature),
   };
 }
@@ -104,11 +117,15 @@ function dropLeadingPoint(side: Side): Side {
       };
 }
 
-const reversedRows = <T>(rows: T[][]): T[][] =>
-  rows.map((row) => [...row].reverse()).reverse();
+/** Per-segment rows the other way round: the segments, and each one's values. */
+export const reversedRows = <T>(rows: T[][]): T[][] =>
+  rows.map((row) => row.toReversed()).reverse();
 
 /** Spans measured from the other end, so they still cover the same stretches. */
-function reversePathDetails(details: PathDetails, length: number): PathDetails {
+export function reversePathDetails(
+  details: PathDetails,
+  length: number,
+): PathDetails {
   return Object.fromEntries(
     Object.entries(details).map(([key, spans]) => [
       key,
@@ -155,13 +172,27 @@ function gap(from: Position | undefined, to: Position | undefined): number {
     : 0;
 }
 
+/** Which end of a line: where it starts, or where it ends. */
+export type LineEnd = 'start' | 'end';
+
+/** The ends the user picked to meet at the seam; either may be left open. */
+export type JoinEnds = { a?: LineEnd; b?: LineEnd };
+
 /**
- * Which track comes first and which is turned round. Recorded times decide it
- * where both have them; otherwise the pairing whose endpoints are nearest wins.
- * A track with times is never reversed — its times would then run backwards.
+ * Which track comes first and which is turned round. Ends the user picked meet
+ * at the seam. Otherwise recorded times decide it where both have them, else
+ * the pairing whose endpoints are nearest wins. A track with times is reversed
+ * only where the picked ends leave no other way — its times then run backwards.
  */
-function orient(a: Side, b: Side, mode: TrackJoinMode): [Side, Side] {
-  if (a.startTime !== undefined && b.startTime !== undefined) {
+function orient(
+  a: Side,
+  b: Side,
+  mode: TrackJoinMode,
+  ends: JoinEnds,
+): [Side, Side] {
+  const pinned = ends.a !== undefined || ends.b !== undefined;
+
+  if (!pinned && a.startTime !== undefined && b.startTime !== undefined) {
     return b.startTime < a.startTime ? [b, a] : [a, b];
   }
 
@@ -169,7 +200,31 @@ function orient(a: Side, b: Side, mode: TrackJoinMode): [Side, Side] {
   // segments the two stay apart, so its points would come back reversed for a
   // gap that isn't there.
   const flips = (side: Side) =>
-    mode === 'line' && side.startTime === undefined ? [false, true] : [false];
+    mode === 'line' && (pinned || side.startTime === undefined)
+      ? [false, true]
+      : [false];
+
+  // The end of `side` that a candidate puts at the seam.
+  const atSeam = (
+    c: { first: Side; flipFirst: boolean; flipSecond: boolean },
+    side: Side,
+  ): LineEnd =>
+    c.first === side
+      ? c.flipFirst
+        ? 'start'
+        : 'end'
+      : c.flipSecond
+        ? 'end'
+        : 'start';
+
+  const timedTurns = (c: {
+    first: Side;
+    flipFirst: boolean;
+    second: Side;
+    flipSecond: boolean;
+  }) =>
+    Number(c.flipFirst && c.first.startTime !== undefined) +
+    Number(c.flipSecond && c.second.startTime !== undefined);
 
   const candidates = (
     [
@@ -196,13 +251,26 @@ function orient(a: Side, b: Side, mode: TrackJoinMode): [Side, Side] {
     ),
   );
 
-  // Ties go to the arrangement that turns and reorders the least, so joining
-  // two tracks that already meet leaves them as they were drawn.
-  candidates.sort(
-    (x, y) => x.gap - y.gap || x.turns - y.turns || x.order - y.order,
+  const meeting = candidates.filter(
+    (c) =>
+      (ends.a === undefined || atSeam(c, a) === ends.a) &&
+      (ends.b === undefined || atSeam(c, b) === ends.b),
   );
 
-  const { first, flipFirst, second, flipSecond } = candidates[0]!;
+  // Kept as segments nothing is turned round, so picked ends may not meet.
+  const allowed = meeting.length ? meeting : candidates;
+
+  // Ties go to the arrangement that turns and reorders the least, so joining
+  // two tracks that already meet leaves them as they were drawn.
+  allowed.sort(
+    (x, y) =>
+      timedTurns(x) - timedTurns(y) ||
+      x.gap - y.gap ||
+      x.turns - y.turns ||
+      x.order - y.order,
+  );
+
+  const { first, flipFirst, second, flipSecond } = allowed[0]!;
 
   return [
     flipFirst ? reverseSide(first) : first,
@@ -234,6 +302,26 @@ function joinedPathDetails(
     second.details &&
       remapPathDetails(second.details, second.distances, cum.slice(startsAt)),
     0,
+  );
+}
+
+/** The spans within `[from, to]` of an axis, measured from `from`. */
+function clipPathDetails(
+  details: PathDetails,
+  from: number,
+  to: number,
+): PathDetails {
+  return Object.fromEntries(
+    Object.entries(details).map(([key, spans]) => [
+      key,
+      spans
+        .filter(({ start, end }) => end > from && start < to)
+        .map(({ start, end, value }) => ({
+          start: Math.max(start, from) - from,
+          end: Math.min(end, to) - from,
+          value,
+        })),
+    ]),
   );
 }
 
@@ -273,15 +361,20 @@ export function joinTrackFeatures(
   a: TrackLine,
   b: TrackLine,
   mode: TrackJoinMode,
+  ends: JoinEnds = {},
 ): TrackLine {
-  // Only the path-detail spans are measured against a track's length, so a
-  // track without them is never walked for one.
-  const measure = Boolean(pathDetailsOf(a) ?? pathDetailsOf(b));
+  // Only spans laid onto one line are measured, so nothing else walks a track.
+  const measure =
+    mode === 'line' &&
+    Boolean(
+      a.properties?.[PATH_DETAILS_PROP] ?? b.properties?.[PATH_DETAILS_PROP],
+    );
 
   const [first, oriented] = orient(
     readSide(a, measure),
     readSide(b, measure),
     mode,
+    ends,
   );
 
   // A vertex the two tracks share would otherwise sit in the line twice.
@@ -307,12 +400,23 @@ export function joinTrackFeatures(
 
   const runs = mode === 'line' || drawn.length === 0 ? all : drawn;
 
-  const out: Run[][] = mode === 'line' ? [runs] : runs.map((run) => [run]);
+  // A `line` join closes only the seam between the two: each keeps its own
+  // gaps, so the first's last segment and the second's first become one.
+  const seamAt = first.segments.length - 1;
+
+  const out: Run[][] =
+    mode === 'line'
+      ? [
+          ...runs.slice(0, seamAt).map((run) => [run]),
+          runs.slice(seamAt, seamAt + 2),
+          ...runs.slice(seamAt + 2).map((run) => [run]),
+        ]
+      : runs.map((run) => [run]);
 
   const coordinates = out.map((runs) => runs.flatMap(segmentOf));
 
   const geometry: LineString | MultiLineString =
-    mode === 'line'
+    out.length === 1
       ? { type: 'LineString', coordinates: coordinates[0]! }
       : { type: 'MultiLineString', coordinates };
 
@@ -338,18 +442,36 @@ export function joinTrackFeatures(
     ),
   }));
 
-  const properties: Record<string, unknown> = {
-    ...withoutPerPointData(b.properties),
+  // The label, and the table a template of it reads, are `a`'s alone.
+  const {
+    name: _name,
+    title: _title,
+    'freemap:label': _label,
+    'freemap:props': _table,
+    ...bData
+  } = withoutPerPointData(b.properties) ?? {};
+
+  const merged: Record<string, unknown> = {
+    ...bData,
     ...withoutPerPointData(a.properties),
   };
 
-  const names = [first.properties['name'], second.properties['name']].filter(
-    (name): name is string => typeof name === 'string' && name !== '',
-  );
+  const labelA = featureLabel(a);
 
-  if (names.length > 0) {
-    properties['name'] = [...new Set(names)].join(', ');
-  }
+  const labelB = featureLabel(b);
+
+  const inOrder =
+    first.properties === a.properties ? [labelA, labelB] : [labelB, labelA];
+
+  // `a`'s label stands as it is; two labels, or `b`'s alone, are written plain.
+  const label = !labelA
+    ? labelB
+    : labelB && labelB !== labelA
+      ? inOrder.join(', ')
+      : undefined;
+
+  const properties =
+    label === undefined ? merged : withPlainLabel(merged, label);
 
   // Which vertex of the joined line the second track starts at — the one they
   // share, where a `line` join dropped it from the second.
@@ -357,14 +479,37 @@ export function joinTrackFeatures(
     first.segments.reduce((n, segment) => n + segment.length, 0) -
     (shared ? 1 : 0);
 
-  const details =
-    mode === 'line'
-      ? // The oriented second, not the trimmed one: its spans still measure
-        // from the vertex a shared seam dropped.
-        joinedPathDetails(first, oriented, coordinates[0]!, startsAt)
-      : // Segment gaps count on neither axis here, so the second's spans only
-        // move by the first track's length.
-        mergePathDetails(first.details, second.details, sideLength(first));
+  let details: PathDetails[] | undefined;
+
+  if (mode === 'line' && out.length > 1) {
+    // Laid on one axis, gaps left out and the closed seam counted, then cut
+    // into the joined line's segments, each measured from its own start.
+    const merged = mergePathDetails(
+      first.details,
+      oriented.details,
+      sideLength(first) + gap(tail(first), head(oriented)),
+    );
+
+    details =
+      merged &&
+      segmentDistances(coordinates).map((cum) =>
+        clipPathDetails(merged, cum[0] ?? 0, cum.at(-1) ?? 0),
+      );
+  } else if (mode === 'line') {
+    // The oriented second, not the trimmed one: its spans still measure from
+    // the vertex a shared seam dropped.
+    const joined = joinedPathDetails(
+      first,
+      oriented,
+      coordinates[0]!,
+      startsAt,
+    );
+
+    details = joined && [joined];
+  } else if (first.parts || second.parts) {
+    // Kept as segments, no side is turned round, so each keeps its own spans.
+    details = out.map(([run]) => sides[run!.side].parts?.[run!.segment] ?? {});
+  }
 
   if (details) {
     properties[PATH_DETAILS_PROP] = details;

@@ -7,6 +7,10 @@ import {
 } from '@app/store/actions.js';
 import { modalOf, UrlModalIdSchema } from '@app/store/activeModal.js';
 import { openToolsSelector } from '@app/store/selectors.js';
+import {
+  isToolAvailable,
+  unavailableToolsSelector,
+} from '@shared/toolDefinitions.js';
 import z from 'zod';
 import { defineTool } from '../tool.js';
 
@@ -36,6 +40,12 @@ export const appTools = [
       "Opens one of the app's tools — its toolbar, and whatever it takes over map clicks for.",
     input: z.object({ tool: ToolSchema }),
     execute({ tool }, { store }) {
+      // A tool with no toolbar would join `panelTools` and the URL while
+      // showing nothing, and nothing could close it again.
+      if (!isToolAvailable(unavailableToolsSelector(store.getState()), tool)) {
+        throw new Error(`tool not available here: ${tool}`);
+      }
+
       store.dispatch(openTool(tool));
 
       return { openTools: openToolsSelector(store.getState()) };

@@ -1,4 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import { hasLegend } from '@features/legend/legendLayers.js';
+import {
+  drawnTypesSelector,
+  libraryIndexSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -6,15 +14,17 @@ import {
   documentMenuItemProps,
   modalMenuItemProps,
 } from '@shared/hooks/useMenuHandler.js';
-import { type JSX, useMemo } from 'react';
+import type { JSX } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaBook,
   FaList,
   FaPowerOff,
   FaRegAddressCard,
+  FaRegQuestionCircle,
   FaUsers,
 } from 'react-icons/fa';
+import { SiOpenstreetmap } from 'react-icons/si';
 import { getDocuments } from '@/documents/index.js';
 
 export function HelpSubmenu(): JSX.Element {
@@ -24,25 +34,37 @@ export function HelpSubmenu(): JSX.Element {
 
   const skCs = ['sk', 'cs'].includes(language);
 
-  const legendLayers = useMemo(
-    () => new Set(skCs ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']),
-    [skCs],
-  );
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
+
+  const libraryIndex = useAppSelector(libraryIndexSelector);
 
   return (
     <>
-      <SubmenuHeader icon={<FaBook />} title={m?.mainMenu.help} />
+      <SubmenuHeader icon={<FaRegQuestionCircle />} title={m?.mainMenu.help} />
 
-      {layers.some((layer) => legendLayers.has(layer)) && (
+      <Dropdown.Item {...modalMenuItemProps('manual')}>
+        <FaBook />
+        <MenuLabel>
+          <Text k="mainMenu.manual" />
+        </MenuLabel>
+      </Dropdown.Item>
+
+      {hasLegend(layers, libraryIndex, customLayers) && (
         <OnlineOnlyItem {...modalMenuItemProps('legend')}>
-          <FaList /> {m?.mainMenu.mapLegend}
+          <FaList />
+          <MenuLabel>
+            <Text k="mainMenu.mapLegend" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
 
       <Dropdown.Item {...modalMenuItemProps('about')}>
-        <FaRegAddressCard /> {m?.mainMenu.contacts}
+        <FaRegAddressCard />
+        <MenuLabel>
+          <Text k="mainMenu.contacts" />
+        </MenuLabel>
       </Dropdown.Item>
 
       <OnlineOnlyItem
@@ -50,7 +72,10 @@ export function HelpSubmenu(): JSX.Element {
         eventKey="url"
         target="_blank"
       >
-        <FaBook /> {m?.mainMenu.osmWiki}
+        <SiOpenstreetmap />
+        <MenuLabel>
+          <Text k="mainMenu.osmWiki" />
+        </MenuLabel>
       </OnlineOnlyItem>
 
       {skCs && (
@@ -60,7 +85,8 @@ export function HelpSubmenu(): JSX.Element {
             eventKey="url"
             target="_blank"
           >
-            <FaUsers /> Fórum slovenskej OSM komunity
+            <FaUsers />
+            <MenuLabel>Fórum slovenskej OSM komunity</MenuLabel>
           </OnlineOnlyItem>
 
           <Dropdown.Divider />
@@ -71,14 +97,18 @@ export function HelpSubmenu(): JSX.Element {
         .filter((item) => item.listed !== false)
         .map(({ key, icon, title }) => (
           <Dropdown.Item key={key} {...documentMenuItemProps(key)}>
-            {icon} {title}
+            {icon}
+            <MenuLabel>{title}</MenuLabel>
           </Dropdown.Item>
         ))}
 
       <Dropdown.Divider />
 
       <Dropdown.Item as="button" eventKey="reset-app" className="text-danger">
-        <FaPowerOff /> {m?.mapLayers.resetApp}
+        <FaPowerOff />
+        <MenuLabel>
+          <Text k="mapLayers.resetApp" />
+        </MenuLabel>
       </Dropdown.Item>
     </>
   );

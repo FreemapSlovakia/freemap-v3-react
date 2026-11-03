@@ -1,7 +1,14 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBreakpointMatches } from '@shared/breakpoints.js';
+import { Text } from '@features/l10n/Text.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
@@ -13,14 +20,13 @@ import {
   useState,
 } from 'react';
 import {
-  Button,
   Form,
   InputGroup,
   Modal,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
-import { FaCamera, FaCheck, FaEraser, FaFilter, FaTimes } from 'react-icons/fa';
+import { FaCamera, FaCheck, FaEraser, FaFilter } from 'react-icons/fa';
 import { IoFlower } from 'react-icons/io5';
 import { SiWikimediacommons } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
@@ -41,10 +47,6 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const gm = useGalleryMessages();
-
-  // "Wikimedia Commons" makes the joined source group too wide for a phone, so
-  // below `sm` it stacks instead of widening the modal.
-  const { sm } = useBreakpointMatches();
 
   const filter = useAppSelector((state) => state.gallery.filter);
 
@@ -313,7 +315,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   // license just narrow them, so those carry no hint.
   const wikimediaExcludedHint = (
     <Form.Text className="text-body-secondary">
-      <SiWikimediacommons /> {gm?.excludesWikimedia}
+      <SiWikimediacommons /> <Text m={gm} k="excludesWikimedia" />
     </Form.Text>
   );
 
@@ -327,13 +329,16 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
       <form onSubmit={handleFormSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCamera /> <FaFilter /> {gm?.filterModal.title}
+            <FaCamera /> <FaFilter /> <Text m={gm} k="filterModal.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="photos" />
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group controlId="tag" className="mb-3">
-            <Form.Label>{gm?.filterModal.tag}</Form.Label>
+            <Form.Label>
+              <Text m={gm} k="filterModal.tag" />
+            </Form.Label>
 
             <Form.Select value={tag} onChange={handleTagChange}>
               <option value="" />
@@ -350,7 +355,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="author" className="mb-3">
-            <Form.Label>{gm?.filterModal.author}</Form.Label>
+            <Form.Label>
+              <Text m={gm} k="filterModal.author" />
+            </Form.Label>
 
             <Form.Select value={userId} onChange={handleUserIdChange}>
               <option value="" />
@@ -382,7 +389,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="createdAt" className="mb-3">
-            <Form.Label>{gm?.filterModal.createdAt}</Form.Label>
+            <Form.Label>
+              <Text m={gm} k="filterModal.createdAt" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -402,7 +411,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="takenAt" className="mb-3">
-            <Form.Label>{gm?.filterModal.takenAt}</Form.Label>
+            <Form.Label>
+              <Text m={gm} k="filterModal.takenAt" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -422,7 +433,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="rating" className="mb-3">
-            <Form.Label>{gm?.filterModal.rating}</Form.Label>
+            <Form.Label>
+              <Text m={gm} k="filterModal.rating" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -471,7 +484,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
           </div>
 
           <Form.Group controlId="filt-license" className="mb-3">
-            <Form.Label className="d-block">{gm?.license.label}</Form.Label>
+            <Form.Label className="d-block">
+              <Text m={gm} k="license.label" />
+            </Form.Label>
 
             <ToggleButtonGroup
               type="checkbox"
@@ -496,13 +511,12 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
           <Form.Group controlId="filt-source" className="mb-3">
             <Form.Label className="d-block">
-              {gm?.filterModal.source}
+              <Text m={gm} k="filterModal.source" />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="filt-source"
-              vertical={!sm}
               // Exactly one is always selected — 'all' means no restriction.
               value={
                 sources.length < GALLERY_SOURCES.length ? sources[0] : 'all'
@@ -516,7 +530,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                 value="all"
                 variant="outline-primary"
               >
-                {gm?.filterModal.allSources}
+                <Text m={gm} k="filterModal.allSources" />
               </ToggleButton>
 
               <ToggleButton
@@ -534,27 +548,28 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
               >
                 <SiWikimediacommons /> Wikimedia Commons
               </ToggleButton>
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={invalidRatingFrom || invalidRatingTo}>
-            <FaCheck /> {m?.general.apply}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={invalidRatingFrom || invalidRatingTo}
+            icon={<FaCheck />}
+            label={m?.general.apply}
+          />
 
-          <Button
+          <FmFooterButton
             variant="secondary"
             onClick={handleEraseClick}
             disabled={filterEmpty}
-          >
-            <FaEraser /> {m?.general.clear}
-          </Button>
+            icon={<FaEraser />}
+            label={m?.general.clear}
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

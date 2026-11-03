@@ -8,7 +8,7 @@ import {
   rememberedGradients,
 } from '../gradient.js';
 import { PROMINENCE_WEIGHT } from '../labels/fromPeaks.js';
-import type { PanoramaQuality } from '../quality.js';
+import type { PanoramaDetail } from '../quality.js';
 import { panoramaSetSettings } from './actions.js';
 
 /**
@@ -367,12 +367,36 @@ export function panoramaLookOf(style: PanoramaStyle): PanoramaLook {
   );
 }
 
+/** What a summit's second line can say, in the order it says them. */
+export const SUB_LINE_PARTS = [
+  'ele',
+  'distance',
+  'prominence',
+  'isolation',
+] as const;
+
+export type SubLinePart = (typeof SUB_LINE_PARTS)[number];
+
+/** The setting that turns each part on. */
+export const SUB_LINE_KEY = {
+  ele: 'showLabelEle',
+  distance: 'showLabelDistance',
+  prominence: 'showLabelProminence',
+  isolation: 'showLabelIsolation',
+} as const satisfies Record<SubLinePart, keyof PanoramaSettingsState>;
+
+/** The parts switched on, in order. */
+export function subLineOf(settings: PanoramaSettingsState): SubLinePart[] {
+  return SUB_LINE_PARTS.filter((part) => settings[SUB_LINE_KEY[part]]);
+}
+
 export interface PanoramaSettingsState {
   /**
-   * Which tier to ask for. Everything above the coarsest is premium's, and the
-   * service clamps what an account may have regardless of what is asked.
+   * How fine a picture to ask for, pixels per degree, or `max` for whatever
+   * the frame allows — which moves with the fov and the band. What an account
+   * may have of it is decided by `grantedPanorama`, not here.
    */
-  quality: PanoramaQuality;
+  detail: PanoramaDetail;
   /** How much sky and ground the frame holds; `custom` uses the two below. */
   tilt: PanoramaTilt;
   altMin: number;
@@ -414,10 +438,13 @@ export interface PanoramaSettingsState {
   /** How many names to draw, `0` for none; see {@link labelLayoutLimits}. */
   labelDensity: number;
   /**
-   * Whether each name carries its summit's elevation on a second line. Off by
+   * What each name's second line says; see {@link SUB_LINE_PARTS}. Off by
    * default: a two-line label is taller, so fewer names fit the picture.
    */
   showLabelEle: boolean;
+  showLabelDistance: boolean;
+  showLabelProminence: boolean;
+  showLabelIsolation: boolean;
   /** Metres of dominance a summit needs to be named; see {@link DOMINANCE_STEPS_M}. */
   minDominance: number;
   /**
@@ -440,6 +467,9 @@ export interface PanoramaSettingsState {
    * picture by hand clears it, the same as the stop button does.
    */
   autoPan: boolean;
+  /** Whether the sun's and the moon's paths over the day are drawn. */
+  showSun: boolean;
+  showMoon: boolean;
 }
 
 /**
@@ -455,11 +485,11 @@ function touchDevice(): boolean {
 
 export const panoramaSettingsInitialState: PanoramaSettingsState = {
   // What to ask for, not what will be granted: an account without premium is
-  // put back to `FREE_QUALITY` before the request goes out. Defaulting to a
-  // middling tier rather than the free one keeps a premium user off the free
-  // picture without their finding this control, and rather than the finest one
-  // because that is half a minute of a server that renders one at a time.
-  quality: 'standard',
+  // held to what its ray budget buys before the request goes out. Middling
+  // rather than the free figure, which would leave a premium user on the coarse
+  // picture until they found the control — and rather than `max`, which is the
+  // better part of a minute of a server that renders one at a time.
+  detail: 20,
   tilt: 'standard',
   altMin: -18,
   altMax: 12,
@@ -476,11 +506,16 @@ export const panoramaSettingsInitialState: PanoramaSettingsState = {
   recentGradients: [],
   labelDensity: 5,
   showLabelEle: false,
+  showLabelDistance: false,
+  showLabelProminence: false,
+  showLabelIsolation: false,
   minDominance: NO_DOMINANCE_FILTER,
   labelHazeKm: 120,
   labelDistanceWeight: 0.5,
   prominenceWeight: PROMINENCE_WEIGHT,
   autoPan: touchDevice(),
+  showSun: true,
+  showMoon: false,
 };
 
 export const panoramaSettingsReducer = createReducer(

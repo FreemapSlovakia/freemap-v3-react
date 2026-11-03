@@ -5,23 +5,27 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Miejsce obserwacji wybierz przyciskiem {icon} poniżej.</>
   ),
+  preparing: 'Panorama jest przygotowywana…',
   rendering: 'Renderowanie panoramy…',
+  encoding: 'Kompresja obrazu…',
+  decoding: 'Rozpakowywanie obrazu…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Czekanie na renderer…'
       : ahead === 1
-        ? 'Czekanie — przed tobą 1 panorama.'
+        ? 'Czekanie — w kolejce przed nią 1 panorama.'
         : ahead < 5
-          ? `Czekanie — przed tobą ${ahead} panoramy.`
-          : `Czekanie — przed tobą ${ahead} panoram.`,
+          ? `Czekanie — w kolejce przed nią ${ahead} panoramy.`
+          : `Czekanie — w kolejce przed nią ${ahead} panoram.`,
   cancel: 'Anuluj',
   update: 'Aktualizuj',
   outdated: 'Obraz jest z poprzedniego punktu obserwacji.',
   locate: 'Widok z mojej pozycji',
   pickViewpoint: 'Wybierz na mapie',
-  pickViewpointPrompt: 'Kliknij na mapie miejsce, z którego chcesz patrzeć',
+  pickViewpointPrompt: 'Kliknij na mapie miejsce obserwacji',
   lookAt: 'Spójrz na miejsce na mapie',
-  pickTargetPrompt: 'Kliknij na mapie miejsce, na które chcesz spojrzeć',
+  pickTargetPrompt:
+    'Kliknij na mapie miejsce, na które ma być skierowany widok',
   createToposcope: 'Utwórz tablicę panoramiczną z tego widoku',
   toposcopeMergeModal: {
     title: 'Mapa nie jest pusta',
@@ -33,13 +37,12 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   settings: {
     title: 'Ustawienia panoramy',
     tiltHint: 'Ile nieba i ziemi mieści obraz — kąty nad horyzontem i pod nim.',
-    custom: 'Dokładne kąty',
     depthLift: 'Rozwiń dal',
     depthLiftOff: 'Widok wierny',
     depthLiftHint:
-      'Podnosi odległy teren, dzięki czemu dalekie pasma odrywają się od grani przed nimi — tak jak na panoramie rysowanej ręcznie. Do obrazu trafiają przez to również szczyty, których stąd naprawdę nie widać; ich nazwy są oznaczone.',
+      'Podnosi odległy teren, dzięki czemu dalekie pasma odrywają się od grani przed nimi — tak jak na panoramie rysowanej ręcznie. Do obrazu trafiają przez to również szczyty, których stąd naprawdę nie widać; ich nazwy są oznaczone. Drogi słońca i księżyca nie są na nim rysowane.',
     rangeHint:
-      'Teren powyżej 300 km należy do premium. Każdy dodatkowy kilometr przechodzony jest wzdłuż każdego promienia obrazu, więc dalszy widok kosztuje renderer proporcjonalnie więcej.',
+      'Teren powyżej 300 km to funkcja premium. Każdy dodatkowy kilometr przechodzony jest wzdłuż każdego promienia obrazu, więc dalszy widok kosztuje renderer proporcjonalnie więcej.',
     look: 'Wygląd',
     looks: {
       natural: 'Naturalny',
@@ -67,24 +70,42 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Teren za tą odległością nie jest rysowany, zamiast być wypełniony ostatnim kolorem, więc cały gradient przypada na to, co pokazuje obraz. Szczyty na nim stojące nie są nazywane.',
   },
-  preview: 'Podgląd',
   quality: {
-    label: 'Jakość / szybkość',
-    superfast: 'Najniższa / najszybsza',
-    fast: 'Niska / szybka',
-    standard: 'Standardowa',
-    detailed: 'Szczegółowa / wolna',
-    finest: 'Najdokładniejsza / najwolniejsza',
+    detail: 'Szczegółowość',
   },
+  frame: 'Kadr i szczegółowość',
   tilt: {
     label: 'Zakres pionowy',
     standard: 'Standardowy',
     wide: 'Wysoki',
     flat: 'Niski',
+    below: 'Poniżej horyzontu',
+    above: 'Powyżej horyzontu',
   },
   fov: {
     label: 'Zakres poziomy',
     full: 'Dookoła',
+  },
+  sky: {
+    title: 'Słońce i księżyc',
+    sun: 'Droga słońca',
+    moon: 'Droga księżyca',
+    date: 'Dzień',
+    dateHint:
+      'Godziny są w strefie czasowej tego urządzenia i oznaczają, kiedy za terenem znika ostatni skrawek tarczy lub pojawia się pierwszy. Teren to goła ziemia, więc drzewa i budynki mogą ją zasłonić wcześniej.',
+    today: 'Dziś',
+    lit: (percent) => `oświetlony w ${percent}`,
+    elevation: (deg) => `wysokość ${deg}`,
+    overTerrain: (deg) => `${deg} nad terenem`,
+    belowTerrain: (deg) => `${deg} pod terenem`,
+    unfolded: (
+      <>
+        Nie na rozwiniętym obrazie: jego odległy teren jest narysowany wyżej,
+        niż stoi, więc drogi przecinałyby horyzont w złych miejscach. W
+        ustawieniach panoramy ustaw <i>Rozwiń dal</i> na <i>Widok wierny</i> i
+        zaktualizuj.
+      </>
+    ),
   },
   labels: {
     title: 'Nazwy szczytów',
@@ -106,14 +127,21 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     prominence: 'Preferuj prawdziwe góry',
     prominenceOff: 'Wyłączone',
     prominenceHint:
-      'Szczyt dostaje nazwę za to, że sam w sobie jest górą, a nie tylko za to, jak wybija się z miejsca, w którym stoisz — dzięki temu również słynny szczyt wciśnięty między wyższych sąsiadów zasłuży na nazwę. Przy wielu szczytach jest nieznana i te oceniane są jak dotąd.',
+      'Szczyt dostaje nazwę za to, że sam w sobie jest górą, a nie tylko za to, jak wybija się z miejsca obserwacji — dzięki temu również słynny szczyt wciśnięty między wyższych sąsiadów zasłuży na nazwę. Przy wielu szczytach jest nieznana i te oceniane są jak dotąd.',
     haze: 'Jak daleko sięgają nazwy',
     hazeOff: 'Czyste powietrze',
     hazeHint:
       'Jak daleko musi być szczyt, żeby mgiełka znaczyła więcej niż sam szczyt. Powyżej trzykrotności tej odległości nie jest nazywane już nic.',
-    showEle: 'Pokaż wysokości',
-    showEleHint:
-      'Pod nazwą każdego szczytu wypisuje jego wysokość. Podpis ma wtedy dwa wiersze, więc mieści się ich na obrazie mniej.',
+    subLine: 'Pod nazwą',
+    subLineHint:
+      'Co mówi drugi wiersz podpisu każdego szczytu. Gdy cokolwiek z tego jest włączone, każdy podpis ma dwa wiersze, więc mieści się ich mniej. Wybitność (W) to, o ile szczyt wznosi się nad najniższą przełęczą na drodze do wyższego terenu; izolacja (I) to, jak daleko jest ten wyższy teren.',
+    subLineParts: {
+      ele: 'Wysokość',
+      distance: 'Odległość',
+      prominence: 'Wybitność',
+      isolation: 'Izolacja',
+    },
+    subLineAbbr: { prominence: 'W', isolation: 'I' },
     showRevealed: 'Nazywaj odsłonięte szczyty',
     showRevealedHint:
       'Szczyty, które rozwinięcie dali wyciągnęło zza bliższej grani: są narysowane, ale stąd naprawdę ich nie widać. Ich nazwy są jaśniejsze, a gdy brakuje miejsca dla obu, pierwszeństwo ma szczyt widoczny.',
@@ -133,9 +161,9 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
   },
   errors: {
-    offline: 'Panoramę renderuje serwer, a ty jesteś offline.',
+    offline: 'Panoramę renderuje serwer, a urządzenie jest offline.',
     unreachable:
-      'Nie udało się połączyć z usługą renderującą. Może być wyłączona albo coś między tobą a nią blokuje żądanie.',
+      'Nie udało się połączyć z usługą renderującą. Może być wyłączona albo coś po drodze blokuje żądanie.',
     busy: 'Usługa renderująca jest teraz niedostępna. Spróbuj za chwilę.',
     tooMany:
       'Ostatnio wyrenderowano zbyt wiele panoram. Spróbuj później albo wykup premium.',
@@ -144,11 +172,6 @@ const pl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Nie udało się wyrenderować panoramy.',
   },
   caveats: {
-    title: 'Co obraz pokazuje, a czego nie',
-    bareEarth:
-      'Model terenu to naga ziemia: nie ma w nim lasów ani budynków, więc widok, który zasłoniłby las, narysowany jest jako wolny. To zdecydowanie największe źródło błędu.',
-    coverage:
-      'Szczegółowość zależy od kraju. Tam, gdzie istnieje krajowy model z lotniczego skaningu laserowego, bliskie otoczenie jest ostre; gdzie indziej odpowiada globalny model 30 m.',
     viewpoint:
       'Oko umieszczane jest na najwyższym punkcie w promieniu kilku metrów od kliknięcia, żeby widoku ze szczytu nie psuła skała obok ciebie.',
     depthLift:

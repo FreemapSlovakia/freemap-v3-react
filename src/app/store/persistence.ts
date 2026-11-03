@@ -1,8 +1,12 @@
 import { authInitialState } from '@features/auth/model/reducer.js';
-import { UserSchema, UserSettingsSchema } from '@features/auth/model/types.js';
+import {
+  UserSchema,
+  UserSettingsCompatSchema,
+} from '@features/auth/model/types.js';
 import { cachedMapsSettingsInitialState } from '@features/cachedMaps/model/settingsReducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
+import { TraceOutputSchema } from '@features/dataViewer/traceServices.js';
 import {
   DrawingSettingsCompatSchema,
   DrawingStyleSchema,
@@ -23,8 +27,20 @@ import {
   HeadingSourceSchema,
   locationSettingsInitialState,
 } from '@features/location/model/settingsReducer.js';
-import { LayerSettingsSchema } from '@features/map/model/actions.js';
-import { mapInitialState } from '@features/map/model/reducer.js';
+import { BRIGHTNESS_STEPS } from '@features/map/brightness.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
+import { LayersSettingsCompatSchema } from '@features/map/model/actions.js';
+import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
+import {
+  MapPresetArrayCompatSchema,
+  presetIdOf,
+  presetItem,
+} from '@features/map/model/mapPreset.js';
+import {
+  mapInitialState,
+  withoutFeaturesLayer,
+  withoutFeaturesLayerKey,
+} from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
@@ -44,6 +60,7 @@ import {
   RANGE_MAX_KM,
   RANGE_MIN_KM,
 } from '@features/panorama/model/settingsReducer.js';
+import { DETAIL_MAX, type PanoramaDetail } from '@features/panorama/quality.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import {
@@ -65,8 +82,14 @@ import {
   STEEPNESS_DEFAULT_SCALE,
   STEEPNESS_SCALES,
 } from '@shared/colorizers/modes/steepness.js';
+import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
 import { LanguageSchema } from '@shared/langUtils.js';
-import { CustomLayerDefArrayCompatSchema } from '@shared/mapDefinitions.js';
+import {
+  CustomLayerDefArrayCompatSchema,
+  resolveLayerAliases,
+  resolveLayersSettingsAliases,
+  SHADING_SOURCE,
+} from '@shared/mapDefinitions.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
@@ -81,7 +104,7 @@ export const PersistedAuthSchema = z.object({
   user: z
     .object({
       ...UserSchema.shape,
-      settings: UserSettingsSchema.optional().catch(undefined),
+      settings: UserSettingsCompatSchema.optional().catch(undefined),
     })
     .nullable()
     .optional(),
@@ -92,15 +115,32 @@ export const PersistedMapSchema = z
     lat: z.number(),
     lon: z.number(),
     zoom: z.number(),
-    layers: z.array(z.string()),
-    layersSettings: z.record(z.string(), LayerSettingsSchema),
-    customLayers: CustomLayerDefArrayCompatSchema,
+    // Each left out on its own when it doesn't parse, rather than the whole
+    // slice falling back to its defaults.
+    layers: z.array(z.string()).optional().catch(undefined),
+    layersSettings: LayersSettingsCompatSchema.optional().catch(undefined),
+    layerSetups: LayerSetupsCompatSchema.optional().catch(undefined),
+    customLayers: CustomLayerDefArrayCompatSchema.optional().catch(undefined),
+    presets: MapPresetArrayCompatSchema.optional().catch(undefined),
+    linkPresets: MapPresetArrayCompatSchema.optional().catch(undefined),
     legacyMapWarningSuppressions: z.array(z.string()),
-    shading: ShadingSchema,
+    shadingOnServer: z.boolean(),
     maxZoom: z.number(),
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
     zoomSnap: z.number(),
+    pixelExact: z.boolean(),
+    backgroundColor: z.string(),
+    backgroundCheckerboard: z.boolean(),
+    // Out of range after a change of steps, it alone falls back.
+    brightness: z
+      .number()
+      .int()
+      .min(-BRIGHTNESS_STEPS)
+      .max(BRIGHTNESS_STEPS)
+      .optional()
+      .catch(undefined),
+    featuresOpacity: z.number().min(0).max(1).optional().catch(undefined),
   })
   .partial();
 
@@ -109,13 +149,47 @@ const LegacyMapSchema = z.object({
   overlays: z.string().array(),
 });
 
-// Accepts the legacy `{ mapType, overlays }` shape, mapping it to `{ layers }`.
+const PreSetupsMapSchema = z.object({
+  layersSettings: z
+    .record(z.string(), z.object({ opacity: z.number().optional() }))
+    .optional(),
+  shading: ShadingSchema.optional(),
+});
+
+// Accepts the legacy `{ mapType, overlays }` shape, mapping it to `{ layers }`,
+// and a map from before setups: overlay opacities and the shading moved into
+// the setups of their maps.
 const PersistedMapCompatSchema = z.preprocess((raw) => {
+  if (!raw || typeof raw !== 'object') {
+    return raw;
+  }
+
   const m = LegacyMapSchema.safeParse(raw);
 
-  return m.success && raw && typeof raw === 'object'
+  const withLayers = m.success
     ? { ...raw, layers: [m.data.mapType, ...m.data.overlays] }
     : raw;
+
+  const pre = PreSetupsMapSchema.safeParse(raw);
+
+  if ('layerSetups' in raw || !pre.success) {
+    return withLayers;
+  }
+
+  const layerSetups: Record<string, object> = Object.fromEntries(
+    Object.entries(pre.data.layersSettings ?? {}).flatMap(([type, s]) =>
+      s.opacity === undefined ? [] : [[type, { opacity: s.opacity }]],
+    ),
+  );
+
+  if (pre.data.shading) {
+    layerSetups[SHADING_SOURCE] = {
+      ...layerSetups[SHADING_SOURCE],
+      shading: pre.data.shading,
+    };
+  }
+
+  return { ...withLayers, layerSetups };
 }, PersistedMapSchema);
 
 export const PersistedL10nSchema = z
@@ -148,7 +222,7 @@ export const PersistedObjectsSettingsSchema = z
   .object({
     selectedIcon: MarkerTypeSchema,
     color: z.string(),
-    showDetails: z.boolean(),
+    labelVisibility: LabelVisibilitySchema,
   })
   .partial();
 
@@ -203,7 +277,10 @@ export const PersistedElevationSettingsSchema = z
 
 const PersistedPanoramaSettingsSchema = z
   .object({
-    quality: z.enum(['superfast', 'fast', 'standard', 'detailed', 'finest']),
+    // The asked-for figures, which may be past what a lapsed account may have:
+    // `grantedPanorama` holds the request to the budget, and premium grants
+    // them back silently.
+    detail: z.union([z.number().positive(), z.literal(DETAIL_MAX)]),
     tilt: z.enum(['standard', 'wide', 'flat', 'custom']),
     altMin: z.number(),
     altMax: z.number(),
@@ -233,6 +310,9 @@ const PersistedPanoramaSettingsSchema = z
     // Bounded, because the level indexes the menu's icon and word arrays.
     labelDensity: z.number().int().min(0).max(LABEL_DENSITY_MAX),
     showLabelEle: z.boolean(),
+    showLabelDistance: z.boolean().catch(false),
+    showLabelProminence: z.boolean().catch(false),
+    showLabelIsolation: z.boolean().catch(false),
     minDominance: z.number(),
     // Bounded to what the sliders offer: all three reach `rankLabels`, where a
     // stored value from outside the range would order the names by something
@@ -241,8 +321,33 @@ const PersistedPanoramaSettingsSchema = z
     labelDistanceWeight: z.number().min(0).max(LABEL_DISTANCE_WEIGHT_MAX),
     prominenceWeight: z.number().min(0).max(PROMINENCE_WEIGHT_MAX),
     autoPan: z.boolean(),
+    showSun: z.boolean(),
+    showMoon: z.boolean(),
   })
   .partial();
+
+/** The detail each named tier asked for; its sampling is now derived. */
+const PANORAMA_TIER_DETAIL: Record<string, PanoramaDetail> = {
+  superfast: 5,
+  fast: 10,
+  standard: 20,
+  detailed: 25,
+  finest: 30,
+  maximum: DETAIL_MAX,
+};
+
+const PersistedPanoramaSettingsCompatSchema = z.preprocess((s) => {
+  if (!s || typeof s !== 'object' || !('quality' in s)) {
+    return s;
+  }
+
+  const { quality, ...rest } = s as { quality: unknown };
+
+  const detail =
+    typeof quality === 'string' ? PANORAMA_TIER_DETAIL[quality] : undefined;
+
+  return detail === undefined ? rest : { ...rest, detail };
+}, PersistedPanoramaSettingsSchema);
 
 const PersistedViewshedSettingsSchema = z
   .object({
@@ -270,14 +375,17 @@ const PersistedViewshedSettingsSchema = z
 export const PersistedSearchSettingsSchema = z
   .object({
     resultStyle: SearchResultStyleSchema.partial(),
+    labelVisibility: LabelVisibilitySchema,
   })
   .partial();
 
 export const PersistedDataViewerSettingsSchema = z
   .object({
     style: DrawingStyleSchema.partial(),
+    labelVisibility: LabelVisibilitySchema,
     colorizeTrackBy: ColorizingModeSchema.nullable(),
     colorizeLegend: z.boolean(),
+    traceOutput: TraceOutputSchema.nullable(),
   })
   .partial();
 
@@ -393,10 +501,34 @@ const PERSIST: PersistEntry[] = [
     // default, or one browser's storage read by another build — and the map
     // would then sit a fraction off what the store and the URL claim.
     rehydrate: (initial, data) => {
-      const merged = { ...initial, ...data };
+      // A field that didn't parse is undefined, and keeps the default.
+      const merged = {
+        ...initial,
+        ...Object.fromEntries(
+          Object.entries(data).filter(([, value]) => value !== undefined),
+        ),
+      } as typeof initial;
+
+      const presetIds = new Set(
+        [...merged.presets, ...merged.linkPresets].map((p) => p.id),
+      );
 
       return {
         ...merged,
+        layers: withoutFeaturesLayer(
+          resolveLayerAliases(merged.layers).filter((item) => {
+            const id = presetIdOf(item);
+
+            // `_<id>`: a legacy map-combination marker.
+            return id === undefined ? !item.startsWith('_') : presetIds.has(id);
+          }),
+        ),
+        layersSettings: withoutFeaturesLayerKey(
+          resolveLayersSettingsAliases(merged.layersSettings),
+        ),
+        layerSetups: withoutFeaturesLayerKey(
+          resolveLayersSettingsAliases(merged.layerSetups),
+        ),
         zoom: merged.zoomSnap
           ? Math.round(merged.zoom / merged.zoomSnap) * merged.zoomSnap
           : merged.zoom,
@@ -408,13 +540,27 @@ const PERSIST: PersistEntry[] = [
       lon: m.lon,
       zoom: m.zoom,
       layers: m.layers,
+      layerSetups: m.layerSetups,
       customLayers: m.customLayers,
+      presets: m.presets,
+      // Only those still on the map.
+      linkPresets: m.linkPresets.filter((p) =>
+        m.layers.includes(presetItem(p.id)),
+      ),
       legacyMapWarningSuppressions: m.legacyMapWarningSuppressions,
-      shading: m.shading,
+      shadingOnServer: m.shadingOnServer,
       maxZoom: m.maxZoom,
       resolutionScale: m.resolutionScale,
       featureScale: m.featureScale,
       zoomSnap: m.zoomSnap,
+      pixelExact: m.pixelExact,
+      backgroundColor: m.backgroundColor,
+      backgroundCheckerboard: m.backgroundCheckerboard,
+      brightness: m.brightness,
+      // A reload must not open on features nobody can see.
+      featuresOpacity: areFeaturesHidden(m.featuresOpacity)
+        ? undefined
+        : m.featuresOpacity,
     }),
   }),
   defineEntry({
@@ -485,7 +631,7 @@ const PERSIST: PersistEntry[] = [
     persist: (o) => ({
       selectedIcon: o.selectedIcon,
       color: o.color,
-      showDetails: o.showDetails,
+      labelVisibility: o.labelVisibility,
     }),
   }),
   defineEntry({
@@ -519,13 +665,17 @@ const PERSIST: PersistEntry[] = [
     initial: searchSettingsInitialState,
     rehydrate: (initial, data) => ({
       ...initial,
+      ...data,
       resultStyle: { ...initial.resultStyle, ...data.resultStyle },
     }),
-    persist: (s) => ({ resultStyle: s.resultStyle }),
+    persist: (s) => ({
+      resultStyle: s.resultStyle,
+      labelVisibility: s.labelVisibility,
+    }),
   }),
   defineEntry({
     key: 'panoramaSettings',
-    schema: PersistedPanoramaSettingsSchema,
+    schema: PersistedPanoramaSettingsCompatSchema,
     initial: panoramaSettingsInitialState,
     persist: (p) => p,
   }),
@@ -558,8 +708,10 @@ const PERSIST: PersistEntry[] = [
     }),
     persist: (t) => ({
       style: t.style,
+      labelVisibility: t.labelVisibility,
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
+      traceOutput: t.traceOutput,
     }),
   }),
   defineEntry({
@@ -623,6 +775,7 @@ const PERSIST: PersistEntry[] = [
       showDirection: g.showDirection,
       showLegend: g.showLegend,
       premium: g.premium,
+      license: g.license,
     }),
   }),
   defineEntry({
@@ -686,16 +839,23 @@ export function getInitialState(): Partial<RootState> {
   return initial;
 }
 
+/**
+ * The slices {@link selectPersistedState} reads. Nothing else in the store can
+ * change what gets written, so identical references across all of them mean the
+ * write would be byte-for-byte what is already there.
+ */
+export const PERSISTED_KEYS: (keyof RootState)[] = PERSIST.filter(
+  (entry) => entry.persist,
+).map((entry) => entry.key);
+
 export function selectPersistedState(state: RootState): Partial<RootState> {
-  const out: Record<string, unknown> = {};
-
-  for (const entry of PERSIST) {
-    if (entry.persist) {
-      out[entry.key] = entry.persist(state[entry.key] as never);
-    }
-  }
-
-  return out as Partial<RootState>;
+  return Object.fromEntries(
+    PERSIST.flatMap((entry) =>
+      entry.persist
+        ? [[entry.key, entry.persist(state[entry.key] as never)]]
+        : [],
+    ),
+  ) as Partial<RootState>;
 }
 
 function parseWithFallback<T>(

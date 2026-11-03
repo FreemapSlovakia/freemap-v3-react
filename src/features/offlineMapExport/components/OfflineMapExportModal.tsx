@@ -1,26 +1,51 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import { DEFAULT_SHADING } from '@features/map/model/layerSetup.js';
+import { drawnSetupsSelector } from '@features/map/model/selectors.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import {
+  isOpaqueShading,
+  serializeShading,
+} from '@features/parameterizedShading/model/Shading.js';
+import { premiumTileAuth } from '@features/premium/premium.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import {
+  FitButtonGroup,
+  FitToggleButtonGroup,
+} from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import {
+  MapLayerItem,
+  type MapLayerItemDef,
+} from '@shared/components/MapLayerItem.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { useExportPrices } from '@shared/exportPrices.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTilesSizeEstimate } from '@shared/hooks/useTilesSizeEstimate.js';
-import {
-  type IntegratedLayerDef,
-  type IsTileLayerDef,
-  integratedLayerDefs,
-} from '@shared/mapDefinitions.js';
+import { layerName } from '@shared/layerName.js';
+import { SHADING_SOURCE, serverShadingUrl } from '@shared/mapDefinitions.js';
+import { exportedLayer } from '@shared/mapLibrary/exportedLayer.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { countTilesInBbox } from '@shared/tileEnumeration.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
@@ -30,26 +55,36 @@ import {
   type SubmitEvent,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
-  Button,
-  ButtonGroup,
   Dropdown,
   Form,
   InputGroup,
   Modal,
   Spinner,
   ToggleButton,
-  ToggleButtonGroup,
 } from 'react-bootstrap';
-import { FaDatabase, FaDownload, FaTimes } from 'react-icons/fa';
+import { FaDatabase, FaDownload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { downloadMap } from '../model/actions.js';
 import { useOfflineMapExportMessages } from '../translations/useOfflineMapExportMessages.js';
+import { OutsideCoverageAlert } from './OutsideCoverageAlert.js';
 
 // pre-filled upper bound; the layer's own `maxNativeZoom` still caps it
 const DEFAULT_MAX_ZOOM = 16;
+
+type ExportableMap = MapLayerItemDef & {
+  /** The API's map `type`. */
+  exportType: string;
+  url: string;
+  minZoom?: number;
+  maxNativeZoom?: number;
+  extraScales?: number[];
+  creditsPerMTile: number;
+  shading?: { spec: string; opaque: boolean };
+};
 
 type Props = { show: boolean };
 
@@ -88,56 +123,83 @@ export default function OfflineMapExportModal({
     startSelecting,
   } = useMapAreaSelection();
 
-  const mapDefs = useMemo(
-    () =>
-      integratedLayerDefs
-        .filter(
-          (
-            def,
-          ): def is IntegratedLayerDef<
-            IsTileLayerDef & {
-              creditsPerMTile: number;
-            }
-          > => def.technology === 'tile' && def.creditsPerMTile !== undefined,
-        )
-        .map((layer) => ({
-          ...layer,
-          overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
-          url: layer.url.startsWith('//') ? `http:${layer.url}` : layer.url,
-        })),
-    [],
-  );
+  const layers = useAppSelector(drawnTypesSelector);
 
-  // for server: src/downloadableMaps.ts
-  // console.log(
-  //   JSON.stringify(
-  //     mapDefs.map((mapDef) => ({
-  //       type: mapDef.type,
-  //       url: mapDef.url,
-  //       extraScales: mapDef.extraScales,
-  //       minZoom: mapDef.minZoom,
-  //       maxNativeZoom: mapDef.maxNativeZoom,
-  //       creditsPerMTile: mapDef.creditsPerMTile,
-  //       layer: mapDef.layer,
-  //       attribution: mapDef.attribution
-  //         .map(
-  //           (a) =>
-  //             a.type +
-  //             ': ' +
-  //             (a.nameKey ? (m?.mapLayers.attr[a.nameKey] ?? '') : a.name),
-  //         )
-  //         .join(', '),
-  //     })),
-  //   ),
-  // );
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
-  const [mapType, setMapType] = useState(
+  const layerSetups = useAppSelector((state) => state.map.layerSetups);
+
+  const drawnSetups = useAppSelector(drawnSetupsSelector);
+
+  const prices = useExportPrices();
+
+  const mapDefs = useMemo((): ExportableMap[] => {
+    const tileMaps = integratedLayerDefs.flatMap((layer) => {
+      // A layer exported as something else takes that one's tiles, price and
+      // countries, whose flags then say what the export covers.
+      const exported = exportedLayer(layer, prices);
+
+      return exported
+        ? [
+            {
+              ...exported,
+              overlay: layer.layer === 'overlay', // TODO make server understand `layer` property
+              url: exported.url.startsWith('//')
+                ? `http:${exported.url}`
+                : exported.url,
+            },
+          ]
+        : [];
+    });
+
+    // The library's and the user's own, each rendered by the terrain service
+    // with its own shading.
+    const shadingPrice = prices?.[SHADING_SOURCE];
+
+    const shadingMaps = [...integratedLayerDefs, ...customLayers].flatMap(
+      (def) => {
+        if (
+          def.technology !== 'parametricShading' ||
+          shadingPrice === undefined
+        ) {
+          return [];
+        }
+
+        // as drawn, a preset's copy included
+        const shading =
+          drawnSetups[def.type]?.shading ??
+          layerSetups[def.type]?.shading ??
+          DEFAULT_SHADING;
+
+        const opaque = isOpaqueShading(shading);
+
+        return [
+          {
+            ...def,
+            creditsPerMTile: shadingPrice,
+            exportType: SHADING_SOURCE,
+            url: serverShadingUrl(shading, opaque ? 'jpeg' : 'png'),
+            shading: { spec: serializeShading(shading), opaque },
+          },
+        ];
+      },
+    );
+
+    return [...tileMaps, ...shadingMaps];
+  }, [integratedLayerDefs, customLayers, layerSetups, drawnSetups, prices]);
+
+  const [pickedType, setMapType] = useState<string>();
+
+  // Derived until picked: the maps on the map may still be loading.
+  const mapType =
+    pickedType ??
     mapDefs.find(
       (mapDef) => mapDef.creditsPerMTile && layers.includes(mapDef.type),
-    )?.type ?? 'X',
-  );
+    )?.type ??
+    mapDefs[0]?.type ??
+    'X';
 
   const [format, setFormat] = useState('mbtiles');
 
@@ -148,10 +210,16 @@ export default function OfflineMapExportModal({
     [mapType, mapDefs],
   );
 
+  // `mapDef` is rebuilt on every body load and layer toggle; defaults apply
+  // once per map so they don't overwrite what the user typed.
+  const defaultsFor = useRef<string>(undefined);
+
   useEffect(() => {
-    if (!mapDef) {
+    if (!mapDef || defaultsFor.current === mapDef.type) {
       return;
     }
+
+    defaultsFor.current = mapDef.type;
 
     // scales are per-layer; keeping the previous one would ask for `@3x` tiles
     // the new layer doesn't serve
@@ -203,10 +271,21 @@ export default function OfflineMapExportModal({
   // screen's DPR; `1` means the plain tile URL
   const exportScale = parseInt(scale, 10) || 1;
 
+  // the server gets the `http:` form, but sampling from this page must stay on
+  // https or the browser blocks it as mixed content
+  const sampleUrl = mapDef?.url.replace(/^http:/, 'https:');
+
   const { bytes: estimatedSize, sampling } = useTilesSizeEstimate({
-    // the server gets the `http:` form, but sampling from this page must stay
-    // on https or the browser blocks it as mixed content
-    urlTemplate: mapDef?.url.replace(/^http:/, 'https:'),
+    urlTemplate: sampleUrl,
+    tileAuth: premiumTileAuth(
+      sampleUrl,
+      mapDef &&
+        'premiumFromZoom' in mapDef &&
+        typeof mapDef.premiumFromZoom === 'number'
+        ? mapDef.premiumFromZoom
+        : undefined,
+      user,
+    ),
     bbox,
     minZoom: Number(minZoom),
     maxZoom: Number(maxZoom),
@@ -227,12 +306,13 @@ export default function OfflineMapExportModal({
       downloadMap({
         email,
         name,
-        map: mapType,
+        map: mapDef?.exportType ?? mapType,
         format,
         maxZoom: parseInt(maxZoom, 10),
         minZoom: parseInt(minZoom, 10),
         scale: parseInt(scale, 10),
         boundary: bboxPolygon(bbox as BBox),
+        shading: mapDef?.shading,
       }),
     );
   };
@@ -253,15 +333,15 @@ export default function OfflineMapExportModal({
 
   const invalidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  const mapDefName = mapDef?.name;
+
   useEffect(() => {
     setName((name) =>
-      name && nameChanged ? name : (m?.mapLayers.letters[mapType] ?? ''),
+      name && nameChanged
+        ? name
+        : (layerName({ type: mapType, name: mapDefName }, m) ?? ''),
     );
-  }, [m, mapType, nameChanged]);
-
-  function getItem(def: IntegratedLayerDef) {
-    return <MapLayerItem def={def} />;
-  }
+  }, [m, mapType, mapDefName, nameChanged]);
 
   return (
     <Modal
@@ -276,9 +356,10 @@ export default function OfflineMapExportModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaDatabase /> {m?.mainMenu.offlineMapExport}{' '}
+            <FaDatabase /> <Text k="mainMenu.offlineMapExport" />{' '}
             <ExperimentalFunction />
           </Modal.Title>
+          <ManualHeaderButton chapter="offline" />
         </Modal.Header>
 
         <Modal.Body>
@@ -286,38 +367,48 @@ export default function OfflineMapExportModal({
 
           <div>
             <p>
-              <strong>{ome?.usageIntro}</strong>
+              <strong>
+                <Text m={ome} k="usageIntro" />
+              </strong>
             </p>
             <ul>
               <li>
-                <strong>{ome?.usageDesktop}</strong>{' '}
-                <a href="https://qgis.org/" target="_blank" rel="noopener">
+                <strong>
+                  <Text m={ome} k="usageDesktop" />
+                </strong>{' '}
+                <a
+                  href="https://qgis.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   QGIS
                 </a>{' '}
                 (Windows/macOS/Linux),{' '}
                 <a
                   href="https://www.maptiler.com/desktop/"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   MapTiler Desktop
                 </a>
               </li>
 
               <li>
-                <strong>{ome?.usageAndroid}</strong>{' '}
+                <strong>
+                  <Text m={ome} k="usageAndroid" />
+                </strong>{' '}
                 <a
                   href="https://play.google.com/store/apps/details?id=menion.android.locus"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Locus Map
                 </a>
                 ,{' '}
                 <a
-                  href="https://play.google.com/store/apps/details?id=menion.android.locus.pro"
+                  href="https://play.google.com/store/apps/details?id=com.orux.oruxmapsDonate"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   OruxMaps
                 </a>
@@ -325,7 +416,7 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://play.google.com/store/apps/details?id=com.bodunov.galileo"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Guru Maps
                 </a>
@@ -333,26 +424,28 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://play.google.com/store/apps/details?id=net.osmand"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   OsmAnd
                 </a>
               </li>
 
               <li>
-                <strong>{ome?.usageIos}</strong>{' '}
+                <strong>
+                  <Text m={ome} k="usageIos" />
+                </strong>{' '}
                 <a
                   href="https://apps.apple.com/app/guru-maps-offline-maps-gps/id1032458712"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Guru Maps
                 </a>
                 ,{' '}
                 <a
-                  href="https://apps.apple.com/app/map-plus/id123456789"
+                  href="https://apps.apple.com/app/map-plus/id438868200"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   Map Plus
                 </a>
@@ -360,30 +453,33 @@ export default function OfflineMapExportModal({
                 <a
                   href="https://apps.apple.com/us/app/osmand-maps-travel-navigate/id934850257"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener noreferrer"
                 >
                   OsmAnd
                 </a>
               </li>
 
               <li>
-                <strong>{ome?.usageWeb}</strong> {ome?.usageWebLead}{' '}
+                <strong>
+                  <Text m={ome} k="usageWeb" />
+                </strong>{' '}
+                <Text m={ome} k="usageWebLead" />{' '}
                 <a
                   href="https://github.com/consbio/mbtileserver"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   mbtileserver
                 </a>{' '}
-                {ome?.usageWebMid}{' '}
+                <Text m={ome} k="usageWebMid" />{' '}
                 <a
                   href="https://github.com/maptiler/tileserver-gl"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   TileServer GL
                 </a>
-                {ome?.usageWebTrail}
+                <Text m={ome} k="usageWebTrail" />
               </li>
             </ul>
           </div>
@@ -393,11 +489,13 @@ export default function OfflineMapExportModal({
           <hr />
 
           <Form.Group controlId="mapType">
-            <Form.Label>{ome?.map}</Form.Label>
+            <Form.Label>
+              <Text m={ome} k="map" />
+            </Form.Label>
 
             <Dropdown className="mb-3" onSelect={(value) => setMapType(value!)}>
               <Dropdown.Toggle as={SelectToggle} className="w-100">
-                {mapDef ? getItem(mapDef) : ome?.unknownMapType}
+                {mapDef ? <MapLayerItem def={mapDef} /> : ome?.unknownMapType}
               </Dropdown.Toggle>
 
               <FmDropdownMenu popperConfig={sameMinWidthPopperConfig}>
@@ -408,7 +506,7 @@ export default function OfflineMapExportModal({
                     key={def.type}
                     eventKey={def.type}
                   >
-                    {getItem(def)}
+                    <MapLayerItem def={def} truncate />
                   </Dropdown.Item>
                 ))}
               </FmDropdownMenu>
@@ -416,7 +514,9 @@ export default function OfflineMapExportModal({
           </Form.Group>
 
           <Form.Group controlId="downloadArea">
-            <Form.Label className="d-block">{ome?.downloadArea}</Form.Label>
+            <Form.Label className="d-block">
+              <Text m={ome} k="downloadArea" />
+            </Form.Label>
 
             <MapAreaToggle
               className="mb-3"
@@ -426,8 +526,12 @@ export default function OfflineMapExportModal({
             />
           </Form.Group>
 
+          <OutsideCoverageAlert mapDef={mapDef} bbox={bbox} active={show} />
+
           <Form.Group controlId="name" className="mb-3">
-            <Form.Label>{ome?.name}</Form.Label>
+            <Form.Label>
+              <Text m={ome} k="name" />
+            </Form.Label>
 
             <Form.Control
               type="text"
@@ -440,9 +544,11 @@ export default function OfflineMapExportModal({
           </Form.Group>
 
           <Form.Group controlId="format" className="mb-3">
-            <Form.Label>{ome?.format}</Form.Label>
+            <Form.Label className="d-block">
+              <Text m={ome} k="format" />
+            </Form.Label>
 
-            <ButtonGroup className="d-block">
+            <FitButtonGroup>
               <LongPressTooltip label={ome?.formatMbtilesTooltip}>
                 {({ props }) => (
                   <ToggleButton
@@ -455,7 +561,7 @@ export default function OfflineMapExportModal({
                     onChange={() => setFormat('mbtiles')}
                     {...props}
                   >
-                    {ome?.formatMbtiles}
+                    <Text m={ome} k="formatMbtiles" />
                   </ToggleButton>
                 )}
               </LongPressTooltip>
@@ -472,16 +578,18 @@ export default function OfflineMapExportModal({
                     onChange={() => setFormat('sqlitedb')}
                     {...props}
                   >
-                    {ome?.formatSqlitedb}
+                    <Text m={ome} k="formatSqlitedb" />
                   </ToggleButton>
                 )}
               </LongPressTooltip>
-            </ButtonGroup>
+            </FitButtonGroup>
           </Form.Group>
 
           {mapDef && (
             <Form.Group controlId="zoomRange" className="mb-3">
-              <Form.Label className="required">{ome?.zoomRange}</Form.Label>
+              <Form.Label className="required">
+                <Text m={ome} k="zoomRange" />
+              </Form.Label>
 
               <InputGroup>
                 <Form.Control
@@ -509,9 +617,11 @@ export default function OfflineMapExportModal({
 
           {mapDef?.extraScales && (
             <Form.Group controlId="scale" className="mb-3">
-              <Form.Label className="d-block">{ome?.scale}</Form.Label>
+              <Form.Label className="d-block">
+                <Text m={ome} k="scale" />
+              </Form.Label>
 
-              <ToggleButtonGroup
+              <FitToggleButtonGroup
                 type="radio"
                 name="scale"
                 value={scale}
@@ -527,12 +637,14 @@ export default function OfflineMapExportModal({
                     {scale}×
                   </ToggleButton>
                 ))}
-              </ToggleButtonGroup>
+              </FitToggleButtonGroup>
             </Form.Group>
           )}
 
           <Form.Group controlId="email" className="mb-3">
-            <Form.Label className="required">{ome?.email}</Form.Label>
+            <Form.Label className="required">
+              <Text m={ome} k="email" />
+            </Form.Label>
 
             <Form.Control
               type="email"
@@ -542,18 +654,20 @@ export default function OfflineMapExportModal({
               onChange={(e) => setEmail(e.currentTarget.value)}
             />
 
-            <Form.Text className="text-muted">{ome?.emailInfo}</Form.Text>
+            <Form.Text className="text-muted">
+              <Text m={ome} k="emailInfo" />
+            </Form.Text>
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer className="flex-wrap">
+        <FmModalFooter className="flex-wrap">
           {tileCount !== undefined && mapDef && (
             <div className="w-100 text-end">
-              {ome?.summaryTiles}: <b>{cnf.format(tileCount)}</b>
+              <Text m={ome} k="summaryTiles" />: <b>{cnf.format(tileCount)}</b>
               {estimatedSize !== undefined && (
                 <>
                   {' '}
-                  ｜ {ome?.summarySize}:{' '}
+                  ｜ <Text m={ome} k="summarySize" />:{' '}
                   {sampling ? (
                     <Spinner animation="border" size="sm" />
                   ) : (
@@ -567,12 +681,14 @@ export default function OfflineMapExportModal({
                   price >= Math.floor(user?.credits ?? 0) ? 'text-danger' : ''
                 }
               >
-                {ome?.summaryPrice(<b>{cnf.format(price)}</b>)}
+                <Text m={ome}>
+                  {(ome) => ome.summaryPrice(<b>{cnf.format(price)}</b>)}
+                </Text>
               </span>
             </div>
           )}
 
-          <Button
+          <FmFooterButton
             variant="primary"
             onClick={close}
             type="submit"
@@ -583,14 +699,13 @@ export default function OfflineMapExportModal({
               invalidMaxZoom ||
               price >= Math.floor(user?.credits ?? 0)
             }
-          >
-            <FaDownload /> {m?.general.export} <kbd>Enter</kbd>
-          </Button>
+            icon={<FaDownload />}
+            label={m?.general.export}
+            kbd="Enter"
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.close} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

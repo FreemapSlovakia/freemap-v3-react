@@ -509,7 +509,7 @@ describe('the backoff', () => {
     for (let i = 0; i < RETRY_DELAYS.length + 2; i++) {
       await okSyncBrokenStream(h);
 
-      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+      vi.advanceTimersByTime(RETRY_DELAYS.at(-1)!);
     }
 
     // One `/status` that timed out must not end a ride on its own, whatever the
@@ -522,7 +522,7 @@ describe('the backoff', () => {
 
     // It takes as many recorder failures as it would have from the start.
     for (let i = 0; i < RETRY_DELAYS.length; i++) {
-      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+      vi.advanceTimersByTime(RETRY_DELAYS.at(-1)!);
 
       await failPendingSync(h);
     }
@@ -555,7 +555,7 @@ describe('the backoff', () => {
     for (let i = 0; i < RETRY_DELAYS.length; i++) {
       expect(h.stored).toBe(true);
 
-      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+      vi.advanceTimersByTime(RETRY_DELAYS.at(-1)!);
 
       await failPendingSync(h);
     }
@@ -601,7 +601,7 @@ describe('the backoff', () => {
 
       expect(last(h)).toBe('reconnecting');
 
-      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+      vi.advanceTimersByTime(RETRY_DELAYS.at(-1)!);
     }
 
     expect(h.stored).toBe(true);
@@ -667,7 +667,7 @@ describe('the stream deadline', () => {
 
       expect(last(h)).toBe('reconnecting');
 
-      vi.advanceTimersByTime(RETRY_DELAYS[RETRY_DELAYS.length - 1]);
+      vi.advanceTimersByTime(RETRY_DELAYS.at(-1)!);
     }
 
     expect(h.stored).toBe(true);

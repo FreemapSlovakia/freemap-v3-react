@@ -199,7 +199,7 @@ export const SKY_COLOR = '#c4d8ee';
 export function normalizeStops(
   stops: PanoramaGradientStop[],
 ): PanoramaGradientStop[] {
-  return [...stops].sort((a, b) => a.pos - b.pos).slice(0, GRADIENT_MAX_STOPS);
+  return stops.toSorted((a, b) => a.pos - b.pos).slice(0, GRADIENT_MAX_STOPS);
 }
 
 /**
@@ -227,9 +227,7 @@ export function storedStops(
   gradient: PanoramaGradient | null,
   stops: PanoramaGradientStop[],
 ): PanoramaGradientStop[] {
-  const faded = gradient?.fadeToSky
-    ? gradient.stops[gradient.stops.length - 1]
-    : null;
+  const faded = gradient?.fadeToSky ? gradient.stops.at(-1)! : null;
 
   return normalizeStops(
     !faded
@@ -353,15 +351,13 @@ export type GroundGradientRequest = {
   stops: [number, string][];
 };
 
-/** `pinnedFarM` overrides the setting with a distance a previous pass measured. */
 export function gradientRequest(
   gradient: PanoramaGradient,
   rangeM: number,
-  pinnedFarM?: number | null,
 ): GroundGradientRequest {
   const stops = normalizeStops(gradient.stops);
 
-  const farM = pinnedFarM ?? (gradient.farKm && gradient.farKm * 1000);
+  const farM = gradient.farKm && gradient.farKm * 1000;
 
   return {
     // Never past `range`: the service refuses a ramp ending beyond anything the
@@ -385,11 +381,7 @@ export const PanoramaGradientStopsSchema = z
 export const PanoramaGradientSchema = z.object({
   stops: PanoramaGradientStopsSchema,
   fadeToSky: z.boolean(),
-  farKm: z
-    .number()
-    .positive()
-    .max(GRADIENT_FAR_STEPS_KM[GRADIENT_FAR_STEPS_KM.length - 1])
-    .nullable(),
+  farKm: z.number().positive().max(GRADIENT_FAR_STEPS_KM.at(-1)!).nullable(),
   clip: z.boolean(),
 });
 

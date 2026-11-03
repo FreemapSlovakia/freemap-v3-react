@@ -2,18 +2,12 @@ import type { Selection } from '@app/store/actions.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import type { DataViewerState } from '@features/dataViewer/model/reducer.js';
-import {
-  drawingLineLabel,
-  drawingPointLabel,
-} from '@features/drawing/labelValues.js';
+import { partitionFeatures } from '@features/dataViewer/drawingWire.js';
 import type {
   DrawingLineType,
-  DrawnLine,
   Line,
 } from '@features/drawing/model/actions/drawingLineActions.js';
-import type { DrawingLinesState } from '@features/drawing/model/reducers/drawingLinesReducer.js';
-import type { DrawingPointsState } from '@features/drawing/model/reducers/drawingPointsReducer.js';
+import type { DrawingPoint } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { GalleryMessages } from '@features/gallery/translations/GalleryMessages.js';
 import { loadGalleryMessages } from '@features/gallery/translations/loadGalleryMessages.js';
 import type { ObjectsState } from '@features/objects/model/reducer.js';
@@ -41,8 +35,10 @@ import type { TrackingState } from '@features/tracking/model/reducer.js';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
 import { COLORS } from '@shared/colors.js';
+import { isoInstant, toEpochMs } from '@shared/dateUtils.js';
 import { parseIconSpec } from '@shared/drawingIcons.js';
 import { fetchElevations } from '@shared/elevation.js';
+import { featureLabel, withRenderedLabel } from '@shared/featureProperties.js';
 import {
   buildMarkerSvg,
   resolveMarkerGlyph,
@@ -50,6 +46,7 @@ import {
   utf8ToBase64,
 } from '@shared/markerSvg.js';
 import { escapeHtml } from '@shared/stringUtils.js';
+import type { Feature } from 'geojson';
 import { iconSpecToGarminSym } from '../../garminSymMapping.js';
 import {
   iconSpecToOsmAndIcon,
@@ -57,8 +54,8 @@ import {
 } from '../../osmandIconMapping.js';
 import type { exportMapFeatures } from '../actions.js';
 import {
-  keepDrawingLine,
-  keepDrawingPoint,
+  featureExportable,
+  keepFeature,
   keepObject,
   keepSearchResult,
   selectedTrackToken,
@@ -93,6 +90,40 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   action,
   dispatch,
 }) => {
+  const gpx = await buildGpx(getState, action.payload);
+
+  const { target } = action.payload;
+
+  if (
+    await upload(
+      'gpx',
+      exportBlob([gpx], 'application/gpx+xml', target),
+      target,
+      getState,
+      dispatch,
+    )
+  ) {
+    dispatch(setActiveModal(null));
+  }
+};
+
+export default handle;
+
+export async function buildGpx(
+  getState: () => RootState,
+  {
+    exportables,
+    only,
+    elevation,
+    filter = () => true,
+  }: Pick<
+    ReturnType<typeof exportMapFeatures>['payload'],
+    'exportables' | 'only' | 'elevation'
+  > & {
+    /** Which map features to include; all when unset. */
+    filter?: (feature: Feature) => boolean;
+  },
+): Promise<string> {
   const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
   doc.documentElement.setAttributeNS(
@@ -154,11 +185,9 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
 
   createElement(meta, 'time', new Date().toISOString());
 
-  createElement(meta, 'keywords', action.payload.exportables.join(' '));
+  createElement(meta, 'keywords', exportables.join(' '));
 
   const {
-    drawingLines,
-    drawingPoints,
     objects,
     routePlanner,
     routePlannerSettings,
@@ -168,9 +197,12 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     l10n: { language },
   } = getState();
 
-  const set = new Set(action.payload.exportables);
+  const features = trackViewer.trackGeojson?.features ?? [];
 
-  const { only } = action.payload;
+  const set = new Set(exportables);
+
+  const keep = (index: number) =>
+    keepFeature(only, index) && filter(features[index]!);
 
   if (set.has('pictures')) {
     addPictures(
@@ -182,15 +214,15 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
   }
 
   if (set.has('drawingLines')) {
-    addDrawingLines(doc, drawingLines, 'line', only);
+    addDrawingLines(doc, features, 'line', keep);
   }
 
   if (set.has('drawingAreas')) {
-    addDrawingLines(doc, drawingLines, 'polygon', only);
+    addDrawingLines(doc, features, 'polygon', keep);
   }
 
   if (set.has('drawingPoints')) {
-    await addDrawingPoints(doc, drawingPoints, only);
+    await addDrawingPoints(doc, features, keep);
   }
 
   if (set.has('objects')) {
@@ -211,9 +243,12 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     addTracking(doc, tracking, selectedTrackToken(only));
   }
 
-  if (set.has('import')) {
-    addImportedTrack(doc, trackViewer);
-  }
+  addImportedTrack(
+    doc,
+    features,
+    (index) =>
+      keep(index) && set.has(featureExportable(features[index]!.geometry)),
+  );
 
   if (set.has('search')) {
     for (const { geojson } of search.selectedResults
@@ -222,8 +257,6 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
       addGeojson(doc, geojson);
     }
   }
-
-  const { elevation } = action.payload;
 
   if (elevation === 'missing' || elevation === 'all') {
     await fillGpxElevations(doc, elevation, getState);
@@ -255,26 +288,8 @@ const handle: ProcessorHandler<typeof exportMapFeatures> = async ({
     }
   }
 
-  const { target } = action.payload;
-
-  if (
-    await upload(
-      'gpx',
-      exportBlob(
-        [new XMLSerializer().serializeToString(doc)],
-        'application/gpx+xml',
-        target,
-      ),
-      target,
-      getState,
-      dispatch,
-    )
-  ) {
-    dispatch(setActiveModal(null));
-  }
-};
-
-export default handle;
+  return new XMLSerializer().serializeToString(doc);
+}
 
 // Fills `<ele>` into `<wpt>`/`<trkpt>`/`<rtept>` elements via the elevation
 // API. `missing` adds it only where absent; `all` also overwrites existing
@@ -485,31 +500,16 @@ function addPictures(
 
 function addDrawingLines(
   doc: Document,
-  { lines }: DrawingLinesState,
+  features: readonly Feature[],
   type: DrawingLineType,
-  only: Selection | undefined,
+  keep: (index: number) => boolean,
 ) {
-  const indexById = new Map(lines.map((line, i) => [line.id, i]));
-
-  for (const [index, line] of lines.entries()) {
-    if (line.type !== type) {
+  for (const { index, line, holes } of partitionFeatures(features).lines) {
+    if (line.type !== type || !keep(index)) {
       continue;
     }
 
-    const parentIndex =
-      line.holeOfId === undefined ? undefined : indexById.get(line.holeOfId);
-
-    // A hole is part of its parent's shape, so picking either one writes both.
-    const kept =
-      keepDrawingLine(only, index) ||
-      (parentIndex !== undefined && keepDrawingLine(only, parentIndex)) ||
-      lines.some(
-        (other, i) => other.holeOfId === line.id && keepDrawingLine(only, i),
-      );
-
-    if (!kept) {
-      continue;
-    }
+    const label = featureLabel(features[index]!) ?? '';
 
     // GPX has no polygon type and so no interior rings either: a hole goes out
     // as its own track, tied to its parent by a shared id. Positional would be
@@ -518,13 +518,13 @@ function addDrawingLines(
     addStyledTrk(
       doc,
       line,
-      parentIndex === undefined
-        ? lines.some((other) => other.holeOfId === line.id)
-          ? { polygonId: String(index) }
-          : undefined
-        : { holeOf: String(parentIndex), style: lines[parentIndex]! },
-      lines,
+      holes.length ? { polygonId: String(index) } : undefined,
+      label,
     );
+
+    for (const hole of holes) {
+      addStyledTrk(doc, hole, { holeOf: String(index), style: line }, label);
+    }
   }
 }
 
@@ -541,14 +541,12 @@ function addDrawingLines(
 function addStyledTrk(
   doc: Document,
   line: Line,
-  hole?: { polygonId: string } | { holeOf: string; style: Line },
-  // The whole collection, so a label naming `{area}` is measured with the holes
-  // taken off it, exactly as the readout and the map do.
-  lines: readonly DrawnLine[] = [],
+  hole: { polygonId: string } | { holeOf: string; style: Line } | undefined,
+  // Rendered off the whole shape, so a label naming `{area}` is measured with
+  // the holes taken off it, exactly as the readout and the map do.
+  renderedLabel: string,
 ) {
   const trkEle = createElement(doc.documentElement, 'trk');
-
-  const renderedLabel = drawingLineLabel(line, lines);
 
   if (renderedLabel && (!hole || 'polygonId' in hole)) {
     createElement(trkEle, 'name', renderedLabel);
@@ -725,8 +723,8 @@ function writeTrkStyle(
 
 async function addDrawingPoints(
   doc: Document,
-  { points }: DrawingPointsState,
-  only: Selection | undefined,
+  features: readonly Feature[],
+  keep: (index: number) => boolean,
 ) {
   // Caches shared across all points in this export, so a thousand identical
   // fa icons resolve once, and identical markers rasterize to PNG once.
@@ -738,11 +736,11 @@ async function addDrawingPoints(
   const pending: { extEle: Element; locusIcon: Promise<string | undefined> }[] =
     [];
 
-  for (const [
+  for (const {
     index,
-    { coords, label, color, markerType, icon, props },
-  ] of points.entries()) {
-    if (!keepDrawingPoint(only, index)) {
+    point: { coords, label, color, markerType, icon, props },
+  } of partitionFeatures(features).points) {
+    if (!keep(index)) {
       continue;
     }
 
@@ -753,11 +751,33 @@ async function addDrawingPoints(
       toLatLon(coords),
     );
 
-    const renderedLabel = drawingPointLabel({ coords, label, props });
+    const renderedLabel = featureLabel(features[index]!) ?? '';
+
+    // The waypoint's own GPX elements, in schema order around `<name>` and
+    // `<sym>`; the table below repeats them for our own importer.
+    const meta = (key: string) => {
+      const value = props?.[key];
+
+      if (value) {
+        createElement(wptEle, key, value);
+      }
+    };
+
+    const time = toEpochMs(props?.['time']);
+
+    if (time !== undefined) {
+      createElement(wptEle, 'time', isoInstant(time));
+    }
 
     if (renderedLabel) {
       createElement(wptEle, 'name', renderedLabel);
     }
+
+    meta('cmt');
+
+    meta('desc');
+
+    meta('src');
 
     // `<sym>` carries the icon for Garmin / BaseCamp / MapSource and many
     // mobile consumers. Falls back to the icon-spec's literal text/poi/fa
@@ -768,6 +788,8 @@ async function addDrawingPoints(
     if (sym) {
       createElement(wptEle, 'sym', sym);
     }
+
+    meta('type');
 
     const extEle = createElement(wptEle, 'extensions');
 
@@ -882,7 +904,7 @@ async function buildLocusIconDataUrl({
   icon,
   faCache,
 }: {
-  markerType: DrawingPointsState['points'][number]['markerType'];
+  markerType: DrawingPoint['markerType'];
   color: string;
   label?: string;
   icon?: string;
@@ -1017,22 +1039,37 @@ function addPlannedRoute(
       const color = isochroneColor(bucket, isochrones.length);
 
       for (const ring of isochrone.geometry.coordinates) {
-        addStyledTrk(doc, {
-          type: 'polygon',
-          label: isochroneLabel(isochrone, bucket, rpm.isochroneRing, language),
-          color: joinColorAlpha(color, lineOpacity),
-          width: lineWidth,
-          // Only the outermost ring is filled, as on the map, which fades the
-          // whole ring group — so the fill takes `lineOpacity` on top of its own.
-          fillColor: joinColorAlpha(
-            color,
-            bucket === isochrones.length - 1
-              ? ISOCHRONE_FILL_OPACITY * lineOpacity
-              : 0,
-          ),
-          // The ring arrives closed; `addStyledTrk` closes polygons itself.
-          points: ring.slice(0, -1).map(([lon, lat], id) => ({ lat, lon, id })),
-        });
+        const label = isochroneLabel(
+          isochrone,
+          bucket,
+          rpm.isochroneRing,
+          language,
+        );
+
+        addStyledTrk(
+          doc,
+          {
+            type: 'polygon',
+            label,
+            color: joinColorAlpha(color, lineOpacity),
+            width: lineWidth,
+            // Only the outermost ring is filled, as on the map, which fades the
+            // whole ring group — so the fill takes `lineOpacity` on top of its
+            // own.
+            fillColor: joinColorAlpha(
+              color,
+              bucket === isochrones.length - 1
+                ? ISOCHRONE_FILL_OPACITY * lineOpacity
+                : 0,
+            ),
+            // The ring arrives closed; `addStyledTrk` closes polygons itself.
+            points: ring
+              .slice(0, -1)
+              .map(([lon, lat], id) => ({ lat, lon, id })),
+          },
+          undefined,
+          label,
+        );
       }
     }
 
@@ -1185,9 +1222,18 @@ function addTracking(
   }
 }
 
-function addImportedTrack(doc: Document, { trackGeojson }: DataViewerState) {
-  if (trackGeojson) {
-    addGeojson(doc, trackGeojson);
+/** The features the drawing form can't say, written as GeoJSON is. */
+function addImportedTrack(
+  doc: Document,
+  features: readonly Feature[],
+  keep: (index: number) => boolean,
+) {
+  const rest = partitionFeatures(features)
+    .rest.filter(({ index }) => keep(index))
+    .map(({ feature }) => withRenderedLabel(feature, 'name'));
+
+  if (rest.length) {
+    addGeojson(doc, { type: 'FeatureCollection', features: rest });
   }
 }
 

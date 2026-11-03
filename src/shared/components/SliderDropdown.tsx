@@ -12,6 +12,16 @@ type Props = {
   name?: ReactNode;
   /** Below this the toggle label collapses into the tooltip. */
   breakpoint?: Breakpoint;
+  /**
+   * Extra classes on the toggle itself — e.g. `text-warning`, saying the value
+   * on show is the one the account is held to; `toggleHint` says what it means.
+   * As in `SelectDropdown`.
+   */
+  toggleClassName?: string;
+  /** A line under the toggle's own tooltip, saying what `toggleClassName` means. */
+  toggleHint?: ReactNode;
+  /** Disables the toggle; its tooltip still shows, so `toggleHint` can say why. */
+  disabled?: boolean;
   /** `LabeledSlider`s, and whatever else answers the same question. */
   children: ReactNode;
 };
@@ -26,9 +36,17 @@ export function SliderDropdown({
   toggleLabel,
   name,
   breakpoint,
+  toggleClassName,
+  toggleHint,
+  disabled,
   children,
 }: Props): ReactElement {
   const [show, setShow] = useState(false);
+
+  // Closed with its toggle, which could no longer close it.
+  if (disabled && show) {
+    setShow(false);
+  }
 
   return (
     <Dropdown
@@ -52,13 +70,17 @@ export function SliderDropdown({
     >
       <LongPressTooltip
         breakpoint={breakpoint}
-        label={toggleLabel ?? '…'}
+        label={toggleLabel ?? undefined}
         name={name}
+        hint={toggleHint}
+        disabled={disabled}
       >
         {({ label: tipLabel, labelClassName, props }) => (
           <Dropdown.Toggle
             variant="secondary"
             bsPrefix="fm-dropdown-toggle-nocaret"
+            className={toggleClassName}
+            disabled={disabled}
             {...props}
           >
             {icon}
@@ -71,13 +93,10 @@ export function SliderDropdown({
       </LongPressTooltip>
 
       <FmDropdownMenu>
-        {/* A column, because everything inside a toolbar inherits
-            `white-space: nowrap` — without it the label and the slider sit
-            side by side on one line. */}
         {/* Fixed rather than shrink-to-fit: a value label grows as the slider
             moves, and the menu would resize under the finger dragging it. */}
         <div
-          className="px-3 py-1 d-flex flex-column gap-3 text-wrap"
+          className="px-3 py-1 d-flex flex-column gap-3"
           style={{ width: 'min(20rem, calc(100vw - 1rem))' }}
         >
           {children}

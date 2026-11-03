@@ -11,7 +11,7 @@ import type { OsmFeatureId } from '@shared/types/featureId.js';
  * unpinned load names exactly one.
  */
 export const osmLoad = createAction<
-  { focus: boolean } & (
+  { focus: boolean | 'pan' } & (
     | { ids: OsmFeatureId[]; pin: true }
     | { ids: [OsmFeatureId]; pin?: false }
   )

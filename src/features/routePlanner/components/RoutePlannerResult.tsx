@@ -3,6 +3,11 @@ import {
   activeMapToolSelector,
   selectingModeSelector,
 } from '@app/store/selectors.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FEATURES_PANE_CLASS,
+  useOwnPaneOpacity,
+} from '@features/map/hooks/featuresPane.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import {
   colorizeGeometrySource,
@@ -24,6 +29,7 @@ import {
   SELECTION_COLOR,
 } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
 import { lineString } from '@turf/helpers';
@@ -66,6 +72,7 @@ import {
 } from '../model/actions.js';
 import { ISOCHRONE_FILL_OPACITY, isochroneColor } from '../model/isochrones.js';
 import { routeColorizeFeatures, tolledMeters } from '../model/pathDetails.js';
+import { directLegsSelector } from '../model/reducer.js';
 import {
   INACTIVE_ALTERNATIVE_COLOR,
   STEP_MODE_COLORS,
@@ -176,19 +183,37 @@ export function RoutePlannerResult(): ReactElement {
   const onlyStart =
     transportTypeDefs[transportType]?.api === 'gh' && mode !== 'route';
 
+  const directLegs = useAppSelector(directLegsSelector);
+
   useMapEvent(
     'click',
     useCallback(
-      ({ latlng }: LeafletMouseEvent) => {
-        if (window.fmEmbedded || draggingRef.current) {
-          // nothing
-        } else if (tool !== 'route-planner') {
-          // nothing
-        } else if (pickMode === 'start' || onlyStart) {
+      ({ latlng, originalEvent }: LeafletMouseEvent) => {
+        if (
+          window.fmEmbedded ||
+          draggingRef.current ||
+          tool !== 'route-planner'
+        ) {
+          return;
+        }
+
+        // In route mode a new start or finish joins the route with a new leg.
+        const direct =
+          directLegs &&
+          originalEvent.shiftKey &&
+          points.length > 0 &&
+          pickMode !== null;
+
+        if (direct) {
+          trackMatomo(['trackEvent', 'RoutePlanner', 'directLeg']);
+        }
+
+        if (pickMode === 'start' || onlyStart) {
           dispatch(
             routePlannerSetStart({
               lat: latlng.lat,
               lon: latlng.lng,
+              ...(direct ? { transport: 'manual' } : {}),
             }),
           );
         } else if (pickMode === 'finish') {
@@ -196,11 +221,12 @@ export function RoutePlannerResult(): ReactElement {
             routePlannerSetFinish({
               lat: latlng.lat,
               lon: latlng.lng,
+              legTransport: direct ? 'manual' : undefined,
             }),
           );
         }
       },
-      [pickMode, dispatch, tool, onlyStart],
+      [pickMode, dispatch, tool, onlyStart, directLegs, points.length],
     ),
   );
 
@@ -223,32 +249,44 @@ export function RoutePlannerResult(): ReactElement {
       return (
         <div>
           <div>
-            {rpm?.distance({
-              value: formatDistance(distanceSum, language),
-              diff:
-                distanceDiff === undefined
-                  ? undefined
-                  : formatDistance(distanceDiff, language),
-            })}
+            <Text m={rpm}>
+              {(rpm) =>
+                rpm.distance({
+                  value: formatDistance(distanceSum, language),
+                  diff:
+                    distanceDiff === undefined
+                      ? undefined
+                      : formatDistance(distanceDiff, language),
+                })
+              }
+            </Text>
           </div>
           {!Number.isNaN(durationSum) && (
             <div>
-              {rpm?.duration({
-                h: Math.floor(Math.round(durationSum / 60) / 60),
-                m: Math.round(durationSum / 60) % 60,
-                diff:
-                  durationDiff === undefined || Number.isNaN(durationDiff)
-                    ? undefined
-                    : {
-                        h: Math.floor(Math.round(durationDiff / 60) / 60),
-                        m: Math.round(durationDiff / 60) % 60,
-                      },
-              })}
+              <Text m={rpm}>
+                {(rpm) =>
+                  rpm.duration({
+                    h: Math.floor(Math.round(durationSum / 60) / 60),
+                    m: Math.round(durationSum / 60) % 60,
+                    diff:
+                      durationDiff === undefined || Number.isNaN(durationDiff)
+                        ? undefined
+                        : {
+                            h: Math.floor(Math.round(durationDiff / 60) / 60),
+                            m: Math.round(durationDiff / 60) % 60,
+                          },
+                  })
+                }
+              </Text>
             </div>
           )}
           {showToll && tolled > 0 && (
             <div>
-              {rpm?.tolled({ value: formatDistance(tolled, language) })}
+              <Text m={rpm}>
+                {(rpm) =>
+                  rpm.tolled({ value: formatDistance(tolled, language) })
+                }
+              </Text>
             </div>
           )}
         </div>
@@ -405,20 +443,19 @@ export function RoutePlannerResult(): ReactElement {
 
   const map = useMap();
 
-  // Keep both route panes' opacity in sync with `lineOpacity` as it changes.
-  // Applying it per pane (not per-layer) composites each as one group, so the
+  // `lineOpacity` per pane (not per layer) composites each as one group, so the
   // slices making up the line — and those making up its casing — never double
-  // up where they meet. The panes themselves are created by the `<Pane>`s below
-  // (whose `style` seeds the initial value); this only handles later changes.
+  // up where they meet. The casing's pane is inside the halo pane, which
+  // already carries the features' opacity.
   useEffect(() => {
-    for (const name of [routePaneName, casingPaneName]) {
-      const pane = map?.getPane(name);
+    const pane = map?.getPane(casingPaneName);
 
-      if (pane) {
-        pane.style.opacity = String(lineOpacity);
-      }
+    if (pane) {
+      pane.style.opacity = String(lineOpacity);
     }
   }, [map, lineOpacity]);
+
+  const routePaneRef = useOwnPaneOpacity(lineOpacity);
 
   const setPointDraggingUi = useCallback(
     (isDragging: boolean) => {
@@ -855,14 +892,14 @@ export function RoutePlannerResult(): ReactElement {
         style={{ zIndex: HALO_UNDER_Z, opacity: lineOpacity }}
       />
 
-      {/*
-       * Route line and colorize canvas share this pane so `lineOpacity` (seeded
-       * here, kept live by the effect above) composites them as one group.
-       * `<Pane>` portals its children in only once the pane exists, so the
-       * layers never attach to a missing pane. Overlay z-level, below the
-       * markers.
-       */}
-      <Pane name={routePaneName} style={{ zIndex: 400, opacity: lineOpacity }}>
+      {/* Line and colorize canvas share one pane, so its opacity composites
+          them as one group; overlay level, below the markers. */}
+      <Pane
+        name={routePaneName}
+        ref={routePaneRef}
+        className={FEATURES_PANE_CLASS}
+        style={{ zIndex: 400 }}
+      >
         {paths}
 
         {noDataRunsList.map((run, i) => (

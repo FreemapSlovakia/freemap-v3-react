@@ -1,3 +1,4 @@
+import { KML_IMPORT_KEYS, withoutKeys } from '@shared/featureProperties.js';
 import * as toGeoJSON from '@tmcw/togeojson';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { extractKmlFromKmz } from './kmz.js';
@@ -130,7 +131,22 @@ export function normalizeName<G extends Geometry | null>(
 ): Feature<G> {
   const props = feature.properties;
 
-  if (!props || props['name'] != null) {
+  if (!props) {
+    return feature;
+  }
+
+  // Ours under a template, which renders the label: `name` is then the label as
+  // rendered (`title`), never a GeoJSON property — the table carries those.
+  if (props['freemap:label'] != null) {
+    const { name: _name, title, ...rest } = props;
+
+    return {
+      ...feature,
+      properties: typeof title === 'string' ? { ...rest, name: title } : rest,
+    };
+  }
+
+  if (props['name'] != null) {
     return feature;
   }
 
@@ -144,6 +160,20 @@ export function normalizeName<G extends Geometry | null>(
   return label === undefined
     ? feature
     : { ...feature, properties: { ...props, name: label } };
+}
+
+/** A KML import without the keys that mean nothing once imported. */
+function withoutKmlKeys<G extends Geometry | null>(
+  fc: FeatureCollection<G>,
+): FeatureCollection<G> {
+  return {
+    ...fc,
+    features: fc.features.map((f) =>
+      KML_IMPORT_KEYS.some((key) => f.properties?.[key] !== undefined)
+        ? { ...f, properties: withoutKeys(f.properties, KML_IMPORT_KEYS) }
+        : f,
+    ),
+  };
 }
 
 // The single finalizer every format funnels through: drop null-geometry
@@ -209,7 +239,7 @@ export function parseDataFile(
               : 'gpx';
 
   if (format === 'kml') {
-    return toGeojson(toGeoJSON.kml(doc), 'kml');
+    return toGeojson(withoutKmlKeys(toGeoJSON.kml(doc)), 'kml');
   }
 
   if (format === 'tcx') {

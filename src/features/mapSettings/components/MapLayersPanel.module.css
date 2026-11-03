@@ -1,0 +1,67 @@
+/* The backdrop is the global `.fm-frosted`. */
+.panel {
+  width: 20rem;
+  max-width: calc(100vw - 1rem);
+  border: 0;
+  background-color: transparent;
+  box-shadow: var(--fm-shadow-1);
+
+  & :global(.card-body) {
+    pointer-events: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Below `sm`; still holds the shading's 236px light wheel and colour picker. */
+  @media (max-width: 575.98px) {
+    width: 17.5rem;
+  }
+}
+
+/* As tall as a toolbar's row of full-size buttons, whatever it holds. */
+.header {
+  min-height: 3rem;
+}
+
+/* Below the header, sharing the height `useFillToBottom` caps. */
+.list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.row-toggle {
+  min-width: 0;
+  padding: 0.375rem 0;
+  border: 0;
+  background: none;
+  color: inherit;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+/* The name opens the row's page: the row lights up as a menu item would. */
+.row:has(.row-toggle:not(:disabled):hover) {
+  background-color: var(--bs-tertiary-bg);
+}
+
+/* The item selected on the map: Bootstrap's `.list-group-item.active`. After
+   the hover rule, of equal specificity, so a hovered one stays selected. */
+.row-selected,
+.row-selected:has(.row-toggle:not(:disabled):hover) {
+  background-color: var(--bs-primary);
+  color: var(--bs-white);
+
+  /* Its Remove too, which `text-body` (an !important utility) keeps dark. */
+  & :global(.btn) {
+    color: inherit !important;
+  }
+}
+
+/* Where a drag handle would be, so names line up. */
+.handle-space {
+  flex-shrink: 0;
+  width: 1em;
+}

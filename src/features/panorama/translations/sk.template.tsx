@@ -3,7 +3,10 @@ import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => <>Miesto pohľadu zvoľte tlačidlom {icon} nižšie.</>,
-  rendering: 'Vykresľujem panorámu…',
+  preparing: 'Panoráma sa pripravuje…',
+  rendering: 'Výpočet panorámy…',
+  encoding: 'Kompresia obrázka…',
+  decoding: 'Rozbaľovanie obrázka…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Čaká sa na vykresľovaciu službu…'
@@ -32,13 +35,12 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavenia panorámy',
     tiltHint:
       'Koľko oblohy a zeme obrázok zachytí — uhly nad obzorom a pod ním.',
-    custom: 'Presné uhly',
     depthLift: 'Rozvinúť diaľku',
     depthLiftOff: 'Verný pohľad',
     depthLiftHint:
-      'Nadvihne vzdialený terén, takže sa ďaleké pohoria oddelia od hrebeňov pred nimi — tak, ako to robia ručne kreslené panorámy. Zároveň tým do obrázka pribudnú vrchy, ktoré by ste odtiaľto v skutočnosti nevideli; ich názvy sú odlíšené.',
+      'Nadvihne vzdialený terén, takže sa ďaleké pohoria oddelia od hrebeňov pred nimi — tak, ako to robia ručne kreslené panorámy. Zároveň tým do obrázka pribudnú vrchy, ktoré by ste odtiaľto v skutočnosti nevideli; ich názvy sú odlíšené. Dráhy slnka a mesiaca sa cez ňu nekreslia.',
     rangeHint:
-      'Terén nad 300 km patrí prémiu. Každý kilometer navyše sa prejde po každom lúči obrázka, takže vzdialenejší výhľad stojí vykresľovanie úmerne viac.',
+      'Terén nad 300 km je prémiová funkcia. Každý kilometer navyše sa prejde po každom lúči obrázka, takže vzdialenejší výhľad stojí vykresľovanie úmerne viac.',
     look: 'Vzhľad',
     looks: {
       natural: 'Prirodzený',
@@ -66,24 +68,42 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Terén za touto vzdialenosťou sa nevykreslí, namiesto toho, aby bol vyplnený poslednou farbou, takže sa celý prechod minie na to, čo je na obrázku. Vrcholy, ktoré na ňom stoja, sa nepomenujú.',
   },
-  preview: 'Náhľad',
   quality: {
-    label: 'Kvalita / rýchlosť',
-    superfast: 'Najnižšia / najrýchlejšia',
-    fast: 'Nízka / rýchla',
-    standard: 'Štandardná',
-    detailed: 'Detailná / pomalá',
-    finest: 'Najjemnejšia / najpomalšia',
+    detail: 'Detail',
   },
+  frame: 'Výrez a detail',
   tilt: {
     label: 'Zvislý rozsah',
     standard: 'Štandardný',
     wide: 'Vysoký',
     flat: 'Nízky',
+    below: 'Pod obzorom',
+    above: 'Nad obzorom',
   },
   fov: {
     label: 'Vodorovný rozsah',
     full: 'Dookola',
+  },
+  sky: {
+    title: 'Slnko a mesiac',
+    sun: 'Dráha slnka',
+    moon: 'Dráha mesiaca',
+    date: 'Deň',
+    dateHint:
+      'Časy sú v časovom pásme tohto zariadenia a označujú, kedy za terénom zmizne posledný kúsok disku, alebo sa objaví prvý. Terén je holá zem, takže stromy a budovy ho môžu zakryť skôr.',
+    today: 'Dnes',
+    lit: (percent) => `osvetlený na ${percent}`,
+    elevation: (deg) => `výška ${deg}`,
+    overTerrain: (deg) => `${deg} nad terénom`,
+    belowTerrain: (deg) => `${deg} pod terénom`,
+    unfolded: (
+      <>
+        Nie cez rozvinutý obrázok: jeho vzdialený terén je nakreslený vyššie,
+        než v skutočnosti stojí, takže dráhy by pretínali obzor na nesprávnych
+        miestach. V nastaveniach panorámy nastavte <i>Rozvinúť diaľku</i> na{' '}
+        <i>Verný pohľad</i> a aktualizujte.
+      </>
+    ),
   },
   labels: {
     title: 'Názvy vrchov',
@@ -110,9 +130,16 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Čistý vzduch',
     hazeHint:
       'Ako ďaleko musí vrch byť, aby opar znamenal viac ako samotný vrch. Nad trojnásobkom tejto vzdialenosti sa už nepomenuje nič.',
-    showEle: 'Zobraziť nadmorské výšky',
-    showEleHint:
-      'Pod meno každého vrchu napíše jeho výšku. Menovka je potom dvojriadková, takže sa ich do obrázka zmestí menej.',
+    subLine: 'Pod názvom',
+    subLineHint:
+      'Čo hovorí druhý riadok menovky každého vrchu. Ak je zapnuté čokoľvek z toho, každá menovka je dvojriadková, takže sa ich do obrázka zmestí menej. Prominencia (P) je, o koľko sa vrch týči nad najnižším sedlom na ceste k vyššiemu terénu; izolácia (I) je, ako ďaleko ten vyšší terén je.',
+    subLineParts: {
+      ele: 'Výška',
+      distance: 'Vzdialenosť',
+      prominence: 'Prominencia',
+      isolation: 'Izolácia',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Pomenovať odhalené vrchy',
     showRevealedHint:
       'Vrchy, ktoré rozvinutie diaľky vytiahlo spoza bližšieho hrebeňa: sú nakreslené, no odtiaľto ich v skutočnosti nevidno. Ich názvy sú svetlejšie a keď nie je miesto pre oba, prednosť dostane vrch, ktorý vidno.',
@@ -142,11 +169,6 @@ const sk: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Panorámu sa nepodarilo vykresliť.',
   },
   caveats: {
-    title: 'Čo obrázok ukazuje a čo nie',
-    bareEarth:
-      'Model terénu je holá zem: lesy ani budovy v ňom nie sú, takže výhľad, ktorý by les zakryl, je nakreslený ako voľný. Toto je zďaleka najväčší zdroj odchýlok.',
-    coverage:
-      'Podrobnosť sa líši podľa krajiny. Kde existuje národný laserový model, je blízke okolie ostré; inde odpovedá globálny 30 m model.',
     viewpoint:
       'Oko je umiestnené na najvyšší bod v okruhu niekoľkých metrov od miesta kliknutia, aby výhľad z vrcholu nekazila skala vedľa vás.',
     depthLift:

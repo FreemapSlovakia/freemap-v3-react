@@ -145,7 +145,7 @@ const handle: ProcessorHandler<typeof authWithApple> = async ({
     },
   });
 
-  await handleLoginResponse(res, getState, dispatch);
+  await handleLoginResponse(res, getState, dispatch, 'apple');
 };
 
 export default handle;

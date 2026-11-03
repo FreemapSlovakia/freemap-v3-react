@@ -2,7 +2,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { EmbedMessages } from './EmbedMessages.js';
 
 const de: DeepPartialWithRequiredObjects<EmbedMessages> = {
-  code: 'Füge den folgenden Code in deine HTML-Seite ein:',
+  code: 'Fügen Sie den folgenden Code in Ihre HTML-Seite ein:',
   example: 'Das Ergebnis wird folgendermaßen aussehen:',
   dimensions: 'Größe',
   height: 'Höhe',

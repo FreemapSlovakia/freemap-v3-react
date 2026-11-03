@@ -15,7 +15,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
       ? `Chyba nám byla automaticky reportována pod ID <b>${ticketId}</b>.`
       : ''
   }
-  Chybu můžeš nahlásit ${
+  Chybu můžete nahlásit ${
     ticketId ? 'i ' : ''
   }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   případně nám poslat detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
@@ -25,7 +25,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 </p>
 `;
 
-const outdoorMap = 'Turistika, Cyklo, Běžky, Jízda';
+const outdoorMap = 'Outdoorová';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -50,7 +50,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeight: 'Výška očí',
     eyeHeightHint:
       'Jak vysoko nad zemí stojíte — rozhledna či dron, ne nadmořská výška.',
-    maxVisibleDistance: 'Maximální viditelná vzdálenost',
+    maxVisibleDistance: 'Max. viditelná vzdálenost',
+    info: 'Informace',
+    terrain: {
+      bareEarth:
+        'Model terénu je holá zem: lesy ani budovy v něm nejsou, takže terén, který by les zakryl, se bere jako volný. To je zdaleka největší zdroj odchylek.',
+      coverage:
+        'Podrobnost se liší podle země. Kde existuje národní laserový model, je blízké okolí ostré; jinde odpovídá globální 30m model.',
+    },
     copyCode: 'Zkopírovat kód',
     loading: 'Načítám…',
     ok: 'OK',
@@ -58,6 +65,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     resetToDefaults: 'Obnovit výchozí',
     back: 'Zpět',
+    valueRange: ({ min, max }) => (
+      <>
+        Zadejte hodnotu mezi {min} a {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Zadejte hodnotu větší než {min}.</>,
+    invalidUrl: 'Zadejte URL začínající na http:// nebo https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -71,17 +85,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Přidat nové',
     clear: 'Vyčistit',
     convertToDrawing: 'Zkonvertovat na kreslení',
+    toggleObjectType: 'Kliknutím zobrazíte nebo skryjete objekty tohoto typu',
+    hideObjectType: ({ name }) => <>Skrýt typ „{name}“</>,
     copyToDrawing: 'Kopírovat do kresby',
-    copyTo: ({ tool }) => <>Kopírovat do {tool}</>,
-    convertTo: ({ tool }) => <>Zkonvertovat do {tool}</>,
+    copyTo: ({ tool }) => <>Kopírovat do nástroje {tool}</>,
     convertAllToDrawing: 'Zkonvertovat vše na kreslení',
-    convertAllTo: ({ tool }) => <>Zkonvertovat vše do {tool}</>,
     openIn: ({ what }) => <>Otevřít v {what}</>,
     panoramaFromHere: 'Panorama odsud',
     viewshedFromHere: 'Viditelnost odsud',
     toposcopeFromHere: 'Orientační růžice odsud',
     lookAtInPanorama: 'Podívat se na to v panoramatu',
-    placeActions: 'Co se dá dělat s tímto místem',
     locationActions: 'Akce pro toto místo',
     convert: {
       geometry: 'Geometrie',
@@ -117,6 +130,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saved: 'Uložené.',
     visual: 'Zobrazení',
     drawingTool: 'Kreslicí nástroj',
+    noDrawingTool: 'Výběr',
     copyOk: 'Zkopírováno do schránky.',
     noCookies: () => (
       <>
@@ -160,6 +174,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Přidat %value%',
     deleteButtonText: 'Odebrat %value% ze seznamu',
     accept: 'Přijmout',
+    externalService: 'Cizí služba s omezeními použití',
   },
 
   generic: {
@@ -202,11 +217,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Vyhledávač tras',
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
-    measurement: 'Kreslení a měření',
     drawPoints: 'Kreslení bodů',
     drawLines: 'Kreslení čar',
     drawPolygons: 'Kreslení polygonů',
-    dataViewer: 'Trasy a data',
+    dataViewer: 'Kreslení a data',
     changesets: 'Změny v mapě',
     mapDetails: 'Detaily v mapě',
     tracking: 'Sledování',
@@ -244,6 +258,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
     status: 'Stav služeb',
     language: 'Jazyk',
+    manual: 'Příručka',
   },
 
   main: {
@@ -290,7 +305,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    showMore: 'Zobrazit více…',
+    showMore: 'Zobrazit více',
     inProgress: 'Hledám…',
     noResults: 'Nebyly nalezeny žádné výsledky',
     prompt: 'Zadejte lokalitu',
@@ -330,12 +345,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'plánovač tras, trasa, navigace, itinerář, cyklo, výlet',
-        'tool-objects': 'body zájmu, poi, místa, vybavenost',
         'tool-draw-points': 'kreslení, značka, špendlík, poznámka',
         'tool-draw-lines': 'kreslení, měření vzdálenosti, délka, pravítko',
         'tool-draw-polygons': 'kreslení, měření plochy, oblast',
         'tool-import-file':
-          'gpx, kml, kmz, tcx, geojson, import, nahrát, otevřít soubor',
+          'trasy, gpx, kml, kmz, tcx, geojson, import, nahrát, otevřít soubor',
         'tool-map-details': 'identifikovat, co je zde, wms',
         'tool-changesets': 'změny osm, sady změn, mapeři, přispěvatelé',
         'tool-tracking': 'sdílení polohy, sledování zařízení, živě, tracking',
@@ -348,39 +362,39 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-features-export':
           'export, gpx, geojson, stáhnout data, uložit objekty',
         'modal-map-to-document-export':
-          'export, tisk, pdf, png, jpeg, svg, obrázek, plakát',
+          'export, tisk, pdf, png, jpeg, webp, svg, obrázek, plakát',
         'modal-offline-map-export':
           'export, offline, stáhnout dlaždice, mbtiles, sd karta',
         'modal-embed': 'iframe, embed, web, html kód, vložení',
         'modal-support-us': 'darovat, přispět, podpora, peníze',
         'modal-legend': 'značky, symboly, vysvětlivky',
+        'modal-manual': 'nápověda, návod, dokumentace, manuál, help',
         'modal-about': 'kontakt, e-mail, zpětná vazba',
-        'modal-map-layers-config': 'vrstvy, správa map, pořadí, průhlednost',
-        'modal-custom-maps': 'vlastní mapa, wms, tms, přidat mapu',
+        'modal-map-manager':
+          'nainstalované mapy, dostupné mapy, knihovna map, katalog, instalovat, odinstalovat, přidat mapy, další mapy, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
         'modal-offline-maps': 'stažené mapy, úložiště',
         'modal-browse-cache': 'mezipaměť, dlaždice, úložiště',
         'modal-map-preferences': 'nastavení, volby, průhlednost překrytí',
         'modal-elevation-settings': 'výškový profil, nadmořská výška, graf',
         'clear-map-features': 'vyčistit, smazat vše, vymazat mapu',
-        'layer-X': 'outdoor, turistika, cyklo, freemap',
+        'layer-X': 'turistika, cyklo, běžky, jezdectví, koně, freemap',
         'layer-XK': 'turistické trasy, značky, kst',
         'layer-O': 'osm, mapnik, standardní',
         'layer-S': 'satelitní, ortofoto, snímky',
-        'layer-Z': 'satelitní, ortofoto, snímky',
         'layer-J1': 'satelitní, ortofoto, snímky',
         'layer-J2': 'satelitní, ortofoto, snímky',
+        'layer-J3': 'satelitní, ortofoto, snímky',
         'layer-d': 'mhd, autobusy, vlaky, jízdní řády',
         'layer-I': 'obrázky, galerie, fotky',
         'layer-w': 'wiki, články',
+        'layer-n': 'openstreetmap, chyby, hlášení, mapování, poznámka',
         'layer-R': 'počasí, déšť, srážky, bouřka, předpověď',
         'layer-v': 'rozhled, výhled, přímá viditelnost, terén',
-        'layer-5': 'stínování, reliéf, terén, výškopis',
         'layer-6': 'stínování, reliéf, povrch, výškopis',
         'layer-7': 'stínování, reliéf, terén, výškopis, lidar',
-        'layer-8': 'stínování, reliéf, terén, výškopis, lidar',
-        'layer-h': 'stínování, reliéf, sklon, orientace, inverze',
-        'layer-z': 'stínování, reliéf, sklon, orientace, inverze',
-        'layer-y': 'stínování, reliéf, sklon, orientace, inverze',
+        'layer-h':
+          'stínování, reliéf, terén, výškopis, sklon, orientace, inverze',
+        'layer-c': 'barva, prázdná, pozadí, podklad, výplň, tónování',
         'layer-l1': 'lesní cesty, nlc',
         'layer-l2': 'lesní cesty, nlc',
         'layer-VO': 'vektorová',
@@ -392,6 +406,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-WGE': 'geologie, horniny',
         'layer-WKA': 'parcely, katastrální mapa',
         'layer-wka': 'parcely, katastrální mapa',
+        'layer-xs': 'sac, obtížnost, stezka, horolezectví, překryv',
+        'layer-xq': 'smoothness, stav, cesta, výtluky, hrbolatá, překryv',
+        'layer-xm': 'horské kolo, singletrack, enduro, sjezd, překryv',
+        'layer-xh': 'turistika, trasa, značky, rozcestníky, překryv',
+        'layer-xb': 'cyklo, kolo, mtb, trasa, překryv',
+        'layer-xl': 'lyže, běžky, trasa, překryv',
+        'layer-xr': 'jezdectví, koně, trasa, překryv',
+        'layer-xa': 'hybrid, letecká, ortofoto, satelit, popisky, překryv',
+        'layer-xc':
+          'vrstevnice, izohypsy, výška, nadmořská výška, reliéf, contours, překryv',
         'layer-WHC': 'chemie vody, hydrologie',
       },
     },
@@ -415,37 +439,43 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning: 'Tato mapa není uložena pro offline použití',
     letters: {
       S: 'Letecká',
-      Z: 'Letecká',
       J1: 'Letecká (2017-2019)',
       J2: 'Letecká (2020-2022)',
+      J3: 'Letecká (2022-2023)',
       O: 'OpenStreetMap',
       d: 'Veřejná doprava (ÖPNV)',
       X: outdoorMap,
       XK: 'Turistické trasy KST',
-      i: 'Datová vrstva',
       I: 'Fotografie',
       l1: 'Lesní cesty NLC (2017)',
       l2: 'Lesní cesty NLC',
       w: 'Wikipedia',
+      n: 'Poznámky OSM',
       R: 'Meteoradar',
       v: 'Viditelnost',
-      '5': 'Stínování terénu',
       '6': 'Stínování povrchu',
       '7': 'Detailní stínování terénu',
-      '8': 'Detailní stínování terénu',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
-      h: ' Parametrické stínování',
-      z: ' Parametrické stínování',
-      y: ' Parametrické stínování',
+      h: 'Parametrické stínování terénu',
+      c: 'Jednobarevná plocha',
       M: 'Fotografie z Wikimedia Commons',
       WDZ: 'Dřevinné složení',
       WLT: 'Lesní typy',
       WGE: 'Geologická',
       WKA: 'Katastr',
       wka: 'Katastr',
+      xs: 'Náročnost stezek',
+      xq: 'Kvalita povrchu cest',
+      xm: 'Obtížnost MTB tras',
+      xh: 'Turistické trasy',
+      xb: 'Cyklotrasy',
+      xl: 'Lyžařské trasy',
+      xr: 'Jezdecké trasy',
+      xa: 'Outdoorová mapa bez podkladu',
+      xc: 'Vrstevnice',
       WHC: 'Hydrochemická',
     },
     customBase: 'Vlastní mapa',
@@ -466,12 +496,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'různé licence Creative Commons',
     },
-    layersConfiguration: 'Nastavení vrstev',
-    customMaps: 'Vlastní mapy',
-    addCustomMap: 'Přidat vlastní mapu',
+    mapManager: 'Správce map',
+    installedMaps: 'Nainstalované mapy',
+    availableMaps: 'Dostupné mapy',
+    allMatchesInManager: 'Všechny výsledky ve správci map',
+    newCustomMap: 'Nová vlastní mapa',
     activate: 'Aktivovat',
-    customMapsEmptyMessage:
-      'Zatím nejsou definovány žádné vlastní mapy. Přidejte jednu pro zobrazení vlastního zdroje map.',
+    layersPanel: 'Vrstvy mapy',
     base: 'Základní vrstvy',
     overlay: 'Překryvné vrstvy',
     url: 'Šablona URL',
@@ -482,8 +513,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'Načítat po dlaždicích',
     tiledHelp:
       'WMS se ve výchozím nastavení vyžádá jako jeden obrázek celého výřezu: jeden požadavek místo desítek a popisky nepřeříznuté na hranicích dlaždic. Dlaždice zapněte pro server, který omezuje velikost obrázku nebo který dlaždice ukládá do mezipaměti — za cenu dávky požadavků na každý výřez.',
-    zIndex: 'Z-Index',
     preferences: 'Předvolby mapy',
+    brightness: 'Jas mapy',
+    featuresOpacity: 'Viditelnost datové vrstvy',
     maxZoom: 'Maximální přiblížení',
     zoomSnap: 'Krok přiblížení',
     zoomSnapFree: 'Volně',
@@ -494,9 +526,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automaticky (podle zařízení)',
     resolutionScaleHelp:
       'Simuluje hustotu pixelů displeje. Ovlivňuje, který variant dlaždic se načte. Pokud vrstva nenabízí požadovaný variant, použije se nejvyšší dostupný.',
+    pixelExact: 'Dlaždice přesně na pixely',
+    pixelExactHelp:
+      'Každý pixel dlaždice připadne právě na jeden pixel obrazovky, takže dlaždice zůstanou ostré i na displeji s neceločíselným poměrem pixelů, např. 1,25 nebo 1,75. Mapa pak vypadá o něco větší nebo menší. Nahrazuje škálu rozlišení a přesná je na úrovních přiblížení, na kterých končí krok přiblížení.',
     featureScale: 'Velikost prvků',
     featureScaleHelp:
       'Zvětšuje vykreslené popisky a čáry. Nemá vliv na satelitní, stínované, WMS ani vektorové (MapLibre) vrstvy.',
+    background: 'Pozadí mapy',
+    backgroundHelp:
+      'Zobrazí se všude, kde žádná vrstva nekreslí: bez podkladové mapy, vedle podkladové mapy, která pokrývá jen část světa nebo je průhledná, a tam, kde se dlaždice ještě načítají.',
+    backgroundCheckerboard: 'Šachovnice',
     layer: {
       layer: 'Vrstva',
       base: 'Základní',
@@ -509,6 +548,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametrické stínování',
+      color: 'Barva',
     },
     loadWmsLayers: 'Načíst vrstvy',
     serverNotResponding: ({ name }) => (

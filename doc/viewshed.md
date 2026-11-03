@@ -75,19 +75,54 @@ explicit act. Beside the eye button it carries a `PlaceActionsButton` for the
 viewpoint — the map context menu's own items, minus the viewshed from here,
 which is what is already on screen.
 
+The layer's registry entry credits only Freemap. The terrain models and their
+credit lines come from the render (`meta.sources`), and `Attribution` adds them
+past its country filter — a 300 km disc is not narrowed by the viewport it is
+looked at from. See `doc/panorama.md`.
+
+A `HintMark` beside the layer's name carries what the overlay does not promise:
+the layer has no window of its own to lay a panel over the way the panorama
+does. Only the viewpoint sensitivity is the viewshed's own — what the terrain
+model itself does not say is `general.terrain`, shared with the panorama so one
+fact is translated once.
+
+The toolbar keeps only the two settings worth reaching for often, range and
+detail, and they ride one `SliderDropdown` the way the panorama's fov and detail
+do — they trade against each other, a shorter reach buying a finer raster for
+the same pixels. The rest — eye and target height, strength, minimum opacity,
+colour — are in `ViewshedSettingsModal` (`#show=viewshed-settings`), for the
+reason the panorama's are: they are all in the render key, so none of them moves
+what is on screen, and a stray click on a slider would cost a render. The
+heights are typed rather than dragged, being figures one knows. It edits a draft
+and writes it on Save, as the panorama's modal does — saving stages, and Update
+pays.
+
 ## What premium grants
 
 Distance and detail, the two settings that decide what a render costs: without
-premium the range is held at `FREE_RADIUS_MAX_KM` (20 km) and the tier at
-`FREE_DETAIL` (the coarsest). **The service clamps neither**, so `grantedViewshed`
-in `request.ts` is the only thing keeping the request honest — everything that
-speaks about what is on the map (the request, the render key, the circle, the
-wait estimate, both dropdowns) reads the granted figures rather than the stored
-ones, or it would claim a picture nobody rendered.
+premium the range is held at `FREE_RADIUS_MAX_KM` (20 km) and the tier to what
+`FREE_PIXELS` affords *at the reach being rendered* — the raster the free reach
+comes to at the coarsest tier, so nothing an account had is taken away, but a
+short viewshed spends the same allowance on detail instead. 20 km still buys
+the coarsest; 10 km buys `fast`, 5 km `detailed`. Pixels rise with the tier, so
+the affordable set is a prefix and its last member is the ceiling — unlike the
+panorama's ray budget, which is not monotonic and has to be searched.
 
-The locked options stay in the menus wearing a `PremiumGem`; picking one opens
-the purchase flow instead of storing a choice the next render would clamp away.
-The stored choice is kept either way, so premium grants it back silently.
+`MIN_SIDE_PX` floors the raster, so at a short reach the coarsest tiers run
+together: at 5 km `superfast` and `fast` both come to 16.67 m/px. Two slider
+stops then draw the same picture — the render key holds the scale rather than
+the tier, so the second of them costs nothing and raises no Update.
+
+**The service clamps neither**, so `grantedViewshed` in `request.ts` is the only
+thing keeping the request honest — everything that speaks about what is on the
+map (the request, the render key, the circle, the toolbar) reads the granted
+figures rather than the stored ones, or it would claim a picture nobody
+rendered.
+
+Both sliders stop where the grant does and wear a `PremiumGem`, which is the
+purchase link: a handle that ran past the grant would stand where nothing is
+rendered, which a menu offering a locked row does not have to worry about. The
+stored choice is kept either way, so premium grants it back silently.
 
 ## The render is an explicit act
 

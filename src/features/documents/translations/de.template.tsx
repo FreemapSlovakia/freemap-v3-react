@@ -3,6 +3,7 @@ import type { DocumentsMessages } from './DocumentsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<DocumentsMessages> = {
   errorLoading: 'Fehler beim Laden des Dokuments.',
+  searchManual: 'Im Handbuch suchen',
 };
 
 export default de;

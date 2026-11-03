@@ -1,17 +1,21 @@
-import type { ExternalTarget } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import type { ExternalTarget, OsmObjectLinks } from '@app/store/actions.js';
+import { Text } from '@features/l10n/Text.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Chord } from '@shared/components/Chord.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { canShareFile } from '@shared/webShare.js';
 import type { ReactElement, ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
+  FaAndroid,
   FaClipboard,
   FaLink,
+  FaMapMarkedAlt,
   FaShareAlt,
   FaWindowMaximize,
 } from 'react-icons/fa';
@@ -33,9 +37,11 @@ import {
   getBasemapAtUrl,
   getCuzkUrl,
   getF4mapUrl,
+  getFreemapAndroidUrl,
   getGeocachingUrl,
   getGeoportailUrl,
   getGeoportalPlUrl,
+  getGeoUrl,
   getGoogleUrl,
   getHikingSkUrl,
   getIberpixUrl,
@@ -81,9 +87,15 @@ interface TargetProps
   /**
    * Offer the two editors. Off where the caller has editor entries of its own —
    * these open whatever is at the position, which for a selected OSM element is
-   * not the same thing as opening the element.
+   * not the same thing as opening the element. Those entries then carry the
+   * osm.org chord too.
    */
   editors?: boolean;
+  /**
+   * Where the place is an OSM object of its own (a note): its osm.org page and
+   * iD's address for it. JOSM's entry takes it from the caller's `onSelect`.
+   */
+  osmObject?: OsmObjectLinks;
   /** Targets of the caller's own, standing before the rest. */
   children?: ReactNode;
 }
@@ -94,6 +106,12 @@ interface TargetProps
  * rules it has for `svg`, so only an `svg` gets exactly the same width.
  */
 const noIcon = <svg width="1em" height="1em" />;
+
+const isAndroid = /Android/i.test(navigator.userAgent);
+
+// Matomo's outlink tracking sees only http(s) links, not `intent:` or `geo:`.
+const trackOpenApp = (where: string) =>
+  trackMatomo(['trackEvent', 'Share', 'openExternal', where]);
 
 export function openMenuItemProps(externalTarget: ExternalTarget) {
   return {
@@ -132,8 +150,6 @@ export function SharePageItems({
   showKbdShortcut,
   ...props
 }: PageProps): ReactElement {
-  const m = useMessages();
-
   const oeam = useOpenInExternalAppMessages();
 
   const { canCopy, hasShare, canShareImage } = pageItemFlags(props);
@@ -142,7 +158,10 @@ export function SharePageItems({
     <>
       {canCopy && (
         <Dropdown.Item as="button" {...openMenuItemProps('copy')}>
-          <FaClipboard /> {m?.general.copyPageUrl}
+          <FaClipboard />
+          <MenuLabel>
+            <Text k="general.copyPageUrl" />
+          </MenuLabel>
           {showKbdShortcut && (
             <MenuGutter>
               <Chord external="copy" />
@@ -153,13 +172,19 @@ export function SharePageItems({
 
       {hasShare && (
         <Dropdown.Item as="button" {...openMenuItemProps('url')}>
-          <FaLink /> {oeam?.url}
+          <FaLink />
+          <MenuLabel>
+            <Text m={oeam} k="url" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
       {canShareImage && (
         <Dropdown.Item as="button" {...openMenuItemProps('image')}>
-          <FaShareAlt /> {oeam?.image}
+          <FaShareAlt />
+          <MenuLabel>
+            <Text m={oeam} k="image" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
     </>
@@ -175,6 +200,7 @@ export function OpenInExternalTargetItems({
   url,
   showKbdShortcut,
   editors = true,
+  osmObject,
   children,
 }: TargetProps): ReactElement {
   // Whole levels only: several of the targets below — ZBGIS, hiking.sk,
@@ -227,7 +253,10 @@ export function OpenInExternalTargetItems({
     <>
       {url && (
         <Dropdown.Item href={url} target="_blank" eventKey="url">
-          <FaWindowMaximize /> {oeam?.window}
+          <FaWindowMaximize />
+          <MenuLabel>
+            <Text m={oeam} k="window" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -237,12 +266,15 @@ export function OpenInExternalTargetItems({
 
       {/* The map data itself, and the tools that work on it. */}
       <OnlineOnlyItem
-        href={getOsmUrl(lat, lon, zoom, includePoint)}
+        href={osmObject?.url ?? getOsmUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        <SiOpenstreetmap /> {oeam?.osm}
-        {showKbdShortcut && (
+        <SiOpenstreetmap />
+        <MenuLabel>
+          <Text m={oeam} k="osm" />
+        </MenuLabel>
+        {showKbdShortcut && editors && (
           <MenuGutter>
             <Chord external="osm.org" />
           </MenuGutter>
@@ -253,7 +285,10 @@ export function OpenInExternalTargetItems({
       {editors && (
         <>
           <Dropdown.Item as="button" {...openMenuItemProps('josm')}>
-            {noIcon} {oeam?.josm}
+            {noIcon}
+            <MenuLabel>
+              <Text m={oeam} k="josm" />
+            </MenuLabel>
             {showKbdShortcut && (
               <MenuGutter>
                 <Chord external="josm" />
@@ -262,11 +297,14 @@ export function OpenInExternalTargetItems({
           </Dropdown.Item>
 
           <OnlineOnlyItem
-            href={getIdUrl(lat, lon, zoom)}
+            href={osmObject?.idUrl ?? getIdUrl(lat, lon, zoom)}
             target="_blank"
             eventKey="url"
           >
-            {noIcon} {oeam?.id}
+            {noIcon}
+            <MenuLabel>
+              <Text m={oeam} k="id" />
+            </MenuLabel>
             {showKbdShortcut && (
               <MenuGutter>
                 <Chord external="osm.org/id" />
@@ -281,18 +319,35 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} Osmose
+        {noIcon}
+        <MenuLabel>Osmose</MenuLabel>
       </OnlineOnlyItem>
 
       <Dropdown.Divider />
 
       {/* General-purpose maps. */}
+      {/* Android only: elsewhere a `geo:` link reaches no map app — on desktop
+          Chromium, Freemap registers itself as its handler. */}
+      {isAndroid && (
+        <Dropdown.Item
+          href={getFreemapAndroidUrl(lat, lon, zoom, includePoint)}
+          eventKey="url"
+          onClick={() => trackOpenApp('freemap-android')}
+        >
+          <FaAndroid />
+          <MenuLabel>Freemap (Android)</MenuLabel>
+        </Dropdown.Item>
+      )}
+
       <OnlineOnlyItem
         href={getMapyCzUrl(lat, lon, zoom, includePoint)}
         target="_blank"
         eventKey="url"
       >
-        {noIcon} {oeam?.mapy_cz}
+        {noIcon}
+        <MenuLabel>
+          <Text m={oeam} k="mapy_cz" />
+        </MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="mapy.com" />
@@ -305,7 +360,10 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiGooglemaps /> {oeam?.googleMaps}
+        <SiGooglemaps />
+        <MenuLabel>
+          <Text m={oeam} k="googleMaps" />
+        </MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="google" />
@@ -318,7 +376,10 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiApple /> {oeam?.appleMaps}
+        <SiApple />
+        <MenuLabel>
+          <Text m={oeam} k="appleMaps" />
+        </MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="apple" />
@@ -331,8 +392,23 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiWaze /> Waze
+        <SiWaze />
+        <MenuLabel>Waze</MenuLabel>
       </OnlineOnlyItem>
+
+      {/* Whichever map app the user picks; Android only, as above. */}
+      {isAndroid && (
+        <Dropdown.Item
+          href={getGeoUrl(lat, lon, zoom, includePoint)}
+          eventKey="url"
+          onClick={() => trackOpenApp('geo-app')}
+        >
+          <FaMapMarkedAlt />
+          <MenuLabel>
+            <Text m={oeam} k="geoApp" />
+          </MenuLabel>
+        </Dropdown.Item>
+      )}
 
       <Dropdown.Divider />
 
@@ -342,7 +418,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiGooglestreetview /> Google Street View
+        <SiGooglestreetview />
+        <MenuLabel>Google Street View</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="streetview" />
@@ -355,7 +432,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiMapillary /> Mapillary
+        <SiMapillary />
+        <MenuLabel>Mapillary</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="mapillary" />
@@ -368,7 +446,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} Panoramax
+        {noIcon}
+        <MenuLabel>Panoramax</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="panoramax" />
@@ -381,7 +460,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} F4Map
+        {noIcon}
+        <MenuLabel>F4Map</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="f4map" />
@@ -394,7 +474,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        {noIcon} Peakfinder
+        {noIcon}
+        <MenuLabel>Peakfinder</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="peakfinder" />
@@ -410,7 +491,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiStrava /> Strava
+        <SiStrava />
+        <MenuLabel>Strava</MenuLabel>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -418,7 +500,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <SiGeocaching /> Geocaching
+        <SiGeocaching />
+        <MenuLabel>Geocaching</MenuLabel>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -426,7 +509,8 @@ export function OpenInExternalTargetItems({
         target="_blank"
         eventKey="url"
       >
-        <TbBrandWindy /> Windy
+        <TbBrandWindy />
+        <MenuLabel>Windy</MenuLabel>
         {showKbdShortcut && (
           <MenuGutter>
             <Chord external="windy" />
@@ -456,7 +540,11 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} {oeam?.oma} <CountryFlag country="sk" />
+          {noIcon}
+          <MenuLabel>
+            <Text m={oeam} k="oma" />
+          </MenuLabel>
+          <CountryFlag country="sk" />
         </OnlineOnlyItem>
       )}
 
@@ -466,7 +554,11 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} {oeam?.hiking_sk} <CountryFlag country="sk" />{' '}
+          {noIcon}
+          <MenuLabel>
+            <Text m={oeam} k="hiking_sk" />
+          </MenuLabel>
+          <CountryFlag country="sk" />
           <CountryFlag country="cz" />
           {showKbdShortcut && (
             <MenuGutter>
@@ -482,7 +574,11 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} {oeam?.zbgis} <CountryFlag country="sk" />
+          {noIcon}
+          <MenuLabel>
+            <Text m={oeam} k="zbgis" />
+          </MenuLabel>
+          <CountryFlag country="sk" />
           {showKbdShortcut && (
             <MenuGutter>
               <Chord external="zbgis" />
@@ -497,7 +593,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} ČÚZK <CountryFlag country="cz" />
+          {noIcon}
+          <MenuLabel>ČÚZK</MenuLabel>
+          <CountryFlag country="cz" />
         </OnlineOnlyItem>
       )}
 
@@ -507,7 +605,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} basemap.at <CountryFlag country="at" />
+          {noIcon}
+          <MenuLabel>basemap.at</MenuLabel>
+          <CountryFlag country="at" />
         </OnlineOnlyItem>
       )}
 
@@ -517,7 +617,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Geoportal <CountryFlag country="pl" />
+          {noIcon}
+          <MenuLabel>Geoportal</MenuLabel>
+          <CountryFlag country="pl" />
         </OnlineOnlyItem>
       )}
 
@@ -527,7 +629,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Atlas okolja <CountryFlag country="si" />
+          {noIcon}
+          <MenuLabel>Atlas okolja</MenuLabel>
+          <CountryFlag country="si" />
         </OnlineOnlyItem>
       )}
 
@@ -537,7 +641,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Geoportale Nazionale <CountryFlag country="it" />
+          {noIcon}
+          <MenuLabel>Geoportale Nazionale</MenuLabel>
+          <CountryFlag country="it" />
         </OnlineOnlyItem>
       )}
 
@@ -547,7 +653,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Géoportail <CountryFlag country="fr" />
+          {noIcon}
+          <MenuLabel>Géoportail</MenuLabel>
+          <CountryFlag country="fr" />
         </OnlineOnlyItem>
       )}
 
@@ -557,7 +665,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} ARKOD <CountryFlag country="hr" />
+          {noIcon}
+          <MenuLabel>ARKOD</MenuLabel>
+          <CountryFlag country="hr" />
         </OnlineOnlyItem>
       )}
 
@@ -567,7 +677,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Iberpix <CountryFlag country="es" />
+          {noIcon}
+          <MenuLabel>Iberpix</MenuLabel>
+          <CountryFlag country="es" />
         </OnlineOnlyItem>
       )}
 
@@ -577,7 +689,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} MapasPT <CountryFlag country="pt" />
+          {noIcon}
+          <MenuLabel>MapasPT</MenuLabel>
+          <CountryFlag country="pt" />
         </OnlineOnlyItem>
       )}
 
@@ -587,7 +701,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Topomapviewer <CountryFlag country="be" />
+          {noIcon}
+          <MenuLabel>Topomapviewer</MenuLabel>
+          <CountryFlag country="be" />
         </OnlineOnlyItem>
       )}
 
@@ -597,7 +713,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} PDOK <CountryFlag country="nl" />
+          {noIcon}
+          <MenuLabel>PDOK</MenuLabel>
+          <CountryFlag country="nl" />
         </OnlineOnlyItem>
       )}
 
@@ -607,7 +725,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Norgeskart <CountryFlag country="no" />
+          {noIcon}
+          <MenuLabel>Norgeskart</MenuLabel>
+          <CountryFlag country="no" />
         </OnlineOnlyItem>
       )}
 
@@ -617,7 +737,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Min karta <CountryFlag country="se" />
+          {noIcon}
+          <MenuLabel>Min karta</MenuLabel>
+          <CountryFlag country="se" />
         </OnlineOnlyItem>
       )}
 
@@ -627,7 +749,9 @@ export function OpenInExternalTargetItems({
           target="_blank"
           eventKey="url"
         >
-          {noIcon} Karttapaikka <CountryFlag country="fi" />
+          {noIcon}
+          <MenuLabel>Karttapaikka</MenuLabel>
+          <CountryFlag country="fi" />
         </OnlineOnlyItem>
       )}
     </>
@@ -635,16 +759,24 @@ export function OpenInExternalTargetItems({
 }
 
 /** Both halves in one menu, for a menu that is nothing but this. */
-export function OpenInExternalAppDropdownItems(
-  props: TargetProps & PageProps,
-): ReactElement {
+export function OpenInExternalAppDropdownItems({
+  targetKbdShortcut = true,
+  ...props
+}: TargetProps &
+  PageProps & {
+    /** Off while a selection holds the target chords; copying keeps its own. */
+    targetKbdShortcut?: boolean;
+  }): ReactElement {
   return (
     <>
       <SharePageItems {...props} />
 
       {hasPageItems(props) && <Dropdown.Divider />}
 
-      <OpenInExternalTargetItems {...props} />
+      <OpenInExternalTargetItems
+        {...props}
+        showKbdShortcut={props.showKbdShortcut && targetKbdShortcut}
+      />
     </>
   );
 }

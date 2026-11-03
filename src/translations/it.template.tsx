@@ -16,14 +16,14 @@ const getErrorMarkup = (ticketId?: string) => `
       ? `L'errore è stato automaticamente segnalato con il Ticket numero (ID) <b>${ticketId}</b>.`
       : ''
   }
-  Puoi segnalare il problema a <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+  Può segnalare il problema a <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   oppure inviare una email con i dettagli a <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
 <p>
   Grazie.
 </p>`;
 
-const outdoorMap = 'Escursionismo, Ciclismo, Sci, Cavallo';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -47,8 +47,15 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     viewpoint: 'Punto di osservazione',
     eyeHeight: 'Altezza dell’occhio',
     eyeHeightHint:
-      'Quanto sei in alto rispetto al terreno — una torre o un drone, non la quota sul livello del mare.',
-    maxVisibleDistance: 'Distanza massima visibile',
+      'L’altezza dell’occhio rispetto al terreno — una torre o un drone, non la quota sul livello del mare.',
+    maxVisibleDistance: 'Distanza max. visibile',
+    info: 'Informazioni',
+    terrain: {
+      bareEarth:
+        'Il modello del terreno è suolo nudo: boschi ed edifici non ci sono, quindi un terreno che un bosco coprirebbe è considerato libero. È di gran lunga la maggiore fonte di errore.',
+      coverage:
+        'Il dettaglio varia da paese a paese. Dove esiste un modello nazionale da scansione laser il primo piano è nitido; altrove risponde un modello globale da 30 m.',
+    },
     copyCode: 'Copia codice',
     loading: 'Caricamento…',
     ok: 'OK',
@@ -56,6 +63,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
     resetToDefaults: 'Ripristina predefiniti',
     back: 'Indietro',
+    valueRange: ({ min, max }) => (
+      <>
+        Inserisca un valore compreso tra {min} e {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Inserisca un valore maggiore di {min}.</>,
+    invalidUrl: 'Inserisca un URL che inizia con http:// o https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -72,25 +86,25 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Aggiungi nuovo',
     clear: 'Pulisci',
     convertToDrawing: 'Converti in disegno',
+    toggleObjectType:
+      'Clicchi per mostrare o nascondere gli oggetti di questo tipo',
+    hideObjectType: ({ name }) => <>Nascondi il tipo «{name}»</>,
     copyToDrawing: 'Copia nel disegno',
     copyTo: ({ tool }) => <>Copia in {tool}</>,
-    convertTo: ({ tool }) => <>Converti in {tool}</>,
     convertAllToDrawing: 'Converti tutto in disegno',
-    convertAllTo: ({ tool }) => <>Converti tutto in {tool}</>,
     openIn: ({ what }) => <>Apri in {what}</>,
 
     panoramaFromHere: 'Panorama da qui',
     viewshedFromHere: 'Visibilità da qui',
     toposcopeFromHere: 'Tavola d’orientamento da qui',
     lookAtInPanorama: 'Guarda questo nel panorama',
-    placeActions: 'Cosa fare con questo luogo',
     locationActions: 'Azioni per questo luogo',
     convert: {
       geometry: 'Geometria',
       pointOnly: 'Solo punto',
       fullGeometry: 'Geometria propria',
       label: 'Etichetta',
-      labelHint: 'Scrivi {p:name} per disegnare una proprietà chiamata name.',
+      labelHint: 'Scriva {p:name} per disegnare una proprietà chiamata name.',
       labelMode: 'Salva etichetta come',
       preview: 'Anteprima',
       labelTemplate: 'Modello',
@@ -139,17 +153,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     iconSearch: 'Cerca icone',
     load: 'Carica',
     unknown: 'Sconosciuto',
-    enablePopup: 'Per favore abilita i popup nel tuo browser per questo sito.',
+    enablePopup: 'Per favore abiliti i popup nel suo browser per questo sito.',
     broadcastChannelUnsupported:
-      'Questa azione non è supportata dal tuo browser (BroadcastChannel non è disponibile, ad es. in modalità privata o in un browser integrato in un’app). Usa una finestra normale in un browser moderno.',
+      'Questa azione non è supportata dal suo browser (BroadcastChannel non è disponibile, ad es. in modalità privata o in un browser integrato in un’app). Usi una finestra normale in un browser moderno.',
     componentLoadingError:
-      'Errore di caricamento. Per favore verifica la tua connessione internet.',
-    offline: 'Non sei connesso a internet.',
+      'Errore di caricamento. Per favore verifichi la sua connessione internet.',
+    offline: 'Nessuna connessione a internet.',
     offlineUnavailable: 'Non disponibile senza una connessione a internet.',
     offlineToolUnavailable:
       'Senza una connessione a internet questo strumento non può caricare nulla.',
     offlineNotice:
-      'Non sei connesso a internet, quindi qui non è possibile caricare né inviare nulla.',
+      'Nessuna connessione a internet, quindi qui non è possibile caricare né inviare nulla.',
     connectionError: 'Errore di collegamento al server.',
     experimentalFunction: 'Funzione sperimentale',
     attribution: () => (
@@ -157,7 +171,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     ),
     export: 'Esporta',
     expiration: 'Scadenza',
-    unauthenticatedError: 'Accedi per utilizzare questa funzione.',
+    unauthenticatedError: 'Acceda per utilizzare questa funzione.',
     confirmation: 'Conferma',
     success: 'Fatto!',
     privacyPolicy: 'Informativa sulla privacy',
@@ -167,6 +181,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Aggiungi %value%',
     deleteButtonText: 'Rimuovi %value% dalla lista',
     accept: 'Accetta',
+    externalService: 'Servizio di terzi, con limitazioni d’uso',
   },
 
   generic: {
@@ -209,7 +224,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Cerca percorso',
     objects: 'Oggetti (POI)',
     photos: 'Foto',
-    measurement: 'Disegno e misurazione',
     drawPoints: 'Disegno a punti',
     drawLines: 'Disegno a linee',
     drawPolygons: 'Disegno a poligoni',
@@ -251,6 +265,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Stato dei servizi',
     language: 'Lingua',
+    manual: 'Manuale',
   },
 
   main: {
@@ -260,7 +275,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Chiudi',
     closeTool: 'Chiudi lo strumento',
     locateMe: 'Localizzami',
-    pickHomeLocationPrompt: 'Clicca sulla mappa il punto in cui abiti',
+    pickHomeLocationPrompt: 'Clicchi sulla mappa il punto in cui abita',
     locationError: 'Errore nel determinare la locazione.',
     locationNoSignal: 'Ancora nessun segnale GPS.',
     headingSource: 'Indicatore di direzione',
@@ -270,10 +285,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       compass: 'Bussola del dispositivo',
     },
     headingSourceHelp:
-      'La direzione di marcia proviene dal GPS e appare solo mentre ti muovi. La bussola del dispositivo funziona anche da fermo, ma richiede un permesso e può essere imprecisa.',
+      'La direzione di marcia proviene dal GPS e appare solo durante il movimento. La bussola del dispositivo funziona anche da fermo, ma richiede un permesso e può essere imprecisa.',
     bearingLine: 'Distanza e rilevamento',
     bearingLineHelp:
-      'Durante la localizzazione traccia una linea tra la tua posizione e un mirino al centro della mappa, con l’indicazione della distanza e del rilevamento dalla tua posizione al mirino. Appare quando sposti la mappa lontano dalla tua posizione.',
+      'Durante la localizzazione traccia una linea tra la sua posizione e un mirino al centro della mappa, con l’indicazione della distanza e del rilevamento dalla sua posizione al mirino. Appare quando sposta la mappa lontano dalla sua posizione.',
     compassPermissionDenied: 'Accesso alla bussola negato.',
     compassUnavailable:
       'Nessun dato dalla bussola. Il dispositivo potrebbe non averla, oppure l’accesso è bloccato.',
@@ -282,7 +297,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     devInfo: () => (
       <div>
         Questa è una versione di test di Freemap Slovakia. Per la versione
-        effettiva vai a <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+        effettiva vada a <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
     copyright: 'Copyright',
@@ -297,12 +312,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    showMore: 'Mostra altro…',
+    showMore: 'Mostra altro',
     offlineHint:
       'Senza una connessione a internet è possibile trovare solo coordinate, un riquadro di delimitazione, numeri di tassello (z/x/y) o GeoJSON incollato.',
     inProgress: 'Ricerca in corso…',
     noResults: 'Nessun risultato trovato',
-    prompt: 'Inserisci il luogo',
+    prompt: 'Inserisca il luogo',
     routeFrom: 'Percorso da qui',
     routeTo: 'Percorso fino a qui',
     fetchingError: ({ err }) => addError(messages, 'Searching error:', err),
@@ -332,7 +347,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'navigazione, itinerario, pianificatore di percorso, gita, bici',
-        'tool-objects': 'punti di interesse, poi, luoghi, servizi',
         'tool-draw-points': 'disegno, segnaposto, spillo, nota',
         'tool-draw-lines': 'disegno, misura distanza, lunghezza, righello',
         'tool-draw-polygons': 'disegno, misura area, regione',
@@ -350,42 +364,42 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-my-maps': 'mappe salvate, salva mappa, condividi mappa',
         'modal-map-features-export': 'esporta, gpx, geojson, scarica dati',
         'modal-map-to-document-export':
-          'esporta, stampa, pdf, png, jpeg, svg, immagine, poster',
+          'esporta, stampa, pdf, png, jpeg, webp, svg, immagine, poster',
         'modal-offline-map-export':
           'esporta, offline, scarica tasselli, mbtiles, scheda sd',
         'modal-embed': 'iframe, incorpora, sito web, codice html',
         'modal-support-us': 'dona, sostieni, contribuisci, denaro',
         'modal-legend': 'simboli, legenda della mappa',
+        'modal-manual': 'aiuto, guida, istruzioni, documentazione, help',
         'modal-about': 'contatti, e-mail, feedback',
-        'modal-map-layers-config': 'livelli, gestisci mappe, ordine, opacità',
-        'modal-custom-maps':
-          'mappa personalizzata, wms, tms, aggiungi sorgente',
+        'modal-map-manager':
+          'mappe installate, mappe disponibili, libreria di mappe, catalogo, installa, disinstalla, aggiungi mappe, altre mappe, configurazione dei livelli, livelli, gestisci mappe, barra degli strumenti, menu, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
         'modal-offline-maps': 'mappe scaricate, archiviazione',
         'modal-browse-cache': 'cache, tasselli in cache, archiviazione',
         'modal-map-preferences':
           'impostazioni, opzioni, opacità delle sovrapposizioni',
         'modal-elevation-settings': 'profilo altimetrico, quota, grafico',
         'clear-map-features': 'rimuovi tutto, cancella, azzera mappa',
-        'layer-X': 'outdoor, escursionismo, ciclismo, freemap',
+        'layer-X': 'escursionismo, ciclismo, sci, cavallo, freemap',
         'layer-XK': 'sentieri segnalati, segnavia, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, ortofoto, immagini aeree',
-        'layer-Z': 'satellite, ortofoto, immagini aeree',
         'layer-J1': 'satellite, ortofoto, immagini aeree',
         'layer-J2': 'satellite, ortofoto, immagini aeree',
+        'layer-J3': 'satellite, ortofoto, immagini aeree',
         'layer-d': 'trasporto pubblico, autobus, treni, orari',
         'layer-I': 'immagini, galleria, foto',
         'layer-w': 'wiki, articoli',
+        'layer-n':
+          'openstreetmap, notes, errori, segnalazioni, mappatura, nota',
         'layer-R': 'meteo, pioggia, precipitazioni, temporale, previsioni',
         'layer-v':
           'analisi di visibilità, bacino visivo, linea di vista, terreno',
-        'layer-5': 'ombreggiatura, rilievo, terreno, quota',
         'layer-6': 'ombreggiatura, rilievo, superficie, quota',
         'layer-7': 'ombreggiatura, rilievo, terreno, quota, lidar',
-        'layer-8': 'ombreggiatura, rilievo, terreno, quota, lidar',
-        'layer-h': 'ombreggiatura, rilievo, pendenza, esposizione, inversione',
-        'layer-z': 'ombreggiatura, rilievo, pendenza, esposizione, inversione',
-        'layer-y': 'ombreggiatura, rilievo, pendenza, esposizione, inversione',
+        'layer-h':
+          'ombreggiatura, rilievo, terreno, quota, pendenza, esposizione, inversione',
+        'layer-c': 'colore, vuota, sfondo, tinta unita, riempimento',
         'layer-l1': 'strade forestali, nlc',
         'layer-l2': 'strade forestali, nlc',
         'layer-VO': 'vettoriale',
@@ -397,6 +411,18 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-WGE': 'geologia, rocce',
         'layer-WKA': 'particelle, catasto',
         'layer-wka': 'particelle, catasto',
+        'layer-xs': 'sac, scala cai, alpinismo, sovrapposizione',
+        'layer-xq': 'smoothness, fondo, buche, sconnessa, sovrapposizione',
+        'layer-xm':
+          'mountain bike, singletrack, enduro, discesa, sovrapposizione',
+        'layer-xh': 'escursionismo, segnavia, cartelli, sovrapposizione',
+        'layer-xb': 'bici, ciclismo, mtb, sovrapposizione',
+        'layer-xl': 'sci, sci di fondo, sovrapposizione',
+        'layer-xr': 'equitazione, cavallo, ippovia, sovrapposizione',
+        'layer-xa':
+          'ibrida, aerea, satellite, ortofoto, etichette, sovrapposizione',
+        'layer-xc':
+          'isoipse, curva di livello, altitudine, quota, rilievo, contours, sovrapposizione',
         'layer-WHC': 'chimica delle acque, idrologia',
       },
     },
@@ -406,7 +432,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     lookupStyle: 'Stile del risultato',
     resetApp: 'Reimposta applicazione',
     resetAppConfirm:
-      'Ripristinare tutte le impostazioni dell’applicazione ai valori predefiniti e ricaricare la pagina? Verrai disconnesso.',
+      'Ripristinare tutte le impostazioni dell’applicazione ai valori predefiniti e ricaricare la pagina? Verrà effettuata la disconnessione.',
     showAll: 'Mostra tutti i livelli',
     filterMaps: 'Filtra mappe',
     noMapsFound: 'Nessuna mappa trovata',
@@ -420,39 +446,45 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning: 'Questa mappa non è salvata per l’uso offline',
     letters: {
       S: 'Aereo',
-      Z: 'Aereo',
       J1: 'Aereo (2017-2019)',
       J2: 'Aereo (2020-2022)',
+      J3: 'Aereo (2022-2023)',
       O: 'OpenStreetMap',
       d: 'Trasporti pubblici (ÖPNV)',
       X: outdoorMap,
       XK: 'Sentieri escursionistici KST',
-      i: 'Livello dati',
       I: 'Foto',
       l1: 'Tracce forestali NLC (2017)',
       l2: 'Tracce forestali NLC',
       w: 'Wikipedia',
+      n: 'Note OSM',
       R: 'Radar meteo',
       v: 'Visibilità',
-      '5': 'Ombreggiatura del terreno',
       '6': 'Ombreggiatura della superficie',
       '7': 'Ombreggiatura dettagliata della terreno',
-      '8': 'Ombreggiatura dettagliata della terreno',
 
       VO: 'OpenStreetMap Vettoriale',
       VS: 'Strade Vettoriale',
       VD: 'Dataviz Vettoriale',
       VT: 'Outdoor Vettoriale',
 
-      h: 'Ombreggiatura parametrica',
-      z: 'Ombreggiatura parametrica',
-      y: 'Ombreggiatura parametrica',
+      h: 'Ombreggiatura parametrica del terreno',
+      c: 'Colore pieno',
       M: 'Foto di Wikimedia Commons',
       WDZ: 'Composizione arborea',
       WLT: 'Tipi di foresta',
       WGE: 'Geologica',
       WKA: 'Catasto',
       wka: 'Catasto',
+      xs: 'Difficoltà dei sentieri',
+      xq: 'Stato delle strade',
+      xm: 'Difficoltà MTB',
+      xh: 'Sentieri escursionistici',
+      xb: 'Percorsi ciclabili',
+      xl: 'Percorsi sciistici',
+      xr: 'Percorsi a cavallo',
+      xa: 'Mappa Outdoor senza sfondo',
+      xc: 'Curve di livello',
       WHC: 'Idrochimica',
     },
     customBase: 'Mappa personalizzata',
@@ -473,11 +505,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'varie licenze Creative Commons',
     },
-    customMaps: 'Mappe personalizzate',
-    addCustomMap: 'Aggiungi mappa personalizzata',
+    newCustomMap: 'Nuova mappa personalizzata',
     activate: 'Attiva',
-    customMapsEmptyMessage:
-      'Nessuna mappa personalizzata definita. Aggiungine una per visualizzare la tua sorgente mappa.',
     base: 'Livelli di base',
     overlay: 'Livelli sovrapposti',
     url: 'Modello URL',
@@ -487,9 +516,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     scaleWithDpi: 'Scala con DPI',
     tiled: 'Carica a riquadri',
     tiledHelp:
-      'Per impostazione predefinita un WMS viene richiesto come un’unica immagine dell’intera vista: una sola richiesta invece di decine, ed etichette non tagliate ai bordi dei riquadri. Attiva i riquadri per un server che limita la dimensione dell’immagine o che li memorizza nella cache, al prezzo di una raffica di richieste per ogni vista.',
-    zIndex: 'Z-Index',
+      'Per impostazione predefinita un WMS viene richiesto come un’unica immagine dell’intera vista: una sola richiesta invece di decine, ed etichette non tagliate ai bordi dei riquadri. Attivi i riquadri per un server che limita la dimensione dell’immagine o che li memorizza nella cache, al prezzo di una raffica di richieste per ogni vista.',
     preferences: 'Preferenze della mappa',
+    brightness: 'Luminosità della mappa',
+    featuresOpacity: 'Opacità del livello dati',
     maxZoom: 'Zoom massimo',
     zoomSnap: 'Passo dello zoom',
     zoomSnapFree: 'Libero',
@@ -500,21 +530,32 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automatica (predefinita del dispositivo)',
     resolutionScaleHelp:
       'Simula la densità di pixel del display. Influisce su quale variante di tile viene caricata. Se un livello non offre la variante richiesta, viene utilizzata la più alta disponibile.',
+    pixelExact: 'Tile al pixel esatto',
+    pixelExactHelp:
+      'Fa corrispondere ogni pixel della tile a esattamente un pixel dello schermo, così le tile restano nitide anche su un display con un rapporto di pixel frazionario come 1,25 o 1,75. La mappa appare allora leggermente più grande o più piccola. Sostituisce la scala di risoluzione ed è esatto sui livelli di zoom su cui si ferma il passo dello zoom.',
     featureScale: 'Dimensione degli elementi',
     featureScaleHelp:
       'Ingrandisce etichette e linee renderizzate. Non ha effetto sui livelli satellitari, di ombreggiatura, WMS o vettoriali (MapLibre).',
+    background: 'Sfondo della mappa',
+    backgroundHelp:
+      'Si vede ovunque nessun livello disegni: senza mappa di base, accanto a una mappa di base che copre solo parte del mondo o è trasparente, e dove le tessere stanno ancora caricando.',
+    backgroundCheckerboard: 'Scacchiera',
     layer: {
       layer: 'Livello',
       base: 'Base',
       overlay: 'Sovrapposto',
     },
     showMore: 'Mostra più mappe',
-    layersConfiguration: 'Configurazione dei livelli',
+    mapManager: 'Gestione mappe',
+    installedMaps: 'Mappe installate',
+    availableMaps: 'Mappe disponibili',
+    allMatchesInManager: 'Tutti i risultati in Gestione mappe',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Ombreggiatura parametrica',
+      color: 'Colore',
     },
     technology: 'Tipo',
     loadWmsLayers: 'Carica livelli',
@@ -524,7 +565,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Mappe offline',
-    browseCache: 'Memorizza durante la navigazione',
+    browseCache: 'Memorizzazione durante la navigazione',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -532,6 +573,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         legacy. Passare alla moderna <b>{messages.mapLayers.letters[to]}</b>?
       </>
     ),
+    layersPanel: 'Livelli della mappa',
   },
 
   elevationChart: {
@@ -562,7 +604,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   errorCatcher: {
     html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
-        Puoi provare:
+        Può provare:
       </p>
       <ul>
         <li><a href="">ricaricare ultima pagina</a></li>

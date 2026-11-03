@@ -1,13 +1,19 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCompass, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaCompass } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { toposcopeSet, toposcopeSetInscription } from '../model/actions.js';
 import { toposcopeInitialState } from '../model/reducer.js';
@@ -48,15 +54,18 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCompass /> {tm?.settings.title}
+          <FaCompass /> <Text m={tm} k="settings.title" />
         </Modal.Title>
+        <ManualHeaderButton chapter="toposcope" />
       </Modal.Header>
 
       <Modal.Body>
         {/* What the rays say first, then what runs around the rim, then how the
             whole thing is drawn. */}
         <Form.Group controlId="toposcope-line1">
-          <Form.Label>{tm?.settings.line1}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="settings.line1" />
+          </Form.Label>
 
           <Form.Control
             value={settings.line1}
@@ -67,7 +76,9 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
         </Form.Group>
 
         <Form.Group controlId="toposcope-line2" className="mt-3">
-          <Form.Label>{tm?.settings.line2}</Form.Label>
+          <Form.Label>
+            <Text m={tm} k="settings.line2" />
+          </Form.Label>
 
           <Form.Control
             value={settings.line2}
@@ -81,7 +92,9 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
           </Form.Text>
         </Form.Group>
 
-        <p className="mt-3 mb-1">{tm?.settings.inscriptions}</p>
+        <p className="mt-3 mb-1">
+          <Text m={tm} k="settings.inscriptions" />
+        </p>
 
         {inscriptions.map((inscription, index) => (
           <Form.Group
@@ -114,7 +127,7 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
 
         <Form.Group controlId="toposcope-scale" className="mt-3">
           <Form.Label>
-            {tm?.settings.scale}: {settings.scale}&nbsp;%
+            <Text m={tm} k="settings.scale" />: {settings.scale}&nbsp;%
             <HintMark hint={tm?.settings.scaleHint} />
           </Form.Label>
 
@@ -131,7 +144,8 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
 
         <Form.Group controlId="toposcope-outer-circle" className="mt-3">
           <Form.Label>
-            {tm?.settings.outerCircleRadius}: {settings.outerCircleRadius}
+            <Text m={tm} k="settings.outerCircleRadius" />:{' '}
+            {settings.outerCircleRadius}
           </Form.Label>
 
           <Form.Range
@@ -151,7 +165,8 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
 
         <Form.Group controlId="toposcope-inner-circle" className="mt-3">
           <Form.Label>
-            {tm?.settings.innerCircleRadius}: {settings.innerCircleRadius}
+            <Text m={tm} k="settings.innerCircleRadius" />:{' '}
+            {settings.innerCircleRadius}
           </Form.Label>
 
           <Form.Range
@@ -185,7 +200,7 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
         />
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         <ResetToDefaultsButton
           onClick={() =>
             dispatch(
@@ -202,10 +217,8 @@ export default function ToposcopeSettingsModal({ show }: Props): ReactElement {
           }
         />
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

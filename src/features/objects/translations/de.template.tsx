@@ -12,6 +12,22 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Quelle',
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Höhe',
+  terrain: {
+    prominence: 'Schartenhöhe',
+    keyCol: 'Scharte',
+    isolation: 'Dominanz',
+    showRoute: 'Weg zu höherem Gelände zeigen',
+    hideRoute: 'Weg ausblenden',
+    depth: 'Satteltiefe',
+    keyColOf: 'Scharte von',
+    showOnMap: 'Auf der Karte zeigen',
+    route: 'Weg zu höherem Gelände',
+    summitElevation: 'Gipfelhöhe',
+    saddleElevation: 'Sattelhöhe',
+    fromMarker: ({ distance }) => `${distance} von der Markierung`,
+  },
+  routeFetchError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Abrufen des Weges', err),
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Um Objekte nach Typ anzuzeigen, müssen Sie mindestens auf Zoomstufe ${minZoom} heranzoomen.`,
@@ -26,14 +42,16 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Zu viele Objekte, um sie als Funde anzuzeigen (${count}, höchstens ${limit}). Zoomen Sie hinein oder schränken Sie den Filter ein.`,
   showAsLookup: 'Als Fund anzeigen',
   showDetails: 'Details',
+  moreGeneralTypes: 'Allgemeinere Typen',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (Verlauf)',
-  type: 'Typ',
+  history: 'Verlauf',
   tooManyPoints: ({ limit }) =>
     `Das Ergebnis wurde auf ${limit} Objekte begrenzt.`,
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Objekte (POIs)', err),
   markerShape: 'Markerform',
+  showAllAsLookup: 'Alle als Funde anzeigen',
 };
 
 export default de;

@@ -22,7 +22,7 @@ const StashSchema = z.object({
   ts: z.number(),
   hash: z.string(),
   sq: z.string().optional(),
-  tr: z.literal(true).optional(),
+  tr: z.union([z.string(), z.literal(true)]).optional(),
 });
 
 /**
@@ -50,9 +50,8 @@ function inMobileAppWindow(): boolean {
  * page goes away, once any owed URL rewrite has landed.
  *
  * `history.state` goes with the hash: `sq` holds the content of a My Maps
- * session, and `tr` says the entry holds a stored track — a load carrying no
- * flag evicts the track (see `trackStore`), so restoring one without the other
- * would throw it away.
+ * session, and `tr` names the entry's snapshot of local data (`trackStore`),
+ * which an entry without it would take off the map.
  */
 export function stashUrl(): void {
   if (window.fmEmbedded || window.isRobot) {
@@ -61,7 +60,8 @@ export function stashUrl(): void {
 
   const hash = window.location.hash.slice(1);
 
-  const { sq, tr } = (history.state as { sq?: string; tr?: true } | null) ?? {};
+  const { sq, tr } =
+    (history.state as { sq?: string; tr?: string | true } | null) ?? {};
 
   try {
     if (hash) {

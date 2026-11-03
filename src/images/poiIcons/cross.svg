@@ -1,5 +1,7 @@
-<svg width="10" height="13" version="1.1"
-  xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-
-  <path d="M 4.5,1.5 V 4.5 H 1.5 V 5.5 H 4.5 V 11.5 H 5.5 V 5.5 H 8.5 V 4.5 H 5.5 V 1.5 Z" />
+<svg
+   width="7"
+   height="10"
+   xmlns="http://www.w3.org/2000/svg">
+  <path
+     d="M 3,0 V 3 H 0 v 1 h 3 v 6 H 4 V 4 H 7 V 3 H 4 V 0 Z" />
 </svg>

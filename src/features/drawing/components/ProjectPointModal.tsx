@@ -1,4 +1,9 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -6,7 +11,6 @@ import {
   useState,
 } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
 import { TbAngle } from 'react-icons/tb';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 
@@ -41,6 +45,10 @@ export function ProjectPointModal({
 
   const dm = useDrawingMessages();
 
+  // Only what has been typed can be wrong: the fields open empty, and reddening
+  // them before anything is entered would mark the dialog as broken on sight.
+  const invalidDistance = distance !== '' && !(parseFloat(distance) > 0);
+
   function isValid() {
     return parseFloat(distance) > 0 && !Number.isNaN(parseFloat(azimuth));
   }
@@ -55,28 +63,37 @@ export function ProjectPointModal({
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <TbAngle /> {dm?.projection.projectPoint}
+            <TbAngle /> <Text m={dm} k="projection.projectPoint" />
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group controlId="distance" className="mb-3">
-            <Form.Label>{dm?.projection.distance}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="projection.distance" />
+            </Form.Label>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 type="number"
                 value={distance}
                 onChange={(e) => setDistance(e.currentTarget.value)}
+                isInvalid={invalidDistance}
                 min={0}
               />
 
               <InputGroup.Text>m</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                <Text>{(m) => m.general.valueAbove({ min: '0\u00a0m' })}</Text>
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
           <Form.Group controlId="azimuth">
-            <Form.Label>{dm?.projection.azimuth}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="projection.azimuth" />
+            </Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -90,15 +107,13 @@ export function ProjectPointModal({
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
+        <FmModalFooter>
           <Button type="submit" disabled={!isValid()}>
-            Add
+            <Text m={dm} k="projection.add" />
           </Button>
 
-          <Button variant="dark" onClick={onClose}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.close} onClick={onClose} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

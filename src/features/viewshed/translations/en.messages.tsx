@@ -4,7 +4,10 @@ const en: ViewshedMessages = {
   pickViewpoint: 'Pick on the map',
   locate: 'Viewshed from my position',
   pickViewpointPrompt: 'Click the map where you want to look from',
-  detail: 'Quality / speed',
+  extent: 'Range and detail',
+  rangeHint:
+    'Looking further than 20 km is premium’s: distance is what a viewshed costs most, the rays growing with the rim and each marching to the edge.',
+  detail: 'Detail',
   details: {
     superfast: 'Lowest / fastest',
     fast: 'Low / fast',
@@ -24,6 +27,10 @@ const en: ViewshedMessages = {
   minOpacity: 'Minimum opacity',
   minOpacityHint:
     'What visible ground shows at, however edge-on it is. At 100% the overlay is a plain stencil: visible or not, nothing in between.',
+  caveats: {
+    viewpoint:
+      'A viewshed is far more sensitive to the exact viewpoint than a panorama: a few metres off a summit can lose whole quadrants.',
+  },
   update: 'Update',
   outdated: 'The overlay is of the previous viewpoint.',
   queued: ({ ahead }) =>

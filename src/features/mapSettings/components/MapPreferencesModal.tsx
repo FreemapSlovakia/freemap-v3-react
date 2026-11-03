@@ -5,18 +5,28 @@ import {
   saveSettings,
   setActiveModal,
 } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { isCompassSupported } from '@features/location/compass.js';
 import { ensureCompassPermission } from '@features/location/ensureCompassPermission.js';
 import { locationSettingsInitialState } from '@features/location/model/settingsReducer.js';
 import { mapSetLocalPrefs } from '@features/map/model/actions.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
+import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   type ChangeEvent,
   type ReactElement,
@@ -24,14 +34,8 @@ import {
   useCallback,
   useState,
 } from 'react';
-import {
-  Button,
-  Form,
-  Modal,
-  ToggleButton,
-  ToggleButtonGroup,
-} from 'react-bootstrap';
-import { FaCheck, FaSlidersH, FaTimes } from 'react-icons/fa';
+import { Form, Modal, ToggleButton } from 'react-bootstrap';
+import { FaCheck, FaSlidersH } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 // The zoom grid a gesture can settle on, as Leaflet's `zoomSnap`. Finer than a
@@ -76,6 +80,22 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
   const [zoomSnap, setZoomSnap] = useState(initialZoomSnap);
 
+  const initialPixelExact = useAppSelector((state) => state.map.pixelExact);
+
+  const [pixelExact, setPixelExact] = useState(initialPixelExact);
+
+  const initialBackground = useAppSelector(
+    (state) => state.map.backgroundColor,
+  );
+
+  const [background, setBackground] = useState(initialBackground);
+
+  const initialCheckerboard = useAppSelector(
+    (state) => state.map.backgroundCheckerboard,
+  );
+
+  const [checkerboard, setCheckerboard] = useState(initialCheckerboard);
+
   const initialHeadingSource = useAppSelector(
     (state) => state.locationSettings.headingSource,
   );
@@ -117,6 +137,12 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
     setZoomSnap(String(mapInitialState.zoomSnap));
 
+    setPixelExact(mapInitialState.pixelExact);
+
+    setBackground(mapInitialState.backgroundColor);
+
+    setCheckerboard(mapInitialState.backgroundCheckerboard);
+
     setHeadingSource(locationSettingsInitialState.headingSource);
 
     setShowBearingLine(locationSettingsInitialState.showBearingLine);
@@ -136,7 +162,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     if (
       resolutionScale !== initialResolutionScale ||
       featureScale !== initialFeatureScale ||
-      zoomSnap !== initialZoomSnap
+      zoomSnap !== initialZoomSnap ||
+      pixelExact !== initialPixelExact ||
+      background !== initialBackground ||
+      checkerboard !== initialCheckerboard
     ) {
       dispatch(
         mapSetLocalPrefs({
@@ -144,8 +173,15 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
             resolutionScale === '' ? null : Number(resolutionScale),
           featureScale: Number(featureScale),
           zoomSnap: Number(zoomSnap),
+          pixelExact,
+          backgroundColor: background,
+          backgroundCheckerboard: checkerboard,
         }),
       );
+    }
+
+    if (pixelExact && !initialPixelExact) {
+      trackMatomo(['trackEvent', 'MapSettings', 'pixelExact']);
     }
 
     if (headingSource !== initialHeadingSource) {
@@ -164,8 +200,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     }
 
     if (Object.keys(settings).length > 0) {
-      // saveSettingsProcessor closes the modal on success;
-      // dispatching setActiveModal(null) here would cancel its PATCH.
+      // saveSettingsProcessor closes the modal on success.
       dispatch(saveSettings({ settings }));
     } else {
       close();
@@ -191,6 +226,9 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     resolutionScale !== initialResolutionScale ||
     featureScale !== initialFeatureScale ||
     zoomSnap !== initialZoomSnap ||
+    pixelExact !== initialPixelExact ||
+    background !== initialBackground ||
+    checkerboard !== initialCheckerboard ||
     headingSource !== initialHeadingSource ||
     showBearingLine !== initialShowBearingLine;
 
@@ -204,6 +242,9 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
         : String(mapInitialState.resolutionScale)) &&
     featureScale === String(mapInitialState.featureScale) &&
     zoomSnap === String(mapInitialState.zoomSnap) &&
+    pixelExact === mapInitialState.pixelExact &&
+    background === mapInitialState.backgroundColor &&
+    checkerboard === mapInitialState.backgroundCheckerboard &&
     headingSource === locationSettingsInitialState.headingSource &&
     showBearingLine === locationSettingsInitialState.showBearingLine;
 
@@ -217,8 +258,9 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaSlidersH /> {m?.mapLayers.preferences}
+            <FaSlidersH /> <Text k="mapLayers.preferences" />
           </Modal.Title>
+          <ManualHeaderButton chapter="maps" />
         </Modal.Header>
 
         <Modal.Body>
@@ -226,7 +268,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
               are this browser's own and save with no connection. */}
           <Form.Group controlId="maxZoom">
             <Form.Label>
-              {m?.mapLayers.maxZoom}
+              <Text k="mapLayers.maxZoom" />
               <OfflineBadge offline={!canSaveSettings} />
             </Form.Label>
 
@@ -243,11 +285,11 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.mapLayers.zoomSnap}
+              <Text k="mapLayers.zoomSnap" />
               <HintMark hint={m?.mapLayers.zoomSnapHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="zoomSnap"
               value={zoomSnap}
@@ -263,23 +305,28 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   {label ?? m?.mapLayers.zoomSnapFree}
                 </ToggleButton>
               ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.mapLayers.resolutionScale}
+              <Text k="mapLayers.resolutionScale" />
               <HintMark hint={m?.mapLayers.resolutionScaleHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="resolutionScale"
               value={resolutionScale}
               onChange={setResolutionScale}
             >
-              <ToggleButton id="rs-auto" value="" variant="outline-primary">
-                {m?.mapLayers.resolutionScaleAuto}
+              <ToggleButton
+                id="rs-auto"
+                value=""
+                variant="outline-primary"
+                disabled={pixelExact}
+              >
+                <Text k="mapLayers.resolutionScaleAuto" />
               </ToggleButton>
 
               {['1', '2', '3', '4'].map((scale) => (
@@ -288,20 +335,32 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   id={`rs-${scale}`}
                   value={scale}
                   variant="outline-primary"
+                  disabled={pixelExact}
                 >
                   {scale}×
                 </ToggleButton>
               ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
+
+            <div className="mt-2 d-flex">
+              <Form.Check
+                id="chk-pixel-exact"
+                label={m?.mapLayers.pixelExact}
+                checked={pixelExact}
+                onChange={(e) => setPixelExact(e.currentTarget.checked)}
+              />
+
+              <HintMark hint={m?.mapLayers.pixelExactHelp} />
+            </div>
           </Form.Group>
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.mapLayers.featureScale}
+              <Text k="mapLayers.featureScale" />
               <HintMark hint={m?.mapLayers.featureScaleHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="featureScale"
               value={featureScale}
@@ -317,16 +376,37 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                   {scale}×
                 </ToggleButton>
               ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
 
           <Form.Group className="mt-3">
             <Form.Label className="d-block">
-              {m?.main.headingSource}
+              <Text k="mapLayers.background" />
+              <HintMark hint={m?.mapLayers.backgroundHelp} />
+            </Form.Label>
+
+            <RgbaColorPicker
+              alpha={false}
+              value={background}
+              onChange={setBackground}
+            />
+
+            <Form.Check
+              className="mt-2"
+              id="chk-background-checkerboard"
+              label={m?.mapLayers.backgroundCheckerboard}
+              checked={checkerboard}
+              onChange={(e) => setCheckerboard(e.currentTarget.checked)}
+            />
+          </Form.Group>
+
+          <Form.Group className="mt-3">
+            <Form.Label className="d-block">
+              <Text k="main.headingSource" />
               <HintMark hint={m?.main.headingSourceHelp} />
             </Form.Label>
 
-            <ToggleButtonGroup
+            <FitToggleButtonGroup
               type="radio"
               name="headingSource"
               value={headingSource}
@@ -351,10 +431,10 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
                     value={source}
                     variant="outline-primary"
                   >
-                    {m?.main.headingSources[source]}
+                    <Text k={`main.headingSources.${source}`} />
                   </ToggleButton>
                 ))}
-            </ToggleButtonGroup>
+            </FitToggleButtonGroup>
           </Form.Group>
 
           <Form.Group className="mt-3 d-flex">
@@ -369,24 +449,22 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
           </Form.Group>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button
+        <FmModalFooter>
+          <FmFooterButton
             variant="primary"
             type="submit"
             disabled={!dirty || invalidMaxZoom}
-          >
-            <FaCheck /> {m?.general.save}
-          </Button>
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           <ResetToDefaultsButton
             onClick={handleResetDefaults}
             disabled={atDefault}
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

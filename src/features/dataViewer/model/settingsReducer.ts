@@ -9,12 +9,17 @@ import {
   colorizerNeedsElevation,
 } from '@shared/colorizers/index.js';
 import { elevationCoverage } from '@shared/geoutils.js';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
+import type { TraceOutput } from '../traceServices.js';
+import { isRecording } from '../trackChannels.js';
 import { isTrackLine } from '../trackSelection.js';
 import {
   dataViewerColorizeTrackBy,
   dataViewerSetColorizeLegend,
   dataViewerSetData,
+  dataViewerSetLabelVisibility,
   dataViewerSetStyle,
+  dataViewerSetTraceOutput,
 } from './actions.js';
 
 // Persisted track-viewer display preferences. A dedicated settings slice (not
@@ -24,15 +29,20 @@ export interface DataViewerSettingsState {
   // Style applied to imported track-viewer features that carry no style of
   // their own.
   style: DrawingStyle;
+  labelVisibility: LabelVisibility;
   colorizeTrackBy: ColorizingMode | null;
   // Whether the colorize legend is shown; independent of the other tools.
   colorizeLegend: boolean;
+  // The trace modal's last result; unset, it is chosen by the device.
+  traceOutput: TraceOutput | null;
 }
 
 export const dataViewerSettingsInitialState: DataViewerSettingsState = {
   style: makeDrawingStyle('#0000ff', 4),
+  labelVisibility: 'always',
   colorizeTrackBy: null,
   colorizeLegend: true,
+  traceOutput: null,
 };
 
 export const dataViewerSettingsReducer = createReducer(
@@ -42,25 +52,33 @@ export const dataViewerSettingsReducer = createReducer(
       .addCase(dataViewerSetStyle, (state, action) => {
         state.style = action.payload;
       })
+      .addCase(dataViewerSetLabelVisibility, (state, action) => {
+        state.labelVisibility = action.payload;
+      })
       .addCase(dataViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;
       })
       .addCase(dataViewerSetColorizeLegend, (state, { payload }) => {
         toggleColorizeLegend(state, payload);
       })
+      .addCase(dataViewerSetTraceOutput, (state, action) => {
+        state.traceOutput = action.payload;
+      })
       .addCase(dataViewerSetData, (state, action) => {
         // A persisted elevation-derived colorize mode would render as a flat
-        // mid-palette on a track that lacks full elevation; drop it so the new
-        // track starts uncolorized rather than in a misleading state. Cleared
-        // in the same dispatch as the track data, so the URL/history sees one
-        // atomic change.
+        // mid-palette on a recording that lacks full elevation (other lines are
+        // drawn from the terrain); drop it so the new track starts uncolorized
+        // rather than in a misleading state. Cleared in the same dispatch as the
+        // track data, so the URL/history sees one atomic change.
+        const recordings = (action.payload.trackGeojson?.features ?? [])
+          .filter(isTrackLine)
+          .filter(isRecording);
+
         if (
-          action.payload.trackGeojson &&
           state.colorizeTrackBy &&
           colorizerNeedsElevation(state.colorizeTrackBy) &&
-          elevationCoverage(
-            action.payload.trackGeojson.features.filter(isTrackLine),
-          ) !== 'full'
+          recordings.length > 0 &&
+          elevationCoverage(recordings) !== 'full'
         ) {
           state.colorizeTrackBy = null;
         }

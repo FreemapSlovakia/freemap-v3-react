@@ -44,11 +44,29 @@ Densification exists purely so charts/colorize don't draw straight DEM-ignorant
 segments. The densified line is cached as a _derived_ slice field, distinct from the
 real geometry, and is never serialized:
 
-- **dataViewer**: `renderTrackGeojson` (vs. `trackGeojson`), built lazily by
-  `ensureRenderGeojson` (`src/features/dataViewer/model/`) **only after a server
-  elevation override** — the one state where every point is known DEM-derived, so
-  inserted DEM points add no seam. A track's own recorded elevation is left alone (no
-  DEM injected between measured points). `dataViewerDensifyProcessor` keeps it fresh.
+- **dataViewer**: `renderTrackGeojson` (vs. `trackGeojson`), from
+  `src/features/dataViewer/model/renderLines.ts`. **Any line but a recording** (drawn, a
+  converted route, a plain import) is drawn from the terrain model throughout, at its
+  vertices **and** densified between them, whatever it stores and whatever was chosen:
+  its values are a router's or a file's, which would step against the samples at every
+  vertex. A **recording** (`isRecording`: a line with per-point data such as times) keeps
+  its measurements: the elevation choice fills its gaps (*fill missing*, *override all*) —
+  filling adds no points, so its channels stay — and only after an override is it
+  densified, which drops them.
+
+  The copy is kept **per line**, against the line's geometry (which a restyle leaves
+  alone, so renaming or recolouring costs nothing), under what it was built for (a
+  recording's depends on the choice, or on its own *override all* this session,
+  `markOverridden`), so an edit costs only the line whose shape it changed: every other
+  line keeps its copy, republished at once with its current properties. Lines are fetched only while something
+  shows their elevation (`shownLines`: every line under an elevation colorize, the active
+  one for the chart or the info panel), all lines of a build in **one** request
+  (`densifyGeometry` inserts the points, `enrichElevations` fills them). The copy's
+  credits are stamped on each line drawn from the terrain — every model that answered
+  its build, so a batch over several countries credits each line with all of them —
+  never on a recording left as it is. `dataViewerRenderProcessor` republishes on any change and fetches what the shown
+  lines lack once edits settle; the chart's resolver fetches the active line itself and
+  falls back to the stored line when that fails.
 - **routePlanner**: `renderGeojson` via `ensureRouteRenderGeojson`. A planned route has
   no recorded measurement, so for **premium** the router's own (different-DEM,
   shape-point-density) elevation is ignored for rendering: `enrichElevations('all')`
@@ -69,7 +87,7 @@ real geometry, and is never serialized:
   profile and still follows the live smoothing preferences.
 
 Consumers read `renderTrackGeojson ?? trackGeojson` (`Results.tsx`,
-`DataViewerDetails.tsx`). Chart paths `await ensureRenderGeojson` first.
+`DataViewerDetails.tsx`). The chart path awaits `buildLines` for its line first.
 
 ### Bridges and tunnels — `src/features/routePlanner/model/structureElevation.ts`
 
@@ -173,8 +191,8 @@ flattens real terrain. The honest fix there is to move the way in OSM.
 
 `smoothElevationSeries` is the single entry point for both passes, so every consumer of
 terrain-model elevation applies them in the same order: `ensureRouteRenderGeojson` (after
-`levelSpans`), dataViewer's `ensureRenderGeojson` (which already runs only
-after a server elevation override), and the elevation chart's own
+`levelSpans`), dataViewer's `renderLines.ts` (on the lines it draws from the terrain
+model, and on recordings only after a server elevation override), and the elevation chart's own
 `processorHandler.ts`, which samples a drawn line or a measurement straight from the API.
 Never on recorded altitude — these correct a terrain model, not a barometer — and never on
 anything exported.
@@ -213,7 +231,8 @@ decides it (see _Crediting the terrain model_ below), for profiles and exports a
 The first two invalidate the derived caches (`routePlanner.renderGeojson` —
 but not the `sampledGeojson` under it, so a route re-derives without a request —
 and `trackViewer.renderTrackGeojson` clear on `elevationSetSettings`). `routePlannerColorizeProcessor`
-and `dataViewerDensifyProcessor` rebuild them, which has to happen whether or not the
+and `dataViewerRenderProcessor` rebuild them (the latter re-smoothing its per-line copies
+without a request), which has to happen whether or not the
 chart is open — an active elevation/steepness colorize reads the same cache. An open chart
 additionally redraws through `elevationChartProcessor` (see _What the chart shows_ below).
 
@@ -245,32 +264,23 @@ elevation, which never went through the API at all.
 Nothing carries them to the chart, onto geometry, or into the store — the credit travels
 alone.
 
-`ELEVATION_API_DTM_COUNTRIES` / `ELEVATION_API_DTM_ATTRIBUTION` remain for the two places
-that credit before any read has happened: the premium offer's country list, and the
-panorama's footer. They are drawn from the outdoor renderer's shading sources
-(`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`), and stay a separate list
-because either side can gain a model the other doesn't hold.
-
-Coverage is reported per country (`/geotools/covered-countries` answers `alpha2` codes), so a
-model that covers only part of one is marked `partial` and its country left out of GEDTM30's
-`exceptCountries`: the model is credited over the whole country and GEDTM30 beside it, both
-over-credits rather than a missing one. England's LIDAR composite is the case. The premium
-offer's country list names such an area through `dtmAreaNames` instead of the country —
-`Intl.DisplayNames` names countries alone.
-
-A country can also be covered by **more than one model** — Belgium is SPW's in the south and
-DHMV II in the north (which reaches over Brussels as well, so there is no gap and no third
-credit), each with its own licence — so the attribution list holds an entry per model while
-`ELEVATION_API_DTM_COUNTRIES` and GEDTM30's `exceptCountries` hold each country once.
+The one place that names coverage before any read has happened — the country list behind the
+premium offer and the elevation prompt — comes from the API itself: `useDtmCountries` reads
+`GET /geotools/elevation/sources` (the source names a read would report, remembered in
+`localStorage`) and keeps the national models' — two- or three-letter area codes (`sk`, `en`,
+`wls`), not a model id such as `sonny`, whose patchwork falls back to SRTM unannounced. It names no model — a read credits whatever the
+API reports for the points it answered. Until the list arrives, the phrase shows no tooltip.
+`Intl.DisplayNames` names countries alone, so a code for part of one is named through
+`dtmAreaNames`.
 
 Which model answers depends on the read, not only on the place: a **premium** read gets the
 national models and GEDTM30 past their borders, while a **non-premium** one is answered from
 **SRTM everywhere**. So a non-premium profile has exactly one source to
 credit, known without waiting on coverage, and the upsell gem always applies to it.
 
-`hasSubMeterPrecision` gives the point readout a decimal when every token is a 2-letter
-country code, since those are the LiDAR-derived national models. A global model is reported
-under its own id (`gedtm30`, `srtm`), which fails that test — so a model the API gains and
+`hasSubMeterPrecision` gives the point readout a decimal when every token is such an area
+code, since those are the LiDAR-derived national models. Any other model is reported under its
+own id (`gedtm30`, `srtm`, `sonny`), which fails that test — so a model the API gains and
 we've never heard of withholds the decimal rather than claiming it off a 30 m grid.
 
 GraphHopper serves its own elevation from **Sonny's LiDAR DTM**, which no read of ours
@@ -334,7 +344,11 @@ names in its ⓘ tooltip. A point readout is always `terrain-model` — which is
 the model the tooltip credits is the one that answered.
 
 `ElevationValue` (`src/features/elevationChart/components/`) is that readout — spinner,
-em dash for no data, or the value with its source tooltip and premium gem. Two toasts show
+em dash for no data, or the value with its source tooltip (`ElevationSourcesInfo`, also
+used by the details toast's terrain facts) and premium gem. The gem is left out for a
+non-premium reading off a national model — `ElevationReading.national` where the reader
+knows it (the terrain service, whose codes such as `de_by` name regions), else
+`hasSubMeterPrecision` of the API's tokens: there is nothing finer to offer. Two toasts show
 it: `ElevationInfo` (the measurement readout, which adds coordinates and tile links) and
 the search/objects details toast, whose `objectDetailsProcessor` reads one point of the
 selected feature once the details are already on screen — a line at its midpoint, anything
@@ -343,6 +357,19 @@ the read fails or the feature carries no geometry at all. It reads nothing for a
 reaching further than `MAX_ELEVATION_EXTENT_M` (200 m, taken as the bbox diagonal by
 `resultExtentM`): a street, a railway route or a whole forest has no single elevation, so
 the line is left out rather than naming one arbitrary point of it.
+
+For a peak or saddle node, the same processor also fetches the terrain service's
+`/peak/{id}` or `/saddle/{id}` (`objects/model/terrainFacts.ts`). Its `ele` — read at
+the summit or saddle point it found near the node, since OSM nodes are often off them —
+replaces the API's reading at the node, labelled _Summit_ or _Saddle elevation_ rather
+than _Elevation_, with no premium offer (it is a fixed point, not a precision tier) and
+its `ele_source` codes credited through the terrain `/licenses` dictionary. Only a point
+the service trusts counts — a `found` or `weak` summit, a `found` saddle — and for
+premium only one off a national model, premium's own reading at the node being national.
+Where that point lies 3 m or more from the node, a line under it says how far; the toggle
+that marks it is offered only where the service moved the geometry onto it (a `found`
+point on national data). The API read runs alongside and stands, as plain _Elevation_,
+wherever the service's does not.
 
 #### The `?sources=1` contract
 
@@ -393,7 +420,7 @@ they were first reported. Getting that union to a chart opened later takes two m
 because the two caches expire differently:
 
 - **Stamped on the geometry** — `ensureRouteRenderGeojson` and dataViewer's
-  `ensureRenderGeojson` put the credits on the render feature as `fm:elevationAttributions`
+  `renderLines.ts` put the credits on the render feature as `fm:elevationAttributions`
   (`withElevationAttributions` / `readElevationAttributions`). The render line is cached, so
   on the second chart open the sampling doesn't happen again; carrying the credit _on_ the
   cached object is what makes it survive, and makes drift impossible. Stamped **only** on
@@ -458,18 +485,30 @@ settings slice), the way the route finder's midpoint hint works. `rangeHint` is 
 message, not a string: it writes a key as `<kbd>`, and the toast renderer resolves only
 strings and functions — a bare JSX value comes out as `…`.
 
-A click hands the place to `panToUncovered` (`src/features/map/panToUncovered.ts`): it
-hit-tests a 24 px grid over the map container (coarser on a large screen — the sweep is
-capped at `MAX_CELLS` hit tests, since it runs on the click path before the browser
-paints), finds the largest rectangle of cells nothing covers (histogram method), and pans
-so the place lands in its middle — the chart's own window is usually over what it points
-at. Hit-testing rather than a list of chrome elements, so a panel added later counts for
-free. However narrow the gap comes out, it is returned as it is: falling back to the whole
-map for a small one would tell `ifHidden` that a mark behind a panel is in view. Every caller passes `ifHidden`, which
-leaves a place already well inside that rectangle where it is: reading along a profile is a
-lot of presses, and the map sliding under each of them helps nobody. The chart and the
-toposcope widen the inset to `GENEROUS_MARGIN_PX`, so a mark clinging to the edge of the
-free area is still centred; the panorama's probe keeps the default.
+`largestUncoveredRect` (`src/features/map/panToUncovered.ts`) hit-tests a 48 px grid over
+the map container (coarser on a large screen — the sweep is capped at `MAX_CELLS` hit tests,
+since it runs on the press path before the browser paints) and finds the largest rectangle
+of cells nothing covers (histogram method) — the chart's own window is usually over what it
+points at. Hit-testing rather than a list of chrome elements, so a panel added later counts
+for free. However narrow the gap comes out, it is returned as it is: falling back to the
+whole map for a small one would say that a mark behind a panel is in view.
+
+The chart follows a primary-button press with `keepUncovered` — zoomed in, a tap instead,
+since a press there may start a slide; a pinch ends following for the rest of its gesture. A
+place well inside that rectangle (inset by `GENEROUS_MARGIN_PX`) is left where it is; a
+hidden one glides to the middle of it through `mapRefocus`, like any other refocus. A drag
+past the click slop cuts the glide short, then holds the place still on screen — where it
+was, or the middle it was gliding to — and slides the map under it. The rectangle is measured
+once per gesture; none found (a full-screen panel) means no following. The slide is
+Leaflet's own drag: `_rawPanBy` plus `move` per pointer move, with `moveend` batched to every
+`KEEP_SYNC_MS` and the gesture's end (`endKeep`), since each `moveend` syncs the store, the
+URL and the covered-countries fetch. The first pan ends GPS following, which would otherwise
+pull the map back; following a tracked device is not ended, so its refocuses still fight a
+slide.
+
+`panToUncovered` is the one-off form: the toposcope passes `GENEROUS_MARGIN_PX` with
+`ifHidden`, the panorama's probe `ifHidden` alone. `fitToUncovered` fits an extent the same
+way, for the map-features list (`MapFeatureItems`).
 
 ### Colorizing the chart — `useChartColorize`
 
@@ -527,21 +566,20 @@ what to show:
 ```ts
 type ElevationChartTarget =
   | { type: "route-planner" } // the active alternative
-  | { type: "track-viewer" } // the active imported track
+  | { type: "track-viewer" } // the active line of the collection
   | { type: "gps-recorder" } // the recording in progress
-  | { type: "drawing"; lineId: number }
   | { type: "tracking"; token: string };
 ```
 
 `elevationChartProcessor` is the only thing that draws it, and `chartIdentity(state)`
 (`resolve.ts`) is its whole redraw rule: one cheap reference naming _what the profile is
-derived from_ — the render line, the active track feature, the drawn line, the device's
-track, the recorder's fixes. A re-route, a switched alternative, a densified line, a
-reshaped drawn line, a refilled elevation or an arriving position each replace that object;
+derived from_ — the render line, the active line's geometry (`activeTrackGeometry`), the
+device's track, the recorder's fixes. A re-route, a switched alternative, a densified line,
+a reshaped line, a refilled elevation or an arriving position each replace that object;
 nothing else does. So
 there is no list of actions to keep in step with, and an action that changes anything else
 leaves it identical and draws nothing. Cheap rather than free: the identity is a lookup
-(for a track viewer target, a scan for the active line feature), evaluated against both the
+(for a `track-viewer` target, the active line feature), evaluated against both the
 new and the previous state on every dispatched action.
 
 That price is also what keeps a derived value out of the identity. A recording's profile is
@@ -552,25 +590,21 @@ alongside `dataViewerSetActiveTrack`. (Calling the memoized `selectRecorderSegme
 would be worse than recomputing: alternating it between the new and the previous state
 thrashes its one-entry cache, and the map's own consumer of it re-renders on every action.)
 
-A drawn line is the one target sampled from the elevation API rather than read off the
-feature, and a vertex drag replaces its geometry on every pointer move — so its redraws are
-coalesced by a timer that dispatches `elevationChartRedraw`. The wait is deliberately not an
-`await` inside the processor, which would hold a progress indicator open for the whole
-gesture.
+A `track-viewer` line that carries no elevation is sampled from the elevation API rather
+than read off the feature (`keepRecorded: false`), and a vertex drag replaces its geometry
+on every pointer move — so `track-viewer` redraws are coalesced by a timer that dispatches
+`elevationChartRedraw`. The wait is deliberately not an `await` inside the processor, which
+would hold a progress indicator open for the whole gesture.
 
 Each target resolves through a small per-feature `resolveElevationChart.ts`, loaded on
 demand (a resolver may densify, and pulls the sampling path in with it). A resolver
 returns the line, whether to keep its recorded elevation, its waypoints, and the
 `ElevationCredit` only it can know — or `null` when there is nothing to chart.
 
-**Identity, not position.** A drawn line is named by an `id` (`DrawnLine`, assigned in
-`drawingLinesReducer`), a device by its token. An array index is not an identity: deleting,
-splitting and joining renumber lines, and a chart holding an index would quietly come to
-draw a different one. The id is deliberately absent from `LineSchema`, so it reaches
-neither the URL (`line=`/`polygon=` are positional) nor a persisted map — existing saved
-documents carry none, and requiring one would fail their parse. The URL therefore names the
-line by position and the id is resolved at that boundary, in `locationChangeHandler` and
-`urlProcessor`.
+**The target names no line.** A `track-viewer` chart follows `activeTrackIndex`, which the
+reducer shifts as deleting, splitting and joining renumber the features, so the chart stays
+on its line; a device is named by its token. `elevation-chart=track-viewer` in the URL
+therefore reopens on the first line after a reload.
 
 **Staleness.** Resolving can take seconds. The processor re-checks that the target is still
 the one it resolved for, and that `chartIdentity` hasn't moved on, before drawing — so a
@@ -600,10 +634,14 @@ report, which is what `gone` is for.
 
 ### Per-consumer elevation policy
 
-- **dataViewer** prompts once per track when elevation is missing/partial — **Fill
-  missing / Override all / Keep recorded** — and the answer drives `enrichElevations`
-  writing `z` into `trackGeojson` (cached; static data). Full-elevation tracks skip the
-  prompt; an explicit "update elevation" button overrides from the server. The prompt
+- **dataViewer** prompts once per collection when a **recording's** elevation is
+  missing/partial — **Fill missing / Override all / Keep recorded** — and the answer
+  drives `enrichElevations` writing `z` into `trackGeojson` (cached; static data). Any
+  other line never prompts: it is drawn from the terrain model (see the render copy
+  above). An explicit **Update elevation** — in the toolbar menu for every line and
+  point, in a selection's ⋮ for that feature alone — asks the same, plus **Clear**,
+  which takes the stored elevation off. Points are filled too (their `z`). A moved
+  vertex or point drops its elevation, which was of where it stood. The prompt
   notes that "Override all" avoids the recorded-vs-DEM seam (steepness spikes at gap
   edges).
 - **routePlanner** auto-fills (`'missing'`, lazy, cached per result) — no prompt.
@@ -620,7 +658,8 @@ report, which is what `gone` is for.
 Imported via `@shared/colorizers/…`. One colorizer per visual variable lives in
 `modes/` (`elevation`, `steepness`, `speed`, `heading`, `time`, `heartRate`, `cadence`,
 `power`, `temperature`, `battery`, `gsmSignal`, plus the categorical `surface`,
-`smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`, `trailColor`);
+`smoothness`, `roadType`, `trackType`, `hikeRating`, `mtbRating`, `trailColor` and the
+scalar span modes `averageSpeed`, `curvature`, `maxSpeed`);
 `index.ts` aggregates them (`colorizers`, `colorizingModes`, `ColorizingModeSchema`,
 `colorizerDetails`).
 
@@ -640,8 +679,8 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   planner, track viewer and tracking at once. `useZoomColorize` reads it and passes it in
   `ColorizeOptions` — one place, rather than threaded through three call sites — and it is
   part of that hook's cache-reset key, or a changed scale would redraw from the old colors.
-- `steepnessColor` and `steepnessGradeAt` are inverses; `ColorizeLegend` labels seven evenly
-  spaced ticks through the latter, so the line and its legend cannot drift apart. Even
+- `steepnessColor` and `steepnessGradeAt` are inverses; the colorizer's own `scale` labels
+  five evenly spaced ticks through the latter, so the line and its legend cannot drift apart. Even
   positions rather than round grades because round ones cannot be had at every scale — at
   ±5 % they collapse onto zero — and the labels closing up toward the middle is itself what
   shows the compression.
@@ -668,15 +707,22 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   be split first — and the split has to take the per-point channels and the path-detail
   spans with it: `@turf/flatten` copies the whole of `properties` onto every part, leaving
   a nested `coordinateProperties` that lines up with no part's coordinates, which reads as
-  "no data" and takes Time/Speed/HR off the dropdown. `trackLineParts.ts` is the data
-  viewer's own flatten, over the same `trackSegmentFeatures` that **Explode** cuts with —
-  one feature per segment, channels cut to it and the spans clipped onto its own start.
+  "no data" and takes Time/Speed/HR off the dropdown. `flattenTracks` (`src/shared/`) is
+  the flatten that hands part `i` its own entry of `fm:pathDetails`; the data viewer's
+  `trackLineParts.ts` instead cuts with `trackSegmentFeatures`, the cut **Explode** keeps
+  as features, which takes the channels too.
 - **Categorical modes** (`modes/pathDetail.ts`) paint named values instead of a scale.
   They read GraphHopper path details that ride on the feature as
-  `properties['fm:pathDetails']` — stretches in **metres** along the line, because the
+  `properties['fm:pathDetails']` — an array with **one entry per part of the line**, entry
+  `i` the stretches of part `i` in metres from _that part's_ start. That is what lets a
+  paused recording stay one recording: `@turf/flatten` gives every part the whole of
+  `properties`, so a plain object of spans would have each part wearing the spans of all of
+  them. Tracks saved earlier hold one object measured along the whole line, gaps between
+  parts left out; `readPathDetailsParts` cuts that into the per-part form on every read.
+  Metres rather than point indices because the
   line is densified for premium users and every point index shifts with it (the same
   reason `structureElevation.ts` measures bridges that way). Because they are measured
-  from the start of the line, an edit that moves a vertex has to move them too:
+  from the start of their part, an edit that moves a vertex has to move them too:
   `clipPathDetails` re-bases them onto each piece a cut or an explode gives (or a tail
   would be painted with the categories of the original beginning), and `remapPathDetails`
   reads them off a new axis when simplifying or joining moves every vertex along it. `compute` returns the whole
@@ -687,10 +733,11 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   instead of a blend across the segment spanning it. For the same reason a value no
   category claims is **not** a gap: `categoricalColorizer` appends an `unknown` category
   in `NO_DATA_COLOR` grey, so it reads like the no-data line without splitting the layer,
-  and the legend can say how much of the route nobody has mapped. One `covering()`
-  generator yields the stretches as painted — holes and unclaimed values already resolved
+  and the legend can say how much of the route nobody has mapped. One generator yields the stretches as painted — holes and unclaimed values already resolved
   to `unknown` — and both `compute` and the legend's `categories` consume it, so the
-  distances the legend lists cannot drift from the line drawn.
+  distances the legend lists cannot drift from the line drawn. That generator is
+  `categorized()` over the module's `covering()`, the hole walk the scalar span modes
+  share.
 - **Two fields carry all of that**, so no component asks "is this mode categorical":
   **`categories(features, messages)`** returns the legend's rows (key, label, color,
   metres) — the same shape of contract as the scalar `legend: { unit, values }`, which is
@@ -700,9 +747,10 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   `smoothFactor: 0` (simplification would collapse the coincident boundary pair — see the
   `react-leaflet-hotline` patch), `useZoomColorize` that one cache entry answers every
   zoom, and the data-viewer/tracking menus that the mode can never apply to a track. A
-  future _scalar_ span mode (`average_speed`, `curvature`) sets `spanBased` and a normal
-  `legend`. Beside it, **`detail`** names the GraphHopper path detail the mode reads, which
-  is what the route planner's menu matches against `pathDetailKeys` (through
+  _scalar_ span mode sets `spanBased` too, and either a `legend` read off the line's own
+  min and max or, on a fixed `colorAt` scale, a `scale` (see below). Beside it,
+  **`detail`** names the GraphHopper path detail the mode reads, which is what the
+  route planner's menu matches against `pathDetailKeys` (through
   `colorizerDetails`) — the two are separate because `spanBased` is about how the line
   renders, `detail` about where its values come from, and a future span mode need not come
   from a path detail at all. It may name **several** keys, for a mode the profile decides
@@ -725,6 +773,37 @@ Imported via `@shared/colorizers/…`. One colorizer per visual variable lives i
   "never asked" (a car leg, an OSRM leg, a manual one) stay different. Off by default,
   because a surface changes hundreds of times per route and every gap is its own render
   layer; `trailColor` sets it, and its uncovered stretches are few and long.
+- **Scalar span modes** (`scalarSpanColorizer`, `modes/pathDetail.ts`) paint a _numeric_
+  path detail with the same hard edges, the colour taken off a scale instead of a category:
+  `averageSpeed` (`average_speed`, km/h — the profile's expected speed, all a planned
+  route has in place of the recorded Speed) runs from the line's own min to its max;
+  `curvature` (beeline over edge length, 1 straight down to the 0.25 GraphHopper stores
+  as its floor) is on a fixed reversed scale (`colorAt`) so a colour means the same on
+  every route, and its legend names the ends rather than numbering them. A number has no
+  category to fall back to, so a stretch no span covers is a gap (no data), and a line
+  with no spans at all is left to the plain route. These details change on nearly every
+  edge, which makes them the costly ones to ask for: ~11 % gzipped on a 200 km foot or
+  bike route, 3 % by car. `maxSpeed` (`max_speed`) is the legal limit on a fixed
+  `colorAt` scale that is not one straight line: 0–140 km/h runs over the first 90 % of
+  the palette, and 150 — GraphHopper's value for no limit — takes a purple band of its
+  own after a hard step. The server fills every untagged edge from country defaults, so
+  a forest path reads as the rural 90 km/h.
+- **A palette position reads back as a value** through `colorizeScale`
+  (`colorizeScale.ts`, hook `useColorizeScale`): the legend's ticks and unit, and
+  `valueAt(t)` as text. Each mode describes its own: a categorical one names the
+  category (`categoryAt`), a fixed scale labels itself (`Colorizer.scale`), and a
+  per-feature-normalized one is read off its `legend` series — with its `digits`, or
+  its `format` (time of day, with the date on a line spanning days) — only for a
+  single line, smoothed exactly as that line
+  was colorized, or its labels would not be the min and max it was scaled to.
+  Two readouts use it. The legend's bar (`LegendGradientBar`) shows it under the
+  pointer on hover, or touch and drag; its tooltip is popper-placed off a marker element
+  popper does not watch, so `FollowMarker` reschedules it on every move. And the
+  elevation chart's marker on the map adds it as a line: `stopAtDistance` takes the
+  nearest of the stops `useChartColorize` computes at the map's scale — not
+  interpolated, as heading wraps at north and a category has nothing in between. Each
+  stop records the line it came from, so a target of several lines is read by that
+  line's own scale, at the same power-of-two level its stops were smoothed at.
 - `colorizeByValues` (`colorize.ts`) maps values to a Hotline palette and flags missing
   values as gaps on `ColorizedPoint`; `splitOnGaps`/`noDataRuns` split a feature's points
   into gap-free runs so the Hotline render loop can break the line at gaps.
@@ -798,7 +877,7 @@ provenance tagged at parse time — never re-derived from density/timestamps:
 - **Operate on a chosen track, not `features[0]`.** `activeTrackIndex`
   (`trackSelection.ts`) picks the active line among loaded line-like features; the chart,
   "more info" and matching act on it. Clicking a line selects it
-  (`main.selection.type === 'data-viewer'`, blue halo pane below the foreground) and
+  (`main.selection.type === 'feature'`, blue halo pane below the foreground) and
   `dataViewerSelectProcessor` aims the active index at it; deselecting leaves the index
   alone, so an open chart doesn't jump to another track. Resets on load —
   `dataViewerSetData({ select: true })` (an import, a saved recording, a conversion, not a
@@ -809,13 +888,6 @@ provenance tagged at parse time — never re-derived from density/timestamps:
   within `WAYPOINT_SNAP_METERS` (100 m); among candidates, the one closest in **time**
   when both waypoint and track carry timestamps (disambiguates a self-crossing track),
   else nearest in space.
-- **Convert-to-drawing replaces.** Drawing state lives in the URL hash, so per-vertex
-  HR/cadence/elevation can't be carried. Only a dense `fm:kind === 'track'` has rich
-  per-vertex data to lose, so it gets the shared simplify dialog
-  (`src/shared/simplifyDialog.tsx`) with that warning as its preamble (Cancel aborts);
-  routes/generic geometry convert straight away, and are asked at all only when dense
-  enough to be worth thinning.
-
 - **Simplify in place.** The dataViewer's own **Simplify** / **Simplify all**
   (`dataViewerSimplify` → `simplifyTrack.ts`) thins the loaded data without converting it.
   The tolerance is a **maximum deviation in metres**: `src/shared/simplifyGeo.ts` scales
@@ -908,8 +980,11 @@ Facts that decide the implementation, all measured against the live server:
   observations, so a paused recording sent whole has it _route across the pause_: a real
   recording carrying a stray three-point fragment 28 km from the walk matched at four
   times its length. `trackSegments` keeps them apart, measuring each on its own, and the
-  result is a feature per segment rather than one `MultiLineString` — the details are
-  metres along their own line, and `@turf/flatten` would hand every part the same spans.
+  result is one feature again, the segments as its parts and each part's details as the
+  entry of the same index (`matchedTrack`) — the track list, the start/finish pair, the
+  profile and "more info" all read the collection, so a recording has to stay one entry in
+  it whatever the graph answered. `flattenTracks` is what turns that back into per-part
+  lines for the colorizers, each with its own spans.
   A segment the graph cannot get through is kept as recorded rather than failing the lot,
   since one leg of a mixed track routinely defeats whatever profile the other leg needs.
 - **A match longer than the recording is refused** (`MATCH_MAX_LENGTH_RATIO`). Matching can
@@ -929,12 +1004,17 @@ Facts that decide the implementation, all measured against the live server:
   which is measured this way rather than read from the response's own `distance` (the
   graph's edge distance, ~2 % above a walk of the points it returns) so that both sides of
   the ratio check are measured alike.
-- **Per-point channels do not survive.** The matched line has its own points (1010 for a
-  286-point input in one measurement) and nothing maps the recorded ones onto them, so
-  `coordinateProperties` is dropped and the feature keeps its name alone. The modal warns
-  only when the track actually carries times or sensors. Transferring them would need a
-  correspondence between the two lines — `nearestPointOnLine` would give it, in either
-  direction, and it is the obvious next step if the loss proves unpopular.
+- **Per-point channels do not survive a matched segment, but survive an unmatched one.**
+  The matched line has its own points (1010 for a 286-point input in one measurement) and
+  nothing maps the recorded ones onto them, so its part of every channel is padded with
+  `null`, and a channel no kept segment records is dropped rather than left all `null`.
+  A segment kept as recorded keeps the recorded points, so its row of every channel and its
+  spans ride along (`trackSegments` cuts them, `asRecordedPart` hands them over).
+  The modal warns
+  only when the track actually carries times or sensors. Transferring them to a matched
+  segment would need a correspondence between the two lines — `nearestPointOnLine` would
+  give it, in either direction, and it is the obvious next step if the loss proves
+  unpopular.
 
 ### Lossless GeoJSON↔GPX transfer
 
@@ -977,44 +1057,46 @@ fetch directly rather than the per-feature `enrichElevations` wrapper:
 - GPX: `fillElevations.ts` filling/replacing `<ele>` on wpt/trkpt/rtept.
 - Polygons (and `fm:type=polygon` GPX tracks) are always skipped.
 
-## The loaded track survives a reload
+## Local data has history
 
-The track viewer's track is the one thing the URL cannot carry, so
-[`dataViewer/trackStore.ts`](../src/features/dataViewer/trackStore.ts) keeps it —
-a **single entry** in its own `idb-keyval` database, validated on read like the
-my-maps working copy (`myMaps/mapStore.ts`).
+The collection goes into the URL while it fits (`urlWire`, `model/urlForm.ts`: every
+feature lossless in the `point=`/`line=`/`polygon=` form and the whole at most
+`URL_FEATURES_BUDGET` characters — see [`url-params.md`](./url-params.md)). When it
+doesn't, [`dataViewer/trackStore.ts`](../src/features/dataViewer/trackStore.ts) keeps
+**snapshots** of it in its own `idb-keyval` database, validated on read like the
+my-maps working copy (`myMaps/mapStore.ts`). A history entry names the version it
+showed by key in `history.state.tr`, so a reload puts that version back and
+Back/Forward step through the edits as they do through anything else.
 
-**Only a track with no other home.** A map's track already lives in the my-maps
-working copy and is restored from there; a `track-uid=` or `import-url=` track is
-named by the URL and re-fetched from it. Storing either would be a second copy of
-the same thing, so `dataViewerStoreProcessor` checks `homedElsewhere` and deletes
-the entry instead. What is left is the case the store exists for: a file import, a
-conversion, a finished recording — the same condition `DataViewerMenu` warns
-about. The check runs off state, on every action that can change the answer, so it
-does not depend on whether a loader sets the track before or after the thing that
-gives it a home.
+**Only data with no other home** (`localTrack`, `model/localTrack.ts`): the URL cannot
+carry it, and it is not a `track-uid=` or `import-url=` track still being downloaded.
+That is the condition `DataViewerMenu` warns about unless a map is open.
 
-**The history entry decides whether it comes back.** `storeTrack` `replaceState`s a
-`tr: true` flag onto the current entry as it writes; `urlProcessor` carries the flag
-onto the entries it writes afterwards; `handleLocationChange` dispatches
-`dataViewerRestoreStored` when it sees it. So reloading the page you were on puts
-the track back, while a fresh visit or a shared link is never ambushed by a track
-from a previous session.
-
-A load carrying no flag deliberately **does not evict** the record. The record is one
-per origin and the flag is one per history entry, so a second tab — a fresh load
-with no flag of its own — would delete the only durable copy of a ride the first tab
-is still holding. Hygiene comes from the store being a single entry that the next
-write and its own delete reclaim.
+- **The key is the content's hash** (`snapshotKey`, cached per object). Any edit
+  replaces `trackGeojson`, so `urlProcessor` reads a new key and pushes an entry;
+  `dataViewerStoreProcessor` writes the snapshot under the same key. Data read
+  back adopts the key it was asked for, so a restore never reads as a new step.
+- **The entry's version is put back by `src/app/url/entryContent.ts`** — the
+  rules, the map and remote-track cases and the scenarios are in
+  [`entry-content.md`](./entry-content.md). `restoringStored` holds the key
+  being read, which is what the elevation chart a URL asked for waits on.
+- **Eviction, not deletion.** Deleting the data doesn't touch its snapshots —
+  the entries before the delete still show it. The store keeps at most
+  `MAX_SNAPSHOTS` and `MAX_TOTAL_CHARS` of JSON, dropping the oldest. An entry
+  whose snapshot has gone takes its key off (`replaceState`) and says so in a
+  toast.
+- An entry carrying `tr: true` reads the record under the key `track`.
+- **Large data has one key per page.** Past `LARGE_POSITIONS` vertices every
+  version is stored under `latest-<random>`, overwritten on each edit: hashing and
+  copying all of it per edit stalled the page and evicted other entries'
+  snapshots. Its edits are therefore not history steps; a reload shows the
+  latest version.
+- **A write that fails says so in a toast**: the entry already names the
+  snapshot, so a reload would find nothing.
 
 The write is validated with the same schema the read uses, so a record that would
 be discarded on the way back is refused on the way in rather than counted as a
-copy. Otherwise it is best effort (`dataViewerStoreProcessor` logs and moves on),
-and the copy is dropped on `dataViewerDelete` and `clearMapFeatures` — one that
-outlived the track would come back as something the user had already thrown away.
-The restore also stands down for a track the URL merely _names_: `homedElsewhere`
-covers a fetch that is still in flight, which IndexedDB would otherwise beat, and
-declaring a server-hosted track local would take `track-uid=` out of the URL.
+copy. Otherwise it is best effort (`dataViewerStoreProcessor` logs and moves on).
 `navigator.storage.persist()` is asked for by `storeTrackDurably` **only** — the GPS
 recorder finishing a ride, which then deletes the phone's copy, so `false` (stored,
 but evictable) is its cue to leave that copy alone. The ordinary path never asks:

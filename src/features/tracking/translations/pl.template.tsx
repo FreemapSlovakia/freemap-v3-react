@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -6,12 +6,12 @@ import type { TrackingMessages } from './TrackingMessages.js';
 const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
   subscribeNotFound: ({ id }) => (
     <>
-      Beobachtungstoken <i>{id}</i> existiert nicht.
+      Token śledzenia <i>{id}</i> nie istnieje.
     </>
   ),
   subscribeError: ({ id }) => (
     <>
-      Fehler beim Beobachten mit Token <i>{id}</i>.
+      Błąd podczas śledzenia przy użyciu tokenu <i>{id}</i>.
     </>
   ),
   trackedDevices: {
@@ -25,7 +25,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Obserwuj urządzenie <i>{name}</i>
+        Nowe obserwowane urządzenie <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -39,7 +39,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     note: 'Notatka',
     delete: (token) => (
       <>
-        Czy na pewno chcesz usunąć token dostępu <i>{token}</i>?
+        Czy na pewno usunąć token dostępu <i>{token}</i>?
       </>
     ),
     deleteTitle: 'Usunięcie tokenu dostępu',
@@ -58,12 +58,12 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Dodaj token śledzenia dla <i>{deviceName}</i>
+        Nowy token śledzenia dla <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
       <>
-        Zmień token śledzenia <i>{token}</i> dla <i>{deviceName}</i>
+        Edytuj token śledzenia <i>{token}</i> dla <i>{deviceName}</i>
       </>
     ),
   },
@@ -82,13 +82,13 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Kod QR Traccar',
     button: 'Moje urządzenia',
     modalTitle: 'Moje śledzone urządzenia',
-    createTitle: 'Utwórz urządzenie śledzące',
+    createTitle: 'Nowe urządzenie śledzące',
     watchTokens: 'Tokeny śledzenia',
     watchPrivately: 'Śledź prywatnie',
     watch: 'Śledź',
     delete: (name) => (
       <>
-        Czy na pewno chcesz usunąć urządzenie <i>{name}</i>?
+        Czy na pewno usunąć urządzenie <i>{name}</i>?
       </>
     ),
     deleteTitle: 'Usunięcie urządzenia',
@@ -100,15 +100,15 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: () => (
       <>
         <p>
-          Zarządzaj swoimi urządzeniami, aby inni mogli śledzić Twoją pozycję,
-          jeśli przekażesz im token śledzenia (można go utworzyć za pomocą ikony{' '}
+          Zarządzaj swoimi urządzeniami, aby inni mogli śledzić ich pozycję,
+          jeśli otrzymają token śledzenia (można go utworzyć za pomocą ikony{' '}
           <FaKey />
           ).
         </p>
         <hr />
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Jak skonfigurować śledzone urządzenie
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

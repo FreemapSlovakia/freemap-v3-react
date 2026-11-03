@@ -1,4 +1,6 @@
 import { CENTER_PROP } from '@features/toposcope/centerPoint.js';
+import { featureDataProps, ownLabel } from '@shared/featureProperties.js';
+import type { GeoJsonProperties } from 'geojson';
 import type { DrawingProps } from './model/actions/drawingPointActions.js';
 import { isTemplate, renderTemplate } from './renderTemplate.js';
 
@@ -27,4 +29,17 @@ export function drawingOsmTags(feature: {
   }
 
   return tags;
+}
+
+/** The same, for a feature's GeoJSON properties. */
+export function featureOsmTags(
+  properties: GeoJsonProperties,
+): Record<string, string> {
+  const name = properties?.['name'];
+
+  return drawingOsmTags({
+    label:
+      ownLabel(properties) ?? (typeof name === 'string' ? name : undefined),
+    props: featureDataProps(properties),
+  });
 }

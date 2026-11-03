@@ -8,6 +8,7 @@ import {
   stopProgress,
 } from '@features/progress/model/actions.js';
 import { tileToGeoJSON } from '@mapbox/tilebelt';
+import { osmTypeAndId } from '@osm/osmNameResolver.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { parseOsmElementId } from '@shared/osmElementIds.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
@@ -33,6 +34,7 @@ import {
   searchSetResults,
 } from '../actions.js';
 import { loadingResult, photonToSearchResult } from '../resultUtils.js';
+import { pickShowsDetailsSelector } from '../selectors.js';
 
 export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   dispatch,
@@ -158,15 +160,13 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   const osmId = parseOsmElementId(query);
 
   if (osmId) {
-    const type = getMessages()?.search.osmElementTypes[osmId.elementType];
-
     dispatch(
       searchSetResults([
         // The stand-in for a fetch, offered rather than shown: picking it is
         // what starts the fetch it stands in for (`searchHighlightProcessor`).
         {
           ...loadingResult(osmId),
-          displayName: `${type ?? osmId.elementType} ${osmId.id}`,
+          displayName: osmTypeAndId(getMessages(), osmId.elementType, osmId.id),
         },
       ]),
     );
@@ -265,7 +265,12 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   dispatch(searchSetResults(results, more));
 
   if (fromUrl && results[0]) {
-    dispatch(searchSelectResult({ result: results[0] }));
+    dispatch(
+      searchSelectResult({
+        result: results[0],
+        details: pickShowsDetailsSelector(getState(), results[0]),
+      }),
+    );
   }
 };
 

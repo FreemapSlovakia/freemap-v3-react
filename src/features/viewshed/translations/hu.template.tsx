@@ -5,7 +5,10 @@ const hu: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Kijelölés a térképen',
   locate: 'Láthatóság a helyzetemből',
   pickViewpointPrompt: 'Kattintson a térképre oda, ahonnan nézni szeretne',
-  detail: 'Minőség / sebesség',
+  extent: 'Hatótáv és részletesség',
+  rangeHint:
+    'A 20 km-nél távolabbi rálátás prémium funkció: a távolság kerül a legtöbbe — a sugarak száma a kerülettel nő, és mindegyik a szélig fut.',
+  detail: 'Részletesség',
   details: {
     superfast: 'Legalacsonyabb / leggyorsabb',
     fast: 'Alacsony / gyors',
@@ -25,6 +28,10 @@ const hu: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Legkisebb átlátszatlanság',
   minOpacityHint:
     'Milyen erősen jelenik meg a látható terep, akkor is, ha szinte élből látszik. 100%-on a réteg egyszerű sablon: látszik vagy nem, semmi közte.',
+  caveats: {
+    viewpoint:
+      'A láthatóság sokkal érzékenyebb a pontos nézőpontra, mint egy panoráma: néhány méterrel a csúcs mellett egész negyedek eshetnek ki.',
+  },
   update: 'Frissítés',
   outdated: 'A réteg az előző nézőpontból készült.',
   queued: ({ ahead }) =>

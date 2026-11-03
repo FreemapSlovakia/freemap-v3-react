@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useMap } from '@features/map/hooks/useMap.js';
 import { OpenInExternalAppDropdownItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
@@ -6,6 +6,9 @@ import type { Modifier, Obj } from '@popperjs/core';
 import type { UseDropdownMenuOptions } from '@restart/ui/DropdownMenu';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { MenuPortal } from '@shared/components/MenuPortal.js';
+import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -19,11 +22,7 @@ import {
   useState,
 } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaExternalLinkAlt,
-} from 'react-icons/fa';
+import { FaChevronRight, FaExternalLinkAlt } from 'react-icons/fa';
 import classes from './MapContextMenu.module.css';
 
 const initialState = {
@@ -95,8 +94,6 @@ function createArrowModifier(
 }
 
 export function MapContextMenu(): ReactElement {
-  const m = useMessages();
-
   const oeam = useOpenInExternalAppMessages();
 
   const [contextMenu, setContextMenu] = useState(initialState);
@@ -198,63 +195,67 @@ export function MapContextMenu(): ReactElement {
         }}
       />
 
-      <Dropdown.Menu
-        className={clsx('fm-dropdown-with-scroller', classes.menu)}
-        popperConfig={popperConfig}
-      >
-        <span ref={arrowRef} className={classes.arrow} />
-
-        <div
-          className="fm-menu-scroller"
-          ref={sc}
-          style={{ maxHeight: contextMenu.maxHeight }}
+      <MenuPortal>
+        <Dropdown.Menu
+          className={clsx('fm-dropdown-with-scroller', classes.menu)}
+          popperConfig={popperConfig}
         >
-          <div />
+          <span ref={arrowRef} className={classes.arrow} />
 
-          {submenu === 'openExternally' ? (
-            <>
-              <Dropdown.Header>
-                <FaExternalLinkAlt /> {oeam?.openInExternal}
-              </Dropdown.Header>
+          <div
+            className="fm-menu-scroller"
+            ref={sc}
+            style={{ maxHeight: contextMenu.maxHeight }}
+          >
+            <div />
 
-              <Dropdown.Item as="button" eventKey="submenu-">
-                <FaChevronLeft /> {m?.mainMenu.back}
-                <MenuGutter>
-                  <kbd>Esc</kbd>
-                </MenuGutter>
-              </Dropdown.Item>
+            {submenu === 'openExternally' ? (
+              <>
+                <SubmenuHeader
+                  icon={<FaExternalLinkAlt />}
+                  title={oeam?.openIn}
+                />
 
-              <Dropdown.Divider />
+                <OpenInExternalAppDropdownItems
+                  lat={contextMenu.lat}
+                  lon={contextMenu.lon}
+                  zoom={zoom}
+                  includePoint
+                  copy={false}
+                  share={false}
+                />
+              </>
+            ) : (
+              <>
+                <LocationActionItems
+                  lat={contextMenu.lat}
+                  lon={contextMenu.lon}
+                  onAct={closeMenu}
+                />
 
-              <OpenInExternalAppDropdownItems
-                lat={contextMenu.lat}
-                lon={contextMenu.lon}
-                zoom={zoom}
-                includePoint
-                copy={false}
-                share={false}
-              />
-            </>
-          ) : (
-            // The place's own menu, flat: this one *is* the location menu, so
-            // there is nothing to hide it behind.
-            <LocationActionItems
-              lat={contextMenu.lat}
-              lon={contextMenu.lon}
-              onAct={closeMenu}
-            >
-              {!window.fmEmbedded && (
-                <Dropdown.Item as="button" eventKey="submenu-openExternally">
-                  <FaExternalLinkAlt /> {oeam?.openInExternal}
-                  <MenuGutter>
-                    <FaChevronRight />
-                  </MenuGutter>
-                </Dropdown.Item>
-              )}
-            </LocationActionItems>
-          )}
-        </div>
-      </Dropdown.Menu>
+                {!window.fmEmbedded && (
+                  <>
+                    <Dropdown.Divider />
+
+                    <Dropdown.Item
+                      as="button"
+                      eventKey="submenu-openExternally"
+                    >
+                      <FaExternalLinkAlt />
+                      <MenuLabel>
+                        <Text m={oeam} k="openIn" />
+                      </MenuLabel>
+                      <MenuGutter>
+                        <FaChevronRight />
+                      </MenuGutter>
+                    </Dropdown.Item>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </Dropdown.Menu>
+      </MenuPortal>
     </Dropdown>
   );
 }

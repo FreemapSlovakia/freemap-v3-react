@@ -42,18 +42,65 @@ describe('dataViewerSettingsReducer — colorize', () => {
 });
 
 describe('dataViewerSettingsReducer — new-track elevation guard', () => {
-  it('drops an elevation-derived mode when the new track lacks full elevation', () => {
-    const state = {
-      ...dataViewerSettingsInitialState,
-      colorizeTrackBy: 'elevation' as const,
-    };
+  const line = (
+    coordinates: number[][],
+    properties: Record<string, unknown> = {},
+  ): FeatureCollection => ({
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties,
+        geometry: { type: 'LineString', coordinates },
+      },
+    ],
+  });
 
+  const state = {
+    ...dataViewerSettingsInitialState,
+    colorizeTrackBy: 'elevation' as const,
+  };
+
+  it('drops an elevation-derived mode when a new recording lacks full elevation', () => {
     const next = dataViewerSettingsReducer(
       state,
-      dataViewerSetData({ trackGeojson: emptyFc }),
+      dataViewerSetData({
+        trackGeojson: line(
+          [
+            [17, 48, 500],
+            [17.1, 48],
+          ],
+          {
+            coordinateProperties: {
+              times: ['2026-01-01T00:00:00Z', '2026-01-01T00:01:00Z'],
+            },
+          },
+        ),
+      }),
     );
 
     expect(next.colorizeTrackBy).toBeNull();
+  });
+
+  it('keeps it for a line without per-point data, drawn from the terrain', () => {
+    const next = dataViewerSettingsReducer(
+      state,
+      dataViewerSetData({
+        trackGeojson: line([
+          [17, 48],
+          [17.1, 48],
+        ]),
+      }),
+    );
+
+    expect(next.colorizeTrackBy).toBe('elevation');
+
+    expect(
+      dataViewerSettingsReducer(
+        state,
+        dataViewerSetData({ trackGeojson: emptyFc }),
+      ).colorizeTrackBy,
+    ).toBe('elevation');
   });
 
   it('leaves the mode untouched when the payload omits the track', () => {

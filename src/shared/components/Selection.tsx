@@ -1,10 +1,12 @@
 import { selectFeature } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toolbarMounted } from '@features/map/panToUncovered.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -31,9 +33,14 @@ export function Selection({
 }): ReactElement {
   const dispatch = useDispatch();
 
+  // A pick that brought this toolbar up may now be under it.
+  useEffect(toolbarMounted, []);
+
   const sc = useScrollClasses('horizontal');
 
   const m = useMessages();
+
+  const escapeKbd = useEscapeKbd(selectFeature(null));
 
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
@@ -59,7 +66,7 @@ export function Selection({
 
           {!window.fmEmbedded && deletable && <DeleteButton />}
 
-          <LongPressTooltip label={m?.general.close} kbd="Esc">
+          <LongPressTooltip label={m?.general.close} kbd={escapeKbd}>
             {({ props }) => (
               <Button
                 variant="dark"

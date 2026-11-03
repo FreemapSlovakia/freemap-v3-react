@@ -1,10 +1,17 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useBreakpointMatches } from '@shared/breakpoints.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -51,6 +58,8 @@ export function MyMapsMenu(): ReactElement {
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const confirm = useConfirm();
 
@@ -134,7 +143,7 @@ export function MyMapsMenu(): ReactElement {
                 m?.tools.myMaps
               ) : (
                 <>
-                  {m?.tools.myMaps} ({mapName})
+                  <Text k="tools.myMaps" /> ({mapName})
                 </>
               )
             }
@@ -156,7 +165,7 @@ export function MyMapsMenu(): ReactElement {
           <LongPressTooltip
             label={
               <>
-                {m?.tools.myMap}: {mapName}
+                <Text k="tools.myMap" />: {mapName}
               </>
             }
           >
@@ -165,7 +174,9 @@ export function MyMapsMenu(): ReactElement {
                 className={`${classes['name']} ps-1 align-self-center d-none d-sm-inline-block text-truncate`}
                 {...props}
               >
-                <span className="d-none d-md-inline">{m?.tools.myMap}: </span>
+                <span className="d-none d-md-inline">
+                  <Text k="tools.myMap" />:{' '}
+                </span>
 
                 <b>{mapName}</b>
               </span>
@@ -233,12 +244,21 @@ export function MyMapsMenu(): ReactElement {
                         dispatch(clearMapFeatures());
                       }}
                     >
-                      <FaEraser /> {mm?.disconnectAndClear}
+                      <FaEraser />
+                      <MenuLabel>
+                        <Text m={mm} k="disconnectAndClear" />
+                      </MenuLabel>
                     </Dropdown.Item>
                   </FmDropdownMenu>
                 </Dropdown>
               )}
             </LongPressTooltip>
+          )}
+
+          {!hidden && (
+            <ResponsiveActions toggleLabel={m?.general.actions}>
+              <Action {...manualAction('my-maps')} />
+            </ResponsiveActions>
           )}
 
           <LongPressTooltip

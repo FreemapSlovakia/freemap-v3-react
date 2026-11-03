@@ -1,12 +1,18 @@
 import type { MyStore } from '@app/store/store.js';
-import { CRS, type LatLng, type Map as LeafletMap, type Point } from 'leaflet';
+import {
+  CRS,
+  type LatLng,
+  type Map as LeafletMap,
+  type Point,
+  point,
+} from 'leaflet';
 import { describe, expect, it } from 'vitest';
 import { fitMapToBbox } from './fitMapToBbox.js';
 import { setMapLeafletElement } from './hooks/leafletElementHolder.js';
 import { attachMapStateHandler } from './mapStateHandler.js';
 import { mapRefocus } from './model/actions.js';
 import { type MapState, mapInitialState, mapReducer } from './model/reducer.js';
-import { duringProgrammaticMove } from './moveOrigin.js';
+import { duringProgrammaticMove, isMapSync } from './moveOrigin.js';
 
 /**
  * Exercises `attachMapStateHandler` against a stand-in for the Leaflet map —
@@ -49,7 +55,13 @@ function makeFakeMap(
     }),
     // The zoom an extent fits at depends on the viewport, which jsdom gives no
     // size; the projection either side of it is the real thing.
-    getBoundsZoom: () => FIT_ZOOM,
+    getBoundsZoom: (_bounds: unknown, _inside: boolean, padding: Point) => {
+      boundsZoomPaddings.push(padding);
+
+      return FIT_ZOOM;
+    },
+    // Any size: a fit into the whole map centers the same whatever it is.
+    getSize: () => point(800, 600),
     project: (latlng: LatLng, atZoom: number) =>
       CRS.EPSG3857.latLngToPoint(latlng, atZoom),
     unproject: (pt: Point, atZoom: number) =>
@@ -103,9 +115,15 @@ const ELSEWHERE = { lat: 49.06, lng: 20.14 };
 
 const FIT_ZOOM = 12;
 
+// What each fit asked `getBoundsZoom` to leave free around the extent.
+const boundsZoomPaddings: Point[] = [];
+
 let mapState: MapState = mapInitialState;
 
 const dispatched: { type: string; payload?: unknown }[] = [];
+
+// Whether each dispatch ran inside `duringMapSync`, index for index.
+const dispatchedFromMap: boolean[] = [];
 
 // Attached once: `attachMapStateHandler` subscribes for the lifetime of the
 // page, so re-attaching per test would stack handlers on every later map.
@@ -113,6 +131,8 @@ const store = {
   getState: () => ({ map: mapState }),
   dispatch: (action: { type: string; payload?: unknown }) => {
     dispatched.push(action);
+
+    dispatchedFromMap.push(isMapSync());
 
     mapState = mapReducer(mapState, action as Parameters<typeof mapReducer>[1]);
 
@@ -132,6 +152,8 @@ function setup(gpsTracked = false) {
   };
 
   dispatched.length = 0;
+
+  dispatchedFromMap.length = 0;
 
   const fake = makeFakeMap({ ...CENTER }, ZOOM);
 
@@ -309,6 +331,18 @@ describe('attachMapStateHandler — moveend while not following', () => {
     });
   });
 
+  // The refocus processor would otherwise pan the map back to this center while
+  // a drag that stopped an inertia pan carries it on.
+  it('marks the sync as coming from the map, so it is not applied back', () => {
+    const { moveTo, fire } = setup();
+
+    moveTo(CENTER.lat + AWAY, CENTER.lng + AWAY);
+
+    fire('moveend');
+
+    expect(dispatchedFromMap).toEqual([true]);
+  });
+
   it('stays quiet when the settled center already matches the store', () => {
     const { fire, refocuses } = setup();
 
@@ -351,6 +385,48 @@ describe('fitMapToBbox', () => {
     // A fit is a jump to something the user asked to see, so it ends following.
     expect(gpsTracked).toBe(false);
     expect(mapState.gpsTracked).toBe(false);
+  });
+
+  it('centers the extent in the area it is fitted into', async () => {
+    const { refocuses } = setup();
+
+    // The right half of the 800 × 600 map: the extent's middle must land at
+    // x 600, so the map's center sits 200 px west of it.
+    await fitMapToBbox(
+      store.dispatch,
+      [
+        ELSEWHERE.lng - 0.1,
+        ELSEWHERE.lat - 0.1,
+        ELSEWHERE.lng + 0.1,
+        ELSEWHERE.lat + 0.1,
+      ],
+      { area: { x: 400, y: 0, width: 400, height: 600 } },
+    );
+
+    const { lat, lon } = refocuses()[0].payload as { lat: number; lon: number };
+
+    const middle = CRS.EPSG3857.latLngToPoint(
+      { lat: ELSEWHERE.lat - 0.1, lng: ELSEWHERE.lng - 0.1 } as LatLng,
+      FIT_ZOOM,
+    )
+      .add(
+        CRS.EPSG3857.latLngToPoint(
+          { lat: ELSEWHERE.lat + 0.1, lng: ELSEWHERE.lng + 0.1 } as LatLng,
+          FIT_ZOOM,
+        ),
+      )
+      .divideBy(2);
+
+    const center = CRS.EPSG3857.latLngToPoint(
+      { lat, lng: lon } as LatLng,
+      FIT_ZOOM,
+    );
+
+    expect(middle.x - center.x).toBeCloseTo(200, 6);
+    expect(middle.y - center.y).toBeCloseTo(0, 6);
+
+    // The zoom fits the half: the other half is padding to `getBoundsZoom`.
+    expect(boundsZoomPaddings.at(-1)).toEqual(point(400, 0));
   });
 
   it('holds the fit to the zoom ceiling the caller named', async () => {

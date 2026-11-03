@@ -1,13 +1,16 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useOpenManual } from '@features/documents/hooks/useOpenManual.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   isCompassSupported,
   requestCompassPermission,
 } from '@features/location/compass.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { pointFeaturesSelector } from '@features/toposcope/centerPoint.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FloatingWindowControls,
   useFullscreenAction,
@@ -23,28 +26,27 @@ import {
   Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
-import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { nearestStep } from '@shared/mathUtils.js';
-import type { ReactElement } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import { type ReactElement, useState } from 'react';
+import { Button, Form, InputGroup, ToggleButton } from 'react-bootstrap';
 import {
+  FaBook,
   FaCog,
   FaCompass,
   FaCrosshairs,
-  FaInfoCircle,
   FaPlay,
   FaStop,
   FaStreetView,
+  FaSun,
   FaSync,
 } from 'react-icons/fa';
-import { LuFoldVertical, LuUnfoldVertical } from 'react-icons/lu';
-import { Md360, MdOutlineHeight } from 'react-icons/md';
 import { PiCompassRoseBold } from 'react-icons/pi';
 import {
-  TbAngle,
   TbBaselineDensityLarge,
   TbBaselineDensityMedium,
   TbBaselineDensitySmall,
@@ -56,6 +58,7 @@ import {
   panoramaRender,
   panoramaSetPicking,
   panoramaSetSettings,
+  panoramaSetSkyDate,
   panoramaToToposcope,
 } from '../model/actions.js';
 import {
@@ -69,19 +72,25 @@ import {
   labelWeightBand,
   NO_DOMINANCE_FILTER,
   PANORAMA_FOVS,
-  type PanoramaTilt,
   PROMINENCE_WEIGHT_MAX,
   PROMINENCE_WEIGHT_STEP,
   panoramaSettingsInitialState,
   prominenceWeightStep,
+  SUB_LINE_KEY,
+  SUB_LINE_PARTS,
+  type SubLinePart,
+  subLineOf,
 } from '../model/settingsReducer.js';
 import {
+  DETAIL_MAX,
   grantedPanorama,
-  grantedQuality,
-  PANORAMA_QUALITY_ORDER,
-  type PanoramaQuality,
+  type PanoramaDetail,
+  panoramaDetailStops,
+  panoramaExpectedMs,
   panoramaRenderKey,
 } from '../quality.js';
+import { localDay, MIN_SKY_YEAR } from '../sky/track.js';
+import { skyHidden, useToday } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 
 /**
@@ -92,6 +101,9 @@ import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 const LABEL_DEFAULTS = {
   labelDensity: panoramaSettingsInitialState.labelDensity,
   showLabelEle: panoramaSettingsInitialState.showLabelEle,
+  showLabelDistance: panoramaSettingsInitialState.showLabelDistance,
+  showLabelProminence: panoramaSettingsInitialState.showLabelProminence,
+  showLabelIsolation: panoramaSettingsInitialState.showLabelIsolation,
   minDominance: panoramaSettingsInitialState.minDominance,
   labelDistanceWeight: panoramaSettingsInitialState.labelDistanceWeight,
   prominenceWeight: panoramaSettingsInitialState.prominenceWeight,
@@ -103,18 +115,16 @@ const LABEL_SETTING_KEYS = Object.keys(
   LABEL_DEFAULTS,
 ) as (keyof typeof LABEL_DEFAULTS)[];
 
+/** Narrowest first, the way a slider runs; a full turn is the far end. */
+const FOV_STOPS = PANORAMA_FOVS.toReversed();
+
 type Props = {
-  /** The caveats panel is the footer's to draw; this only presses the button. */
-  showCaveats: boolean;
-  onToggleCaveats: () => void;
   fullscreen: boolean;
   onToggleFullscreen: () => void;
 };
 
 /** Everything the panorama is driven by; see `FloatingWindowControls`. */
 export function PanoramaControls({
-  showCaveats,
-  onToggleCaveats,
   fullscreen,
   onToggleFullscreen,
 }: Props): ReactElement {
@@ -124,7 +134,7 @@ export function PanoramaControls({
 
   const dispatch = useDispatch();
 
-  const becomePremium = useBecomePremium();
+  const openManual = useOpenManual('window');
 
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
@@ -132,12 +142,19 @@ export function PanoramaControls({
 
   const settings = useAppSelector((state) => state.panoramaSettings);
 
-  const { viewpoint, render, rendering, renderAz } = useAppSelector(
+  const { viewpoint, render, rendering, renderAz, skyDate } = useAppSelector(
     (state) => state.panorama,
   );
 
+  const dateFormat = useDateTimeFormat({ dateStyle: 'medium' });
+
+  const today = useToday();
+
+  /** A year still being typed; see the date field. */
+  const [dateDraft, setDateDraft] = useState<string | null>(null);
+
   const hasDrawnPoints = useAppSelector(
-    (state) => state.drawingPoints.points.length > 0,
+    (state) => pointFeaturesSelector(state).length > 0,
   );
 
   const confirmChoice = useConfirmChoice();
@@ -191,6 +208,45 @@ export function PanoramaControls({
     unitDisplay: 'narrow',
     maximumFractionDigits: 0,
   });
+
+  const nfInt = useNumberFormat({ maximumFractionDigits: 0 });
+
+  const nfSec = useNumberFormat({
+    style: 'unit',
+    unit: 'second',
+    maximumFractionDigits: 0,
+  });
+
+  // The stops this frame can actually be rendered at, with `max` last — the one
+  // stop that follows the frame rather than naming a figure. Stops past what
+  // the frame or the account allows are not offered at all, rather than offered
+  // and then clamped out from under the handle.
+  const detailStops: PanoramaDetail[] = [
+    ...panoramaDetailStops(settings, premium),
+    DETAIL_MAX,
+  ];
+
+  // The handle sits on what is being served, not on what was asked: a stored
+  // detail this frame or this account no longer affords is granted the nearest
+  // stop below it, and the handle has to say so.
+  const servedIndex =
+    settings.detail === DETAIL_MAX
+      ? detailStops.length - 1
+      : detailStops.indexOf(grants.pxPerDeg);
+
+  const detailIndex = servedIndex < 0 ? detailStops.length - 1 : servedIndex;
+
+  // Pixels per degree rather than the request's own degrees per pixel: it reads
+  // the way a person expects — more is sharper — and it says the same thing
+  // about a slice as about a full turn, where a pixel count would call a narrow
+  // slice coarser for being smaller.
+  const pxLabel = `${nfInt.format(grants.pxPerDeg)} px/°`;
+
+  const expectedMs = panoramaExpectedMs(grants.pxPerDeg, settings);
+
+  // Of the picture on screen, not of the setting: the turning follows what was
+  // rendered, so a narrowed view not yet asked for still follows the device.
+  const followsDevice = !render || isFullTurn(render.fov);
 
   const dominanceStep = nearestStep(DOMINANCE_STEPS_M, settings.minDominance);
 
@@ -263,131 +319,76 @@ export function PanoramaControls({
         onPick={() => dispatch(panoramaSetPicking('viewpoint'))}
       />
 
-      <SelectDropdown
-        // What is actually being rendered, not what is stored: an account
-        // without premium asks for a finer tier by default and is put back on
-        // the fast one, and showing it that finer name would be a lie. The
-        // stored choice is kept either way, so premium later grants it silently.
-        value={grants.quality}
-        onSelect={(value) => {
-          const asked = (value ?? 'fast') as PanoramaQuality;
-
-          // Offering to buy what the tier costs, rather than quietly storing a
-          // choice that would be clamped away on the next render.
-          if (grantedQuality(asked, premium) !== asked) {
-            becomePremium?.();
-          } else {
-            dispatch(panoramaSetSettings({ quality: asked }));
-          }
-        }}
-        options={PANORAMA_QUALITY_ORDER.map((tier) => ({
-          value: tier,
-          label: m?.quality[tier],
-          extra:
-            grantedQuality(tier, premium) === tier ? undefined : (
-              <PremiumGem nested />
-            ),
-        }))}
-        toggleIcon={<TbGridDots />}
-        name={m?.quality.label}
+      {/* The frame: how much horizon, how much sky and ground, and how fine.
+          One question with one answer — the wait — and one control, because
+          each of the three moves what the others can reach and the figures
+          only make sense beside each other. */}
+      <SliderDropdown
+        icon={<TbGridDots />}
+        // What is being rendered, not what is stored: an account without
+        // premium asks for more by default and is held to its budget, and
+        // showing it the figure it cannot have would be a lie. The stored ask
+        // is kept either way, so premium grants it back silently. The band is
+        // left off: of the three it moves least and costs least.
+        toggleLabel={`${isFullTurn(settings.fovDeg) ? m?.fov.full : nfDeg.format(settings.fovDeg)} · ${nfInt.format(grants.pxPerDeg)} px/°`}
+        name={m?.frame}
         breakpoint="md"
-        // Says on the toolbar why the picture is the coarse one; the tier names
-        // are only in the menu, which nobody opens to find out what they lack.
-        // The offer to buy is on the tiers themselves, one press away.
+        // Says on the toolbar why the picture is the coarse one; the reason is
+        // otherwise only inside a menu nobody opens to find out what they lack.
         toggleClassName={premium ? undefined : 'text-warning'}
         toggleHint={premium ? undefined : prm?.higherDetail}
-      />
-
-      {/* How much horizon to render, which is the one setting that buys time
-          back rather than spending it: the cost is about linear in it. Below a
-          full turn the picture has ends, so the wedge on the map turns from
-          something that looks around into something that says which way — see
-          `PanoramaResult`. */}
-      <SelectDropdown
-        value={String(settings.fovDeg)}
-        // The item already in effect is offered like the rest and fires like
-        // the rest, and setting a slice re-aims it at what is on screen — so
-        // picking the current one would light Update over nothing.
-        onSelect={(value) => {
-          const fovDeg = Number(value) || FOV_FULL;
-
-          if (fovDeg !== settings.fovDeg) {
-            dispatch(panoramaSetSettings({ fovDeg }));
+      >
+        {/* The one setting that buys time back rather than spending it, and at
+            `max` detail spends it on sharpness instead. `All around` is the
+            last stop rather than the first: it is what the tool means, but a
+            slider runs from least to most and a turn is the most there is. */}
+        <LabeledSlider
+          id="fm-panorama-fov"
+          label={m?.fov.label}
+          valueLabel={
+            isFullTurn(settings.fovDeg)
+              ? m?.fov.full
+              : nfDeg.format(settings.fovDeg)
           }
-        }}
-        // Widest first, so the list runs from what the tool means by default
-        // down to the narrowest slice — the way the tilt list runs.
-        options={PANORAMA_FOVS.map((fov) => ({
-          value: String(fov),
-          label: isFullTurn(fov) ? m?.fov.full : nfDeg.format(fov),
-          icon: isFullTurn(fov) ? <Md360 /> : <TbAngle />,
-          // Sets off the full turn from the slices, which are a different kind
-          // of picture: one to look around in against one aimed somewhere.
-          divider: isFullTurn(fov),
-        }))}
-        // A fov from a link matching no preset would leave the toggle blank; it
-        // says the angle instead, and a preset is the way back out of it.
-        {...(PANORAMA_FOVS.some((fov) => fov === settings.fovDeg)
-          ? {}
-          : {
-              toggleIcon: <TbAngle />,
-              toggleLabel: nfDeg.format(settings.fovDeg),
-            })}
-        name={m?.fov.label}
-        breakpoint="md"
-      />
+          min={0}
+          max={FOV_STOPS.length - 1}
+          value={Math.max(
+            0,
+            FOV_STOPS.findIndex((fov) => fov >= settings.fovDeg),
+          )}
+          onChange={(index) =>
+            dispatch(
+              panoramaSetSettings({ fovDeg: FOV_STOPS[index] ?? FOV_FULL }),
+            )
+          }
+        />
 
-      <SelectDropdown
-        value={settings.tilt}
-        onSelect={(value) =>
-          // The last item is a door, not a band: the angles are typed in the
-          // settings modal, which is the only place that has room for two
-          // number fields and the one place they live.
-          value === 'custom'
-            ? dispatch(setActiveModal({ type: 'panorama-settings' }))
-            : dispatch(
-                panoramaSetSettings({
-                  tilt: (value ?? 'standard') as PanoramaTilt,
-                }),
-              )
-        }
-        // Shortest frame to tallest, so the list runs the way the thing it
-        // controls does.
-        options={[
-          { value: 'flat', label: m?.tilt.flat, icon: <LuFoldVertical /> },
-          {
-            value: 'standard',
-            label: m?.tilt.standard,
-            icon: <MdOutlineHeight />,
-          },
-          {
-            value: 'wide',
-            label: m?.tilt.wide,
-            icon: <LuUnfoldVertical />,
-            // Sets off what follows, which is a door rather than a band; the
-            // flag draws the line *after* its own option.
-            divider: true,
-          },
-          {
-            value: 'custom',
-            label: `${m?.settings.custom}…`,
-            icon: <FaCog />,
-          },
-        ]}
-        // A band from a `panorama-tilt=altMin,altMax` link matches no preset,
-        // which would leave the toggle blank. It says the angles instead, and
-        // picking a preset is the way back out of it.
-        {...(settings.tilt === 'custom'
-          ? {
-              toggleIcon: <MdOutlineHeight />,
-              toggleLabel: `${nfDeg.format(settings.altMin)}…${nfDeg.format(
-                settings.altMax,
-              )}`,
-            }
-          : {})}
-        name={m?.tilt.label}
-        breakpoint="md"
-      />
+        <LabeledSlider
+          id="fm-panorama-detail"
+          label={
+            <>
+              <Text m={m} k="quality.detail" />
+
+              {!premium && <PremiumGem hint={prm?.higherDetail} />}
+            </>
+          }
+          valueLabel={pxLabel}
+          min={0}
+          max={detailStops.length - 1}
+          value={detailIndex}
+          onChange={(index) =>
+            dispatch(
+              panoramaSetSettings({ detail: detailStops[index] ?? DETAIL_MAX }),
+            )
+          }
+        />
+
+        {/* What the three come to, server and this side both: the picture
+            arrives some way after the spinner says the service is done. */}
+        <div className="text-body-secondary text-end">
+          ≈ {nfSec.format(expectedMs / 1000)}
+        </div>
+      </SliderDropdown>
 
       {/* Which summits are named and how they are ordered — one question in
           several parts, all instant, so they share a menu. Sliders rather than
@@ -411,23 +412,50 @@ export function PanoramaControls({
           }
         />
 
-        {/* Beside the count, because it is the other half of the same
-            question: a second line makes every label taller, so fewer of them
-            fit the picture. */}
-        <div className="d-flex">
-          <Form.Check
-            id="fm-panorama-label-ele"
-            type="checkbox"
-            label={m?.labels.showEle}
-            checked={settings.showLabelEle}
-            onChange={(e) =>
-              dispatch(
-                panoramaSetSettings({ showLabelEle: e.currentTarget.checked }),
-              )
-            }
-          />
+        {/* Beside the count: a second line makes every label taller, so fewer
+            of them fit the picture. */}
+        <div>
+          <div className="mb-1">
+            <Text m={m} k="labels.subLine" />
 
-          <HintMark hint={m?.labels.showEleHint} />
+            <HintMark hint={m?.labels.subLineHint} />
+          </div>
+
+          <FitToggleButtonGroup
+            type="checkbox"
+            size="sm"
+            className="w-100"
+            value={subLineOf(settings)}
+            onChange={(parts: SubLinePart[]) => {
+              for (const part of parts) {
+                if (!settings[SUB_LINE_KEY[part]]) {
+                  trackMatomo(['trackEvent', 'Panorama', 'labelSubLine', part]);
+                }
+              }
+
+              dispatch(
+                panoramaSetSettings(
+                  Object.fromEntries(
+                    SUB_LINE_PARTS.map((part) => [
+                      SUB_LINE_KEY[part],
+                      parts.includes(part),
+                    ]),
+                  ),
+                ),
+              );
+            }}
+          >
+            {SUB_LINE_PARTS.map((part) => (
+              <ToggleButton
+                key={part}
+                id={`fm-panorama-label-${part}`}
+                value={part}
+                variant="outline-primary"
+              >
+                <Text m={m} k={`labels.subLineParts.${part}`} />
+              </ToggleButton>
+            ))}
+          </FitToggleButtonGroup>
         </div>
 
         <LabeledSlider
@@ -549,6 +577,96 @@ export function PanoramaControls({
         />
       </SliderDropdown>
 
+      {/* Instant: the paths need no render. */}
+      <SliderDropdown
+        icon={<FaSun />}
+        toggleLabel={
+          skyDate === null
+            ? m?.sky.today
+            : dateFormat.format(localDay(skyDate)[0])
+        }
+        name={m?.sky.title}
+        breakpoint="md"
+        disabled={skyHidden(render)}
+        toggleHint={skyHidden(render) ? m?.sky.unfolded : undefined}
+      >
+        <Form.Check
+          id="fm-panorama-sun"
+          type="checkbox"
+          label={m?.sky.sun}
+          checked={settings.showSun}
+          onChange={(e) => {
+            const { checked } = e.currentTarget;
+
+            trackMatomo(['trackEvent', 'Panorama', 'showSun', String(checked)]);
+
+            dispatch(panoramaSetSettings({ showSun: checked }));
+          }}
+        />
+
+        <Form.Check
+          id="fm-panorama-moon"
+          type="checkbox"
+          label={m?.sky.moon}
+          checked={settings.showMoon}
+          onChange={(e) => {
+            const { checked } = e.currentTarget;
+
+            trackMatomo([
+              'trackEvent',
+              'Panorama',
+              'showMoon',
+              String(checked),
+            ]);
+
+            dispatch(panoramaSetSettings({ showMoon: checked }));
+          }}
+        />
+
+        <Form.Group controlId="fm-panorama-sky-date">
+          <Form.Label className="d-flex align-items-center">
+            <Text m={m} k="sky.date" />
+
+            <HintMark hint={m?.sky.dateHint} />
+          </Form.Label>
+
+          <InputGroup size="sm">
+            <Form.Control
+              type="date"
+              value={dateDraft ?? skyDate ?? today}
+              onBlur={() => setDateDraft(null)}
+              // Today is stored as `null` however it is picked, so the paths
+              // move on with the clock past midnight.
+              onChange={(e) => {
+                const { value } = e.currentTarget;
+
+                // Chromium reports a year as it is typed — 0002, 0020, 0202 —
+                // held here rather than refused, or React would write it back.
+                if (value && Number(value.slice(0, 4)) < MIN_SKY_YEAR) {
+                  setDateDraft(value);
+
+                  return;
+                }
+
+                setDateDraft(null);
+
+                dispatch(
+                  panoramaSetSkyDate(!value || value === today ? null : value),
+                );
+              }}
+            />
+
+            <Button
+              variant="secondary"
+              disabled={skyDate === null}
+              onClick={() => dispatch(panoramaSetSkyDate(null))}
+            >
+              <Text m={m} k="sky.today" />
+            </Button>
+          </InputGroup>
+        </Form.Group>
+      </SliderDropdown>
+
       {outdated && !rendering && (
         <LongPressTooltip label={m?.outdated}>
           {({ props }) => (
@@ -557,7 +675,7 @@ export function PanoramaControls({
               onClick={() => dispatch(panoramaRender())}
               {...props}
             >
-              <FaSync /> {m?.update}
+              <FaSync /> <Text m={m} k="update" />
             </Button>
           )}
         </LongPressTooltip>
@@ -605,16 +723,14 @@ export function PanoramaControls({
             magnetometer the view follows it rather than turning by itself, so a
             play mark would promise the wrong thing — see `PanoramaView`.
 
-            Never disabled, though a slice has nothing to turn through: a phone
-            starts out following, so disabling it there would leave someone
-            unable to turn it off and the view spinning again the moment they
-            went back to a full turn. It sets the preference either way. */}
+            A slice sweeps between its ends rather than following the device,
+            so it wears the play mark there whatever the phone can do. */}
         <Action
           label={m?.autoPan}
           icon={
             settings.autoPan ? (
               <FaStop />
-            ) : isCompassSupported() ? (
+            ) : isCompassSupported() && followsDevice ? (
               <FaCompass />
             ) : (
               <FaPlay />
@@ -632,14 +748,6 @@ export function PanoramaControls({
           }}
         />
 
-        <Action
-          label={showCaveats ? gm?.general.close : m?.caveats.title}
-          icon={<FaInfoCircle />}
-          showFrom="xl"
-          active={showCaveats}
-          onClick={onToggleCaveats}
-        />
-
         <Action {...fullscreenAction} onClick={onToggleFullscreen} />
 
         {/* First to fold, being the rarest and the costliest. Not the
@@ -652,6 +760,13 @@ export function PanoramaControls({
           showFrom="xxl"
           disabled={!render}
           onClick={() => void createToposcope()}
+        />
+
+        <Action
+          label={gm?.mainMenu.manual}
+          icon={<FaBook />}
+          showFrom="xl"
+          onClick={() => openManual('panorama')}
         />
       </ResponsiveActions>
     </FloatingWindowControls>

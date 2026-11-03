@@ -111,11 +111,12 @@ just the dispatch and what it wants to say back. Keep the input schemas plain
 (objects, enums, arrays, `.describe()`): they have to survive the JSON Schema
 conversion.
 
-Then **describe the tool in `src/static/llms.txt`** ("In-page agent tools"),
-which is also what `get-app-guide` serves: it fetches `/llms.txt` and returns
-one section of it, so an agent can read what a dialog does before opening it.
-That file is the app's own documentation for assistants and the reason the tool
-descriptions can stay short.
+Then **describe the tool in `src/static/llms-agent-tools.md`** ("In-page agent
+tools"), which is also what `get-app-guide` serves: it fetches `/llms.txt`, then
+the `llms-*.md` reference files that index links, and returns one section of the
+whole, so an agent can read what a dialog does before opening it. Those files are
+the app's own documentation for assistants and the reason the tool descriptions
+can stay short.
 
 Descriptions and enum values are **English only**, deliberately — they are read
 by a model, not by the user, and translating them would put 15 more strings per

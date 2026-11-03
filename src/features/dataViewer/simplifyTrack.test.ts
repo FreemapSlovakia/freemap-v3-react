@@ -1,4 +1,5 @@
 import { PATH_DETAILS_PROP } from '@shared/colorizers/colorize.js';
+import { cumulativeDistances, lineSegments } from '@shared/geoutils.js';
 import type { Feature, Position } from 'geojson';
 import { describe, expect, it } from 'vitest';
 import {
@@ -105,9 +106,9 @@ describe('simplifyTrackFeature', () => {
     const before = vertexDistances(lineString(coordinates)).at(-1)!.at(-1)!;
 
     const feature = lineString(coordinates, {
-      [PATH_DETAILS_PROP]: {
-        surface: [{ start: 0, end: before, value: 'asphalt' }],
-      },
+      [PATH_DETAILS_PROP]: [
+        { surface: [{ start: 0, end: before, value: 'asphalt' }] },
+      ],
     });
 
     const kept = simplifyTrackFeature(feature, 100)!;
@@ -121,8 +122,8 @@ describe('simplifyTrackFeature', () => {
     const [span] = (
       kept.properties![PATH_DETAILS_PROP] as {
         surface: { start: number; end: number }[];
-      }
-    ).surface;
+      }[]
+    )[0]!.surface;
 
     expect(span!.start).toBe(0);
 
@@ -130,10 +131,9 @@ describe('simplifyTrackFeature', () => {
     expect(span!.end).toBeCloseTo(after, 6);
   });
 
-  it('keeps the spans either side of a segment gap apart', () => {
-    // Two bulging segments far apart. Their own axis leaves the gap out, so the
-    // second's first vertex sits at the same distance as the first's last —
-    // the two spans must not run into one another across it.
+  it('remaps each segment on its own axis', () => {
+    // Two bulging segments far apart, each part's spans measured from its own
+    // start.
     const segment = (lon: number): Position[] => [
       [lon, 0],
       [lon + 0.0005, 0.5],
@@ -148,37 +148,38 @@ describe('simplifyTrackFeature', () => {
       geometry: { type: 'MultiLineString', coordinates },
     };
 
-    const half = vertexDistances(feature)[0]!.at(-1)!;
-
-    const whole = vertexDistances(feature)[1]!.at(-1)!;
+    const [length0, length1] = coordinates.map(
+      (c) => cumulativeDistances(c).at(-1)!,
+    );
 
     const simplified = simplifyTrackFeature(
       {
         ...feature,
         properties: {
           ...feature.properties,
-          [PATH_DETAILS_PROP]: {
-            surface: [
-              { start: 0, end: half, value: 'asphalt' },
-              { start: half, end: whole, value: 'gravel' },
-            ],
-          },
+          [PATH_DETAILS_PROP]: [
+            { surface: [{ start: 0, end: length0!, value: 'asphalt' }] },
+            { surface: [{ start: 0, end: length1!, value: 'gravel' }] },
+          ],
         },
       },
       100,
     )!;
 
-    const kept = vertexDistances(simplified);
+    const kept = lineSegments(simplified.geometry).map(cumulativeDistances);
 
-    const { surface } = simplified.properties![PATH_DETAILS_PROP] as {
-      surface: { start: number; end: number; value: string }[];
-    };
+    const [first, second] = (
+      simplified.properties![PATH_DETAILS_PROP] as {
+        surface: { start: number; end: number; value: string }[];
+      }[]
+    ).map((part) => part.surface);
 
     // Each span still covers exactly its own segment of the shortened line.
-    expect(surface[0]!.start).toBe(0);
-    expect(surface[0]!.end).toBeCloseTo(kept[0]!.at(-1)!, 6);
-    expect(surface[1]!.start).toBeCloseTo(kept[1]![0]!, 6);
-    expect(surface[1]!.end).toBeCloseTo(kept[1]!.at(-1)!, 6);
+    expect(first![0]!.start).toBe(0);
+    expect(first![0]!.end).toBeCloseTo(kept[0]!.at(-1)!, 6);
+    expect(second![0]!.start).toBe(0);
+    expect(second![0]!.end).toBeCloseTo(kept[1]!.at(-1)!, 6);
+    expect(kept[1]!.at(-1)!).toBeLessThan(length1!);
   });
 
   it('leaves a line the tolerance cannot thin alone', () => {

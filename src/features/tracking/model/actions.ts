@@ -61,7 +61,7 @@ export const trackingActions = {
     'TRACKING_SET_COLORIZE_LEGEND',
   ),
 
-  delete: createAction<{ token: string | number }>('TRACKING_DELETE'),
+  delete: createAction<{ token: string }>('TRACKING_DELETE'),
 
   /**
    * Copies what a watched device has travelled so far into the track viewer,

@@ -90,7 +90,7 @@ from both the old and new identities.
 | `Language` | `set` | language code, or `auto` | *(added 2026-06)* | [`l10n/model/processor.ts`](../src/features/l10n/model/processor.ts) |
 | `Location` | `locate` | — *(GPS follow enabled)* | *(added 2026-06)* | [`locateProcessor.ts`](../src/features/location/model/locateProcessor.ts) |
 | `Modal` | `open` | modal id (incl. `embed`, `account`, `legend`, `support-us`, `map-preferences`, …) | *(added 2026-06)* | [`setActiveModalProcessor.ts`](../src/processors/setActiveModalProcessor.ts) |
-| `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`contour`) | *(added 2026-06)* | [`ShadingControl.tsx`](../src/features/parameterizedShading/components/ShadingControl.tsx) |
+| `MapShading` | `add` | shading component type (`hillshade-*`/`slope-*`/`color-relief`/`aspect`/`curvature`/`contours`) or `background` | *(added 2026-06)* | [`ShadingSection.tsx`](../src/features/parameterizedShading/components/ShadingSection.tsx) |
 | `HomeLocation` | `save` | — | *(added 2026-06)* | [`HomeLocationPickingMenu.tsx`](../src/features/homeLocation/components/HomeLocationPickingMenu.tsx) |
 | `Osm` | `view` | `node` / `way` / `relation`, with how many of that type the load names as the event value | *(added 2026-06)* | [`osmLoadProcessor.ts`](../src/features/osm/model/processors/osmLoadProcessor.ts) |
 | `Tool` | `set` | tool id | `Main`/`openTool` | [`openToolProcessor.ts`](../src/processors/openToolProcessor.ts) |
@@ -113,14 +113,17 @@ from both the old and new identities.
 | `Gallery` | `deletePhoto` | — | *(added 2026-06)* | [`galleryDeletePictureProcessor.ts`](../src/features/gallery/model/processors/galleryDeletePictureProcessor.ts) |
 | `Tracking` | `create` / `update` | `device`, `accessToken`, or `watchedDevice` | `Tracking`/`saveDevice`, `saveAccessToken` (name was `create`/`modify`); `watchedDevice` *(added 2026-06)* | [`trackingDeviceProcessors.ts`](../src/features/tracking/model/processors/trackingDeviceProcessors.ts), [`trackingAccessTokenProcessors.ts`](../src/features/tracking/model/processors/trackingAccessTokenProcessors.ts), [`TrackedDeviceForm.tsx`](../src/features/tracking/components/TrackedDeviceForm.tsx) |
 | `Tracking` | `copyToDataViewer` | `replace` or `append` — how the copy met what the track viewer held | *(added 2026-08)* | [`trackingCopyProcessor.ts`](../src/features/tracking/model/processors/trackingCopyProcessor.ts) |
-| `DocumentExport` | `export` | format (pdf/svg/png/jpg) | `MapExport`/`export` | [`exportMapToDocument.ts`](../src/features/mapToDocumentExport/model/exportMapToDocument.ts) |
+| `DataViewer` | `setLineKind` / `editChannels` / `editDetails` | the new kind (`line`, `track`, `route`) for `setLineKind`; `line` or `point` for `editDetails`; none for `editChannels` — sent from a Properties save that changed a line's kind, its per-point channels, or a line's or waypoint's GPX details | *(added 2026-10)* | [`DataViewerPropertiesModal.tsx`](../src/features/dataViewer/components/DataViewerPropertiesModal.tsx) |
+| `DataViewer` | `setPropertyType` | the type (`multiline`, `number`, `true`, `false`, `null`, `json`, `text`) — sent from a Properties save, once per type it gave a property row that row didn't have (a new row counts as text) | *(added 2026-10)* | [`DataViewerPropertiesModal.tsx`](../src/features/dataViewer/components/DataViewerPropertiesModal.tsx) |
+| `DataViewer` | `editVertices` / `editVertexValues` | geometry type — `editVertices` once per feature dragged, inserted into or deleted from; `editVertexValues` per save of a vertex's dialog | *(added 2026-10)* | [`dataViewerVertexEditProcessor.ts`](../src/features/dataViewer/model/processors/dataViewerVertexEditProcessor.ts) |
+| `DocumentExport` | `export` | format (pdf/svg/png/jpeg/webp/webp-lossy) | `MapExport`/`export` | [`exportMapToDocument.ts`](../src/features/mapToDocumentExport/model/exportMapToDocument.ts) |
 | `FeaturesExport` | `export` | query string of `type` (gpx/geojson), `target` (download/gdrive/dropbox/garmin), sorted `exportables` | `MapFeaturesExport`/`export` *(added 2026-06)* | [`exportMapFeaturesProcessor.ts`](../src/features/mapFeaturesExport/model/processors/exportMapFeaturesProcessor.ts) |
 | `OfflineExport` | `export` | query string of `map`/`format`/`scale` | `DownloadMap`/`downloadMapStart` — *was JSON-wrapped* | [`downloadMapProcessorHandler.ts`](../src/features/offlineMapExport/model/downloadMapProcessorHandler.ts) |
 | `MapCache` | `start` | cached base-layer id (`sourceType`) | *(added 2026-06)* | [`cacheTilesProcessor.ts`](../src/features/cachedMaps/model/cacheTilesProcessor.ts) |
 | `MyMaps` | `create` / `update` / `copy` | — | `MyMaps`/`save` (variant was in name) *(added 2026-06)* | [`mapsSaveProcessor.ts`](../src/features/myMaps/model/processors/mapsSaveProcessor.ts) |
 | `MyMaps` | `load` | `replace` or `merge` (only user-initiated, not auth re-validation reloads) | *(added 2026-06)* | [`mapsLoadProcessor.ts`](../src/features/myMaps/model/processors/mapsLoadProcessor.ts) |
 | `MyMaps` | `delete` | — | *(added 2026-06)* | [`mapsDeleteProcessor.ts`](../src/features/myMaps/model/processors/mapsDeleteProcessor.ts) |
-| `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapsModal.tsx`](../src/features/mapSettings/components/CustomMapsModal.tsx) |
+| `MapSettings` | `create` / `update` / `delete` | `customMap` | `CustomMap`/`create`,`edit`,`delete` *(added 2026-06)* | [`CustomMapEditor.tsx`](../src/features/mapSettings/components/CustomMapEditor.tsx), [`useCustomMapActions.ts`](../src/features/mapSettings/useCustomMapActions.ts) |
 | `Purchase` | `start` / `success` | name = `premium-subscription` / `premium-once` / `premium-chrons` / `credits`; **value** = credit amount | `Purchase`/`purchaseStart`, `purchaseSuccess` — *was JSON payload*; name was a bare `premium` until 2026-08, so premium totals spanning that date must sum all three variants plus `premium` | [`purchaseProcessor.ts`](../src/features/purchases/model/processors/purchaseProcessor.ts) |
 | `Purchase` | `confirmPayOnce` | `shown` / `subscribed` / `continued` | no longer emitted — the pay-once confirmation existed only for the price-lock window (2026-08 to 2026-09-01); the data is still in Matomo | — |
 
@@ -204,8 +207,8 @@ Standardize on this so the scheme doesn't drift again:
   track (`*GaProcessor.ts`); others push an event as a side effect of work they
   already do. A few events are tracked in **components** instead, because the
   distinction or the user gesture only exists at the call site and isn't carried
-  by a dedicated action: `MapSettings`/`customMap` (funnels through generic
-  `saveSettings`), `Tracking`/`watchedDevice`, `HomeLocation`/`save`,
+  by a dedicated action: `MapSettings`/`customMap` (whether it is a create or an
+  update is known only to the form), `Tracking`/`watchedDevice`, `HomeLocation`/`save`,
   `MapShading`/`add`, `Purchase`/`confirmPayOnce` (the dialog and which button
   ended it exist only in the modal — the `purchase` action carries no trace of
   it), and `Ad`/`impression`+`click` (the rendered ad id and the

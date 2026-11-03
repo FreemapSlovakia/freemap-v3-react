@@ -1,8 +1,16 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapFitBbox, mapToggleLayer } from '@features/map/model/actions.js';
 import { useOfflineMapExportMessages } from '@features/offlineMapExport/translations/useOfflineMapExportMessages.js';
-import { IconSpecGlyph } from '@shared/components/IconGlyph.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
@@ -12,9 +20,12 @@ import {
 import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
+import clsx from 'clsx';
 import type { ReactElement } from 'react';
 import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
@@ -22,11 +33,11 @@ import {
   FaCrosshairs,
   FaDatabase,
   FaEye,
+  FaLayerGroup,
   FaPencilAlt,
   FaPlay,
   FaPlus,
   FaStop,
-  FaTimes,
   FaTrash,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -55,6 +66,10 @@ export function CachedMapsList(): ReactElement {
 
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
+  const highlight = useAppSelector((state) => state.cachedMaps.highlight);
+
+  const canSaveSettings = useCanSaveSettings();
+
   const activeDownloads = useAppSelector(
     (state) => state.cachedMaps.activeDownloads,
   );
@@ -70,7 +85,7 @@ export function CachedMapsList(): ReactElement {
 
   const byName = makeLabelComparator(language);
 
-  const sortedMaps = [...cachedMaps].sort((a, b) =>
+  const sortedMaps = cachedMaps.toSorted((a, b) =>
     byName(a.name || undefined, b.name || undefined),
   );
 
@@ -80,20 +95,23 @@ export function CachedMapsList(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <BiWifiOff /> {m?.mapLayers.offlineMaps}
+          <BiWifiOff /> <Text k="mapLayers.offlineMaps" />
         </Modal.Title>
+        <ManualHeaderButton chapter="offline" />
       </Modal.Header>
 
       <Modal.Body>
         {cachedMaps.length === 0 ? (
-          <p className="text-muted mb-0">{cmm?.emptyMessage}</p>
+          <p className="text-muted mb-0">
+            <Text m={cmm} k="emptyMessage" />
+          </p>
         ) : (
           <>
             <ListGroup>
               {sortedMaps.map((cm) => {
                 const dl = activeDownloads[cm.type];
 
-                const isComplete = cm.downloadedCount === cm.tileCount;
+                const isComplete = isCachedMapComplete(cm);
 
                 const pct = dl
                   ? Math.round((dl.downloaded / dl.total) * 100)
@@ -104,15 +122,16 @@ export function CachedMapsList(): ReactElement {
                 return (
                   <ListGroup.Item
                     key={cm.type}
+                    ref={cm.type === highlight ? scrollIntoCenter : undefined}
                     variant={
                       activeLayers.includes(cm.type) ? 'primary' : undefined
                     }
-                    className="d-flex align-items-center gap-2"
+                    className={clsx(
+                      'd-flex align-items-center gap-2',
+                      cm.type === highlight && 'fm-flash',
+                    )}
                   >
-                    <IconSpecGlyph
-                      spec={cm.iconSpec}
-                      fallback={<BiWifiOff />}
-                    />
+                    <CustomMapGlyph spec={cm.iconSpec} kind="cached" />
 
                     <div className="flex-grow-1 me-2 min-w-0">
                       <div>{cm.name}</div>
@@ -120,14 +139,14 @@ export function CachedMapsList(): ReactElement {
                       <div className="d-flex flex-wrap align-items-center gap-2">
                         <small className="text-muted">
                           <span className="text-nowrap">
-                            {cmm?.zoom}:{' '}
+                            <Text m={cmm} k="zoom" />:{' '}
                             <strong>
                               {cm.minZoom}&ndash;{cm.maxNativeZoom}
                             </strong>
                             {' · '}
                           </span>{' '}
                           <span className="text-nowrap">
-                            {cmm?.tiles}:{' '}
+                            <Text m={cmm} k="tiles" />:{' '}
                             <strong>{nf.format(cm.tileCount)}</strong>
                             {' · '}
                           </span>{' '}
@@ -135,12 +154,13 @@ export function CachedMapsList(): ReactElement {
                               for the rest it would be a guess from this screen */}
                           {cm.tileScale !== undefined && (
                             <span className="text-nowrap">
-                              {ome?.scale}: <strong>{cm.tileScale}×</strong>
+                              <Text m={ome} k="scale" />:{' '}
+                              <strong>{cm.tileScale}×</strong>
                               {' · '}
                             </span>
                           )}{' '}
                           <span className="text-nowrap">
-                            {cmm?.size}:{' '}
+                            <Text m={cmm} k="size" />:{' '}
                             <strong>
                               {formatSize(dl?.sizeBytes ?? cm.sizeBytes)}
                             </strong>
@@ -161,10 +181,14 @@ export function CachedMapsList(): ReactElement {
                             style={{ minWidth: 80 }}
                           />
                         ) : isComplete ? (
-                          <small className="text-success">{cmm?.ready}</small>
+                          <small className="text-success">
+                            <Text m={cmm} k="ready" />
+                          </small>
                         ) : (
                           <small className="text-warning">
-                            {cmm?.incomplete({ pct })}
+                            <Text m={cmm}>
+                              {(cmm) => cmm.incomplete({ pct })}
+                            </Text>
                           </small>
                         )}
                       </div>
@@ -256,6 +280,24 @@ export function CachedMapsList(): ReactElement {
                           />
                         )}
 
+                        {/* Where its toolbar, menu, shortcut and opacity are set. */}
+                        {isComplete && (
+                          <Action
+                            icon={<FaLayerGroup />}
+                            label={cmm?.showInInstalledMaps}
+                            disabled={!canSaveSettings}
+                            onClick={() =>
+                              dispatch(
+                                setActiveModal({
+                                  type: 'map-manager',
+                                  highlight: cm.type,
+                                }),
+                              )
+                            }
+                            showFrom="never"
+                          />
+                        )}
+
                         <Action
                           icon={<FaTrash />}
                           label={m?.general.delete}
@@ -284,33 +326,43 @@ export function CachedMapsList(): ReactElement {
             </ListGroup>
 
             <div className="text-muted text-end mt-2">
-              {cmm?.total}: {formatSize(totalSize)}
+              <Text m={cmm} k="total" />: {formatSize(totalSize)}
             </div>
           </>
         )}
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {/* a real link, so it can be opened or copied like the menu entries
             that address a modal; the click itself is handled here */}
         <Button variant="link" {...modalLink({ type: 'browse-cache' })}>
-          <FaDatabase /> {m?.mapLayers.browseCache}
+          <FaDatabase /> <Text k="mapLayers.browseCache" />
         </Button>
 
+        {/* Gated as the menu's item is: offline its settings can't be saved. */}
         <Button
+          variant="link"
+          disabled={!canSaveSettings}
+          {...modalLink({ type: 'map-manager' })}
+        >
+          <FaLayerGroup /> <Text k="mapLayers.mapManager" />
+        </Button>
+
+        <FmFooterButton
           variant="primary"
           disabled={!online}
           onClick={() => dispatch(cachedMapsSetView('add'))}
-        >
-          <FaPlus /> {cmm?.addOfflineMap}
-        </Button>
+          icon={<FaPlus />}
+          label={cmm?.addOfflineMap}
+        />
 
         <OfflineBadge />
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={m?.general.close}
+          onClick={() => dispatch(setActiveModal(null))}
+        />
+      </FmModalFooter>
     </>
   );
 }

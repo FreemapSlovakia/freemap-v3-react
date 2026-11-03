@@ -1,3 +1,4 @@
+import { TextPlaceholder } from '@features/l10n/Text.js';
 import { type Breakpoint, useBreakpointMatches } from '@shared/breakpoints.js';
 import {
   createContext,
@@ -14,6 +15,9 @@ import {
 import { Overlay, Tooltip } from 'react-bootstrap';
 
 const InTooltip = createContext(false);
+
+// Lets a nested tooltip's target (a badge on a button) hide the enclosing one.
+const SuppressParent = createContext<((active: boolean) => void) | null>(null);
 
 /**
  * Whether this is a tooltip's own body. A mark rendered there is already being
@@ -38,6 +42,17 @@ export type TooltipTargetProps = {
   onContextMenuCapture: (e: MouseEvent) => void;
 };
 
+const noop = () => {};
+
+/** What a disabled control is handed: its wrapper is the tooltip's target. */
+const INERT_TARGET: TooltipTargetProps = {
+  ref: noop,
+  onPointerEnter: noop,
+  onPointerLeave: noop,
+  onClickCapture: noop,
+  onContextMenuCapture: noop,
+};
+
 type Props = {
   label?: ReactNode;
   /**
@@ -55,10 +70,22 @@ type Props = {
    */
   hint?: ReactNode;
   /**
+   * Overrides `breakpoint` where the room is measured rather than assumed —
+   * see `FmModalFooter`.
+   */
+  hideLabel?: boolean;
+  /**
    * Opens on a plain click or tap as well. Only for a mark that does nothing
    * else — on a control the same tap would activate it.
    */
   toggleOnClick?: boolean;
+  /**
+   * The control is disabled, so takes no pointer events: the tooltip hangs on a
+   * wrapper around it instead, and the control is handed inert props.
+   */
+  disabled?: boolean;
+  /** Classes for that wrapper; `d-inline-block` by default. */
+  wrapperClassName?: string;
   children: (props: {
     props: TooltipTargetProps;
     label: ReactNode;
@@ -67,16 +94,23 @@ type Props = {
 };
 
 export function LongPressTooltip({
-  label = '…',
+  label = <TextPlaceholder />,
   name,
   kbd,
   hint,
   delay = 500,
   breakpoint,
+  hideLabel,
   toggleOnClick,
+  disabled,
+  wrapperClassName = 'd-inline-block',
   children,
 }: Props) {
   const [show, setShow] = useState(false);
+
+  const suppressParent = useContext(SuppressParent);
+
+  const [childActive, setChildActive] = useState(false);
 
   const [target, setTarget] = useState<HTMLElement | null>(null);
 
@@ -100,7 +134,8 @@ export function LongPressTooltip({
   // matches may be a panel's own width rather than the viewport's, so the class
   // is decided here rather than by a `d-{bp}-inline` utility.
   const labelHidden =
-    breakpoint === undefined || (breakpoint !== 'xs' && !matches[breakpoint]);
+    hideLabel ??
+    (breakpoint === undefined || (breakpoint !== 'xs' && !matches[breakpoint]));
 
   const handleStart = useCallback(
     (e: PointerEvent) => {
@@ -109,6 +144,8 @@ export function LongPressTooltip({
       coarseRef.current = isCoarse;
 
       setCoarse(isCoarse);
+
+      suppressParent?.(true);
 
       if (
         (!labelHidden && name == null && hint == null) ||
@@ -121,10 +158,12 @@ export function LongPressTooltip({
         setShow(true);
       }, delay);
     },
-    [delay, hint, labelHidden, name],
+    [delay, hint, labelHidden, name, suppressParent],
   );
 
   const handleClear = useCallback(() => {
+    suppressParent?.(false);
+
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
@@ -136,11 +175,20 @@ export function LongPressTooltip({
     if (!(toggleOnClick && coarseRef.current)) {
       setShow(false);
     }
-  }, [toggleOnClick]);
+  }, [toggleOnClick, suppressParent]);
 
-  const handleClickCapture = useCallback(() => {
-    setShow((show) => (toggleOnClick ? !show : false));
-  }, [toggleOnClick]);
+  const handleClickCapture = useCallback(
+    (e: MouseEvent) => {
+      // Inside a `<label>` the tap would otherwise focus the labelled control
+      // and forward a click to it, which `rootClose` reads as a click outside.
+      if (toggleOnClick) {
+        e.preventDefault();
+      }
+
+      setShow((show) => (toggleOnClick ? !show : false));
+    },
+    [toggleOnClick],
+  );
 
   // Stops the native menu on a long press. The tap that ended it raises no
   // click of its own — the browser has already cancelled the gesture.
@@ -196,30 +244,42 @@ export function LongPressTooltip({
     [coarse],
   );
 
+  const targetProps: TooltipTargetProps = {
+    ref: attachTarget,
+    onPointerEnter: handleStart,
+    onPointerLeave: handleClear,
+    onClickCapture: handleClickCapture,
+    onContextMenuCapture: handleContextMenuCapture,
+  };
+
+  const control = children({
+    props: disabled ? INERT_TARGET : targetProps,
+    label: kbd ? (
+      <>
+        {label} {kbdEl}
+      </>
+    ) : (
+      label
+    ),
+    labelClassName: labelHidden ? 'd-none' : 'd-inline',
+  });
+
   return (
     <>
-      {children({
-        props: {
-          ref: attachTarget,
-          onPointerEnter: handleStart,
-          onPointerLeave: handleClear,
-          onClickCapture: handleClickCapture,
-          onContextMenuCapture: handleContextMenuCapture,
-        },
-        label: kbd ? (
-          <>
-            {label} {kbdEl}
-          </>
+      <SuppressParent value={setChildActive}>
+        {disabled ? (
+          <span className={wrapperClassName} {...targetProps}>
+            {control}
+          </span>
         ) : (
-          label
-        ),
-        labelClassName: labelHidden ? 'd-none' : 'd-inline',
-      })}
+          control
+        )}
+      </SuppressParent>
 
       {target && (labelHidden || name != null || hint != null) && (
         <Overlay
           target={target}
-          show={show}
+          show={show && !childActive}
           placement="top"
           flip
           offset={offset}

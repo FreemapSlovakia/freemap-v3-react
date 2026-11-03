@@ -26,6 +26,10 @@ export type FuzzyMatch = {
 
 const WORD_CHAR = /[\p{L}\p{N}]/u;
 
+/** Whether a word starts at `i` of `text`. */
+export const isWordStart = (text: string, i: number): boolean =>
+  i === 0 || !WORD_CHAR.test(text[i - 1]);
+
 const COMBINING = /[̀-ͯ]/g;
 
 /**
@@ -54,18 +58,33 @@ function normalize(value: string): { text: string; origin: number[] } {
   return { text, origin };
 }
 
+/** A target normalized once, for a caller matching the same ones repeatedly. */
+export type FuzzyTarget = ReturnType<typeof normalize>;
+
+export function prepareFuzzyTarget(target: string): FuzzyTarget {
+  return normalize(target);
+}
+
 /**
  * Scores `query` against `target`, or answers `null` when the query's
  * characters don't all appear in order. An empty query matches nothing.
+ *
+ * Normalizing the target is the bulk of the cost, so a caller running this
+ * over the same long list on every keystroke passes a {@link FuzzyTarget}
+ * prepared once instead of the string.
  */
-export function fuzzyMatch(query: string, target: string): FuzzyMatch | null {
+export function fuzzyMatch(
+  query: string,
+  target: string | FuzzyTarget,
+): FuzzyMatch | null {
   const q = normalize(query).text.replace(/\s+/g, ' ').trim();
 
   if (!q) {
     return null;
   }
 
-  const { text: t, origin } = normalize(target);
+  const { text: t, origin } =
+    typeof target === 'string' ? normalize(target) : target;
 
   const ql = q.length;
 
@@ -91,8 +110,6 @@ export function fuzzyMatch(query: string, target: string): FuzzyMatch | null {
   const slot = (qi: number, ti: number, prev: boolean) =>
     (prev ? (ql + 1) * (tl + 1) : 0) + qi * (tl + 1) + ti;
 
-  const isWordStart = (ti: number) => ti === 0 || !WORD_CHAR.test(t[ti - 1]);
-
   function best(qi: number, ti: number, prev: boolean): number {
     if (qi === ql) {
       return 0;
@@ -112,11 +129,11 @@ export function fuzzyMatch(query: string, target: string): FuzzyMatch | null {
 
     let score = best(qi, ti + 1, false) - SKIP_PENALTY;
 
-    if (q[qi] === t[ti] && (prev || isWordStart(ti))) {
+    if (q[qi] === t[ti] && (prev || isWordStart(t, ti))) {
       const bonus =
         MATCH +
         (prev ? CONSECUTIVE_BONUS : 0) +
-        (isWordStart(ti) ? WORD_START_BONUS : 0) +
+        (isWordStart(t, ti) ? WORD_START_BONUS : 0) +
         (ti === 0 ? START_BONUS : 0);
 
       score = Math.max(score, bonus + best(qi + 1, ti + 1, true));

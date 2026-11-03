@@ -14,8 +14,7 @@ import type { ReactElement, ReactNode } from 'react';
  * mark that comes and goes with the connection, and `OnlineOnlyItem` can only
  * put it there — so everything else keeps its column when it appears.
  *
- * `flex-shrink-0` because `.dropdown-item` wraps: the cluster moves to the next
- * line whole instead of being squashed.
+ * `flex-shrink-0`: in a row too narrow, the `MenuLabel` gives way, not this.
  */
 export function MenuGutter({
   children,

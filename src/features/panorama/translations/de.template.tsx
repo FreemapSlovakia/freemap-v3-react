@@ -5,7 +5,10 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Wählen Sie den Blickpunkt mit der Schaltfläche {icon} unten.</>
   ),
+  preparing: 'Panorama wird vorbereitet…',
   rendering: 'Panorama wird berechnet…',
+  encoding: 'Bild wird komprimiert…',
+  decoding: 'Bild wird entpackt…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Warten auf den Renderer…'
@@ -32,13 +35,12 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Panorama-Einstellungen',
     tiltHint:
       'Wie viel Himmel und Boden das Bild fasst — die Winkel über und unter dem Horizont.',
-    custom: 'Genaue Winkel',
     depthLift: 'Ferne entfalten',
     depthLiftOff: 'Naturgetreu',
     depthLiftHint:
-      'Hebt entferntes Gelände an, sodass sich ferne Ketten von den Graten davor abheben — so wie es ein von Hand gezeichnetes Panorama tut. Dadurch kommen auch Gipfel ins Bild, die von hier aus gar nicht zu sehen wären; ihre Namen sind gekennzeichnet.',
+      'Hebt entferntes Gelände an, sodass sich ferne Ketten von den Graten davor abheben — so wie es ein von Hand gezeichnetes Panorama tut. Dadurch kommen auch Gipfel ins Bild, die von hier aus gar nicht zu sehen wären; ihre Namen sind gekennzeichnet. Sonnen- und Mondbahn werden darüber nicht gezeichnet.',
     rangeHint:
-      'Gelände jenseits von 300 km gehört zu Premium. Jeder weitere Kilometer wird entlang jedes Strahls des Bildes abgeschritten, eine weitere Sicht kostet den Renderer also entsprechend mehr.',
+      'Gelände jenseits von 300 km ist eine Premium-Funktion. Jeder weitere Kilometer wird entlang jedes Strahls des Bildes abgeschritten, eine weitere Sicht kostet den Renderer also entsprechend mehr.',
     look: 'Stil',
     looks: {
       natural: 'Natürlich',
@@ -66,24 +68,42 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Gelände jenseits dieser Entfernung wird weggelassen statt flach in der letzten Farbe gemalt, sodass der ganze Verlauf auf das entfällt, was das Bild zeigt. Gipfel, die darauf stehen, werden nicht benannt.',
   },
-  preview: 'Vorschau',
   quality: {
-    label: 'Qualität / Geschwindigkeit',
-    superfast: 'Niedrigste / schnellste',
-    fast: 'Niedrige / schnelle',
-    standard: 'Standard',
-    detailed: 'Detailliert / langsam',
-    finest: 'Feinste / langsamste',
+    detail: 'Detail',
   },
+  frame: 'Ausschnitt und Detail',
   tilt: {
     label: 'Senkrechter Ausschnitt',
     standard: 'Standard',
     wide: 'Hoch',
     flat: 'Flach',
+    below: 'Unter dem Horizont',
+    above: 'Über dem Horizont',
   },
   fov: {
     label: 'Waagerechter Ausschnitt',
     full: 'Rundum',
+  },
+  sky: {
+    title: 'Sonne und Mond',
+    sun: 'Sonnenbahn',
+    moon: 'Mondbahn',
+    date: 'Tag',
+    dateHint:
+      'Die Zeiten gelten in der Zeitzone dieses Geräts und markieren, wann der letzte Rand der Scheibe hinter dem Gelände verschwindet oder der erste auftaucht. Das Gelände ist nackter Boden, Bäume und Gebäude können sie also früher verdecken.',
+    today: 'Heute',
+    lit: (percent) => `${percent} beleuchtet`,
+    elevation: (deg) => `Höhe ${deg}`,
+    overTerrain: (deg) => `${deg} über dem Gelände`,
+    belowTerrain: (deg) => `${deg} unter dem Gelände`,
+    unfolded: (
+      <>
+        Nicht über einem entfalteten Bild: sein fernes Gelände ist höher
+        gezeichnet, als es steht, sodass die Bahnen den Horizont an falschen
+        Stellen kreuzen würden. Stellen Sie in den Panorama-Einstellungen{' '}
+        <i>Ferne entfalten</i> auf <i>Naturgetreu</i> und aktualisieren Sie.
+      </>
+    ),
   },
   labels: {
     title: 'Gipfelnamen',
@@ -104,9 +124,16 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Klare Luft',
     hazeHint:
       'Wie weit ein Gipfel entfernt sein muss, damit der Dunst mehr zählt als der Gipfel selbst. Jenseits des Dreifachen davon wird gar nichts mehr benannt.',
-    showEle: 'Höhen anzeigen',
-    showEleHint:
-      'Schreibt unter jeden Gipfelnamen seine Höhe. Jede Beschriftung ist dann zwei Zeilen hoch, sodass weniger davon ins Bild passen.',
+    subLine: 'Unter dem Namen',
+    subLineHint:
+      'Was die zweite Zeile jeder Gipfelbeschriftung sagt. Ist etwas davon an, ist jede Beschriftung zwei Zeilen hoch, sodass weniger ins Bild passen. Die Schartenhöhe (S) sagt, wie hoch der Gipfel über der tiefsten Scharte auf dem Weg zu höherem Gelände aufragt; die Dominanz (D), wie weit dieses höhere Gelände entfernt ist.',
+    subLineParts: {
+      ele: 'Höhe',
+      distance: 'Entfernung',
+      prominence: 'Schartenhöhe',
+      isolation: 'Dominanz',
+    },
+    subLineAbbr: { prominence: 'S', isolation: 'D' },
     showRevealed: 'Aufgedeckte Gipfel benennen',
     showRevealedHint:
       'Gipfel, die das Entfalten der Ferne hinter einem näheren Grat hervorgeholt hat: gezeichnet, aber von hier aus nicht wirklich sichtbar. Ihre Namen sind blasser und treten dort zurück, wo neben einem sichtbaren Gipfel kein Platz für beide ist.',
@@ -138,11 +165,6 @@ const de: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Das Panorama konnte nicht berechnet werden.',
   },
   caveats: {
-    title: 'Was das Bild zeigt und was nicht',
-    bareEarth:
-      'Das Geländemodell ist blanke Erde: Wälder und Gebäude fehlen darin, eine Sicht, die ein Wald verstellen würde, ist also frei gezeichnet. Das ist mit Abstand die größte Fehlerquelle.',
-    coverage:
-      'Die Genauigkeit hängt vom Land ab. Wo ein nationales Laserscan-Modell vorliegt, ist der Nahbereich scharf; sonst antwortet ein globales 30-m-Modell.',
     viewpoint:
       'Das Auge wird auf den höchsten Punkt im Umkreis weniger Meter um Ihren Klick gesetzt, damit der Fels daneben die Gipfelsicht nicht verdirbt.',
     depthLift:

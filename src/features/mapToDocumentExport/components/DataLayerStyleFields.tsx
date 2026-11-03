@@ -1,4 +1,5 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import type { ChangeEvent, ReactElement } from 'react';
 import {
@@ -53,14 +54,14 @@ export function DataLayerStyleFields({
   customLayerOrder,
   onCustomLayerOrderChange,
 }: Props): ReactElement {
-  const m = useMessages();
-
   const mtde = useMapToDocumentExportMessages();
 
   return (
     <fieldset disabled={disabled} className="mt-3">
       <Form.Group>
-        <Form.Label className="d-block">{mtde?.glow}</Form.Label>
+        <Form.Label className="d-block">
+          <Text m={mtde} k="glow" />
+        </Form.Label>
 
         <div className="d-flex flex-wrap align-items-center gap-2">
           <ToggleButtonGroup
@@ -76,14 +77,16 @@ export function DataLayerStyleFields({
               variant="outline-primary"
               className="rounded flex-grow-0"
             >
-              <FaRegSun /> {mtde?.glow}
+              <FaRegSun /> <Text m={mtde} k="glow" />
             </ToggleButton>
           </ToggleButtonGroup>
 
           {glow && (
             <>
               <InputGroup className="w-auto">
-                <InputGroup.Text>{m?.generic.color}</InputGroup.Text>
+                <InputGroup.Text>
+                  <Text k="generic.color" />
+                </InputGroup.Text>
 
                 <RgbaColorPicker
                   value={glowColor}
@@ -94,7 +97,9 @@ export function DataLayerStyleFields({
               </InputGroup>
 
               <InputGroup className="w-auto">
-                <InputGroup.Text>{m?.generic.width}</InputGroup.Text>
+                <InputGroup.Text>
+                  <Text k="generic.width" />
+                </InputGroup.Text>
 
                 <Form.Control
                   type="number"
@@ -113,11 +118,15 @@ export function DataLayerStyleFields({
       </Form.Group>
 
       <Form.Group className="mt-3">
-        <Form.Label className="d-block">{mtde?.labelTitle}</Form.Label>
+        <Form.Label className="d-block">
+          <Text m={mtde} k="labelTitle" />
+        </Form.Label>
 
         <div className="d-flex flex-wrap align-items-center gap-2">
           <InputGroup className="w-auto">
-            <InputGroup.Text>{m?.generic.color}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="generic.color" />
+            </InputGroup.Text>
 
             <RgbaColorPicker
               value={labelColor}
@@ -129,7 +138,9 @@ export function DataLayerStyleFields({
           </InputGroup>
 
           <InputGroup className="w-auto">
-            <InputGroup.Text>{m?.generic.size}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="generic.size" />
+            </InputGroup.Text>
 
             <Form.Control
               type="number"
@@ -144,7 +155,9 @@ export function DataLayerStyleFields({
           </InputGroup>
 
           <InputGroup className="w-auto">
-            <InputGroup.Text>{m?.generic.weight}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="generic.weight" />
+            </InputGroup.Text>
 
             <Form.Control
               type="number"
@@ -161,9 +174,11 @@ export function DataLayerStyleFields({
       </Form.Group>
 
       <Form.Group className="mt-3">
-        <Form.Label className="d-block">{mtde?.customLayerOrder}</Form.Label>
+        <Form.Label className="d-block">
+          <Text m={mtde} k="customLayerOrder" />
+        </Form.Label>
 
-        <ToggleButtonGroup
+        <FitToggleButtonGroup
           type="radio"
           name="customLayerOrder"
           value={customLayerOrder}
@@ -174,7 +189,7 @@ export function DataLayerStyleFields({
             value="natural"
             variant="outline-primary"
           >
-            {mtde?.orders.natural}
+            <Text m={mtde} k="orders.natural" />
           </ToggleButton>
 
           <ToggleButton
@@ -182,9 +197,9 @@ export function DataLayerStyleFields({
             value="topmost"
             variant="outline-primary"
           >
-            {mtde?.orders.topmost}
+            <Text m={mtde} k="orders.topmost" />
           </ToggleButton>
-        </ToggleButtonGroup>
+        </FitToggleButtonGroup>
       </Form.Group>
     </fieldset>
   );

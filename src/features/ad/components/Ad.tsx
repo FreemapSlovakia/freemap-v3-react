@@ -1,4 +1,4 @@
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -35,8 +35,6 @@ const adViews = new Map<AdItem['id'], number>();
 
 export default function Ad(): ReactElement | null {
   const [closed, setClosed] = useState(false);
-
-  const m = useMessages();
 
   const adm = useAdMessages();
 
@@ -80,13 +78,56 @@ export default function Ad(): ReactElement | null {
 
   const ref = useLeftMarginAdjuster();
 
+  const [root, setRoot] = useState<HTMLDivElement | null>(null);
+
+  const [besideLogo, setBesideLogo] = useState(false);
+
+  // Hanging over the map only beside the logo's toolbar: on a line of its own
+  // it would cover what wraps below it (the Map layers panel).
+  useEffect(() => {
+    const row = root?.parentElement;
+
+    if (!root || !row) {
+      return;
+    }
+
+    const check = () => {
+      const first = row.firstElementChild;
+
+      setBesideLogo(
+        first instanceof HTMLElement &&
+          first !== root &&
+          root.offsetTop < first.offsetTop + first.offsetHeight,
+      );
+    };
+
+    check();
+
+    const resizes = new ResizeObserver(check);
+
+    resizes.observe(row);
+
+    const mutations = new MutationObserver(check);
+
+    mutations.observe(row, { childList: true });
+
+    return () => {
+      resizes.disconnect();
+
+      mutations.disconnect();
+    };
+  }, [root]);
+
+  if (closed) {
+    return null;
+  }
+
   return (
     <div
+      ref={setRoot}
       className={clsx(
-        'mt-2',
-        'd-flex',
-        'flex-column',
-        closed ? 'invisible' : 'visible',
+        'mt-2 d-flex flex-column',
+        besideLogo && 'fm-ad-overhang',
       )}
     >
       <div
@@ -116,7 +157,7 @@ export default function Ad(): ReactElement | null {
           <a
             href="https://nabezky.sk/freemap_t-shirt"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             <img
               className="border rounded w-100"
@@ -138,7 +179,8 @@ export default function Ad(): ReactElement | null {
             onClick={() => setClosed(true)}
             disabled={closeTime > 0}
           >
-            {m?.general.close} {closeTime > 0 ? ` (${closeTime})` : null}
+            <Text k="general.close" />{' '}
+            {closeTime > 0 ? ` (${closeTime})` : null}
           </Button>
         )}
 
@@ -149,7 +191,7 @@ export default function Ad(): ReactElement | null {
           size="sm"
           onClick={becomePremium}
         >
-          {m?.general.remove}
+          <Text k="general.remove" />
         </Button>
       </div>
     </div>

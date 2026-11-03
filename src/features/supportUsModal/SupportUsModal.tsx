@@ -1,15 +1,20 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { ShowModalLink } from '@shared/components/ShowModalLink.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, Form, Modal } from 'react-bootstrap';
-import { FaGem, FaHeart, FaPaypal, FaTimes } from 'react-icons/fa';
+import { FaGem, FaHeart, FaPaypal } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useSupportUsMessages } from './translations/useSupportUsMessages.js';
 
@@ -40,7 +45,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaHeart color="red" /> {m?.mainMenu.supportUs}{' '}
+          <FaHeart color="red" /> <Text k="mainMenu.supportUs" />{' '}
           <FaHeart color="red" />
         </Modal.Title>
       </Modal.Header>
@@ -48,7 +53,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
       <Modal.Body>
         <OfflineAlert />
 
-        {lm?.explanation}
+        <Text m={lm} k="explanation" />
 
         <hr />
 
@@ -60,16 +65,18 @@ export default function SupportUsModal({ show }: Props): ReactElement {
               disabled={!online}
               className="my-3 mx-auto d-block"
             >
-              <FaGem /> {prm?.becomePremium}
+              <FaGem /> <Text m={prm} k="becomePremium" />
             </Button>
-            {lm?.alert.line2}
+            <Text m={lm} k="alert.line2" />
           </Alert>
         )}
 
         <div className="d-flex flex-wrap justify-content-between">
           <div>
             <p>
-              <b>{lm?.account}</b>
+              <b>
+                <Text m={lm} k="account" />
+              </b>
               <br /> VÚB 2746389453/0200
             </p>
 
@@ -94,7 +101,7 @@ export default function SupportUsModal({ show }: Props): ReactElement {
               />
 
               <Button type="submit" disabled={!online}>
-                <FaPaypal /> {lm?.paypal}
+                <FaPaypal /> <Text m={lm} k="paypal" />
               </Button>
             </Form>
           </div>
@@ -124,21 +131,21 @@ export default function SupportUsModal({ show }: Props): ReactElement {
           </>
         )}
 
-        <p>{lm?.thanks}</p>
+        <p>
+          <Text m={lm} k="thanks" />
+        </p>
 
         <div className="text-end">
-          {lm?.team}{' '}
+          <Text m={lm} k="team" />{' '}
           <ShowModalLink modal={{ type: 'about' }}>
             OZ Freemap Slovakia
           </ShowModalLink>
         </div>
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

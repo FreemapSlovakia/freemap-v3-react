@@ -1,4 +1,4 @@
-import { httpRequest } from '@app/httpRequest.js';
+import { HttpError, httpRequest, isNetworkError } from '@app/httpRequest.js';
 import {
   clearMapFeatures,
   deleteFeature,
@@ -7,6 +7,13 @@ import {
 import type { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
+import { withTickedLayers } from '@features/map/model/layerSetup.js';
+import { drawnSetupsSelector } from '@features/map/model/selectors.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import {
   type SearchResult,
   searchSetQuery,
@@ -14,9 +21,9 @@ import {
 } from '@features/search/model/actions.js';
 import { photonToSearchResult } from '@features/search/model/resultUtils.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import {
   type IsWmsLayerDef,
-  integratedLayerDefs,
   isWmsLayerDef,
   type LayerDef,
 } from '@shared/mapDefinitions.js';
@@ -33,13 +40,18 @@ import {
   photonLang,
   photonOsmElementType,
 } from '@shared/types/photonResult.js';
-import { wmsBaseUrl } from '@shared/wms.js';
+import { requestWms, wmsBaseUrl, wmsProxyOf } from '@shared/wms.js';
 import { point } from '@turf/helpers';
 import { toWgs84 } from '@turf/projection';
 import type { FeatureCollection } from 'geojson';
 import { CRS } from 'leaflet';
 import type { Dispatch } from 'redux';
 import { loadMapDetailsMessages } from '../translations/loadMapDetailsMessages.js';
+import {
+  decodeFeatureInfo,
+  dropOffView,
+  parseFeatureInfo,
+} from './featureInfoParser.js';
 
 /** An object is worth reporting when it carries one of these keys. */
 const osmKeys = [
@@ -85,6 +97,17 @@ const cancelType = [
   searchSetQuery.type,
 ];
 
+// GeoJSON (geo+json, GeoServer's json), then GML; MapServer refuses text/xml.
+const INFO_FORMATS = [
+  'application/geo+json',
+  'application/json',
+  'text/xml',
+  'application/vnd.ogc.gml',
+];
+
+/** The format each WMS last answered in, by service URL, to try first. */
+const infoFormats = new Map<string, string>();
+
 // Dismiss the details toast once the map-details tool is gone.
 const mapDetailsClosed = (state: RootState) =>
   state.main.mapTool !== 'map-details';
@@ -98,10 +121,16 @@ export async function handle(
 
   trackMatomo(['trackEvent', 'MapDetails', 'search']);
 
+  const setups = drawnSetupsSelector(getState());
+
   const wmsLayerDefs = [
-    ...integratedLayerDefs,
-    ...getState().map.customLayers,
-  ].filter(isWmsLayerDef);
+    ...integratedLayerDefsSelector(getState()),
+    ...resolvedCustomLayersSelector(getState()),
+  ]
+    .filter(isWmsLayerDef)
+    // Nothing picked is drawn, and is nothing to ask about either.
+    .filter((def) => setups[def.type]?.wmsLayers?.length !== 0)
+    .map((def) => withTickedLayers(def, setups));
 
   const wmsLayerTypes = wmsLayerDefs.map((def) => def.type);
 
@@ -135,8 +164,8 @@ export async function handle(
           expectedStatus: 200,
         }).then((res) => res.json()),
 
-    ...getState()
-      .map.layers.filter(
+    ...drawnTypesSelector(getState())
+      .filter(
         (layer) =>
           wmsLayerTypes.includes(layer) &&
           !excludeSources.includes(`wms:${layer}`),
@@ -177,7 +206,6 @@ export async function handle(
           url.searchParams.set('QUERY_LAYERS', def.layers.join(','));
           // Part of the map request GetFeatureInfo copies, and mandatory there.
           url.searchParams.set('STYLES', '');
-          url.searchParams.set('INFO_FORMAT', 'application/geo+json'); // TODO
           url.searchParams.set('CRS', 'EPSG:3857'); // TODO
           url.searchParams.set('I', point.x.toFixed());
           url.searchParams.set('J', point.y.toFixed());
@@ -185,19 +213,57 @@ export async function handle(
           url.searchParams.set('HEIGHT', size.y.toFixed());
           url.searchParams.set('BBOX', [a.x, a.y, b.x, b.y].join(','));
 
-          const res = await httpRequest({ getState, url: url.toString() });
+          // Tried in turn, as capabilities can't pick: ags.geology.sk advertises
+          // only application/json, refuses it, and serves geo+json. A server
+          // answering none is left out rather than failing the whole query.
+          const remembered = infoFormats.get(def.url);
 
-          return {
-            type: def.type,
-            name,
-            info: toWgs84(
-              JSON.parse(
-                (await res.text())
-                  // kataster.skgeodesy.sk returns number with decimal comma, try to fix it
-                  .replace(/\[(\d+),(\d+),(\d+),(\d+)\]/g, '[$1.$2,$3.$4]'),
-              ),
-            ) as FeatureCollection, // TODO validate
-          };
+          const proxy = wmsProxyOf(def);
+
+          for (const format of new Set(
+            remembered ? [remembered, ...INFO_FORMATS] : INFO_FORMATS,
+          )) {
+            url.searchParams.set('INFO_FORMAT', format);
+
+            try {
+              const res = await requestWms(url.toString(), proxy, (url) =>
+                httpRequest({ getState, url }),
+              );
+
+              const body = decodeFeatureInfo(
+                await res.arrayBuffer(),
+                res.headers.get('Content-Type'),
+              );
+
+              const info = dropOffView(
+                toWgs84(parseFeatureInfo(body)) as FeatureCollection,
+                bounds,
+              );
+
+              infoFormats.set(def.url, format);
+
+              return { type: def.type, name, info };
+            } catch (err) {
+              if (isAbortError(err)) {
+                return undefined;
+              }
+
+              console.warn(`Feature info from ${name} as ${format}`, err);
+
+              // Failing whatever the format; a 400 or a 500 may refuse only
+              // this one, so go on. So may a direct refusal without CORS
+              // headers, but through the proxy a network error means it failed.
+              if (
+                (proxy && isNetworkError(err)) ||
+                (err instanceof HttpError &&
+                  [401, 403, 404, 429, 502, 503, 504].includes(err.status))
+              ) {
+                return undefined;
+              }
+            }
+          }
+
+          return undefined;
         }),
       ),
   ]);
@@ -231,10 +297,22 @@ export async function handle(
 
   sr.push(
     ...wms
+      .filter((wms) => wms !== undefined)
       .flatMap((wms) =>
         wms.info.features.map((feature) => ({
           ...wms,
-          info: feature,
+          // GeoServer's values are typed, null included; the details table
+          // expects strings.
+          info: {
+            ...feature,
+            properties:
+              feature.properties &&
+              Object.fromEntries(
+                Object.entries(feature.properties).flatMap(([k, v]) =>
+                  v == null ? [] : [[k, String(v)]],
+                ),
+              ),
+          },
         })),
       )
       .map((wms, seq) => {
@@ -256,26 +334,50 @@ export async function handle(
               };
 
         return {
-          geojson: wms.info.geometry
-            ? wms.info
-            : {
-                ...wms.info,
-                geometry: { type: 'Point', coordinates: [lon, lat] },
-              },
+          geojson: {
+            ...wms.info,
+            geometry: wms.info.geometry ?? {
+              type: 'Point',
+              coordinates: [lon, lat],
+            },
+          },
           id: id ?? {
             type: 'wms',
             map: wms.type,
             seq,
           },
-          genericName: (wms.info as unknown as { layerName: unknown })
-            .layerName as string, // ArcGIS only?,
+          // ArcGIS names the layer; GeoServer prefixes the feature id with it.
+          genericName: ((wms.info as unknown as { layerName?: string })
+            .layerName ??
+            (typeof wms.info.id === 'string'
+              ? wms.info.id.split('.')[0]
+              : undefined) ??
+            wms.name) as string,
           source: `wms:${wms.type}`,
         } satisfies SearchResult;
       }),
   );
 
   if (reverseGeocodingElement) {
-    sr.push(photonToSearchResult(reverseGeocodingElement, 'nominatim-reverse'));
+    const result = photonToSearchResult(
+      reverseGeocodingElement,
+      'nominatim-reverse',
+    );
+
+    // Photon keeps one tag of an element; the same element from the OSM API,
+    // dropped below as a duplicate, has them all — `bicycle=yes` on a guidepost.
+    const osmTags = [...nearbyElements, ...surroundingElements].find(
+      (e) => e.id === reverseOsm,
+    )?.properties;
+
+    if (osmTags && result.geojson.type === 'Feature') {
+      result.geojson = {
+        ...result.geojson,
+        properties: { ...osmTags, ...result.geojson.properties },
+      };
+    }
+
+    sr.push(result);
   }
 
   const elements = [

@@ -13,7 +13,7 @@ export const dataViewerSelectProcessor: Processor<typeof selectFeature> = {
   handle: ({ getState, dispatch, action }) => {
     const selection = action.payload;
 
-    if (selection?.type !== 'data-viewer') {
+    if (selection?.type !== 'feature' && selection?.type !== 'vertex') {
       return;
     }
 

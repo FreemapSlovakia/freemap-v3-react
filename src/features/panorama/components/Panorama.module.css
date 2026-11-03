@@ -35,6 +35,32 @@
   cursor: pointer;
 }
 
+/* Subtle over the picture rather than a toolbar button: a fingertip target in
+   the corner the picture can spare, which only says what it is on hover. */
+.about-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.65;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* The whole picture is its backdrop, so a long disclaimer on a tall-enough
+   panel is read without the panel changing size — and scrolls when the window
+   is too short for it. */
+.about {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 /* Clears the two grips for an overlay in a top corner: they sit 0.25rem down
    and stand 2rem tall, measured from the *box*, while the overlay is measured
    from the content inside it. Bootstrap's spacing scale steps 1.5rem to 3rem,
@@ -80,14 +106,14 @@
   }
 }
 
-/* A 360° render wraps: its last column abuts its first, so repeating it
-   sideways turns panning into an offset with nothing to run off the end of.
-   Repeating also keeps the whole thing out of a canvas, which on older mobile
-   GPUs cannot hold an image 7200 pixels wide. */
+/* The picture, blitted from a decoded bitmap — see the draw in `PanoramaView`.
+   Its backing store is sized in device pixels, so the element is stretched to
+   the panel rather than left at its intrinsic size. */
 .image {
   position: absolute;
   inset: 0;
-  background-repeat: repeat-x;
+  width: 100%;
+  height: 100%;
   image-rendering: auto;
 }
 

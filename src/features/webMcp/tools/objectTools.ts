@@ -1,4 +1,3 @@
-import { openTool } from '@app/store/actions.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import { objectCategories } from '@features/objects/objectCategories.js';
 import type { SearchResult } from '@features/search/model/actions.js';
@@ -64,8 +63,6 @@ export const objectTools = [
     }),
     async execute({ categories }, { store, signal }) {
       await assertKnownCategories(categories, store.getState().l10n.language);
-
-      store.dispatch(openTool('objects'));
 
       // The fetch is edge-triggered on the categories and the map position, so
       // re-asking for the categories already active would fetch nothing and

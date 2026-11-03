@@ -1,12 +1,15 @@
 import z from 'zod';
 import type { Colorizer } from './colorize.js';
+import { averageSpeedColorizer } from './modes/averageSpeed.js';
 import { batteryColorizer } from './modes/battery.js';
 import { cadenceColorizer } from './modes/cadence.js';
+import { curvatureColorizer } from './modes/curvature.js';
 import { elevationColorizer } from './modes/elevation.js';
 import { gsmSignalColorizer } from './modes/gsmSignal.js';
 import { headingColorizer } from './modes/heading.js';
 import { heartRateColorizer } from './modes/heartRate.js';
 import { hikeRatingColorizer } from './modes/hikeRating.js';
+import { maxSpeedColorizer } from './modes/maxSpeed.js';
 import { mtbRatingColorizer } from './modes/mtbRating.js';
 import { powerColorizer } from './modes/power.js';
 import { roadTypeColorizer } from './modes/roadType.js';
@@ -29,7 +32,10 @@ export const colorizers = {
   hikeRating: hikeRatingColorizer,
   mtbRating: mtbRatingColorizer,
   trailColor: trailColorColorizer,
+  curvature: curvatureColorizer,
+  maxSpeed: maxSpeedColorizer,
   speed: speedColorizer,
+  averageSpeed: averageSpeedColorizer,
   heartRate: heartRateColorizer,
   cadence: cadenceColorizer,
   power: powerColorizer,
@@ -44,12 +50,14 @@ export const colorizers = {
 // the user moved, what the way is, what a sensor recorded, what the device did.
 export const colorizingModeGroups = [
   ['elevation', 'steepness'],
-  ['time', 'speed', 'heading'],
+  ['time', 'speed', 'averageSpeed', 'heading'],
   [
     'surface',
     'smoothness',
     'roadType',
     'trackType',
+    'curvature',
+    'maxSpeed',
     'hikeRating',
     'mtbRating',
     'trailColor',

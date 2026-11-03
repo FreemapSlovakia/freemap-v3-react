@@ -12,6 +12,15 @@
     cursor: grab;
   }
 
+  /* The tools' features, faded together; `Map` sets the variable. */
+  & .leaflet-shadow-pane,
+  & .leaflet-marker-pane,
+  & .leaflet-overlay-pane,
+  & .leaflet-tooltip-pane,
+  & .fm-features-pane {
+    opacity: calc(var(--fm-features-opacity, 1) * var(--fm-pane-opacity, 1));
+  }
+
   /* On for the map's whole life, not just the gesture: the one-finger zoom
      suspends dragging, which takes Leaflet's own `touch-action` with it, and the
      browser latches this when the finger goes down — too late to set per gesture. */
@@ -40,20 +49,26 @@
     }
   }
 
+  /* Each arrow 1px into its box (Leaflet sets 12px): edge to edge, both
+     anti-aliased at a fractional pixel, they leave a hairline at any zoom. */
   & .leaflet-tooltip-top:before {
     border-top-color: var(--bs-body-bg);
+    margin-bottom: -11px;
   }
 
   & .leaflet-tooltip-bottom:before {
     border-bottom-color: var(--bs-body-bg);
+    margin-top: -11px;
   }
 
   & .leaflet-tooltip-left:before {
     border-left-color: var(--bs-body-bg);
+    margin-right: -11px;
   }
 
   & .leaflet-tooltip-right:before {
     border-right-color: var(--bs-body-bg);
+    margin-left: -11px;
   }
 }
 
@@ -71,6 +86,19 @@
   .leaflet-fm-active-overlay-pane
   .leaflet-interactive {
   pointer-events: auto !important;
+}
+
+/* Features faded below seeing take no clicks; `Map` sets the class. */
+.fm-features-faint
+  :is(
+    .leaflet-shadow-pane,
+    .leaflet-marker-pane,
+    .leaflet-overlay-pane,
+    .leaflet-tooltip-pane,
+    .fm-features-pane
+  )
+  .leaflet-interactive {
+  pointer-events: none !important;
 }
 
 /* preventing some defaults on L.divIcon */
@@ -103,18 +131,6 @@ a.leaflet-control-layers-toggle {
   pointer-events: none;
 }
 
-@media (max-width: 720px) {
-  .leaflet-control-scale {
-    margin-bottom: 4rem !important;
-  }
-}
-
-@media (max-width: 271px) {
-  .leaflet-control-scale {
-    margin-bottom: 7.5rem !important;
-  }
-}
-
 .fm-base-layer .fm-demo-tile {
   box-shadow: 5px 5px 8px #0004;
 }
@@ -136,6 +152,11 @@ a.leaflet-control-layers-toggle {
     max-width: 200px;
     text-align: center;
   }
+}
+
+/* The base under a detail layer must not show through: as `#aaa8` on `#ddd`. */
+.fm-detail .fm-nonpremium-tile {
+  background-color: #c2c2c2;
 }
 
 /*

@@ -58,7 +58,7 @@ const pl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     title: 'Usunąć nagranie?',
     message:
       'Rejestrator odrzuci cały swój ślad. Tej operacji nie można cofnąć. ' +
-      'Jeśli chcesz zachować nagranie, zamiast tego je zakończ.',
+      'Aby zachować nagranie, należy je zamiast tego zakończyć.',
     confirm: 'Usuń',
   },
   setup: {
@@ -99,11 +99,11 @@ const pl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
       'przejęte ani usunięte. Połącz się ponownie i zakończ jeszcze raz.',
     notStored:
       'Nie udało się zapisać nagrania w tej przeglądarce, więc pozostało w ' +
-      'rejestratorze. Masz je w śladach — stamtąd je wyeksportuj lub zapisz.',
+      'rejestratorze. Jest dostępne w śladach — stamtąd można je wyeksportować lub zapisać.',
     notPersisted:
       'Ta przeglądarka nie obiecała zachować swojej pamięci, więc nagranie ' +
-      'pozostało w rejestratorze. Masz je w śladach — wyeksportuj lub zapisz ' +
-      'je, a potem usuń nagranie.',
+      'pozostało w rejestratorze. Jest dostępne w śladach — można je wyeksportować ' +
+      'lub zapisać, a potem usunąć nagranie.',
     needsForeground:
       'Android nie pozwolił rejestratorowi uruchomić się w tle. Otwórz go i ' +
       'zacznij nagrywanie w nim albo pozwól mu działać bez ograniczeń ' +
@@ -128,7 +128,7 @@ const pl: DeepPartialWithRequiredObjects<GpsRecorderMessages> = {
     sourceFused: 'Łączone (GPS, wifi i czujniki)',
     sourceHint:
       'Odbiornik mierzy wysokość przy każdym pomiarze; źródło łączone lepiej ' +
-      'umiejscawia cię wśród budynków i pod drzewami, ale powtarza tę samą ' +
+      'określa pozycję wśród budynków i pod drzewami, ale powtarza tę samą ' +
       'wysokość nawet przez kilka sekund.',
     priority: 'Dokładność',
     priorityHigh: 'Najwyższa (GPS, największe zużycie baterii)',

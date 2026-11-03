@@ -1,14 +1,10 @@
-import { objectsSetFilter } from '@features/objects/model/actions.js';
+import { Text } from '@features/l10n/Text.js';
+import { ObjectFilterChip } from '@features/objects/components/ObjectFilterChip.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
-import {
-  getGenericNameFromOsmElementSync,
-  getOsmMapping,
-} from '@osm/osmNameResolver.js';
-import type { OsmMapping } from '@osm/types.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { useOsmMapping } from '@osm/useOsmMapping.js';
+import { fuzzyMatch } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import clsx from 'clsx';
 import {
   Fragment,
   type ReactElement,
@@ -16,9 +12,14 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Accordion, Table } from 'react-bootstrap';
+import { Accordion, Form, InputGroup, Table } from 'react-bootstrap';
+import { FaSearch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import z from 'zod';
+import {
+  LegendCatalogueSchema,
+  legendTagsName,
+  strippedName,
+} from '../legendCatalogue.js';
 import { useLegendMessages } from '../translations/useLegendMessages.js';
 
 type Item = {
@@ -29,19 +30,19 @@ type Item = {
   }[];
 };
 
+/** Shorter than this a fuzzy query keeps most of the legend, so it isn't run. */
+const minQueryLength = 2;
+
 const fmMapserverUrl = process.env['FM_MAPSERVER_URL'];
 
-const ResSchema = z.array(
-  z.object({
-    id: z.string(),
-    category: z.string(),
-    tags: z.array(z.record(z.string(), z.string())),
-  }),
-);
+type Props = {
+  /** The renderer route the legend is scoped to, as `RENDERER_ROUTES` has it. */
+  variant: string;
+};
 
-export default function OutdoorMapLegend(): ReactElement {
-  const activeObjects = useAppSelector((s) => s.objects.active);
-
+export default function OutdoorMapLegend({
+  variant,
+}: Props): ReactElement | null {
   // The map renders differently by zoom, so the legend is asked for the zoom
   // the user is currently looking at — rounded, because the renderer styles by
   // whole zoom levels and the endpoint rejects anything else outright.
@@ -53,23 +54,29 @@ export default function OutdoorMapLegend(): ReactElement {
 
   const lang = useEffectiveChosenLanguage();
 
-  const [osmMapping, setOsmMapping] = useState<OsmMapping>();
-
-  useEffect(() => {
-    getOsmMapping(lang).then((osmMapping) => setOsmMapping(osmMapping));
-  }, [lang]);
+  const osmMapping = useOsmMapping(lang);
 
   useEffect(() => {
     if (!osmMapping) {
       return;
     }
 
-    fetch(`${fmMapserverUrl}/legend?zoom=${zoom}`)
+    // A zoom change must not be overtaken by the answer for the zoom before it.
+    const ac = new AbortController();
+
+    fetch(
+      `${fmMapserverUrl}/legend?zoom=${zoom}&variant=${encodeURIComponent(variant)}`,
+      { signal: ac.signal },
+    )
       .then((response) =>
         response.status === 200 ? response.json() : undefined,
       )
       .then((data) => {
-        const items = ResSchema.parse(data);
+        if (ac.signal.aborted) {
+          return;
+        }
+
+        const items = LegendCatalogueSchema.parse(data);
 
         const catMap = new Map<string, Item>();
 
@@ -84,12 +91,7 @@ export default function OutdoorMapLegend(): ReactElement {
           i.items.push({
             id: item.id,
             name_w_tags: item.tags.map((tags) => ({
-              name: getGenericNameFromOsmElementSync(
-                tags,
-                'relation',
-                osmMapping.osmTagToNameMapping,
-                osmMapping.colorNames,
-              ),
+              name: legendTagsName(tags, osmMapping),
               tags,
             })),
           });
@@ -98,6 +100,10 @@ export default function OutdoorMapLegend(): ReactElement {
         setLegend([...catMap.values()]);
       })
       .catch((err) => {
+        if (ac.signal.aborted) {
+          return;
+        }
+
         dispatch(
           toastsAdd({
             id: 'outdoorLegend',
@@ -107,141 +113,190 @@ export default function OutdoorMapLegend(): ReactElement {
           }),
         );
       });
-  }, [dispatch, osmMapping, zoom]);
+
+    return () => ac.abort();
+  }, [dispatch, osmMapping, zoom, variant]);
 
   const lm = useLegendMessages();
 
+  const collator = useMemo(() => new Intl.Collator(lang), [lang]);
+
   const orderedLegend = useMemo(() => {
-    const outdoorMap = lm?.outdoorMap;
+    const names = (lm?.outdoorMap ?? {}) as Record<string, string>;
 
-    if (!outdoorMap) {
-      return legend;
-    }
-
-    const order = new Map<string, number>();
-
-    let i = 0;
-
-    for (const key of Object.keys(outdoorMap)) {
-      order.set(key, i++);
-    }
-
-    return [...legend].sort(
+    // Alphabetical, except the catch-all, which belongs after the named ones.
+    return legend.toSorted(
       (a, b) =>
-        (order.get(a.category) ?? Number.MAX_SAFE_INTEGER) -
-        (order.get(b.category) ?? Number.MAX_SAFE_INTEGER),
+        Number(a.category === 'other') - Number(b.category === 'other') ||
+        collator.compare(
+          names[a.category] ?? a.category,
+          names[b.category] ?? b.category,
+        ),
     );
-  }, [legend, lm]);
+  }, [collator, legend, lm]);
+
+  const [query, setQuery] = useState('');
+
+  const categoryName = (category: string) =>
+    (lm?.outdoorMap as Record<string, string>)?.[category] ?? category;
+
+  const filtering = query.trim().length >= minQueryLength;
+
+  const filteredLegend = useMemo(() => {
+    const q = query.trim();
+
+    if (q.length < minQueryLength) {
+      return orderedLegend;
+    }
+
+    const names = (lm?.outdoorMap ?? {}) as Record<string, string>;
+
+    return orderedLegend
+      .map((c) => {
+        // A category matched by its own name shows everything it holds.
+        if (fuzzyMatch(q, names[c.category] ?? c.category)) {
+          return c;
+        }
+
+        const items = c.items.filter(({ name_w_tags }) =>
+          name_w_tags.some(
+            ({ name, tags }) =>
+              fuzzyMatch(q, strippedName(name)) ||
+              Object.entries(tags).some(([k, v]) => fuzzyMatch(q, `${k}=${v}`)),
+          ),
+        );
+
+        return items.length === 0 ? null : { ...c, items };
+      })
+      .filter((c) => c !== null);
+  }, [lm, orderedLegend, query]);
+
+  // A lone category (most overlays) is too short to need search or folding;
+  // nothing is shown while loading, so an overlay's search box doesn't flash.
+  if (orderedLegend.length < 2) {
+    return orderedLegend.length === 0 ? null : (
+      <LegendItems
+        items={orderedLegend[0].items}
+        zoom={zoom}
+        variant={variant}
+      />
+    );
+  }
 
   return (
-    <Accordion>
-      {orderedLegend.map((c: Item, i: number) => (
-        <Accordion.Item key={c.category} eventKey={String(i)}>
-          <Accordion.Header>
-            {(lm?.outdoorMap as Record<string, string>)?.[c.category] ??
-              c.category}
-          </Accordion.Header>
+    <>
+      <InputGroup className="mb-3">
+        <InputGroup.Text>
+          <FaSearch />
+        </InputGroup.Text>
 
-          <Accordion.Body
-            className="d-grid align-items-center row-gap-2 column-gap-3"
-            style={{ gridTemplateColumns: 'auto 1fr' }}
-          >
-            {c.items.map(({ id, name_w_tags }) => (
-              <Fragment key={id}>
-                <div>
-                  <img
-                    alt={name_w_tags.map(({ name }) => name).join(', ')}
-                    src={`${fmMapserverUrl}/legend/${id}?zoom=${zoom}`}
-                    srcSet={[1, 2, 3]
-                      .map(
-                        (s) =>
-                          `${fmMapserverUrl}/legend/${id}?zoom=${zoom}&scale=${s}${
-                            s > 1 ? ` ${s}x` : ''
-                          }`,
-                      )
-                      .join(', ')}
-                  />
-                </div>
+        <Form.Control
+          type="search"
+          value={query}
+          placeholder={lm?.filter}
+          onChange={(e) => setQuery(e.currentTarget.value)}
+        />
+      </InputGroup>
 
-                <div className="d-flex flex-wrap gap-2">
-                  {name_w_tags.map(({ name, tags }, i) => {
-                    const ts = Object.entries(tags).map(
-                      ([k, v]) => `${k}=${v}`,
-                    );
+      {!filtering ? (
+        <Accordion>
+          {filteredLegend.map((c: Item, i: number) => (
+            <Accordion.Item key={c.category} eventKey={String(i)}>
+              <Accordion.Header>{categoryName(c.category)}</Accordion.Header>
 
-                    const activeIndex = activeObjects.findIndex((ao) => {
-                      const aos = ao.split(',');
+              <Accordion.Body>
+                <LegendItems items={c.items} zoom={zoom} variant={variant} />
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+      ) : filteredLegend.length === 0 ? (
+        <p className="text-body-secondary">
+          <Text k="search.noResults" />
+        </p>
+      ) : (
+        filteredLegend.map((c: Item) => (
+          <div key={c.category} className="mb-3">
+            <div className="fw-bold mb-2">{categoryName(c.category)}</div>
 
-                      return (
-                        aos.every((t) => ts.includes(t)) &&
-                        ts.every((t) => aos.includes(t))
-                      );
-                    });
+            <LegendItems items={c.items} zoom={zoom} variant={variant} />
+          </div>
+        ))
+      )}
+    </>
+  );
+}
 
-                    return (
-                      <LongPressTooltip
-                        key={i}
-                        label={
-                          <Table
-                            className="text-left mb-0"
-                            bordered
-                            size="sm"
-                            data-bs-theme={
-                              document.documentElement.dataset['bsTheme'] ===
-                              'light'
-                                ? 'dark'
-                                : 'light'
-                            }
-                          >
-                            <tbody>
-                              {Object.entries(tags).map(([key, value]) => (
-                                <tr key={key}>
-                                  <th>{key}</th>
-                                  <td>{value}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </Table>
-                        }
-                      >
-                        {({ props }) => {
-                          const next =
-                            activeIndex > -1
-                              ? activeObjects.toSpliced(activeIndex, 1)
-                              : [...activeObjects, ts.join(',')];
+function LegendItems({
+  items,
+  zoom,
+  variant,
+}: {
+  items: Item['items'];
+  zoom: number;
+  variant: string;
+}): ReactElement {
+  const query = `zoom=${zoom}&variant=${encodeURIComponent(variant)}`;
 
-                          return (
-                            <a
-                              className={clsx(
-                                'px-2 rounded',
-                                activeIndex > -1
-                                  ? 'bg-primary text-light'
-                                  : 'bg-body-secondary',
-                              )}
-                              href={
-                                '/#objects=' +
-                                encodeURIComponent(next.join(';'))
-                              }
-                              onClick={(e) => {
-                                e.preventDefault();
+  return (
+    <div
+      className="d-grid align-items-center row-gap-2 column-gap-3"
+      style={{ gridTemplateColumns: 'auto 1fr' }}
+    >
+      {items.map(({ id, name_w_tags }) => (
+        <Fragment key={id}>
+          <div>
+            <img
+              alt={name_w_tags.map(({ name }) => name).join(', ')}
+              src={`${fmMapserverUrl}/legend/${id}?${query}`}
+              srcSet={[1, 2, 3]
+                .map(
+                  (s) =>
+                    `${fmMapserverUrl}/legend/${id}?${query}&scale=${s}${
+                      s > 1 ? ` ${s}x` : ''
+                    }`,
+                )
+                .join(', ')}
+            />
+          </div>
 
-                                dispatch(objectsSetFilter(next));
-                              }}
-                              {...props}
-                            >
-                              {name?.replace(/\s*\*\s*/g, '') || '???'}
-                            </a>
-                          );
-                        }}
-                      </LongPressTooltip>
-                    );
-                  })}
-                </div>
-              </Fragment>
-            ))}
-          </Accordion.Body>
-        </Accordion.Item>
+          <div className="d-flex flex-wrap gap-2">
+            {name_w_tags.map(({ name, tags }, i) => {
+              const ts = Object.entries(tags).map(([k, v]) => `${k}=${v}`);
+
+              return (
+                <ObjectFilterChip
+                  key={i}
+                  filterKey={ts.join(',')}
+                  tooltip={
+                    <Table
+                      className="text-left mb-0"
+                      bordered
+                      size="sm"
+                      data-bs-theme={
+                        document.documentElement.dataset['bsTheme'] === 'light'
+                          ? 'dark'
+                          : 'light'
+                      }
+                    >
+                      <tbody>
+                        {Object.entries(tags).map(([key, value]) => (
+                          <tr key={key}>
+                            <th>{key}</th>
+                            <td>{value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  }
+                >
+                  {strippedName(name) || '???'}
+                </ObjectFilterChip>
+              );
+            })}
+          </div>
+        </Fragment>
       ))}
-    </Accordion>
+    </div>
   );
 }

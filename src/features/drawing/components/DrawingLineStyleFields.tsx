@@ -1,8 +1,10 @@
+import { Text } from '@features/l10n/Text.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import type { LineCap, LineJoin } from '../model/actions/drawingLineActions.js';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
+import { type Mixed, MixedField } from './MixedField.js';
 
 type Props = {
   color: string;
@@ -19,6 +21,10 @@ type Props = {
   onLineJoinChange?: (lineJoin: LineJoin) => void;
   dashArray?: number[];
   onDashArrayChange?: (dashArray: number[]) => void;
+  /** Fields that features edited together differ in. */
+  mixed?: Mixed;
+  /** Off where the holder shows one of its own. */
+  preview?: boolean;
 };
 
 // Each field is shown only when its change handler is given, so a consumer that
@@ -38,6 +44,8 @@ export function DrawingLineStyleFields({
   onLineJoinChange,
   dashArray,
   onDashArrayChange,
+  mixed,
+  preview = true,
 }: Props): ReactElement {
   const dm = useDrawingMessages();
 
@@ -57,8 +65,7 @@ export function DrawingLineStyleFields({
   }, [dashArray]);
 
   function handleInputChange(index: number, value: string) {
-    const newInputs = [...inputs];
-    newInputs[index] = value;
+    const newInputs = inputs.with(index, value);
     if (index === inputs.length - 1 && value !== '') {
       newInputs.push('');
     }
@@ -69,7 +76,7 @@ export function DrawingLineStyleFields({
 
   function handleInputBlur(index: number) {
     if (inputs[index] === '' && index !== inputs.length - 1) {
-      setInputs(inputs.filter((_, i) => i !== index));
+      setInputs(inputs.toSpliced(index, 1));
     }
   }
 
@@ -103,123 +110,155 @@ export function DrawingLineStyleFields({
   return (
     <>
       <Form.Group controlId="color" className="mt-3">
-        <Form.Label>{dm?.edit.color}</Form.Label>
+        <Form.Label>
+          <Text m={dm} k="edit.color" />
+        </Form.Label>
 
-        <RgbaColorPicker value={color} onChange={onColorChange} />
+        <MixedField field="color" mixed={mixed}>
+          <RgbaColorPicker value={color} onChange={onColorChange} />
+        </MixedField>
       </Form.Group>
 
       {onFillColorChange && (
         <Form.Group controlId="fillColor" className="mt-3">
-          <Form.Label>{dm?.edit.fillColor}</Form.Label>
+          <Form.Label>
+            <Text m={dm} k="edit.fillColor" />
+          </Form.Label>
 
-          <RgbaColorPicker
-            value={fillColor ?? color}
-            onChange={onFillColorChange}
-          />
+          <MixedField field="fillColor" mixed={mixed}>
+            <RgbaColorPicker
+              value={fillColor ?? color}
+              onChange={onFillColorChange}
+            />
+          </MixedField>
         </Form.Group>
       )}
 
       <Form.Group controlId="width" className="mt-3">
-        <Form.Label>{dm?.edit.width}</Form.Label>
+        <Form.Label>
+          <Text m={dm} k="edit.width" />
+        </Form.Label>
 
-        <Form.Control
-          type="number"
-          value={width}
-          min={1}
-          max={99}
-          step={widthStep}
-          isInvalid={invalidWidth}
-          onChange={(e) => onWidthChange(e.currentTarget.value)}
-        />
+        <MixedField field="width" mixed={mixed}>
+          <Form.Control
+            type="number"
+            value={width}
+            min={1}
+            max={99}
+            step={widthStep}
+            isInvalid={invalidWidth}
+            onChange={(e) => onWidthChange(e.currentTarget.value)}
+          />
+        </MixedField>
       </Form.Group>
 
       {onLineCapChange && (
         <Form.Group controlId="lineCap" className="mt-3">
-          <Form.Label>{dm?.edit.lineCap}</Form.Label>
+          <Form.Label>
+            <Text m={dm} k="edit.lineCap" />
+          </Form.Label>
 
-          <Form.Select
-            value={lineCap}
-            onChange={(e) => onLineCapChange(e.currentTarget.value as LineCap)}
-          >
-            <option value="round">{dm?.edit.lineCapRound}</option>
-            <option value="butt">{dm?.edit.lineCapButt}</option>
-            <option value="square">{dm?.edit.lineCapSquare}</option>
-          </Form.Select>
+          <MixedField field="lineCap" mixed={mixed}>
+            <Form.Select
+              value={lineCap}
+              onChange={(e) =>
+                onLineCapChange(e.currentTarget.value as LineCap)
+              }
+            >
+              <option value="round">{dm?.edit.lineCapRound}</option>
+              <option value="butt">{dm?.edit.lineCapButt}</option>
+              <option value="square">{dm?.edit.lineCapSquare}</option>
+            </Form.Select>
+          </MixedField>
         </Form.Group>
       )}
 
       {onLineJoinChange && (
         <Form.Group controlId="lineJoin" className="mt-3">
-          <Form.Label>{dm?.edit.lineJoin}</Form.Label>
+          <Form.Label>
+            <Text m={dm} k="edit.lineJoin" />
+          </Form.Label>
 
-          <Form.Select
-            value={lineJoin}
-            onChange={(e) =>
-              onLineJoinChange(e.currentTarget.value as LineJoin)
-            }
-          >
-            <option value="round">{dm?.edit.lineJoinRound}</option>
-            <option value="miter">{dm?.edit.lineJoinMiter}</option>
-            <option value="bevel">{dm?.edit.lineJoinBevel}</option>
-          </Form.Select>
+          <MixedField field="lineJoin" mixed={mixed}>
+            <Form.Select
+              value={lineJoin}
+              onChange={(e) =>
+                onLineJoinChange(e.currentTarget.value as LineJoin)
+              }
+            >
+              <option value="round">{dm?.edit.lineJoinRound}</option>
+              <option value="miter">{dm?.edit.lineJoinMiter}</option>
+              <option value="bevel">{dm?.edit.lineJoinBevel}</option>
+            </Form.Select>
+          </MixedField>
         </Form.Group>
       )}
 
       <Form.Group controlId="dashArray" className="mt-3">
         {onDashArrayChange && (
           <>
-            <Form.Label>{dm?.edit.dashArray}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="edit.dashArray" />
+            </Form.Label>
 
-            <div className="d-flex flex-wrap gap-1 mb-2">
-              {inputs.map((val, i) => (
-                <Form.Control
-                  key={i}
-                  type="number"
-                  min={0}
-                  value={val}
-                  style={{ width: '4rem' }}
-                  onChange={(e) => handleInputChange(i, e.currentTarget.value)}
-                  onBlur={() => handleInputBlur(i)}
-                />
-              ))}
+            <div className="mb-2">
+              <MixedField field="dashArray" mixed={mixed}>
+                <div className="d-flex flex-wrap gap-1">
+                  {inputs.map((val, i) => (
+                    <Form.Control
+                      key={i}
+                      type="number"
+                      min={0}
+                      value={val}
+                      style={{ width: '4rem' }}
+                      onChange={(e) =>
+                        handleInputChange(i, e.currentTarget.value)
+                      }
+                      onBlur={() => handleInputBlur(i)}
+                    />
+                  ))}
+                </div>
+              </MixedField>
             </div>
           </>
         )}
 
-        <svg
-          ref={svgRef}
-          width="100%"
-          height={previewHeight}
-          style={{ display: 'block' }}
-        >
-          {svgWidth > 0 &&
-            (onFillColorChange ? (
-              <rect
-                x={inset}
-                y={inset}
-                width={svgWidth - 2 * inset}
-                height={previewHeight - 2 * inset}
-                fill={fillColor || color}
-                stroke={color}
-                strokeWidth={widthNum}
-                strokeLinecap={lineCap}
-                strokeLinejoin={lineJoin}
-                strokeDasharray={dashArrayValue}
-              />
-            ) : (
-              <line
-                x1={inset}
-                y1={previewHeight / 2}
-                x2={svgWidth - inset}
-                y2={previewHeight / 2}
-                stroke={color}
-                strokeWidth={widthNum}
-                strokeLinecap={lineCap}
-                strokeLinejoin={lineJoin}
-                strokeDasharray={dashArrayValue}
-              />
-            ))}
-        </svg>
+        {preview && (
+          <svg
+            ref={svgRef}
+            width="100%"
+            height={previewHeight}
+            style={{ display: 'block' }}
+          >
+            {svgWidth > 0 &&
+              (onFillColorChange ? (
+                <rect
+                  x={inset}
+                  y={inset}
+                  width={svgWidth - 2 * inset}
+                  height={previewHeight - 2 * inset}
+                  fill={fillColor || color}
+                  stroke={color}
+                  strokeWidth={widthNum}
+                  strokeLinecap={lineCap}
+                  strokeLinejoin={lineJoin}
+                  strokeDasharray={dashArrayValue}
+                />
+              ) : (
+                <line
+                  x1={inset}
+                  y1={previewHeight / 2}
+                  x2={svgWidth - inset}
+                  y2={previewHeight / 2}
+                  stroke={color}
+                  strokeWidth={widthNum}
+                  strokeLinecap={lineCap}
+                  strokeLinejoin={lineJoin}
+                  strokeDasharray={dashArrayValue}
+                />
+              ))}
+          </svg>
+        )}
       </Form.Group>
     </>
   );

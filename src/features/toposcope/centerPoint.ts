@@ -1,16 +1,19 @@
 import type { RootState } from '@app/store/store.js';
+import { pointToFeature } from '@features/dataViewer/drawingWire.js';
 import {
-  type DrawingPoint,
-  drawingPointAdd,
-  drawingPointChangePosition,
-} from '@features/drawing/model/actions/drawingPointActions.js';
+  dataViewerAddFeatures,
+  dataViewerMoveVertex,
+} from '@features/dataViewer/model/actions.js';
 import { poiSpec } from '@shared/drawingIcons.js';
+import { featureDataProps } from '@shared/featureProperties.js';
 import type { LatLon } from '@shared/types/common.js';
+import type { Feature, FeatureCollection, Point } from 'geojson';
+import { createSelector } from 'reselect';
 
 /**
- * The property that makes a drawn point the dial's centre, and the value it
- * takes. A property rather than the icon or the position: both of those are the
- * user's to change, and neither should be able to take the toposcope apart —
+ * The property that makes a point the dial's centre, and the value it takes. A
+ * property rather than the icon or the position: both of those are the user's
+ * to change, and neither should be able to take the toposcope apart —
  * restyling a marker or drawing another point in front of it now means nothing
  * to the dial.
  *
@@ -37,43 +40,67 @@ export const CENTER_ICON = poiSpec(CENTER_POI);
  */
 export const CENTER_LABEL = '{location}';
 
-export function isToposcopeCenter(point: DrawingPoint): boolean {
-  return point.props?.[CENTER_PROP]?.trim().toLowerCase() === CENTER_PROP_VALUE;
+/** A point of the map's features, where it sits among them. */
+export type IndexedPoint = {
+  index: number;
+  coords: LatLon;
+  feature: Feature<Point>;
+};
+
+/** The map's points, each with its index; the dial's rays are drawn to them. */
+export const pointFeaturesSelector = createSelector(
+  (state: RootState) => state.trackViewer.trackGeojson,
+  (fc: FeatureCollection | null): IndexedPoint[] =>
+    (fc?.features ?? []).flatMap((feature, index) =>
+      feature.geometry.type === 'Point'
+        ? [
+            {
+              index,
+              coords: {
+                lat: feature.geometry.coordinates[1]!,
+                lon: feature.geometry.coordinates[0]!,
+              },
+              feature: feature as Feature<Point>,
+            },
+          ]
+        : [],
+    ),
+);
+
+export function isToposcopeCenter(feature: Feature): boolean {
+  return (
+    feature.geometry.type === 'Point' &&
+    featureDataProps(feature.properties)[CENTER_PROP]?.trim().toLowerCase() ===
+      CENTER_PROP_VALUE
+  );
 }
 
 /**
- * The drawn point the dial stands on, and where it sits among the others — the
- * first one marked, so a second marked point is simply ignored rather than
- * making the dial ambiguous. Its index is what the rays are told apart by, and
- * is read fresh each time rather than remembered, since every edit renumbers.
+ * The point the dial stands on — the first one marked, so a second marked
+ * point is simply ignored rather than making the dial ambiguous. Its index is
+ * what the rays are told apart by, and is read fresh each time rather than
+ * remembered, since every edit renumbers.
  *
  * Removing the property, or the point, ends the toposcope.
  */
-export function toposcopeCenterSelector(
-  state: RootState,
-): { index: number; point: DrawingPoint } | undefined {
-  const index = state.drawingPoints.points.findIndex(isToposcopeCenter);
-
-  return index === -1
-    ? undefined
-    : { index, point: state.drawingPoints.points[index]! };
-}
+export const toposcopeCenterSelector = createSelector(
+  pointFeaturesSelector,
+  (points): IndexedPoint | undefined =>
+    points.find(({ feature }) => isToposcopeCenter(feature)),
+);
 
 /** A fresh centre standing at `coords`, marked, styled and labelled as one. */
-export function makeToposcopeCenter(
-  state: RootState,
-  coords: LatLon,
-): DrawingPoint {
+export function makeToposcopeCenter(state: RootState, coords: LatLon): Feature {
   const { color, markerType } = state.drawingSettings.style;
 
-  return {
+  return pointToFeature({
     coords,
     color,
     markerType,
     icon: CENTER_ICON,
     label: CENTER_LABEL,
     props: { [CENTER_PROP]: CENTER_PROP_VALUE },
-  };
+  });
 }
 
 /**
@@ -85,9 +112,13 @@ export function placeToposcopeCenter(state: RootState, coords: LatLon) {
   const center = toposcopeCenterSelector(state);
 
   return center
-    ? drawingPointChangePosition({ index: center.index, coords })
-    : drawingPointAdd({
-        ...makeToposcopeCenter(state, coords),
-        id: state.drawingPoints.points.length,
+    ? dataViewerMoveVertex({
+        index: center.index,
+        part: 0,
+        vertex: 0,
+        position: [coords.lon, coords.lat],
+      })
+    : dataViewerAddFeatures({
+        features: [makeToposcopeCenter(state, coords)],
       });
 }

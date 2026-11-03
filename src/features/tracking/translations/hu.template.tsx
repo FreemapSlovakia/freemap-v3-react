@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -20,16 +20,16 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: 'Figyelt eszközök kezelése ismerősei pozíciójának megismeréséhez.',
     modifyTitle: (name) => (
       <>
-        Figyelt eszköz módosításaí <i>{name}</i>
+        Figyelt eszköz módosítása <i>{name}</i>
       </>
     ),
     createTitle: (name) => (
       <>
-        <i>{name}</i> készülék figyelése
+        Új figyelt eszköz <i>{name}</i>
       </>
     ),
     storageWarning:
-      'Figyelem, az eszközök listája csak az oldal URL-jében jelenik meg. Ha el szeretnéd menteni, használd a „Saját térképek” funkciót.',
+      'Figyelem, az eszközök listája csak az oldal URL-jében jelenik meg. Ha el szeretné menteni, használja a „Saját térképek” funkciót.',
   },
   accessToken: {
     token: 'Figyelőkód',
@@ -58,7 +58,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Figyelőkód hozzáadása a(z) <i>{deviceName}</i> készülékhez
+        Új figyelőkód a(z) <i>{deviceName}</i> készülékhez
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -83,7 +83,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Traccar QR-kód',
     button: 'Készülékeim',
     modalTitle: 'Követett készülékeim',
-    createTitle: 'Követendő készülék létrehozása',
+    createTitle: 'Új követett készülék',
     watchTokens: 'Kódok megtekintése',
     watchPrivately: 'Privát figyelés',
     watch: 'Figyelés',
@@ -105,7 +105,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
           nekik egy figyelőkódot (amelyet a <FaKey /> ikonnal hozhat létre).
         </p>
         <hr />
-        <DocumentLink doc="tracking">A követett eszköz beállítása</DocumentLink>
+        <ManualLink chapter="tracking">A követett eszköz beállítása</ManualLink>
       </>
     ),
   },

@@ -12,19 +12,32 @@ type GuideSection = {
 
 let guidePromise: Promise<string> | undefined;
 
+function fetchText(path: string): Promise<string> {
+  return fetch(new URL(path, window.location.href)).then((response) => {
+    if (!response.ok) {
+      throw new Error(`Fetching ${path} failed with ${response.status}.`);
+    }
+
+    return response.text();
+  });
+}
+
 /**
- * `static/llms.txt`, the hand-maintained description of what the app can do.
- * Deliberately fetched without the caller's abort signal: the promise is shared
- * by everyone waiting on it, and one agent giving up would fail the rest.
+ * `static/llms.txt` plus the reference files it lists, concatenated: the
+ * hand-maintained description of what the app can do. Deliberately fetched
+ * without the caller's abort signal — the promise is shared by everyone waiting
+ * on it, and one agent giving up would fail the rest.
  */
 function loadGuide(): Promise<string> {
-  guidePromise ??= fetch(new URL('/llms.txt', window.location.href))
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Fetching the guide failed with ${response.status}.`);
-      }
+  guidePromise ??= fetchText('/llms.txt')
+    .then(async (index) => {
+      // llms.txt itself only indexes: the sections live in the files its
+      // listing links, and their heading levels continue the index's.
+      const parts = [
+        ...index.matchAll(/^- \[[^\]]+]\((\/llms-[\w-]+\.md)\)/gm),
+      ].map(([, path]) => path);
 
-      return response.text();
+      return [index, ...(await Promise.all(parts.map(fetchText)))].join('\n\n');
     })
     // An aborted or failed fetch must not become the cached answer.
     .catch((err) => {

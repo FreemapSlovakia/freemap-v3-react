@@ -20,3 +20,12 @@ export function useRegionNames(): Intl.DisplayNames {
 
   return names;
 }
+
+/** A country's name, in either case; the code itself where it is no region. */
+export function regionName(names: Intl.DisplayNames, code: string): string {
+  try {
+    return names.of(code.toUpperCase()) ?? code;
+  } catch {
+    return code;
+  }
+}

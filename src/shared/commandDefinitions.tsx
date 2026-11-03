@@ -8,18 +8,28 @@ import {
   DocumentSchema,
   documentShow,
 } from '@features/documents/model/actions.js';
-import { getLegendLayers } from '@features/legend/legendLayers.js';
+import { hasLegend } from '@features/legend/legendLayers.js';
 import {
   type LayerSettings,
+  mapPresetToggle,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
+import type { LayerKind } from '@features/map/model/layerKind.js';
+import type { MapPreset } from '@features/map/model/mapPreset.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { Chord } from '@shared/components/Chord.js';
+import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import type { MapLayerItemDef } from '@shared/components/MapLayerItem.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
+import {
+  effectiveShortcut,
+  isLayerInstalled,
+  userShortcuts,
+} from '@shared/mapLibrary/installed.js';
 import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
+  FaBook,
   FaChartArea,
   FaCode,
   FaDatabase,
@@ -35,10 +45,11 @@ import {
   FaSlidersH,
   FaUser,
 } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
 import { getDocuments } from '@/documents/index.js';
+import { getManualChapters } from '@/manual/index.js';
 import type { Messages } from '../translations/messagesInterface.js';
-import { type CustomLayerDef, integratedLayerDefs } from './mapDefinitions.js';
+import { layerName } from './layerName.js';
+import type { CustomLayerDef, MapIndexEntry } from './mapDefinitions.js';
 import { isToolAvailable, toolDefinitions } from './toolDefinitions.js';
 
 /**
@@ -48,7 +59,7 @@ import { isToolAvailable, toolDefinitions } from './toolDefinitions.js';
 export type Command = {
   /** Names the row's synonyms in `search.commands.keywords`, and what Matomo records. */
   id: string;
-  kind: 'function' | 'map';
+  kind: 'function' | 'map' | 'manual';
   /** A map row is drawn by `MapLayerItem`, so it carries its marks instead of an icon. */
   layerDef?: MapLayerItemDef;
   icon?: ReactNode;
@@ -81,7 +92,12 @@ export type CommandContext = {
   /** The layers that are on. */
   layers: string[];
   customLayers: CustomLayerDef[];
+  presets: MapPreset[];
+  /** `presetKindsSelector`'s answer. */
+  presetKinds: Readonly<Record<string, LayerKind>>;
   layersSettings: Record<string, LayerSettings>;
+  /** `libraryIndexSelector`'s answer: built-in maps and the catalog maps known. */
+  libraryIndex: MapIndexEntry[];
   embedFeatures: string[];
 };
 
@@ -154,28 +170,19 @@ const modalCommands: ModalCommand[] = [
     requiresOnline: true,
     // The modal describes the layers that are on, so with none of them on it
     // would open empty.
-    available: (ctx) => {
-      const legendLayers = getLegendLayers(ctx.customLayers);
-
-      return ctx.layers.some((layer) => legendLayers.has(layer));
-    },
+    available: (ctx) =>
+      hasLegend(ctx.layers, ctx.libraryIndex, ctx.customLayers),
   },
   {
     id: 'about',
     icon: <FaRegAddressCard />,
     label: (m) => m.mainMenu.contacts,
   },
-  // Both write the settings, which a signed-in account keeps on the server.
+  // These write the settings, which a signed-in account keeps on the server.
   {
-    id: 'map-layers-config',
+    id: 'map-manager',
     icon: <FaLayerGroup />,
-    label: (m) => m.mapLayers.layersConfiguration,
-    offline: (ctx) => !ctx.canSaveSettings,
-  },
-  {
-    id: 'custom-maps',
-    icon: <MdDashboardCustomize />,
-    label: (m) => m.mapLayers.customMaps,
+    label: (m) => m.mapLayers.mapManager,
     offline: (ctx) => !ctx.canSaveSettings,
   },
   {
@@ -265,6 +272,27 @@ export function getCommands(ctx: CommandContext): Command[] {
       action: clearMapFeatures(),
     });
 
+    add({
+      id: 'modal-manual',
+      kind: 'function',
+      icon: <FaBook />,
+      label: m.mainMenu.manual,
+      href: '#show=manual',
+      action: setActiveModal({ type: 'manual' }),
+    });
+
+    for (const chapter of getManualChapters(ctx.language)) {
+      add({
+        id: `manual-${chapter.key}`,
+        // Its own caption: a chapter is often named like the function it covers.
+        kind: 'manual',
+        icon: chapter.icon ?? <FaBook />,
+        label: chapter.title,
+        href: `#show=manual/${chapter.key}`,
+        action: setActiveModal({ type: 'manual', chapter: chapter.key }),
+      });
+    }
+
     for (const doc of getDocuments(ctx.language)) {
       const key = DocumentSchema.safeParse(doc.key);
 
@@ -284,23 +312,20 @@ export function getCommands(ctx: CommandContext): Command[] {
   }
 
   if (!embedded || !ctx.embedFeatures.includes('noMapSwitch')) {
-    for (const def of integratedLayerDefs) {
-      const label = m.mapLayers.letters[def.type];
+    const taken = userShortcuts(ctx.layersSettings, ctx.customLayers);
 
-      // `i` is the one layer that hides rather than shows what it names, so
-      // switching it on here would read as the opposite of what it does.
+    for (const def of ctx.libraryIndex) {
+      const label = layerName(def, m);
+
       if (
         !label ||
-        def.type === 'i' ||
-        (def.layerPreview && !ctx.canPreviewLayers)
+        (def.layerPreview && !ctx.canPreviewLayers) ||
+        !isLayerInstalled(ctx.layersSettings, def.type)
       ) {
         continue;
       }
 
-      const shortcut =
-        ctx.layersSettings[def.type]?.shortcut === undefined
-          ? def.shortcut
-          : ctx.layersSettings[def.type].shortcut;
+      const shortcut = effectiveShortcut(ctx.layersSettings, def, taken);
 
       add({
         id: `layer-${def.type}`,
@@ -326,6 +351,21 @@ export function getCommands(ctx: CommandContext): Command[] {
         layerDef: def,
         label: def.name,
         action: mapToggleLayer({ type: def.type, enable: true }),
+      });
+    }
+
+    for (const preset of ctx.presets) {
+      add({
+        id: `preset-${preset.id}`,
+        kind: 'map',
+        layerDef: {
+          type: preset.id,
+          layer: ctx.presetKinds[preset.id] ?? 'overlay',
+          name: preset.name,
+          icon: <CustomMapGlyph spec={preset.iconSpec} kind="preset" />,
+        },
+        label: preset.name,
+        action: mapPresetToggle({ id: preset.id, enable: true }),
       });
     }
   }

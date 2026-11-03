@@ -1,6 +1,9 @@
 import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
+import {
+  dataViewerAddFeatures,
+  dataViewerSetData,
+} from '@features/dataViewer/model/actions.js';
 import { soleTrackLine } from '@features/dataViewer/trackSelection.js';
 import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import bbox from '@turf/bbox';
@@ -33,7 +36,23 @@ export const dataViewerSetTrackDataProcessor: Processor<
       : undefined;
 
     if (line) {
-      dispatch(selectFeature({ type: 'data-viewer', id: line.index }));
+      dispatch(selectFeature({ type: 'feature', id: line.index }));
+    }
+  },
+};
+
+/** Selects the first of the features added, where asked to. */
+export const dataViewerAddFeaturesProcessor: Processor<
+  typeof dataViewerAddFeatures
+> = {
+  actionCreator: dataViewerAddFeatures,
+  handle: ({ action, dispatch, getState }) => {
+    const count = getState().trackViewer.trackGeojson?.features.length ?? 0;
+
+    const { features, select } = action.payload;
+
+    if (select && features.length > 0) {
+      dispatch(selectFeature({ type: 'feature', id: count - features.length }));
     }
   },
 };

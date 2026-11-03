@@ -1,4 +1,5 @@
 import { elevationSetSettings } from '@features/elevationChart/model/actions.js';
+import { Text } from '@features/l10n/Text.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
@@ -50,7 +51,7 @@ export function SteepnessScaleSlider({
       }}
     >
       <Form.Label className="mb-1 small d-flex justify-content-between gap-2">
-        {cm?.steepnessScale ?? '…'}
+        <Text m={cm} k="steepnessScale" />
         <span className="text-body-secondary">
           ±{Math.round(scale * 100)}&nbsp;%
         </span>

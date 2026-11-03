@@ -7,28 +7,35 @@ import {
 } from '@features/auth/model/actions.js';
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { loadMyMapsMessages } from '@features/myMaps/translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '@features/myMaps/translations/useMyMapsMessages.js';
 import { PurchasesSection } from '@features/purchases/components/PurchasesSection.js';
 import { usePurchasesMessages } from '@features/purchases/translations/usePurchasesMessages.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useCallback, useEffect } from 'react';
-import { Accordion, Button, Modal } from 'react-bootstrap';
+import { Accordion, Modal } from 'react-bootstrap';
 import {
   FaAddressCard,
   FaEraser,
+  FaKey,
   FaShoppingBasket,
   FaSignOutAlt,
-  FaTimes,
   FaUser,
   FaUserCircle,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { AppTokensSection } from './AppTokensSection.js';
 import { AuthProvidersSection } from './AuthProvidersSection.js';
 import { PersonalInfoSection } from './PersonalInfoSection.js';
 
@@ -89,28 +96,25 @@ export default function AccountModal({ show }: Props): ReactElement | null {
     close();
   };
 
-  const handleDeleteClick = () => {
-    dispatch(setActiveModal(null));
+  const handleDeleteClick = async () => {
+    // Awaited rather than shown empty, like the logout warning above: a dialog
+    // that asks for something irreversible has to say what it is asking.
+    const amm = am ?? (await loadAuthMessages(language));
 
-    dispatch(
-      toastsAdd({
-        id: 'account.delete',
-        messageKey: 'account.deleteWarning',
-        messageLoader: loadAuthMessages,
-        style: 'danger',
-        actions: [
-          {
-            nameKey: 'general.delete',
-            variant: 'danger',
-            action: authDeleteAccount(),
-          },
-          {
-            nameKey: 'general.cancel',
-            variant: 'dark',
-          },
-        ],
-      }),
-    );
+    if (
+      !(await confirm({
+        title: amm.account.delete,
+        message: amm.account.deleteWarning,
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      }))
+    ) {
+      return;
+    }
+
+    dispatch(authDeleteAccount());
+
+    close();
   };
 
   useDocumentTitle(show ? m?.mainMenu.account : undefined);
@@ -128,18 +132,19 @@ export default function AccountModal({ show }: Props): ReactElement | null {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaUser /> {m?.mainMenu.account}
+          <FaUser /> <Text k="mainMenu.account" />
         </Modal.Title>
+        <ManualHeaderButton chapter="account" />
       </Modal.Header>
 
       <Modal.Body className="bg-body-tertiary">
         <OfflineAlert />
 
-        <Accordion defaultActiveKey="payments">
+        <Accordion>
           <Accordion.Item eventKey="payments">
             <Accordion.Header>
               <span>
-                <FaShoppingBasket /> {pm?.purchases}
+                <FaShoppingBasket /> <Text m={pm} k="purchases" />
               </span>
             </Accordion.Header>
 
@@ -151,7 +156,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="personal">
             <Accordion.Header>
               <span>
-                <FaAddressCard /> {am?.account.personalInfo}
+                <FaAddressCard /> <Text m={am} k="account.personalInfo" />
               </span>
             </Accordion.Header>
 
@@ -163,7 +168,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           <Accordion.Item eventKey="accounts">
             <Accordion.Header>
               <span>
-                <FaUserCircle /> {am?.account.authProviders}
+                <FaUserCircle /> <Text m={am} k="account.authProviders" />
               </span>
             </Accordion.Header>
 
@@ -171,29 +176,43 @@ export default function AccountModal({ show }: Props): ReactElement | null {
               <AuthProvidersSection />
             </Accordion.Body>
           </Accordion.Item>
+
+          <Accordion.Item eventKey="appTokens">
+            <Accordion.Header>
+              <span>
+                <FaKey /> <Text m={am} k="appTokens.title" />
+              </span>
+            </Accordion.Header>
+
+            <Accordion.Body>
+              <AppTokensSection />
+            </Accordion.Body>
+          </Accordion.Item>
         </Accordion>
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {/* Logging out clears what the account left in this browser — offline
             maps, queued saves, the cached app shell — and the server has to
             answer for the session to end at all, so it waits for a connection. */}
-        <Button
+        <FmFooterButton
           variant="secondary"
           disabled={!online}
           onClick={handleLogoutClick}
-        >
-          <FaSignOutAlt /> {m?.mainMenu.logOut}
-        </Button>
+          icon={<FaSignOutAlt />}
+          label={m?.mainMenu.logOut}
+        />
 
-        <Button variant="danger" disabled={!online} onClick={handleDeleteClick}>
-          <FaEraser /> {am?.account.delete}
-        </Button>
+        <FmFooterButton
+          variant="danger"
+          disabled={!online}
+          onClick={handleDeleteClick}
+          icon={<FaEraser />}
+          label={am?.account.delete}
+        />
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

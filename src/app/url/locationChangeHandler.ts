@@ -1,26 +1,26 @@
 import {
   type ChangesetParams,
+  changesetsInspect,
   changesetsSet,
   changesetsSetParams,
 } from '@features/changesets/model/actions.js';
 import {
+  VERBATIM_KEYS,
+  type Verbatim,
+  type WireItem,
+  type WireVertex,
+} from '@features/dataViewer/drawingWire.js';
+import {
   dataViewerColorizeTrackBy,
-  dataViewerDownloadTrack,
-  dataViewerGpxLoad,
-  dataViewerRestoreStored,
   dataViewerSetColorizeLegend,
   dataViewerSetStyle,
 } from '@features/dataViewer/model/actions.js';
-import {
-  drawingLineSetLines,
-  type Line,
-  type LineCap,
-  type LineJoin,
-  toWireHoleIndexes,
+import type {
+  LineCap,
+  LineJoin,
 } from '@features/drawing/model/actions/drawingLineActions.js';
 import {
   type DrawingProps,
-  drawingPointSetAll,
   normalizeProps,
 } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
@@ -52,11 +52,25 @@ import {
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
+import { mapRefocus, mapSetCustomLayers } from '@features/map/model/actions.js';
 import {
-  mapRefocus,
-  mapSetCustomLayers,
-  mapSetShading,
-} from '@features/map/model/actions.js';
+  type LayerSetup,
+  withLoadedConfig,
+} from '@features/map/model/layerSetup.js';
+import {
+  parsePresetParams,
+  parseSetup,
+  presetUrlParts,
+  SETUP_PARAM_PREFIX,
+  sameInLink,
+  serializeSetup,
+} from '@features/map/model/layerSetupUrl.js';
+import {
+  adoptPresets,
+  type MapPreset,
+  presetIdOf,
+  presetItem,
+} from '@features/map/model/mapPreset.js';
 import {
   type MapRestore,
   mapsRestore,
@@ -66,30 +80,31 @@ import {
   objectsSetStyle,
 } from '@features/objects/model/actions.js';
 import { osmLoad } from '@features/osm/model/osmActions.js';
+import { selectedOsmNoteId } from '@features/osmNotes/model/selectors.js';
 import {
   panoramaClear,
   panoramaPick,
   panoramaSetAzimuth,
   panoramaSetRenderAz,
   panoramaSetSettings,
+  panoramaSetSkyDate,
 } from '@features/panorama/model/actions.js';
 import {
   FOV_FULL,
   isFullTurn,
 } from '@features/panorama/model/settingsReducer.js';
 import {
+  DEFAULT_PANORAMA_SKY,
+  parsePanoramaDate,
   parsePanoramaFov,
+  parsePanoramaSky,
   parsePanoramaTilt,
   parsePanoramaViewpoint,
   serializePanoramaTilt,
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
-import {
-  type ColorStop,
-  type Color as ColorType,
-  type ShadingComponent,
-  serializeShading,
-} from '@features/parameterizedShading/model/Shading.js';
+import { localToday } from '@features/panorama/sky/track.js';
+import { parseShading } from '@features/parameterizedShading/model/Shading.js';
 import { isPremium } from '@features/premium/premium.js';
 import {
   type RoutePoint,
@@ -130,10 +145,12 @@ import {
   type ColorizingMode,
   ColorizingModeSchema,
 } from '@shared/colorizers/index.js';
+import { isDataKey } from '@shared/featureProperties.js';
 import { isLanguage } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
-  integratedLayerDefMap,
+  isNamedMapDef,
+  SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
 import {
   isMapClickTool,
@@ -150,11 +167,7 @@ import {
   type OsmFeatureId,
   osmElementTypes,
 } from '@shared/types/featureId.js';
-import {
-  serializeDrawingLine,
-  serializeDrawingPoint,
-} from '@shared/urlSerialization.js';
-import Color from 'color';
+import type { TypedValue } from '@shared/urlSerialization.js';
 import type { Dispatch } from 'redux';
 import {
   closeTool,
@@ -169,9 +182,13 @@ import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
 import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
+import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
+
+// As `CustomMapEditor` makes them, or the legacy `.<n>` / `:<n>`.
+const CUSTOM_ID_RE = /^(?:[0-9a-z]{1,6}|[.:]\d+)$/;
 
 function parseQuery(search: string) {
   const q: Record<string, string | string[]> = {};
@@ -200,7 +217,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const { sq, tr } = (history.state as {
     sq?: string;
-    tr?: true;
+    tr?: string | true;
   } | null) ?? { sq: undefined, tr: undefined };
 
   const parsedQuery = parseQuery(search);
@@ -209,18 +226,21 @@ export function handleLocationChange(store: MyStore): void {
     (typeof parsedQuery['id'] === 'string' ? parsedQuery['id'] : undefined) ||
     undefined;
 
-  // Set when the URL names a map, and dispatched at the end — once any
-  // `track-uid=` / `import-url=` is known, so the restore owns the track instead
-  // of racing a fetch started here. Whether the map continues from the browser's
-  // working copy or is re-read from the backend is decided there.
+  // Set when the URL names a map, and dispatched at the end, after `openEntry`.
+  // Whether the map continues from the browser's working copy or is re-read
+  // from the backend is decided there. A load standing in for the lost snapshot
+  // of the entry left is that entry's, so it never counts as this map opening.
   let restore: MapRestore | null = null;
+
+  const { loadMeta } = getState().myMaps;
 
   if (
     id !== undefined &&
-    id !==
-      (getState().myMaps.loadMeta?.id ??
-        getState().myMaps.restoring?.mapId ??
-        getState().myMaps.activeMap?.id)
+    (loadMeta?.replaceEntry ||
+      id !==
+        (loadMeta?.id ??
+          getState().myMaps.restoring?.mapId ??
+          getState().myMaps.activeMap?.id))
   ) {
     restore = {
       mapId: id,
@@ -450,17 +470,6 @@ export function handleLocationChange(store: MyStore): void {
 
   const trackUID = query['track-uid'];
 
-  if (
-    typeof trackUID === 'string' &&
-    getState().trackViewer.trackUID !== trackUID
-  ) {
-    if (restore) {
-      restore.trackUID = trackUID;
-    } else {
-      dispatch(dataViewerDownloadTrack(trackUID));
-    }
-  }
-
   handleColorize(
     dispatch,
     query,
@@ -497,7 +506,7 @@ export function handleLocationChange(store: MyStore): void {
     trackingActions.setColorizeLegend,
   );
 
-  handleInfoPoint(getState, dispatch, query);
+  handleSearchQuery(dispatch, query);
 
   handleFeatureStyles(getState, dispatch, query);
 
@@ -542,88 +551,22 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(changesetsSetParams(changesetParams));
   }
 
-  const lines: Line[] = [];
-
-  for (const [key, value] of new URLSearchParams(
-    id === undefined ? search : sq,
-  )) {
-    if (
-      key === 'distance-measurement-points' ||
-      key === 'area-measurement-points' ||
-      key === 'line' ||
-      key === 'polygon'
-    ) {
-      // `s` so the style fields survive a label written on several lines: a
-      // bare `.` stops at a newline and would drop every field after it.
-      // biome-ignore lint/suspicious/noControlCharactersInRegex: I am aware of this
-      const m = /([^;\x1e]*)([;\x1e][\s\S]*)?/.exec(value);
-
-      if (!m) {
-        continue;
-      }
-
-      const points = m[1]!
-        .split(',')
-        .map((point) =>
-          point
-            .split('/')
-            .map((coord) => parseFloat(coord))
-            .filter((x) => !Number.isNaN(x)),
-        )
-        .filter((pair): pair is [number, number] => pair.length === 2)
-        .map(([lat, lon], id) => ({ lat, lon, id }));
-
-      if (points.length > 0) {
-        // `H` is geometry-only (the index of the polygon this ring is a hole
-        // of), so it stays out of the style-field codec the point params share.
-        // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separator
-        const holeOf = /\x1eH(\d+)/.exec(m[2] ?? '');
-
-        lines.push({
-          type:
-            key === 'distance-measurement-points' || key === 'line'
-              ? 'line'
-              : 'polygon',
-          points,
-          ...parseColorAndLabel(m[2] ?? ''),
-          holeOf: holeOf ? Number(holeOf[1]) : undefined,
-        });
-      }
-    }
-  }
-
-  const stateLines = getState().drawingLines.lines;
-
-  const stateHoleIndexes = toWireHoleIndexes(stateLines);
-
-  // The type prefixes the digest because it is the URL's parameter *name*
-  // (`line=` / `polygon=`) rather than one of the fields the serializer writes,
-  // so without it a polygon and a line of the same shape read alike and a
-  // history entry that only changed the type never arrives.
-  const digestLine = (line: Line, holeOf: number | undefined) =>
-    `${line.type}${serializeDrawingLine(line, holeOf)}`;
+  const inspectedChangeset = Number(query['changeset']) || null;
 
   if (
-    lines.map((line) => digestLine(line, line.holeOf)).join('\x1d') !==
-    stateLines
-      .map((line, i) => digestLine(line, stateHoleIndexes[i]))
-      .join('\x1d')
+    inspectedChangeset !== (getState().changesetInspector.inspected?.id ?? null)
   ) {
-    dispatch(drawingLineSetLines(lines));
+    dispatch(changesetsInspect(inspectedChangeset));
   }
+
+  const urlFeatures = parseFeatureParams(
+    new URLSearchParams(id === undefined ? search : sq),
+  );
 
   const gpxUrl =
     query['import-url'] ||
     query['gpx-url'] ||
     query['load']; /* `gpx-url` and `load` kept for backward compatibility */
-
-  if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
-    if (restore) {
-      restore.gpxUrl = gpxUrl;
-    } else {
-      dispatch(dataViewerGpxLoad(gpxUrl));
-    }
-  }
 
   const focus = !parsedQuery['map'];
 
@@ -633,18 +576,15 @@ export function handleLocationChange(store: MyStore): void {
 
   handleEvents(getState, dispatch, query);
 
-  const mapStateFromUrl = getMapStateFromUrl();
-
   const customLayerDefsStr = query['custom-layers'];
 
   const { customLayers } = getState().map;
 
-  if (
-    typeof customLayerDefsStr === 'string' &&
-    JSON.stringify(getState().map.customLayers) !== customLayerDefsStr
-  ) {
-    const existingCustomLayersDefStrings = getState().map.customLayers.map(
-      (cl) => JSON.stringify(cl),
+  const customTypes: string[] = [];
+
+  if (typeof customLayerDefsStr === 'string') {
+    const existingCustomLayersDefStrings = customLayers.map((cl) =>
+      JSON.stringify(cl),
     );
 
     try {
@@ -652,9 +592,18 @@ export function handleLocationChange(store: MyStore): void {
         JSON.parse(customLayerDefsStr),
       );
 
-      mapStateFromUrl.layers ??= [];
+      // A named map's source rides along to draw it, not to be drawn.
+      const sources = new Set(
+        customLayerDefs.flatMap((def) =>
+          isNamedMapDef(def) ? [def.source] : [],
+        ),
+      );
 
-      mapStateFromUrl.layers.push(...customLayerDefs.map((def) => def.type));
+      customTypes.push(
+        ...customLayerDefs
+          .map((def) => def.type)
+          .filter((type) => !sources.has(type)),
+      );
 
       const newCustomLayerDefs = customLayerDefs.filter(
         (cl) => !existingCustomLayersDefStrings.includes(JSON.stringify(cl)),
@@ -674,154 +623,183 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
+  // `layers=` names the custom maps it carries in `custom-layers=`. A My Map's
+  // link carries them only in history state, so a fresh tab takes any custom
+  // id on trust: the map's document brings their definitions. An offline map
+  // is known here, or on already: its list loads after a reload reads this.
+  const { cachedMaps, layers: onMap } = getState().map;
+
+  const mapStateFromUrl = getMapStateFromUrl(
+    (type) =>
+      customTypes.includes(type) ||
+      (id !== undefined && CUSTOM_ID_RE.test(type)) ||
+      cachedMaps.some((cm) => cm.type === type) ||
+      onMap.includes(type),
+  );
+
+  // The presets the link carries: those alike to one of the account's stand
+  // for it, the rest are the link's own.
+  let linkPresets: MapPreset[] | undefined;
+
+  let setups: Record<string, LayerSetup> | undefined;
+
+  if (mapStateFromUrl.layers) {
+    const inline = mapStateFromUrl.layers.flatMap((item) => {
+      const n = presetIdOf(item);
+
+      const preset = n === undefined ? undefined : parsePresetParams(query, n);
+
+      return preset ? [preset] : [];
+    });
+
+    const adopted = adoptPresets(
+      mapStateFromUrl.layers,
+      inline,
+      getState().map.presets,
+      '',
+      sameInLink,
+    );
+
+    mapStateFromUrl.layers = adopted.layers;
+
+    linkPresets = adopted.linkPresets;
+
+    // What the link says of each layer it names; one it says nothing of is at
+    // its defaults, so the link draws what the screen it came from did. A
+    // link from before setups has its shading in `shading=`.
+    setups = {};
+
+    const legacyShading = query['shading'];
+
+    for (const type of mapStateFromUrl.layers) {
+      if (presetIdOf(type) !== undefined) {
+        continue;
+      }
+
+      const value = query[`${SETUP_PARAM_PREFIX}${type}`];
+
+      setups[type] =
+        typeof value === 'string'
+          ? parseSetup(value)
+          : type === SHADING_SOURCE && typeof legacyShading === 'string'
+            ? { shading: parseShading(legacyShading) }
+            : {};
+    }
+
+    // A map only in the link's presets: its shading and layers from the link,
+    // the opacity and kind of one's own drawing of it kept.
+    const onMap = new Set(mapStateFromUrl.layers);
+
+    const presetsOnMap = [
+      ...(linkPresets ?? []),
+      ...getState().map.presets,
+    ].filter((p) => onMap.has(presetItem(p.id)));
+
+    for (const { type } of presetsOnMap.flatMap((p) => p.layers)) {
+      const value = query[`${SETUP_PARAM_PREFIX}${type}`];
+
+      // Without one the link has the map's defaults: one's own config stays.
+      if (onMap.has(type) || setups[type] || typeof value !== 'string') {
+        continue;
+      }
+
+      setups[type] = withLoadedConfig(
+        getState().map.layerSetups[type],
+        parseSetup(value),
+      );
+    }
+  }
+
+  // A link from before `layers=` named custom maps has them on top; one a
+  // preset of the link holds is not on the map on its own. A link without a
+  // base map opens without one, the map background showing.
+  if (mapStateFromUrl.layers || customTypes.length) {
+    const named = new Set([
+      ...(mapStateFromUrl.layers ?? []),
+      ...(linkPresets ?? []).flatMap((p) => p.layers.map((l) => l.type)),
+      ...getState().map.presets.flatMap((p) =>
+        mapStateFromUrl.layers?.includes(presetItem(p.id))
+          ? p.layers.map((l) => l.type)
+          : [],
+      ),
+    ]);
+
+    mapStateFromUrl.layers = [
+      ...(mapStateFromUrl.layers ?? []),
+      ...customTypes.filter((type) => !named.has(type)),
+    ];
+  }
+
   const diff = getMapStateDiffFromUrl(mapStateFromUrl, getState().map);
 
-  if (diff && Object.keys(diff).length) {
-    dispatch(mapRefocus(diff));
+  const { layerSetups } = getState().map;
+
+  // Compared as a link writes them: parsing shading gives its components new
+  // ids, and key order or rounding is no change either.
+  const setupsChanged =
+    setups !== undefined &&
+    Object.entries(setups).some(
+      ([type, setup]) =>
+        serializeSetup(setup) !== serializeSetup(layerSetups[type] ?? {}),
+    );
+
+  const asLinked = (presets: readonly MapPreset[]) =>
+    JSON.stringify(presets.map((p) => [p.id, presetUrlParts(p, '')]));
+
+  const linkPresetsChanged =
+    linkPresets !== undefined &&
+    asLinked(linkPresets) !== asLinked(getState().map.linkPresets);
+
+  if (
+    (diff && Object.keys(diff).length) ||
+    setupsChanged ||
+    linkPresetsChanged
+  ) {
+    dispatch(
+      mapRefocus({
+        ...diff,
+        ...(setupsChanged ? { setups } : {}),
+        ...(linkPresetsChanged ? { linkPresets } : {}),
+      }),
+    );
   }
 
   // After the layers the URL names are on: until here `map.layers` still holds
   // whatever was stored from last time, and the viewshed gates on it.
   handleViewshed(getState, dispatch, query);
 
-  const { shading } = query;
-
-  const map = getState().map;
-
-  if (
-    shading &&
-    !Array.isArray(shading) &&
-    map.layers.some(
-      (layer) =>
-        integratedLayerDefMap[layer]?.technology === 'parametricShading',
-    ) &&
-    shading !== serializeShading(map.shading)
-  ) {
-    function toColor(color = '00000000') {
-      try {
-        const bands = Color(`#${color}`).array();
-
-        if (bands.length === 3) {
-          bands.push(1);
-        }
-
-        return bands as ColorType;
-      } catch {
-        console.error(`error parsing color: ${color}`);
-
-        return [0, 0, 0, 1] as ColorType;
-      }
-    }
-
-    const [bg, ...comps] = shading.split('!');
-
-    const components: ShadingComponent[] = comps
-      .map((component) => {
-        const [type, ...params] = component.split('_');
-
-        let colorStops: ColorStop[];
-
-        switch (type) {
-          case 'hillshade-classic':
-          case 'hillshade-igor':
-          case 'slope-classic':
-          case 'slope-igor':
-            colorStops = [
-              {
-                value: 0,
-                color: toColor(params.pop()),
-              },
-            ];
-
-            break;
-          case 'aspect':
-          case 'color-relief':
-            colorStops = [];
-
-            for (let i = 0; i < params.length; i += 2) {
-              colorStops.push({
-                value: Number(params[i]),
-                color: toColor(params[i + 1]),
-              });
-            }
-            break;
-          default:
-            return undefined;
-        }
-
-        const base = {
-          id: Math.random(),
-          brightness: 0,
-          contrast: 1,
-          colorStops,
-        };
-
-        switch (type) {
-          case 'hillshade-classic':
-            return {
-              ...base,
-              type,
-              azimuth: Number(params.shift()) * (Math.PI / 180),
-              elevation: Number(params.shift()) * (Math.PI / 180),
-              exaggeration: Number(params.shift()),
-            };
-          case 'hillshade-igor':
-            return {
-              ...base,
-              type,
-              azimuth: Number(params.shift()) * (Math.PI / 180),
-              exaggeration: Number(params.shift()),
-            };
-          case 'slope-classic':
-            return {
-              ...base,
-              type,
-              elevation: Number(params.shift()) * (Math.PI / 180),
-              exaggeration: Number(params.shift()),
-            };
-          case 'slope-igor':
-            return {
-              ...base,
-              type,
-              exaggeration: Number(params.shift()),
-            };
-          case 'aspect':
-          case 'color-relief':
-            return {
-              ...base,
-              type,
-            };
-          default:
-            return undefined;
-        }
-      })
-      .filter((a): a is ShadingComponent => Boolean(a));
-
-    dispatch(
-      mapSetShading({
-        backgroundColor: toColor(bg),
-        components,
-      }),
-    );
-  }
-
   {
     // Unified modal/overlay param. Legacy `document=`/`tip=`/`image=`/`wmc=`
-    // links fold into the packed `show=type/arg` form.
+    // links fold into the packed `show=type/arg` form, and so does `manual=`,
+    // which the SEO prerender needs: nginx serves no query holding a `/`.
     const showRaw =
       typeof query['show'] === 'string'
         ? query['show']
         : typeof query['document'] === 'string'
           ? `document/${query['document']}`
-          : typeof query['tip'] === 'string'
-            ? `document/${query['tip']}`
-            : typeof query['image'] === 'string'
-              ? `gallery-viewer/${query['image']}`
-              : typeof query['wmc'] === 'string'
-                ? `wmc/${query['wmc']}`
-                : undefined;
+          : typeof query['manual'] === 'string'
+            ? `manual/${query['manual']}`
+            : typeof query['tip'] === 'string'
+              ? `document/${query['tip']}`
+              : typeof query['image'] === 'string'
+                ? `gallery-viewer/${query['image']}`
+                : typeof query['wmc'] === 'string'
+                  ? `wmc/${query['wmc']}`
+                  : undefined;
 
     const next = showRaw === undefined ? null : decodeActiveModal(showRaw);
+
+    const mainNext =
+      next?.type === 'gallery-viewer' || next?.type === 'wiki' ? null : next;
+
+    // First: any `setActiveModal` closes the viewer and the preview, and cancels
+    // a preview's load, so it must not follow the requests below.
+    if (
+      encodeActiveModal(getState().main.activeModal) !==
+      encodeActiveModal(mainNext)
+    ) {
+      dispatch(setActiveModal(mainNext));
+    }
 
     // The gallery viewer and the Wikimedia Commons preview own their own slice
     // state; everything else lives in main.activeModal.
@@ -844,16 +822,6 @@ export function handleLocationChange(store: MyStore): void {
       }
     } else if (getState().wiki.preview || getState().wiki.loading) {
       dispatch(wikiSetPreview(null));
-    }
-
-    const mainNext =
-      next?.type === 'gallery-viewer' || next?.type === 'wiki' ? null : next;
-
-    if (
-      encodeActiveModal(getState().main.activeModal) !==
-      encodeActiveModal(mainNext)
-    ) {
-      dispatch(setActiveModal(mainNext));
     }
   }
 
@@ -990,38 +958,136 @@ export function handleLocationChange(store: MyStore): void {
 
   const fq = query['follow'];
 
+  // A device's token, all digits or not: tokens are strings throughout.
   if (typeof fq === 'string') {
-    const follow = /^\d+$/.test(fq) ? Number.parseInt(fq, 10) : fq;
-
     const { selection } = getState().main;
 
-    if (
-      (selection?.type === 'tracking' ? selection?.id : undefined) !== follow
-    ) {
-      dispatch(selectFeature({ type: 'tracking', id: follow }));
+    if ((selection?.type === 'tracking' ? selection?.id : undefined) !== fq) {
+      dispatch(selectFeature({ type: 'tracking', id: fq }));
     }
+  }
+
+  const noteId = Number(query['osm-note']);
+
+  const selectedNoteId = selectedOsmNoteId(getState());
+
+  if (Number.isInteger(noteId) && noteId > 0) {
+    if (selectedNoteId !== noteId) {
+      dispatch(selectFeature({ type: 'osm-note', id: noteId }));
+    }
+  } else if (selectedNoteId !== null) {
+    dispatch(selectFeature(null));
   }
 
   handleElevationChart(getState, dispatch, query, restore !== null);
 
-  if (restore) {
-    dispatch(mapsRestore(restore));
-  }
+  // A `track-uid=` / `import-url=` link is nothing but its track.
+  const request: EntryRequest = {
+    items: urlFeatures,
+    tr,
+    remote:
+      typeof trackUID === 'string'
+        ? { trackUID }
+        : typeof gpxUrl === 'string'
+          ? { gpxUrl }
+          : undefined,
+    mapId: id,
+  };
 
-  // The track this browser stored for this history entry. Dispatched last, and a
-  // no-op when something else already owns the track viewer, so a map or a shared
-  // track named in the URL wins.
-  //
-  // A load carrying no flag deliberately does *not* evict the store. The record is
-  // one per origin while the flag is one per history entry, so a second tab — a
-  // fresh load with no flag of its own — would delete the only durable copy of a
-  // ride the first tab is still holding. Hygiene is left to the store being a
-  // single entry that its own delete and the next write reclaim.
-  if (tr) {
-    dispatch(dataViewerRestoreStored());
+  const entry = openEntry(store, request);
+
+  if (restore) {
+    dispatch(
+      mapsRestore({ ...restore, entry, ownContent: hasOwnContent(request) }),
+    );
   }
 
   setUrlUpdatingEnabled(true);
+}
+
+/**
+ * The `point=`, `line=` and `polygon=` params in the order written, with the
+ * legacy measurement and info-point spellings.
+ */
+export function parseFeatureParams(params: URLSearchParams): WireItem[] {
+  const items: WireItem[] = [];
+
+  for (const [key, value] of params) {
+    if (
+      key === 'point' ||
+      key === 'info-point' ||
+      key === 'elevation-measurement-point'
+    ) {
+      const point = parseDrawingPointParam(value);
+
+      if (point) {
+        items.push({ kind: 'point', point: withoutUndefined(point) });
+      }
+
+      continue;
+    }
+
+    if (
+      key !== 'distance-measurement-points' &&
+      key !== 'area-measurement-points' &&
+      key !== 'line' &&
+      key !== 'polygon'
+    ) {
+      continue;
+    }
+
+    // `s` so the style fields survive a label written on several lines: a bare
+    // `.` stops at a newline and would drop every field after it.
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: I am aware of this
+    const m = /([^;\x1e]*)([;\x1e][\s\S]*)?/.exec(value);
+
+    if (!m) {
+      continue;
+    }
+
+    const fields = parseColorAndLabel(m[2] ?? '');
+
+    const { points, breaks } = parseVertices(m[1]!, fields.columns);
+
+    if (points.length > 0) {
+      // `H` is geometry-only (the index of the polygon this ring is a hole
+      // of, and its member), so it stays out of the style-field codec.
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: the field separator
+      const holeOf = /\x1eH(\d+)(?:\.(\d+))?/.exec(m[2] ?? '');
+
+      items.push({
+        kind: 'line',
+        line: withoutUndefined({
+          type:
+            key === 'distance-measurement-points' || key === 'line'
+              ? 'line'
+              : 'polygon',
+          points,
+          ...fields,
+          breaks: breaks.length ? breaks : undefined,
+          holeOf: holeOf ? Number(holeOf[1]) : undefined,
+          member: holeOf?.[2] ? Number(holeOf[2]) : undefined,
+        }),
+      });
+    }
+  }
+
+  // An old link's label for its single info point.
+  const ipl = params.get('info-point-label');
+
+  const first = items.find((item) => item.kind === 'point');
+
+  if (ipl && first?.kind === 'point') {
+    first.point = { ...first.point, label: decodeURIComponent(ipl) };
+  }
+
+  return items;
+}
+
+function withoutUndefined<T extends object>(o: T): T {
+  return Object.fromEntries(
+    Object.entries(o).filter(([, v]) => v !== undefined),
+  ) as T;
 }
 
 /**
@@ -1097,11 +1163,11 @@ function parseChartTarget(
     case 'tracking':
       return key ? { type: 'tracking', token: key } : null;
 
-    case 'drawing': {
-      const line = getState().drawingLines.lines[Number(key ?? Number.NaN)];
-
-      return line ? { type: 'drawing', lineId: line.id } : null;
-    }
+    // An older link's drawn line, now one of the map's features.
+    case 'drawing':
+      return getState().trackViewer.trackGeojson
+        ? { type: 'track-viewer' }
+        : null;
 
     default:
       return null;
@@ -1456,6 +1522,24 @@ function handleEvents(
   }
 }
 
+/**
+ * A pair field's pairs (`P`, `Q`, `M`). A trailing key with no value is dropped,
+ * so a truncated link invents nothing; so is `__proto__`, a prototype setter.
+ */
+function parsePairs(field: string): [string, string][] {
+  const parts = field.slice(1).split('\x1f');
+
+  const pairs: [string, string][] = [];
+
+  for (let i = 0; i + 1 < parts.length; i += 2) {
+    if (parts[i] !== '__proto__') {
+      pairs.push([parts[i]!, parts[i + 1]!]);
+    }
+  }
+
+  return pairs;
+}
+
 function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
   // compatibility
   if (m.startsWith(',') || m.startsWith(';')) {
@@ -1476,8 +1560,11 @@ function parseColorAndLabel(m: string): ReturnType<typeof parseStyleFields> {
  * geometry params and the per-feature default-style params (`track-style`,
  * `objects-style`, `search-style`). Field codes: `L`abel, `C`olor,
  * `F`illColor, `W`idth, `D`ashArray, line`K`ap, line`J`oin, `S`hape
- * (markerType), `I`con, `P`roperties. A leading separator is tolerated. Only
- * present fields are returned.
+ * (markerType), `I`con, `P`roperties and their typed values (`Q`), keys kept
+ * verbatim (`M`), and for
+ * recorded data the `V`alue columns,
+ * the import's `fm:kind` (`Y`) and its `_gpxType` (`G`). A leading separator is
+ * tolerated. Only present fields are returned.
  */
 export function parseStyleFields(s: string): {
   label?: string;
@@ -1490,6 +1577,11 @@ export function parseStyleFields(s: string): {
   markerType?: 'pin' | 'square' | 'ring';
   icon?: string;
   props?: DrawingProps;
+  typed?: Record<string, TypedValue>;
+  verbatim?: Verbatim;
+  columns?: string[];
+  kind?: string;
+  gpxType?: string;
 } {
   const out: ReturnType<typeof parseStyleFields> = {};
 
@@ -1512,28 +1604,68 @@ export function parseStyleFields(s: string): {
         : undefined;
     } else if (field[0] === 'K') {
       out.lineCap =
-        field[1] === 'b' ? 'butt' : field[1] === 's' ? 'square' : undefined;
+        field[1] === 'b'
+          ? 'butt'
+          : field[1] === 's'
+            ? 'square'
+            : field[1] === 'r'
+              ? 'round'
+              : undefined;
     } else if (field[0] === 'J') {
       out.lineJoin =
-        field[1] === 'm' ? 'miter' : field[1] === 'b' ? 'bevel' : undefined;
+        field[1] === 'm'
+          ? 'miter'
+          : field[1] === 'b'
+            ? 'bevel'
+            : field[1] === 'r'
+              ? 'round'
+              : undefined;
     } else if (field[0] === 'S') {
       out.markerType =
-        field[1] === 's' ? 'square' : field[1] === 'r' ? 'ring' : undefined;
+        field[1] === 's'
+          ? 'square'
+          : field[1] === 'r'
+            ? 'ring'
+            : field[1] === 'p'
+              ? 'pin'
+              : undefined;
     } else if (field[0] === 'I') {
       out.icon = field.slice(1) || undefined;
     } else if (field[0] === 'P') {
-      // Key/value pairs, unit-separated. A trailing key with no value is
-      // dropped rather than read as empty, so a truncated link can't invent a
-      // property nobody wrote.
-      const parts = field.slice(1).split('\x1f');
+      out.props = normalizeProps(Object.fromEntries(parsePairs(field)));
+    } else if (field[0] === 'Q') {
+      // Each value JSON; a string is `P`'s, and a key the editor owns
+      // (`coordinateProperties`, `freemap:*`) no datum, so both are skipped.
+      const typed = parsePairs(field).flatMap(([key, text]) => {
+        try {
+          const value: unknown = JSON.parse(text);
 
-      const props: DrawingProps = {};
+          return typeof value !== 'string' && isDataKey(key)
+            ? [[key, value as TypedValue] as const]
+            : [];
+        } catch {
+          // Not JSON: a hand-edited link.
+          return [];
+        }
+      });
 
-      for (let i = 0; i + 1 < parts.length; i += 2) {
-        props[parts[i]!] = parts[i + 1]!;
+      if (typed.length) {
+        out.typed = Object.fromEntries(typed);
       }
+    } else if (field[0] === 'M') {
+      const verbatim = parsePairs(field).filter(([key]) =>
+        (VERBATIM_KEYS as readonly string[]).includes(key),
+      );
 
-      out.props = normalizeProps(props);
+      if (verbatim.length) {
+        out.verbatim = Object.fromEntries(verbatim) as Verbatim;
+      }
+    } else if (field[0] === 'V') {
+      out.columns = field.slice(1).split('\x1f');
+    } else if (field[0] === 'Y') {
+      out.kind = field.slice(1);
+    } else if (field[0] === 'G') {
+      out.gpxType = field.slice(1);
     }
   }
 
@@ -1684,7 +1816,8 @@ function handleToposcope(
 
 /**
  * `panorama=` the viewpoint, `panorama-az=` the bearing, `panorama-tilt=` the
- * vertical band, `panorama-fov=` how much horizon; see `panoramaUrl.ts` for the
+ * vertical band, `panorama-fov=` how much horizon, `panorama-sky=` and
+ * `panorama-date=` the sky paths and their day; see `panoramaUrl.ts` for the
  * formats. The picture is not in the link: arriving with a viewpoint renders it
  * again, which is the same explicit action a click on the map is.
  *
@@ -1760,6 +1893,35 @@ function handlePanorama(
     dispatch(panoramaSetSettings(tilt));
   }
 
+  // Absent is the default and invalid is ignored, for the sky and its date alike.
+  const skyParam = query['panorama-sky'];
+
+  const sky =
+    skyParam === undefined
+      ? DEFAULT_PANORAMA_SKY
+      : parsePanoramaSky(typeof skyParam === 'string' ? skyParam : '');
+
+  const { showSun, showMoon } = getState().panoramaSettings;
+
+  if (sky && (sky.showSun !== showSun || sky.showMoon !== showMoon)) {
+    dispatch(panoramaSetSettings(sky));
+  }
+
+  const dateParam = query['panorama-date'];
+
+  const date =
+    dateParam === undefined
+      ? null
+      : parsePanoramaDate(typeof dateParam === 'string' ? dateParam : '');
+
+  if (dateParam === undefined || date) {
+    const skyDate = date === localToday() ? null : date;
+
+    if (skyDate !== getState().panorama.skyDate) {
+      dispatch(panoramaSetSkyDate(skyDate));
+    }
+  }
+
   if (
     !viewpoint ||
     serializePanoramaViewpoint(viewpoint) !== serializePanoramaViewpoint(next)
@@ -1825,8 +1987,20 @@ function handleViewshed(
   }
 }
 
+const COORD = String.raw`-?\d+(?:\.\d+)?`;
+
+// The elevation as JS writes a number, which may be in exponent form.
+const ELE = String.raw`-?\d+(?:\.\d+)?(?:e[-+]?\d+)?`;
+
+// A multi-point's further members only before a field or the end: what else
+// follows a `,` is a legacy label.
+const POINT_PARAM = new RegExp(
+  String.raw`^(${COORD})\/(${COORD})(?:\/(${ELE}))?((?:,${COORD}\/${COORD}(?:\/${ELE})?)*(?=\x1e|$))?([\s\S]*)$`,
+);
+
 /**
- * One `point=` value: `lat/lon` followed by optional style fields. Returns
+ * One `point=` value: `lat/lon[/ele]`, a multi-point's further members after
+ * commas, then optional style fields. Returns
  * `undefined` for anything that isn't a pair of coordinates.
  *
  * The tail is matched with `[\s\S]` rather than `.` because a label may be
@@ -1834,69 +2008,114 @@ function handleViewshed(
  * fails against the anchored end, and the point is dropped altogether.
  */
 export function parseDrawingPointParam(value: string | undefined) {
-  const m = value
-    ? /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)([\s\S]*)$/.exec(value)
-    : null;
+  const m = value ? POINT_PARAM.exec(value) : null;
 
   if (!m) {
     return undefined;
   }
 
-  const { label, color, markerType, icon, props } = parseColorAndLabel(
-    m[3] ?? '',
-  );
+  const { label, color, markerType, icon, props, typed, verbatim, kind } =
+    parseColorAndLabel(m[5] ?? '');
 
   return {
     coords: { lat: parseFloat(m[1]!), lon: parseFloat(m[2]!) },
+    ...(m[3] !== undefined && { ele: parseFloat(m[3]) }),
+    ...(m[4] && {
+      more: m[4]
+        .slice(1)
+        .split(',')
+        .map((member) => {
+          const [lat, lon, ele] = member.split('/');
+
+          return {
+            lat: parseFloat(lat!),
+            lon: parseFloat(lon!),
+            ...(ele !== undefined && { ele: parseFloat(ele) }),
+          };
+        }),
+    }),
     label,
     color,
     markerType,
     icon,
     props,
+    typed,
+    verbatim,
+    kind,
   };
 }
 
-function handleInfoPoint(
-  getState: () => RootState,
+/**
+ * A line param's vertices: `lat/lon` and its values in `columns` order, empty
+ * where missing; an empty vertex between two segments. `time` comes as the
+ * seconds since the previous one, after an absolute first.
+ */
+function parseVertices(
+  text: string,
+  columns: string[] | undefined,
+): { points: WireVertex[]; breaks: number[] } {
+  const time = columns?.indexOf('time') ?? -1;
+
+  const points: WireVertex[] = [];
+
+  const breaks: number[] = [];
+
+  let previousMs: number | undefined;
+
+  for (const item of text.split(',')) {
+    if (item === '') {
+      if (points.length && breaks.at(-1) !== points.length) {
+        breaks.push(points.length);
+      }
+
+      continue;
+    }
+
+    const [lat, lon, ...rest] = item.split('/');
+
+    const latLon = [parseFloat(lat ?? ''), parseFloat(lon ?? '')];
+
+    if (latLon.some(Number.isNaN)) {
+      continue;
+    }
+
+    const v = (columns ?? []).map((_, i): number | null => {
+      const value = rest[i] ? Number(rest[i]) : Number.NaN;
+
+      if (!Number.isFinite(value)) {
+        return null;
+      }
+
+      if (i !== time) {
+        return value;
+      }
+
+      const ms = Math.round(value * 1000) + (previousMs ?? 0);
+
+      previousMs = ms;
+
+      return ms / 1000;
+    });
+
+    points.push({
+      lat: latLon[0]!,
+      lon: latLon[1]!,
+      id: points.length,
+      ...(columns?.length && { v }),
+    });
+  }
+
+  // A break after the last vertex starts nothing.
+  return {
+    points,
+    breaks: breaks.filter((at) => at < points.length),
+  };
+}
+
+function handleSearchQuery(
   dispatch: Dispatch,
   query: Record<string, string | string[]>,
 ) {
-  const drawingPoint =
-    query['point'] || query['info-point']; /* compatibility */
-
-  const emp = query['elevation-measurement-point']; // for compatibility
-
-  const ips = (
-    !drawingPoint
-      ? []
-      : Array.isArray(drawingPoint)
-        ? drawingPoint
-        : [drawingPoint]
-  )
-    .concat(typeof emp === 'string' ? [emp] : [])
-    .map(parseDrawingPointParam)
-    .filter((point) => point !== undefined);
-
-  // backward compatibility
-  const ipl = query['info-point-label'];
-
-  if (ipl && ips.length) {
-    ips[0]!.label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
-  }
-
-  // Compared through the very serializer that wrote the URL, so the comparison
-  // can't overlook a field the way a hand-rolled list of them did. Joined on a
-  // separator no label can contain, so two different sets can't digest alike.
-  if (
-    ips.map(serializeDrawingPoint).sort().join('\x1d') !==
-    getState()
-      .drawingPoints.points.map(serializeDrawingPoint)
-      .sort()
-      .join('\x1d')
-  ) {
-    dispatch(drawingPointSetAll(ips));
-  }
-
   if (typeof query['q'] === 'string') {
     dispatch(searchSetQuery({ query: query['q'], fromUrl: true }));
   }

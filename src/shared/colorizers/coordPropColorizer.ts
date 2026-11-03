@@ -6,6 +6,7 @@ import {
   colorizeByValues,
   type HotlinePalette,
   hasNumericArray,
+  linearScale,
   readNumericArray,
   smoothedValues,
 } from './colorize.js';
@@ -22,9 +23,12 @@ export function coordPropColorizerAbsolute(
   palette: HotlinePalette,
   min: number,
   max: number,
+  unit: string,
 ): Colorizer {
   return {
     palette,
+    scale: ({ language }) =>
+      linearScale({ min, max }, language, [0, 0.25, 0.5, 0.75, 1], { unit }),
     isAvailable: (features) => hasNumericArray(features, key),
     compute: (features, options) =>
       colorizeByValues(features, (feature) => {
@@ -76,6 +80,7 @@ export function coordPropColorizer(
     legend: unit
       ? {
           unit,
+          smoothed: true,
           values: (feature, options) => smoothedValues(spec(feature, options)),
         }
       : undefined,

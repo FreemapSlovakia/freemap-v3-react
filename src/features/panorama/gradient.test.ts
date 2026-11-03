@@ -80,7 +80,7 @@ describe('panoramaGroundInk', () => {
     expect(
       panoramaGroundInk('#000000', {
         ...gradient,
-        stops: [...gradient.stops].reverse(),
+        stops: gradient.stops.toReversed(),
       }),
     ).toBe('#3a4a34');
   });
@@ -232,12 +232,5 @@ describe('gradientRequest', () => {
       [0, '#000000'],
       [1, '#ffffff'],
     ]);
-  });
-
-  // What a previous pass measured, so several renders agree about colour.
-  it('takes a pinned distance over the setting, in metres', () => {
-    expect(gradientRequest(gradient, 300_000, 70_000).far_distance).toBe(
-      70_000,
-    );
   });
 });

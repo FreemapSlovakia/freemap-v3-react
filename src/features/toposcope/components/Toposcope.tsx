@@ -1,12 +1,13 @@
 import { closeTool, selectFeature } from '@app/store/actions.js';
-import { drawingPointLabel } from '@features/drawing/labelValues.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   GENEROUS_MARGIN_PX,
   panToUncovered,
 } from '@features/map/panToUncovered.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import { FloatingWindowGrips } from '@shared/components/FloatingWindowControls.js';
+import { featureDataProps, featureLabel } from '@shared/featureProperties.js';
 import {
   bearingTo,
   distanceTo,
@@ -23,7 +24,10 @@ import clsx from 'clsx';
 import { type ReactElement, useMemo } from 'react';
 import { CloseButton } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { toposcopeCenterSelector } from '../centerPoint.js';
+import {
+  pointFeaturesSelector,
+  toposcopeCenterSelector,
+} from '../centerPoint.js';
 import {
   fillRayTemplate,
   metersToFeet,
@@ -68,7 +72,7 @@ export default function Toposcope(): ReactElement {
 
   const inscriptions = useAppSelector((state) => state.toposcope.inscriptions);
 
-  const points = useAppSelector((state) => state.drawingPoints.points);
+  const points = useAppSelector(pointFeaturesSelector);
 
   const {
     innerCircleRadius,
@@ -80,9 +84,7 @@ export default function Toposcope(): ReactElement {
   } = useAppSelector((state) => state.toposcope);
 
   const activeRayId = useAppSelector((state) =>
-    state.main.selection?.type === 'draw-points'
-      ? (state.main.selection.id ?? null)
-      : null,
+    state.main.selection?.type === 'feature' ? state.main.selection.id : null,
   );
 
   const nf = useNumberFormat({
@@ -124,9 +126,9 @@ export default function Toposcope(): ReactElement {
   // names: select it, and — the dial being a window over the map — bring it out
   // from behind the panel where it is not already in view.
   const selectPoint = (id: number) => {
-    dispatch(selectFeature({ type: 'draw-points', id }));
+    dispatch(selectFeature({ type: 'feature', id }));
 
-    const at = points[id]?.coords;
+    const at = points.find((point) => point.index === id)?.coords;
 
     if (at) {
       panToUncovered(dispatch, at, {
@@ -136,8 +138,8 @@ export default function Toposcope(): ReactElement {
     }
   };
 
-  // Every drawn point but the centre is a ray, written on the two templates the
-  // dial carries rather than on the point's own label — that label is one of the
+  // Every point but the centre is a ray, written on the two templates the dial
+  // carries rather than on the point's own label — that label is one of the
   // things a template can name, so a converted peak reads properly with nothing
   // typed into it. Rays keep their point's index as their id, so pressing one
   // selects the right point on the map.
@@ -146,22 +148,24 @@ export default function Toposcope(): ReactElement {
       return [];
     }
 
-    return points.flatMap((point, i): ToposcopeRay[] => {
-      if (i === center.index) {
+    return points.flatMap((point): ToposcopeRay[] => {
+      if (point.index === center.index) {
         return [];
       }
 
-      const bearing = bearingTo(center.point.coords, point.coords);
+      const bearing = bearingTo(center.coords, point.coords);
 
-      const meters = distanceTo(center.point.coords, point.coords);
+      const meters = distanceTo(center.coords, point.coords);
+
+      const props = featureDataProps(point.feature.properties);
 
       // `Number('')` is 0, which would read as a summit at sea level.
-      const rawEle = point.props?.['ele']?.trim();
+      const rawEle = props['ele']?.trim();
 
       const ele = rawEle ? Number(rawEle) : Number.NaN;
 
       const values: RayValues = {
-        label: drawingPointLabel(point),
+        label: featureLabel(point.feature) ?? '',
         elevation: Number.isFinite(ele) ? nfEle.format(ele) : undefined,
         elevation_ft: Number.isFinite(ele)
           ? nfFt.format(metersToFeet(ele))
@@ -170,12 +174,12 @@ export default function Toposcope(): ReactElement {
         distance_mi: nfMi.format(metersToMiles(meters)),
         azimuth: nfAz.format(bearing),
         location: formatLocationLines(point.coords),
-        props: point.props,
+        props,
       };
 
       return [
         {
-          id: i,
+          id: point.index,
           bearing,
           // The first template above the ray and the second below it, each
           // keeping whatever lines its text and its values turned out to have.
@@ -190,7 +194,7 @@ export default function Toposcope(): ReactElement {
   // The middle of the dial says whatever the centre point is labelled with —
   // `{location}` by default, which the picker writes when it creates the point.
   const centerLines = useMemo(
-    () => (center ? toLines(drawingPointLabel(center.point)) : []),
+    () => (center ? toLines(featureLabel(center.feature) ?? '') : []),
     [center],
   );
 
@@ -251,7 +255,7 @@ export default function Toposcope(): ReactElement {
           />
         ) : (
           <p className="m-0 text-center text-body-secondary">
-            {m?.pickCenterHint}
+            <Text m={m} k="pickCenterHint" />
           </p>
         )}
       </div>
@@ -272,7 +276,9 @@ export default function Toposcope(): ReactElement {
           )}
         >
           {center && rays.length === 0 && (
-            <p className="m-0 small text-body-secondary">{m?.addPointsHint}</p>
+            <p className="m-0 small text-body-secondary">
+              <Text m={m} k="addPointsHint" />
+            </p>
           )}
         </div>
       </div>

@@ -1,86 +1,119 @@
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
-import { Toolbar } from '@shared/components/Toolbar.js';
+import {
+  type ColorizeScale,
+  formatScaleNumber,
+} from '@shared/colorizers/colorize.js';
+import {
+  LegendGradientBar,
+  LegendShell,
+  LegendSwatch,
+  LegendTick,
+} from '@shared/components/Legend.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 import { FaCamera, FaPalette } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import {
+  AGE_YEAR_S,
+  ageColor,
+  ageT,
+  ageYearsAt,
+  ratingColor,
+  SEASON_START_S,
+  seasonColor,
+  seasonOffsetAt,
+} from '../colorScales.js';
 import { LICENSE_COLORS } from '../licenseColors.js';
 import { PHOTO_LICENSES } from '../licenses.js';
 import { GALLERY_COLOR, MUTED_COLOR } from '../marbleColors.js';
-import type { GalleryColorizeBy } from '../model/actions.js';
+import {
+  type GalleryColorizeBy,
+  galleryToggleLegend,
+} from '../model/actions.js';
 import type { GalleryMessages } from '../translations/GalleryMessages.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
-/** The gallery legend's outer shell + camera/palette header, shared by the
- *  gradient and categorical (license) legend variants. */
-function LegendShell({
-  toolbarClassName,
-  fit,
-  children,
-}: {
-  toolbarClassName?: string;
-  // Shrink to the content width (categorical swatches) instead of filling 400px
-  // (the gradient bar wants the full width, a couple of swatches don't).
-  fit?: boolean;
-  children: ReactNode;
-}) {
-  const gm = useGalleryMessages();
+const ICON = (
+  <>
+    <FaCamera />
+    <FaPalette />
+  </>
+);
 
-  return (
-    <div
-      className={fit ? undefined : 'w-100'}
-      style={
-        fit ? { maxWidth: '100%', width: 'fit-content' } : { maxWidth: '400px' }
-      }
-    >
-      <Toolbar
-        className={`mt-2 d-flex${toolbarClassName ? ` ${toolbarClassName}` : ''}`}
-      >
-        <LongPressTooltip label={gm?.legend} breakpoint="sm">
-          {({ props, label, labelClassName }) => (
-            <span
-              className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
-              {...props}
-            >
-              <FaCamera />
-              <FaPalette />
-              <span className={labelClassName}>{label}</span>
-            </span>
-          )}
-        </LongPressTooltip>
+/** A CSS gradient sampled from a colour function, for a curve CSS can't draw. */
+function sampledGradient(colorAt: (t: number) => string, steps: number) {
+  const stops = Array.from({ length: steps + 1 }, (_, i) => {
+    const t = i / steps;
 
-        {children}
-      </Toolbar>
-    </div>
-  );
+    return `${colorAt(t)} ${t * 100}%`;
+  });
+
+  return `linear-gradient(to right, ${stops.join(', ')})`;
+}
+
+/** Older than this, the date readout stops counting. */
+const MAX_AGE_YEARS = 100;
+
+const SEC = 1000;
+
+type PictureScale = ColorizeScale & { background: string };
+
+function ageScale(language: string): PictureScale {
+  const monthYear = new Intl.DateTimeFormat(language, {
+    month: 'short',
+    year: 'numeric',
+  });
+
+  const year = new Intl.DateTimeFormat(language, { year: 'numeric' });
+
+  return {
+    background: sampledGradient(ageColor, 4),
+    wide: true,
+    ticks: [0, 1, 2, 3, 5, 10, 20].map((y) => ({ t: ageT(y), label: `${-y}` })),
+    valueAt: (t) => {
+      const years = Math.min(MAX_AGE_YEARS, ageYearsAt(t));
+
+      const date = Date.now() - years * AGE_YEAR_S * SEC;
+
+      return years < MAX_AGE_YEARS
+        ? monthYear.format(date)
+        : `< ${year.format(date)}`;
+    },
+  };
 }
 
 /**
- * The CSS gradient for a colorize mode's legend, or undefined for categorical
- * modes (mine/author/premium) that have no gradient scale. The single source of
- * truth for which modes draw a legend — see {@link pictureLegendApplies}.
+ * The gradient, ticks and readout of each gradient colorize mode, by language;
+ * which modes draw a scale — see {@link pictureLegendApplies}.
  */
-export function pictureGradient(
-  colorizeBy: GalleryColorizeBy | null | undefined,
-): string | undefined {
-  switch (colorizeBy) {
-    case 'rating':
-      return 'linear-gradient(to right in hsl, hsl(60 100% 1%), hsl(60 100% 99%))';
-    case 'takenAt':
-    case 'createdAt':
-      return 'linear-gradient(to right in hsl, hsl(60 100% 99%), hsl(60 100% 1%))';
-    case 'season':
-      return `linear-gradient(
-              to right in lab,
-              lab(70 -5 -52) 0%,  /* winter */
-              lab(70 -62 42) 25%, /* spring */
-              lab(90 -4 74) 50%,  /* summer */
-              lab(70 48 43) 75%,  /* fall */
-              lab(70 -5 -52) 100% /* wrap back to winter */
-            )`;
-    default:
-      return undefined;
-  }
-}
+const PICTURE_SCALES: Partial<
+  Record<GalleryColorizeBy, (language: string) => PictureScale>
+> = {
+  rating: (language) => ({
+    background: sampledGradient((t) => ratingColor(1 + 4 * t), 16),
+    ticks: [1, 2, 3, 4, 5].map((r) => ({ t: (r - 1) / 4, label: `${r}` })),
+    valueAt: (t) => formatScaleNumber(1 + 4 * t, 1, language),
+  }),
+  takenAt: ageScale,
+  createdAt: ageScale,
+  season: (language) => {
+    const dayMonth = new Intl.DateTimeFormat(language, {
+      day: 'numeric',
+      month: 'short',
+      timeZone: 'UTC',
+    });
+
+    return {
+      background: sampledGradient(seasonColor, 24),
+      wide: true,
+      ticks: Array.from({ length: 13 }, (_, i) => ({
+        t: i / 12,
+        label: `${(i % 12) + 1}`,
+      })),
+      valueAt: (t) =>
+        dayMonth.format((SEASON_START_S + seasonOffsetAt(t)) * SEC),
+    };
+  },
+};
 
 type Swatch = { color: string; label: string; title?: string };
 
@@ -120,12 +153,16 @@ export function pictureLegendApplies(
   colorizeBy: GalleryColorizeBy | null | undefined,
 ): boolean {
   return (
-    pictureGradient(colorizeBy) !== undefined ||
+    (colorizeBy != null && colorizeBy in PICTURE_SCALES) ||
     categoricalSwatches(colorizeBy, undefined) !== null
   );
 }
 
 export function PictureLegend() {
+  const dispatch = useDispatch();
+
+  const onClose = () => dispatch(galleryToggleLegend(false));
+
   const colorizeBy = useAppSelector(
     (state) =>
       state.map.layers.includes('I') && state.gallerySettings.colorizeBy,
@@ -133,123 +170,48 @@ export function PictureLegend() {
 
   const gm = useGalleryMessages();
 
-  const byDate = colorizeBy === 'takenAt' || colorizeBy === 'createdAt';
+  const language = useAppSelector((state) => state.l10n.language);
 
-  const background = pictureGradient(colorizeBy || undefined);
+  // Sampling the gradient converts colours, and new ticks re-measure the bar.
+  const scale = useMemo(
+    () => (colorizeBy ? PICTURE_SCALES[colorizeBy]?.(language) : undefined),
+    [colorizeBy, language],
+  );
 
   const swatches = categoricalSwatches(colorizeBy || undefined, gm);
 
   if (swatches) {
     return (
-      <LegendShell fit toolbarClassName="flex-wrap align-items-center gap-2">
+      <LegendShell
+        icon={ICON}
+        label={gm?.legend}
+        onClose={onClose}
+        className="flex-wrap align-items-center gap-2"
+      >
         {swatches.map(({ color, label, title }) => (
-          <LongPressTooltip key={color} label={title}>
-            {({ props }) => (
-              <span
-                {...props}
-                className="d-inline-flex align-items-center gap-1"
-              >
-                <span
-                  className="border rounded d-inline-block"
-                  style={{
-                    width: '16px',
-                    height: '16px',
-                    background: color,
-                  }}
-                />
-                <small>{label}</small>
-              </span>
-            )}
-          </LongPressTooltip>
+          <LegendSwatch key={color} color={color} label={label} title={title} />
         ))}
       </LegendShell>
     );
   }
 
-  if (!background) {
+  if (!scale) {
     return null;
   }
 
   return (
-    <LegendShell>
-      <div
-        // Not the toolbar's rhythm: the outermost tick is centred on the
-        // gradient's edge, so it needs room to overhang into (as in
-        // `ColorizeLegend`).
-        className="mx-2"
-        style={{
-          flexGrow: '1',
-          position: 'relative',
-          height: '34px',
-        }}
+    <LegendShell icon={ICON} label={gm?.legend} onClose={onClose}>
+      <LegendGradientBar
+        background={scale.background}
+        valueAt={scale.valueAt}
+        wide={scale.wide}
       >
-        <div
-          className="border rounded position-absolute"
-          style={{
-            inset: 0,
-            background,
-          }}
-        />
-
-        <div
-          className="text-body position-absolute"
-          style={{
-            inset: 0,
-            paintOrder: 'stroke',
-            WebkitTextStrokeWidth: '2px',
-            WebkitTextStrokeColor: 'var(--bs-body-bg)',
-          }}
-        >
-          {colorizeBy === 'rating'
-            ? new Array(5).fill(0).map((_, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: 'absolute',
-                    left: `calc(${(i * 100) / 4}% - 20px)`,
-                    top: '16%',
-                    width: '40px',
-                    textWrap: 'nowrap',
-                    textAlign: 'center',
-                  }}
-                >
-                  {i + 1}
-                </div>
-              ))
-            : byDate
-              ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 40].map((i, j) => (
-                  <div
-                    key={i}
-                    style={{
-                      transform: 'rotate(90deg)',
-                      fontSize: '0.75em',
-                      position: 'absolute',
-                      left: `calc(${(0.333 * i * 100) / (1 + 0.333 * i)}% - 4px)`,
-                      top: j % 2 ? '3px' : '13px',
-                    }}
-                  >
-                    {-i}
-                  </div>
-                ))
-              : colorizeBy === 'season'
-                ? new Array(13).fill(0).map((_, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        position: 'absolute',
-                        left: `calc(${(i * 100) / 12}% - 20px)`,
-                        top: '16%',
-                        width: '40px',
-                        textWrap: 'nowrap',
-                        textAlign: 'center',
-                      }}
-                    >
-                      {(i % 12) + 1}
-                    </div>
-                  ))
-                : null}
-        </div>
-      </div>
+        {scale.ticks.map(({ t, label }) => (
+          <LegendTick key={t} t={t}>
+            {label}
+          </LegendTick>
+        ))}
+      </LegendGradientBar>
     </LegendShell>
   );
 }

@@ -5,21 +5,20 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Stile predefinito',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Dividi',
-    pick: 'Clicca la traccia nel punto di divisione',
+    pick: 'Clicchi la traccia nel punto di divisione',
     here: 'Dividi qui',
-    segments: 'Dividi in segmenti',
   },
   join: {
     action: 'Unisci',
     asLine: 'Unisci in una sola linea',
     asSegments: 'Unisci mantenendo i segmenti',
-    pick: 'Clicca la traccia da unire',
+    pick: 'Clicchi la traccia da unire',
+    pickEnd: 'Selezioni un punto per unire le linee',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Aggancia ai percorsi',
     title: 'Aggancia ai percorsi',
@@ -31,21 +30,20 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     tooLong: 'Questa traccia ha troppi punti per essere agganciata.',
     tooShort: 'La traccia è troppo corta per essere agganciata.',
     brokenSequence:
-      'La traccia esce da qualche parte dalla rete mappata, quindi non può essere agganciata. Prova un altro mezzo oppure lascia la traccia com’è.',
+      'La traccia esce da qualche parte dalla rete mappata, quindi non può essere agganciata. Provi un altro mezzo oppure lasci la traccia com’è.',
     offNetwork:
-      'Il percorso agganciato è risultato molto più lungo della traccia, il che significa che la traccia non seguiva percorsi mappati — attraverso un prato, ad esempio. L’aggancio può rispondere solo con percorsi esistenti, quindi il risultato non sarebbe dove sei passato. La traccia resta invariata.',
+      'Il percorso agganciato è risultato molto più lungo della traccia, il che significa che la traccia non seguiva percorsi mappati — attraverso un prato, ad esempio. L’aggancio può rispondere solo con percorsi esistenti, quindi il risultato non sarebbe dove è passato. La traccia resta invariata.',
     partial:
       'Alcune parti della traccia non sono state agganciate — restano come registrate. Una traccia che cambia mezzo a metà strada (una camminata, poi il rientro in auto) va prima divisa.',
   },
   info: () => <DataViewerDetails />,
   upload: 'Carica',
   unnamedTrack: ({ n }) => `Traccia ${n}`,
-  convertLossWarning:
-    'La conversione in disegno sostituisce la traccia e ne scarta i dati registrati (quota, frequenza cardiaca, velocità, tempo).',
   simplifyAll: 'Semplifica tutto',
   moreInfo: 'Maggiori info',
+  breakApart: 'Separa in parti',
   saveAsMap: 'Salva nelle mie mappe',
-  loginToSaveMap: 'Accedi prima per salvare la traccia nelle tue mappe.',
+  loginToSaveMap: 'Acceda prima per salvare la traccia nelle sue mappe.',
   details: {
     startTime: 'Ora inizio',
     finishTime: 'Ora fine',
@@ -65,7 +63,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   },
   uploadModal: {
     title: 'Importa file',
-    drop: 'Trascina qui un file GPX, KML, KMZ, TCX o GeoJSON oppure clicca per selezionarlo.',
+    drop: 'Trascini qui un file GPX, KML, KMZ, TCX o GeoJSON oppure clicchi per selezionarlo.',
     mergeTitle: 'Dati già caricati',
     mergeMessage:
       'Alcuni geodati sono già visualizzati. Aggiungere i dati importati o sostituirli?',
@@ -73,39 +71,72 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Aggiungi',
     replace: 'Sostituisci',
   },
-  elevationFill: {
-    title: 'Dati di quota',
-    introNone: 'Questa traccia non ha dati di quota.',
-    introPartial: 'In alcuni punti di questa traccia manca la quota.',
-    introFull:
-      'Questa traccia ha già la quota, ma un modello del terreno è spesso ' +
-      'più preciso.',
-    premiumHiRes: (premiumLink) => (
+  trace: {
+    streams: 'Tracciamento dei corsi d’acqua',
+    forests: 'Tracciamento dei boschi',
+    streamsHelp:
+      'Serve a ricavare le linee dei corsi d’acqua dal modello del terreno ad alta risoluzione nel poligono selezionato. Adatto alla mappatura in OpenStreetMap.',
+    forestsHelp:
+      'Serve a tracciare le aree coperte dalle classi di punti LiDAR scelte nel poligono selezionato. Adatto soprattutto a mappare la copertura del suolo in OpenStreetMap.',
+    pixelSize: 'Dimensione del pixel',
+    pixelSizeHint: 'Vuoto per la risoluzione propria del modello del terreno.',
+    threshold: 'Area minima del bacino',
+    minLength: 'Lunghezza minima del corso d’acqua',
+    simplify: 'Tolleranza di semplificazione',
+    classes: 'Classi di punti',
+    classNames: {
+      lowVegetation: 'Vegetazione bassa',
+      mediumVegetation: 'Vegetazione media',
+      highVegetation: 'Vegetazione alta',
+      building: 'Edifici',
+      water: 'Acqua',
+    },
+    output: 'Risultato',
+    outputJosm: 'Apri in JOSM',
+    outputOsm: 'Scarica come OSM XML',
+    outputGeojson: 'Scarica come GeoJSON',
+    tooBig: ({ max }) => `Il poligono è troppo grande; il limite è ${max}.`,
+    run: 'Traccia',
+    legacy: ({ phrase, item }) => (
       <>
-        Con l’{premiumLink('accesso premium')}, nei paesi supportati la quota è
-        campionata da un modello nazionale ad alta risoluzione — per ora
-        Slovacchia (DMR 5.0: ÚGKK SR), altri in arrivo.
+        Invece dell’<i>easter egg</i> <code>{phrase}</code>, usi la voce{' '}
+        <i>{item}</i> nel menu ⋮ del poligono selezionato.
       </>
     ),
-    question: 'Cosa vuoi fare?',
+  },
+  elevationFill: {
+    title: 'Dati di quota',
+    introNone: 'Non ci sono ancora dati di quota.',
+    introPartial: 'In alcuni punti manca la quota.',
+    introFull:
+      'I dati di quota sono già presenti, ma un modello del terreno è spesso ' +
+      'più preciso.',
+    premiumHiRes: (premiumLink, countries) => (
+      <>
+        Con l’{premiumLink('accesso premium')}, in{' '}
+        {countries('molti paesi europei')} la quota è campionata da modelli
+        nazionali del terreno ad alta risoluzione.
+      </>
+    ),
+    question: 'Cosa vuole fare?',
     overrideAll: 'Sovrascrivi tutto',
     overrideAllDesc:
-      'sostituisci ogni punto con il modello del terreno — un profilo ' +
+      'sostituisce ogni punto con il modello del terreno — un profilo ' +
       'uniforme e coerente',
     fillMissing: 'Riempi mancanti',
     fillMissingDesc:
-      'mantieni i valori registrati e riempi solo le lacune (potrebbero ' +
+      'mantiene i valori registrati e riempie solo le lacune (potrebbero ' +
       'esserci scalini dove i due dati si incontrano)',
     keep: 'Non modificare',
     keepDesc: 'usa la quota memorizzata nella traccia',
     add: 'Aggiungi quota',
     update: 'Aggiorna quota',
-    updateConfirm:
-      'Sostituire la quota della traccia con il modello del terreno?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'La quota mancante è stata riempita.'
-        : 'La quota è stata sovrascritta.',
+        : mode === 'clear'
+          ? 'La quota è stata rimossa.'
+          : 'La quota è stata sovrascritta.',
   },
   fetchingError: ({ err }) =>
     addError(
@@ -119,7 +150,7 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
   unsaved: 'Non salvata',
   unsavedTooltip:
-    'Questa traccia non si trova in nessuna mappa salvata e non fa parte del collegamento: resta solo in questo browser, quindi condividere il collegamento non la condivide. Salvala nelle tue mappe per conservarla.',
+    "Questi dati non possono stare nell'indirizzo della pagina (URL) e non sono in nessuna mappa salvata: restano solo in questo browser. Li salvi nelle sue mappe per conservarli.",
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Errore durante l’aggancio della traccia', err),
 };

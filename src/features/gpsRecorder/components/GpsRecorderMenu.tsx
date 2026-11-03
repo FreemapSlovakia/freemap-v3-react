@@ -1,6 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { isToolOpen } from '@app/store/selectors.js';
 import { useDataMergeMode } from '@features/dataViewer/hooks/useDataMergeMode.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -8,6 +9,10 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect } from 'react';
@@ -30,7 +35,7 @@ import {
 } from '../model/actions.js';
 import {
   selectRecorderHasProfile,
-  selectRecorderSegments,
+  selectRecorderLines,
 } from '../model/selectors.js';
 import { useGpsRecorderMessages } from '../translations/useGpsRecorderMessages.js';
 import classes from './GpsRecorderMenu.module.css';
@@ -38,6 +43,8 @@ import { GpsRecorderReadout } from './GpsRecorderReadout.js';
 
 export default function GpsRecorderMenu(): ReactElement {
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const m = useMessages();
 
@@ -55,8 +62,8 @@ export default function GpsRecorderMenu(): ReactElement {
 
   // What finishing would actually produce: the hand-over drops segments too short
   // to be a line, so counting raw fixes would offer a Finish that takes nothing.
-  const saveable = useAppSelector((state) =>
-    selectRecorderSegments(state).some((segment) => segment.length >= 2),
+  const saveable = useAppSelector(
+    (state) => selectRecorderLines(state).length > 0,
   );
 
   // The profile of the ride so far, redrawn as fixes arrive — offered while the
@@ -112,7 +119,6 @@ export default function GpsRecorderMenu(): ReactElement {
       dispatch(gpsRecorderSync());
     }
   }, [open, dispatch]);
-
   // Always asked: the tap empties the recorder either way — its track is taken
   // and deleted, so a start afterwards begins a new one. Running, it also ends a
   // ride that cannot be resumed, which is what the message leads with.
@@ -259,6 +265,10 @@ export default function GpsRecorderMenu(): ReactElement {
           </Button>
         )}
       </LongPressTooltip>
+
+      <ResponsiveActions toggleLabel={m?.general.actions}>
+        <Action {...manualAction('gps-recorder')} />
+      </ResponsiveActions>
     </ToolMenu>
   );
 }

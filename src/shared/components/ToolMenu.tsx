@@ -1,6 +1,7 @@
 import { closeTool, openTool, type Tool } from '@app/store/actions.js';
 import { activeMapToolSelector, isToolOpen } from '@app/store/selectors.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toolbarMounted } from '@features/map/panToUncovered.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
@@ -9,16 +10,12 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import clsx from 'clsx';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
-import {
-  FaAngleLeft,
-  FaAngleRight,
-  FaPencilRuler,
-  FaTimes,
-} from 'react-icons/fa';
+import { FaAngleLeft, FaAngleRight, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { isMapClickTool, toolDefinitions } from '../toolDefinitions.js';
+import { useEscapeKbd } from '../hooks/useEscapeKbd.js';
+import { toolDefinitions } from '../toolDefinitions.js';
 
 type Props = {
   tool: Tool;
@@ -45,6 +42,8 @@ type Props = {
    * tool's name stays beside it either way.
    */
   wrapCollapsedIcon?: (icon: ReactNode) => ReactNode;
+  /** Set while the map-click tool is in a state where it takes no map clicks. */
+  mapClicksIdle?: boolean;
 };
 
 export function ToolMenu({
@@ -54,10 +53,13 @@ export function ToolMenu({
   noClose,
   iconClassName,
   wrapCollapsedIcon,
+  mapClicksIdle,
 }: Props): ReactElement {
   const sc = useScrollClasses('horizontal');
 
   const dispatch = useDispatch();
+
+  const closeKbd = useEscapeKbd(closeTool(tool));
 
   const m = useMessages();
 
@@ -79,19 +81,22 @@ export function ToolMenu({
 
   const collapsed = !open || (collapsible && userCollapsed);
 
+  // Releases a fit waiting for the opened tool's controls.
+  useEffect(() => {
+    if (open) {
+      toolbarMounted();
+    }
+  }, [open]);
+
   // Not merely "is a map-click tool": while a picking mode owns the map the tool
   // goes inert, and the outline would then promise clicks it doesn't take.
-  const ownsMapClicks = useAppSelector(
-    (state) => activeMapToolSelector(state) === tool,
-  );
+  const ownsMapClicks =
+    useAppSelector((state) => activeMapToolSelector(state) === tool) &&
+    !mapClicksIdle;
 
   const buttonIcon = collapsed && wrapCollapsedIcon !== undefined;
 
-  const icon = toolDef && (
-    <span className={iconClassName}>
-      {toolDef.draw ? <FaPencilRuler /> : toolDef.icon}
-    </span>
-  );
+  const icon = toolDef && <span className={iconClassName}>{toolDef.icon}</span>;
 
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
@@ -105,9 +110,7 @@ export function ToolMenu({
             <>
               <LongPressTooltip
                 breakpoint="sm"
-                label={
-                  toolDef.draw ? m?.tools.measurement : m?.tools[toolDef.msgKey]
-                }
+                label={m?.tools[toolDef.msgKey]}
               >
                 {({ label, labelClassName, props }) => (
                   <span
@@ -170,14 +173,8 @@ export function ToolMenu({
                 </LongPressTooltip>
               )}
 
-              {/* Escape closes the tool that owns map clicks — it is what leaves
-                  a mode — so only there does it name the same gesture as this
-                  button. */}
               {!noClose && (
-                <LongPressTooltip
-                  label={m?.general.close}
-                  kbd={isMapClickTool(tool) ? 'Esc' : undefined}
-                >
+                <LongPressTooltip label={m?.general.close} kbd={closeKbd}>
                   {({ props }) => (
                     <Button
                       variant="dark"

@@ -2,14 +2,19 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { CachedMapsMessages } from './CachedMapsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
-  cacheOfflineMap: 'Shrani zemljevid za uporabo brez povezave',
-  modifyOfflineMap: 'Uredi zemljevid brez povezave',
+  newOfflineMap: 'Nov zemljevid brez povezave',
+  modifyOfflineMap: (name) => (
+    <>
+      Uredi zemljevid brez povezave <i>{name}</i>
+    </>
+  ),
   deviceOnly:
     'Zemljevid brez povezave se shrani samo v tem brskalniku na tej napravi.',
   deviceOnlyHint:
     'Da bo na voljo v drugem brskalniku ali na drugi napravi, ga je treba ustvariti tam.',
   toDownload: 'Za prenos',
   addOfflineMap: 'Dodaj zemljevid brez povezave',
+  showInInstalledMaps: 'Prikaži med nameščenimi kartami',
   emptyMessage:
     'Zaenkrat ni shranjenih zemljevidov brez povezave. Dodajte enega za uporabo zemljevidov brez internetne povezave.',
   zoom: 'Približava',

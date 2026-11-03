@@ -8,7 +8,7 @@
 // Reference: Garmin GPX symbol list (BaseCamp / MapSource defaults), e.g.
 // https://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd & community wikis.
 
-import { faSpec, poiSpec } from '@shared/drawingIcons.js';
+import { faSpec, parseIconSpec, poiSpec } from '@shared/drawingIcons.js';
 
 // poi name (filename stem) -> Garmin sym. Multiple poi entries may share the
 // same sym, which is fine for export.
@@ -208,15 +208,14 @@ export function iconSpecToGarminSym(
     return undefined;
   }
 
-  if (icon.startsWith('poi:')) {
-    return POI_TO_SYM[icon.slice(4)];
-  }
+  // Through the parser, so a spec naming a renamed icon finds its row.
+  const spec = parseIconSpec(icon);
 
-  if (icon.startsWith('fa:')) {
-    return FA_TO_SYM[icon.slice(3)];
-  }
-
-  return undefined;
+  return spec?.kind === 'poi'
+    ? POI_TO_SYM[spec.name]
+    : spec?.kind === 'fa'
+      ? FA_TO_SYM[spec.name]
+      : undefined;
 }
 
 /**

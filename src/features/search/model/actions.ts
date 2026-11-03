@@ -3,6 +3,7 @@ import {
   DrawingStyleSchema,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { createAction } from '@reduxjs/toolkit';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import { type FeatureId, FeatureIdSchema } from '@shared/types/featureId.js';
 import type { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
 import z from 'zod';
@@ -27,6 +28,10 @@ export type SearchResultStyle = DrawingStyle;
 
 export const searchSetResultStyle = createAction<SearchResultStyle>(
   'SEARCH_SET_RESULT_STYLE',
+);
+
+export const searchSetLabelVisibility = createAction<LabelVisibility>(
+  'SEARCH_SET_LABEL_VISIBILITY',
 );
 
 export const SearchSourceSchema = z.union([
@@ -183,7 +188,8 @@ export type SearchResultTier = 'preview' | 'keep';
  */
 export const searchSelectResult = createAction<{
   result: SearchResult;
-  focus?: boolean;
+  /** `pan` brings the result into view at the zoom the map is at. */
+  focus?: boolean | 'pan';
   /** Defaults to `preview`. */
   tier?: SearchResultTier;
   /**
@@ -193,6 +199,8 @@ export const searchSelectResult = createAction<{
    * was asked for.
    */
   select?: boolean;
+  /** Whether its details toast opens; defaults to true. */
+  details?: boolean;
 } | null>('SEARCH_SELECT_RESULT');
 
 /** Takes one result off the map, leaving the rest of them shown. */

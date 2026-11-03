@@ -1,5 +1,11 @@
 import { init } from '@bokuweb/zstd-wasm';
-import { createTileLayerComponent } from '@react-leaflet/core';
+import {
+  createTileLayerComponent,
+  type EventedProps,
+  updateGridLayer,
+} from '@react-leaflet/core';
+import { TERRAIN_TILES_URL } from '@shared/mapDefinitions.js';
+import { noteTileCodes } from '@shared/tileAttribution.js';
 import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
   type Coords,
@@ -12,8 +18,14 @@ import {
 import type { Messages } from '@/translations/messagesInterface.js';
 import {
   type Color,
+  MAX_COLOR_STOPS,
+  MAX_RADIUS_PX,
+  MAX_SHADING_COMPONENTS,
+  radiusPx,
   SHADING_COMPONENT_TYPES,
   type Shading,
+  type ShadingComponent,
+  SKY_MODES,
 } from '../model/Shading.js';
 import { DataWriter } from './DataWriter.js';
 import classes from './ShadingLayer.module.css';
@@ -25,15 +37,36 @@ type ShadingLayerOptions = GridLayerOptions & {
   shading: Shading;
   premiumFromZoom: number | undefined;
   premiumOnlyText: string | undefined;
+  /** Sent as a bearer token with tiles from this URL zoom up. */
+  tileAuth?: { fromZoom: number; token: string };
   gpuMessages?: Messages['gpu'];
   onPremiumClick?: () => void;
 };
 
 type CanvasEx = HTMLCanvasElement & {
   _render: (shading: Shading) => void;
+  /** Whether its elevation border is too narrow for `shading`. */
+  _outgrown?: (shading: Shading) => boolean;
   _gpuCleanup?: () => void;
   _gpuUnloaded?: boolean;
 };
+
+// Elevation borders a tile is fetched with, so a radius change refetches only
+// when it outgrows the one at hand.
+const BORDERS = [2, 8, 16, 32, MAX_RADIUS_PX];
+
+/** A layer's radius in pixels on the elevation tile `z`/`y`. */
+const componentRadius = (c: ShadingComponent, z: number, y: number) =>
+  'radius' in c ? radiusPx(c, z, y) : 0;
+
+/** The border `shading` reads beyond tile `z`/`y`, rounded up to `BORDERS`. */
+function elevationBorder(shading: Shading, z: number, y: number) {
+  const radius = Math.max(
+    ...shading.components.map((c) => componentRadius(c, z, y)),
+  );
+
+  return BORDERS.find((b) => b >= radius) ?? MAX_RADIUS_PX;
+}
 
 class TileNotFoundError extends Error {}
 
@@ -287,9 +320,17 @@ class LShadingLayer extends LGridLayer {
     // zoomOffset-adjusted `zoom` which is only used for URL templating.
     const key = `${x}/${y}/${coords.z}`;
 
-    const url = Util.template(this._options.url, { x, y, z: zoom });
+    const border = elevationBorder(this.shading, zoom, y);
 
-    canvas.dataset['url'] = url;
+    const templated = Util.template(this._options.url, { x, y, z: zoom });
+
+    // Only terrain-tiles serves a border other than 2 px.
+    const widens = templated.startsWith(`${TERRAIN_TILES_URL}/`);
+
+    const url =
+      border > 2 && widens
+        ? `${templated}${templated.includes('?') ? '&' : '?'}buffer=${border}`
+        : templated;
 
     const controller = new AbortController();
 
@@ -300,7 +341,15 @@ class LShadingLayer extends LGridLayer {
     let res;
 
     try {
-      res = await fetch(url, { signal });
+      const { tileAuth } = this._options;
+
+      res = await fetch(url, {
+        signal,
+        ...(tileAuth &&
+          zoom >= tileAuth.fromZoom && {
+            headers: { authorization: `Bearer ${tileAuth.token}` },
+          }),
+      });
     } catch {
       if (signal.aborted) {
         throw new TileAbortedError();
@@ -320,6 +369,11 @@ class LShadingLayer extends LGridLayer {
       throw new Error(`unexpected status ${res.status}`);
     }
 
+    // The datasets it was drawn from, for the attribution.
+    canvas.dataset['tileUrl'] = url;
+
+    noteTileCodes(url, res.headers);
+
     canvas.style.display = '';
 
     const compressed = new Uint8Array(await res.arrayBuffer());
@@ -333,6 +387,9 @@ class LShadingLayer extends LGridLayer {
     if (!Number.isInteger(tileSize)) {
       throw new Error('Tile is not square');
     }
+
+    // Other sources are taken to hold a 2 px border.
+    const tileBorder = tileSize === 256 + 2 * border ? border : 2;
 
     const texture = device.createTexture({
       size: [tileSize, tileSize],
@@ -353,7 +410,8 @@ class LShadingLayer extends LGridLayer {
 
     const shadingBuffer = device.createBuffer({
       size:
-        8 * 4 + 8 /* MAX_COMPONENTS */ * 4 * (8 + 16 /* colors len */ * 8 * 8),
+        // Header, then per component 12 words and 16 stops of 8 words each.
+        8 * 4 + MAX_SHADING_COMPONENTS * 4 * (12 + MAX_COLOR_STOPS * 8),
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
@@ -389,6 +447,9 @@ class LShadingLayer extends LGridLayer {
       return false;
     }
 
+    canvasEx._outgrown = (shading: Shading) =>
+      widens && elevationBorder(shading, zoom, y) > tileBorder;
+
     canvasEx._render = (shading: Shading) => {
       const shadingData = new ArrayBuffer(shadingBuffer.size);
 
@@ -401,30 +462,44 @@ class LShadingLayer extends LGridLayer {
         dw.f32(color[3]);
       }
 
-      dw.u32(shading.components.length);
+      // More would overflow the uniform buffer.
+      const components = shading.components.slice(0, MAX_SHADING_COMPONENTS);
+
+      dw.u32(components.length);
       dw.u32(zoom);
-      dw.pad32(2);
+      dw.u32(y);
+      dw.u32(tileBorder);
 
       writeColor(shading.backgroundColor);
 
-      for (const component of shading.components) {
+      for (const component of components) {
         dw.u32(SHADING_COMPONENT_TYPES.indexOf(component.type));
         dw.f32('azimuth' in component ? component.azimuth : NaN);
         dw.f32('elevation' in component ? component.elevation : NaN);
         dw.f32(component.contrast);
         dw.f32(component.brightness);
         dw.f32('exaggeration' in component ? component.exaggeration : 1.0);
-        dw.u32(component.colorStops.length);
+        const stops = component.colorStops.slice(0, MAX_COLOR_STOPS);
+
+        dw.u32(stops.length);
+        dw.f32('interval' in component ? component.interval : NaN);
+        dw.f32('lineWidth' in component ? component.lineWidth : NaN);
+        dw.u32(componentRadius(component, zoom, y));
+        dw.u32(
+          component.type === 'sky-view'
+            ? SKY_MODES.indexOf(component.skyMode)
+            : 0,
+        );
         dw.pad32(1);
 
-        for (const colorStop of component.colorStops) {
+        for (const colorStop of stops) {
           dw.f32(colorStop.value);
           dw.pad32(3);
 
           writeColor(colorStop.color);
         }
 
-        dw.pad32(8 * (16 - component.colorStops.length));
+        dw.pad32(8 * (MAX_COLOR_STOPS - stops.length));
       }
 
       device.queue.writeBuffer(shadingBuffer, 0, shadingData);
@@ -463,9 +538,12 @@ class LShadingLayer extends LGridLayer {
 
   createTile(coords: Coords, done: DoneCallback) {
     if (this.errorDiv) {
-      done(new Error('already errored'));
+      const div = document.createElement('div');
 
-      return document.createElement('div');
+      // With the element: `tileerror` hands it to its listeners.
+      done(new Error('already errored'), div);
+
+      return div;
     }
 
     const isOnPremiumZoom =
@@ -481,7 +559,6 @@ class LShadingLayer extends LGridLayer {
         const a = document.createElement('a');
 
         a.href = '#show=premium';
-        a.target = '_blank';
         a.innerText = this._options.premiumOnlyText;
         a.onclick = this.handlePremiumClick;
 
@@ -521,7 +598,7 @@ class LShadingLayer extends LGridLayer {
           this.showError(err);
         }
 
-        done(err);
+        done(err, canvas);
       },
     );
 
@@ -531,8 +608,19 @@ class LShadingLayer extends LGridLayer {
   setShading(shading: Shading) {
     this.shading = shading;
 
+    let outgrown = false;
+
     for (const tile in this._tiles) {
-      (this._tiles[tile].el as CanvasEx)._render?.(shading);
+      const canvas = this._tiles[tile].el as CanvasEx;
+
+      canvas._render?.(shading);
+
+      outgrown ||= canvas._outgrown?.(shading) ?? false;
+    }
+
+    // Tiles fetched with a narrower border can't serve the wider radius.
+    if (outgrown) {
+      this.redraw();
     }
   }
 
@@ -575,7 +663,7 @@ class LShadingLayer extends LGridLayer {
   }
 }
 
-type Props = ShadingLayerOptions;
+type Props = ShadingLayerOptions & EventedProps;
 
 export default createTileLayerComponent<LShadingLayer, Props>(
   (props, context) => ({
@@ -584,6 +672,9 @@ export default createTileLayerComponent<LShadingLayer, Props>(
   }),
 
   (instance, props, prevProps) => {
+    // The stack order moves a mounted layer's z-index.
+    updateGridLayer(instance, props, prevProps);
+
     if (JSON.stringify(props.shading) !== JSON.stringify(prevProps.shading)) {
       instance.setShading(props.shading);
     } else if (

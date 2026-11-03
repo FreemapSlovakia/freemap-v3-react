@@ -5,6 +5,9 @@ import {
   readCoordTimes,
 } from '../colorize.js';
 
+const sameDay = (a: number, b: number) =>
+  new Date(a).toDateString() === new Date(b).toDateString();
+
 /**
  * Colour by elapsed time along the track. Offered only when real per-point
  * timestamps exist (e.g. a recorded GPX); a planned route has none, so the
@@ -36,4 +39,20 @@ export const timeColorizer: Colorizer = {
 
       return { coords, values };
     }),
+  legend: {
+    values: (feature) =>
+      readCoordTimes(feature, feature.geometry.coordinates.length) ?? [],
+    // A time, with its date where the line runs over more than one day, is a
+    // wider label than the default bar spaces.
+    wide: true,
+    format: (language, { min, max }) => {
+      const fmt = new Intl.DateTimeFormat(language, {
+        ...(!sameDay(min, max) && { day: 'numeric', month: 'short' }),
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      return (value) => fmt.format(value);
+    },
+  },
 };

@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -25,7 +25,7 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Suivre l’appareil <i>{name}</i>
+        Nouvel appareil suivi <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,7 +58,7 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Ajouter un jeton de suivi pour <i>{deviceName}</i>
+        Nouveau jeton de suivi pour <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -82,7 +82,7 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Code QR Traccar',
     button: 'Mes appareils',
     modalTitle: 'Mes appareils suivis',
-    createTitle: 'Créer un appareil de suivi',
+    createTitle: 'Nouvel appareil de suivi',
     watchTokens: 'Jetons de suivi',
     watchPrivately: 'Suivre en privé',
     watch: 'Suivre',
@@ -108,9 +108,9 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
 
         <hr />
 
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Comment configurer votre appareil suivi
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

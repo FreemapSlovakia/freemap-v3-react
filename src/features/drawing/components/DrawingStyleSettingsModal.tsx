@@ -1,30 +1,39 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import {
   type ReactElement,
   type ReactNode,
   type SubmitEvent,
   useCallback,
+  useState,
 } from 'react';
-import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { Modal } from 'react-bootstrap';
+import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   type DrawingStyle,
   drawingStyleEquals,
 } from '../model/reducers/drawingSettingsReducer.js';
+import { LabelVisibilityField } from './LabelVisibilityField.js';
 import { useDrawingStyleEditor } from './useDrawingStyleEditor.js';
 
 /** An extra footer action (between Save and Reset), e.g. drawing's "Apply to all". */
 type ExtraAction = {
   key: string;
   label: ReactNode;
-  icon?: ReactNode;
+  icon: ReactNode;
   variant?: string;
-  /** Receives the edited style; the modal closes afterwards. */
-  onClick: (style: DrawingStyle) => void;
+  /** Receives the edited values; the modal closes afterwards. */
+  onClick: (style: DrawingStyle, labelVisibility: LabelVisibility) => void;
 };
 
 type Props = {
@@ -39,9 +48,11 @@ type Props = {
   current: DrawingStyle;
   /** Style the "Reset to default" button refills the form with. */
   defaults: DrawingStyle;
+  currentLabelVisibility: LabelVisibility;
+  defaultLabelVisibility: LabelVisibility;
   widthStep?: number;
-  /** Receives the edited style on Save; the modal closes afterwards. */
-  onSave: (style: DrawingStyle) => void;
+  /** Receives the edited values on Save; the modal closes afterwards. */
+  onSave: (style: DrawingStyle, labelVisibility: LabelVisibility) => void;
   extraActions?: ExtraAction[];
 };
 
@@ -58,6 +69,8 @@ export function DrawingStyleSettingsModal({
   icon = <FaPaintBrush />,
   current,
   defaults,
+  currentLabelVisibility,
+  defaultLabelVisibility,
   widthStep = 0.1,
   onSave,
   extraActions,
@@ -68,6 +81,10 @@ export function DrawingStyleSettingsModal({
 
   const editor = useDrawingStyleEditor(current, { widthStep });
 
+  const [labelVisibility, setLabelVisibility] = useState(
+    currentLabelVisibility,
+  );
+
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
@@ -75,7 +92,7 @@ export function DrawingStyleSettingsModal({
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    onSave(editor.style);
+    onSave(editor.style, labelVisibility);
 
     close();
   };
@@ -102,42 +119,60 @@ export function DrawingStyleSettingsModal({
           <Modal.Title>
             {icon} {title}
           </Modal.Title>
+          <ManualHeaderButton chapter="drawing" />
         </Modal.Header>
 
-        <Modal.Body>{editor.element}</Modal.Body>
+        <Modal.Body>
+          {editor.element}
 
-        <Modal.Footer>
-          <Button type="submit" disabled={editor.invalid || !editor.dirty}>
-            <FaCheck /> {m?.general.save}
-          </Button>
+          <LabelVisibilityField
+            value={labelVisibility}
+            onChange={setLabelVisibility}
+          />
+        </Modal.Body>
+
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={
+              editor.invalid ||
+              (!editor.dirty && labelVisibility === currentLabelVisibility)
+            }
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           {extraActions?.map((action) => (
-            <Button
+            <FmFooterButton
               key={action.key}
               variant={action.variant ?? 'secondary'}
               disabled={editor.invalid}
               onClick={() => {
-                action.onClick(editor.style);
+                action.onClick(editor.style, labelVisibility);
 
                 close();
               }}
-            >
-              {action.icon} {action.label}
-            </Button>
+              icon={action.icon}
+              label={action.label}
+            />
           ))}
 
           <ResetToDefaultsButton
-            onClick={() => editor.reset(defaults)}
+            onClick={() => {
+              editor.reset(defaults);
+
+              setLabelVisibility(defaultLabelVisibility);
+            }}
             // Enabled while invalid so reset can recover a broken field.
             disabled={
-              !editor.invalid && drawingStyleEquals(editor.style, defaults)
+              !editor.invalid &&
+              drawingStyleEquals(editor.style, defaults) &&
+              labelVisibility === defaultLabelVisibility
             }
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

@@ -218,6 +218,52 @@ function patched(
 }
 
 /**
+ * The keys a line's style is read from and written to, in every dialect. Keep
+ * in step with the readers and writers here: whoever compares features by the
+ * style they resolve to (the link's round trip) leaves exactly these out.
+ */
+export const LINE_STYLE_KEYS = [
+  'freemap:type',
+  'freemap:color',
+  'freemap:fillColor',
+  'freemap:width',
+  'freemap:lineCap',
+  'freemap:lineJoin',
+  'freemap:dashArray',
+  'stroke',
+  'stroke-opacity',
+  'stroke-width',
+  'stroke-linecap',
+  'stroke-linejoin',
+  'stroke-dasharray',
+  'fill',
+  'fill-opacity',
+  'osmand:color',
+  'osmand:fill_color',
+  'osmand:width',
+  'gpx_style:hasFill',
+] as const;
+
+/**
+ * The same for a point. `icon`, `sym` and `marker-symbol` are left to the
+ * caller: they can say more than the resolved style (a KML image URL, a
+ * Garmin symbol with no icon).
+ */
+export const POINT_STYLE_KEYS = [
+  'freemap:color',
+  'marker-color',
+  'marker-color-opacity',
+  'osmand:color',
+  'icon-color',
+  'icon-opacity',
+  'freemap:markerType',
+  'markerType',
+  'osmand:background',
+  'freemap:icon',
+  'osmand:icon',
+] as const;
+
+/**
  * The inverse of {@link lineStyleFromProperties}: `freemap:*` for our own
  * lossless read-back, mirrored into simplestyle for everyone else, and the
  * lower-priority dialects dropped so nothing stale contradicts what is written.
@@ -226,7 +272,7 @@ export function lineStyleToProperties(
   properties: Record<string, unknown> | null | undefined,
   style: {
     type: DrawingLineType;
-    color: string;
+    color?: string;
     fillColor?: string;
     width?: number;
     lineCap?: LineCap;
@@ -234,7 +280,7 @@ export function lineStyleToProperties(
     dashArray?: number[];
   },
 ): Record<string, unknown> {
-  const stroke = splitColorAlpha(style.color);
+  const stroke = style.color ? splitColorAlpha(style.color) : undefined;
 
   // Both dialects read a dash as a string; our own reader takes nothing else.
   const dash = style.dashArray?.length ? style.dashArray.join(' ') : undefined;
@@ -251,7 +297,7 @@ export function lineStyleToProperties(
     'freemap:lineCap': style.lineCap,
     'freemap:lineJoin': style.lineJoin,
     'freemap:dashArray': dash,
-    stroke: stroke.color,
+    stroke: stroke?.color,
     'stroke-opacity': alpha(stroke),
     'stroke-width': style.width,
     'stroke-linecap': style.lineCap,
@@ -266,32 +312,41 @@ export function lineStyleToProperties(
   });
 }
 
-/** The inverse of {@link pointStyleFromProperties}; see {@link lineStyleToProperties}. */
+/**
+ * The inverse of {@link pointStyleFromProperties}; see {@link lineStyleToProperties}.
+ * Only the fields `style` names are written, so a symbol it could not read survives.
+ */
 export function pointStyleToProperties(
   properties: Record<string, unknown> | null | undefined,
-  style: { color: string; markerType?: MarkerType; icon?: string },
+  style: { color?: string; markerType?: MarkerType; icon?: string },
 ): Record<string, unknown> {
-  const marker = splitColorAlpha(style.color);
+  const marker = style.color ? splitColorAlpha(style.color) : undefined;
 
   const icon = style.icon || undefined;
 
   const sym = iconSpecToGarminSym(icon);
 
   return patched(properties, {
-    'freemap:color': style.color,
-    'freemap:markerType': style.markerType,
-    'freemap:icon': icon,
-    'marker-color': marker.color,
-    'marker-color-opacity': alpha(marker),
-    'marker-symbol': sym,
-    markerType: style.markerType,
-    icon,
-    // GPX export writes `<sym>` from this one.
-    sym,
-    'osmand:color': undefined,
-    'osmand:icon': undefined,
-    'osmand:background': undefined,
-    'icon-color': undefined,
-    'icon-opacity': undefined,
+    ...('color' in style && {
+      'freemap:color': style.color,
+      'marker-color': marker?.color,
+      'marker-color-opacity': alpha(marker),
+      'osmand:color': undefined,
+      'icon-color': undefined,
+      'icon-opacity': undefined,
+    }),
+    ...('markerType' in style && {
+      'freemap:markerType': style.markerType,
+      markerType: style.markerType,
+      'osmand:background': undefined,
+    }),
+    ...('icon' in style && {
+      'freemap:icon': icon,
+      'marker-symbol': sym,
+      icon,
+      // GPX export writes `<sym>` from this one.
+      sym,
+      'osmand:icon': undefined,
+    }),
   });
 }

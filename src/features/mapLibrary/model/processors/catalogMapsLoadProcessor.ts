@@ -1,0 +1,94 @@
+import { init } from '@app/store/actions.js';
+import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
+import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+import { catalogInstalledByDefault } from '@shared/mapLibrary/installed.js';
+import { createSelector } from 'reselect';
+import { isUnreachable, loadCatalogMaps } from '../../catalog.js';
+import {
+  mapLibraryCatalogMapsLoaded,
+  mapLibraryLoadRetry,
+} from '../actions.js';
+import { drawnTypesSelector } from '../selectors.js';
+import { scheduleRetry } from './mapLibraryLoadProcessor.js';
+
+/** Catalog ids wanted but not known, comma-joined: installed, on the map, or an offline or named map's source. */
+const missingCatalogIdsSelector = createSelector(
+  (state: RootState) => state.map.layersSettings,
+  drawnTypesSelector,
+  (state: RootState) => state.map.cachedMaps,
+  (state: RootState) => state.map.catalogMaps,
+  (state: RootState) => state.map.customLayers,
+  (layersSettings, layers, cachedMaps, catalogMaps, customLayers) =>
+    [
+      ...new Set([
+        ...Object.keys(layersSettings).filter(
+          (type) => layersSettings[type].installed,
+        ),
+        ...catalogInstalledByDefault.filter(
+          (type) => layersSettings[type]?.installed !== false,
+        ),
+        ...layers,
+        ...cachedMaps.map((cm) => cm.sourceType),
+        ...customLayers.flatMap((def) => (def.source ? [def.source] : [])),
+      ]),
+    ]
+      .filter(
+        (type) =>
+          isCatalogId(type) && !catalogMaps.some((map) => map.type === type),
+      )
+      .sort()
+      .join(','),
+);
+
+/** Asked for already; an id the catalog lacks isn't asked for again. */
+const asked = new Set<string>();
+
+export const catalogMapsLoadProcessor: Processor = {
+  actionCreator: [init, mapLibraryLoadRetry],
+  stateChangePredicate: missingCatalogIdsSelector,
+  predicatesOperation: 'OR',
+  handle({ getState, dispatch }) {
+    const missing = missingCatalogIdsSelector(getState());
+
+    const types = missing
+      ? missing.split(',').filter((type) => !asked.has(type))
+      : [];
+
+    if (!types.length) {
+      return;
+    }
+
+    for (const type of types) {
+      asked.add(type);
+    }
+
+    // Not awaited: loading the catalog is no reason for the progress spinner.
+    void loadCatalogMaps(types).then(
+      (maps) => {
+        dispatch(mapLibraryCatalogMapsLoaded(maps));
+      },
+      (err: unknown) => {
+        for (const type of types) {
+          asked.delete(type);
+        }
+
+        // Out of reach (offline, say): asked again quietly, as the maps couldn't
+        // draw without the network anyway.
+        if (!isUnreachable(err)) {
+          dispatch(
+            toastsAdd({
+              id: 'mapLibrary.catalogError',
+              messageKey: 'general.loadError',
+              messageParams: { err },
+              style: 'danger',
+            }),
+          );
+        }
+
+        scheduleRetry(dispatch);
+      },
+    );
+  },
+};

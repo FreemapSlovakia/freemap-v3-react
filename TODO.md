@@ -5,23 +5,6 @@ product decisions — is tracked as a GitHub issue instead; the sections below s
 which label to look under. See [`doc/architecture.md`](./doc/architecture.md) for
 the surrounding context.
 
-## Waiting on upstream
-
-- [ ] **Unpin zod once 4.5.x carries the cycle fix.** `package.json` pins
-      `"zod": "4.4.3"` exactly, because 4.5.0 broke every schema `zod-geojson`
-      composes: `GeoJSONFeature*Schema` spends ~8 s on the main thread and then
-      throws `RangeError: Maximum call stack size exceeded`, which took the
-      stored-track restore, saved and offline maps, and search results with it
-      (fixed in `44f7f3bb`). The cause is upstream —
-      [colinhacks/zod#6526](https://github.com/colinhacks/zod/issues/6526), fixed
-      by [#6530](https://github.com/colinhacks/zod/pull/6530), merged 2026-09-01
-      but unreleased as of that date; latest published is 4.5.4. When a release
-      lands, verify before widening the range: `GeoJSONFeatureCollectionSchema`
-      must parse `{type:'FeatureCollection',features:[]}` in milliseconds. The
-      caret is what let 4.5 in, so re-pin rather than trust the range.
-      [reilem/zod-geojson#37](https://github.com/reilem/zod-geojson/issues/37)
-      tracks memoising their factories, which would make us immune regardless.
-
 ## Committed work
 
 - [~] **Add automated tests.** Vitest + jsdom now configured (`vitest.config.ts`,
@@ -80,16 +63,11 @@ Still emitting at info level (non-blocking, optional cleanup):
       removal, ~85 handlers across those files are a single expression used
       exactly once, so the named const buys nothing. Purely cosmetic: named and
       inline forms are memoized identically. Unlike the `useCallback` removal
-      this is *not* provably a no-op — inlining shifts where the arrow is
+      this is _not_ provably a no-op — inlining shifts where the arrow is
       created, so the cache layout changes (equivalently, but not
       byte-identically). Prefer doing it opportunistically while editing a file
       rather than as a sweep; the 26 handlers used more than once stay named.
 
-- [ ] **Viewshed viewpoint picking has no Escape.** Every other picking mode is
-      cancelled by Escape in `keyboardHandler`; `viewshedSetPickingViewpoint`
-      was never added to that chain, so its toolbar is the one that cannot
-      advertise `cancelKbd="Esc"`. Add it beside the toposcope and panorama
-      cases, then pass the prop.
 - [ ] **Make `pickingModeSelector` answer _which_ mode, not just whether.**
       It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
       six modes, `keyboardHandler` handles them at three different priorities
@@ -106,33 +84,15 @@ Still emitting at info level (non-blocking, optional cleanup):
       `showGalleryPicker || picking` is a behaviour change for those two —
       decide it deliberately rather than letting the two lists keep diverging.
       Folds into the item above.
-- [ ] **A modified click on an SPA link never opens a new tab.** Every in-page
-      link — `useModalLink`, the `handleSelect` menu rows, `CreditsText`,
-      `Attribution` — calls `preventDefault` unconditionally, so Ctrl/Cmd-click
-      routes in-page instead of opening a tab. Middle-click escapes it (that is
-      `auxclick`), so the two gestures disagree. Guarding on the modifier keys
-      is the easy half; the hard half is that these hrefs are not deep links.
-      A bare `#show=…`/`#layers=…` replaces the *whole* hash, and a fresh load
-      restores only what persists — not the route, the drawing or the open
-      tools (`persistence.ts` keeps `transportType`/`milestones` and nothing
-      else of them) — so the new tab would open the modal over a map that is
-      not the one clicked on. Worse for the rows whose href *sets* what the
-      handler *toggles* (`#layers=`, `#tools=`): a bare `#layers=I` drops the
-      base layer and `urlMapUtils` substitutes `X`. A faithful href is the
-      current hash with `show=` merged in, which means reading mutable URL
-      state during render — a React Compiler hazard, see
-      [`doc/react-compiler.md`](./doc/react-compiler.md). Documents are the one
-      safe subset: self-contained, and the links people most want in a tab.
-      Attempted and reverted once; don't re-do the guard without the href.
 - [ ] **`Attribution`'s document-link branch is unreachable.** `PREFIX =
-      '?document='` (`src/shared/components/Attribution.tsx`) matches no
+'?document='` (`src/shared/components/Attribution.tsx`) matches no
       `AttributionDef.url` anywhere, so the `documentShow` interception has
       never fired. Either something should produce such a URL — and then it
       wants the hash form the rest of the app uses, not a query — or the branch
       and the prefix should go.
 - [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
       abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
-    split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
+split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
       button first, which `SplitButton` doesn't expose yet.
 - [ ] **`SplitButton`'s menu can't do what `SelectDropdown`'s can** — no `kbd`,
       `extra` (premium badge), `active` or `divider`, because it writes its own
@@ -205,6 +165,36 @@ Still emitting at info level (non-blocking, optional cleanup):
       line, which is the remaining per-fix cost over the whole track now that the
       statistics are folded incrementally. Only worth doing if a long recording
       actually feels slow — measure first.
+- [ ] **One primitive for state kept outside Redux.** About a dozen modules
+      hand-roll the same store — a module-level value, a listener `Set`, a
+      `useSyncExternalStore` hook — each with its own subscribe/notify code.
+      Write `createStore<T>(initial, { equal?, onObserved? })` in `src/shared/`
+      returning `{ get, set, subscribe, use(selector?) }`; `onObserved` runs on
+      the first subscriber and returns a teardown for the last. Not zustand: what
+      varies here is lazy start/stop and equality, which zustand doesn't cover
+      either. Migrate in phases:
+      1. Single values: `makeSlot` in `panorama/viewStore.ts` (becomes the
+         primitive), `pictureCacheBust`, `messagesStore`, `renderHolder` (keeps
+         closing the old bitmap in its own setter), `useDocumentTitle`. Move
+         the hovered changeset (`changesets.hovered`, `changesetsHover`) and the
+         hovered search result (`search.hoverResult`) out of Redux onto it:
+         pointer state dispatched per row crossed runs every reducer, processor
+         predicate and selector for nothing persisted or in the URL. Clearing it
+         on `changesetsInspect` then moves from the reducer to the code that
+         inspects.
+      2. `mapLayersPanelStore`: its per-field hooks become `use(selector)`;
+         conditional persistence stays its own.
+      3. Caches: `rememberedJson`, `tileCoverage`, `drawingIcons`, then
+         `tileAttribution` (tuned, see
+         [`doc/tile-attribution.md`](./doc/tile-attribution.md)). Their loading,
+         rAF/microtask batching and `listeners.size` checks move onto
+         `onObserved`; only the plumbing goes.
+      4. Optional: `breakpoints` (fits `onObserved`, works as is).
+      Out of scope: `useBsTheme`/`useOnline` (stateless DOM adapters), `compass`
+      (an event stream), `leafletElementHolder` (listeners take the value,
+      replay on subscribe, and ~20 modules use its promise). Document the
+      primitive in `doc/architecture.md` as the one way to keep state outside
+      Redux.
 - [ ] **Adopt React 19 hooks codebase-wide** (own session — it's a cross-cutting
       decision, not a local cleanup). The app uses zero Suspense today; all async
       loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects
@@ -217,54 +207,6 @@ Still emitting at info level (non-blocking, optional cleanup):
       for manual pending state, and **React Compiler** eligibility (decide first —
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
-- [ ] **The premium offer names England's model for the whole UK.** The elevation
-      API reports England under its own `en` token and resolves the verbatim OGL v3
-      Environment Agency line for it, while the rest of the UK answers from Sonny —
-      so the profile's credit and the readout's decimal are both already exact
-      (`en` is two letters, so `hasSubMeterPrecision` grants the decimal the 1 m
-      composite deserves). What is left is the offer: `ELEVATION_API_DTM_COUNTRIES`
-      is a per-country list, so `gb` carries the England-only model's name through
-      `dtmAreaNames` for Scotland and Wales too, where the data is Sonny's 10 m.
-      Fixing it means the offer's list stops being keyed by country alone.
-- [ ] **A GraphHopper route credits Sonny alone, not the agencies behind it.**
-      `SONNY_ATTR` is one hardcoded line, added by `useRoutingAttributions` for any
-      standing GraphHopper result and by `useElevationSources` for a free-tier
-      route's profile. But the elevation API, asked for the same dataset, answers
-      with the whole chain — 8 credits for a point in Scotland, 18 for one in
-      Germany — because the upstream licences (DL-DE/BY-2.0, OGL v3 and the rest)
-      each want their own source line. So the router's own elevation, which every
-      free route draws and which weights every route including premium ones, is
-      credited by one line where a read of the same data is credited by eighteen.
-      The credit is owed for the weighting alone, so it is not only the free tier's
-      profile that needs it: a premium route re-sampled from the national models was
-      still *shaped* by Sonny, and an isochrone that draws no elevation at all was
-      too.
-      GraphHopper itself is no help: `/route` returns 3D coordinates but its
-      `info.copyrights` is only `["GraphHopper", "OpenStreetMap contributors"]`,
-      and no elevation provider can add to it — that list is static in
-      `GraphHopperConfig`, for Skadi and Mapterhorn as much as for Sonny. Reported
-      upstream as
-      [graphhopper#3397](https://github.com/graphhopper/graphhopper/issues/3397).
-      Two ways forward, neither waiting on it:
-      **interim** — `copyrights:` is a `config.yml` key (`setCopyrights` is a public
-      setter) on our own instance, so the chain can be listed there and read from
-      `info.copyrights` instead of `SONNY_ATTR`. It *replaces* the list, so the YAML
-      must re-include GraphHopper and OpenStreetMap contributors, and it is
-      graph-wide, so a Slovak route would carry every Sonny country in the graph.
-      **Proper** — our own backend resolves the credits, which it already does per
-      country, so an endpoint keyed by the countries a route crosses fits. Either
-      way, a client-side copy of Sonny's agency list is the coupling
-      `elevationSourcesFromTokens` was removed to end.
-- [ ] **A saved map's imported track loses its elevation credit.** Overriding a
-      loaded track's elevation puts the credits in `trackViewer.elevationAttributions`
-      and on the render-only copy; neither reaches the map document, which stores
-      `trackViewer: { trackGeojson, trackUID, gpxUrl }` and not `elevationDecision`.
-      So reopening the map — offline included — draws terrain-model elevation
-      crediting nobody until the fill is re-run, which is an under-credit rather
-      than the safe direction. A planned route has no such gap: its credits ride on
-      `SavedRoute.geometry` as `fm:elevationAttributions`. The fix is to carry
-      `elevationDecision` and the credits in the document, so it is a map-document
-      schema change (and the same shape the route already stores).
 
 ## Decisions worth not relitigating
 
@@ -377,66 +319,12 @@ can't be made exclusive + optics). Keep the free/open core intact.
 
 Bugs and feature requests are issues under `area: drawing`.
 
-- [x] **Holes in polygons.** A hole is its own `DrawnLine` pointing at its parent
-      by `holeOfId`, not a nested ring inside `points` — so every existing edit
-      (vertex drag, midpoint insert, simplify, reverse) works on it unchanged,
-      and the URL, the elevation chart and the `{lineIndex, pointId}` selection
-      needed no ring index. The parent renders `[outer, ...holes]` as one
-      `<Polygon>`, whose default `evenodd` fill rule punches the holes out and
-      takes clicks through them. Holes are fully subordinate: no label or style
-      of their own, measured as part of the parent, deleted with it. Rings stay
-      flat — an island in a lake is a further hole of the same parent — so there
-      is no chain to walk and no cycle to guard. Out on the wire a hole names
-      its parent by _position_ (`holeOf`), since neither the URL (`\x1eH<i>`)
-      nor a saved document carries line ids; both must keep agreeing, or a map
-      restored from its URL reads as having unsaved changes.
-- [ ] **No coverage for the hole wire formats.** The reducer's linking, cascade
-      delete and stale-index tolerance are tested, but nothing exercises the
-      round-trips the design leans on: URL `H` field ↔ store, document
-      `holeOf` ↔ `holeOfId` (and the my-maps fingerprint agreeing across both),
-      the GeoJSON interior rings, the GPX `fm:polygonId` / `fm:holeOf` pairing,
-      and KML `innerBoundaryIs`. These are pure functions over small fixtures —
-      cheap to pin, and the place a regression would go unnoticed longest.
-
-- [ ] **A stored route is invisible to the unsaved-changes comparison.** A saved
-      map carries its computed route (`savedRoute.ts`), but `fingerprintState`
-      deliberately ignores it: the digest has to match what a _restore_ produces,
-      and a restore rebuilds the route from the URL, where a stored one has
-      nowhere to come from — so digesting it would report every restored map as
-      changed forever. Consequences: **Recompute route** has to say so outright
-      (`myMaps.routeRecomputed`, the one tracked flag in a slice that otherwise
-      derives everything), and switching to another alternative changes what a
-      save would store without the map reading as changed. Fixing it properly
-      means the restore knowing the stored result — e.g. keeping it in the
-      working copy beside the track, which would also close the entry below.
-
-- [ ] **A map with unsaved changes has no route offline.** The browser's working
-      copy (`mapStore.ts`) holds the track and the digest but not the route, so
-      reloading a _dirty_ saved map takes `mapsRestoreProcessor`'s
-      record-exists-and-differs path: no document is read, nothing supplies
-      `savedRoute`, and the route is asked for from the URL — which offline
-      fails to a straight dotted line. A clean map reloads through `mapsLoad`
-      and gets its stored route from the cached document, so only unsaved work
-      is affected. Fix by putting `savedRoute` in the working-copy record beside
-      the track (needs a record-schema bump).
-
-- [ ] **A pinned result is stored whole, however big it is.** A pin carries the
-      geometry it was loaded with, so pinning a large relation — a national
-      boundary, a long route relation — embeds its whole assembled collection in
-      every save body and every offline copy, with nothing on the path capping
-      it. `objectsLookupProcessor` caps how _many_ pins arrive at once
-      (`MAX_LOOKUPS`) but nothing caps how _large_ one is. Same exposure as the
-      stored track and route, so a size guard would belong to all three rather
-      than to pins alone.
-
-- [ ] **A map with unsaved changes has only its OSM pins offline.** The same
-      path, for the same reason: the pinned results a document carries reach the
-      screen through `mapsLoaded`, which a dirty reload never gets to. What the
-      URL names (`osm-node=` & co.) is re-fetched and so is there online but not
-      off; a pin the URL can't name — a geocoding hit without an OSM element, a
-      WMS feature — is gone either way until the map is saved again. The fix is
-      the record-schema bump above: store the pins in the working copy beside
-      the route and the track.
+- [ ] **No coverage for holes in the file formats.** The link's `H` field ↔
+      polygon rings is pinned (`drawingWire.test.ts`); nothing exercises the GPX
+      `fm:polygonId` / `fm:holeOf` pairing, KML `innerBoundaryIs`, or a saved
+      map's `holeOf` agreeing with its fingerprint. Pure functions over small
+      fixtures — cheap to pin, and where a regression would go unnoticed
+      longest.
 
 ## Track viewer: generic geodata vs. recorded tracks
 
@@ -484,44 +372,78 @@ gpxUrl }`, which are in every saved map on the server;
       discriminated `mode: { type: 'split'; … } | { type: 'join'; … } | null`
       makes it structural, and a `useTrackModes` hook then gives the map one
       `{ armed, handleClick, handleMove, handleOut, halos }` instead of a
-      per-mode fan-out. Do it when a third mode lands, or sooner. Two details
+      per-mode fan-out. Do it when a third mode lands, or sooner. One detail
       to fold in: `joinWith.featureIndex` duplicates `main.selection.id` (pass
       `selectedIndex` in, as `useTrackSplit` already does — but note the
-      selection is cleared by paths that don't dispatch `selectFeature`), and
-      the drawing/dataViewer slices spell "not armed" as `undefined` vs `null`,
-      which is why the Delete guard reads as two conditions.
+      selection is cleared by paths that don't dispatch `selectFeature`).
 
-## Drawing vs. data viewer: one model, two storage budgets
+## Drawing + data viewer merge: one collection, storage by size
 
-The two features hold the same kind of thing — a named, styled point, line or
-polygon with a property table — and keep converging: the style modal, the
-simplify dialog and now the properties editor are literally the same component.
-The only real difference is where the features live: drawing rides in the URL,
-so it cannot carry per-point data (elevation, heart rate, cadence, times);
-loaded data lives in IndexedDB, so it cannot be shared by link. Both differences
-disappear once the user saves a map, which is why "why are there two of these?"
-is a fair question from anyone who hasn't hit either limit.
+Drawing and the data viewer become one collection of map features with one
+editor; where it is stored follows from its size, not from the tool that made it.
 
-Not a merge — the URL budget is real and doesn't go away. The aim is to stop
-presenting one model as two kinds of object.
-
-- [ ] **Say the storage per feature, not per tool.** The data viewer's toolbar
-      already warns that a loaded track is in this browser only; drawing has no
-      mirror of it. A badge on each selection toolbar — "in the link" vs "in
-      this browser" — answers the question where the user is looking, and is
-      the honest reason there are two.
-- [ ] **Keep exactly one exclusive capability on each side, and name it.**
-      Today drawing owns vertex editing and the data viewer owns per-point
-      data; "Convert to…" bridges them both ways, with the loss warning. That
-      line is what makes the split explicable. Adding vertex dragging to the
-      data viewer would erase it, and the merge would then be the cheaper
-      option than keeping both — decide it deliberately.
-- [ ] **Close the cosmetic gaps that make the two look like different data
-      models.** The visible leftover is labels: a drawing label interpolates
-      `{p:key}` (`interpolateLabel.ts`), a data-viewer one is the raw `name`
-      property. Rendering `freemap:label` templates in `DataViewerResult` (and
-      handing `keyToken`/`labelHint` to `FeaturePropertiesModal` there) removes
-      it, and makes a drawing→data conversion round-trip visually identical.
+- [x] **History for local data.** Per-entry content-hashed snapshots in
+      IndexedDB (`trackStore.ts`), `history.state.tr` naming one; Back/Forward
+      step through edits.
+- [x] **One model.** `trackViewer.trackGeojson` holds every point, line and
+      polygon; `drawingLines`/`drawingPoints` are gone. Features are addressed
+      by index (`feature`/`vertex` selections), vertex editing works per part
+      with channels kept, one toolbar (`import-file`) holds the draw modes,
+      and only "convert to drawing" remains as "add to the map".
+- [x] **Storage by size.** `urlWire`: the URL when every feature round-trips
+      and the params fit 8000 characters, else a snapshot. My Maps documents
+      keep `points`/`lines` for what those can say.
+- [x] **Richer URL codec.** `V` names per-vertex columns (`ele`, `time`
+      delta-encoded, numeric channels), `,,` breaks segments, `Y`/`G` carry
+      `fm:kind`/`_gpxType`, a point takes `/ele`.
+- [ ] **One index remap for the collection.** Feature indices are shifted in
+      `replaceFeature`, by hand in join, in the main reducer for hole edits,
+      in `deleteProcessor` and `dataViewerSplitSelectionProcessor`, and cleaned
+      up after by the stale-selection processor. Make `replaceFeature` the only
+      length-changing primitive and apply its `old → new | null` map to every
+      index holder, the selection included.
+- [ ] **Per-feature caches on the hot path.** Each edit re-hashes the whole
+      collection (`snapshotKey`, the
+      saved-map fingerprint), re-validates it (`storeSnapshot`) and
+      re-serializes it (`urlWire`). Key, hash, validate and encode per feature.
+- [ ] **One answer to "where do the features live"** (link, remote file,
+      snapshot) instead of `featuresInLink`, `homedElsewhere`, `localTrack`
+      and `getMapContentParts` each asking. Restoring an entry is already one
+      place (`entryContent.ts`); deciding where to write it is not.
+- [ ] **One feature folder, one name.** The tool is "Drawing and data", but its
+      code is split over `src/features/drawing/` (the point/line tools, styles
+      and `drawingSettings`, the property editor, labels, JOSM export, and the
+      `DrawingPoint`/`Line` document types in `model/actions/`, which hold no
+      actions any more) and `src/features/dataViewer/`, under the slice name
+      `trackViewer`. Step 1: move `drawing/` into `dataViewer/` and merge the
+      two translation bundles — mechanical, about 70 importers, all caught by
+      `tsc`. Step 2, optional: rename `dataViewer` / `trackViewer` to one name.
+      `trackViewerSettings` and `drawingSettings` are localStorage keys
+      (`persistence.ts`), so renaming them needs a migration; map documents keep
+      `trackViewer` / `points` / `lines` on the wire.
+- [ ] **Edit a multi-polygon's vertices in place** — a step towards a full
+      GeoJSON editor; today Break apart is the way. `editableParts` would list
+      its rings flat and `withPart` write them back to their polygon. The work
+      is that "part > 0 is a hole" is assumed by hole selection, Detach hole,
+      Cut a hole, Make a hole and the delete rule: they need one helper saying
+      what a part is (outer or hole, of which polygon). Deleting an outer
+      ring's last usable vertex should drop that member, holes and all. Then
+      `MultiPoint` the same way (each point a part), and grouping features into
+      a multi geometry if anyone asks.
+- [ ] **Chart identity: what it draws, not the whole collection.** The
+      track-viewer target's identity is the active line's geometry paired with
+      every point, so a property-only edit of the line (removing its `times`
+      channel) leaves a stale chart, while any point edit refetches a 2D
+      line's profile. Key it on the line's geometry and the channels it draws.
+- [ ] **A line's label beside it by its angle.** Leaflet's `auto` puts it left
+      or right by which half of the map the line's centre is in. Better: above
+      a steep line, beside a flat one, from the bearing at the label's anchor.
+- [ ] **Chart identity across reloads.** `elevation-chart=track-viewer` reopens
+      on the first line, not the one charted; naming the line by index in the
+      param would fix it.
+- [ ] **A link with both `track-uid=` and drawing params** loads the track
+      and ignores the params; drawing beside such a track makes the whole
+      collection local.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
@@ -602,40 +524,61 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       bytes have started, so `loadPass` retries a transient drop by restarting the
       whole pass — up to 75 GB re-downloaded because a connection blinked.
 
-## Offline maps (`src/features/cachedMaps/`)
+## Map layers and presets (`src/features/map/`, see [`doc/map-library.md`](./doc/map-library.md))
 
-- [ ] **Make the shrink prune resumable.** Narrowing a cached map's area or zoom
-      range deletes the tiles that fall outside, walking the previous coverage
-      once. That walk is neither resumable nor recorded, so interrupting it —
-      Stop, or closing the tab — leaves the dropped tiles in Cache Storage with
-      nothing that will ever collect them, and the map's `sizeBytes` describing
-      storage the coverage no longer accounts for. Nothing re-walks the old
-      coverage afterwards, and only deleting the whole map frees them.
-      Fix by recording the coverage still to prune in `CachedTileMapDef` (set
-      before the walk, cleared after) and having `cacheTilesRestart` finish it
-      before downloading. Needs a big shrink interrupted mid-flight to matter,
-      hence deferred.
+Bugs and feature requests are issues under `area: maps-layers`.
 
-## Open in external app (`src/features/openInExternalApp/`)
-
-- [ ] **Add Ukraine's cadastral map if it reopens.** `map.land.gov.ua` has a
-      clean deep-link format, but the host has been firewalled to the outside
-      world since 2022-02-24 — it times out from every vantage point tried,
-      including one inside Ukraine, and the Internet Archive has no capture
-      after that date. `nsdi.gov.ua` is login-gated, so there is no substitute.
-      The template, recovered from the viewer's own bundle, is
-      `https://map.land.gov.ua/?cc={x3857},{y3857}&z={zoom}&l=kadastr&bl=ortho10k_all`
-      — EPSG:3857 metres, a plain web-mercator zoom, and two traps: `cc` must be
-      the first query parameter, and `z`/`l`/`bl` must all be present or its
-      parser throws.
-
-- Romania has no linkable viewer, and re-checking is unlikely to change that.
-  ANCPI's public cadastral map (`geoportal.ancpi.ro/imobile.html`) reads no URL
-  parameters at all — its `MapView` is built with no position. Its Web AppBuilder
-  viewers do take `center`/`level`, but their basemaps are Stereo 70 (EPSG:3844)
-  with bespoke 11–13-step LOD ladders, so `level` cannot be derived from a
-  web-mercator zoom. The whole host has also been down since the August 2026
-  ANCPI incident.
+- [ ] **Decide a map's kind once, per drawing.** It is worked out in about eight
+      places: `withKind` in `allLayerEntries`, `libraryIndexSelector` and
+      `resolvedCustomLayersSelector` hand out defs already switched by the map's
+      own setup, so a preset's copy has to switch back (`withMemberKind` in
+      `Layers`, `capturePreset`, `useTargetDef`); the reducer's `itemKindsOf`
+      and the panel's `Stack.kindOf` each build their own item → kind lookup,
+      and the reducer's `kindsOf`/`nativeKindsOf` rebuild what
+      `layerKindsSelector`/`nativeKindsSelector` hold, since it sees only
+      `MapState`. Instead: def selectors stay native, `layerInstancesSelector`
+      sets every instance's kind (a map on its own from its setup, a preset's
+      copy from the copy's), and `withKind` runs where `Layers` draws. Lists of
+      maps not on the map — the switcher, `overlayStackSelector`, the library —
+      have no instance, so they read `layerKindsSelector` instead of
+      `def.layer`. One exported item-kind function over `MapState`-level
+      inputs, for the reducer and the stack alike. Clarity only, no known bug:
+      the `defaultOpacity` a switch-back leaves on a base copy is ignored by
+      `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
+      switched.
+- [ ] **Harvest bugs (freemap-v3-api `scripts/harvest-eli.mjs`).** Older than
+      the move to the API, found in its review:
+      - A map dropped after its grace period gets a new probe record without
+        `failingSince`; the next run, reading main's `ids.json` where it still
+        has its id, starts a new grace, the catalog matches main again and the
+        workflow closes the PR that dropped it. A dead map is then never
+        removed unless that PR is merged within its week.
+      - `answered()` takes a 404 as alive for a WMS too, though a GetMap gives
+        no 404 for an empty spot: a moved WMS stays without a countdown.
+      - National sources' WMS layer names go into the query unencoded
+        (`LAYERS=${layers.join(',')}`), then are decoded by `URLSearchParams`:
+        a `+`, `&`, `#` or space in a name is mangled.
+      - The probes fetch whatever host ELI or a national source names, from
+        fm5, with plain `fetch`: a name resolving to a private address (or
+        redirecting there) makes fm5 request its own services, and the result
+        lands in the PR report. Give the probe the proxy's public-address
+        lookup (`publicLookup` in the API's `wmsProxyHandler.ts`).
+      - The workflow's "Restore the probe record" always takes fm5's cached
+        `probe.json` over the committed one, even when a hand-run harvest
+        committed a newer one: a recovered map's old `failingSince` comes back
+        and a new failure drops it at once. Restore the newer, or merge by entry.
+      - The PR body is the report verbatim, with ELI's names and attribution:
+        an `@name` or `#123` in them notifies or cross-links on GitHub. Wrap
+        names in backticks in the report.
+      - `toWms` turns every `{placeholder}` into `x` before parsing but drops
+        only the standard WMS parameters, so one in another parameter
+        (`TIME={time}`, `DPI={dpi}`) stays in the base URL as `x`; `toLeaflet`
+        refuses unknown placeholders, `toWms` doesn't.
+- [ ] **Helpers for a map's effective settings.** `effectiveShortcut` in
+      `installed.ts` serves `keyboardHandler` and `MapSwitchButton`; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
+      `CacheTilesForm` still resolve the shortcut inline, and the menu/toolbar
+      defaults are recomputed everywhere: helpers beside it, the default passed
+      in. Likewise `layerName(def, m) ?? def.type`, hand-written at six sites.
 
 ## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
 
@@ -673,64 +616,12 @@ Remaining work is issues under `area: gallery`, plus two backend-repo items:
       `photon.komoot.io`, which runs the same 1.3.0 and the same 2026-08-08
       import, so none of it is our index.
 
-## Branding assets (`src/images/freemap-*.svg`)
-
-The logo became vector in `f0cf4885` (2026-09-01): `freemap-logo-sk.svg`,
-`freemap-logo-eu.svg` and the site-neutral `freemap-flower.svg`, with gloss from
-gradients rather than SVG filters, and text converted to paths. The entry
-document stamps `data-site` on `<html>`, so CSS, the pre-JS bootstrap and the
-print logo all pick the same wordmark. The editable sources, which still carry
-live Sriracha text, are in [`design/`](./design/README.md) alongside the export
-procedure and the two traps it has to avoid.
-
-`RspackIconsPlugin` renders every raster from those SVGs at build time, so no
-generated bitmap is committed: the favicons, apple-touch and mstile icons and the
-manifest icons are the flower alone (site-neutral, all sizes), the iOS splash
-screens carry the wordmark per domain, and the `og:image` is 1200×630 with the
-tagline under it, per domain and language. The header logo is a raster too, at
-1×–4× behind `image-set()` — Firefox draws these SVGs blurred at that fixed small
-size, and a vector buys nothing where the box never changes. The tagline lives in
-`entryDocs` in `rspack.config.ts` beside the other build-time copy, set in the
-bundled `src/fonts/LiberationSans-Bold.ttf` so CI and local renders match.
-
-Four rasters under `src/static` are referenced by nothing and stay anyway:
-`logo.jpg`, `freemap-logo.{png,jpg}` and `freemap-logo-for-garmin.jpg` drew 114,
-39, 32 and 35 requests on 2026-09-06. `logo.jpg` was the `og:image` until
-`d7fbc64c`, so WhatsApp and iMessage keep unfurling links shared before then
-against it; the rest are fetched by real browsers, so something outside this repo
-embeds them. Deleting any of them only looks safe because the deploy rsync has no
-`--delete`. Still open:
-
-- [ ] **Have the taglines reviewed by native speakers.** "more than just a map"
-      was written here and translated by an agent; only `en` and `sk` have had a
-      human eye. `hu`, `it` and `fr` deliberately aren't literal — Hungarian
-      drops "just", Italian and French say "more than a *simple* map".
-- [ ] **A small-size wordmark variant.** Below roughly 110 px wide the black
-      outline swallows the white letters. The narrow header dodges it by
-      switching to the flower, but any future small wordmark use needs a
-      thinner-stroke cut.
-
-## SEO prerender (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
-
-Open items are issues under `area: infra`.
-
 ## Drawing properties (`props` on points and lines)
 
-- [ ] **Carry properties through GPX.** They export to GeoJSON `properties` and
-      come back, but GPX only carries the rendered `<name>` and the raw
-      `<fm:label>` — a drawing round-tripped through GPX keeps its label text
-      and loses the table behind it. Needs an `<fm:prop k="…">` element (or
-      similar) plus whatever it takes to get it back through `togeojson`, which
-      is the part that decides whether it's worth doing.
 - [ ] **Reconsider the carried-tag allowlist** (`CARRIED_TAGS` in
       `drawingPointActions.ts`). Ten keys is a guess at what's useful without
       making a bulk conversion produce an unsendable link; revisit once there's
       a sense of what people actually reference in labels.
-
-## Toposcope (`src/features/toposcope/`)
-
-The dial is drawn from the centre point plus the drawn points, and saves as an
-SVG. Open items are issues under `area: toposcope`.
 
 ## Panorama (`src/features/panorama/`, see [`doc/panorama.md`](./doc/panorama.md))
 
@@ -771,23 +662,68 @@ distance probe, a premium quality tier. What it does not do yet is issues under
       makes a mid-ramp sky representable. It does not remove the picker
       round-trip: `SKY_COLOR` still goes out and comes back as a real colour.
 
-## Weather radar (`src/features/weatherRadar/`, see [`doc/weather-radar.md`](./doc/weather-radar.md))
+## Terrain shading (`terrain.tiles.freemap.sk`)
 
-[`doc/weather.md`](./doc/weather.md) records what was asked of the upstream feed
-and what landed. Nothing is outstanding there.
+- [ ] **Keep shading exports off the interactive workers.** An offline export
+      of `h` (freemap-v3-api `downloadMap`) renders every tile on the same
+      per-CPU pool as on-screen shading, 8 at a time, so a large export slows
+      the map for everyone. Give export requests a lower priority or their own
+      small pool in terrain-tiles, or lower the API's concurrency for `h`.
+- [ ] **Key the global model `_` in `/licenses`**, as the outdoor renderer
+      does. The API's credit line recognises terrain-tiles' fallback only by
+      its id (`GLOBAL_KEYS` in freemap-v3-api `tileAttribution.ts`), so a
+      renamed model would sort among the national ones.
+- [ ] **Derive `opaque` on the API instead of trusting the client.** The
+      shading export picks JPEG vs PNG and base map vs overlay from the
+      client's flag (`isOpaqueShading`); a wrong flag exports black where the
+      shading should show through. Needs parsing the spec, or terrain-tiles
+      saying whether a shading is opaque.
 
-- [ ] **Leftovers of the old LibreWXR instance on fm5.** The container is gone,
-      but the `weather.freemap.sk` vhost and its cert still point at the dead
-      upstream, and `/fm/data4/librewxr` still holds ~3 GB of its tiles.
+- [ ] **Delete the tilesets the shading layers no longer read**, once this all is
+      deployed: `dem-sk.mbtiles` and `dem-cz.mbtiles` (the old `y`/`z` sources,
+      ~1.2 TB), `dmr5-shading.mbtiles` (`5`) and `cz-shading.mbtiles` (`8`) in
+      `/fm/storage1/tilesets` on fm6, plus the `parametric-shading`,
+      `dmr5-shading` and `cz-hires-shading` vhosts and their
+      `/fm/storage-offsite/tilesets` copies. `sk-dmr-hires.mbtiles` (`7`)
+      stays until the lidar-rendered Slovak source replaces it.
+- [ ] **Rebuild `at.tif` at z17 if fm6 runs short of space.** It is 1 m data
+      at z18 (~600 GB); z17 is about a quarter of that and only slightly less
+      sharp. `pl.tif` is z17 for space alone and could go to z18 once there is
+      room (~2.5 TB).
+- [ ] **Finer Austrian Länder as their own sources.** `at` is the nationwide
+      1 m ALS DTM; Tirol (statewide 0.5 m GeoTIFF mosaic, tiris) and
+      Oberösterreich (0.5 m) publish finer ones, Vorarlberg a laserscan model
+      of unconfirmed resolution. Each would go in at z18 ranked above `at`, as
+      `ch` is, with its credit added to elevation-sources.
+- [ ] **Italian regional DTMs as their own sources, ranked above `it`.** `it` is
+      the IRPI-CNR HR-DTM at z15, de-blocked and de-rippled. Its Alps are
+      pixel-doubled TINITALY 10 m, because the full-coverage regional sets
+      were never used (inputs: Table 1 of EarthArXiv preprint 12152). By gain
+      for effort: 1. Trentino: 0.5 m lidar, CC BY 4.0, a plain directory listing
+      (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII). 2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`). 3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`. 4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads. 5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far. 6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
 
-## Route path details (see [`doc/elevation-and-colorizers.md`](./doc/elevation-and-colorizers.md))
+      Also watch the MASE PNRR 0.25 m national reflight: it would cover
+                                  Lombardy, the Apennines, Sardinia and the South, which have no usable
+                                  regional lidar. Unverified: Aosta's resolution, Veneto's CRS, which
+                                  parts of E-R are covered, and some licences.
 
-Colorize, path details and track matching are issues under `area: routing` and
-`area: data-viewer`. What stays here is internal:
-
-- [ ] **Two legends, built twice.** `PictureLegend` (gallery) and `ColorizeLegend`
-      (colorizers) each carry their own copy of the same shell — the toolbar, the
-      icon pair, the fit-vs-400px sizing — and now of the same swatch row as
-      well, since both grew a categorical variant. Lift `LegendShell` and a
-      swatch item into `src/shared/components/`, parameterized by icons and
-      label, and render both through them.
+- [ ] **Slovakia from lidar points at z18**, replacing `sk.tif` and then `7`:
+      `laz2geotiff xyz` (ground only, relative gap rule), the two-pass membrane
+      `fill` with `--reach`, clipped by an official ÚGKK border (not OSM), the
+      way Czechia was built.
+- [ ] **The other 13 German states**, one source each (`de_<state>`, keyed by
+      their elevation-sources directory) at z17, ~650 GB. Their 1 m DGM1 is
+      already in `/fm/storage2/dtm` on fm6; Bavaria, Baden-Württemberg and
+      Hessen went first by Matomo visits.
+- [ ] **Hungary**: the most engaged audience without terrain (Matomo), but no
+      open national DTM is known. Look for one.
+- [ ] **France from IGN LiDAR HD**, mountains first. RGE ALTI (on fm6) is
+      only ~5 m in the mountains; the 0.5 m LiDAR HD MNT is published for all
+      of the Alps, Pyrenees, Corsica and the Vosges (Etalab 2.0). No bulk
+      download: the WFS index `IGNF_LIDAR-HD_METADONNEE:metadata` on
+      `data.geopf.fr` gives each 1 km tile's `url_mnt` (2000×2000 Float32
+      GeoTIFF, EPSG:2154), ~40 req/s. Alps + Pyrenees ≈ 76k tiles, ~1.2 TB raw;
+      recompress as they arrive. Corsica is IGN78, lakes and military zones
+      are nodata. Sample z17 vs z18 first. The rest of France can come from
+      RGE ALTI at z15 below it, re-interpolated with a cubic spline where its
+      5 m lattice shows (bilinear facets otherwise shade as squares).

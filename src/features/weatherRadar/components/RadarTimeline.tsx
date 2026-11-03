@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -47,7 +48,11 @@ export function RadarTimeline() {
   const frame = frames[index];
 
   if (!frame) {
-    return <span className="px-1 align-self-center">{wm?.loading}</span>;
+    return (
+      <span className="px-1 align-self-center">
+        <Text m={wm} k="loading" />
+      </span>
+    );
   }
 
   // Boundaries as a share of the track. The thumb sits at

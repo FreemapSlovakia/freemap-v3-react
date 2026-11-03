@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -17,7 +17,7 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
   trackedDevices: {
     button: 'Beobachtet',
     modalTitle: 'Beobachtete Geräte',
-    desc: 'Verwalte beobachtete Geräte, um die Position deiner Freunde zu sehen.',
+    desc: 'Verwalten Sie beobachtete Geräte, um die Position Ihrer Freunde zu sehen.',
     modifyTitle: (name) => (
       <>
         Beobachtetes Gerät bearbeiten <i>{name}</i>
@@ -25,11 +25,11 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Gerät beobachten <i>{name}</i>
+        Neues beobachtetes Gerät <i>{name}</i>
       </>
     ),
     storageWarning:
-      'Bitte beachte, dass die Geräteliste nur in der Seiten-URL enthalten ist. Wenn du sie speichern möchtest, nutze die Funktion „Meine Karten“.',
+      'Bitte beachten Sie, dass die Geräteliste nur in der Seiten-URL enthalten ist. Wenn Sie sie speichern möchten, nutzen Sie die Funktion „Meine Karten“.',
   },
   accessToken: {
     token: 'Beobachtungs-Token',
@@ -58,7 +58,7 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Beobachtungs-Token hinzufügen für <i>{deviceName}</i>
+        Neues Beobachtungs-Token für <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -82,7 +82,7 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
     traccarQrCode: 'Traccar-QR-Code',
     button: 'Meine Geräte',
     modalTitle: 'Meine verfolgten Geräte',
-    createTitle: 'Verfolgungsgerät erstellen',
+    createTitle: 'Neues Verfolgungsgerät',
     watchTokens: 'Beobachtungstoken',
     watchPrivately: 'Privat beobachten',
     watch: 'Beobachten',
@@ -105,9 +105,9 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
           -Symbol erstellt werden).
         </p>
         <hr />
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           So richten Sie Ihr verfolgtes Gerät ein
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

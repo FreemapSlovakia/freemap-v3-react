@@ -3,9 +3,12 @@ import type { PanoramaMessages } from './PanoramaMessages.js';
 
 const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
-    <>Scegli da dove guardare con il pulsante {icon} qui sotto.</>
+    <>Scelga da dove guardare con il pulsante {icon} qui sotto.</>
   ),
+  preparing: 'Il panorama è in preparazione…',
   rendering: 'Rendering del panorama…',
+  encoding: "Compressione dell'immagine…",
+  decoding: "Decompressione dell'immagine…",
   queued: ({ ahead }) =>
     ahead === 0
       ? 'In attesa del renderer…'
@@ -17,9 +20,9 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   outdated: 'L’immagine è del punto di osservazione precedente.',
   locate: 'Vista dalla mia posizione',
   pickViewpoint: 'Scegli sulla mappa',
-  pickViewpointPrompt: 'Clicca sulla mappa il punto da cui vuoi guardare',
+  pickViewpointPrompt: 'Clicchi sulla mappa il punto da cui vuole guardare',
   lookAt: 'Guarda un luogo sulla mappa',
-  pickTargetPrompt: 'Clicca sulla mappa il luogo che vuoi guardare',
+  pickTargetPrompt: 'Clicchi sulla mappa il luogo che vuole guardare',
   createToposcope: 'Crea una tavola d’orientamento da questa vista',
   toposcopeMergeModal: {
     title: 'La mappa non è vuota',
@@ -32,13 +35,12 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Impostazioni del panorama',
     tiltHint:
       'Quanto cielo e quanto terreno entrano nell’immagine — gli angoli sopra e sotto l’orizzonte.',
-    custom: 'Angoli esatti',
     depthLift: 'Dispiega la distanza',
     depthLiftOff: 'Vista reale',
     depthLiftHint:
-      'Solleva il terreno lontano, così le catene distanti si staccano dalle creste davanti a loro, come in un panorama disegnato a mano. Porta però nell’immagine anche cime che da qui non si vedrebbero davvero; i loro nomi sono contrassegnati.',
+      'Solleva il terreno lontano, così le catene distanti si staccano dalle creste davanti a loro, come in un panorama disegnato a mano. Porta però nell’immagine anche cime che da qui non si vedrebbero davvero; i loro nomi sono contrassegnati. I percorsi del sole e della luna non vi sono disegnati.',
     rangeHint:
-      'Il terreno oltre i 300 km è riservato al premium. Ogni chilometro in più viene percorso lungo ogni raggio dell’immagine, quindi una vista più lontana costa al renderer proporzionalmente di più.',
+      'Il terreno oltre i 300 km è una funzione premium. Ogni chilometro in più viene percorso lungo ogni raggio dell’immagine, quindi una vista più lontana costa al renderer proporzionalmente di più.',
     look: 'Aspetto',
     looks: {
       natural: 'Naturale',
@@ -66,24 +68,42 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Il terreno oltre quella distanza viene omesso invece di essere dipinto piatto nell’ultimo colore, così tutto il gradiente si spende su ciò che l’immagine mostra. Le cime che vi si trovano non vengono nominate.',
   },
-  preview: 'Anteprima',
   quality: {
-    label: 'Qualità / velocità',
-    superfast: 'Minima / velocissima',
-    fast: 'Bassa / veloce',
-    standard: 'Standard',
-    detailed: 'Dettagliata / lenta',
-    finest: 'Massima / lentissima',
+    detail: 'Dettaglio',
   },
+  frame: 'Inquadratura e dettaglio',
   tilt: {
     label: 'Ampiezza verticale',
     standard: 'Standard',
     wide: 'Alta',
     flat: 'Bassa',
+    below: "Sotto l'orizzonte",
+    above: "Sopra l'orizzonte",
   },
   fov: {
     label: 'Ampiezza orizzontale',
     full: 'Tutto attorno',
+  },
+  sky: {
+    title: 'Sole e luna',
+    sun: 'Percorso del sole',
+    moon: 'Percorso della luna',
+    date: 'Giorno',
+    dateHint:
+      'Gli orari sono nel fuso orario di questo dispositivo e indicano quando l’ultimo spicchio del disco scompare dietro il terreno o il primo riappare. Il terreno è nudo, quindi alberi ed edifici possono nasconderlo prima.',
+    today: 'Oggi',
+    lit: (percent) => `illuminata al ${percent}`,
+    elevation: (deg) => `altezza ${deg}`,
+    overTerrain: (deg) => `${deg} sopra il terreno`,
+    belowTerrain: (deg) => `${deg} sotto il terreno`,
+    unfolded: (
+      <>
+        Non su un’immagine dispiegata: il terreno lontano è disegnato più in
+        alto di dove sta, quindi i percorsi taglierebbero l’orizzonte nei punti
+        sbagliati. Nelle impostazioni del panorama porti{' '}
+        <i>Dispiega la distanza</i> su <i>Vista reale</i> e aggiorni.
+      </>
+    ),
   },
   labels: {
     title: 'Nomi delle cime',
@@ -105,14 +125,21 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     prominence: 'Privilegia le montagne vere',
     prominenceOff: 'Disattivato',
     prominenceHint:
-      'Una cima riceve il nome per essere una montagna in sé, non solo per quanto spicca da dove ti trovi — così anche una vetta famosa stretta fra vicine più alte si guadagna il nome. Per molte cime è sconosciuta e queste vengono valutate come prima.',
+      'Una cima riceve il nome per essere una montagna in sé, non solo per quanto spicca dal punto di osservazione — così anche una vetta famosa stretta fra vicine più alte si guadagna il nome. Per molte cime è sconosciuta e queste vengono valutate come prima.',
     haze: 'Fin dove arrivano i nomi',
     hazeOff: 'Aria tersa',
     hazeHint:
       'Quanto deve essere lontana una cima perché la foschia conti più della cima stessa. Oltre il triplo di quella distanza non viene nominato più nulla.',
-    showEle: 'Mostra le quote',
-    showEleHint:
-      'Scrive la quota sotto il nome di ogni cima. L’etichetta occupa allora due righe, così nell’immagine ne stanno di meno.',
+    subLine: 'Sotto il nome',
+    subLineHint:
+      'Cosa dice la seconda riga dell’etichetta di ogni cima. Con una qualsiasi di queste attiva, ogni etichetta occupa due righe, così ne stanno di meno. La prominenza (P) è quanto la cima si alza sopra la sella più bassa verso un terreno più alto; l’isolamento (I) è quanto dista quel terreno più alto.',
+    subLineParts: {
+      ele: 'Quota',
+      distance: 'Distanza',
+      prominence: 'Prominenza',
+      isolation: 'Isolamento',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Nomina le cime scoperte',
     showRevealedHint:
       'Cime che il dispiegamento della distanza ha tirato fuori da dietro una cresta più vicina: sono disegnate, ma da qui non si vedono davvero. I loro nomi sono più chiari e, quando non c’è spazio per entrambi, la precedenza va alla cima che si vede.',
@@ -132,24 +159,19 @@ const it: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     figures: ({ distance, azimuth }) => `${distance}\xa0· ${azimuth}`,
   },
   errors: {
-    offline: 'Il panorama viene reso dal server e tu sei offline.',
+    offline: 'Il panorama viene reso dal server e il dispositivo è offline.',
     unreachable:
-      'Non è stato possibile raggiungere il servizio di rendering. Potrebbe non essere attivo, oppure qualcosa fra te e lui blocca la richiesta.',
-    busy: 'Il servizio di rendering non è disponibile in questo momento. Riprova fra poco.',
+      'Non è stato possibile raggiungere il servizio di rendering. Potrebbe non essere attivo, oppure qualcosa lungo il percorso blocca la richiesta.',
+    busy: 'Il servizio di rendering non è disponibile in questo momento. Riprovi fra poco.',
     tooMany:
-      'Ultimamente sono stati resi troppi panorami. Riprova più tardi oppure passa al premium.',
+      'Ultimamente sono stati resi troppi panorami. Riprovi più tardi oppure passi al premium.',
     noData:
-      'Per questo punto di osservazione non ci sono dati del terreno. Prova a cliccare altrove.',
+      'Per questo punto di osservazione non ci sono dati del terreno. Provi a cliccare altrove.',
     failed: 'Non è stato possibile rendere il panorama.',
   },
   caveats: {
-    title: 'Che cosa mostra e che cosa non mostra l’immagine',
-    bareEarth:
-      'Il modello del terreno è suolo nudo: boschi ed edifici non ci sono, quindi una vista che un bosco coprirebbe è disegnata come libera. È di gran lunga la maggiore fonte di errore.',
-    coverage:
-      'Il dettaglio varia da paese a paese. Dove esiste un modello nazionale da scansione laser il primo piano è nitido; altrove risponde un modello globale da 30 m.',
     viewpoint:
-      'L’occhio viene posto sul punto più alto entro pochi metri dal tuo clic, così la vista dalla cima non è rovinata dalla roccia lì accanto.',
+      'L’occhio viene posto sul punto più alto entro pochi metri dal punto cliccato, così la vista dalla cima non è rovinata dalla roccia lì accanto.',
     depthLift:
       'La distanza è dispiegata, quindi questa immagine è un disegno e non una fotografia: le cime dal nome più chiaro sono in realtà coperte da una cresta davanti a loro, e una distanza letta dall’immagine non significa più una linea di vista libera.',
   },

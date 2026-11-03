@@ -15,7 +15,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Anwendungsfehler</h1>
       ? `Der Fehler wurde uns automatisch unter der ID <b>${ticketId}</b> gemeldet.`
       : ''
   }
-  Du kannst den Fehler ${
+  Sie können den Fehler ${
     ticketId ? 'auch ' : ''
   }auf <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a> melden
   oder uns Details per E-Mail an <a href="mailto:freemap@freemap.sk?subject=Fehlermeldung%20auf%20www.freemap.sk">freemap@freemap.sk</a> senden.
@@ -24,7 +24,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Anwendungsfehler</h1>
   Vielen Dank.
 </p>`;
 
-const outdoorMap = 'Wandern, Radfahren, Langlauf, Reiten';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -49,7 +49,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeight: 'Augenhöhe',
     eyeHeightHint:
       'Wie hoch über dem Boden Sie stehen — ein Turm oder eine Drohne, nicht die Höhe über dem Meer.',
-    maxVisibleDistance: 'Maximale Sichtweite',
+    maxVisibleDistance: 'Max. Sichtweite',
+    info: 'Informationen',
+    terrain: {
+      bareEarth:
+        'Das Geländemodell ist blanke Erde: Wälder und Gebäude fehlen darin, Gelände, das ein Wald verdecken würde, gilt also als frei. Das ist mit Abstand die größte Fehlerquelle.',
+      coverage:
+        'Die Genauigkeit hängt vom Land ab. Wo ein nationales Laserscan-Modell vorliegt, ist der Nahbereich scharf; sonst antwortet ein globales 30-m-Modell.',
+    },
     copyCode: 'Code kopieren',
     loading: 'Lade…',
     ok: 'OK',
@@ -57,6 +64,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Fenster mit ungespeicherten Änderungen schließen?',
     resetToDefaults: 'Auf Standard zurücksetzen',
     back: 'Zurück',
+    valueRange: ({ min, max }) => (
+      <>
+        Geben Sie einen Wert zwischen {min} und {max} ein.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Geben Sie einen Wert größer als {min} ein.</>,
+    invalidUrl:
+      'Geben Sie eine URL ein, die mit http:// oder https:// beginnt.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -70,17 +85,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Neu hinzufügen',
     clear: 'Löschen',
     convertToDrawing: 'In Zeichnung umwandeln',
+    toggleObjectType: 'Klicken, um Objekte dieses Typs ein- oder auszublenden',
+    hideObjectType: ({ name }) => <>Typ „{name}“ ausblenden</>,
     copyToDrawing: 'In die Zeichnung kopieren',
     copyTo: ({ tool }) => <>Nach {tool} kopieren</>,
-    convertTo: ({ tool }) => <>Nach {tool} umwandeln</>,
     convertAllToDrawing: 'Alles in Zeichnung umwandeln',
-    convertAllTo: ({ tool }) => <>Alles nach {tool} umwandeln</>,
     openIn: ({ what }) => <>In {what} öffnen</>,
     panoramaFromHere: 'Panorama von hier',
     viewshedFromHere: 'Sichtbarkeit von hier',
     toposcopeFromHere: 'Panoramatafel von hier',
     lookAtInPanorama: 'Das im Panorama anschauen',
-    placeActions: 'Was man mit diesem Ort tun kann',
     locationActions: 'Aktionen für diesen Ort',
     convert: {
       geometry: 'Geometrie',
@@ -163,6 +177,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: '%value% hinzufügen',
     deleteButtonText: '%value% aus der Liste entfernen',
     accept: 'Akzeptieren',
+    externalService: 'Fremder Dienst mit Nutzungsbeschränkungen',
   },
 
   generic: {
@@ -205,7 +220,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Routenplaner',
     objects: 'Objekte (POIs)',
     photos: 'Fotos',
-    measurement: 'Zeichnen und Messen',
     drawPoints: 'Punkte zeichnen',
     drawLines: 'Linien zeichnen',
     drawPolygons: 'Polygone zeichnen',
@@ -247,6 +261,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/De:Main_Page',
     status: 'Dienststatus',
     language: 'Sprache',
+    manual: 'Handbuch',
   },
 
   main: {
@@ -294,7 +309,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   search: {
-    showMore: 'Mehr anzeigen…',
+    showMore: 'Mehr anzeigen',
     offlineHint:
       'Ohne Internetverbindung können nur Koordinaten, ein Begrenzungsrahmen, Kachelnummern (z/x/y) oder eingefügtes GeoJSON gefunden werden.',
     inProgress: 'Suche…',
@@ -329,7 +344,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'navigation, routenplaner, wegbeschreibung, tour, radtour',
-        'tool-objects': 'sehenswürdigkeiten, poi, orte, einrichtungen',
         'tool-draw-points': 'zeichnen, markierung, stecknadel, notiz',
         'tool-draw-lines':
           'zeichnen, entfernung messen, länge, lineal, strecke',
@@ -349,42 +363,42 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-features-export':
           'export, gpx, geojson, daten herunterladen, objekte speichern',
         'modal-map-to-document-export':
-          'export, drucken, pdf, png, jpeg, svg, bild, poster',
+          'export, drucken, pdf, png, jpeg, webp, svg, bild, poster',
         'modal-offline-map-export':
           'export, offline, kacheln herunterladen, mbtiles, sd-karte',
         'modal-embed': 'iframe, einbetten, webseite, html code',
         'modal-support-us': 'spenden, unterstützen, sponsor, geld',
         'modal-legend': 'zeichenerklärung, symbole, kartenlegende',
+        'modal-manual': 'hilfe, anleitung, bedienungsanleitung, dokumentation',
         'modal-about': 'kontakt, e-mail, feedback',
-        'modal-map-layers-config':
-          'ebenen, karten verwalten, reihenfolge, deckkraft',
-        'modal-custom-maps': 'eigene karte, wms, tms, kartenquelle hinzufügen',
+        'modal-map-manager':
+          'installierte karten, verfügbare karten, kartenbibliothek, katalog, installieren, deinstallieren, karten hinzufügen, weitere karten, ebenenkonfiguration, ebenen, karten verwalten, symbolleiste, menü, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',
         'modal-offline-maps': 'heruntergeladene karten, speicher',
         'modal-browse-cache': 'zwischenspeicher, cache, kacheln, speicher',
         'modal-map-preferences':
           'einstellungen, optionen, deckkraft der überlagerung',
         'modal-elevation-settings': 'höhenprofil, höhe, diagramm',
         'clear-map-features': 'alles entfernen, löschen, karte zurücksetzen',
-        'layer-X': 'outdoor, wandern, radfahren, freemap',
+        'layer-X': 'wandern, radfahren, langlauf, reiten, freemap',
         'layer-XK': 'wanderwege, markierungen, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellit, orthofoto, luftbild',
-        'layer-Z': 'satellit, orthofoto, luftbild',
         'layer-J1': 'satellit, orthofoto, luftbild',
         'layer-J2': 'satellit, orthofoto, luftbild',
+        'layer-J3': 'satellit, orthofoto, luftbild',
         'layer-d': 'öpnv, nahverkehr, busse, züge, fahrpläne',
         'layer-I': 'bilder, galerie, fotos',
         'layer-w': 'wiki, artikel',
+        'layer-n':
+          'openstreetmap, notes, notizen, fehler, meldungen, kartierung',
         'layer-R': 'wetter, regen, niederschlag, gewitter, vorhersage',
         'layer-v':
           'sichtbarkeitsanalyse, sichtfeld, sichtlinie, aussicht, gelände',
-        'layer-5': 'schummerung, relief, gelände, höhe',
         'layer-6': 'schummerung, relief, oberfläche, höhe',
         'layer-7': 'schummerung, relief, gelände, höhe, lidar',
-        'layer-8': 'schummerung, relief, gelände, höhe, lidar',
-        'layer-h': 'schummerung, relief, hangneigung, exposition, inversion',
-        'layer-z': 'schummerung, relief, hangneigung, exposition, inversion',
-        'layer-y': 'schummerung, relief, hangneigung, exposition, inversion',
+        'layer-h':
+          'schummerung, relief, gelände, höhe, hangneigung, exposition, inversion',
+        'layer-c': 'farbe, leer, hintergrund, einfarbig, tönung, füllung',
         'layer-l1': 'waldwege, nlc',
         'layer-l2': 'waldwege, nlc',
         'layer-VO': 'vektor',
@@ -396,6 +410,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-WGE': 'geologie, gestein',
         'layer-WKA': 'parzellen, kataster, grundbuch',
         'layer-wka': 'parzellen, kataster, grundbuch',
+        'layer-xs': 'sac, bergwandern, alpin, overlay',
+        'layer-xq': 'smoothness, oberfläche, schlaglöcher, holprig, overlay',
+        'layer-xm': 'mountainbike, singletrail, enduro, downhill, overlay',
+        'layer-xh': 'wandern, routen, markierungen, wegweiser, overlay',
+        'layer-xb': 'radfahren, fahrrad, mtb, routen, overlay',
+        'layer-xl': 'ski, langlauf, loipe, routen, overlay',
+        'layer-xr': 'reiten, pferd, routen, overlay',
+        'layer-xa':
+          'hybrid, satellit, luftbild, orthofoto, beschriftung, overlay',
+        'layer-xc': 'höhenlinie, isohypsen, höhe, relief, contours, overlay',
         'layer-WHC': 'wasserchemie, hydrologie',
       },
     },
@@ -408,37 +432,43 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Alle Anwendungseinstellungen auf die Standardwerte zurücksetzen und die Seite neu laden? Sie werden abgemeldet.',
     letters: {
       S: 'Luftbild',
-      Z: 'Luftbild',
       J1: 'Luftbild (2017-2019)',
       J2: 'Luftbild (2020-2022)',
+      J3: 'Luftbild (2022-2023)',
       O: 'OpenStreetMap',
       d: 'Öffentlicher Verkehr (ÖPNV)',
       X: outdoorMap,
       XK: 'KST-Wanderwege',
-      i: 'Datenschicht',
       I: 'Fotos',
       l1: 'Forststraßen NLC (2017)',
       l2: 'Forststraßen NLC',
       w: 'Wikipedia',
+      n: 'OSM-Hinweise',
       R: 'Wetterradar',
       v: 'Sichtbarkeit',
-      '5': 'Geländeschattierung',
       '6': 'Oberflächenschattierung',
       '7': 'Detaillierte Geländeschattierung',
-      '8': 'Detaillierte Geländeschattierung',
       VO: 'OpenStreetMap Vektor',
       VS: 'Straßen Vektor',
       VD: 'Dataviz Vektor',
       VT: 'Outdoor Vektor',
-      h: 'Parametrische Schattierung',
-      z: 'Parametrische Schattierung',
-      y: 'Parametrische Schattierung',
+      h: 'Parametrische Geländeschattierung',
+      c: 'Einfarbige Fläche',
       M: 'Wikimedia Commons Fotos',
       WDZ: 'Baumartenzusammensetzung',
       WLT: 'Waldtypen',
       WGE: 'Geologisch',
       WKA: 'Kataster',
       wka: 'Kataster',
+      xs: 'Wanderschwierigkeit',
+      xq: 'Straßenzustand',
+      xm: 'MTB-Schwierigkeit',
+      xh: 'Wanderwege',
+      xb: 'Radwege',
+      xl: 'Skirouten',
+      xr: 'Reitwege',
+      xa: 'Outdoor-Karte ohne Hintergrund',
+      xc: 'Höhenlinien',
       WHC: 'Hydrochemisch',
     },
 
@@ -474,11 +504,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Der aktuelle Kartenausschnitt liegt außerhalb dieser Karte',
     offlineWarning: 'Diese Karte ist nicht für die Offline-Nutzung gespeichert',
     customBase: 'Benutzerdefinierte Karte',
-    customMaps: 'Benutzerdefinierte Karten',
-    addCustomMap: 'Benutzerdefinierte Karte hinzufügen',
+    newCustomMap: 'Neue benutzerdefinierte Karte',
     activate: 'Aktivieren',
-    customMapsEmptyMessage:
-      'Noch keine benutzerdefinierten Karten definiert. Fügen Sie eine hinzu, um Ihre eigene Kartenquelle anzuzeigen.',
     base: 'Grundlegende Ebenen',
     overlay: 'Überlagerungsebenen',
     url: 'URL-Vorlage',
@@ -489,8 +516,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'In Kacheln laden',
     tiledHelp:
       'Ein WMS wird standardmäßig als ein einziges Bild des gesamten Ausschnitts angefordert: eine Anfrage statt Dutzender, und Beschriftungen werden nicht an Kachelrändern abgeschnitten. Kacheln lohnen sich für einen Server, der die Bildgröße begrenzt oder Kacheln zwischenspeichert — um den Preis vieler Anfragen pro Ansicht.',
-    zIndex: 'Z-Index',
     preferences: 'Karteneinstellungen',
+    brightness: 'Kartenhelligkeit',
+    featuresOpacity: 'Deckkraft der Datenschicht',
     maxZoom: 'Maximale Zoomstufe',
     zoomSnap: 'Zoomschritt',
     zoomSnapFree: 'Stufenlos',
@@ -501,21 +529,32 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automatisch (Gerätestandard)',
     resolutionScaleHelp:
       'Simuliert die Pixeldichte des Displays. Beeinflusst, welche Kachelvariante geladen wird. Wenn eine Ebene die angeforderte Variante nicht anbietet, wird stattdessen die höchste verfügbare verwendet.',
+    pixelExact: 'Pixelgenaue Kacheln',
+    pixelExactHelp:
+      'Legt jedes Kachelpixel auf genau ein Bildschirmpixel, sodass Kacheln auch bei einem gebrochenen Pixelverhältnis wie 1,25 oder 1,75 scharf bleiben. Die Karte wirkt dann etwas größer oder kleiner. Ersetzt die Auflösungsskala und ist auf den Zoomstufen exakt, auf denen der Zoomschritt landet.',
     featureScale: 'Objektgröße',
     featureScaleHelp:
       'Vergrößert gerenderte Beschriftungen und Linien. Hat keine Auswirkung auf Satelliten-, Schattierungs-, WMS- oder Vektor-Ebenen (MapLibre).',
+    background: 'Kartenhintergrund',
+    backgroundHelp:
+      'Erscheint überall, wo keine Ebene zeichnet: ohne Basiskarte, neben einer Basiskarte, die nur einen Teil der Welt abdeckt oder transparent ist, und wo Kacheln noch laden.',
+    backgroundCheckerboard: 'Schachbrettmuster',
     layer: {
       layer: 'Ebene',
       base: 'Basis',
       overlay: 'Overlay',
     },
     showMore: 'Mehr Karten anzeigen',
-    layersConfiguration: 'Ebenenkonfiguration',
+    mapManager: 'Kartenverwaltung',
+    installedMaps: 'Installierte Karten',
+    availableMaps: 'Verfügbare Karten',
+    allMatchesInManager: 'Alle Treffer in der Kartenverwaltung',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametrische Schattierung',
+      color: 'Farbe',
     },
     technology: 'Typ',
     loadWmsLayers: 'Layer laden',
@@ -525,7 +564,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       </>
     ),
     offlineMaps: 'Offline-Karten',
-    browseCache: 'Beim Stöbern zwischenspeichern',
+    browseCache: 'Zwischenspeichern beim Stöbern',
     legacy: 'veraltet',
     legacyMapWarning: ({ from, to }) => (
       <>
@@ -533,6 +572,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         veraltet. Zur modernen <b>{messages.mapLayers.letters[to]}</b>wechseln?
       </>
     ),
+    layersPanel: 'Kartenebenen',
   },
 
   elevationChart: {

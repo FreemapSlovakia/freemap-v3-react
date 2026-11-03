@@ -1,10 +1,15 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Icon } from 'leaflet';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { createRoot } from 'react-dom/client';
-import { FaExternalLinkAlt, FaTimes, FaWikipediaW } from 'react-icons/fa';
+import { FaWikipediaW } from 'react-icons/fa';
 import { Marker, Pane, Tooltip } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
@@ -26,7 +31,7 @@ class WikiIcon extends Icon {
     (this as any)._setIconStyles(div, 'icon');
 
     if (WikiIcon.template) {
-      div.appendChild(WikiIcon.template.cloneNode());
+      div.appendChild(WikiIcon.template.cloneNode(true));
     } else {
       const root = createRoot(div);
 
@@ -62,10 +67,19 @@ export function WikiLayer(): ReactElement {
   const loading = useAppSelector((state) => state.wiki.loading);
 
   const opacity = useAppSelector(
-    (state) => state.map.layersSettings['w']?.opacity ?? 1,
+    (state) => state.map.layerSetups['w']?.opacity ?? 1,
   );
 
   const dispatch = useDispatch();
+
+  // `Pane` reads its style once; set anew, it would remount every marker.
+  const [pane, setPane] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (pane) {
+      pane.style.opacity = String(opacity);
+    }
+  }, [pane, opacity]);
 
   const [memPreview, setMemPreview] = useState<WikiPreview>();
 
@@ -111,8 +125,7 @@ export function WikiLayer(): ReactElement {
               }
               target="wikipedia"
             >
-              {effPreview ? effPreview.title : loading?.replace(/.*:/, '')}{' '}
-              <FaExternalLinkAlt />
+              {effPreview ? effPreview.title : loading?.replace(/.*:/, '')}
             </a>
           </Modal.Title>
         </Modal.Header>
@@ -131,18 +144,16 @@ export function WikiLayer(): ReactElement {
               <div dangerouslySetInnerHTML={{ __html: effPreview.extract }} />
             </>
           ) : (
-            m?.general.loading
+            <Text k="general.loading" />
           )}
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close}
-          </Button>
-        </Modal.Footer>
+        <FmModalFooter>
+          <FmDismissButton label={m?.general.close} onClick={close} />
+        </FmModalFooter>
       </Modal>
 
-      <Pane name="wiki" style={{ opacity }} key={opacity}>
+      <Pane name="wiki" ref={setPane}>
         {points.map(({ id, lat, lon, name, wikipedia }) => (
           <Marker
             key={id}

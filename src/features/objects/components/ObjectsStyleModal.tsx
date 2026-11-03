@@ -1,16 +1,27 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
+import { LabelVisibilityField } from '@features/drawing/components/LabelVisibilityField.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
-import { FaCheck, FaPaintBrush, FaTimes } from 'react-icons/fa';
+import { Form, Modal } from 'react-bootstrap';
+import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { objectsSetStyle } from '../model/actions.js';
+import {
+  objectsSetLabelVisibility,
+  objectsSetStyle,
+} from '../model/actions.js';
 import { objectsSettingsInitialState } from '../model/settingsReducer.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
@@ -29,9 +40,16 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
 
   const color = useAppSelector((state) => state.objectsSettings.color);
 
+  const labelVisibility = useAppSelector(
+    (state) => state.objectsSettings.labelVisibility,
+  );
+
   const [editedMarkerType, setEditedMarkerType] = useState(markerType);
 
   const [editedColor, setEditedColor] = useState(color);
+
+  const [editedLabelVisibility, setEditedLabelVisibility] =
+    useState(labelVisibility);
 
   const dispatch = useDispatch();
 
@@ -46,6 +64,8 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
       objectsSetStyle({ selectedIcon: editedMarkerType, color: editedColor }),
     );
 
+    dispatch(objectsSetLabelVisibility(editedLabelVisibility));
+
     close();
   };
 
@@ -53,9 +73,14 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     setEditedMarkerType(objectsSettingsInitialState.selectedIcon);
 
     setEditedColor(objectsSettingsInitialState.color);
+
+    setEditedLabelVisibility(objectsSettingsInitialState.labelVisibility);
   };
 
-  const dirty = editedMarkerType !== markerType || editedColor !== color;
+  const dirty =
+    editedMarkerType !== markerType ||
+    editedColor !== color ||
+    editedLabelVisibility !== labelVisibility;
 
   useDocumentTitle(show ? om?.style.title : undefined);
 
@@ -72,13 +97,16 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaPaintBrush /> {om?.style.title}
+            <FaPaintBrush /> <Text m={om} k="style.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="objects" />
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group controlId="markerType">
-            <Form.Label>{om?.markerShape}</Form.Label>
+            <Form.Label>
+              <Text m={om} k="markerShape" />
+            </Form.Label>
 
             <MarkerTypeSelect
               asSelect
@@ -88,29 +116,39 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="color" className="mt-3">
-            <Form.Label>{dm?.edit.color}</Form.Label>
+            <Form.Label>
+              <Text m={dm} k="edit.color" />
+            </Form.Label>
 
             <RgbaColorPicker value={editedColor} onChange={setEditedColor} />
           </Form.Group>
+
+          <LabelVisibilityField
+            value={editedLabelVisibility}
+            onChange={setEditedLabelVisibility}
+          />
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={!dirty}>
-            <FaCheck /> {m?.general.save}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={!dirty}
+            icon={<FaCheck />}
+            label={m?.general.save}
+          />
 
           <ResetToDefaultsButton
             onClick={handleReset}
             disabled={
               editedMarkerType === objectsSettingsInitialState.selectedIcon &&
-              editedColor === objectsSettingsInitialState.color
+              editedColor === objectsSettingsInitialState.color &&
+              editedLabelVisibility ===
+                objectsSettingsInitialState.labelVisibility
             }
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

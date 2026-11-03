@@ -1,5 +1,6 @@
+import { NetworkError } from '@app/httpRequest.js';
 import { afterEach, expect, test, vi } from 'vitest';
-import { wms, wmsBaseUrl } from './wms.js';
+import { requestWms, wms, wmsBaseUrl, wmsProxyOf } from './wms.js';
 
 function serve(xml: string) {
   vi.stubGlobal(
@@ -317,7 +318,7 @@ test('replaces the request parameters a pasted URL already carries', async () =>
 
   await wms('https://example.org/wms?map=/x.map&SERVICE=WMS&REQUEST=GetMap');
 
-  const url = new URL(vi.mocked(fetch).mock.calls[0][0] as string);
+  const url = new URL((vi.mocked(fetch).mock.calls[0][0] as Request).url);
 
   expect(url.searchParams.get('map')).toBe('/x.map');
 
@@ -329,4 +330,112 @@ test('replaces the request parameters a pasted URL already carries', async () =>
   ]);
 
   expect(url.searchParams.get('request')).toBe('GetCapabilities');
+});
+
+// Each test proxies its own map, as the module remembers proxied ones.
+const isProxied = (url: string) => url.includes('/wms-proxy/');
+
+const failed = () => new NetworkError(new TypeError('Failed to fetch'));
+
+const url = 'https://example.org/wms?service=WMS&request=GetCapabilities';
+
+test('requestWms: a network error retries through the proxy, then sticks', async () => {
+  const request = vi.fn(async (url: string) => {
+    if (!isProxied(url)) {
+      throw failed();
+    }
+
+    return url;
+  });
+
+  const proxied = await requestWms(url, { type: 'AAAA1' }, request);
+
+  expect(proxied).toMatch(
+    /\/wms-proxy\/AAAA1\?service=WMS&request=GetCapabilities$/,
+  );
+
+  expect(request).toHaveBeenCalledTimes(2);
+
+  expect(isProxied(await requestWms(url, { type: 'AAAA1' }, request))).toBe(
+    true,
+  );
+
+  expect(request).toHaveBeenCalledTimes(3);
+});
+
+test('requestWms: a failed direct request pins the map even when the proxy refuses', async () => {
+  const request = vi.fn(async (url: string): Promise<string> => {
+    throw isProxied(url) ? new Error('400') : failed();
+  });
+
+  await expect(requestWms(url, { type: 'EEEE1' }, request)).rejects.toThrow(
+    '400',
+  );
+
+  await expect(requestWms(url, { type: 'EEEE1' }, request)).rejects.toThrow(
+    '400',
+  );
+
+  // Direct and proxied, then proxied only.
+  expect(request).toHaveBeenCalledTimes(3);
+});
+
+test('requestWms: a TypeError is not taken for a network error', async () => {
+  const request = vi.fn(async (): Promise<string> => {
+    throw new TypeError('bad header');
+  });
+
+  await expect(requestWms(url, { type: 'FFFF1' }, request)).rejects.toThrow(
+    'bad header',
+  );
+
+  expect(request).toHaveBeenCalledTimes(1);
+});
+
+test('requestWms: other errors are not retried', async () => {
+  const request = vi.fn(async () => {
+    throw new Error('400');
+  });
+
+  await expect(requestWms(url, { type: 'CCCC1' }, request)).rejects.toThrow(
+    '400',
+  );
+
+  expect(request).toHaveBeenCalledTimes(1);
+});
+
+test('requestWms: always skips the direct request', async () => {
+  const request = vi.fn(async (url: string) => url);
+
+  expect(
+    isProxied(await requestWms(url, { type: 'DDDD1', always: true }, request)),
+  ).toBe(true);
+
+  expect(request).toHaveBeenCalledTimes(1);
+});
+
+test('requestWms: a map with no proxy is asked directly only', async () => {
+  const request = vi.fn(async (): Promise<string> => {
+    throw failed();
+  });
+
+  await expect(requestWms(url, undefined, request)).rejects.toThrow();
+
+  expect(request).toHaveBeenCalledTimes(1);
+});
+
+test('wmsProxyOf: catalog maps only', () => {
+  expect(wmsProxyOf({ type: 'FSK18', proxy: true })).toEqual({
+    type: 'FSK18',
+    always: true,
+  });
+
+  expect(wmsProxyOf({ type: 'abcdef' })).toBeUndefined();
+
+  expect(wmsProxyOf({ type: 'abcdef', source: 'FSK18' })).toEqual({
+    type: 'FSK18',
+    always: undefined,
+  });
+
+  expect(wmsProxyOf({ type: 'G' })).toBeUndefined();
 });

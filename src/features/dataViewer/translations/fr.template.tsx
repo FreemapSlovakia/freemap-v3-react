@@ -8,28 +8,26 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Importer',
   unnamedTrack: ({ n }) => `Trace ${n}`,
-  convertLossWarning:
-    'La conversion en dessin remplace la trace et supprime ses données enregistrées (altitude, fréquence cardiaque, vitesse, temps).',
   simplifyAll: 'Tout simplifier',
   moreInfo: 'Plus d’infos',
+  breakApart: 'Séparer en parties',
   saveAsMap: 'Enregistrer dans mes cartes',
   loginToSaveMap:
     'Connectez-vous d’abord pour enregistrer la trace dans vos cartes.',
-  style: {
-    title: 'Style par défaut',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Diviser',
     pick: 'Cliquez sur la trace à l’endroit de la coupure',
     here: 'Diviser ici',
-    segments: 'Diviser en segments',
   },
   join: {
     action: 'Fusionner',
     asLine: 'Fusionner en une seule ligne',
     asSegments: 'Fusionner en gardant les segments',
     pick: 'Cliquez sur la trace à fusionner',
+    pickEnd: 'Sélectionnez un point pour joindre les lignes',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Caler sur les chemins',
     title: 'Caler sur les chemins',
@@ -74,18 +72,52 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Ajouter',
     replace: 'Remplacer',
   },
+  trace: {
+    streams: 'Tracé des cours d’eau',
+    forests: 'Tracé des forêts',
+    streamsHelp:
+      'Sert à déduire les lignes des cours d’eau du modèle de terrain haute résolution dans le polygone sélectionné. Utile pour cartographier dans OpenStreetMap.',
+    forestsHelp:
+      'Sert à tracer les surfaces couvertes par les classes de points LiDAR choisies dans le polygone sélectionné. Utile surtout pour cartographier l’occupation du sol dans OpenStreetMap.',
+    pixelSize: 'Taille de pixel',
+    pixelSizeHint: 'Vide pour la résolution propre du modèle de terrain.',
+    threshold: 'Surface minimale du bassin versant',
+    minLength: 'Longueur minimale du cours d’eau',
+    simplify: 'Tolérance de simplification',
+    classes: 'Classes de points',
+    classNames: {
+      lowVegetation: 'Végétation basse',
+      mediumVegetation: 'Végétation moyenne',
+      highVegetation: 'Végétation haute',
+      building: 'Bâtiments',
+      water: 'Eau',
+    },
+    output: 'Résultat',
+    outputJosm: 'Ouvrir dans JOSM',
+    outputOsm: 'Télécharger en OSM XML',
+    outputGeojson: 'Télécharger en GeoJSON',
+    tooBig: ({ max }) =>
+      `Le polygone est trop grand ; la limite est de ${max}.`,
+    run: 'Tracer',
+    legacy: ({ phrase, item }) => (
+      <>
+        Au lieu de l’<i>easter egg</i> <code>{phrase}</code>, utilisez l’élément{' '}
+        <i>{item}</i> du menu ⋮ du polygone sélectionné.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Données d’altitude',
-    introNone: 'Cette trace ne comporte pas de données d’altitude.',
-    introPartial: 'L’altitude de certains points de cette trace est manquante.',
+    introNone: 'Il n’y a pas encore de données d’altitude.',
+    introPartial: 'L’altitude de certains points est manquante.',
     introFull:
-      'Cette trace comporte déjà une altitude, mais un modèle de terrain est souvent plus ' +
-      'précis.',
-    premiumHiRes: (premiumLink) => (
+      'Les données d’altitude sont déjà présentes, mais un modèle de terrain ' +
+      'est souvent plus précis.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        Avec {premiumLink('l’accès premium')}, l’altitude dans les pays pris en
-        charge est échantillonnée à partir d’un modèle national haute résolution
-        — actuellement la Slovaquie (DMR 5.0 : ÚGKK SR), d’autres à venir.
+        Avec {premiumLink('l’accès premium')}, l’altitude dans{' '}
+        {countries('de nombreux pays européens')} est échantillonnée à partir de
+        modèles nationaux de terrain haute résolution.
       </>
     ),
     question: 'Que souhaitez-vous faire ?',
@@ -100,12 +132,12 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'utiliser l’altitude enregistrée dans la trace',
     add: 'Ajouter l’altitude',
     update: 'Mettre à jour l’altitude',
-    updateConfirm:
-      'Remplacer l’altitude de la trace par le modèle de terrain ?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'L’altitude manquante a été complétée.'
-        : 'L’altitude a été remplacée.',
+        : mode === 'clear'
+          ? 'L’altitude a été supprimée.'
+          : 'L’altitude a été remplacée.',
   },
   fetchingError: ({ err }) =>
     addError(
@@ -121,7 +153,7 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Certains fichiers n’ont pas pu être chargés : ${names}.`,
   unsaved: 'Non enregistrée',
   unsavedTooltip:
-    'Cette trace ne figure dans aucune carte enregistrée et ne fait pas partie du lien : elle reste uniquement dans ce navigateur, partager le lien ne la partagera donc pas. Enregistrez-la dans vos cartes pour la conserver.',
+    "Ces données ne peuvent pas figurer dans l'adresse de la page (URL) et ne sont dans aucune carte enregistrée : elles restent uniquement dans ce navigateur. Enregistrez-les dans vos cartes pour les conserver.",
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Erreur lors du calage de la trace', err),
 };

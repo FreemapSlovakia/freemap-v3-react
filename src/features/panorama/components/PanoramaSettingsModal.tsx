@@ -1,8 +1,16 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
+import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
@@ -17,7 +25,7 @@ import {
   useState,
 } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { FaCheck, FaCog, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaCog } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   gradientFarStepIndex,
@@ -62,6 +70,9 @@ type Draft = Pick<
   | 'groundGradient'
 >;
 
+/** Shortest frame to tallest, as a row of presses above the two sliders. */
+const TILT_PRESETS = ['flat', 'standard', 'wide'] as const;
+
 const EYE_MIN = 0;
 
 const EYE_MAX = 300;
@@ -76,8 +87,8 @@ function typedNumber(value: string): number {
   return value.trim() ? Number(value) : Number.NaN;
 }
 
-/** The current settings as a form: the band as its two angles, whichever way it
- * is stored, so the fields read as the numbers behind what is framed now. */
+/** The current settings as a form: the band as its two angles, whichever way
+ * it is stored, so the sliders read as what is framed now. */
 function seedDraft(settings: PanoramaSettingsState): Draft {
   const [altMin, altMax] = tiltRange(settings);
 
@@ -128,6 +139,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
     maximumFractionDigits: 0,
   });
 
+  const nfDeg = useNumberFormat({
+    style: 'unit',
+    unit: 'degree',
+    unitDisplay: 'narrow',
+    maximumFractionDigits: 0,
+  });
+
   // A copy to edit, so a render landing underneath the modal can't rewrite what
   // is being typed and Cancel really is a cancel.
   const [draft, setDraft] = useState<Draft>(() => seedDraft(settings));
@@ -151,56 +169,32 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  // A band the wrong way round would render nothing; the eye is metres above
-  // the ground, and a number field can be left empty mid-edit.
+  // The eye is metres above the ground, and a number field can be left empty
+  // mid-edit. The band needs no such check: the presets and the two sliders
+  // cannot express a bad one, each running 1..ALT_LIMIT on its own side.
   const invalid =
-    !Number.isFinite(draft.eye) ||
-    draft.eye < EYE_MIN ||
-    draft.eye > EYE_MAX ||
-    !Number.isFinite(draft.altMin) ||
-    !Number.isFinite(draft.altMax) ||
-    draft.altMax <= draft.altMin ||
-    // A band is angles above and below the horizon; anything wider is not a
-    // view, and `panoramaStep` would work a step out of it and ask the service
-    // for something it refuses — with the bad band persisted behind it.
-    draft.altMin < -ALT_LIMIT ||
-    draft.altMax > ALT_LIMIT;
+    !Number.isFinite(draft.eye) || draft.eye < EYE_MIN || draft.eye > EYE_MAX;
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    const [altMin, altMax] = tiltRange(settings);
+    const { altMin, altMax, ...rest } = draft;
 
-    const { altMin: _min, altMax: _max, ...rest } = draft;
-
-    // A band that is exactly a preset's is that preset, whether it was typed or
-    // came from Reset. Storing it as `custom` would leave the toolbar showing
-    // "−18…12°" with the Standard item unticked, for the standard band.
-    const preset = (
-      Object.keys(PANORAMA_TILTS) as (keyof typeof PANORAMA_TILTS)[]
-    ).find(
+    // A band that is exactly a preset's is stored as that preset, whether it
+    // was dragged there or came from Reset: kept as `custom` it would say the
+    // same thing in a form no control marks as chosen.
+    const preset = TILT_PRESETS.find(
       (name) =>
-        PANORAMA_TILTS[name][0] === draft.altMin &&
-        PANORAMA_TILTS[name][1] === draft.altMax,
+        PANORAMA_TILTS[name][0] === altMin &&
+        PANORAMA_TILTS[name][1] === altMax,
     );
 
     dispatch(
       panoramaSetSettings({
         ...rest,
-        // The angles are written only when they are actually being changed.
-        // Writing them regardless would overwrite a custom band the user had
-        // set and then stepped away from with a preset — `altMin`/`altMax` are
-        // deliberately left standing while a preset is chosen, so the band can
-        // be returned to.
-        ...(draft.altMin === altMin && draft.altMax === altMax
-          ? {}
-          : preset
-            ? { tilt: preset }
-            : {
-                tilt: 'custom' as const,
-                altMin: draft.altMin,
-                altMax: draft.altMax,
-              }),
+        ...(preset
+          ? { tilt: preset }
+          : { tilt: 'custom' as const, altMin, altMax }),
       }),
     );
 
@@ -240,27 +234,31 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
       // modal turns it off.
       enforceFocus={false}
     >
-      <form onSubmit={handleSubmit} className="d-contents">
+      {/* `step` is what the arrows move by, not a rule: without this the
+          browser refuses to submit 1.65 m while Save sits there enabled. */}
+      <form onSubmit={handleSubmit} className="d-contents" noValidate>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaCog /> {m?.settings.title}
+            <FaCog /> <Text m={m} k="settings.title" />
           </Modal.Title>
+          <ManualHeaderButton chapter="panorama" />
         </Modal.Header>
 
         <Modal.Body>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="fm-panorama-eye">
-              {gm?.general.eyeHeight}
+              <Text k="general.eyeHeight" />
               <HintMark hint={gm?.general.eyeHeightHint} />
             </Form.Label>
 
-            <InputGroup>
+            <InputGroup hasValidation>
               <Form.Control
                 id="fm-panorama-eye"
                 type="number"
                 min={EYE_MIN}
                 max={EYE_MAX}
                 step={0.1}
+                isInvalid={invalid}
                 value={Number.isFinite(draft.eye) ? draft.eye : ''}
                 onChange={(e) =>
                   patch({
@@ -272,54 +270,72 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               {/* Literal, as the shading modal's metre fields are: the symbol
                   is the sam */}
               <InputGroup.Text>m</InputGroup.Text>
+
+              <Form.Control.Feedback type="invalid">
+                <Text>
+                  {(m) =>
+                    m.general.valueRange({
+                      min: `${EYE_MIN}\u00a0m`,
+                      max: `${EYE_MAX}\u00a0m`,
+                    })
+                  }
+                </Text>
+              </Form.Control.Feedback>
             </InputGroup>
           </Form.Group>
 
-          {/* The angles themselves, not another preset list — picking a preset
-              is the toolbar's job, and offering it here as well would be the
-              same control in two places, free to disagree. Seeded from whatever
-              is framed now, so this reads as "and here are the numbers behind
-              it"; typing different ones is what makes the band custom. */}
-          <Form.Group className="mb-3">
-            {/* The toolbar's name for it, not "Exact angles": this is that
-                setting, written as its numbers. The toolbar item that opens
-                this modal is the one thing "Exact angles" names, and that is a
-                door rather than a setting. */}
-            <Form.Label>
-              {m?.tilt.label}
+          {/* Here rather than on the toolbar: a band is set to taste and then
+              left, where the view angle and the detail are changed for every
+              other picture. The presets are one press and what most views want;
+              the sliders under them are the same setting said exactly. */}
+          <fieldset className="mb-3 border rounded p-3">
+            <legend>
+              <Text m={m} k="tilt.label" />
               <HintMark hint={m?.settings.tiltHint} />
-            </Form.Label>
+            </legend>
 
-            {/* An en dash rather than a hyphen: the lower angle is normally
-                negative, and a hyphen beside a minus sign reads as arithmetic. */}
-            <InputGroup>
-              <Form.Control
-                type="number"
-                step={1}
-                value={Number.isFinite(draft.altMin) ? draft.altMin : ''}
-                onChange={(e) =>
-                  patch({
-                    altMin: typedNumber(e.currentTarget.value),
-                  })
-                }
-              />
+            <FitButtonGroup className="mb-2">
+              {TILT_PRESETS.map((preset) => {
+                const [lo, hi] = PANORAMA_TILTS[preset];
 
-              <InputGroup.Text>–</InputGroup.Text>
+                return (
+                  <Button
+                    key={preset}
+                    variant={
+                      draft.altMin === lo && draft.altMax === hi
+                        ? 'primary'
+                        : 'outline-primary'
+                    }
+                    onClick={() => patch({ altMin: lo, altMax: hi })}
+                  >
+                    <Text m={m} k={`tilt.${preset}`} />
+                  </Button>
+                );
+              })}
+            </FitButtonGroup>
 
-              <Form.Control
-                type="number"
-                step={1}
-                value={Number.isFinite(draft.altMax) ? draft.altMax : ''}
-                onChange={(e) =>
-                  patch({
-                    altMax: typedNumber(e.currentTarget.value),
-                  })
-                }
-              />
+            {/* Degrees from the horizon, so both read positive and neither can
+                be dragged through the other into a band with no height. */}
+            <LabeledSlider
+              id="fm-panorama-alt-max"
+              label={m?.tilt.above}
+              valueLabel={nfDeg.format(draft.altMax)}
+              min={1}
+              max={ALT_LIMIT}
+              value={draft.altMax}
+              onChange={(altMax) => patch({ altMax })}
+            />
 
-              <InputGroup.Text>°</InputGroup.Text>
-            </InputGroup>
-          </Form.Group>
+            <LabeledSlider
+              id="fm-panorama-alt-min"
+              label={m?.tilt.below}
+              valueLabel={nfDeg.format(-draft.altMin)}
+              min={1}
+              max={ALT_LIMIT}
+              value={-draft.altMin}
+              onChange={(below) => patch({ altMin: -below })}
+            />
+          </fieldset>
 
           {/* Beside the band because it moves it: the horizon rises by exactly
               the lift, and the request adds the same on top so the far ridges
@@ -350,7 +366,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               id="fm-panorama-range"
               label={
                 <>
-                  {gm?.general.maxVisibleDistance}
+                  <Text k="general.maxVisibleDistance" />
 
                   {!premium && <PremiumGem hint={m?.settings.rangeHint} />}
                 </>
@@ -367,7 +383,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           <hr />
 
           <Form.Group className="mb-3">
-            <Form.Label>{m?.settings.look}</Form.Label>
+            <Form.Label>
+              <Text m={m} k="settings.look" />
+            </Form.Label>
 
             <div>
               <SelectDropdown
@@ -418,7 +436,9 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="mb-0">{m?.settings.ridgeColor}</Form.Label>
+            <Form.Label className="mb-0">
+              <Text m={m} k="settings.ridgeColor" />
+            </Form.Label>
 
             <div>
               <RgbaColorPicker
@@ -434,7 +454,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
               are ready-made ramps. */}
           <Form.Group className={gradient ? 'mb-3' : undefined}>
             <Form.Label className="mb-0">
-              {m?.settings.ground}
+              <Text m={m} k="settings.ground" />
               <HintMark hint={m?.settings.groundHint} />
             </Form.Label>
 
@@ -511,10 +531,13 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
           )}
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button type="submit" disabled={invalid}>
-            <FaCheck /> {gm?.general.save}
-          </Button>
+        <FmModalFooter>
+          <FmFooterButton
+            type="submit"
+            disabled={invalid}
+            icon={<FaCheck />}
+            label={gm?.general.save}
+          />
 
           {/* Everything the form holds, not only the look: the button says it
               resets the form, and a modal that quietly left the eye height and
@@ -526,10 +549,8 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
             )}
           />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {gm?.general.cancel}
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={gm?.general.cancel} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

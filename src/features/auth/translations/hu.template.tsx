@@ -9,7 +9,7 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     email: 'E-mail',
     delete: 'Fiók törlése',
     deleteWarning:
-      'Biztosan törölni szeretnéd a fiókodat? Ez eltávolítja az összes fotódat, fotómegjegyzésedet és értékelésedet, a térképeidet és a követett eszközeidet.',
+      'Biztosan törölni szeretné a fiókját? Ez eltávolítja az összes fotóját, fotómegjegyzését és értékelését, a térképeit és a követett eszközeit.',
     personalInfo: 'Személyes adatok',
     authProviders: 'Bejelentkezési szolgáltatók',
     picture: 'Profilkép',
@@ -17,8 +17,10 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
     description: 'Rólam',
   },
+  appTokens: { scopeNames: {} },
   connectLabel: 'Csatlakozás',
-  connectSuccess: 'Csatlakoztatva',
+  connectSuccess: ({ provider }) =>
+    `A(z) ${provider}-fiókját összekapcsoltuk a Freemap-fiókjával. Mostantól ezzel is bejelentkezhet.`,
   disconnectLabel: 'Kapcsolat bontása',
   disconnectSuccess: 'Lecsatlakoztatva',
   logInWith: 'Válasszon bejelentkezési szolgáltatót',

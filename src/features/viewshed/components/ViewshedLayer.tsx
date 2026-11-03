@@ -9,7 +9,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LatLngBoundsExpression } from 'leaflet';
 import { type ReactElement, useCallback, useMemo } from 'react';
 import { FaEye } from 'react-icons/fa';
-import { Circle, ImageOverlay } from 'react-leaflet';
+import { Circle, ImageOverlay, Pane } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { viewshedMoveViewpoint } from '../model/actions.js';
 import {
@@ -100,6 +100,11 @@ export default function ViewshedLayer({
     ? (render?.eyeElevation ?? null)
     : null;
 
+  const ghost =
+    (dragging || !atRenderedViewpoint) && renderedAt && render
+      ? { at: renderedAt, render }
+      : undefined;
+
   return (
     <>
       {imageUrl && bounds && (
@@ -114,53 +119,60 @@ export default function ViewshedLayer({
         />
       )}
 
-      {/* How far the next render will look, which is the overlay's own edge
-          once it answers for the pin. */}
-      {position && (
-        <Circle
-          center={position}
-          radius={grants.radiusKm * 1000}
-          interactive={false}
-          pathOptions={circleStyle}
-        />
-      )}
-
-      {/* Where the overlay was drawn from, while the pin is elsewhere: faded,
-          so it reads as the place the picture belongs to rather than as a
-          second viewpoint, with the ring it actually looked out to. */}
-      {(dragging || !atRenderedViewpoint) && renderedAt && render && (
-        <>
+      {/* The layer's own panes, at the default ones' levels: the default ones
+          fade with the tools' features. */}
+      <Pane name="fm-viewshed-rings" style={{ zIndex: 400 }}>
+        {/* How far the next render will look, which is the overlay's own edge
+            once it answers for the pin. */}
+        {position && (
           <Circle
-            center={renderedAt}
-            radius={render.radiusKm * 1000}
+            center={position}
+            radius={grants.radiusKm * 1000}
+            interactive={false}
+            pathOptions={circleStyle}
+          />
+        )}
+
+        {/* Where the overlay was drawn from, while the pin is elsewhere, with
+            the ring it actually looked out to. */}
+        {ghost && (
+          <Circle
+            center={ghost.at}
+            radius={ghost.render.radiusKm * 1000}
             interactive={false}
             pathOptions={ghostStyle}
           />
+        )}
+      </Pane>
 
+      <Pane name="fm-viewshed-viewpoint" style={{ zIndex: 600 }}>
+        {/* Faded, so it reads as the place the picture belongs to rather than
+            as a second viewpoint. */}
+        {ghost && (
           <GhostViewpointMarker
-            position={renderedAt}
+            position={ghost.at}
             color={color}
             faIcon={<FaEye />}
-            elevation={render.eyeElevation}
+            elevation={ghost.render.eyeElevation}
           />
-        </>
-      )}
+        )}
 
-      {/* An eye, in the overlay's own colour: it marks where one stands and
-          looks from, and tells the pin from the panorama's standing figure. */}
-      {position && (
-        <RichMarker
-          position={position}
-          color={color}
-          draggable
-          eventHandlers={handlers}
-          faIcon={<FaEye />}
-        >
-          {eyeElevation === null ? null : (
-            <ViewpointElevationTooltip elevation={eyeElevation} />
-          )}
-        </RichMarker>
-      )}
+        {/* An eye, in the overlay's own colour: it marks where one stands and
+            looks from, and tells the pin from the panorama's standing figure. */}
+        {position && (
+          <RichMarker
+            position={position}
+            color={color}
+            draggable
+            eventHandlers={handlers}
+            faIcon={<FaEye />}
+          >
+            {eyeElevation === null ? null : (
+              <ViewpointElevationTooltip elevation={eyeElevation} />
+            )}
+          </RichMarker>
+        )}
+      </Pane>
     </>
   );
 }

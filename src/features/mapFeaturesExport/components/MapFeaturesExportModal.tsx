@@ -1,9 +1,16 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { authWithGarmin } from '@features/auth/model/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBreakpointMatches } from '@shared/breakpoints.js';
+import { Text } from '@features/l10n/Text.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
+import { FitButtonGroup } from '@shared/components/FitButtonGroup.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -17,22 +24,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import {
-  Alert,
-  Button,
-  ButtonGroup,
-  Form,
-  Modal,
-  Spinner,
-  ToggleButton,
-} from 'react-bootstrap';
+import { Alert, Form, Modal, Spinner, ToggleButton } from 'react-bootstrap';
 import {
   FaDownload,
   FaDropbox,
   FaFileExport,
   FaGoogle,
   FaShareAlt,
-  FaTimes,
 } from 'react-icons/fa';
 import { SiGarmin } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
@@ -99,10 +97,6 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const confirm = useConfirm();
-
-  // Joined single-choice groups with long labels can't shrink, so below `sm`
-  // they stack instead of pushing the modal wider than the viewport.
-  const { sm } = useBreakpointMatches();
 
   // Seeded from what the map holds, never from the connection: folding that in
   // would re-seed the checkboxes — losing the user's picks — the moment it
@@ -385,19 +379,24 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
       <form onSubmit={runExport} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>
-            <FaFileExport /> {m?.mainMenu.mapFeaturesExport}
+            <FaFileExport /> <Text k="mainMenu.mapFeaturesExport" />
           </Modal.Title>
+          <ManualHeaderButton chapter="tracks" />
         </Modal.Header>
 
         <Modal.Body>
           <fieldset disabled={exporting}>
-            <Alert variant="warning">{em?.licenseAlert}</Alert>
+            <Alert variant="warning">
+              <Text m={em} k="licenseAlert" />
+            </Alert>
 
             <Form.Group controlId="target" className="mb-3">
-              <Form.Label>{em?.target}</Form.Label>
+              <Form.Label>
+                <Text m={em} k="target" />
+              </Form.Label>
 
               <div>
-                <ButtonGroup vertical={!sm}>
+                <FitButtonGroup>
                   {ExportTargetSchema.options
                     .filter(
                       (exportTarget) => exportTarget !== 'share' || shareable,
@@ -417,12 +416,12 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           {
                             download: (
                               <>
-                                <FaDownload /> {em?.download}
+                                <FaDownload /> <Text m={em} k="download" />
                               </>
                             ),
                             share: (
                               <>
-                                <FaShareAlt /> {em?.share}
+                                <FaShareAlt /> <Text m={em} k="share" />
                               </>
                             ),
                             gdrive: (
@@ -452,7 +451,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         }
                       </ToggleButton>
                     ))}
-                </ButtonGroup>
+                </FitButtonGroup>
               </div>
 
               {shareNote && (
@@ -465,16 +464,21 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
             {isGarmin ? (
               <>
                 <Form.Group controlId="courseName" className="mb-3">
-                  <Form.Label>{em?.garmin.courseName}</Form.Label>
+                  <Form.Label className="required">
+                    <Text m={em} k="garmin.courseName" />
+                  </Form.Label>
 
                   <Form.Control
                     value={name}
+                    required
                     onChange={(e) => setName(e.currentTarget.value)}
                   />
                 </Form.Group>
 
                 <Form.Group controlId="description" className="mb-3">
-                  <Form.Label>{em?.garmin.description}</Form.Label>
+                  <Form.Label>
+                    <Text m={em} k="garmin.description" />
+                  </Form.Label>
 
                   <Form.Control
                     as="textarea"
@@ -486,10 +490,13 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
                 {/* Too many options with too long labels for a joined group. */}
                 <Form.Group controlId="activityType" className="mb-3">
-                  <Form.Label>{em?.garmin.activityType}</Form.Label>
+                  <Form.Label className="required">
+                    <Text m={em} k="garmin.activityType" />
+                  </Form.Label>
 
                   <Form.Select
                     value={activity}
+                    required
                     onChange={(e) => setActivity(e.currentTarget.value)}
                   >
                     <option value="" />
@@ -504,10 +511,12 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               </>
             ) : (
               <Form.Group controlId="format" className="mb-3">
-                <Form.Label>{em?.format}</Form.Label>
+                <Form.Label>
+                  <Text m={em} k="format" />
+                </Form.Label>
 
                 <div>
-                  <ButtonGroup>
+                  <FitButtonGroup>
                     {ExportTypeSchema.options.map((exportType) => (
                       <ToggleButton
                         id={exportType}
@@ -522,13 +531,15 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         {EXPORT_FORMAT_LABELS[exportType]}
                       </ToggleButton>
                     ))}
-                  </ButtonGroup>
+                  </FitButtonGroup>
                 </div>
               </Form.Group>
             )}
 
             <Form.Group controlId="download" className="mb-3">
-              <Form.Label>{m?.general.export}</Form.Label>
+              <Form.Label>
+                <Text k="general.export" />
+              </Form.Label>
 
               {target === 'garmin' ? (
                 <>
@@ -562,7 +573,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                             disabled={!value}
                             onChange={() => handleCheckboxChange(type)}
                           >
-                            <Icon /> {em?.what[type]}
+                            <Icon /> <Text m={em} k={`what.${type}`} />
                           </ToggleButton>
                         );
                       })}
@@ -580,7 +591,7 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                         key={type}
                         className="d-block text-danger mt-2"
                       >
-                        <Icon /> {em?.what[type]}{' '}
+                        <Icon /> <Text m={em} k={`what.${type}`} />{' '}
                         {garminExportables?.[type] as string}
                       </Form.Text>
                     ))}
@@ -614,17 +625,19 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
 
               {!effectiveOnlySelected && (
                 <Form.Text muted className="d-block mt-1">
-                  {em?.disabledAlert}
+                  <Text m={em} k="disabledAlert" />
                 </Form.Text>
               )}
             </Form.Group>
 
             {!isGarmin && (
               <Form.Group controlId="elevation" className="mb-3">
-                <Form.Label>{em?.elevation.label}</Form.Label>
+                <Form.Label>
+                  <Text m={em} k="elevation.label" />
+                </Form.Label>
 
                 <div>
-                  <ButtonGroup vertical={!sm}>
+                  <FitButtonGroup>
                     {ExportElevationSchema.options.map((option) => (
                       <ToggleButton
                         id={`ele-${option}`}
@@ -643,18 +656,18 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                           (option === 'all' && !hasRecorded)
                         }
                       >
-                        {em?.elevation[option]}
+                        <Text m={em} k={`elevation.${option}`} />
                       </ToggleButton>
                     ))}
-                  </ButtonGroup>
+                  </FitButtonGroup>
                 </div>
               </Form.Group>
             )}
           </fieldset>
         </Modal.Body>
 
-        <Modal.Footer>
-          <Button
+        <FmModalFooter>
+          <FmFooterButton
             type="submit"
             variant="primary"
             disabled={
@@ -664,19 +677,18 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
               garminSelectedError ||
               (target === 'garmin' && (!name.trim() || !activity))
             }
-          >
-            {exporting ? (
-              <Spinner as="span" size="sm" role="status" />
-            ) : (
-              <FaFileExport />
-            )}{' '}
-            {m?.general.export}
-          </Button>
+            icon={
+              exporting ? (
+                <Spinner as="span" size="sm" role="status" />
+              ) : (
+                <FaFileExport />
+              )
+            }
+            label={m?.general.export}
+          />
 
-          <Button variant="dark" onClick={close}>
-            <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton label={m?.general.close} onClick={close} />
+        </FmModalFooter>
       </form>
     </Modal>
   );

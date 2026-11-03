@@ -1,21 +1,32 @@
 import { convertToDrawing } from '@app/store/actions.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   Action,
+  ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
-import { FaDownload, FaEraser, FaHistory, FaPencilAlt } from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
+import {
+  FaArrowLeft,
+  FaDownload,
+  FaEraser,
+  FaHistory,
+  FaPencilAlt,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { changesetsRefresh, changesetsSetParams } from '../model/actions.js';
+import {
+  changesetsInspect,
+  changesetsRefresh,
+  changesetsSetParams,
+} from '../model/actions.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 
 export default function ChangesetsMenu(): ReactElement {
@@ -46,9 +57,33 @@ export default function ChangesetsMenu(): ReactElement {
     (state) => state.changesets.changesets.length > 0,
   );
 
+  const inspected = useAppSelector(
+    (state) => state.changesetInspector.inspected,
+  );
+
   const dispatch = useDispatch();
 
-  const convertToDataViewer = useConvertToDataViewer();
+  const manualAction = useManualAction();
+
+  const backKbd = useEscapeKbd(changesetsInspect(null));
+
+  if (inspected) {
+    return (
+      <ToolMenu tool="changesets">
+        <LongPressTooltip label={m?.general.back} kbd={backKbd}>
+          {({ label, props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => dispatch(changesetsInspect(null))}
+              {...props}
+            >
+              <FaArrowLeft /> {label}
+            </Button>
+          )}
+        </LongPressTooltip>
+      </ToolMenu>
+    );
+  }
 
   return (
     <ToolMenu tool="changesets">
@@ -116,8 +151,8 @@ export default function ChangesetsMenu(): ReactElement {
         )}
       </LongPressTooltip>
 
-      {hasChangesets && (
-        <ResponsiveActions toggleLabel={m?.general.actions}>
+      <ResponsiveActions toggleLabel={m?.general.actions}>
+        {hasChangesets && (
           <Action
             icon={<FaPencilAlt />}
             label={m?.general.convertToDrawing}
@@ -126,17 +161,12 @@ export default function ChangesetsMenu(): ReactElement {
             }}
             showFrom="never"
           />
+        )}
 
-          <Action
-            icon={<MdShapeLine />}
-            label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
-            onClick={() => {
-              convertToDataViewer({ type: 'changesets' });
-            }}
-            showFrom="never"
-          />
-        </ResponsiveActions>
-      )}
+        <ActionDivider />
+
+        <Action {...manualAction('changesets')} />
+      </ResponsiveActions>
     </ToolMenu>
   );
 }

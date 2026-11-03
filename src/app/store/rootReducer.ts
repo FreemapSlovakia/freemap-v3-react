@@ -1,12 +1,11 @@
 import { authReducer } from '@features/auth/model/reducer.js';
 import { cachedMapsReducer } from '@features/cachedMaps/model/reducer.js';
 import { cachedMapsSettingsReducer } from '@features/cachedMaps/model/settingsReducer.js';
+import { changesetInspectorReducer } from '@features/changesets/model/inspectorReducer.js';
 import { changesetReducer } from '@features/changesets/model/reducer.js';
 import { cookieConsentReducer } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerReducer } from '@features/dataViewer/model/reducer.js';
 import { dataViewerSettingsReducer } from '@features/dataViewer/model/settingsReducer.js';
-import { drawingLinesReducer } from '@features/drawing/model/reducers/drawingLinesReducer.js';
-import { drawingPointsReducer } from '@features/drawing/model/reducers/drawingPointsReducer.js';
 import { drawingSettingsReducer } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
 import { elevationSettingsReducer } from '@features/elevationChart/model/settingsReducer.js';
@@ -23,9 +22,11 @@ import { locationSettingsReducer } from '@features/location/model/settingsReduce
 import { mapReducer } from '@features/map/model/reducer.js';
 import { mapAreaReducer } from '@features/mapArea/model/reducer.js';
 import { mapDetailsReducer } from '@features/mapDetails/model/reducer.js';
+import { mapLibraryReducer } from '@features/mapLibrary/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import { objectsReducer } from '@features/objects/model/reducer.js';
 import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
+import { osmNotesReducer } from '@features/osmNotes/model/reducer.js';
 import { panoramaReducer } from '@features/panorama/model/reducer.js';
 import { panoramaSettingsReducer } from '@features/panorama/model/settingsReducer.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
@@ -52,10 +53,9 @@ export const reducers = {
   cachedMaps: cachedMapsReducer,
   cachedMapsSettings: cachedMapsSettingsReducer,
   changesets: changesetReducer,
+  changesetInspector: changesetInspectorReducer,
   cookieConsent: cookieConsentReducer,
   drawingSettings: drawingSettingsReducer,
-  drawingLines: drawingLinesReducer,
-  drawingPoints: drawingPointsReducer,
   elevationChart: elevationChartReducer,
   elevationSettings: elevationSettingsReducer,
   events: eventsReducer,
@@ -72,6 +72,7 @@ export const reducers = {
   mapDetails: mapDetailsReducer,
   mapArea: mapAreaReducer,
   map: mapReducer,
+  mapLibrary: mapLibraryReducer,
   objects: objectsReducer,
   objectsSettings: objectsSettingsReducer,
   panorama: panoramaReducer,
@@ -94,4 +95,5 @@ export const reducers = {
   websocket: websocketReducer,
   myMaps: mapsReducer,
   wiki: wikiReducer,
+  osmNotes: osmNotesReducer,
 };

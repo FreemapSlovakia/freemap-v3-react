@@ -21,7 +21,6 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>niveaux de zoom les plus élevés de la carte Outdoor</li>
-                <li>cartes basées sur WMS</li>
                 <li>
                   niveaux de zoom les plus élevés des orthophotos de la
                   Slovaquie et de la Tchéquie
@@ -55,7 +54,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">Freemap reste gratuit et ouvert.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'Angleterre' },
+  dtmAreaNames: { en: 'Angleterre', wls: 'pays de Galles' },
   purchaseAfterLogin: (
     <>
       En choisissant un fournisseur de connexion, vous vous connectez ou créez

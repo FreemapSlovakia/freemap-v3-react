@@ -4,11 +4,19 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
-import { dataViewerSetData } from '@features/dataViewer/model/actions.js';
-import { drawingLineStopDrawing } from '@features/drawing/model/actions/drawingLineActions.js';
-import { objectsSetResult } from '@features/objects/model/actions.js';
+import {
+  dataViewerDetachHole,
+  dataViewerDrawStop,
+  dataViewerMakeHole,
+  dataViewerSetData,
+} from '@features/dataViewer/model/actions.js';
+import {
+  objectsSetResult,
+  setDetailsShown,
+} from '@features/objects/model/actions.js';
 import {
   type SearchResult,
+  searchKeepResult,
   searchSelectResult,
   searchUnselectResult,
 } from '@features/search/model/actions.js';
@@ -27,7 +35,7 @@ import { type MainState, mainInitialState, mainReducer } from './reducer.js';
 const run = (...actions: Action[]): MainState =>
   actions.reduce(mainReducer, mainInitialState);
 
-const aLine = { type: 'draw-line-poly', id: 0 } as const;
+const aLine = { type: 'feature', id: 0 } as const;
 
 const aResult = {
   id: { type: 'osm', elementType: 'node', id: 1 },
@@ -220,6 +228,94 @@ describe('selecting a feature', () => {
   });
 });
 
+describe('detailsShown', () => {
+  const quietPick = searchSelectResult({ result: aResult, details: false });
+
+  it('a pick shows its details unless it says not to', () => {
+    expect(run(searchSelectResult({ result: aResult }))).toMatchObject({
+      detailsShown: true,
+      detailsOnRequest: false,
+    });
+
+    expect(run(quietPick)).toMatchObject({
+      detailsShown: false,
+      detailsOnRequest: true,
+    });
+  });
+
+  it('a pick without details keeps its toggle while it stays selected', () => {
+    // Asking for them.
+    expect(run(quietPick, setDetailsShown(true))).toMatchObject({
+      detailsShown: true,
+      detailsOnRequest: true,
+    });
+
+    // Clicking it on the map, which shows them.
+    expect(
+      run(quietPick, searchSelectResult({ result: aResult, tier: 'keep' })),
+    ).toMatchObject({ detailsShown: true, detailsOnRequest: true });
+
+    // Keeping it, which changes neither.
+    expect(run(quietPick, searchKeepResult(aResult.id))).toMatchObject({
+      detailsShown: false,
+      detailsOnRequest: true,
+    });
+
+    // Another result is a new selection.
+    expect(
+      run(quietPick, searchSelectResult({ result: anotherResult })),
+    ).toMatchObject({ detailsShown: true, detailsOnRequest: false });
+  });
+
+  it('picking it again never closes details asked for', () => {
+    expect(run(quietPick, setDetailsShown(true), quietPick)).toMatchObject({
+      detailsShown: true,
+      detailsOnRequest: true,
+    });
+  });
+
+  it('an element landing for the selection leaves it alone', () => {
+    expect(
+      run(quietPick, searchSelectResult({ result: aResult, select: false }))
+        .detailsShown,
+    ).toBe(false);
+  });
+
+  it('selecting again brings back details dismissed with ×', () => {
+    const selection = {
+      type: 'objects',
+      id: { type: 'osm', elementType: 'node', id: 1 },
+    } as const;
+
+    expect(
+      run(selectFeature(selection), setDetailsShown(false)).detailsShown,
+    ).toBe(false);
+
+    expect(
+      run(
+        selectFeature(selection),
+        setDetailsShown(false),
+        selectFeature(selection),
+      ),
+    ).toMatchObject({ detailsShown: true, detailsOnRequest: false });
+  });
+
+  it('a selection an embed ignores leaves it alone', () => {
+    window.fmEmbedded = true;
+
+    expect(
+      run(
+        searchSelectResult({ result: aResult }),
+        setDetailsShown(false),
+        selectFeature({
+          type: 'objects',
+          id: { type: 'osm', elementType: 'node', id: 1 },
+        }),
+      ).detailsShown,
+    ).toBe(false);
+  });
+});
+
 describe('convertToDrawing', () => {
   it('closes the tool the conversion was reached for from', () => {
     const s = run(
@@ -299,25 +395,72 @@ describe('dataViewerSetData', () => {
   });
 
   // What a fresh load selects instead is `dataViewerSetTrackDataProcessor`.
-  it('drops a stale data-viewer selection but leaves another feature selected', () => {
+  it('drops a stale feature selection but leaves anything else selected', () => {
     expect(
       run(
-        selectFeature({ type: 'data-viewer', id: 3 }),
+        selectFeature({ type: 'feature', id: 3 }),
         dataViewerSetData({ trackGeojson: fc(line) }),
       ).selection,
     ).toBe(null);
 
+    const tracked = { type: 'tracking', id: 'tok' } as const;
+
     expect(
-      run(selectFeature(aLine), dataViewerSetData({ trackGeojson: fc(line) }))
+      run(selectFeature(tracked), dataViewerSetData({ trackGeojson: fc(line) }))
         .selection,
-    ).toEqual(aLine);
+    ).toEqual(tracked);
   });
 });
 
-describe('drawingLineStopDrawing', () => {
-  it('keeps the draw tool open — stopping only clears the drawing flag in the drawingLines slice', () => {
-    const s = run(openTool('draw-lines'), drawingLineStopDrawing());
+describe('dataViewerDrawStop', () => {
+  it('keeps the draw tool open — stopping only ends the drawing', () => {
+    const s = run(openTool('draw-lines'), dataViewerDrawStop());
 
     expect(s.mapTool).toBe('draw-lines');
+  });
+});
+
+describe('the selection across hole edits', () => {
+  it('follows a polygon made a hole into its parent, which moves up', () => {
+    const s = run(
+      selectFeature({ type: 'feature', id: 1 }),
+      dataViewerMakeHole({ index: 1, parent: 3 }),
+    );
+
+    expect(s.selection).toEqual({ type: 'feature', id: 2 });
+  });
+
+  it('moves a later feature up past the one that went', () => {
+    const s = run(
+      selectFeature({ type: 'feature', id: 4 }),
+      dataViewerMakeHole({ index: 1, parent: 0 }),
+    );
+
+    expect(s.selection).toEqual({ type: 'feature', id: 3 });
+  });
+
+  it('follows a detached hole to the polygon it became', () => {
+    const s = run(
+      selectFeature({ type: 'feature', id: 2, part: 1 }),
+      dataViewerDetachHole({ index: 2, part: 1 }),
+    );
+
+    expect(s.selection).toEqual({ type: 'feature', id: 3 });
+  });
+
+  it('renumbers a later hole and a later feature', () => {
+    expect(
+      run(
+        selectFeature({ type: 'feature', id: 2, part: 2 }),
+        dataViewerDetachHole({ index: 2, part: 1 }),
+      ).selection,
+    ).toEqual({ type: 'feature', id: 2, part: 1 });
+
+    expect(
+      run(
+        selectFeature({ type: 'feature', id: 5 }),
+        dataViewerDetachHole({ index: 2, part: 1 }),
+      ).selection,
+    ).toEqual({ type: 'feature', id: 6 });
   });
 });

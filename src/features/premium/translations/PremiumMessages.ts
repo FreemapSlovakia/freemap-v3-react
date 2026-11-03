@@ -1,15 +1,16 @@
+import type { DTM_SUB_AREAS } from '@shared/elevationSources.js';
 import type { JSX, ReactNode } from 'react';
 
 export type PremiumMessages = {
   title: string;
   /** `dtmCountries` is the localized country list of the elevation bullet. */
-  commonHeader: (price: number, dtmCountries: string) => ReactNode;
+  commonHeader: (price: number, dtmCountries: string | undefined) => ReactNode;
   /**
    * What that list says instead of the country's own name where the model
    * covers only part of it, keyed by the code the coverage is reported under.
    * `Intl.DisplayNames` names countries alone, so these are translated by hand.
    */
-  dtmAreaNames: { gb: string };
+  dtmAreaNames: Record<keyof typeof DTM_SUB_AREAS, string>;
   /** Brief reminder in the login modal of what the login is for. */
   purchaseAfterLogin: ReactNode;
   success: string;

@@ -20,7 +20,6 @@ const en: PremiumMessages = {
             hint={
               <ul className="mb-0 ps-3 text-start">
                 <li>highest zoom levels of Outdoor Map</li>
-                <li>WMS-based maps</li>
                 <li>
                   highest zoom levels of ortophoto maps of Slovakia and Czechia
                 </li>
@@ -47,7 +46,7 @@ const en: PremiumMessages = {
       <p className="mb-0">Freemap stays free and open.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'England' },
+  dtmAreaNames: { en: 'England', wls: 'Wales' },
   purchaseAfterLogin: (
     <>
       Choosing a login provider signs you in or creates a free Freemap account.

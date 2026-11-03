@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -25,7 +25,7 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Sleduj zařízení <i>{name}</i>
+        Nové sledované zařízení <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,12 +58,12 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Přidej sledovací token pro <i>{deviceName}</i>
+        Nový sledovací token pro <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
       <>
-        Uprav sledovací token <i>{token}</i> pro <i>{deviceName}</i>
+        Upravit sledovací token <i>{token}</i> pro <i>{deviceName}</i>
       </>
     ),
   },
@@ -74,7 +74,7 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     maxAge: 'Maximální doba',
     maxCount: 'Maximální počet',
     splitDistance: 'Rozdělit po vzdálenosti',
-    splitDuration: 'Rozdělení po době',
+    splitDuration: 'Rozdělit po době',
     color: 'Barva',
     width: 'Šířka',
   },
@@ -94,7 +94,7 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
     deleteTitle: 'Smazání zařízení',
     modifyTitle: ({ name }) => (
       <>
-        Úprava zařízení <i>{name}</i>
+        Upravit zařízení <i>{name}</i>
       </>
     ),
     desc: () => (
@@ -105,9 +105,9 @@ const cs: DeepPartialWithRequiredObjects<TrackingMessages> = {
           ).
         </p>
         <hr />
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Jak nastavit sledované zařízení
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

@@ -1,38 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   id="svg2"
-   viewBox="0 0 14 14"
-   height="14"
    width="14"
-   version="1.1">
-  <defs
-     id="defs3053" />
-  <metadata
-     id="metadata8">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <rect
-     width="14"
-     height="14"
-     x="0"
-     y="0"
-     id="canvas"
-     style="fill:none;stroke:none;visibility:hidden" />
+   height="14"
+   xmlns="http://www.w3.org/2000/svg">
   <path
-     id="perfumery"
-     style="fill:#000000;fill-opacity:1;stroke:none"
-     d="M 14,2.5 C 14,3.6605381 12.880712,4.6013401 11.5,4.6013401 10.119288,4.6013401 9,3.6605381 9,2.5 9,1.3394619 10.119288,0.39865994 11.5,0.39865994 12.880712,0.39865994 14,1.3394619 14,2.5 Z M 8,2 10,2 10,3 8,3 Z M 3,-5.0000001e-8 l 1,0 L 4,1 3,1 Z M 1,0 2,0 2,1 1,1 Z M 1,4 2,4 2,5 1,5 Z M 3,4 4,4 4,5 3,5 Z M 4,2 5,2 5,3 4,3 Z M 2,2 3,2 3,3 2,3 Z M 0,2 1,2 1,3 0,3 Z M 6,5.4221106 8,5.39866 8,2 C 8,1 8,1 7,1 6.0336003,1.0168001 6,1 6,2 Z M 5,6 C 3,6 1.46875,9 1.46875,11 1.46875,12 4,14 5,14 l 4,0 c 1,0 3.414063,-2 3.414062,-3 C 12.414062,9 11,6 9,6 Z" />
+     d="M 14,2.5 C 14,3.6605 12.8807,4.6013 11.5,4.6013 C 10.1193,4.6013 9,3.6605 9,2.5 C 9,1.3395 10.1193,0.3987 11.5,0.3987 C 12.8807,0.3987 14,1.3395 14,2.5 Z M 8,2 H 10 V 3 H 8 Z M 3,0 H 4 V 1 H 3 Z M 1,0 H 2 V 1 H 1 Z M 1,4 H 2 V 5 H 1 Z M 3,4 H 4 V 5 H 3 Z M 4,2 H 5 V 3 H 4 Z M 2,2 H 3 V 3 H 2 Z M 0,2 H 1 V 3 H 0 Z M 6,5.4221 L 8,5.3987 V 2 C 8,1 8,1 7,1 C 6.0336,1.0168 6,1 6,2 Z M 5,6 C 3,6 1.4688,9 1.4688,11 C 1.4688,12 4,14 5,14 H 9 C 10,14 12.4141,12 12.4141,11 C 12.4141,9 11,6 9,6 Z" />
 </svg>

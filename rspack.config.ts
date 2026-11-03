@@ -57,12 +57,10 @@ const styleOrExtractLoader = prod
     }
   : 'style-loader';
 
-// Browser targets for CSS lowering. The `.css` files use native CSS nesting,
-// which `css-loader` does not transpile; without lowering it ships verbatim and
-// breaks on browsers lacking nesting support (Firefox < 117 incl. ESR 115,
-// Chrome < 112, Safari < 16.5). LightningCSS flattens nesting (and adds vendor
-// prefixes) for these targets. JS is left as-is — these browsers handle it.
-const cssTargets = [
+// Browser targets. LightningCSS flattens native CSS nesting for them, which
+// `css-loader` would ship verbatim (Firefox < 117, Chrome < 112, Safari < 16.5);
+// SWC lowers JS syntax and injects core-js polyfills for the built-ins used.
+const browserTargets = [
   '>= 0.5%',
   'last 2 versions',
   'Firefox ESR',
@@ -82,6 +80,8 @@ type EntryDoc = {
   errorHtml: string;
   nojsMessage: string;
   loadingMessage: string;
+  /** The button a slow start offers for the build cached for offline use. */
+  skipNetworkMessage: string;
   /** Web-manifest copy. Site-neutral — the portal name is added per site. */
   appDescription: string;
   /** Labels for the base manifest's `shortcuts`, in order. */
@@ -99,6 +99,7 @@ const enDoc: EntryDoc = {
   nojsMessage:
     'JavaScript enabled browser is required to run this application.',
   loadingMessage: 'Loading…',
+  skipNetworkMessage: 'Start the version saved on this device',
   appDescription:
     'Freemap is a free online outdoor map based on OpenStreetMap data',
   shortcutNames: ['My maps', 'Route finder', 'Objects'],
@@ -116,6 +117,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.',
     loadingMessage: 'Načítavam…',
+    skipNetworkMessage: 'Spustiť verziu uloženú v zariadení',
     appDescription:
       'Freemap je voľne dostupná online outdoorová mapa založená na dátach z OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Vyhľadávač trás', 'Objekty'],
@@ -130,6 +132,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Aplikace vyžaduje prohlížeč se zapnutou podporou JavaScriptu.',
     loadingMessage: 'Načítám…',
+    skipNetworkMessage: 'Spustit verzi uloženou v zařízení',
     appDescription:
       'Freemap je volně dostupná online outdoorová mapa založená na datech z OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Vyhledávač tras', 'Objekty'],
@@ -144,6 +147,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Az alkalmazás futtatásához JavaScriptet támogató böngészőre van szükség.',
     loadingMessage: 'Betöltés…',
+    skipNetworkMessage: 'Az eszközön tárolt verzió indítása',
     appDescription:
       'A Freemap szabadon elérhető online szabadidős térkép az OpenStreetMap adatai alapján',
     shortcutNames: ['Saját térképeim', 'Útvonaltervező', 'Objektumok'],
@@ -158,6 +162,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       "E' richiesto un browser con JavaScript abilitato per avviare questa applicazione.",
     loadingMessage: 'Caricamento…',
+    skipNetworkMessage: 'Avvia la versione salvata sul dispositivo',
     appDescription:
       'Freemap è una mappa outdoor online gratuita basata sui dati di OpenStreetMap',
     shortcutNames: ['Le mie mappe', 'Cerca percorso', 'Oggetti'],
@@ -172,6 +177,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Zum Ausführen dieser Anwendung ist ein Browser mit aktiviertem JavaScript erforderlich.',
     loadingMessage: 'Lade…',
+    skipNetworkMessage: 'Auf dem Gerät gespeicherte Version starten',
     appDescription:
       'Freemap ist eine frei zugängliche Outdoor-Onlinekarte auf Basis von OpenStreetMap-Daten',
     shortcutNames: ['Meine Karten', 'Routenplaner', 'Objekte'],
@@ -185,6 +191,7 @@ const entryDocs: EntryDoc[] = [
       '<p>Upewnij się, że używasz aktualnej wersji jednej ze współczesnych przeglądarek (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).</p>',
     nojsMessage: 'Aplikacja wymaga przeglądarki z włączoną obsługą JavaScript.',
     loadingMessage: 'Ładowanie…',
+    skipNetworkMessage: 'Uruchom wersję zapisaną na urządzeniu',
     appDescription:
       'Freemap to bezpłatna mapa outdoorowa online oparta na danych OpenStreetMap',
     shortcutNames: ['Moje mapy', 'Wyszukiwarka tras', 'Obiekty'],
@@ -199,6 +206,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Za zagon te aplikacije potrebujete brskalnik z omogočenim JavaScriptom.',
     loadingMessage: 'Nalaganje…',
+    skipNetworkMessage: 'Zaženi različico, shranjeno v napravi',
     appDescription:
       'Freemap je prosto dostopen spletni zemljevid za dejavnosti v naravi, ki temelji na podatkih OpenStreetMap',
     shortcutNames: ['Moji zemljevidi', 'Iskalnik poti', 'Objekti'],
@@ -213,6 +221,7 @@ const entryDocs: EntryDoc[] = [
     nojsMessage:
       'Un navigateur avec JavaScript activé est nécessaire pour exécuter cette application.',
     loadingMessage: 'Chargement…',
+    skipNetworkMessage: 'Lancer la version enregistrée sur l’appareil',
     appDescription:
       'Freemap est une carte outdoor en ligne gratuite basée sur les données OpenStreetMap',
     shortcutNames: ['Mes cartes', 'Planificateur d’itinéraire', 'Objets'],
@@ -377,6 +386,8 @@ function htmlPluginProps(doc: EntryDoc, site: Site, filename: string) {
       errorHtml: doc.errorHtml,
       nojsMessage: doc.nojsMessage,
       loadingMessage: doc.loadingMessage,
+      skipNetworkMessage: doc.skipNetworkMessage,
+      prod,
       splashScreens,
       faviconSizes,
       appleTouchSizes,
@@ -406,6 +417,10 @@ const config: Configuration = {
   context: path.resolve(__dirname, 'src'),
   entry: {
     main: './app/index.tsx',
+    // Production only: there is no DSN in development, and a second entry on
+    // the page would get its own HMR client and React Refresh runtime.
+    // Not named `sentry`, which filter lists block.
+    ...(prod ? { reporting: './app/sentry.ts' } : {}),
     sw: './sw/sw.ts',
     'upload-sw': './sw/upload-sw.ts',
   },
@@ -437,14 +452,14 @@ const config: Configuration = {
     minimizer: [
       new TerserPlugin({
         minify: TerserPlugin.swcMinify,
-        // Already-minified maplibre worker assets: re-minifying them buys
-        // nothing and risks breaking the ESM link between the two files.
-        exclude: /^maplibre-gl-(worker|shared)\./,
+        // The maplibre worker asset is already minified; re-minifying buys
+        // nothing.
+        exclude: /^maplibre-gl-worker\./,
       }),
       // LightningCSS (replaces cssnano) so it also downlevels native CSS
-      // nesting to flat selectors for the browsers in `cssTargets`.
+      // nesting to flat selectors for the browsers in `browserTargets`.
       new rspack.LightningCssMinimizerRspackPlugin({
-        minimizerOptions: { targets: cssTargets },
+        minimizerOptions: { targets: browserTargets },
       }),
     ],
   },
@@ -474,6 +489,13 @@ const config: Configuration = {
         exclude: /node_modules/,
         loader: 'builtin:swc-loader',
         options: {
+          // Only app code: node_modules is excluded above, so a dependency's own
+          // use of a newer built-in is not polyfilled.
+          env: {
+            targets: browserTargets,
+            mode: 'usage',
+            coreJs: '3.50',
+          },
           jsc: {
             parser: {
               syntax: 'typescript',
@@ -599,7 +621,7 @@ const config: Configuration = {
       {
         // maplibre-gl's worker is loaded by URL at runtime, not bundled, so it
         // stays a raw asset — the `.mjs` rule above would otherwise parse it as
-        // a module. The loader also emits the sibling module it imports.
+        // a module.
         test: /[\\/]maplibre-gl-worker\.mjs$/,
         type: 'asset/resource',
         generator: { filename: '[name].[contenthash].js' },
@@ -616,6 +638,10 @@ const config: Configuration = {
         },
       }),
     new RspackMarkdownDictPlugin({ dir: 'src/documents' }),
+    new RspackMarkdownDictPlugin({
+      dir: 'src/manual',
+      modulePath: 'node_modules/virtual/manual-dict.js',
+    }),
     new RspackSyncLanguagesPlugin({
       root: __dirname,
       script: path.resolve(
@@ -641,10 +667,15 @@ const config: Configuration = {
       DEPLOYMENT: process.env['DEPLOYMENT'] ?? null,
       FM_MAPSERVER_URL:
         process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk',
+      // terrain-tiles: elevation for parametric shading, and shading rendered
+      // on the server.
+      FM_TERRAIN_TILES_URL:
+        process.env['FM_TERRAIN_TILES_URL'] ||
+        'https://terrain.tiles.freemap.sk',
       // Own osm2pgsql-backed API (freemap-osm-api): the objects layer and map
       // details. Europe only.
       FM_OSM_API_URL: process.env['FM_OSM_API_URL'] || 'https://osm.freemap.sk',
-      // Changeset listings only — element geometry comes from the own API.
+      // Changeset listings and OSM notes — element geometry comes from the own API.
       OSM_API_URL:
         process.env['OSM_API_URL'] || 'https://api.openstreetmap.org',
       // Self-hosted Photon: forward search and reverse geocoding. Its index

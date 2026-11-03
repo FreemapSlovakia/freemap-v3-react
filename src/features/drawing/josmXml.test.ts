@@ -1,20 +1,33 @@
+import type { Feature, Position } from 'geojson';
 import { describe, expect, it } from 'vitest';
-import { drawnLinesToOsmXml } from './josmXml.js';
-import type { DrawnLine } from './model/actions/drawingLineActions.js';
+import { featureToOsmXml } from './josmXml.js';
 
-const points = [
-  { id: 0, lat: 48.1, lon: 17.1 },
-  { id: 1, lat: 48.2, lon: 17.2 },
-  { id: 2, lat: 48.3, lon: 17.3 },
+const positions: Position[] = [
+  [17.1, 48.1],
+  [17.2, 48.2],
+  [17.3, 48.3],
 ];
 
-const line: DrawnLine = { id: 0, type: 'line', points };
+const ring = (ps: Position[]) => [...ps, ps[0]!];
 
-const polygon: DrawnLine = { id: 1, type: 'polygon', points };
+const line = (properties: Feature['properties'] = {}): Feature => ({
+  type: 'Feature',
+  properties,
+  geometry: { type: 'LineString', coordinates: positions },
+});
 
-describe('drawnLinesToOsmXml', () => {
+const polygon = (
+  rings: Position[][],
+  properties: Feature['properties'] = {},
+): Feature => ({
+  type: 'Feature',
+  properties,
+  geometry: { type: 'Polygon', coordinates: rings },
+});
+
+describe('featureToOsmXml', () => {
   it('writes a node per point and an open way through them', () => {
-    const xml = drawnLinesToOsmXml(line);
+    const xml = featureToOsmXml(line());
 
     expect(xml).toContain('<node id="-1" lat="48.1" lon="17.1"/>');
 
@@ -26,23 +39,15 @@ describe('drawnLinesToOsmXml', () => {
   });
 
   it('closes a ring back onto its first node', () => {
-    expect(drawnLinesToOsmXml(polygon)).toContain(
+    expect(featureToOsmXml(polygon([ring(positions)]))).toContain(
       '<way id="-1"><nd ref="-1"/><nd ref="-2"/><nd ref="-3"/><nd ref="-1"/></way>',
     );
   });
 
-  it('leaves a two-point ring open, having no area to close', () => {
-    expect(
-      drawnLinesToOsmXml({ ...polygon, points: points.slice(0, 2) }),
-    ).toContain('<way id="-1"><nd ref="-1"/><nd ref="-2"/></way>');
-  });
-
   it("carries the feature's properties, and a plain label as the name", () => {
-    const xml = drawnLinesToOsmXml({
-      ...line,
-      label: 'Devínska cesta & spol',
-      props: { highway: 'path' },
-    });
+    const xml = featureToOsmXml(
+      line({ name: 'Devínska cesta & spol', highway: 'path' }),
+    );
 
     expect(xml).toContain(
       '<tag k="name" v="Devínska cesta &amp; spol"/><tag k="highway" v="path"/>',
@@ -50,15 +55,14 @@ describe('drawnLinesToOsmXml', () => {
   });
 
   it('leaves a template label out of the tags', () => {
-    expect(drawnLinesToOsmXml({ ...line, label: '{length}' })).not.toContain(
-      '<tag',
-    );
+    expect(
+      featureToOsmXml(line({ 'freemap:label': '{length}', name: '1 km' })),
+    ).not.toContain('<tag');
   });
 
   it('makes a multipolygon of a ring with holes', () => {
-    const xml = drawnLinesToOsmXml(
-      { ...polygon, props: { natural: 'water' } },
-      [{ ...polygon, id: 2, holeOfId: 1 }],
+    const xml = featureToOsmXml(
+      polygon([ring(positions), ring(positions)], { natural: 'water' }),
     );
 
     // The hole's nodes carry on from the outer ring's, and each ring is a way.
@@ -76,9 +80,15 @@ describe('drawnLinesToOsmXml', () => {
         '<tag k="natural" v="water"/><tag k="type" v="multipolygon"/>' +
         '</relation>',
     );
+  });
 
-    expect(xml).toContain(
-      '<way id="-1"><nd ref="-1"/><nd ref="-2"/><nd ref="-3"/><nd ref="-1"/></way>',
-    );
+  it('writes nothing for a point', () => {
+    expect(
+      featureToOsmXml({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Point', coordinates: [17, 48] },
+      }),
+    ).toBeUndefined();
   });
 });

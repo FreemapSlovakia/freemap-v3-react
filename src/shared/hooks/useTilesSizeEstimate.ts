@@ -19,6 +19,8 @@ export type TilesSizeEstimateParams = {
   estimateForCount?: number;
   /** The `@Nx` variant that will really be downloaded; see `pickTileScale`. */
   scale?: number;
+  /** A premium account's token for gated zooms; see `premiumTileAuth`. */
+  tileAuth?: { fromZoom: number; token: string };
   enabled?: boolean;
 };
 
@@ -43,6 +45,7 @@ export function useTilesSizeEstimate({
   tileCount,
   estimateForCount,
   scale,
+  tileAuth,
   enabled = true,
 }: TilesSizeEstimateParams): TilesSizeEstimate {
   // the average is kept per tile and keyed by layer so that editing the area or
@@ -59,6 +62,11 @@ export function useTilesSizeEstimate({
   tileCountRef.current = tileCount;
 
   const key = `${urlTemplate}@${scale}`;
+
+  // primitives, so a fresh object on each render doesn't restart the sampling
+  const authFromZoom = tileAuth?.fromZoom;
+
+  const authToken = tileAuth?.token;
 
   useEffect(() => {
     if (
@@ -90,6 +98,10 @@ export function useTilesSizeEstimate({
         minZoom,
         maxZoom,
         scale,
+        tileAuth:
+          authFromZoom === undefined || authToken === undefined
+            ? undefined
+            : { fromZoom: authFromZoom, token: authToken },
         signal: abortController.signal,
       })
         .then((estimate) => {
@@ -117,7 +129,18 @@ export function useTilesSizeEstimate({
 
       abortController.abort();
     };
-  }, [enabled, urlTemplate, subdomain, bboxKey, minZoom, maxZoom, scale, key]);
+  }, [
+    enabled,
+    urlTemplate,
+    subdomain,
+    bboxKey,
+    minZoom,
+    maxZoom,
+    scale,
+    key,
+    authFromZoom,
+    authToken,
+  ]);
 
   const bytesPerTile = sample?.key === key ? sample.bytesPerTile : undefined;
 

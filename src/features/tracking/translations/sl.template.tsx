@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -25,7 +25,7 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (name) => (
       <>
-        Sledi napravi <i>{name}</i>
+        Nova sledena naprava <i>{name}</i>
       </>
     ),
     storageWarning:
@@ -58,7 +58,7 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
     ),
     createTitle: (deviceName) => (
       <>
-        Dodaj žeton za sledenje za <i>{deviceName}</i>
+        Nov žeton za sledenje za <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
@@ -81,7 +81,7 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
   devices: {
     button: 'Moje naprave',
     modalTitle: 'Moje naprave',
-    createTitle: 'Dodaj napravo',
+    createTitle: 'Nova naprava',
     watchTokens: 'Žetoni za sledenje',
     traccarQrCode: 'Traccar QR koda',
     watchPrivately: 'Sledi zasebno',
@@ -108,9 +108,9 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
 
         <hr />
 
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Kako nastaviti sledeno napravo
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },

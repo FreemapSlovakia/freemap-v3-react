@@ -4,11 +4,13 @@ import { isPremium } from '@features/premium/premium.js';
 import { loadPremiumMessages } from '@features/premium/translations/loadPremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import type { Dispatch } from 'redux';
+import type { Action, Dispatch } from 'redux';
 import z from 'zod';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authSetUser } from '../actions.js';
 import {
+  AUTH_PROVIDER_LABELS,
+  type AuthProvider,
   LoginResponseSchema,
   RawUserSchema,
   type UserSettings,
@@ -24,6 +26,8 @@ export async function handleLoginResponse(
   res: Response,
   getState: () => RootState,
   dispatch: Dispatch,
+  provider: AuthProvider,
+  successAction?: Action,
 ) {
   const { user, connect, clientData } = RawLoginResponseSchema.parse(
     await res.json(),
@@ -31,15 +35,23 @@ export async function handleLoginResponse(
 
   trackMatomo(['trackEvent', 'Auth', 'login', connect ? 'connect' : 'login']);
 
-  dispatch(
-    toastsAdd({
-      id: 'lcd',
-      messageKey: connect ? 'connectSuccess' : 'logInSuccess',
-      messageLoader: loadAuthMessages,
-      style: 'info',
-      timeout: 5000,
-    }),
-  );
+  // Re-authorizing a provider the account already has (e.g. for a wider scope)
+  // connects nothing. Read before `authSetUser` below.
+  const reauthorized =
+    connect && getState().auth.user?.authProviders.includes(provider);
+
+  if (!reauthorized) {
+    dispatch(
+      toastsAdd({
+        id: 'lcd',
+        messageKey: connect ? 'connectSuccess' : 'logInSuccess',
+        messageParams: { provider: AUTH_PROVIDER_LABELS[provider] },
+        messageLoader: loadAuthMessages,
+        style: 'info',
+        timeout: 5000,
+      }),
+    );
+  }
 
   let settings: UserSettings | undefined;
 
@@ -71,8 +83,10 @@ export async function handleLoginResponse(
     }
   }
 
-  if (clientData?.successAction) {
-    dispatch(clientData.successAction);
+  const followUp = successAction ?? clientData?.successAction;
+
+  if (followUp) {
+    dispatch(followUp);
   } else if (connect) {
     dispatch(setActiveModal({ type: 'account' }));
   }

@@ -1,7 +1,17 @@
+import { isHeicFile } from '@shared/heicSupport.js';
 import type z from 'zod';
 import type { GalleryFilter, GalleryFilterSchema } from './model/actions.js';
 
 export type GallerySource = 'gallery' | 'wikimedia';
+
+/** Whether a dropped file is a photo the gallery upload takes: JPEG or HEIC/HEIF. */
+export function isUploadablePicture(file: File): boolean {
+  return (
+    file.type === 'image/jpeg' ||
+    /\.jpe?g$/i.test(file.name) ||
+    isHeicFile(file)
+  );
+}
 
 export const GALLERY_SOURCES: GallerySource[] = ['gallery', 'wikimedia'];
 

@@ -1,11 +1,18 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
-import { FaMobileAlt, FaPlus, FaTimes } from 'react-icons/fa';
+import { Alert, ListGroup, Modal } from 'react-bootstrap';
+import { FaMobileAlt, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
@@ -30,14 +37,17 @@ export function MyDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaMobileAlt /> {tm?.devices.modalTitle}
+          <FaMobileAlt /> <Text m={tm} k="devices.modalTitle" />
         </Modal.Title>
+        <ManualHeaderButton chapter="tracking" />
       </Modal.Header>
 
       <Modal.Body>
         <OfflineAlert />
 
-        <Alert variant="secondary">{tm?.devices.desc()}</Alert>
+        <Alert variant="secondary">
+          <Text m={tm}>{(tm) => tm.devices.desc()}</Text>
+        </Alert>
 
         {devices.length > 0 && (
           <ListGroup>
@@ -48,18 +58,19 @@ export function MyDevices(): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           disabled={!online}
           onClick={() => dispatch(trackingActions.modifyDevice(null))}
-        >
-          <FaPlus /> {m?.general.add}
-        </Button>
+          icon={<FaPlus />}
+          label={m?.general.add}
+        />
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={m?.general.close}
+          onClick={() => dispatch(setActiveModal(null))}
+        />
+      </FmModalFooter>
     </>
   );
 }

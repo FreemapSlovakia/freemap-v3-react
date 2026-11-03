@@ -20,7 +20,6 @@ export type MapFeaturesExportMessages = {
     drawingAreas: string;
     drawingPoints: string;
     tracking: string;
-    import: string;
     search: string;
   };
   onlySelected: string;

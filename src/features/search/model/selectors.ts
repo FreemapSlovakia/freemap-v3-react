@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { createSelector } from '@reduxjs/toolkit';
 import { type FeatureId, featureIdsEqual } from '@shared/types/featureId.js';
 import type { SearchResult } from './actions.js';
 
@@ -18,6 +19,16 @@ export function activeSearchResultSelector(
       ) ?? null)
     : null;
 }
+
+/** The results shown and kept: all but the one only being looked at. */
+export const keptSearchResultsSelector = createSelector(
+  (state: RootState) => state.search.selectedResults,
+  (state: RootState) => state.search.previewId,
+  (results, previewId) =>
+    results.filter(
+      (result) => !(previewId && featureIdsEqual(previewId, result.id)),
+    ),
+);
 
 /**
  * Whether what is shown for `id` is the stand-in for a fetch in flight — an
@@ -48,5 +59,24 @@ export function activeSearchResultKeptSelector(state: RootState): boolean {
   return (
     selection?.type === 'search' &&
     !(previewId && featureIdsEqual(previewId, selection.id))
+  );
+}
+
+/**
+ * Whether picking `result` from the search box shows its details: all but a
+ * name-search hit not kept. An embed has no ⓘ to ask for them, so there all do.
+ */
+export function pickShowsDetailsSelector(
+  state: RootState,
+  result: SearchResult,
+): boolean {
+  const { previewId, selectedResults } = state.search;
+
+  const kept =
+    selectedResults.some((r) => featureIdsEqual(r.id, result.id)) &&
+    !(previewId && featureIdsEqual(previewId, result.id));
+
+  return (
+    Boolean(window.fmEmbedded) || result.source !== 'nominatim-forward' || kept
   );
 }

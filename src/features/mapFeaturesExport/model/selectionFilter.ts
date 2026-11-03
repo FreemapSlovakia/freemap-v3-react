@@ -4,6 +4,7 @@ import {
   featureIdsEqual,
   type OsmFeatureId,
 } from '@shared/types/featureId.js';
+import type { Geometry } from 'geojson';
 
 // Intra-source narrowing for an "export only the selected item" export. The
 // export modal already restricts `exportables` to the selected feature's source
@@ -12,22 +13,34 @@ import {
 // restriction. Shared by the GeoJSON/KML builder and the direct GPX exporter so
 // both narrow identically.
 
-export function keepDrawingLine(
-  only: Selection | undefined,
-  lineIndex: number,
-): boolean {
-  return (
-    !only ||
-    (only.type === 'draw-line-poly' && only.id === lineIndex) ||
-    (only.type === 'line-point' && only.lineIndex === lineIndex)
-  );
-}
-
-export function keepDrawingPoint(
+/** A map feature, by its index in the collection. */
+export function keepFeature(
   only: Selection | undefined,
   index: number,
 ): boolean {
-  return !only || (only.type === 'draw-points' && only.id === index);
+  return (
+    !only ||
+    ((only.type === 'feature' || only.type === 'vertex') && only.id === index)
+  );
+}
+
+export type FeatureExportable =
+  | 'drawingLines'
+  | 'drawingAreas'
+  | 'drawingPoints';
+
+/** The export toggle a map feature falls under, by its geometry. */
+export function featureExportable(geometry: Geometry): FeatureExportable {
+  switch (geometry.type) {
+    case 'Point':
+    case 'MultiPoint':
+      return 'drawingPoints';
+    case 'Polygon':
+    case 'MultiPolygon':
+      return 'drawingAreas';
+    default:
+      return 'drawingLines';
+  }
 }
 
 export function keepObject(

@@ -11,8 +11,8 @@ const de: DeepPartialWithRequiredObjects<AdMessages> = {
   },
   rovas: () => (
     <RovasAd rovasDesc="eine Wirtschaft, die Arbeit belohnt">
-      Erfasse deine freiwillige Tätigkeit, lass sie von der Community bestätigen
-      und verdiene Chrons.
+      Erfassen Sie Ihre freiwillige Tätigkeit, lassen Sie sie von der Community
+      bestätigen und verdienen Sie Chrons.
     </RovasAd>
   ),
   zdilaAuthorship: () => (

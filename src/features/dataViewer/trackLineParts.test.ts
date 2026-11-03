@@ -1,4 +1,7 @@
-import { PATH_DETAILS_PROP } from '@shared/colorizers/colorize.js';
+import {
+  PATH_DETAILS_PROP,
+  readPathDetails,
+} from '@shared/colorizers/colorize.js';
 import { colorizers } from '@shared/colorizers/index.js';
 import { cumulativeDistances } from '@shared/geoutils.js';
 import type { FeatureCollection } from 'geojson';
@@ -75,24 +78,22 @@ describe('trackLineParts', () => {
         ...feature,
         properties: {
           ...feature.properties,
-          // The gap between the segments is not in this measure, so the second
-          // starts where the first ended.
-          [PATH_DETAILS_PROP]: {
-            surface: [
-              { start: 0, end: segment, value: 'asphalt' },
-              { start: segment, end: 2 * segment, value: 'gravel' },
-            ],
-          },
+          // One entry per part, each measured from its own start.
+          [PATH_DETAILS_PROP]: [
+            { surface: [{ start: 0, end: segment, value: 'asphalt' }] },
+            { surface: [{ start: 0, end: segment, value: 'gravel' }] },
+          ],
         },
       })),
     });
 
-    const surface = (
-      second!.properties![PATH_DETAILS_PROP] as Record<
-        string,
-        { start: number; end: number; value: string }[]
-      >
-    )['surface']!;
+    // A flattened part carries only its own spans, so the colorizer reading it
+    // needs no part of its own.
+    expect((second!.properties![PATH_DETAILS_PROP] as unknown[]).length).toBe(
+      1,
+    );
+
+    const surface = readPathDetails(second!, 'surface')!;
 
     expect(surface).toHaveLength(1);
     expect(surface[0]!.value).toBe('gravel');

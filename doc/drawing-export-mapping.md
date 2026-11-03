@@ -106,6 +106,20 @@ carries one is ours and its `<name>` is ignored; a file without one is read as
 before, the name becoming a property and the label `{p:name}`. (The data-viewer
 point branch instead copies the name as literal text; that predates this.)
 
+The data viewer draws such a file the way the drawing did. Its `name` is only
+ever the label as last rendered, and a template's data lives only in the table:
+`normalizeName` gives a templated feature its `title` as `name`, or none, so
+neither a GeoJSON `name` property nor a GPX `<name>` is read as data.
+`featureLabel` renders `freemap:label` from the table and the geometry, else
+reads `name`. The editor stores a template over the table — made on the first
+one, seeded with the plain label it replaces — and the rendering in `name`;
+beside a table a plain label is written to `freemap:label` too, as a drawing
+export does, so a conversion does not take the table's `name` instead. Exports
+render afresh (`withRenderedLabel`): into `name` for GPX and the baked-marker
+formats (KML among them), and into `title` for GeoJSON, beside the table stated
+as plain properties. KML carries the rendered `<name>` alone, so a template does
+not survive it.
+
 An export from before the table existed therefore keeps its old behaviour rather
 than losing its properties, and no separate marker is needed to tell the two
 apart.
@@ -238,7 +252,7 @@ they're audited by eye and exercised through round-trip exports.
 | `src/features/export/model/processors/gpxExportProcessorHandler.ts`             | GPX writer (`addDrawingPoints`, `addDrawingLines`, marker SVG builder for Locus icon)                                  |
 | `src/features/export/model/processors/geojsonExportProcessorHandler.ts`         | GeoJSON writer                                                                                                         |
 | `src/features/dataViewer/parseGpx.ts`                                           | GPX → GeoJSON reader; writes the canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk/rte features |
-| `src/processors/convertToDrawingProcessor.ts`                                   | Turns parsed features into drawing state                                                                               |
+| `src/processors/convertToDrawingProcessor.ts`                                   | Turns other tools' features into features of the collection                                                            |
 | `src/shared/styleFromProperties.ts`                                             | `*StyleFromProperties` priority chains, and the `*StyleToProperties` writers the data viewer's properties editor uses  |
 | `src/shared/featureProperties.ts`                                               | Which property keys are the feature's own data vs. style/bookkeeping; the `freemap:props` table reader                 |
 | `src/shared/drawingIcons.tsx`                                                   | iconSpec parser, FA loader, POI name↔URL maps, `tagsToPoiIconSpec`                                                     |
@@ -249,12 +263,14 @@ they're audited by eye and exercised through round-trip exports.
 If you add a new persisted field to a drawing point/line, the full
 checklist is:
 
-1. Add it to the Zod schema (`DrawingPointSchema` /
-   `LineSchema`) and the action payloads. If the field can't be carried
-   verbatim (like `holeOf`, an index out here but a parent id in the
-   store), the URL (`serializeDrawingLine` / `locationChangeHandler`) and
-   the map document (`mapDocument.ts`) must agree on the wire form, or a
-   map restored from its URL reads as having unsaved changes.
+1. Add it to the Zod schema (`DrawingPointSchema` / `LineSchema`) and to
+   the wire conversion in `dataViewer/drawingWire.ts` (`featureToWire`,
+   `pointToFeature` / `lineToFeature`). A feature whose wire form doesn't
+   read back as the feature is never written to the URL, so a field missing
+   there quietly sends every collection that has it to a browser snapshot.
+   The URL (`serializeDrawingLine` / `locationChangeHandler`) and the map
+   document (`mapDocument.ts`) must agree on the wire form, or a map
+   restored from its URL reads as having unsaved changes.
 2. **GPX writer** (`addDrawingPoints` / `addDrawingLines`):
    emit it as `<fm:fieldName>` always; emit it in foreign namespaces
    (osmand/locus/gpx_style) wherever a sensible counterpart exists.

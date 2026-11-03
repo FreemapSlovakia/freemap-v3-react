@@ -22,10 +22,17 @@ import { flattenLevelledSpans } from './structureElevation.js';
  * than as a detail.
  */
 export function pathDetailKeys(transport: TransportType): string[] {
-  // The ones every profile can be described by. Two extra cost 2.9 % of an
-  // uncompressed 200 km response, so asking always beats guessing which profile
-  // will want them — a mode with nothing mapped only greys out anyway.
-  const keys = ['surface', 'road_class', 'track_type', 'smoothness'];
+  // Asked of every profile: cheaper than guessing which wants them. The three
+  // numeric ones change on nearly every edge, so they cost the most.
+  const keys = [
+    'surface',
+    'road_class',
+    'track_type',
+    'smoothness',
+    'average_speed',
+    'curvature',
+    'max_speed',
+  ];
 
   // Only a motor vehicle is charged, and only `ALL` charges a car — `HGV` is a
   // road lorries pay for and cars do not. `carnotoll` is included precisely
@@ -215,8 +222,9 @@ export function routeColorizeFeatures(
         : // A run is a piece of the line, so anything of the line's that answers
           // to its length cannot come along.
           withoutPerPointData(line?.properties ?? null)),
-      [PATH_DETAILS_PROP]:
+      [PATH_DETAILS_PROP]: [
         unrouted.length === 0 ? details : clipPathDetails(details, from, to),
+      ],
       // What was cut out before this run still counts on the whole route's
       // distance axis, which the elevation chart colors against.
       [LINE_START_PROP]: from,
@@ -237,7 +245,7 @@ function routedRuns(
 ): { from: number; to: number; coordinates: Position[] }[] {
   const cum = cumulativeDistances(coordinates);
 
-  const total = cum[cum.length - 1] ?? 0;
+  const total = cum.at(-1) ?? 0;
 
   if (unrouted.length === 0) {
     return [{ from: 0, to: total, coordinates }];

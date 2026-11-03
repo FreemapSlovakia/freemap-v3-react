@@ -1,6 +1,10 @@
 import type { Middleware } from '@reduxjs/toolkit';
 import storage from 'local-storage-fallback';
-import { STORAGE_KEY, selectPersistedState } from '../persistence.js';
+import {
+  PERSISTED_KEYS,
+  STORAGE_KEY,
+  selectPersistedState,
+} from '../persistence.js';
 import type { RootState } from '../store.js';
 
 // Latched on once a full app reset + reload is initiated. The reset clears the
@@ -31,8 +35,36 @@ export const statePersistingMiddleware: Middleware<object, RootState> =
 
 let persistFailureReported = false;
 
+/** The persisted slices as they were last written; `null` before the first. */
+let lastPersisted: unknown[] | null = null;
+
+/**
+ * Whether anything that gets written has actually changed. Every action reaches
+ * this middleware, and most change nothing persisted — a map pan, a render's
+ * progress, an incoming tracking fix — so without this each of them serialises
+ * the whole persisted tree and makes a synchronous `localStorage` write.
+ *
+ * Reducers return the slice they were given when they change nothing, so
+ * identity is enough and costs one comparison per persisted slice.
+ */
+function persistedStateChanged(state: RootState): boolean {
+  const current = PERSISTED_KEYS.map((key) => state[key]);
+
+  if (lastPersisted?.every((slice, i) => slice === current[i])) {
+    return false;
+  }
+
+  lastPersisted = current;
+
+  return true;
+}
+
 function persistSelectedState(state: RootState) {
   if (window.fmEmbedded) {
+    return;
+  }
+
+  if (!persistedStateChanged(state)) {
     return;
   }
 

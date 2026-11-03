@@ -1,17 +1,14 @@
 import { activeMapToolSelector, isToolOpen } from '@app/store/selectors.js';
 import { ChangesetsResult } from '@features/changesets/components/ChangesetsResult.js';
-import { DrawingLinesResult } from '@features/drawing/components/DrawingLinesResult.js';
-import { DrawingPointsResult } from '@features/drawing/components/DrawingPointsResult.js';
 import { ElevationChartActivePoint } from '@features/elevationChart/components/ElevationChartActivePoint.js';
-import { useMap } from '@features/map/hooks/useMap.js';
 import { ObjectsResult } from '@features/objects/components/ObjectsResult.js';
+import { TerrainOverlayResult } from '@features/objects/components/TerrainOverlayResult.js';
 import { RoutePlannerResult } from '@features/routePlanner/components/RoutePlannerResult.js';
 import { SearchResults } from '@features/search/components/SearchResults.js';
 import { TrackingResult } from '@features/tracking/components/TrackingResult.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useEffect } from 'react';
+import type { ReactElement } from 'react';
 import { AsyncComponent } from './AsyncComponent.js';
-import { LocationResult } from './LocationResult.js';
 
 // Module scope so each keeps one identity: `useLazy` re-runs its effect when
 // the factory changes, and an inline `import()` also stops the React Compiler
@@ -26,6 +23,12 @@ const panoramaResultFactory = () =>
   import(
     /* webpackChunkName: "panorama-result" */
     '@features/panorama/components/PanoramaResult.js'
+  );
+
+const changesetDiffResultFactory = () =>
+  import(
+    /* webpackChunkName: "changeset-diff-result" */
+    '@features/changesets/components/ChangesetDiffResult.js'
   );
 
 const gpsRecorderResultFactory = () =>
@@ -71,25 +74,9 @@ export function Results(): ReactElement {
       state.panorama.viewpoint !== null && isToolOpen(state, 'panorama'),
   );
 
-  const opacity = useAppSelector(
-    (state) => state.map.layersSettings['i']?.opacity ?? 1,
+  const hasChangesetDiff = useAppSelector((state) =>
+    Boolean(state.changesetInspector.inspected?.diff),
   );
-
-  const map = useMap();
-
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    for (const name of ['shadowPane', 'markerPane', 'overlayPane']) {
-      const pane = map.getPane(name);
-
-      if (pane) {
-        pane.style.opacity = String(opacity ?? 1);
-      }
-    }
-  }, [map, opacity]);
 
   return (
     <>
@@ -101,13 +88,9 @@ export function Results(): ReactElement {
 
       {hasObjects && <ObjectsResult />}
 
+      <TerrainOverlayResult />
+
       {showRoutePlanner && <RoutePlannerResult />}
-
-      <DrawingLinesResult />
-
-      <DrawingPointsResult />
-
-      <LocationResult />
 
       {trackGeojson && (
         <AsyncComponent
@@ -117,6 +100,10 @@ export function Results(): ReactElement {
       )}
 
       <ChangesetsResult />
+
+      {hasChangesetDiff && (
+        <AsyncComponent factory={changesetDiffResultFactory} />
+      )}
 
       {hasPanorama && <AsyncComponent factory={panoramaResultFactory} />}
 

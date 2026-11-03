@@ -5,6 +5,7 @@ if ($blocked_country) {
     return 444;
 }
 
+	# Repeated in every location with add_header of its own, which drops this.
 	add_header Alt-Svc 'h3=":443"; ma=86400';
 
 	root /home/freemap/www;
@@ -70,6 +71,16 @@ if ($blocked_country) {
 		add_header Referrer-Policy 'no-referrer';
 		add_header Strict-Transport-Security 'max-age=31536000';
 		add_header Vary 'Accept-Language';
+		add_header Alt-Svc 'h3=":443"; ma=86400';
+	}
+
+	# The reference files llms.txt links. nginx has no MIME type for `.md`, and
+	# `types { }` clears the map so default_type always applies; text/plain keeps
+	# them readable in a browser and acceptable to every agent's fetcher.
+	location ~ "^/llms-[\w-]+\.md$" {
+		types { }
+		default_type 'text/plain; charset=UTF-8';
+		add_header Alt-Svc 'h3=":443"; ma=86400' always;
 	}
 
 	# Content-hashed assets (16-hex-char [chunk|content]hash — keep in sync with
@@ -77,11 +88,13 @@ if ($blocked_country) {
 	# does, so cache them forever without revalidation.
 	location ~ ".+\.[a-z0-9]{16}\..+$" {
 		add_header Cache-Control 'public, max-age=31536000, immutable';
+		add_header Alt-Svc 'h3=":443"; ma=86400';
 	}
 
 	# Possibly-unhashed images: cache long, but allow revalidation on change.
 	location ~ "\.png$|\.jpg$|\.svg$|\.ico$" {
 		add_header Cache-Control 'max-age=31536000';
+		add_header Alt-Svc 'h3=":443"; ma=86400';
 	}
 
 	location /pgbadger {
@@ -111,6 +124,23 @@ if ($blocked_country) {
 		}
 	}
 
+	# Sentry tunnel (`tunnel` in src/app/sentry.ts): blockers drop requests to
+	# Sentry's own URLs. The project key travels in the envelope header.
+	location = /api/fm-report {
+		limit_except POST {
+			deny all;
+		}
+
+		client_max_body_size 1m;
+
+		proxy_pass http://127.0.0.1:9000/api/2/envelope/;
+		proxy_set_header Host sentry.freemap.sk;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		add_header Alt-Svc 'h3=":443"; ma=86400';
+	}
+
 	location /tiles/parametric-shading {
 		proxy_set_header Host $host;
 	        proxy_set_header X-Real-IP $remote_addr;
@@ -119,6 +149,7 @@ if ($blocked_country) {
 
 		expires 30d;
 		add_header Cache-Control "public, no-transform";
+		add_header Alt-Svc 'h3=":443"; ma=86400';
 
 		rewrite ^/tiles/parametric-shading/(.*)$ /$1 break;
         	proxy_pass http://localhost:3033/;

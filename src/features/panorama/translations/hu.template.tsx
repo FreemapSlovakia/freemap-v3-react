@@ -5,7 +5,10 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>A nézőpontot az alábbi {icon} gombbal válassza ki.</>
   ),
+  preparing: 'A panoráma készül…',
   rendering: 'Panoráma renderelése…',
+  encoding: 'Kép tömörítése…',
+  decoding: 'Kép kicsomagolása…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Várakozás a renderelőre…'
@@ -32,13 +35,12 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Panoráma beállításai',
     tiltHint:
       'Mennyi égbolt és talaj fér a képbe — a horizont feletti és alatti szög.',
-    custom: 'Pontos szögek',
     depthLift: 'Távolság kibontása',
     depthLiftOff: 'Hű kilátás',
     depthLiftHint:
-      'Megemeli a távoli terepet, így a messzi hegyláncok elválnak az előttük álló gerincektől — ahogy a kézzel rajzolt panorámákon. Ezzel olyan csúcsok is a képre kerülnek, amelyeket innen valójában nem látna; a nevük meg van jelölve.',
+      'Megemeli a távoli terepet, így a messzi hegyláncok elválnak az előttük álló gerincektől — ahogy a kézzel rajzolt panorámákon. Ezzel olyan csúcsok is a képre kerülnek, amelyeket innen valójában nem látna; a nevük meg van jelölve. A Nap és a Hold útja nem rajzolódik rá.',
     rangeHint:
-      'A 300 km-en túli terep a prémiumé. Minden további kilométert a kép minden sugara mentén be kell járni, így a távolabbi kilátás arányosan többe kerül a renderelőnek.',
+      'A 300 km-en túli terep prémium funkció. Minden további kilométert a kép minden sugara mentén be kell járni, így a távolabbi kilátás arányosan többe kerül a renderelőnek.',
     look: 'Megjelenés',
     looks: {
       natural: 'Természetes',
@@ -66,24 +68,42 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'A távolságon túli terep kimarad ahelyett, hogy laposan az utolsó színnel lenne kitöltve, így az egész színátmenet arra jut, amit a kép mutat. Az ott álló csúcsok nem kapnak nevet.',
   },
-  preview: 'Előnézet',
   quality: {
-    label: 'Minőség / sebesség',
-    superfast: 'Legalacsonyabb / leggyorsabb',
-    fast: 'Alacsony / gyors',
-    standard: 'Normál',
-    detailed: 'Részletes / lassú',
-    finest: 'Legfinomabb / leglassabb',
+    detail: 'Részletesség',
   },
+  frame: 'Kivágás és részletesség',
   tilt: {
     label: 'Függőleges tartomány',
     standard: 'Normál',
     wide: 'Magas',
     flat: 'Alacsony',
+    below: 'A horizont alatt',
+    above: 'A horizont felett',
   },
   fov: {
     label: 'Vízszintes tartomány',
     full: 'Körben',
+  },
+  sky: {
+    title: 'Nap és Hold',
+    sun: 'A Nap útja',
+    moon: 'A Hold útja',
+    date: 'Nap',
+    dateHint:
+      'Az időpontok az eszköz időzónájában értendők, és azt jelzik, mikor tűnik el a korong utolsó szelete a terep mögött, vagy mikor bukkan fel az első. A terep csupasz felszín, így a fák és az épületek korábban eltakarhatják.',
+    today: 'Ma',
+    lit: (percent) => `${percent}-ban megvilágítva`,
+    elevation: (deg) => `magasság: ${deg}`,
+    overTerrain: (deg) => `${deg} a terep felett`,
+    belowTerrain: (deg) => `${deg} a terep alatt`,
+    unfolded: (
+      <>
+        Kibontott képen nem: a távoli terep magasabban van rajzolva, mint ahol
+        áll, így az utak rossz helyen metszenék a látóhatárt. A panoráma
+        beállításaiban állítsa a <i>Távolság kibontása</i> értékét{' '}
+        <i>Hű kilátás</i> értékre, és frissítsen.
+      </>
+    ),
   },
   labels: {
     title: 'Csúcsnevek',
@@ -110,9 +130,16 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Tiszta levegő',
     hazeHint:
       'Milyen messze kell lennie egy csúcsnak, hogy a pára többet nyomjon a latban, mint maga a csúcs. Ennek háromszorosán túl semmi sem kap nevet.',
-    showEle: 'Magasságok megjelenítése',
-    showEleHint:
-      'Minden csúcs neve alá odaírja a magasságát. A felirat így kétsoros, ezért kevesebb fér el belőlük a képen.',
+    subLine: 'A név alatt',
+    subLineHint:
+      'Mit mond minden csúcsfelirat második sora. Ha bármelyik be van kapcsolva, minden felirat kétsoros, így kevesebb fér el a képen. A prominencia (P) azt mondja meg, mennyivel emelkedik a csúcs a magasabb terep felé vezető legalacsonyabb nyereg fölé; az izoláció (I), hogy milyen messze van ez a magasabb terep.',
+    subLineParts: {
+      ele: 'Magasság',
+      distance: 'Távolság',
+      prominence: 'Prominencia',
+      isolation: 'Izoláció',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Feltárt csúcsok elnevezése',
     showRevealedHint:
       'Csúcsok, amelyeket a távolság kibontása húzott elő egy közelebbi gerinc mögül: meg vannak rajzolva, de innen valójában nem látszanak. A nevük halványabb, és ha nincs hely mindkettőnek, a látható csúcs kapja meg.',
@@ -143,11 +170,6 @@ const hu: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'A panorámát nem sikerült renderelni.',
   },
   caveats: {
-    title: 'Mit mutat a kép, és mit nem',
-    bareEarth:
-      'A domborzatmodell csupasz föld: erdők és épületek nincsenek benne, így az a kilátás, amelyet egy erdő eltakarna, szabadként van megrajzolva. Messze ez a legnagyobb hibaforrás.',
-    coverage:
-      'A részletesség országonként eltér. Ahol van országos lézerszkennelt modell, ott a közeli terep éles; máshol egy globális, 30 m-es modell felel.',
     viewpoint:
       'A szem a kattintástól számított néhány méteren belüli legmagasabb pontra kerül, hogy a csúcsról nyíló kilátást ne rontsa el a mellette álló szikla.',
     depthLift:

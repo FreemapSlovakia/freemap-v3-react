@@ -1,55 +1,37 @@
-import {
-  type AttributionDef,
-  OUTDOOR_NATIONAL_DTM_ATTRIBUTION,
-} from './mapDefinitions.js';
+import z from 'zod';
+import type { AttributionDef } from './mapDefinitions.js';
+import { rememberedJson } from './rememberedJson.js';
 
 /**
- * Countries the elevation API answers from a national high-resolution terrain
- * model, for a read that presents premium credentials; past their borders such a
- * read falls back to the global 30 m GEDTM30. This is what the premium offer
- * advertises, so it must track the models the API actually holds.
- *
- * A non-premium read gets none of these: it is answered from SRTM everywhere.
- * Neither is what GraphHopper returns from its own graph — that is Sonny's.
- *
- * Drawn from the outdoor renderer's shading sources
- * (`OUTDOOR_NATIONAL_DTM_ATTRIBUTION` in `mapDefinitions.tsx`) — the same
- * models, and at the moment the same countries, but the two lists stay separate
- * because either side can gain a model the other doesn't hold.
- *
- * Coverage is per country, so `gb` overstates a model that covers England
- * alone; a read elsewhere in the UK still falls back to GEDTM30. A country can
- * also have more than one model — `be` is two — so this list is the countries,
- * not the models.
+ * A token naming a national model by its area — a country, or a part of one
+ * (`en`, `wls`) — rather than a model of its own (`gedtm30`, `sonny`, `srtm`).
  */
-export const ELEVATION_API_DTM_COUNTRIES = [
-  'at',
-  'be',
-  'ch',
-  'cz',
-  'es',
-  'fi',
-  'fr',
-  'gb',
-  'hr',
-  'it',
-  'lu',
-  'no',
-  'pl',
-  'se',
-  'si',
-  'sk',
-];
+const NATIONAL_TOKEN = /^[a-z]{2,3}$/;
+
+// The API's source names as a read reports them, kept to the national models'.
+const sources = rememberedJson(
+  `${process.env['API_URL']}/geotools/elevation/sources`,
+  'fm.elevationSources',
+  z
+    .array(z.string())
+    .transform((names) => names.filter((name) => NATIONAL_TOKEN.test(name))),
+);
+
+/** Areas a premium read answers from a national model; `null` until known. */
+export const useDtmCountries = sources.useValue;
 
 /**
- * The national models above as attribution entries — what the panorama's footer
- * credits, the terrain service naming no model itself. An elevation read credits
- * what the API resolved for it instead (`readElevationAttributions`).
+ * The country each part-of-a-country area lies in. A new one needs its name in
+ * premium's `dtmAreaNames`, which is keyed by this table.
  */
-export const ELEVATION_API_DTM_ATTRIBUTION =
-  OUTDOOR_NATIONAL_DTM_ATTRIBUTION.filter((attr) =>
-    ELEVATION_API_DTM_COUNTRIES.includes(attr.country),
-  );
+export const DTM_SUB_AREAS = { en: 'gb', wls: 'gb' } as const;
+
+/** The country code a national model's area lies in. */
+export function dtmAreaCountry(token: string): string {
+  return Object.hasOwn(DTM_SUB_AREAS, token)
+    ? DTM_SUB_AREAS[token as keyof typeof DTM_SUB_AREAS]
+    : token;
+}
 
 /**
  * The LiDAR-derived terrain model GraphHopper is built on: it serves its own
@@ -64,20 +46,14 @@ export const SONNY_ATTR: AttributionDef = {
   url: 'https://sonny.4lima.de/',
 };
 
-/** A token naming a country's national model rather than a model of its own. */
-const COUNTRY_TOKEN = /^[a-z]{2}$/;
-
 /**
- * Whether every model that answered is a national one — LiDAR-derived, so a
- * reading off it is worth a decimal. Recognized by the country code it is
- * reported under, since a global model the API gains is named by a model id we
- * would not know: the decimal is then withheld rather than claimed off a 30 m
- * grid. Nothing reported is treated the same way.
+ * Whether every model that answered is a national, LiDAR-derived one, so a
+ * reading is worth a decimal. An unknown model id, or nothing reported, isn't.
  */
 export function hasSubMeterPrecision(tokens: string[]): boolean {
   return (
     tokens.length > 0 &&
-    tokens.every((token) => COUNTRY_TOKEN.test(token.toLowerCase()))
+    tokens.every((token) => NATIONAL_TOKEN.test(token.toLowerCase()))
   );
 }
 

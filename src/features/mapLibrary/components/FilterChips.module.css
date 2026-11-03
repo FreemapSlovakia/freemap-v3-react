@@ -1,0 +1,41 @@
+/* Measured on the panel rather than the viewport: a modal is as wide on a
+   tablet as on a desktop. */
+.panel {
+  container-type: inline-size;
+}
+
+/* Label and chips share the columns of every row, so the chips start at the
+   widest label's edge. Subgrid keeps the columns shared; -1px tucks the first
+   row's divider under the panel's edge, where `overflow-hidden` clips it. */
+.grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+}
+
+.row {
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  margin-top: -1px;
+}
+
+/* Padded to sit level with the first line of chips. */
+.label {
+  padding-top: calc(0.25rem + var(--bs-border-width));
+}
+
+/* Narrow, the label column would leave a strip of empty space under every
+   label, so each label takes a line of its own above its chips. */
+@container (width < 28rem) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .label {
+    padding-top: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .label:empty {
+    display: none;
+  }
+}

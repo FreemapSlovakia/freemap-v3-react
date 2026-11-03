@@ -5,11 +5,18 @@ const sl: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Obarvaj po',
   legend: 'Legenda',
   steepnessScale: 'Razpon naklona',
+  curvatureEnds: {
+    straight: 'Ravna',
+    winding: 'Vijugasta',
+  },
   mode: {
     none: 'Neaktivno',
     elevation: 'Nadmorska višina',
     steepness: 'Naklon',
     speed: 'Hitrost',
+    averageSpeed: 'Pričakovana hitrost',
+    curvature: 'Vijugavost',
+    maxSpeed: 'Omejitev hitrosti',
     heartRate: 'Srčni utrip',
     cadence: 'Kadenca',
     power: 'Moč',

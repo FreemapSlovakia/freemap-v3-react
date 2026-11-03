@@ -9,7 +9,10 @@ const en: PanoramaMessages = {
       {' button below.'}
     </>
   ),
+  preparing: 'The panorama is being prepared…',
   rendering: 'Rendering the panorama…',
+  encoding: 'Compressing the picture…',
+  decoding: 'Unpacking the picture…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Waiting for the renderer…'
@@ -36,11 +39,10 @@ const en: PanoramaMessages = {
     title: 'Panorama settings',
     tiltHint:
       'How much sky and ground the picture holds, as the angles above and below the horizon.',
-    custom: 'Exact angles',
     depthLift: 'Unfold distance',
     depthLiftOff: 'True view',
     depthLiftHint:
-      'Raises distant terrain so that far ranges separate from the ridges in front of them, the way a hand-drawn panorama does. It also brings into view summits you could not actually see from here; their names are marked.',
+      'Raises distant terrain so that far ranges separate from the ridges in front of them, the way a hand-drawn panorama does. It also brings into view summits you could not actually see from here; their names are marked. Sun and moon paths are not drawn over it.',
     rangeHint:
       'Terrain past 300 km is premium’s. Every extra kilometre is walked along every ray of the picture, so a farther view costs the renderer proportionally more.',
     look: 'Look',
@@ -70,24 +72,42 @@ const en: PanoramaMessages = {
     gradientClipHint:
       'Terrain past that distance is left out rather than painted flat in the last colour, so the whole gradient is spent on what the picture shows. Summits standing on it are not named.',
   },
-  preview: 'Preview',
   quality: {
-    label: 'Quality / speed',
-    superfast: 'Lowest / fastest',
-    fast: 'Low / fast',
-    standard: 'Standard',
-    detailed: 'Detailed / slow',
-    finest: 'Finest / slowest',
+    detail: 'Detail',
   },
+  frame: 'View and detail',
   tilt: {
     label: 'Vertical view',
     standard: 'Standard',
     wide: 'Tall',
     flat: 'Short',
+    below: 'Below the horizon',
+    above: 'Above the horizon',
   },
   fov: {
     label: 'Horizontal view',
     full: 'All around',
+  },
+  sky: {
+    title: 'Sun and moon',
+    sun: 'Sun path',
+    moon: 'Moon path',
+    date: 'Day',
+    dateHint:
+      'Times are in this device’s time zone and mark when the last sliver of the disc goes behind the terrain or the first one comes out. The terrain is bare earth, so trees and buildings can hide it sooner.',
+    today: 'Today',
+    lit: (percent) => `${percent} lit`,
+    elevation: (deg) => `elevation ${deg}`,
+    overTerrain: (deg) => `${deg} above the terrain`,
+    belowTerrain: (deg) => `${deg} below the terrain`,
+    unfolded: (
+      <>
+        Not over an unfolded picture: its distant terrain is drawn higher than
+        it stands, so the paths would cross the skyline in the wrong places. Set{' '}
+        <i>Unfold distance</i> to <i>True view</i> in the panorama settings and
+        update.
+      </>
+    ),
   },
   labels: {
     title: 'Peak names',
@@ -114,9 +134,16 @@ const en: PanoramaMessages = {
     hazeOff: 'Clear air',
     hazeHint:
       'How far a summit must be before haze counts for more than the summit does. Past three times that, nothing is named at all.',
-    showEle: 'Show elevations',
-    showEleHint:
-      'Writes each summit’s height under its name. Every label is then two lines tall, so fewer of them fit the picture.',
+    subLine: 'Under the name',
+    subLineHint:
+      'What each summit’s second line says. With any of them on, every label is two lines tall, so fewer fit the picture. Prominence (P) is how far the summit rises above the lowest col on the way to higher ground; isolation (I) is how far that higher ground is.',
+    subLineParts: {
+      ele: 'Elevation',
+      distance: 'Distance',
+      prominence: 'Prominence',
+      isolation: 'Isolation',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Name revealed peaks',
     showRevealedHint:
       'Summits that unfolding lifted out from behind a nearer ridge: drawn, but not actually visible from here. Their names are drawn faded, and rank below the ones that can be seen where there is no room for both.',
@@ -150,11 +177,6 @@ const en: PanoramaMessages = {
     failed: 'The panorama could not be rendered.',
   },
   caveats: {
-    title: 'What the picture does and does not show',
-    bareEarth:
-      'The terrain model is bare earth: forests and buildings are invisible, so a view a forest would block is drawn as if it were clear. This is by far the largest source of error.',
-    coverage:
-      'Detail varies by country. Where a national laser-scanned model exists the near field is sharp; elsewhere a global 30 m model answers.',
     viewpoint:
       'The eye is put on the highest point within a few metres of where you clicked, so a summit view is not spoiled by the rock beside it.',
     depthLift:

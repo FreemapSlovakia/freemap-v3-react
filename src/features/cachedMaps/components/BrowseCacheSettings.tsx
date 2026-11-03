@@ -1,12 +1,19 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useState } from 'react';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import { FaCheck, FaDatabase, FaTimes, FaTrash } from 'react-icons/fa';
+import { Col, Form, Modal, Row } from 'react-bootstrap';
+import { FaCheck, FaDatabase, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { TileServeMode } from '../browseCache.js';
 import { browseCacheCleared, cachedMapsSetSettings } from '../model/actions.js';
@@ -60,15 +67,20 @@ export function BrowseCacheSettings(): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaDatabase /> {m?.mapLayers.browseCache}
+          <FaDatabase /> <Text k="mapLayers.browseCache" />
         </Modal.Title>
+        <ManualHeaderButton chapter="offline" />
       </Modal.Header>
 
       <Modal.Body>
-        <p className="text-muted">{cmm?.browse.intro}</p>
+        <p className="text-muted">
+          <Text m={cmm} k="browse.intro" />
+        </p>
 
         <Form.Group controlId="browseMode" className="mb-3">
-          <Form.Label>{cmm?.browse.mode}</Form.Label>
+          <Form.Label>
+            <Text m={cmm} k="browse.mode" />
+          </Form.Label>
 
           <Form.Select
             value={draft.mode}
@@ -113,7 +125,9 @@ export function BrowseCacheSettings(): ReactElement {
         <Row>
           <Col xs={12} sm={6}>
             <Form.Group controlId="browseMaxAge" className="mb-3">
-              <Form.Label>{cmm?.browse.maxAge}</Form.Label>
+              <Form.Label>
+                <Text m={cmm} k="browse.maxAge" />
+              </Form.Label>
 
               <Form.Select
                 value={draft.maxAgeDays}
@@ -136,7 +150,9 @@ export function BrowseCacheSettings(): ReactElement {
 
           <Col xs={12} sm={6}>
             <Form.Group controlId="browseMaxSize" className="mb-3">
-              <Form.Label>{cmm?.browse.maxSize}</Form.Label>
+              <Form.Label>
+                <Text m={cmm} k="browse.maxSize" />
+              </Form.Label>
 
               <Form.Select
                 value={draft.maxSizeMb}
@@ -160,24 +176,36 @@ export function BrowseCacheSettings(): ReactElement {
           </Col>
         </Row>
 
-        <Form.Text>{cmm?.browse.retentionHint}</Form.Text>
+        <Form.Text>
+          <Text m={cmm} k="browse.retentionHint" />
+        </Form.Text>
       </Modal.Body>
 
-      <Modal.Footer className="flex-wrap">
+      <FmModalFooter className="flex-wrap">
         <div className="w-100 text-end">
-          {cmm?.browse.cached({
-            tiles: nf.format(stats?.tiles ?? 0),
-            size: formatSize(stats?.bytes ?? 0),
-          })}
+          <Text m={cmm}>
+            {(cmm) =>
+              cmm.browse.cached({
+                tiles: nf.format(stats?.tiles ?? 0),
+                size: formatSize(stats?.bytes ?? 0),
+              })
+            }
+          </Text>
         </div>
 
-        <Button variant="primary" type="submit">
-          <FaCheck /> {m?.general.save} <kbd>Enter</kbd>
-        </Button>
+        <FmFooterButton
+          variant="primary"
+          type="submit"
+          icon={<FaCheck />}
+          label={m?.general.save}
+          kbd="Enter"
+        />
 
-        <Button
+        <FmFooterButton
           variant="danger"
           disabled={!stats?.tiles}
+          icon={<FaTrash />}
+          label={cmm?.browse.clear}
           onClick={async () => {
             if (
               await confirm({
@@ -190,14 +218,13 @@ export function BrowseCacheSettings(): ReactElement {
               dispatch(browseCacheCleared());
             }
           }}
-        >
-          <FaTrash /> {cmm?.browse.clear}
-        </Button>
+        />
 
-        <Button variant="dark" onClick={() => dispatch(setActiveModal(null))}>
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={m?.general.cancel}
+          onClick={() => dispatch(setActiveModal(null))}
+        />
+      </FmModalFooter>
     </form>
   );
 }

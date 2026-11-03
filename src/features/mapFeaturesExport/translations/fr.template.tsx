@@ -28,7 +28,6 @@ const fr: DeepPartialWithRequiredObjects<MapFeaturesExportMessages> = {
     drawingAreas: 'dessin - polygones',
     drawingPoints: 'dessin - points',
     tracking: 'suivi en direct',
-    import: 'traces et données',
     search: 'résultat',
   },
   onlySelected: "Seulement l'élément sélectionné",

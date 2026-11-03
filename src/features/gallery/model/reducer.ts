@@ -29,6 +29,7 @@ import {
   gallerySetEditModel,
   gallerySetFilter,
   gallerySetImage,
+  gallerySetImageFetchFailed,
   gallerySetImageIds,
   gallerySetItemError,
   gallerySetItemForPositionPicking,
@@ -48,6 +49,8 @@ export interface GalleryState {
   imageIds: number[] | null;
   activeImageId: number | null;
   image: Picture | null;
+  // The active photo's record failed to load, rather than being on its way.
+  imageFetchFailed: boolean;
   items: GalleryItem[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
@@ -68,6 +71,7 @@ export const galleryInitialState: GalleryState = {
   imageIds: null,
   activeImageId: null,
   image: null,
+  imageFetchFailed: false,
 
   items: [],
   pickingPositionForId: null,
@@ -98,6 +102,15 @@ export const galleryInitialState: GalleryState = {
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
 };
 
+/** The viewer's own fields, as when no photo is open. */
+const closedViewer = {
+  imageIds: null,
+  image: null,
+  imageFetchFailed: false,
+  activeImageId: null,
+  editModel: null,
+} satisfies Partial<GalleryState>;
+
 export const galleryReducer = createReducer(galleryInitialState, (builder) =>
   builder
     .addCase(mapRefocus, (state, action) => {
@@ -118,22 +131,24 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       ...state,
       imageIds: action.payload,
     }))
-    .addCase(galleryClear, (state) => ({
-      ...state,
-      imageIds: null,
-      image: null,
-      activeImageId: null,
-      editModel: null,
-    }))
+    .addCase(galleryClear, (state) => ({ ...state, ...closedViewer }))
     .addCase(gallerySetImage, (state, action) => ({
       ...state,
       image: action.payload,
+      imageFetchFailed: false,
       editModel: null,
     }))
+    .addCase(gallerySetImageFetchFailed, (state) => {
+      state.imageFetchFailed = true;
+    })
     .addCase(galleryRequestImage, (state, action) => {
       const set = (activeImageId: number) => {
         Object.assign(state, {
           activeImageId,
+          // Another photo's record must not stay on screen if the fetch fails.
+          // A re-fetch of the same photo keeps it until the fresh one lands.
+          image: activeImageId === state.activeImageId ? state.image : null,
+          imageFetchFailed: false,
           comment: '',
           editModel: null,
         });
@@ -262,9 +277,23 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
         state.items = [];
 
         state.pickingPositionForId = null;
+      } else {
+        // The viewer is a modal too, and `show=` names only one: what opens
+        // replaces it, with the overlays the viewer had put the map in.
+        Object.assign(state, closedViewer);
+
+        state.showPosition = false;
+
+        if (state.pickingPositionForId === -1) {
+          state.pickingPositionForId = null;
+        }
       }
     })
     .addCase(galleryEditPicture, (state) => {
+      if (!state.editModel && !state.image) {
+        return;
+      }
+
       const position = state.image
         ? { lat: state.image.lat, lon: state.image.lon }
         : null;

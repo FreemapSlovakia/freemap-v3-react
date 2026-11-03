@@ -65,4 +65,14 @@ export const headingColorizer: Colorizer = {
         return { lat: coord[1], lon: coord[0], color };
       });
     }),
+  scale: ({ cardinals }) => ({
+    valueAt: (t) => `${Math.round(t * 360) % 360}°`,
+    ticks: [
+      { t: 0, label: cardinals.n },
+      { t: 0.25, label: cardinals.e },
+      { t: 0.5, label: cardinals.s },
+      { t: 0.75, label: cardinals.w },
+      { t: 1, label: cardinals.n },
+    ],
+  }),
 };

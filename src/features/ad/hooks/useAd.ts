@@ -48,7 +48,7 @@ export function useAd(ads: AdItem[], timeout = 30_000): AdId | null {
 
       let r = Math.random() * totalWeight;
 
-      let chosenAdId = candidates[candidates.length - 1].id;
+      let chosenAdId = candidates.at(-1)!.id;
 
       for (const ad of candidates) {
         if (r < ad.chance) {

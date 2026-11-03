@@ -7,30 +7,100 @@ import type { DataViewerMessages } from './DataViewerMessages.js';
 const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Nahrať',
-  unnamedTrack: ({ n }) => `Trasa ${n}`,
-  convertLossWarning:
-    'Prevod na kresbu nahradí trasu a zahodí jej zaznamenané údaje (nadmorská výška, tep, rýchlosť, čas).',
+  unnamedTrack: ({ n, kind }) =>
+    `${kind === 'track' ? 'Záznam trasy' : kind === 'route' ? 'Plánovaná trasa' : 'Čiara'} ${n}`,
   simplifyAll: 'Zjednodušiť všetko',
   moreInfo: 'Viac info',
+  breakApart: 'Rozdeliť na časti',
   saveAsMap: 'Uložiť do mojich máp',
   unsaved: 'Neuložené',
   unsavedTooltip:
-    'Táto trasa nie je v žiadnej uloženej mape ani v odkaze – zostáva len v tomto prehliadači, takže zdieľaním odkazu ju nezdieľate. Uložte ju do svojich máp, aby ste ju zachovali.',
+    'Tieto dáta sa nedajú vložiť do adresy stránky (URL) a nie sú v žiadnej uloženej mape – zostávajú len v tomto prehliadači. Uložte ich do svojich máp, aby ste ich zachovali.',
   loginToSaveMap: 'Pre uloženie trasy do vašich máp sa najprv prihláste.',
-  style: {
-    title: 'Predvolený štýl',
+  snapshotGone: 'Dáta z tohto kroku už tento prehliadač neuchováva.',
+  snapshotFailed:
+    'Tento prehliadač nedokázal dáta uchovať, takže po opätovnom načítaní stránky sa stratia. Ak ich chcete zachovať, uložte ich do svojich máp.',
+  vertex: {
+    menuItem: 'Údaje bodu',
+    latitude: 'Zemepisná šírka',
+    longitude: 'Zemepisná dĺžka',
+    elevation: 'Nadmorská výška',
+    time: 'Čas',
+    filled: ({ filled, total }) => `${filled} z ${total} bodov`,
+    emptyHint:
+      'Prázdne pole nechá bod bez tejto hodnoty. Aké hodnoty čiara má, sa nastavuje v jej vlastnostiach.',
+    notANumber: 'Zadajte číslo.',
+    outOfRange: 'Mimo rozsahu.',
+    timeOrder: 'Čas musí ležať medzi časmi predchádzajúceho a ďalšieho bodu.',
+    channels: {
+      heart: 'Tep',
+      cads: 'Kadencia',
+      atemps: 'Teplota vzduchu',
+      wtemps: 'Teplota vody',
+      depths: 'Hĺbka',
+      speeds: 'Rýchlosť',
+      courses: 'Smer pohybu',
+      bearings: 'Azimut',
+      powers: 'Výkon',
+      accuracies: 'Presnosť',
+      battery: 'Batéria',
+      gsmSignal: 'Signál GSM',
+    },
   },
   split: {
     action: 'Rozdeliť',
     pick: 'Kliknite na trasu v mieste rozdelenia',
     here: 'Rozdeliť tu',
-    segments: 'Rozdeliť na úseky',
   },
   join: {
     action: 'Spojiť',
     asLine: 'Spojiť do jednej čiary',
     asSegments: 'Spojiť so zachovaním úsekov',
-    pick: 'Kliknite na trasu, s ktorou spojiť',
+    pick: 'Kliknite na trasu, ktorú chcete pripojiť',
+    pickEnd: 'Zvoľte bod pre spojenie čiar',
+  },
+  osmUpload: {
+    menuItem: 'Nahrať GPS stopu na OpenStreetMap',
+    title: 'Nahrať GPS stopu na OpenStreetMap',
+    help: 'Nahrá načítané trasy do vášho účtu OpenStreetMap ako GPS stopu, podľa ktorej môžu mapovatelia zakresliť cesty. Nahrajú sa len trasy so zaznamenanými časmi – iné OpenStreetMap neuchováva. Nahrávajte len trasy, ktoré ste sami nahrali.',
+    description: 'Popis',
+    tags: 'Značky',
+    tagsHint: 'Oddelené čiarkami.',
+    tagsInvalid:
+      'OpenStreetMap v značke neprijme . ; / ? % ani # a ani značku dlhšiu ako 255 znakov.',
+    visibility: 'Viditeľnosť',
+    visibilities: {
+      identifiable: 'Identifikovateľná',
+      public: 'Verejná',
+      trackable: 'Sledovateľná',
+      private: 'Súkromná',
+    },
+    visibilityHints: {
+      identifiable:
+        'Zobrazená v zozname stôp s vaším menom, ako usporiadané body s časovými značkami.',
+      public:
+        'Zobrazená v zozname stôp s vaším menom, ako anonymné neusporiadané body.',
+      trackable:
+        'Zdieľaná len ako anonymné usporiadané body s časovými značkami.',
+      private: 'Zdieľaná len ako anonymné neusporiadané body.',
+    },
+    upload: 'Nahrať',
+    loginPrompt:
+      'Na nahranie sa musíte prihlásiť cez OpenStreetMap a povoliť Freemapu nahrávať GPS stopy. Pokračovať?',
+    connectPrompt:
+      'Na nahranie musíte k účtu Freemap pripojiť účet OpenStreetMap a povoliť Freemapu nahrávať doň GPS stopy. Ak už máte iný účet Freemap, do ktorého sa prihlasujete týmto účtom OpenStreetMap, oba účty sa zlúčia do jedného. Pokračovať?',
+    authorizePrompt:
+      'Na nahranie musíte povoliť Freemapu nahrávať GPS stopy do vášho účtu OpenStreetMap. Pokračovať?',
+    reauthorize:
+      'Povolenie Freemapu nahrávať GPS stopy do vášho účtu OpenStreetMap bolo práve odvolané. Kliknite znova na Nahrať a povoľte ho.',
+    success: ({ url }) => (
+      <>
+        Trasa bola nahraná. OpenStreetMap ju spracuje do niekoľkých minút.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Zobraziť stopu na OpenStreetMap
+        </a>
+      </>
+    ),
   },
   match: {
     menuItem: 'Priradiť k cestám',
@@ -76,17 +146,50 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Pripojiť',
     replace: 'Nahradiť',
   },
+  trace: {
+    streams: 'Trasovanie vodných tokov',
+    forests: 'Trasovanie lesov',
+    streamsHelp:
+      'Slúži na odvodenie línií vodných tokov z výškového modelu s vysokým rozlíšením vo zvolenom polygóne. Vhodné na mapovanie v OpenStreetMap.',
+    forestsHelp:
+      'Slúži na vytrasovanie plôch pokrytých vybranými triedami bodov LiDAR vo zvolenom polygóne. Vhodné najmä na mapovanie krajinnej pokrývky v OpenStreetMap.',
+    pixelSize: 'Veľkosť pixela',
+    pixelSizeHint: 'Prázdne pre vlastné rozlíšenie výškového modelu.',
+    threshold: 'Minimálna plocha povodia',
+    minLength: 'Minimálna dĺžka toku',
+    simplify: 'Tolerancia zjednodušenia',
+    classes: 'Triedy bodov',
+    classNames: {
+      lowVegetation: 'Nízka vegetácia',
+      mediumVegetation: 'Stredná vegetácia',
+      highVegetation: 'Vysoká vegetácia',
+      building: 'Budovy',
+      water: 'Voda',
+    },
+    output: 'Výsledok',
+    outputJosm: 'Otvoriť v JOSM',
+    outputOsm: 'Stiahnuť ako OSM XML',
+    outputGeojson: 'Stiahnuť ako GeoJSON',
+    tooBig: ({ max }) => `Polygón je priveľký; limit je ${max}.`,
+    run: 'Vytrasovať',
+    legacy: ({ phrase, item }) => (
+      <>
+        Namiesto <i>veľkonočného vajíčka</i> <code>{phrase}</code> použite
+        položku <i>{item}</i> v ponuke ⋮ označeného polygónu.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Nadmorská výška',
-    introNone: 'Táto trasa nemá údaje o nadmorskej výške.',
-    introPartial: 'Tejto trase chýba nadmorská výška pre niektoré body.',
+    introNone: 'Údaje o nadmorskej výške zatiaľ chýbajú.',
+    introPartial: 'Niektorým bodom chýba nadmorská výška.',
     introFull:
-      'Táto trasa už má nadmorskú výšku, no model terénu býva často presnejší.',
-    premiumHiRes: (premiumLink) => (
+      'Nadmorská výška už je zadaná, no model terénu býva často presnejší.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        S {premiumLink('prémiovým prístupom')} sa nadmorská výška v
-        podporovaných krajinách získava z národného modelu vo vysokom rozlíšení
-        — zatiaľ Slovensko (DMR 5.0: ÚGKK SR), ďalšie pribudnú.
+        S {premiumLink('prémiovým prístupom')} sa nadmorská výška vo{' '}
+        {countries('viacerých európskych krajinách')} získava z národných
+        modelov terénu vo vysokom rozlíšení.
       </>
     ),
     question: 'Čo chcete urobiť?',
@@ -100,17 +203,27 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keep: 'Nič nemeniť',
     keepDesc: 'použiť nadmorskú výšku uloženú v trase',
     add: 'Doplniť výšku',
+    clear: 'Vymazať výšku',
+    clearDesc:
+      'odstrániť uloženú výšku; profily ju potom čítajú z modelu terénu',
     update: 'Aktualizovať výšku',
-    updateConfirm: 'Nahradiť nadmorskú výšku trasy modelom terénu?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Chýbajúca nadmorská výška bola doplnená.'
-        : 'Nadmorská výška bola prepísaná.',
+        : mode === 'clear'
+          ? 'Nadmorská výška bola vymazaná.'
+          : 'Nadmorská výška bola prepísaná.',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri získavaní záznamu trasy', err),
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri priraďovaní trasy', err),
+  osmUploadError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Nastala chyba pri nahrávaní na OpenStreetMap',
+      err,
+    ),
   loadingError: 'Súbor sa nepodarilo načítať.',
   onlyOne: 'Očakáva sa iba jeden súbor.',
   invalidFormat: 'Súbor nie je v podporovanom formáte alebo je neplatný.',

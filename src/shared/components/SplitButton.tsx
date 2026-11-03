@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import { FmDropdownMenu } from './FmDropdownMenu.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
+import { MenuLabel } from './MenuLabel.js';
 
 export type SplitButtonItem = {
   icon?: ReactNode;
@@ -19,6 +20,8 @@ type Props = {
   items: SplitButtonItem[];
   variant?: string;
   disabled?: boolean;
+  /** Writes the label beside the icon instead of hiding it in the tooltip. */
+  showLabel?: boolean;
 };
 
 /**
@@ -32,6 +35,7 @@ export function SplitButton({
   items,
   variant = 'secondary',
   disabled,
+  showLabel,
 }: Props): ReactElement {
   return (
     // Keyed by index through the dropdown's own `onSelect`: an item's own
@@ -40,18 +44,24 @@ export function SplitButton({
       as={ButtonGroup}
       onSelect={(key) => items[Number(key)]?.onSelect()}
     >
-      <LongPressTooltip label={label}>
-        {({ props }) => (
-          <Button
-            variant={variant}
-            onClick={onClick}
-            disabled={disabled}
-            {...props}
-          >
-            {icon}
-          </Button>
-        )}
-      </LongPressTooltip>
+      {showLabel ? (
+        <Button variant={variant} onClick={onClick} disabled={disabled}>
+          {icon} {label}
+        </Button>
+      ) : (
+        <LongPressTooltip label={label}>
+          {({ props }) => (
+            <Button
+              variant={variant}
+              onClick={onClick}
+              disabled={disabled}
+              {...props}
+            >
+              {icon}
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
 
       <Dropdown.Toggle split variant={variant} disabled={disabled} />
 
@@ -65,7 +75,8 @@ export function SplitButton({
             eventKey={String(i)}
             disabled={item.disabled}
           >
-            {item.icon} {item.label}
+            {item.icon}
+            <MenuLabel>{item.label}</MenuLabel>
           </Dropdown.Item>
         ))}
       </FmDropdownMenu>

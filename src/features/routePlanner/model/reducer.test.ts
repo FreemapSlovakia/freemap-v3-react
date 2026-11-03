@@ -5,16 +5,19 @@ import { describe, expect, it } from 'vitest';
 import {
   routeKey,
   routePlannerAddPoint,
+  routePlannerChangeTransport,
   routePlannerDelete,
   routePlannerRecompute,
   routePlannerRemovePoint,
   routePlannerRestoreSavedRoute,
   routePlannerSetActiveAlternativeIndex,
+  routePlannerSetFinish,
   routePlannerSetMilestones,
   routePlannerSetMode,
   routePlannerSetPoint,
   routePlannerSetResult,
   routePlannerSetRoundtripParams,
+  routePlannerSetStart,
   routePlannerSetTransportType,
   routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
@@ -90,6 +93,124 @@ describe('routePlannerReducer — point editing', () => {
     const next = routePlannerReducer(state, routePlannerRemovePoint(1));
 
     expect(next.points.map((p) => p.lat)).toEqual([0, 2]);
+  });
+
+  it('removePoint leaves the new finish without a transport', () => {
+    const state = {
+      ...routePlannerInitialState,
+      points: [pt(0, 0), pt(1, 1, 'car'), pt(2, 2)],
+    };
+
+    const next = routePlannerReducer(state, routePlannerRemovePoint(2));
+
+    expect(next.points[1]).toEqual({ lat: 1, lon: 1 });
+  });
+
+  it('setFinish gives the new leg the route’s transport', () => {
+    const state = {
+      ...routePlannerInitialState,
+      points: [pt(0, 0, 'manual'), pt(1, 1)],
+    };
+
+    const next = routePlannerReducer(state, routePlannerSetFinish(pt(2, 2)));
+
+    expect(next.points.map((p) => p.transport)).toEqual([
+      'manual',
+      undefined,
+      undefined,
+    ]);
+  });
+
+  it('setStart prepends a start leading the transport it is given', () => {
+    const state = {
+      ...routePlannerInitialState,
+      points: [pt(0, 0), pt(1, 1)],
+    };
+
+    const next = routePlannerReducer(
+      state,
+      routePlannerSetStart({ lat: 2, lon: 2, transport: 'manual' }),
+    );
+
+    expect(next.points.map((p) => [p.lat, p.transport])).toEqual([
+      [2, 'manual'],
+      [0, undefined],
+      [1, undefined],
+    ]);
+  });
+
+  it('setStart gives a prepended leg the route’s transport', () => {
+    const state = {
+      ...routePlannerInitialState,
+      points: [pt(0, 0, 'manual'), pt(1, 1)],
+    };
+
+    const next = routePlannerReducer(state, routePlannerSetStart(pt(2, 2)));
+
+    expect(next.points.map((p) => p.transport)).toEqual([
+      undefined,
+      'manual',
+      undefined,
+    ]);
+  });
+
+  it('setFinish takes over a trailing empty point', () => {
+    const state = {
+      ...routePlannerInitialState,
+      points: [pt(0, 0), pt(1, 1), null as never],
+    };
+
+    const next = routePlannerReducer(state, routePlannerSetFinish(pt(2, 2)));
+
+    expect(next.points.map((p) => p.lat)).toEqual([0, 1, 2]);
+  });
+
+  it('changeTransport keeps the result when no leg changes', () => {
+    const route = {
+      ...routePlannerInitialState,
+      points: [pt(0, 0), pt(1, 1)],
+    };
+
+    const state = { ...route, resultKey: routeKey(route) };
+
+    const next = routePlannerReducer(
+      state,
+      routePlannerChangeTransport({
+        transport: 'car',
+        scope: { type: 'next' },
+      }),
+    );
+
+    expect(next.transportType).toBe('car');
+    expect(next.resultKey).toBe(routeKey(next));
+
+    const changed = routePlannerReducer(
+      state,
+      routePlannerChangeTransport({
+        transport: 'car',
+        scope: { type: 'route' },
+      }),
+    );
+
+    expect(changed.resultKey).not.toBe(routeKey(changed));
+  });
+
+  it('setFinish gives the new leg the transport it is asked for', () => {
+    const state = {
+      ...routePlannerInitialState,
+      points: [pt(0, 0), pt(1, 1)],
+    };
+
+    const next = routePlannerReducer(
+      state,
+      routePlannerSetFinish({ lat: 2, lon: 2, legTransport: 'manual' }),
+    );
+
+    expect(next.points.map((p) => p.transport)).toEqual([
+      undefined,
+      'manual',
+      undefined,
+    ]);
   });
 });
 

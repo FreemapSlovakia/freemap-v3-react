@@ -12,10 +12,27 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Zdroj',
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmořská výška',
+  terrain: {
+    prominence: 'Prominence',
+    keyCol: 'Klíčové sedlo',
+    isolation: 'Izolace',
+    showRoute: 'Zobrazit cestu k vyššímu terénu',
+    hideRoute: 'Skrýt cestu',
+    depth: 'Hloubka sedla',
+    keyColOf: 'Klíčové sedlo vrcholu',
+    showOnMap: 'Zobrazit na mapě',
+    route: 'Cesta k vyššímu terénu',
+    summitElevation: 'Výška vrcholu',
+    saddleElevation: 'Výška sedla',
+    fromMarker: ({ distance }) => `${distance} od značky`,
+  },
+  routeFetchError: ({ err }) =>
+    addError(getMessages()!, 'Chyba při získávání cesty', err),
   showDetails: 'Podrobnosti',
+  moreGeneralTypes: 'Obecnější typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historie)',
-  type: 'Typ',
+  history: 'Historie',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Vyhledávání míst je možné až od přiblížení úrovně ${minZoom}.`,
@@ -33,6 +50,7 @@ const cs: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     `Příliš mnoho objektů pro zobrazení jako nálezy (${count}, nejvýše ${limit}). Přibližte mapu nebo zužte filtr.`,
   showAsLookup: 'Zobrazit jako Nález',
   markerShape: 'Tvar značky',
+  showAllAsLookup: 'Zobrazit vše jako Nález',
 };
 
 export default cs;

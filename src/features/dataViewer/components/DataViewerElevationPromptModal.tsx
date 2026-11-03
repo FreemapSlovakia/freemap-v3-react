@@ -1,15 +1,23 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
+import { useDtmCountryNames } from '@features/premium/hooks/useDtmCountryNames.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaMountain, FaTimes } from 'react-icons/fa';
+import { FaMountain } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   dataViewerResolveElevationPrompt,
   dataViewerSetElevationPrompt,
+  type ElevationFillMode,
 } from '../model/actions.js';
+import { targetsCoverage } from '../model/elevationTargets.js';
 import { isTrackLine } from '../trackSelection.js';
 import { useDataViewerMessages } from '../translations/useDataViewerMessages.js';
 
@@ -20,13 +28,17 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
 
   const dispatch = useDispatch();
 
+  const dtmCountries = useDtmCountryNames();
+
   const consumer = useAppSelector((state) => state.trackViewer.elevationPrompt);
 
-  const coverage = useAppSelector((state) =>
-    elevationCoverage(
-      (state.trackViewer.trackGeojson?.features ?? []).filter(isTrackLine),
-    ),
-  );
+  const coverage = useAppSelector((state) => {
+    const { trackGeojson, elevationPrompt } = state.trackViewer;
+
+    return elevationPrompt?.type === 'update'
+      ? (targetsCoverage(trackGeojson, elevationPrompt.index) ?? 'none')
+      : elevationCoverage((trackGeojson?.features ?? []).filter(isTrackLine));
+  });
 
   if (!consumer || !tvm) {
     return null;
@@ -36,12 +48,14 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
 
   const close = () => dispatch(dataViewerSetElevationPrompt(null));
 
-  const resolve = (mode: 'missing' | 'all' | 'keep') =>
+  const resolve = (mode: ElevationFillMode) =>
     dispatch(dataViewerResolveElevationPrompt({ mode, consumer }));
 
   // "Update elevation" is an explicit change request, so offering "leave
   // unchanged" there would just duplicate Cancel.
   const offerKeep = consumer.type !== 'update';
+
+  const offerClear = consumer.type === 'update' && coverage !== 'none';
 
   const intro =
     coverage === 'none'
@@ -81,18 +95,29 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
                   <strong>{ef.keep}</strong> — {ef.keepDesc}
                 </li>
               )}
+
+              {offerClear && (
+                <li>
+                  <strong>{ef.clear}</strong> — {ef.clearDesc}
+                </li>
+              )}
             </ul>
           </>
         )}
 
         <p className="text-body-secondary small mb-0">
-          {ef.premiumHiRes((label) => (
-            <PremiumGem label={label} onBeforeNavigate={close} />
-          ))}
+          {ef.premiumHiRes(
+            (label) => (
+              <PremiumGem label={label} onBeforeNavigate={close} />
+            ),
+            (label) => (
+              <HintTooltip hint={dtmCountries}>{label}</HintTooltip>
+            ),
+          )}
         </p>
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         <Button variant="primary" onClick={() => resolve('all')}>
           {coverage === 'none' ? ef.add : ef.overrideAll}
         </Button>
@@ -109,10 +134,14 @@ export default function DataViewerElevationPromptModal(): ReactElement | null {
           </Button>
         )}
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.cancel}
-        </Button>
-      </Modal.Footer>
+        {offerClear && (
+          <Button variant="danger" onClick={() => resolve('clear')}>
+            {ef.clear}
+          </Button>
+        )}
+
+        <FmDismissButton label={m?.general.cancel} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

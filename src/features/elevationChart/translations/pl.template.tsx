@@ -13,13 +13,13 @@ const pl: DeepPartialWithRequiredObjects<ElevationChartMessages> = {
   fetchError: 'Nie udało się odczytać wysokości',
   rangeHint: () => (
     <>
-      Kółkiem myszy przybliżysz wykres, przybliżony wykres przesuniesz
+      Kółkiem myszy można przybliżyć wykres, a przybliżony wykres przesunąć
       przeciągnięciem. Aby zmierzyć fragment linii, przytrzymaj <kbd>Shift</kbd>{' '}
       i przeciągnij.
     </>
   ),
   rangeHintTouch:
-    'Zsunięciem palców przybliżysz wykres, przybliżony wykres przesuniesz przeciągnięciem. Aby zmierzyć fragment linii, przytrzymaj palec, a następnie przeciągnij.',
+    'Zsunięciem palców można przybliżyć wykres, a przybliżony wykres przesunąć przeciągnięciem. Aby zmierzyć fragment linii, przytrzymaj palec, a następnie przeciągnij.',
 };
 
 export default pl;

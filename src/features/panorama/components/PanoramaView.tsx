@@ -13,14 +13,15 @@ import {
   type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { FaCrosshairs } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 import { distanceAt } from '../depth.js';
-import { candidateLabels } from '../labels/fromPeaks.js';
+import { candidateLabels, matchDoubted } from '../labels/fromPeaks.js';
 import {
   type LabelAnchor,
   type LabelPlacement,
@@ -34,7 +35,12 @@ import {
   panoramaSetSettings,
 } from '../model/actions.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
-import { isFullTurn, labelLayoutLimits } from '../model/settingsReducer.js';
+import {
+  isFullTurn,
+  labelLayoutLimits,
+  type SubLinePart,
+  subLineOf,
+} from '../model/settingsReducer.js';
 import {
   clampPanoramaAzimuth,
   columnAt,
@@ -44,12 +50,16 @@ import {
   readAlong,
 } from '../ray.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
+import { horizonProfile, skylineAt } from '../sky/horizon.js';
+import type { SkyTrack } from '../sky/useSky.js';
+import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
 import {
   setPanoramaHover,
   setPanoramaView,
   usePanoramaAim,
 } from '../viewStore.js';
 import classes from './Panorama.module.css';
+import { PanoramaSky } from './PanoramaSky.js';
 
 /** Matches `.label` in the stylesheet, which is what `measure` measures. */
 const LABEL_FONT = '12px sans-serif';
@@ -74,6 +84,15 @@ const COMPASS_HEIGHT = 24;
 
 /** A full turn in a minute, which reads as looking around rather than spinning. */
 const AUTO_PAN_DEG_PER_S = 6;
+
+/**
+ * Half that for a slice, which reverses: at the turning rate a short one is
+ * back before the eye has followed it out.
+ */
+const SLICE_PAN_DEG_PER_S = 3;
+
+/** How long it stands at an end before starting back. */
+const SLICE_HOLD_MS = 1500;
 
 /**
  * Roughly how long the view takes to close on where the phone points. Long
@@ -189,6 +208,8 @@ type Props = {
   data: PanoramaRenderData;
   width: number;
   height: number;
+  /** Shared with the footer's times, so the day is worked out once. */
+  skyTracks: SkyTrack[];
 };
 
 export function PanoramaView({
@@ -196,8 +217,11 @@ export function PanoramaView({
   data,
   width,
   height,
+  skyTracks,
 }: Props): ReactElement {
   const gm = useMessages();
+
+  const m = usePanoramaMessages();
 
   const dispatch = useDispatch();
 
@@ -236,7 +260,12 @@ export function PanoramaView({
    */
   const [picked, setPicked] = useState<{ az: number; iy: number } | null>(null);
 
+  /** Which point of the sky paths to read out: sky or terrain, hover or press. */
+  const [skyAim, setSkyAim] = useState<{ az: number; iy: number } | null>(null);
+
   const viewportRef = useRef<HTMLDivElement>(null);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const nfDeg = useNumberFormat({
     style: 'unit',
@@ -250,6 +279,22 @@ export function PanoramaView({
   const nfEle = useNumberFormat({
     style: 'unit',
     unit: 'meter',
+    unitDisplay: 'short',
+    maximumFractionDigits: 0,
+  });
+
+  // Kilometres, and a decimal only while one is worth reading: at 120 km it
+  // would be noise under a name.
+  const nfDistNear = useNumberFormat({
+    style: 'unit',
+    unit: 'kilometer',
+    unitDisplay: 'short',
+    maximumFractionDigits: 1,
+  });
+
+  const nfDistFar = useNumberFormat({
+    style: 'unit',
+    unit: 'kilometer',
     unitDisplay: 'short',
     maximumFractionDigits: 0,
   });
@@ -303,6 +348,110 @@ export function PanoramaView({
   const maxOffsetY = Math.max(0, render.height - height / scale);
 
   const clampedOffsetY = Math.min(offsetY, maxOffsetY);
+
+  // The picture is *drawn* rather than set as a background image. It arrives as
+  // an `ImageBitmap` decoded off the main thread, and blitting the visible part
+  // of it is work for the compositor — where a CSS background scaled down to
+  // the panel is a decode and a resample the renderer does on its paint path,
+  // which on a few megapixels of 10-bit AVIF is seconds of frozen tab.
+  //
+  // Before the paint, not after: the names and the compass move with the same
+  // render, and a passive effect would leave the picture a frame behind them
+  // for the length of every drag.
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current;
+
+    const bitmap = data.bitmap;
+
+    if (!canvas || !bitmap || width === 0 || height === 0) {
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      return;
+    }
+
+    // The backing store is in device pixels, so a high-DPI panel is shown the
+    // picture's own pixels rather than a scaled copy of a CSS-pixel one.
+    const dpr = window.devicePixelRatio || 1;
+
+    const bw = Math.round(width * dpr);
+
+    const bh = Math.round(height * dpr);
+
+    if (canvas.width !== bw || canvas.height !== bh) {
+      canvas.width = bw;
+
+      canvas.height = bh;
+    }
+
+    // `high` asks Chrome for a multi-pass resample, and a fit view is a 2–5×
+    // downscale of several megapixels: the `drawImage` call itself records an
+    // op and returns — which is why the span around it reads nothing — while
+    // the resample happens at raster, inside the frame and on the main thread.
+    // `medium` is a mip-based filter, a fraction of the cost and no worse than
+    // the bitmap it samples from.
+    ctx.imageSmoothingQuality = 'medium';
+
+    ctx.clearRect(0, 0, bw, bh);
+
+    // What of the picture is on screen, in its own pixels. `fitScale` keeps the
+    // panel from asking for more of it than there is, bar the rounding.
+    const sw = Math.min(width / scale, bitmap.width);
+
+    const sh = Math.min(height / scale, bitmap.height - clampedOffsetY);
+
+    if (sh <= 0) {
+      return;
+    }
+
+    const dh = sh * scale * dpr;
+
+    const left = relLeftDeg / render.stepDeg;
+
+    // A full turn wraps, so the strip can start past the last column and run
+    // into the first, which takes a second draw from column zero.
+    const sx = full ? mod(left, bitmap.width) : left;
+
+    const head = Math.min(sw, bitmap.width - sx);
+
+    ctx.drawImage(
+      bitmap,
+      sx,
+      clampedOffsetY,
+      head,
+      sh,
+      0,
+      0,
+      head * scale * dpr,
+      dh,
+    );
+
+    if (head < sw) {
+      ctx.drawImage(
+        bitmap,
+        0,
+        clampedOffsetY,
+        sw - head,
+        sh,
+        head * scale * dpr,
+        0,
+        (sw - head) * scale * dpr,
+        dh,
+      );
+    }
+  }, [
+    clampedOffsetY,
+    data.bitmap,
+    full,
+    height,
+    relLeftDeg,
+    render.stepDeg,
+    scale,
+    width,
+  ]);
 
   /** Where a bearing lands in the viewport, taking the 360° wrap either way. */
   const screenX = useCallback(
@@ -373,16 +522,17 @@ export function PanoramaView({
   }, [storedAzimuth]);
 
   // A reading belongs to the picture it was taken from. `iy` is an image row,
-  // and the two passes are not the same height — the preview's rows are a
-  // quarter of the detailed one's — so a reading carried across would be put
-  // back at the wrong altitude while still claiming the old distance. A new
-  // viewpoint is the same story, and the reducer already clears the map's mark
-  // for it.
+  // and two renders of one viewpoint are not the same height — a detail or a
+  // band apart — so a reading carried across would be put back at the wrong
+  // altitude while still claiming the old distance. A new viewpoint is the same
+  // story, and the reducer already clears the map's mark for it.
   // biome-ignore lint/correctness/useExhaustiveDependencies: the render's identity is the point
   useEffect(() => {
     setHover(null);
 
     setPicked(null);
+
+    setSkyAim(null);
 
     setPanoramaHover(null);
   }, [render.id]);
@@ -453,9 +603,7 @@ export function PanoramaView({
     // `display: none` box, re-laying out every peak label each frame, on the
     // phone the user is picking on.
     //
-    // A slice has nothing to turn through: the pan would peg against its end
-    // and the compass would sit there whenever the device faced elsewhere.
-    if (!settings.autoPan || dragging || width === 0 || !full) {
+    if (!settings.autoPan || dragging || width === 0) {
       return;
     }
 
@@ -463,12 +611,63 @@ export function PanoramaView({
 
     let last = performance.now();
 
+    // A slice sweeps between its ends instead of turning: which way it is
+    // going, and until when it is standing at the end it just reached.
+    let dir = 1;
+
+    let holdUntil = 0;
+
     const step = (now: number) => {
       const dt = now - last;
 
       last = now;
 
       const compass = compassRef.current;
+
+      // A slice does not follow the device: it would hold every bearing outside
+      // itself at one end, which reads as a picture stuck rather than as a view
+      // that does not reach there. It sweeps between its ends instead.
+      //
+      // Reversing is a side effect, so it happens here rather than inside the
+      // updater below — React may run an updater twice to surface impurity,
+      // which would turn the sweep back round twice and never reverse it.
+      if (!full) {
+        if (now >= holdUntil) {
+          const {
+            azimuth: a,
+            render: r,
+            width: w,
+            degPerPx: dpp,
+          } = geomRef.current;
+
+          // The ends: the middle of the slice, and how far the aim may stray
+          // from it before the picture's edge reaches the viewport's. Zero once
+          // the whole slice is on screen — nothing to sweep, so it stands still
+          // rather than juddering in place.
+          const span = panoramaSpanDeg(r);
+
+          const middle = r.azStart + span / 2;
+
+          const reach = Math.max(0, (span - w * dpp) / 2);
+
+          const next =
+            angleDiff(a, middle) + (dir * SLICE_PAN_DEG_PER_S * dt) / 1000;
+
+          if (Math.abs(next) >= reach) {
+            dir = -dir;
+
+            holdUntil = now + SLICE_HOLD_MS;
+
+            setAzimuth(mod(middle + Math.sign(next) * reach, 360));
+          } else {
+            setAzimuth(mod(middle + next, 360));
+          }
+        }
+
+        raf = requestAnimationFrame(step);
+
+        return;
+      }
 
       setAzimuth((a) =>
         compass && now - compass.at < COMPASS_STALE_MS
@@ -771,11 +970,20 @@ export function PanoramaView({
     // A pointer hovering: say how far away whatever is under it stands.
     const sample = sampleGround(e);
 
+    // Past the end of a slice: nothing under the pointer to read.
     if (!sample) {
+      setHover(null);
+
+      setSkyAim(null);
+
+      setPanoramaHover(null);
+
       return;
     }
 
     setHover(hoverReading(sample));
+
+    setSkyAim({ az: sample.az, iy: sample.iy });
 
     // The map follows the pointer, so what is under it can be found without
     // committing to it — the press is what leaves a mark behind.
@@ -823,8 +1031,19 @@ export function PanoramaView({
         // sees. It stays until the next press, the way the mark does.
         setHover(hoverReading(sample));
 
+        setSkyAim({ az: sample.az, iy: sample.iy });
+
         setPicked(sample.ground ? { az: sample.az, iy: sample.iy } : null);
       }
+    } else if (e.pointerType !== 'touch') {
+      // The picture moved under a still mouse: read what is under it now.
+      const sample = sampleGround(e);
+
+      setHover(sample && hoverReading(sample));
+
+      setSkyAim(sample && { az: sample.az, iy: sample.iy });
+
+      setPanoramaHover(sample?.ground ?? null);
     }
   };
 
@@ -862,6 +1081,20 @@ export function PanoramaView({
       }),
     );
   };
+
+  const screenY = useCallback(
+    (altitude: number) =>
+      ((render.altMax - altitude) / render.stepDeg - clampedOffsetY) * scale,
+    [clampedOffsetY, render.altMax, render.stepDeg, scale],
+  );
+
+  const skyline = useCallback(
+    (az: number) =>
+      data.depth
+        ? skylineAt(render, horizonProfile(render, data.depth), az)
+        : null,
+    [data.depth, render],
+  );
 
   const anchor = useCallback(
     (label: PanoramaLabel): LabelAnchor | null => {
@@ -951,24 +1184,73 @@ export function PanoramaView({
     [candidates, degPerPx, limits, width],
   );
 
-  // Each summit's height as it is written, worked out once per set of names
+  // What each summit's second line says, worked out once per set of names
   // rather than per frame: formatting a number is dear, and the layout below
   // asks for every one of them on every frame of a pan.
-  const eleTexts = useMemo(() => {
+  const subLine = useAppSelector(
+    (state) => subLineOf(state.panoramaSettings),
+    shallowEqual,
+  );
+
+  const subAbbr = m?.labels.subLineAbbr;
+
+  const subTexts = useMemo(() => {
     const texts = new Map<string, string>();
 
-    if (settings.showLabelEle) {
-      for (const label of named) {
-        if (label.ele !== null) {
-          texts.set(label.id, nfEle.format(label.ele));
-        }
+    if (!subLine.length) {
+      return texts;
+    }
+
+    // `null` where the summit has no figure: the part is left out, not zeroed.
+    // The lettered ones wait for their letters, or they'd pass for elevations.
+    const lettered = (
+      label: PanoramaLabel,
+      letter: string | undefined,
+      value: string | undefined,
+    ) =>
+      value === undefined || letter === undefined
+        ? null
+        : `${letter} ${matchDoubted(label) ? '~' : ''}${value}`;
+
+    const format: Record<SubLinePart, (label: PanoramaLabel) => string | null> =
+      {
+        ele: (label) => (label.ele === null ? null : nfEle.format(label.ele)),
+        distance: (label) =>
+          (label.distance < 10_000 ? nfDistNear : nfDistFar).format(
+            label.distance / 1000,
+          ),
+        prominence: (label) =>
+          lettered(
+            label,
+            subAbbr?.prominence,
+            label.prominence === undefined
+              ? undefined
+              : nfEle.format(label.prominence),
+          ),
+        isolation: (label) =>
+          lettered(
+            label,
+            subAbbr?.isolation,
+            label.isolation === undefined
+              ? undefined
+              : formatDistance(label.isolation, language),
+          ),
+      };
+
+    for (const label of named) {
+      const parts = subLine
+        .map((part) => format[part](label))
+        .filter((text) => text !== null);
+
+      if (parts.length) {
+        texts.set(label.id, parts.join(' · '));
       }
     }
 
     return texts;
-  }, [named, nfEle, settings.showLabelEle]);
+  }, [named, nfEle, nfDistNear, nfDistFar, subAbbr, subLine, language]);
 
-  const labelHeight = settings.showLabelEle
+  const labelHeight = subLine.length
     ? LINE_HEIGHT + ELE_LINE_HEIGHT
     : LINE_HEIGHT;
 
@@ -980,11 +1262,11 @@ export function PanoramaView({
         // The wider of the two lines: both are centred on the subject, so
         // that is the box the neighbours have to be kept out of.
         measure: (label) => {
-          const ele = eleTexts.get(label.id);
+          const sub = subTexts.get(label.id);
 
           return Math.max(
             measureText(label.name),
-            ele ? measureText(ele, ELE_FONT) : 0,
+            sub ? measureText(sub, ELE_FONT) : 0,
           );
         },
         viewportWidth: width,
@@ -994,7 +1276,7 @@ export function PanoramaView({
         minTop: COMPASS_HEIGHT + 2,
         maxClimb: limits?.maxClimbPx ?? 0,
       }),
-    [anchor, eleTexts, labelHeight, limits, named, width],
+    [anchor, subTexts, labelHeight, limits, named, width],
   );
 
   // Every label the strip can carry, worked out once per language: the eight
@@ -1074,28 +1356,43 @@ export function PanoramaView({
         if (e.pointerType !== 'touch') {
           setHover(null);
 
+          setSkyAim(null);
+
           setPanoramaHover(null);
         }
       }}
     >
-      <div
-        className={classes.image}
-        style={{
-          backgroundImage: `url(${data.imageUrl})`,
-          backgroundSize: `${render.width * scale}px ${render.height * scale}px`,
-          backgroundPositionX: `${(-relLeftDeg / render.stepDeg) * scale}px`,
-          backgroundPositionY: `${-clampedOffsetY * scale}px`,
-          // The sheet repeats, which is what a full turn wants; a slice tiled
-          // would draw the same ridge again past its own end.
-          backgroundRepeat: full ? undefined : 'no-repeat',
-        }}
-      />
+      <canvas ref={canvasRef} className={classes.image} />
 
       {/* Each leader is drawn twice, dark under light, the way the names carry
           a shadow: a pale line alone disappears against the sky, which is
           exactly where most of them run. A summit the lift revealed fades its
           whole mark, the same as its name. */}
       <svg className={classes.overlay}>
+        {skyTracks.length > 0 && (
+          <PanoramaSky
+            tracks={skyTracks}
+            screenX={screenX}
+            screenY={screenY}
+            width={width}
+            altMin={render.altMin}
+            aim={
+              skyAim && !dragging
+                ? {
+                    azimuth: skyAim.az,
+                    altitude: render.altMax - skyAim.iy * render.stepDeg,
+                    band: [
+                      render.altMax -
+                        (clampedOffsetY + height / scale) * render.stepDeg,
+                      render.altMax - clampedOffsetY * render.stepDeg,
+                    ],
+                  }
+                : null
+            }
+            skyline={skyline}
+          />
+        )}
+
         {placements.map((p) => (
           <g
             key={p.label.id}
@@ -1170,8 +1467,8 @@ export function PanoramaView({
           {/* A summit the terrain model had no height for keeps its one line;
               the box was laid out for two either way, which costs nothing but
               a little air above it. */}
-          {eleTexts.has(p.label.id) && (
-            <span className={classes.labelEle}>{eleTexts.get(p.label.id)}</span>
+          {subTexts.has(p.label.id) && (
+            <span className={classes.labelEle}>{subTexts.get(p.label.id)}</span>
           )}
         </button>
       ))}

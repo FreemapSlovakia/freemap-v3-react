@@ -1,4 +1,5 @@
-import type { Action } from 'redux';
+import { stopProgress } from '@features/progress/model/actions.js';
+import type { Action, Dispatch } from 'redux';
 
 // Auth providers that use the OAuth2 authorization-code flow driven through a
 // popup window. The popup redirects to `/authCallback.html`, which relays the
@@ -6,13 +7,40 @@ import type { Action } from 'redux';
 // exchanges the code for a token (see `makeOAuthLoginHandler` in the API).
 export type PopupOAuthProvider = 'osm' | 'github' | 'strava' | 'microsoft';
 
-// In-flight popup logins for THIS tab, keyed by nonce → optional action to
-// dispatch on success. The callback echoes the nonce back in `state`; only the
-// tab that started the login holds it, and it's removed on use — so the
-// single-use code is redeemed exactly once, by the initiating tab.
-// (`BroadcastChannel` reaches every same-origin tab, so without this each open
-// tab would race to redeem the same code.)
-export const pendingOAuthLogins = new Map<string, Action | undefined>();
+export function isPopupOAuthProvider(
+  provider: string,
+): provider is PopupOAuthProvider {
+  return Object.hasOwn(popupOAuthProviders, provider);
+}
+
+/** Progress id held from opening the popup until the login completes or is abandoned. */
+export const OAUTH_PROGRESS_ID = 'popupOAuth';
+
+export type PendingOAuthLogin = {
+  provider: PopupOAuthProvider;
+  successAction: Action | undefined;
+  /** Whether its popup still holds `OAUTH_PROGRESS_ID`. */
+  holdsProgress: boolean;
+};
+
+// This tab's popup logins by the nonce the callback echoes in `state`. The
+// callback reaches every tab, so only the one holding the nonce redeems the code.
+export const pendingOAuthLogins = new Map<string, PendingOAuthLogin>();
+
+/** Stops the login's hold on `OAUTH_PROGRESS_ID`, if it still has one. */
+export function releaseOAuthProgress(
+  login: PendingOAuthLogin | undefined,
+  dispatch: Dispatch,
+): void {
+  if (login?.holdsProgress) {
+    login.holdsProgress = false;
+
+    dispatch(stopProgress(OAUTH_PROGRESS_ID));
+  }
+}
+
+/** OSM scope that lets the API upload GPS traces; a plain login doesn't ask for it. */
+export const OSM_GPX_SCOPE = 'read_prefs write_gpx';
 
 type PopupOAuthProviderConfig = {
   authorizeUrl: string;

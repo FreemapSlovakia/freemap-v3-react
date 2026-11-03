@@ -42,6 +42,8 @@ export interface PanoramaLabel {
   prominence?: number;
   /** How far off the summit that prominence was matched from, metres. */
   promDistM?: number;
+  /** Metres to the nearest higher ground, where known. */
+  isolation?: number;
   /**
    * The depth lift is what brought its subject into view: drawn and nameable,
    * but hidden from the actual viewpoint. A source that warps nothing leaves it

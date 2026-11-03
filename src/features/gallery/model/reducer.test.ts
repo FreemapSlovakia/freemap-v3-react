@@ -217,4 +217,22 @@ describe('galleryReducer — resets', () => {
     expect(next.items).toEqual([]);
     expect(next.pickingPositionForId).toBeNull();
   });
+
+  it('a modal opening closes the viewer but keeps the upload items', () => {
+    const state = {
+      ...galleryInitialState,
+      items: [item({ id: 1 })],
+      imageIds: [3, 4],
+      activeImageId: 3,
+    };
+
+    const next = galleryReducer(
+      state,
+      setActiveModal({ type: 'manual', chapter: 'photos' }),
+    );
+
+    expect(next.activeImageId).toBeNull();
+    expect(next.imageIds).toBeNull();
+    expect(next.items).toHaveLength(1);
+  });
 });

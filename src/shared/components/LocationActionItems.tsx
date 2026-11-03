@@ -1,15 +1,17 @@
 import { openInExternalApp, openTool } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
-import { drawingLineAddPoint } from '@features/drawing/model/actions/drawingLineActions.js';
+import { pointToFeature } from '@features/dataViewer/drawingWire.js';
 import {
-  drawingMeasure,
-  drawingPointAdd,
-} from '@features/drawing/model/actions/drawingPointActions.js';
+  dataViewerAddFeatures,
+  dataViewerDrawStart,
+} from '@features/dataViewer/model/actions.js';
+import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import { galleryRequestImages } from '@features/gallery/model/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
 import {
@@ -17,8 +19,9 @@ import {
   ViewFromHereItems,
 } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { lineStyleToProperties } from '@shared/styleFromProperties.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaCamera,
@@ -36,8 +39,6 @@ type Props = LatLon & {
   onAct?: () => void;
   /** Views this place is already the subject of; see {@link ViewFromHereItems}. */
   omit?: readonly ViewFromHere[];
-  /** Items slotted after the group that only looks at the place. */
-  children?: ReactNode;
   /** What the place is called, for the share sheet. */
   pointTitle?: string;
   pointDescription?: string;
@@ -46,23 +47,19 @@ type Props = LatLon & {
 };
 
 /**
- * Everything the map can do with a place: centre on it, name it, ask what is
- * around it, draw at it, route from or to it, take a view from it. Dropdown
- * items, so the map's context menu carries them flat while any menu that knows
- * a position carries the same list behind one entry.
+ * Everything the map can do with a place: ask what is around it, name it,
+ * centre on it, draw at it, route from or to it, take a view from it. Dropdown
+ * items, so every menu that knows a position carries the same flat list.
  */
 export function LocationActionItems({
   lat,
   lon,
   onAct,
   omit,
-  children,
   pointTitle,
   pointDescription,
   url,
 }: Props): ReactElement {
-  const m = useMessages();
-
   const oeam = useOpenInExternalAppMessages();
 
   const dispatch = useDispatch();
@@ -75,28 +72,6 @@ export function LocationActionItems({
 
   return (
     <>
-      <Dropdown.Item
-        as="button"
-        onClick={() => {
-          dispatch(mapRefocus({ lat, lon }));
-
-          onAct?.();
-        }}
-      >
-        <FaRegDotCircle /> {m?.mapCtxMenu.centerMap}
-      </Dropdown.Item>
-
-      <Dropdown.Item
-        as="button"
-        onClick={() => {
-          dispatch(drawingMeasure({ position: { lat, lon } }));
-
-          onAct?.();
-        }}
-      >
-        <FaRuler /> {m?.mapCtxMenu.measurePosition}
-      </Dropdown.Item>
-
       {(!window.fmEmbedded || embedFeatures.includes('search')) && (
         <OnlineOnlyItem
           as="button"
@@ -110,9 +85,26 @@ export function LocationActionItems({
             onAct?.();
           }}
         >
-          <FaInfo /> {m?.mapCtxMenu.queryFeatures}
+          <FaInfo />
+          <MenuLabel>
+            <Text k="mapCtxMenu.queryFeatures" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
+
+      <Dropdown.Item
+        as="button"
+        onClick={() => {
+          dispatch(drawingMeasure({ position: { lat, lon } }));
+
+          onAct?.();
+        }}
+      >
+        <FaRuler />
+        <MenuLabel>
+          <Text k="mapCtxMenu.measurePosition" />
+        </MenuLabel>
+      </Dropdown.Item>
 
       {(!window.fmEmbedded || !embedFeatures.includes('noMapSwitch')) && (
         <OnlineOnlyItem
@@ -123,11 +115,26 @@ export function LocationActionItems({
             onAct?.();
           }}
         >
-          <FaCamera /> {m?.mapCtxMenu.showPhotos}
+          <FaCamera />
+          <MenuLabel>
+            <Text k="mapCtxMenu.showPhotos" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
 
-      {children}
+      <Dropdown.Item
+        as="button"
+        onClick={() => {
+          dispatch(mapRefocus({ lat, lon }));
+
+          onAct?.();
+        }}
+      >
+        <FaRegDotCircle />
+        <MenuLabel>
+          <Text k="mapCtxMenu.centerMap" />
+        </MenuLabel>
+      </Dropdown.Item>
 
       {!window.fmEmbedded && (
         <>
@@ -136,14 +143,15 @@ export function LocationActionItems({
           <Dropdown.Item
             as="button"
             onClick={() => {
-              const { drawingSettings, drawingPoints } = store.getState();
+              const { color, markerType } =
+                store.getState().drawingSettings.style;
 
               dispatch(
-                drawingPointAdd({
-                  coords: { lat, lon },
-                  color: drawingSettings.style.color,
-                  markerType: drawingSettings.style.markerType,
-                  id: drawingPoints.points.length,
+                dataViewerAddFeatures({
+                  features: [
+                    pointToFeature({ coords: { lat, lon }, color, markerType }),
+                  ],
+                  select: true,
                 }),
               );
 
@@ -152,33 +160,39 @@ export function LocationActionItems({
               onAct?.();
             }}
           >
-            <FaMapMarkerAlt /> {m?.mapCtxMenu.addPoint}
+            <FaMapMarkerAlt />
+            <MenuLabel>
+              <Text k="mapCtxMenu.addPoint" />
+            </MenuLabel>
           </Dropdown.Item>
 
           <Dropdown.Item
             as="button"
             onClick={() => {
-              const { drawingSettings, drawingLines } = store.getState();
-
               dispatch(openTool('draw-lines'));
 
+              // After the tool opens, which ends a drawing and can drop its line.
+              const { drawingSettings, trackViewer } = store.getState();
+
               dispatch(
-                drawingLineAddPoint({
-                  lineProps: {
-                    type: 'line',
-                    color: drawingSettings.style.color,
-                    width: drawingSettings.style.width,
-                  },
-                  point: { id: 0, lat, lon },
-                  indexOfLineToSelect: drawingLines.lines.length,
-                  drawing: true,
+                dataViewerDrawStart({
+                  type: 'line',
+                  position: [lon, lat],
+                  index: trackViewer.trackGeojson?.features.length ?? 0,
+                  properties: lineStyleToProperties(
+                    {},
+                    { ...drawingSettings.style, type: 'line' },
+                  ),
                 }),
               );
 
               onAct?.();
             }}
           >
-            <MdTimeline /> {m?.mapCtxMenu.startLine}
+            <MdTimeline />
+            <MenuLabel>
+              <Text k="mapCtxMenu.startLine" />
+            </MenuLabel>
           </Dropdown.Item>
 
           <RouteEndpointItems divider lat={lat} lon={lon} onAct={onAct} />
@@ -216,7 +230,10 @@ export function LocationActionItems({
               onAct?.();
             }}
           >
-            <FaLink /> {oeam?.url}
+            <FaLink />
+            <MenuLabel>
+              <Text m={oeam} k="url" />
+            </MenuLabel>
           </Dropdown.Item>
         </>
       )}

@@ -1,4 +1,5 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import '@shared/styles/react-tags.scss';
 import {
@@ -100,11 +101,7 @@ export function GalleryEditForm({
   };
 
   const handleTagDelete = (i: number) => {
-    const tags = [...model.tags];
-
-    tags.splice(i, 1);
-
-    changeModel('tags', tags);
+    changeModel('tags', model.tags.toSpliced(i, 1));
   };
 
   // hack to resize tags properly on modal re-appear
@@ -161,7 +158,11 @@ export function GalleryEditForm({
         </Form.Group>
       )}
 
-      <Form.Group controlId="location" className="mb-3">
+      <Form.Group
+        controlId="location"
+        className="mb-3"
+        data-position-pick={id ?? -1}
+      >
         <InputGroup>
           <Form.Control
             type="text"
@@ -171,7 +172,7 @@ export function GalleryEditForm({
           />
 
           <Button onClick={onPositionPick}>
-            <FaRegDotCircle /> {gm?.editForm.setLocation}
+            <FaRegDotCircle /> <Text m={gm} k="editForm.setLocation" />
           </Button>
         </InputGroup>
       </Form.Group>
@@ -222,7 +223,9 @@ export function GalleryEditForm({
       </Form.Group>
 
       <Form.Group controlId={`license-${id ?? 'x'}`} className="mb-3">
-        <Form.Label>{gm?.license.label}</Form.Label>
+        <Form.Label>
+          <Text m={gm} k="license.label" />
+        </Form.Label>
 
         <GalleryLicenseSelect
           value={model.license}
@@ -230,7 +233,7 @@ export function GalleryEditForm({
         />
 
         <Form.Text className="text-muted lh-sm d-block">
-          {gm?.license.descriptions[model.license]}
+          <Text m={gm} k={`license.descriptions.${model.license}`} />
           {id === undefined && gm?.license.changeNote
             ? ` ${gm.license.changeNote}`
             : ''}

@@ -24,7 +24,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
   Ďakujeme.
 </p>`;
 
-const outdoorMap = 'Turistika, Cyklo, Bežky, Jazdenie';
+const outdoorMap = 'Outdoorová';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -49,7 +49,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeight: 'Výška očí',
     eyeHeightHint:
       'Ako vysoko nad zemou stojíte — rozhľadňa či dron, nie nadmorská výška.',
-    maxVisibleDistance: 'Maximálna viditeľná vzdialenosť',
+    maxVisibleDistance: 'Max. viditeľná vzdialenosť',
+    info: 'Informácie',
+    terrain: {
+      bareEarth:
+        'Model terénu je holá zem: lesy ani budovy v ňom nie sú, takže terén, ktorý by les zakryl, sa berie ako voľný. Toto je zďaleka najväčší zdroj odchýlok.',
+      coverage:
+        'Podrobnosť sa líši podľa krajiny. Kde existuje národný laserový model, je blízke okolie ostré; inde odpovedá globálny 30 m model.',
+    },
     copyCode: 'Skopírovať kód',
     loading: 'Načítavam…',
     ok: 'OK',
@@ -57,6 +64,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     closeWithoutSaving: 'Zavrieť okno bez uloženia zmien?',
     resetToDefaults: 'Obnoviť predvolené',
     back: 'Späť',
+    valueRange: ({ min, max }) => (
+      <>
+        Zadajte hodnotu medzi {min} a {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Zadajte hodnotu väčšiu ako {min}.</>,
+    invalidUrl: 'Zadajte URL začínajúcu na http:// alebo https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -70,17 +84,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Pridať nové',
     clear: 'Vyčistiť',
     convertToDrawing: 'Skonvertovať na kreslenie',
+    toggleObjectType: 'Kliknutím zobrazíte alebo skryjete objekty tohto typu',
+    hideObjectType: ({ name }) => <>Skryť typ „{name}“</>,
     copyToDrawing: 'Kopírovať do kreslenia',
-    copyTo: ({ tool }) => <>Kopírovať do {tool}</>,
-    convertTo: ({ tool }) => <>Skonvertovať do {tool}</>,
+    copyTo: ({ tool }) => <>Kopírovať do nástroja {tool}</>,
     convertAllToDrawing: 'Skonvertovať všetko na kreslenie',
-    convertAllTo: ({ tool }) => <>Skonvertovať všetko do {tool}</>,
     openIn: ({ what }) => <>Otvoriť v {what}</>,
     panoramaFromHere: 'Panoráma odtiaľto',
     viewshedFromHere: 'Viditeľnosť odtiaľto',
     toposcopeFromHere: 'Orientačná ružica odtiaľto',
     lookAtInPanorama: 'Pozrieť sa na to v panoráme',
-    placeActions: 'Čo sa dá robiť s týmto miestom',
     locationActions: 'Akcie pre toto miesto',
     convert: {
       geometry: 'Geometria',
@@ -116,6 +129,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saved: 'Uložené.',
     visual: 'Zobrazenie',
     drawingTool: 'Kresliaci nástroj',
+    noDrawingTool: 'Výber',
     copyOk: 'Skopírované do schránky.',
     noCookies: () => (
       <>
@@ -204,11 +218,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
     events: 'Akcie',
-    measurement: 'Kreslenie a meranie',
     drawPoints: 'Kreslenie bodov',
     drawLines: 'Kreslenie čiar',
     drawPolygons: 'Kreslenie polygónov',
-    dataViewer: 'Trasy a dáta',
+    dataViewer: 'Kreslenie a dáta',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
@@ -246,6 +259,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Sk:WikiProjekt_Slovensko',
     status: 'Stav služieb',
     language: 'Jazyk',
+    manual: 'Príručka',
   },
   main: {
     title: shared.title,
@@ -331,7 +345,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     buttonTitle: 'Hľadať',
     placeholder: 'Hľadať miesta a funkcie',
     result: 'Nález',
-    showMore: 'Zobraziť viac…',
+    showMore: 'Zobraziť viac',
     keepOnMap: 'Ponechať na mape',
     offlineHint:
       'Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, čísla dlaždíc (z/x/y) alebo vložený GeoJSON.',
@@ -357,12 +371,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'plánovač trás, trasa, navigácia, itinerár, cyklo, výlet',
-        'tool-objects': 'body záujmu, poi, miesta, vybavenosť',
         'tool-draw-points': 'kreslenie, značka, špendlík, poznámka',
         'tool-draw-lines': 'kreslenie, meranie vzdialenosti, dĺžka, pravítko',
         'tool-draw-polygons': 'kreslenie, meranie plochy, oblasť',
         'tool-import-file':
-          'gpx, kml, kmz, tcx, geojson, import, nahrať, otvoriť súbor',
+          'trasy, gpx, kml, kmz, tcx, geojson, import, nahrať, otvoriť súbor',
         'tool-map-details': 'identifikovať, čo je tu, wms',
         'tool-changesets': 'zmeny osm, sady zmien, mapéri, prispievatelia',
         'tool-tracking':
@@ -370,45 +383,99 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'tool-toposcope': 'vrcholy, kopce, obzor, ružica, toposkop, toposcope',
         'tool-panorama': '360, pohľad, vrcholy, obzor, terén',
         'tool-gps-recorder': 'záznam trasy, nahrávanie, logger',
-        'modal-account': 'profil, môj účet, nastavenia, odhlásenie',
+        'modal-account':
+          'profil, môj účet, nastavenia, odhlásenie, token, api kľúč',
         'modal-login': 'prihlásenie, účet',
         'modal-my-maps': 'uložené mapy, uložiť mapu, zdieľať mapu',
         'modal-map-features-export':
           'export, gpx, geojson, stiahnuť dáta, uložiť objekty',
         'modal-map-to-document-export':
-          'export, tlač, pdf, png, jpeg, svg, obrázok, plagát',
+          'export, tlač, pdf, png, jpeg, webp, svg, obrázok, plagát',
         'modal-offline-map-export':
           'export, offline, stiahnuť dlaždice, mbtiles, sd karta',
         'modal-embed': 'iframe, embed, web, html kód, vloženie',
         'modal-support-us': 'darovať, prispieť, podpora, peniaze',
         'modal-legend': 'značky, symboly, vysvetlivky',
+        'modal-manual': 'pomoc, návod, nápoveda, dokumentácia, manuál, help',
+        'manual-getting-started': 'základy, úvod, prvé kroky, pomoc',
+        'manual-shortcuts': 'klávesnica, klávesy, skratky',
+        'manual-search':
+          'pomoc, návod, hľadať, nájsť, súradnice, adresa, miesto, ponechať na mape',
+        'manual-osm-notes':
+          'pomoc, návod, poznámka, hlásenie, chyba, openstreetmap, josm, id',
+        'manual-route-planner':
+          'pomoc, návod, navigácia, trasa, plánovanie trasy, zastávky',
+        'manual-maps':
+          'pomoc, návod, vrstvy, podkladová mapa, prekrytie, správca máp, knižnica, inštalovať, predvoľba, legenda, priehľadnosť',
+        'manual-custom-maps':
+          'pomoc, návod, vlastná mapa, wms, tms, adresa dlaždíc, pridať mapu',
+        'manual-shading':
+          'pomoc, návod, tieňovanie, reliéf, terén, výškopis, lidar, dmr',
+        'manual-weather-radar':
+          'pomoc, návod, dážď, zrážky, počasie, predpoveď, búrka, meteoradar',
+        'manual-panorama': 'pomoc, návod, 360, výhľad, vrcholy, obzor, terén',
+        'manual-viewshed':
+          'pomoc, návod, viditeľnosť, rozhľad, výhľad, čo je odtiaľ vidieť',
+        'manual-toposcope':
+          'pomoc, návod, orientačná ružica, vrcholy, kopce, toposkop, tlač',
+        'manual-map-export':
+          'pomoc, návod, tlač, pdf, png, svg, jpeg, webp, obrázok, plagát, export mapy',
+        'manual-objects':
+          'pomoc, návod, poi, body záujmu, miesta, kategórie, objekty, osm',
+        'manual-map-details':
+          'pomoc, návod, čo je tu, detaily, prvky, osm prvok, história, wms',
+        'manual-changesets':
+          'pomoc, návod, zmeny osm, sady zmien, mapéri, prispievatelia',
+        'manual-my-maps':
+          'pomoc, návod, uložené mapy, uložiť mapu, zdieľať mapu, účet, neuložené',
+        'manual-account':
+          'pomoc, návod, prihlásenie, odhlásenie, profil, token, api kľúč, zrušiť účet',
+        'manual-gps-recorder':
+          'pomoc, návod, záznam trasy, nahrávanie, logger, android, na pozadí',
+        'manual-ai':
+          'pomoc, návod, ai, umelá inteligencia, chatgpt, claude, gemini, asistent, agent, webmcp, llms.txt',
+        'manual-drawing':
+          'pomoc, návod, meranie, vzdialenosť, plocha, čiara, polygón, bod',
+        'manual-tracks':
+          'pomoc, návod, gpx, kml, trasa, import, výškový profil, export',
+        'manual-photos': 'pomoc, návod, fotky, galéria, nahrať fotografie',
+        'manual-tracking':
+          'pomoc, návod, sledovanie, zdieľanie polohy, nastavenie zariadenia, locus, osmand',
+        'manual-offline':
+          'pomoc, návod, stiahnuť mapy, bez pripojenia, vyrovnávacia pamäť',
+        'manual-devices':
+          'pomoc, návod, garmin, locus, oruxmaps, geocaching, vloženie do webu, otvoriť v aplikácii',
+        'manual-premium':
+          'pomoc, predplatné, cena, platba, kredity, kúpiť, reklama, zrušiť, vrátenie peňazí, premium',
+        'manual-about':
+          'openstreetmap, osm, združenie, komunita, mapovanie, prispievanie, licencia, atribúcia, uvedenie zdroja, copyright, komerčné použitie',
         'modal-about': 'kontakt, e-mail, spätná väzba',
-        'modal-map-layers-config': 'vrstvy, správa máp, poradie, priehľadnosť',
-        'modal-custom-maps': 'vlastná mapa, wms, tms, pridať mapu',
+        'modal-map-manager':
+          'nainštalované mapy, dostupné mapy, knižnica máp, katalóg, inštalovať, odinštalovať, pridať mapy, ďalšie mapy, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
         'modal-offline-maps': 'stiahnuté mapy, úložisko',
         'modal-browse-cache': 'vyrovnávacia pamäť, dlaždice, úložisko',
-        'modal-map-preferences': 'nastavenia, voľby, priehľadnosť prekrytia',
+        'modal-map-preferences':
+          'predvoľby, preferencie, voľby, priehľadnosť prekrytia',
         'modal-elevation-settings': 'výškový profil, nadmorská výška, graf',
         'clear-map-features': 'vyčistiť, zmazať všetko, vymazať mapu',
-        'layer-X': 'outdoor, turistika, cyklo, freemap',
+        'layer-X': 'turistika, cyklo, bežky, jazdenie, freemap',
         'layer-XK': 'turistické trasy, značky, kst',
         'layer-O': 'osm, mapnik, štandardná',
         'layer-S': 'satelitná, ortofoto, snímky',
-        'layer-Z': 'satelitná, ortofoto, snímky',
         'layer-J1': 'satelitná, ortofoto, snímky',
         'layer-J2': 'satelitná, ortofoto, snímky',
+        'layer-J3': 'satelitná, ortofoto, snímky',
         'layer-d': 'mhd, autobusy, vlaky, cestovné poriadky',
         'layer-I': 'obrázky, galéria, fotky',
         'layer-w': 'wiki, články',
+        'layer-n': 'openstreetmap, chyby, hlásenia, mapovanie, poznámka',
         'layer-R': 'počasie, dážď, zrážky, búrka, predpoveď',
         'layer-v': 'rozhľad, výhľad, dohľad, priama viditeľnosť, terén',
-        'layer-5': 'tieňovanie, reliéf, terén, výškopis',
         'layer-6': 'tieňovanie, reliéf, povrch, výškopis',
         'layer-7': 'tieňovanie, reliéf, terén, výškopis, lidar',
-        'layer-8': 'tieňovanie, reliéf, terén, výškopis, lidar',
-        'layer-h': 'tieňovanie, reliéf, sklon, orientácia, inverzia',
-        'layer-z': 'tieňovanie, reliéf, sklon, orientácia, inverzia',
-        'layer-y': 'tieňovanie, reliéf, sklon, orientácia, inverzia',
+        'layer-h':
+          'tieňovanie, reliéf, terén, výškopis, sklon, orientácia, inverzia',
+        'layer-c': 'farba, prázdna, pozadie, podklad, výplň, tónovanie',
         'layer-l1': 'lesné cesty, nlc',
         'layer-l2': 'lesné cesty, nlc',
         'layer-VO': 'vektorová',
@@ -420,6 +487,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-WGE': 'geológia, horniny',
         'layer-WKA': 'parcely, katastrálna mapa',
         'layer-wka': 'parcely, katastrálna mapa',
+        'layer-xs': 'sac, obtiažnosť, chodník, horolezectvo, prekrytie',
+        'layer-xq': 'smoothness, stav, cesta, výtlky, hrboľatá, prekrytie',
+        'layer-xm': 'horský bicykel, singletrack, enduro, zjazd, prekrytie',
+        'layer-xh':
+          'turistika, trasa, značky, smerovníky, rázcestníky, prekrytie',
+        'layer-xb': 'cyklo, bicykel, mtb, trasa, prekrytie',
+        'layer-xl': 'lyže, bežky, trasa, prekrytie',
+        'layer-xr': 'jazdectvo, kone, trasa, prekrytie',
+        'layer-xa': 'hybrid, letecká, ortofoto, satelit, popisy, prekrytie',
+        'layer-xc':
+          'vrstevnica, izohypsy, výška, nadmorská výška, reliéf, contours, prekrytie',
         'layer-WHC': 'chémia vody, hydrológia',
       },
     },
@@ -440,38 +518,44 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineWarning: 'Táto mapa nie je uložená pre offline použitie',
     letters: {
       S: 'Letecká',
-      Z: 'Letecká',
       J1: 'Letecká (2017-2019)',
       J2: 'Letecká (2020-2022)',
+      J3: 'Letecká (2022-2023)',
       O: 'OpenStreetMap',
       d: 'Verejná doprava (ÖPNV)',
       X: outdoorMap,
       XK: 'Turistické trasy KST',
-      i: 'Dátová vrstva',
       I: 'Fotografie',
       A: 'Akcie',
       l1: 'Lesné cesty NLC (2017)',
       l2: 'Lesné cesty NLC',
       w: 'Wikipedia',
+      n: 'Poznámky OSM',
       R: 'Meteoradar',
       v: 'Viditeľnosť',
       M: 'Fotografie z Wikimedia Commons',
-      '5': 'Tieňovanie terénu',
       '6': 'Tieňovanie povrchu',
       '7': 'Detailné tieňovanie terénu',
-      '8': 'Detailné tieňovanie terénu',
       VO: 'OpenStreetMap Vektorová',
       VS: 'Streets Vektorová',
       VD: 'Dataviz Vektorová',
       VT: 'Outdoor Vektorová',
-      h: 'Parametrické tieňovanie',
-      z: 'Parametrické tieňovanie',
-      y: 'Parametrické tieňovanie',
+      h: 'Parametrické tieňovanie terénu',
+      c: 'Jednofarebná plocha',
       WDZ: 'Drevinové zloženie',
       WLT: 'Lesné typy',
       WGE: 'Geologická',
       WKA: 'Kataster',
       wka: 'Kataster',
+      xs: 'Náročnosť chodníkov',
+      xq: 'Kvalita povrchu ciest',
+      xm: 'Náročnosť MTB trás',
+      xh: 'Turistické trasy',
+      xb: 'Cyklotrasy',
+      xl: 'Lyžiarske trasy',
+      xr: 'Jazdecké trasy',
+      xa: 'Outdoorová mapa bez podkladu',
+      xc: 'Vrstevnice',
       WHC: 'Hydrochemická',
     },
     customBase: 'Vlastná mapa',
@@ -492,12 +576,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
       photosCc: 'rôzne licencie Creative Commons',
     },
-    layersConfiguration: 'Nastavenie vrstiev',
-    customMaps: 'Vlastné mapy',
-    addCustomMap: 'Pridať vlastnú mapu',
+    mapManager: 'Správca máp',
+    installedMaps: 'Nainštalované mapy',
+    availableMaps: 'Dostupné mapy',
+    allMatchesInManager: 'Všetky výsledky v správcovi máp',
+    newCustomMap: 'Nová vlastná mapa',
     activate: 'Aktivovať',
-    customMapsEmptyMessage:
-      'Zatiaľ nie sú definované žiadne vlastné mapy. Pridajte jednu na zobrazenie vlastného zdroja máp.',
+    layersPanel: 'Vrstvy mapy',
     base: 'Základné vrstvy',
     overlay: 'Prekryvné vrstvy',
     technology: 'Typ',
@@ -506,6 +591,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vektor (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametrické tieňovanie',
+      color: 'Farba',
     },
     url: 'URL',
     minZoom: 'Minimálne priblíženie',
@@ -515,8 +601,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'Načítať po dlaždiciach',
     tiledHelp:
       'WMS sa štandardne vyžiada ako jeden obrázok celého výrezu: jedna požiadavka namiesto desiatok a názvy neprerezané na hraniciach dlaždíc. Dlaždice zapnite pre server, ktorý obmedzuje veľkosť obrázka alebo ktorý dlaždice kešuje — za cenu dávky požiadaviek na každý výrez.',
-    zIndex: 'Z-Index',
-    preferences: 'Predvoľby mapy',
+    preferences: 'Nastavenia mapy',
+    brightness: 'Jas mapy',
+    featuresOpacity: 'Viditeľnosť dátovej vrstvy',
     maxZoom: 'Maximálne priblíženie',
     zoomSnap: 'Krok priblíženia',
     zoomSnapFree: 'Voľne',
@@ -527,9 +614,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Automaticky (podľa zariadenia)',
     resolutionScaleHelp:
       'Simuluje hustotu pixelov displeja. Ovplyvňuje, ktorý variant dlaždíc sa načíta. Ak vrstva neponúka požadovaný variant, použije sa najvyšší dostupný.',
+    pixelExact: 'Dlaždice presne na pixely',
+    pixelExactHelp:
+      'Každý pixel dlaždice pripadne práve na jeden pixel obrazovky, takže dlaždice ostanú ostré aj na displeji s neceločíselným pomerom pixelov, napr. 1,25 alebo 1,75. Mapa potom vyzerá o niečo väčšia alebo menšia. Nahrádza škálu rozlíšenia a presná je na úrovniach priblíženia, na ktorých končí krok priblíženia.',
     featureScale: 'Veľkosť prvkov',
     featureScaleHelp:
       'Zväčšuje vykreslené popisy a čiary. Nemá vplyv na satelitné, tieňované, WMS ani vektorové (MapLibre) vrstvy.',
+    background: 'Pozadie mapy',
+    backgroundHelp:
+      'Zobrazí sa všade, kde žiadna vrstva nekreslí: bez podkladovej mapy, vedľa podkladovej mapy, ktorá pokrýva len časť sveta alebo je priehľadná, a tam, kde sa dlaždice ešte načítavajú.',
+    backgroundCheckerboard: 'Šachovnica',
     lookupStyle: 'Štýl nálezu',
     resetApp: 'Obnoviť aplikáciu',
     resetAppConfirm:

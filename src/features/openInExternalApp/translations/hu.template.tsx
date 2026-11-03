@@ -14,6 +14,7 @@ const hu: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   josm: 'JOSM',
   id: 'iD',
   window: 'Új ablakban',
+  geoApp: 'Térképalkalmazás',
   url: 'Hely megosztása',
   image: 'Fénykép megosztása',
 };

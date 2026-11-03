@@ -21,11 +21,11 @@ src/
     hooks/
   features/<name>/   one self-contained feature per folder (see "Feature anatomy")
   shared/         cross-feature utilities, components, hooks, and the three registries
-                  (mapDefinitions.tsx = layers, toolDefinitions.tsx = tools,
+                  (mapLibrary/ = layers, toolDefinitions.tsx = tools,
                    commandDefinitions.tsx = what the search box can do)
   translations/   global i18n master (en.messages.tsx) + per-language files + Messages type
   processors/     a handful of cross-cutting processors not owned by one feature
-  osm/, sw/, processors/, pica-gpu/, documents/, images/, static/
+  osm/, sw/, processors/, pica-gpu/, documents/, manual/, images/, static/
 ```
 
 ### Backend services
@@ -39,9 +39,11 @@ elsewhere:
   (`/v1/features/at`) and the geometry of an element a link or a pin names by id
   (`/v1/features/by-id`). Holds Europe only, and only tagged objects — as do
   Photon and GraphHopper, so the app is Europe-wide throughout.
-- **`OSM_API_URL`** — the public OSM API, used only for changeset listings
-  (`src/features/changesets/model/processor.ts`). Element geometry comes from
-  the own API above.
+- **`OSM_API_URL`** — the public OSM API, used only for changeset listings and
+  metadata (`src/features/changesets/model/`) and for OSM notes
+  (`src/features/osmNotes/`). Element geometry comes from the
+  own API above; a changeset's changes come from OSMCha's public augmented
+  diffs (`adiffs.osmcha.org`, hardcoded in `inspectProcessor.ts`).
 - **`PHOTON_URL`** — geocoding; see [photon-geocoder.md](./photon-geocoder.md).
 - **`FM_MAPSERVER_URL`** — the outdoor map renderer: tiles and the legend.
 - **`API_URL`** — the app's own backend (`freemap-v3-api`): accounts, gallery,
@@ -87,7 +89,7 @@ Wiring a feature into the app is **explicit**, via three central registries:
    `src/app/store/persistence.ts` (see "State persistence").
 2. **`src/app/store/processors.ts`** — push every processor into the ordered
    `processors` array. **Order matters** (see processor middleware).
-3. **`src/shared/mapDefinitions.tsx`** (layers) / **`src/shared/toolDefinitions.tsx`**
+3. **`src/shared/mapLibrary/`** (layers) / **`src/shared/toolDefinitions.tsx`**
    (tools) and **`src/app/components/Main.tsx`** (lazy modal/menu factories), as
    applicable.
 
@@ -208,7 +210,8 @@ plain visit would otherwise wipe.
 installed PWA relaunched after Android reclaims its process is restarted from
 its launch intent, which carries only the manifest's `start_url` — a browser tab
 is spared, since the browser restores tabs itself. So the hash plus its
-`history.state` (`sq`, `tr`) is written to `localStorage` as the page goes away,
+`history.state` (`sq`, and `tr`, the key of the Drawing and data snapshot the entry
+shows) is written to `localStorage` as the page goes away,
 and put back at bootstrap when a **mobile** app window arrives at a bare URL.
 `index.tsx` must call `restoreStashedUrl()` before `handleLocationChange`.
 Desktop is excluded on purpose: it restores its own windows, and a
@@ -232,7 +235,8 @@ Two layers — global and per-feature:
   bundle lives in a small subscribable module store (`features/l10n/messagesStore.ts`);
   components read it via `useMessages()` (backed by `useSyncExternalStore`), and
   non-React callers use `getMessages()`. See the root agent file for the full
-  add-a-string checklist.
+  add-a-string checklist, and [`translations.md`](./translations.md) for how each
+  language addresses the user.
 - **Per-feature lazy** (e.g. `features/routePlanner/translations/`): a feature can
   own its own message bundle, code-split per language, to keep it out of the global
   blob. Pattern: `<Feature>Messages.ts` (the type) + `use<Feature>Messages.ts`
@@ -245,10 +249,22 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
 
 ## The three registries to keep honest
 
-- `src/shared/mapDefinitions.tsx` — the layer registry (ids, zoom ranges, premium
-  thresholds, credits, keyboard shortcuts, countries, base/overlay). The most
-  drift-prone file; mirrored in `src/static/llms.txt` and (for POI icons) shared
-  by filename with the `freemap-outdoor-map` renderer.
+- `src/shared/mapLibrary/` — the layer registry, split so a map's definition
+  loads only when wanted. `mapIndex.tsx` holds what every map needs up front (id,
+  base/overlay, technology, icon, shortcut, countries, menu defaults) and a
+  `load()` into `defs/<name>.ts`, which holds the rest (URL, zooms, premium,
+  credits). File names are readable rather than ids, since ids differ only by
+  case (`WKA`/`wka`). The types and shared credits stay in
+  `src/shared/mapDefinitions.tsx`. The most drift-prone area; mirrored in
+  `src/static/llms.txt` and (for POI icons) shared by filename with the
+  `freemap-outdoor-map` renderer.
+
+  Bodies live in the `mapLibrary` slice: `mapLibraryLoadProcessor` loads those of
+  installed maps, maps on the map, offline maps' sources and the shading source.
+  Read them through `integratedLayerDefsSelector` / `integratedLayerDefMapSelector`,
+  which list only loaded maps; code that must know every map (ids, kinds, links,
+  shortcuts) reads `mapIndex`. A map the user uninstalled (`layersSettings[id].installed`)
+  is offered nowhere but still renders from a link.
 - `src/shared/toolDefinitions.tsx` — the tool list (id, icon, message key, keyboard
   shortcut, whether it's a drawing tool) and `MAP_CLICK_TOOLS`, which decides
   which slot a tool opens into (see "Open tools"). `Tool` itself is a Zod enum in
@@ -275,10 +291,16 @@ Gotcha: toast`messageKey`s referenced from processors must resolve against the
   selection toolbar's is blue). Escape closes it; taking the slot from another
   tool drops the selection unless the tool opened is the one the selected feature
   belongs to.
-- **Toolbar-only tools** (objects, tracks and data, changesets, live tracking, GPS
+- **Toolbar-only tools** (objects, drawing and data, changesets, live tracking, GPS
   recorder) accumulate: any number of them are open at once, in the order opened,
   alongside a map-click tool. Opening or closing one says nothing about the
   selection, and Escape leaves them alone — they close by their own button.
+- **The drawing tools have no toolbar of their own.** They are modes of
+  `import-file`'s (`DataViewerMenu`): opening one opens `import-file` too, and
+  closing `import-file` closes the drawing tool. Everything they draw goes into the
+  one `trackViewer.trackGeojson` collection, and a selected feature or vertex is
+  `{ type: 'feature' | 'vertex', id }` with `id` its index there — owned by any
+  drawing tool, so switching modes keeps it.
   A toolbar with something worth leaving on the screen can also offer a collapse
   button (`ToolMenu`'s `collapsible`, local state): only the GPS recorder does,
   because its strip keeps saying that the phone is recording. A toolbar with

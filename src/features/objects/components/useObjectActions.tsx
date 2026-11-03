@@ -1,11 +1,12 @@
-import { openInExternalApp } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { type ExternalTarget, openInExternalApp } from '@app/store/actions.js';
+import { Text } from '@features/l10n/Text.js';
 import { OpenInExternalTargetItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
 import {
   getIdElementUrl,
   getOsmElementUrl,
 } from '@features/openInExternalApp/externalUrlUtils.js';
 import { josmRemote } from '@features/openInExternalApp/josmRemote.js';
+import { useSelectionOpener } from '@features/openInExternalApp/selectionOpener.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { resultCoords } from '@features/search/model/resultUtils.js';
@@ -14,15 +15,20 @@ import {
   getNameFromOsmElement,
 } from '@osm/osmNameResolver.js';
 import type { SelectCallback } from '@restart/ui/types';
+import { Chord } from '@shared/components/Chord.js';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {
   ActionDivider,
+  ActionItems,
   ActionSubmenu,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import type { EventKey } from '@shared/hooks/useMenuHandler.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   type OsmFeatureId,
   OsmFeatureIdSchema,
@@ -30,7 +36,7 @@ import {
 import { afterPrefix } from '@shared/types/typeUtils.js';
 import { type ReactNode, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
@@ -53,8 +59,6 @@ export function useObjectActions({ result }: Props): {
   actions: ReactNode[];
   onSelect: SelectCallback;
 } {
-  const m = useMessages();
-
   const om = useObjectsMessages();
 
   const oeam = useOpenInExternalAppMessages();
@@ -85,6 +89,8 @@ export function useObjectActions({ result }: Props): {
   // objects refresh replaces the result on every pan, so resolving it with the
   // selection would reload the tag mapping that often for a menu never opened.
   const editInJosm = (element: OsmFeatureId) => {
+    trackMatomo(['trackEvent', 'Share', 'openExternal', 'josm']);
+
     (result?.genericName
       ? Promise.resolve(result.genericName)
       : getGenericNameFromOsmElement(
@@ -118,7 +124,12 @@ export function useObjectActions({ result }: Props): {
         target="_blank"
         eventKey="url"
       >
-        {om?.openInOsm}
+        <MenuLabel>
+          <Text m={om} k="openInOsm" />
+        </MenuLabel>
+        <MenuGutter>
+          <Chord external="osm.org" />
+        </MenuGutter>
       </OnlineOnlyItem>
 
       <OnlineOnlyItem
@@ -126,13 +137,20 @@ export function useObjectActions({ result }: Props): {
         target="_blank"
         eventKey="url"
       >
-        {om?.osmHistory}
+        <MenuLabel>
+          <Text m={om} k="osmHistory" />
+        </MenuLabel>
       </OnlineOnlyItem>
 
       {!window.fmEmbedded && (
         <>
           <Dropdown.Item as="button" onClick={() => editInJosm(parsedId.data)}>
-            {oeam?.josm}
+            <MenuLabel>
+              <Text m={oeam} k="josm" />
+            </MenuLabel>
+            <MenuGutter>
+              <Chord external="josm" />
+            </MenuGutter>
           </Dropdown.Item>
 
           <OnlineOnlyItem
@@ -140,7 +158,12 @@ export function useObjectActions({ result }: Props): {
             target="_blank"
             eventKey="url"
           >
-            {oeam?.id}
+            <MenuLabel>
+              <Text m={oeam} k="id" />
+            </MenuLabel>
+            <MenuGutter>
+              <Chord external="osm.org/id" />
+            </MenuGutter>
           </OnlineOnlyItem>
         </>
       )}
@@ -157,19 +180,47 @@ export function useObjectActions({ result }: Props): {
     </ActionSubmenu>
   );
 
+  const open = (where: ExternalTarget) => {
+    const element = parsedId?.success ? parsedId.data : undefined;
+
+    // Reached only by a chord: the menu's JOSM entry calls this directly.
+    if (where === 'josm' && element) {
+      editInJosm(element);
+
+      return;
+    }
+
+    if (coords) {
+      dispatch(
+        openInExternalApp({
+          where,
+          ...coords,
+          zoom,
+          includePoint: true,
+          pointTitle: displayName,
+          osmObject: element && {
+            url: getOsmElementUrl(element),
+            idUrl: getIdElementUrl(element),
+          },
+        }),
+      );
+    }
+  };
+
+  // Without a position nothing but JOSM could open, so the map's view keeps the chords.
+  useSelectionOpener(coords ? open : null);
+
   const actions: ReactNode[] = [];
 
   if (coords && !window.fmEmbedded) {
     actions.push(
       <ActionDivider key="place-divider" />,
 
-      <ActionSubmenu
-        key="location"
-        label={m?.general.locationActions}
-        icon={<FaMapPin />}
-      >
+      <ActionItems key="location">
         <LocationActionItems {...coords} pointTitle={displayName} />
-      </ActionSubmenu>,
+      </ActionItems>,
+
+      <ActionDivider key="open-in-divider" />,
 
       openIn(
         <OpenInExternalTargetItems
@@ -180,6 +231,7 @@ export function useObjectActions({ result }: Props): {
           // The editors here open the element itself; the list's own open
           // whatever is at the position, which is not the same thing.
           editors={false}
+          showKbdShortcut
         >
           {osmItems}
         </OpenInExternalTargetItems>,
@@ -200,16 +252,8 @@ export function useObjectActions({ result }: Props): {
           ? undefined
           : afterPrefix(eventKey as EventKey, 'open-');
 
-      if (where !== undefined && coords) {
-        dispatch(
-          openInExternalApp({
-            where,
-            ...coords,
-            zoom,
-            includePoint: true,
-            pointTitle: displayName,
-          }),
-        );
+      if (where !== undefined) {
+        open(where);
       }
     },
   };

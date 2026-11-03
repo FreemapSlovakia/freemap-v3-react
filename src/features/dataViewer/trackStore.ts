@@ -1,39 +1,231 @@
-import { createStore, del, get, set } from 'idb-keyval';
+import { positionCount } from '@shared/geoutils.js';
+import type { Feature } from 'geojson';
+import { createStore, delMany, get, set, update } from 'idb-keyval';
 import z from 'zod';
 import { GeoJSONFeatureCollectionSchema } from 'zod-geojson';
 
 /**
- * The track on screen, kept across a reload.
+ * Snapshots of the loaded data, one per version a history entry has shown, so a
+ * reload puts back what was on screen and Back/Forward step through the edits.
+ * A history entry names its snapshot by key (`history.state.tr`).
  *
- * A loaded track is the one thing the URL cannot carry: a file import, a
- * conversion, a finished recording — none of them have anywhere to come back
- * from. My Maps solves that for a track that belongs to a map (`mapStore.ts`);
- * this is the same idea for a track that belongs to nothing.
- *
- * Its own database, so purging either one never takes the other with it.
+ * Its own database, so purging it never takes the my-maps working copy with it.
  */
 const store = createStore('fm-trackViewer', 'kv');
 
-// One entry: the track viewer holds one track, and this is it. An archive of
-// every track that has ever been open would need a list to manage it and a rule
-// for reclaiming space, neither of which anybody has asked for.
-const KEY = 'track';
+/** Where the single record of the previous design lives; read for `tr: true`. */
+const LEGACY_KEY = 'track';
+
+const INDEX_KEY = 'index';
+
+const SNAPSHOT_PREFIX = 's:';
+
+// Oldest snapshots go first past either bound; the one just written never goes.
+const MAX_SNAPSHOTS = 100;
+
+const MAX_TOTAL_CHARS = 50_000_000;
+
+/**
+ * Past this many vertices one snapshot stands for every version: hashing and
+ * copying all of it on every edit stalls the page and evicts the snapshots
+ * other entries name. Its edits are then not history steps of their own.
+ */
+const LARGE_POSITIONS = 50_000;
+
+const LATEST_PREFIX = 'latest';
+
+/**
+ * The key large data shares across its versions: this page's own, or that of
+ * the large snapshot it put back, so a reload writes on instead of copying.
+ */
+let latestKey = `${LATEST_PREFIX}-${Math.random().toString(36).slice(2, 10)}`;
+
+/** Has this page write its large data on under a large snapshot just put back. */
+export function continueSnapshot(key: string): void {
+  if (key.startsWith(LATEST_PREFIX)) {
+    latestKey = key;
+  }
+}
+
+/** Its JSON length, near enough: ~40 chars a vertex, ~15 more per channel. */
+function estimatedSize(geojson: object): number {
+  const { features } = geojson as { features?: Feature[] };
+
+  let size = 0;
+
+  for (const { geometry, properties } of features ?? []) {
+    const channels = properties?.['coordinateProperties'];
+
+    size +=
+      positionCount(geometry) *
+      (40 +
+        15 *
+          (channels && typeof channels === 'object'
+            ? Object.keys(channels).length
+            : 0));
+  }
+
+  return size;
+}
+
+function isLarge(geojson: object): boolean {
+  const { features } = geojson as { features?: Feature[] };
+
+  let count = 0;
+
+  for (const { geometry } of features ?? []) {
+    count += positionCount(geometry);
+
+    if (count > LARGE_POSITIONS) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 const RecordSchema = z.object({
-  /** When the track was stored, for nothing but diagnosis. */
+  /** When the snapshot was stored, for nothing but diagnosis. */
   savedAt: z.number(),
   geojson: GeoJSONFeatureCollectionSchema,
 });
 
 export type StoredTrack = z.infer<typeof RecordSchema>;
 
+type IndexEntry = { key: string; size: number; savedAt: number };
+
+const keyCache = new WeakMap<object, string>();
+
+const textCache = new WeakMap<object, string>();
+
+function serialized(geojson: object): string {
+  let text = textCache.get(geojson);
+
+  if (text === undefined) {
+    text = JSON.stringify(geojson);
+
+    textCache.set(geojson, text);
+  }
+
+  return text;
+}
+
+// cyrb53: a fast 53-bit string hash. Collisions only cost a wrong restore.
+function hash53(text: string): string {
+  let h1 = 0xdeadbeef;
+
+  let h2 = 0x41c6ce57;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charCodeAt(i);
+
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+
 /**
- * The geojson last written, by reference. `dataViewerSetData` is what triggers a
- * write, and a caller that has already stored the very object being set — the
- * recorder finishing a ride, which must know the write succeeded before it lets
- * the recorder delete anything — would otherwise have it written twice.
+ * The key naming this version of the data, by content, so the same data always
+ * names the same snapshot — or, for large data, the one key all its versions
+ * share. Cached per object: the URL asks on every action.
  */
-let lastStored: unknown = null;
+export function snapshotKey(geojson: object): string {
+  let key = keyCache.get(geojson);
+
+  if (key === undefined) {
+    key = isLarge(geojson) ? latestKey : hash53(serialized(geojson));
+
+    keyCache.set(geojson, key);
+  }
+
+  return key;
+}
+
+/**
+ * Makes `geojson` answer to `key` — for data read back from a snapshot, whose
+ * parse may not reproduce the stored text exactly, so the entry that asked for
+ * it isn't taken for a new version.
+ */
+function adoptKey(geojson: object, key: string) {
+  keyCache.set(geojson, key);
+}
+
+/**
+ * Stores the data as a snapshot a history entry can name; the browser may still
+ * evict it. Throws when it would not read back, as the read validates and
+ * discards whatever fails.
+ */
+export async function storeSnapshot(geojson: object): Promise<string> {
+  const key = snapshotKey(geojson);
+
+  // Written even when this page wrote it before: another tab may have evicted
+  // it since, and the write moves it to the newest end of the index.
+  const record = { savedAt: Date.now(), geojson };
+
+  const parsed = RecordSchema.safeParse(record);
+
+  if (!parsed.success) {
+    throw new Error(
+      `the data would not read back: ${parsed.error.issues[0]?.message ?? 'invalid'}`,
+    );
+  }
+
+  await set(SNAPSHOT_PREFIX + key, record, store);
+
+  // Large data is not serialized only to be measured. Estimated rather than
+  // fixed, so the bound evicts the records past pages left behind.
+  const size = key.startsWith(LATEST_PREFIX)
+    ? estimatedSize(geojson)
+    : serialized(geojson).length;
+
+  const evicted: string[] = [];
+
+  await update<IndexEntry[]>(
+    INDEX_KEY,
+    (index = []) => {
+      const kept = [
+        ...index.filter((entry) => entry.key !== key),
+        { key, size, savedAt: record.savedAt },
+      ];
+
+      let total = kept.reduce((sum, entry) => sum + entry.size, 0);
+
+      while (
+        kept.length > 1 &&
+        (kept.length > MAX_SNAPSHOTS || total > MAX_TOTAL_CHARS)
+      ) {
+        const [oldest] = kept.splice(0, 1);
+
+        total -= oldest!.size;
+
+        evicted.push(oldest!.key);
+      }
+
+      return kept;
+    },
+    store,
+  );
+
+  if (evicted.length) {
+    await delMany(
+      evicted.map((k) => SNAPSHOT_PREFIX + k),
+      store,
+    );
+  }
+
+  return key;
+}
 
 /**
  * Asks the browser to keep this origin's storage rather than reclaim it under
@@ -60,37 +252,6 @@ async function requestPersistence(): Promise<boolean> {
 }
 
 /**
- * Stores the track, so a reload of this history entry puts it back. Nothing is
- * promised about how long the browser keeps it — for an imported file that is
- * enough, since the file itself has not gone anywhere.
- *
- * Throws when the track would not read back. The read validates and discards
- * whatever fails, so writing without the same check would let a caller believe it
- * had a copy of something that is already lost.
- */
-export async function storeTrack(geojson: unknown): Promise<void> {
-  if (geojson === lastStored) {
-    return;
-  }
-
-  const record = { savedAt: Date.now(), geojson };
-
-  const parsed = RecordSchema.safeParse(record);
-
-  if (!parsed.success) {
-    throw new Error(
-      `the track would not read back: ${parsed.error.issues[0]?.message ?? 'invalid'}`,
-    );
-  }
-
-  await set(KEY, record, store);
-
-  lastStored = geojson;
-
-  markHistoryEntry(true);
-}
-
-/**
  * What became of a store the caller is about to act on.
  *
  * - `durable` — written, and the browser has promised to keep it.
@@ -100,17 +261,17 @@ export async function storeTrack(geojson: unknown): Promise<void> {
 export type StoreOutcome = 'durable' | 'evictable' | 'unreadable';
 
 /**
- * Stores the track and says exactly how well, for the caller that is about to
+ * Stores the data and says exactly how well, for the caller that is about to
  * delete another copy — the GPS recorder finishing a ride. Anything but `durable`
  * is its cue to leave the other copy where it is.
  */
 export async function storeTrackDurably(
-  geojson: unknown,
+  geojson: object,
 ): Promise<StoreOutcome> {
   const persisted = await requestPersistence();
 
   try {
-    await storeTrack(geojson);
+    await storeSnapshot(geojson);
   } catch (err) {
     console.warn('Refusing to store an unreadable track:', err);
 
@@ -121,12 +282,17 @@ export async function storeTrackDurably(
 }
 
 /**
- * The stored recording, or undefined when there is none. Validated on read, so a
- * record written by an older build reads as absent rather than restoring
- * something the app can no longer make sense of.
+ * The snapshot a history entry names, or undefined when there is none — evicted,
+ * cleared with the site's data, or written by a build whose records no longer
+ * validate. `true` is the flag of the previous single-record design.
  */
-export async function getStoredTrack(): Promise<StoredTrack | undefined> {
-  const raw = await get(KEY, store);
+export async function getSnapshot(
+  key: string | true,
+): Promise<StoredTrack | undefined> {
+  const raw = await get(
+    key === true ? LEGACY_KEY : SNAPSHOT_PREFIX + key,
+    store,
+  );
 
   if (raw === undefined) {
     return undefined;
@@ -140,46 +306,9 @@ export async function getStoredTrack(): Promise<StoredTrack | undefined> {
     return undefined;
   }
 
-  lastStored = parsed.data.geojson;
+  if (key !== true) {
+    adoptKey(parsed.data.geojson, key);
+  }
 
   return parsed.data;
-}
-
-export async function deleteStoredTrack(): Promise<void> {
-  lastStored = null;
-
-  await del(KEY, store);
-
-  markHistoryEntry(false);
-}
-
-/**
- * Flags the current history entry as holding — or no longer holding — the stored
- * track, so a reload of *this* entry puts it back while a fresh visit is left
- * alone. `urlProcessor` carries the flag onto the entries it writes afterwards,
- * and `handleLocationChange` both reads it and, when a fresh load carries none,
- * evicts the entry it refers to.
- *
- * The history entry rather than `localStorage`, because that is the granularity
- * the question actually has: "was I looking at this track when I reloaded?" It
- * also makes the flag the authority — no flag, no track — so the store cannot
- * outlive the session that filled it.
- */
-function markHistoryEntry(holding: boolean): void {
-  const state = (history.state ?? {}) as { tr?: true };
-
-  if (holding === (state.tr === true)) {
-    return;
-  }
-
-  try {
-    history.replaceState(
-      holding ? { ...state, tr: true } : { ...state, tr: undefined },
-      '',
-      window.location.href,
-    );
-  } catch {
-    // A document opened from a URL `replaceState` refuses (see `index.tsx`); the
-    // track is stored either way, it just won't come back by itself on a reload.
-  }
 }

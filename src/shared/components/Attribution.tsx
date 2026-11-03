@@ -1,26 +1,59 @@
 import type { RootState } from '@app/store/store.js';
+import { drawnEnvelope } from '@features/cachedMaps/sourceLayer.js';
 import {
+  type Document,
   DocumentSchema,
   documentShow,
 } from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefMapSelector,
+  integratedLayerDefsSelector,
+  namedLayerDefsSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { SONNY_ATTR } from '@shared/elevationSources.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
+import { cachedMapSource } from '@shared/mapLibrary/exportedLayer.js';
+import {
+  licenseAttributions,
+  resolveTileCodes,
+  useTileAttribution,
+} from '@shared/tileAttribution.js';
+import { useTerrainLicenses, useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { useTileZoom } from '../hooks/useTileZoom.js';
 import {
   type AttributionDef,
   FIXTHEMAP_ATTR,
-  integratedLayerDefs,
+  type IsTileLayerDef,
   OSM_DATA_ATTR,
   OSRM_ROUTING_ATTR,
+  RETIRED_SOURCE_LAYERS,
+  reportsTileCodes,
+  type TileDetailDef,
 } from '../mapDefinitions.js';
+import { coversInBounds, useTileCoverages } from '../tileCoverage.js';
 
 type Props = { unknown: string };
 
 const PREFIX = '?document=';
+
+/** The in-app document a credit links to; anything else opens in a new tab. */
+function documentOf(url: string | undefined): Document | undefined {
+  return url?.startsWith(PREFIX)
+    ? DocumentSchema.safeParse(url.slice(PREFIX.length)).data
+    : undefined;
+}
+
+// The no-break space keeps the dot on the credit it follows.
+const SEPARATOR = '\u00a0· ';
 
 /**
  * Maps the `state.map.countries` tri-state to the country filter that
@@ -40,30 +73,26 @@ export function toAttributionCountries(
 
 /**
  * Tells whether an attribution applies to the covered `countries`: a
- * country-specific source needs its country in the list, and a global fallback
- * (`exceptCountries`) needs at least one covered country the national sources
- * don't serve. An `undefined` country list means "unknown", so everything shows.
+ * country-specific source needs its country in the list, a global one always
+ * applies. An `undefined` country list means "unknown", so everything shows.
  */
 function coversCountries(
   def: AttributionDef,
   countries: string[] | undefined,
 ): boolean {
-  return (
-    !countries ||
-    ((!def.country || countries.includes(def.country)) &&
-      (!def.exceptCountries ||
-        countries.some((country) => !def.exceptCountries?.includes(country))))
-  );
+  return !countries || !def.country || countries.includes(def.country);
 }
 
 export function Attribution({ unknown }: Props): ReactElement {
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
   const countriesState = useAppSelector((state) => state.map.countries);
 
   const attribution = useResolvedAttribution(
     layers,
     toAttributionCountries(countriesState),
+    true,
+    true,
   );
 
   return attribution === null ? (
@@ -147,90 +176,263 @@ export function useRoutingAttributions(): AttributionDef[] {
  * "fix the map" obligation applies: it is a link or it is nothing, and baking
  * its label into an exported image would only add noise. It is FOSSGIS' term,
  * so it rides along with the OSRM credit and nothing else.
+ *
+ * `fromPaintedTiles` credits a layer by what its tiles report having drawn
+ * rather than by the countries in view. Only for the map on screen — an export
+ * covers an area the painted tiles say nothing about.
  */
 function useCategorizedAttribution(
-  layers: string[],
+  layers: readonly string[],
   countries?: string[],
   creditRouting = true,
   linked = false,
+  fromPaintedTiles = false,
 ) {
   const cachedMaps = useAppSelector((state) => state.map.cachedMaps);
 
-  const cachedAttrs = cachedMaps
-    .filter((cm) => layers.includes(cm.type) && cm.attribution)
-    .flatMap((cm) => cm.attribution!);
+  const integratedLayerDefMap = useAppSelector(integratedLayerDefMapSelector);
+
+  const libraryDefs = useAppSelector(integratedLayerDefsSelector);
+
+  const namedDefs = useAppSelector(namedLayerDefsSelector);
+
+  // A named map credits its source's data under its own id.
+  const integratedLayerDefs = [...libraryDefs, ...namedDefs];
 
   const routingAttrs = useRoutingAttributions();
 
-  const defs = [
-    ...integratedLayerDefs
-      .filter(({ type }) => layers.includes(type))
-      .flatMap((def) => def.attribution),
-    ...cachedAttrs,
-    ...(creditRouting ? routingAttrs : []),
-  ].filter((def) => coversCountries(def, countries));
-
-  const categorized = categorize(
-    linked && defs.includes(OSRM_ROUTING_ATTR)
-      ? [...defs, FIXTHEMAP_ATTR]
-      : defs,
+  const viewshedCredits = useAppSelector(
+    (state) => state.viewshed.render?.attributions,
   );
 
-  const esriAttribution = useAppSelector((state) => state.map.esriAttribution);
+  const tileAttribution = useTileAttribution();
+
+  const licenses = useTileLicenses();
+
+  const terrainLicenses = useTerrainLicenses();
+
+  const bounds = useAppSelector((state) => state.map.bounds);
+
+  const tileZoom = useTileZoom();
+
+  const online = useOnline();
+
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
+
+  const drawnCachedMaps = cachedMaps.filter((cm) => layers.includes(cm.type));
+
+  const coverages = useTileCoverages([
+    ...integratedLayerDefs.flatMap((def) =>
+      layers.includes(def.type) && 'detail' in def && def.detail
+        ? [def.detail.coverageUrl]
+        : [],
+    ),
+    ...drawnCachedMaps.flatMap((cm) =>
+      cm.coverageUrl ? [cm.coverageUrl] : [],
+    ),
+  ]);
+
+  // Layers with a detail whose own tiles are all covered by it on screen.
+  const coveredLayers = new Set<string>();
+
+  // What a coverage says of the tiles on screen, each source judged at the zoom
+  // it draws at; nothing for an export or a coverage not known yet.
+  const coversAt = (
+    coverageUrl: string,
+    scaleWithDpi: boolean | undefined,
+    maxNativeZoom: number | undefined,
+  ) => {
+    const coverage = coverages.get(coverageUrl);
+
+    return fromPaintedTiles && coverage && bounds
+      ? coversInBounds(coverage, bounds, tileZoom(scaleWithDpi, maxNativeZoom))
+      : undefined;
+  };
+
+  // A source with a coverage is credited only where it has data on screen.
+  const creditWhereCovered = (
+    coverageUrl: string,
+    scaleWithDpi: boolean | undefined,
+    maxNativeZoom: number | undefined,
+    attribution: AttributionDef[],
+  ) => {
+    const covers = coversAt(coverageUrl, scaleWithDpi, maxNativeZoom);
+
+    if (!covers?.size || covers.has('partial') || covers.has('full')) {
+      guessed.push(...attribution);
+    }
+  };
+
+  // A layer with a detail credits each of its two sources only where its tiles
+  // are on screen.
+  const creditDetail = (
+    def: IsTileLayerDef & { type: string },
+    detail: TileDetailDef,
+  ) => {
+    creditWhereCovered(
+      detail.coverageUrl,
+      def.scaleWithDpi,
+      detail.maxNativeZoom,
+      detail.attribution,
+    );
+
+    const baseCovers = coversAt(
+      detail.coverageUrl,
+      def.scaleWithDpi,
+      def.maxNativeZoom,
+    );
+
+    if (
+      baseCovers?.size &&
+      !baseCovers.has('partial') &&
+      !baseCovers.has('none')
+    ) {
+      coveredLayers.add(def.type);
+    }
+  };
+
+  // A layer whose tiles reported their datasets is credited from those and
+  // skips the country filter — the codes are the exact answer it approximates.
+  const exact: AttributionDef[] = [];
+
+  const guessed: AttributionDef[] = [];
+
+  // A shading layer's tiles name terrain-tiles' datasets, read by its own
+  // dictionary. Where they can't be read it credits every source it could have
+  // drawn on, narrowed by the countries in view: its floor alone names none.
+  const creditShading = (type: string, floor: AttributionDef[]) => {
+    const resolved = fromPaintedTiles
+      ? resolveTileCodes(tileAttribution[type], terrainLicenses, floor)
+      : null;
+
+    if (resolved) {
+      exact.push(...resolved);
+    } else {
+      guessed.push(
+        ...floor,
+        ...(terrainLicenses ? licenseAttributions(terrainLicenses) : []),
+      );
+    }
+  };
+
+  for (const def of integratedLayerDefs) {
+    if (!layers.includes(def.type)) {
+      continue;
+    }
+
+    if (def.technology === 'parametricShading') {
+      creditShading(def.type, def.attribution);
+
+      continue;
+    }
+
+    if ('detail' in def && def.detail) {
+      creditDetail(def, def.detail);
+
+      if (coveredLayers.has(def.type)) {
+        continue;
+      }
+    }
+
+    const resolved = fromPaintedTiles
+      ? resolveTileCodes(tileAttribution[def.type], licenses)
+      : null;
+
+    if (resolved) {
+      exact.push(...resolved);
+    } else {
+      guessed.push(...def.attribution);
+
+      // Only an export credits every dataset the renderer could have drawn on,
+      // narrowed by the countries in view. On screen a dataset is named by the
+      // tiles that drew it or not at all.
+      if (!fromPaintedTiles && licenses && reportsTileCodes(def)) {
+        guessed.push(...licenseAttributions(licenses));
+      }
+    }
+  }
+
+  // A cached map is credited by its painted tiles where they all carry codes,
+  // else by the union of everything it downloaded, with the dictionary it
+  // carries for offline; a map from before that wears its source layer's credit.
+  for (const cm of drawnCachedMaps) {
+    const source =
+      cachedMapSource(cm, integratedLayerDefMap[cm.sourceType]) ??
+      RETIRED_SOURCE_LAYERS[cm.sourceType];
+
+    // the map's own copy where the source isn't loaded
+    const attribution = source?.attribution ?? cm.attribution ?? [];
+
+    // a stand-in for part of its layer credits where its coverage has data
+    if (cm.coverageUrl && cm.technology === 'tile') {
+      creditWhereCovered(
+        cm.coverageUrl,
+        cm.scaleWithDpi,
+        // the depth it is drawn from
+        drawnEnvelope(cm, online, customLayers, integratedLayerDefMap)
+          ?.maxNativeZoom ?? cm.maxNativeZoom,
+        attribution,
+      );
+
+      continue;
+    }
+
+    // Only the renderer's own layers report their datasets at all.
+    const fromRenderer = reportsTileCodes(cm);
+
+    const painted = fromPaintedTiles ? tileAttribution[cm.type] : null;
+
+    const resolved = fromRenderer
+      ? (resolveTileCodes(painted, licenses) ??
+        resolveTileCodes(painted, cm.attributionLicenses) ??
+        resolveTileCodes(cm.attributionCodes, cm.attributionLicenses))
+      : null;
+
+    if (resolved) {
+      exact.push(...resolved);
+    } else {
+      guessed.push(...attribution);
+
+      // As for a layer on screen: a map that couldn't say what it drew credits
+      // everything it could have drawn on, rather than the floor alone.
+      if (fromRenderer && licenses) {
+        guessed.push(...licenseAttributions(licenses));
+      }
+    }
+  }
+
+  const defs = [
+    ...exact,
+    ...[...guessed, ...(creditRouting ? routingAttrs : [])].filter((def) =>
+      coversCountries(def, countries),
+    ),
+  ];
+
+  // Past the country filter: the service names the models its render was
+  // answered from, which the viewport it is looked at from cannot narrow.
+  const terrainDefs = layers.includes('v') ? (viewshedCredits ?? []) : [];
+
+  const categorized = categorize([
+    ...defs,
+    ...terrainDefs,
+    ...(linked && defs.includes(OSRM_ROUTING_ATTR) ? [FIXTHEMAP_ATTR] : []),
+  ]);
+
+  const allEsriAttribution = useAppSelector(
+    (state) => state.map.esriAttribution,
+  );
+
+  // Esri's contributors are its `S` tiles', which the detail may cover whole.
+  const esriAttribution = coveredLayers.has('S') ? [] : allEsriAttribution;
 
   return { categorized, esriAttribution };
 }
 
-/**
- * Plain-text attribution for the given layers and covered countries, suitable
- * for baking into an exported map. Mirrors {@link useResolvedAttribution} but
- * flattens to a string and skips attributions whose label is not plain text.
- *
- * `creditRouting` is what the caller says about the route: an export that leaves
- * it out must not carry the routers' credit either.
- */
-export function useResolvedAttributionText(
-  layers: string[],
-  countries?: string[],
-  creditRouting = true,
-): string | null {
-  const m = useMessages();
-
-  const { categorized, esriAttribution } = useCategorizedAttribution(
-    layers,
-    countries,
-    creditRouting,
-  );
-
-  if (categorized.length === 0) {
-    return null;
-  }
-
-  const parts = categorized
-    .map(({ type, attributions }) => {
-      const names = attributions
-        .map((a) => a.name ?? (a.nameKey ? m?.mapLayers.attr[a.nameKey] : ''))
-        .filter(
-          (name): name is string => typeof name === 'string' && name !== '',
-        );
-
-      return names.length === 0
-        ? ''
-        : `${m?.mapLayers.type[type] ?? ''} ${names.join(', ')}`.trim();
-    })
-    .filter(Boolean);
-
-  if (esriAttribution?.length) {
-    parts.push(esriAttribution.join(', '));
-  }
-
-  return parts.length === 0 ? null : parts.join('; ');
-}
-
 export function useResolvedAttribution(
-  layers: string[],
+  layers: readonly string[],
   countries?: string[],
   creditRouting = true,
+  fromPaintedTiles = false,
 ): [string, ReactElement][] | null {
   const m = useMessages();
 
@@ -239,6 +441,7 @@ export function useResolvedAttribution(
     countries,
     creditRouting,
     true,
+    fromPaintedTiles,
   );
 
   const dispatch = useDispatch();
@@ -250,42 +453,35 @@ export function useResolvedAttribution(
           [
             type,
             <>
-              {m?.mapLayers.type[type]}{' '}
-              {attributions.map((a, j) => [
-                j > 0 ? ', ' : '',
-                a.url ? (
-                  <a
-                    key={j}
-                    href={a.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => {
-                      if (!a.url?.startsWith(PREFIX)) {
-                        return;
-                      }
+              <Text k={`mapLayers.type.${type}`} />{' '}
+              {attributions.map((a, j) => (
+                <Fragment key={j}>
+                  {j > 0 && SEPARATOR}
+                  {a.url ? (
+                    <a
+                      href={a.url}
+                      {...(documentOf(a.url) === undefined && {
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                      })}
+                      onClick={(e) => {
+                        const doc = documentOf(a.url);
 
-                      const doc = DocumentSchema.safeParse(
-                        a.url.slice(PREFIX.length),
-                      );
+                        if (doc !== undefined) {
+                          e.preventDefault();
 
-                      if (!doc.success) {
-                        return;
-                      }
-
-                      e.preventDefault();
-
-                      dispatch(documentShow(doc.data));
-                    }}
-                  >
-                    {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-                  </a>
-                ) : (
-                  <Fragment key={j}>
-                    {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-                  </Fragment>
-                ),
-              ])}
-              {esriAttribution?.map((a) => `, ${a}`).join('') ?? ''}
+                          dispatch(documentShow(doc));
+                        }
+                      }}
+                    >
+                      {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
+                    </a>
+                  ) : (
+                    a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])
+                  )}
+                </Fragment>
+              ))}
+              {esriAttribution?.map((a) => SEPARATOR + a).join('') ?? ''}
             </>,
           ] as const,
       );

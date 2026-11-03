@@ -1,9 +1,16 @@
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
@@ -45,6 +52,8 @@ export default function WeatherRadarMenu() {
   const wm = useWeatherRadarMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const frames = useAppSelector(radarFramesSelector);
 
@@ -177,11 +186,17 @@ export default function WeatherRadarMenu() {
                       <Checkbox value={settings.showNowcast} />
                     ) : (
                       <FaGem className="text-warning" />
-                    )}{' '}
-                    {wm?.showNowcast ?? '…'}
+                    )}
+                    <MenuLabel>
+                      <Text m={wm} k="showNowcast" />
+                    </MenuLabel>
                   </Dropdown.Item>
                 </FmDropdownMenu>
               </Dropdown>
+
+              <ResponsiveActions toggleLabel={m?.general.actions}>
+                <Action {...manualAction('weather-radar')} />
+              </ResponsiveActions>
             </>
           )}
 

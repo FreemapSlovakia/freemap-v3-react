@@ -21,21 +21,7 @@
      it drops the shadow below the box and leaves the top edge flat. */
   box-shadow: var(--fm-shadow-2);
 
-  /* Translucent over a blurred backdrop, so the map reads behind the panel
-     without its labels and hairlines making the panel's own text unreadable.
-
-     On a pseudo-element, not on the box: `backdrop-filter` would make the box
-     the containing block for `position: fixed` descendants, and the controls'
-     dropdowns are placed by a fixed-strategy popper against the viewport. */
-  &::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    inset: 0;
-    border-radius: inherit;
-    backdrop-filter: blur(6px);
-    background-color: rgba(255, 255, 255, 0.7);
-  }
+  /* Its translucent backdrop is the global `.fm-frosted`. */
 
   & > button {
     position: absolute;
@@ -45,23 +31,16 @@
   }
 }
 
-/* Not nested under `.window`: `&` inside a `::before` rule resolves through
-   `:is()`, which rejects pseudo-elements, so the whole selector is dropped and
-   dark panels stay white. `:not(.fullscreen)` because this outranks the
-   fullscreen override below, which needs its opaque background to win. */
-[data-bs-theme="dark"] .window:not(.fullscreen)::before {
-  background-color: rgba(0, 0, 0, 0.7);
+/* Nothing behind a fullscreen panel is visible, so the blur is pure cost. Two
+   classes, to outrank `.fm-frosted::before` whatever the stylesheet order. */
+.window.fullscreen::before {
+  backdrop-filter: none;
+  background-color: var(--bs-body-bg);
 }
 
 /* The panel taking the screen, dropping the grips it no longer needs. */
 .fullscreen {
   z-index: 1100;
-
-  /* Nothing behind it is visible, so the blur is pure cost. */
-  &::before {
-    backdrop-filter: none;
-    background-color: var(--bs-body-bg);
-  }
 
   /* `!important` because the hook writes the geometry as an inline style. The
      padding and rounding are Bootstrap utilities, which the hook leaves off

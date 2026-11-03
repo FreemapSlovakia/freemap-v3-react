@@ -1,4 +1,5 @@
 import type { Map as LeafletMap } from 'leaflet';
+import './boxZoomTolerance.js';
 import './touchMouseCompat.js';
 
 type Listener = (map: LeafletMap) => void;
@@ -10,9 +11,11 @@ let resolveMap: ((map: LeafletMap) => void) | undefined;
 const listeners = new Set<Listener>();
 
 function pending() {
-  return new Promise<LeafletMap>((resolve) => {
-    resolveMap = resolve;
-  });
+  const { promise, resolve } = Promise.withResolvers<LeafletMap>();
+
+  resolveMap = resolve;
+
+  return promise;
 }
 
 /**

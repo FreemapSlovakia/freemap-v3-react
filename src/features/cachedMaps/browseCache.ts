@@ -1,4 +1,5 @@
-import { TILE_SCALE_SUFFIX } from '@shared/tileUrl.js';
+import { ATTRIBUTION_HEADER } from '@shared/tileAttribution.js';
+import { buildTileUrl, TILE_SCALE_SUFFIX } from '@shared/tileUrl.js';
 import {
   clear,
   createStore,
@@ -6,6 +7,7 @@ import {
   get,
   getMany,
   set,
+  setMany,
   type UseStore,
 } from 'idb-keyval';
 
@@ -22,6 +24,9 @@ export const BROWSE_CACHE_NAME = 'tiles-browse';
 const CONFIG_KEY = 'browseTileCacheConfig';
 
 const TEMPLATES_KEY = 'browseTileCacheTemplates';
+
+// the app's own: what each map's template was, for maps still loading
+const TEMPLATES_BY_TYPE_KEY = 'browseTileCacheTemplatesByType';
 
 const STATS_KEY = 'browseTileCacheStats';
 
@@ -49,6 +54,22 @@ export const browseCacheDefaults: BrowseCacheConfig = {
   maxAgeDays: 30,
   maxSizeMb: 500,
 };
+
+/**
+ * A tile layer's URL template, with what the worker needs to name the tiles
+ * around one it was asked for: the hosts `{s}` cycles over, and which way `{y}`
+ * runs.
+ */
+export type BrowseTileTemplate = {
+  url: string;
+  subdomains?: string | string[];
+  tms?: boolean;
+};
+
+// a bare string is a template without subdomains or `tms`
+function toTemplate(stored: BrowseTileTemplate | string): BrowseTileTemplate {
+  return typeof stored === 'string' ? { url: stored } : stored;
+}
 
 export type BrowseCacheStats = { tiles: number; bytes: number };
 
@@ -84,7 +105,7 @@ function getIndexStore(): UseStore {
  */
 export async function readBrowseCacheState(): Promise<{
   config: BrowseCacheConfig;
-  templates: string[];
+  templates: BrowseTileTemplate[];
   cleared: number;
 }> {
   // `getMany` types every key the same, so the tuple is named here instead
@@ -94,13 +115,13 @@ export async function readBrowseCacheState(): Promise<{
     CLEARED_KEY,
   ])) as [
     Partial<BrowseCacheConfig> | undefined,
-    string[] | undefined,
+    (BrowseTileTemplate | string)[] | undefined,
     number | undefined,
   ];
 
   return {
     config: { ...browseCacheDefaults, ...config },
-    templates: templates ?? [],
+    templates: (templates ?? []).map(toTemplate),
     cleared: cleared ?? 0,
   };
 }
@@ -112,9 +133,32 @@ export async function writeBrowseCacheConfig(
 }
 
 export async function writeBrowseTileTemplates(
-  templates: string[],
+  byType: Record<string, BrowseTileTemplate>,
 ): Promise<void> {
-  await set(TEMPLATES_KEY, templates);
+  const unique = new Map(
+    Object.values(byType).map((template) => [
+      JSON.stringify(template),
+      template,
+    ]),
+  );
+
+  await setMany([
+    [TEMPLATES_KEY, [...unique.values()]],
+    [TEMPLATES_BY_TYPE_KEY, byType],
+  ]);
+}
+
+export async function readBrowseTileTemplatesByType(): Promise<
+  Record<string, BrowseTileTemplate>
+> {
+  const stored =
+    (await get<Record<string, BrowseTileTemplate | string>>(
+      TEMPLATES_BY_TYPE_KEY,
+    )) ?? {};
+
+  return Object.fromEntries(
+    Object.entries(stored).map(([type, t]) => [type, toTemplate(t)]),
+  );
 }
 
 export async function readBrowseCacheStats(): Promise<BrowseCacheStats> {
@@ -164,20 +208,30 @@ export async function clearBrowseCache(): Promise<void> {
 }
 
 /**
- * Stores a tile under `key`, stripped to its body and content type. The source
- * server's CORS headers and `Vary` mean nothing under a cache key of our own and
- * only make `cache.match` browser-dependent.
+ * Stores a tile under `key`, stripped to its body, content type and the
+ * datasets the source said it drew from — which a later pass reads back off the
+ * stored response rather than fetching the tile again. The rest of the source
+ * server's headers mean nothing under a cache key of our own, and its `Vary`
+ * only makes `cache.match` browser-dependent.
  */
 export async function putTileResponse(
   cache: Cache,
   key: string,
   contentType: string | null,
   body: Blob,
+  attribution?: string | null,
 ): Promise<void> {
   await cache.put(
     key,
     new Response(body, {
-      headers: { 'Content-Type': contentType ?? 'application/octet-stream' },
+      headers: {
+        'Content-Type': contentType ?? 'application/octet-stream',
+        // null is unknown and stays unsaid; empty credits nothing, and is kept
+        ...(attribution !== null &&
+          attribution !== undefined && {
+            [ATTRIBUTION_HEADER]: attribution,
+          }),
+      },
     }),
   );
 }
@@ -186,27 +240,116 @@ function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+const PLACEHOLDER_PATTERNS: Record<string, string> = {
+  s: '[^./]+',
+  x: '-?\\d+',
+  y: '-?\\d+',
+  z: '\\d+',
+};
+
 /**
- * Matches every tile URL a layer template can produce, `@Nx` variants included.
- * The service worker has nothing but the request URL to go on, so this is how it
- * tells a map tile from any other cross-origin request.
+ * Matches every tile URL a layer template can produce, `@Nx` variants included,
+ * so the service worker can tell a map tile from any other request. The
+ * placeholders, `proto` and the `@Nx`/query `tail` are named groups.
  */
 export function tileTemplateToRegExp(template: string): RegExp {
+  const named = new Set<string>();
+
   const body = template
     .split(/(\{[sxyz]\})/)
-    .map((part) =>
-      part === '{s}'
-        ? '[^./]+'
-        : part === '{x}' || part === '{y}'
-          ? '-?\\d+'
-          : part === '{z}'
-            ? '\\d+'
-            : escapeRegExp(part),
-    )
+    .map((part) => {
+      const name = /^\{([sxyz])\}$/.exec(part)?.[1];
+
+      if (!name) {
+        return escapeRegExp(part);
+      }
+
+      if (named.has(name)) {
+        return `\\k<${name}>`;
+      }
+
+      named.add(name);
+
+      return `(?<${name}>${PLACEHOLDER_PATTERNS[name]})`;
+    })
     .join('');
 
   return new RegExp(
     // a protocol-relative template is fetched over whatever the page uses
-    `^${body.startsWith('//') ? `https?:${body}` : body}(?:${TILE_SCALE_SUFFIX})?(?:\\?.*)?$`,
+    `^${body.startsWith('//') ? `(?<proto>https?:)${body}` : body}(?<tail>(?:${TILE_SCALE_SUFFIX})?(?:\\?.*)?)$`,
   );
+}
+
+/** A layer's tile URLs, and what it takes to name a tile's ancestors. */
+export type TileGrid = {
+  template: string;
+  re: RegExp;
+  subdomains: string[];
+  tms: boolean;
+};
+
+export type TileAncestor = {
+  url: string;
+  /** How many of the tile fit across the ancestor. */
+  scale: number;
+  /** Where in the ancestor the tile lies, counted from its top left. */
+  col: number;
+  row: number;
+};
+
+/**
+ * The tiles that cover a tile's area at lower zooms, nearest first, each
+ * under every host `{s}` cycles over — the tile's own host first. Empty for a
+ * URL `re` doesn't match or a template that doesn't name `{z}`, `{x}` and `{y}`.
+ */
+export function tileAncestors(
+  url: string,
+  { template, re, subdomains, tms }: TileGrid,
+  maxLevels: number,
+): TileAncestor[] {
+  const groups = re.exec(url)?.groups;
+
+  const z = Number(groups?.['z']);
+
+  const x = Number(groups?.['x']);
+
+  const y = Number(groups?.['y']);
+
+  if (!groups || Number.isNaN(z) || Number.isNaN(x) || Number.isNaN(y)) {
+    return [];
+  }
+
+  const own = groups['s'];
+
+  const hosts =
+    own === undefined
+      ? [undefined]
+      : [own, ...subdomains.filter((host) => host !== own)];
+
+  const ancestors: TileAncestor[] = [];
+
+  for (let level = 1; level <= Math.min(maxLevels, z); level++) {
+    const scale = 2 ** level;
+
+    const ax = Math.floor(x / scale);
+
+    const ay = Math.floor(y / scale);
+
+    const rowInGrid = y - ay * scale;
+
+    for (const s of hosts) {
+      ancestors.push({
+        url:
+          (groups['proto'] ?? '') +
+          buildTileUrl(template, ax, ay, z - level, s) +
+          (groups['tail'] ?? ''),
+        scale,
+        col: x - ax * scale,
+        // a TMS `{y}` counts up from the bottom
+        row: tms ? scale - 1 - rowInGrid : rowInGrid,
+      });
+    }
+  }
+
+  return ancestors;
 }

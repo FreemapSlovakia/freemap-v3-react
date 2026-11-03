@@ -1,5 +1,7 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
@@ -7,15 +9,21 @@ import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SubmenuHeader } from '@shared/components/SubmenuHeader.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { useEffect, useState } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import type { IconType } from 'react-icons';
@@ -24,7 +32,6 @@ import {
   FaAngleRight,
   FaAsterisk,
   FaBan,
-  FaBook,
   FaCamera,
   FaCog,
   FaCreativeCommons,
@@ -37,6 +44,7 @@ import {
   FaPalette,
   FaRegCheckSquare,
   FaRegComment,
+  FaRegImages,
   FaRegSquare,
   FaStar,
   FaTimes,
@@ -94,6 +102,8 @@ export default function GalleryMenu() {
   const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const confirm = useConfirm();
 
@@ -200,6 +210,8 @@ export default function GalleryMenu() {
           user: {
             sendGalleryEmails: !sendGalleryEmails,
           },
+          // Not from a modal, so none to close.
+          keepOpen: true,
         }),
       );
     } else if (eventKey === 'direction') {
@@ -272,6 +284,13 @@ export default function GalleryMenu() {
                       return;
                     }
 
+                    trackMatomo([
+                      'trackEvent',
+                      'Gallery',
+                      'colorize',
+                      colorizeBy ?? 'none',
+                    ]);
+
                     dispatch(
                       galleryColorizeBy(
                         colorizeBy === 'none'
@@ -302,8 +321,10 @@ export default function GalleryMenu() {
                           eventKey={LEGEND_ITEM}
                           active={showLegend}
                         >
-                          {showLegend ? <FaRegCheckSquare /> : <FaRegSquare />}{' '}
-                          {gm?.legend ?? '…'}
+                          {showLegend ? <FaRegCheckSquare /> : <FaRegSquare />}
+                          <MenuLabel>
+                            <Text m={gm} k="legend" />
+                          </MenuLabel>
                         </Dropdown.Item>
 
                         <Dropdown.Divider />
@@ -315,7 +336,10 @@ export default function GalleryMenu() {
                       eventKey="none"
                       active={!colorizeBy}
                     >
-                      <FaBan /> {gm?.noColorize ?? '…'}
+                      <FaBan />
+                      <MenuLabel>
+                        <Text m={gm} k="noColorize" />
+                      </MenuLabel>
                     </Dropdown.Item>
 
                     {GalleryColorizeBySchema.options.map((by) => {
@@ -329,7 +353,10 @@ export default function GalleryMenu() {
                           title={gm?.c[by]}
                           active={colorizeBy === by}
                         >
-                          <Icon /> {gm?.c[by] ?? '…'}
+                          <Icon />
+                          <MenuLabel>
+                            <Text m={gm} k={`c.${by}`} />
+                          </MenuLabel>
                         </Dropdown.Item>
                       );
                     })}
@@ -348,7 +375,7 @@ export default function GalleryMenu() {
                         disabled={!online}
                         {...props}
                       >
-                        <FaBook />{' '}
+                        <FaRegImages />{' '}
                         <span className={labelClassName}>{label}</span>
                       </Dropdown.Toggle>
                     )}
@@ -361,7 +388,8 @@ export default function GalleryMenu() {
 
                         return (
                           <Dropdown.Item key={key} as="button" eventKey={key}>
-                            <Icon /> {gm?.f[key]}
+                            <Icon />
+                            <MenuLabel>{gm?.f[key]}</MenuLabel>
                             {key === '-createdAt' && (
                               <MenuGutter>
                                 <Chord command="gallery-list" />
@@ -424,40 +452,55 @@ export default function GalleryMenu() {
                             eventKey={`lic:${id}`}
                             key={id}
                           >
-                            <LicenseBadge licenseId={id} />{' '}
-                            {gm?.license.names[id] ?? id}
+                            <LicenseBadge licenseId={id} />
+                            <MenuLabel>{gm?.license.names[id] ?? id}</MenuLabel>
                           </OnlineOnlyItem>
                         ))}
                       </>
                     ) : (
                       <>
                         <Dropdown.Item as="button" eventKey="direction">
-                          <Checkbox value={showDirection} /> <FaLocationArrow />{' '}
-                          {gm?.showDirection}
+                          <Checkbox value={showDirection} />
+                          <FaLocationArrow />
+                          <MenuLabel>
+                            <Text m={gm} k="showDirection" />
+                          </MenuLabel>
                         </Dropdown.Item>
 
                         {sendGalleryEmails !== undefined && (
                           <>
                             <OnlineOnlyItem as="button" eventKey="emails">
-                              <Checkbox value={sendGalleryEmails} />{' '}
-                              <FaEnvelope /> {gm?.sendGalleryEmails}
+                              <Checkbox value={sendGalleryEmails} />
+                              <FaEnvelope />
+                              <MenuLabel>
+                                <Text m={gm} k="sendGalleryEmails" />
+                              </MenuLabel>
                             </OnlineOnlyItem>
 
                             <Dropdown.Divider />
 
                             <OnlineOnlyItem as="button" eventKey="all-premium">
-                              <FaGem /> {gm?.allMyPhotos.premium}
+                              <FaGem />
+                              <MenuLabel>
+                                <Text m={gm} k="allMyPhotos.premium" />
+                              </MenuLabel>
                             </OnlineOnlyItem>
 
                             <OnlineOnlyItem as="button" eventKey="all-free">
-                              <FaDove /> {gm?.allMyPhotos.free}
+                              <FaDove />
+                              <MenuLabel>
+                                <Text m={gm} k="allMyPhotos.free" />
+                              </MenuLabel>
                             </OnlineOnlyItem>
 
                             <OnlineOnlyItem
                               as="button"
                               eventKey="submenu-license"
                             >
-                              <FaCreativeCommons /> {gm?.license.chooseForAll}
+                              <FaCreativeCommons />
+                              <MenuLabel>
+                                <Text m={gm} k="license.chooseForAll" />
+                              </MenuLabel>
                               <MenuGutter>
                                 <FaChevronRight />
                               </MenuGutter>
@@ -468,6 +511,10 @@ export default function GalleryMenu() {
                     )}
                   </FmDropdownMenu>
                 </Dropdown>
+
+                <ResponsiveActions toggleLabel={m?.general.actions}>
+                  <Action {...manualAction('photos')} />
+                </ResponsiveActions>
               </>
             )}
 

@@ -1,3 +1,6 @@
+import type { OsmFeatureId } from '@shared/types/featureId.js';
+import type { Messages } from '@/translations/messagesInterface.js';
+import { normalizeTaxonTags } from './taxon.js';
 import type { Node, OsmMapping } from './types.js';
 
 type Part = { text: string; tags: Record<string, string>; case: string };
@@ -148,16 +151,64 @@ export function eliminateMoreGenericNames(items: Part[]): Part[] {
 export function resolveGenericName(
   m: Node,
   tags: Record<string, string>,
+  /** A tree or shrub with a genus is the genus ("Linden"), not both. */
+  preferGenus = false,
 ): string[] {
+  return resolveGenericNameParts(m, tags, preferGenus).map((part) => part.text);
+}
+
+/** One kind the element is, with the tags that make it that. */
+export type GenericNamePart = { text: string; tags: Record<string, string> };
+
+export function resolveGenericNameParts(
+  m: Node,
+  tags: Record<string, string>,
+  preferGenus = false,
+): GenericNamePart[] {
   // Deduplicated: two keys can name the same thing — `amenity=pharmacy` beside
   // `healthcare=pharmacy` is the recommended tagging — and it reads once.
-  return [
-    ...new Set(
-      eliminateMoreGenericNames(
-        resolveGenericNameWithMeta(m, adjustTags(tags), {}),
-      ).map((part) => part.text),
+  const seen = new Set<string>();
+
+  return pickPlantOrGenus(
+    eliminateMoreGenericNames(
+      resolveGenericNameWithMeta(m, adjustTags(tags), {}),
     ),
-  ];
+    preferGenus,
+  ).flatMap(({ text, tags }) => {
+    if (seen.has(text)) {
+      return [];
+    }
+
+    seen.add(text);
+
+    return [{ text, tags }];
+  });
+}
+
+const singlePlants = new Set(['tree', 'shrub', 'scrub']);
+
+/**
+ * A single plant with a genus resolves as both. A name keeps the genus over the
+ * bare plant; an icon keeps the plant, so a juniper shrub stays a shrub.
+ */
+function pickPlantOrGenus(parts: Part[], preferGenus: boolean): Part[] {
+  const hasGenus = (part: Part) => 'genus' in part.tags;
+
+  const isPlant = (part: Part) =>
+    singlePlants.has(part.tags['natural'] ?? '') && !hasGenus(part);
+
+  const isBarePlant = (part: Part) =>
+    isPlant(part) && Object.keys(part.tags).length === 1;
+
+  if (!parts.some(hasGenus)) {
+    return parts;
+  }
+
+  return preferGenus
+    ? parts.filter((part) => !isBarePlant(part))
+    : parts.some(isPlant)
+      ? parts.filter((part) => !hasGenus(part))
+      : parts;
 }
 
 export async function getOsmMapping(lang: string): Promise<OsmMapping> {
@@ -171,19 +222,34 @@ export async function getOsmMapping(lang: string): Promise<OsmMapping> {
   );
 }
 
-export async function getGenericNameFromOsmElement(
+export async function getGenericNamePartsFromOsmElement(
   tags: Record<string, string>,
   type: 'relation' | 'way' | 'node',
   lang: string,
-): Promise<string> {
+): Promise<GenericNamePart[]> {
   const { osmTagToNameMapping, colorNames } = await getOsmMapping(lang);
 
-  return getGenericNameFromOsmElementSync(
+  return getGenericNamePartsFromOsmElementSync(
     tags,
     type,
     osmTagToNameMapping,
     colorNames,
   );
+}
+
+export async function getGenericNameFromOsmElement(
+  tags: Record<string, string>,
+  type: 'relation' | 'way' | 'node',
+  lang: string,
+): Promise<string> {
+  return joinGenericNameParts(
+    await getGenericNamePartsFromOsmElement(tags, type, lang),
+  );
+}
+
+/** Joins the kinds an element is at once ("Mountain range, Geomorphological unit"). */
+export function joinGenericNameParts(parts: { text: string }[]): string {
+  return parts.map((part) => part.text).join(', ');
 }
 
 export function getGenericNameFromOsmElementSync(
@@ -192,20 +258,36 @@ export function getGenericNameFromOsmElementSync(
   osmTagToNameMapping: Node,
   colorNames: Record<string, string>,
 ): string {
-  const parts = resolveGenericName(osmTagToNameMapping, tags);
+  return joinGenericNameParts(
+    getGenericNamePartsFromOsmElementSync(
+      tags,
+      type,
+      osmTagToNameMapping,
+      colorNames,
+    ),
+  );
+}
 
-  let gn = parts.length === 0 ? undefined : parts.join('; ');
+export function getGenericNamePartsFromOsmElementSync(
+  tags: Record<string, string>,
+  type: 'relation' | 'way' | 'node',
+  osmTagToNameMapping: Node,
+  colorNames: Record<string, string>,
+): GenericNamePart[] {
+  const parts = resolveGenericNameParts(osmTagToNameMapping, tags, true);
 
-  if (type === 'relation' && tags['type'] === 'route') {
+  if (type === 'relation' && tags['type'] === 'route' && parts.length > 0) {
     const color =
       colorNames[
         (tags['osmc:symbol'] ?? '').replace(/:.*/, '') || (tags['colour'] ?? '')
-      ] ?? '';
+      ];
 
-    gn = `${color} ${gn}`;
+    if (color) {
+      parts[0] = { ...parts[0], text: `${color} ${parts[0].text}` };
+    }
   }
 
-  return gn ?? '';
+  return parts;
 }
 
 export function getNameFromOsmElement(
@@ -286,7 +368,7 @@ function adjustTags(tags: Record<string, string>) {
     res = { ...rest, fixme };
   }
 
-  return res;
+  return normalizeTaxonTags(res);
 }
 
 // TODO add others
@@ -327,3 +409,12 @@ export const categoryKeys = new Set([
   'water',
   'waterway',
 ]);
+
+/** An element named by its type and id, as `Node 123`. */
+export function osmTypeAndId(
+  m: Messages | undefined,
+  elementType: OsmFeatureId['elementType'],
+  id: number,
+): string {
+  return `${m?.search.osmElementTypes[elementType] ?? elementType} ${id}`;
+}

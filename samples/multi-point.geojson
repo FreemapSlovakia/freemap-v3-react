@@ -1,0 +1,31 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Three springs"
+      },
+      "geometry": {
+        "type": "MultiPoint",
+        "coordinates": [
+          [
+            21.054000000000002,
+            48.74,
+            600
+          ],
+          [
+            21.083403103136867,
+            48.76391766733612,
+            801
+          ],
+          [
+            21.113919222654083,
+            48.777480587033956,
+            354
+          ]
+        ]
+      }
+    }
+  ]
+}

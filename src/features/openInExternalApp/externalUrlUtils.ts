@@ -19,6 +19,19 @@ export function getOsmElementUrl(
   return `https://www.openstreetmap.org/${elementType}/${id}${history ? '/history' : ''}`;
 }
 
+export function getOsmNoteUrl(id: number): string {
+  return `https://www.openstreetmap.org/note/${id}`;
+}
+
+/** The note open in iD on osm.org, as opposed to whatever is at its position. */
+export function getIdNoteUrl(id: number): string {
+  return `https://www.openstreetmap.org/edit?editor=id&note=${id}`;
+}
+
+export function getOsmChangesetUrl(id: number): string {
+  return `https://www.openstreetmap.org/changeset/${id}`;
+}
+
 /** The element itself open in iD, as opposed to whatever is at a position. */
 export function getIdElementUrl({ elementType, id }: OsmFeatureId): string {
   return `https://www.openstreetmap.org/edit?editor=id&${elementType}=${id}`;
@@ -64,6 +77,47 @@ export function getHikingSkUrl(
   }
 
   return `https://mapy.hiking.sk/?${new URLSearchParams(params).toString()}`;
+}
+
+/** `lat,lon?z=…` — the part of a `geo:` URI after the scheme, as Google Maps and Locus read it. */
+function geoSsp(
+  lat: number,
+  lon: number,
+  zoom: number,
+  includePoint?: boolean,
+): string {
+  // The map centre is not wrapped past the antimeridian; `geo:` wants -180..180.
+  const ll = `${lat.toFixed(6)},${(((((lon + 180) % 360) + 360) % 360) - 180).toFixed(6)}`;
+
+  return `${ll}?z=${zoom}${includePoint ? `&q=${ll}` : ''}`;
+}
+
+/** Android offers every installed map app for it. */
+export function getGeoUrl(
+  lat: number,
+  lon: number,
+  zoom: number,
+  includePoint?: boolean,
+): string {
+  return `geo:${geoSsp(lat, lon, zoom, includePoint)}`;
+}
+
+/**
+ * The `geo:` URI aimed at the Freemap Android app alone; without the app
+ * installed, Chrome opens its Play Store listing by the `package`. No
+ * `browser_fallback_url`: that would replace the map tab with the store page.
+ * `intent:` without `//` so the data resolves to `geo:lat,lon`, not `geo://…`.
+ */
+export function getFreemapAndroidUrl(
+  lat: number,
+  lon: number,
+  zoom: number,
+  includePoint?: boolean,
+): string {
+  return (
+    `intent:${geoSsp(lat, lon, zoom, includePoint)}` +
+    '#Intent;scheme=geo;package=sk.bigware.freemap;end'
+  );
 }
 
 export function getPeakfinderUrl(lat: number, lon: number): string {

@@ -5,11 +5,18 @@ const cs: DeepPartialWithRequiredObjects<ColorizerMessages> = {
   colorizeBy: 'Obarvit podle',
   legend: 'Legenda',
   steepnessScale: 'Rozsah sklonu',
+  curvatureEnds: {
+    straight: 'Rovná',
+    winding: 'Klikatá',
+  },
   mode: {
     none: 'Neaktivní',
     elevation: 'Nadmořská výška',
     steepness: 'Sklon',
     speed: 'Rychlost',
+    averageSpeed: 'Očekávaná rychlost',
+    curvature: 'Klikatost',
+    maxSpeed: 'Rychlostní limit',
     heartRate: 'Tepová frekvence',
     cadence: 'Kadence',
     power: 'Výkon',

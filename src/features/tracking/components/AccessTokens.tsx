@@ -1,9 +1,15 @@
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, Button, ListGroup, Modal } from 'react-bootstrap';
+import { Alert, ListGroup, Modal } from 'react-bootstrap';
 import { FaBullseye, FaChevronLeft, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
@@ -38,14 +44,18 @@ export function AccessTokens(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaBullseye /> {tm?.accessTokens.modalTitle(deviceName)}
+          <FaBullseye />{' '}
+          <Text m={tm}>{(tm) => tm.accessTokens.modalTitle(deviceName)}</Text>
         </Modal.Title>
+        <ManualHeaderButton chapter="tracking" />
       </Modal.Header>
 
       <Modal.Body>
         <OfflineAlert />
 
-        <Alert variant="secondary">{tm?.accessTokens.desc(deviceName)}</Alert>
+        <Alert variant="secondary">
+          <Text m={tm}>{(tm) => tm.accessTokens.desc(deviceName)}</Text>
+        </Alert>
 
         {accessTokens.length > 0 && (
           <ListGroup>
@@ -56,25 +66,25 @@ export function AccessTokens(): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button
+      <FmModalFooter>
+        <FmFooterButton
           disabled={!online}
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(null));
           }}
-        >
-          <FaPlus /> {m?.general.add}
-        </Button>
+          icon={<FaPlus />}
+          label={m?.general.add}
+        />
 
-        <Button
+        <FmFooterButton
           variant="dark"
           onClick={() => {
             dispatch(trackingActions.showAccessTokens(undefined));
           }}
-        >
-          <FaChevronLeft /> {m?.general.back}
-        </Button>
-      </Modal.Footer>
+          icon={<FaChevronLeft />}
+          label={m?.general.back}
+        />
+      </FmModalFooter>
     </>
   );
 }

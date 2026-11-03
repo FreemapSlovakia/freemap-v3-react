@@ -9,7 +9,12 @@ import {
   useState,
 } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import { FaCheck, FaExclamationTriangle, FaTimes } from 'react-icons/fa';
+import { FaCheck, FaExclamationTriangle } from 'react-icons/fa';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from './FmModalFooter.js';
 import classes from './ModalProvider.module.css';
 
 /** Which button the user pressed (or `'cancel'` for Escape/backdrop/dismiss). */
@@ -346,14 +351,14 @@ export function ModalProvider({
           </Modal.Body>
         )}
 
-        <Modal.Footer>
-          <Button
+        <FmModalFooter>
+          <FmFooterButton
             variant={options.confirmStyle ?? 'primary'}
             disabled={options.confirmDisabled?.(value)}
             onClick={() => close('confirm')}
-          >
-            <FaCheck /> {options.confirmLabel ?? m?.general.ok}
-          </Button>
+            icon={<FaCheck />}
+            label={options.confirmLabel ?? m?.general.ok}
+          />
 
           {options.extraLabel !== undefined && (
             <Button
@@ -364,11 +369,11 @@ export function ModalProvider({
             </Button>
           )}
 
-          <Button variant="dark" onClick={() => close('cancel')}>
-            <FaTimes /> {options.cancelLabel ?? m?.general.cancel}{' '}
-            <kbd>Esc</kbd>
-          </Button>
-        </Modal.Footer>
+          <FmDismissButton
+            label={options.cancelLabel ?? m?.general.cancel}
+            onClick={() => close('cancel')}
+          />
+        </FmModalFooter>
       </Modal>
     </>
   );

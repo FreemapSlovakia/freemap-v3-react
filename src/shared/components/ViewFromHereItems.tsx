@@ -1,15 +1,19 @@
 import { openTool } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { requestCompassPermission } from '@features/location/compass.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import {
   panoramaLookAt,
   panoramaPick,
 } from '@features/panorama/model/actions.js';
-import { placeToposcopeCenter } from '@features/toposcope/centerPoint.js';
+import {
+  placeToposcopeCenter,
+  pointFeaturesSelector,
+} from '@features/toposcope/centerPoint.js';
 import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
 import { viewshedPick } from '@features/viewshed/model/actions.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -44,8 +48,6 @@ export function ViewFromHereItems({
   divider,
   omit,
 }: Props): ReactElement | null {
-  const m = useMessages();
-
   const dispatch = useDispatch();
 
   // Nothing to turn where no picture has been rendered — the tool may even be
@@ -55,7 +57,7 @@ export function ViewFromHereItems({
   // The dial's rays are the points already drawn, so with none it is an empty
   // dial; the toposcope's own ◎ button is the way in from nothing.
   const hasDrawnPoints = useAppSelector(
-    (state) => state.drawingPoints.points.length > 0,
+    (state) => pointFeaturesSelector(state).length > 0,
   );
 
   // Read as the click comes: the centre is placed against the whole drawing,
@@ -86,7 +88,10 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <PiMountains /> {m?.general.panoramaFromHere}
+          <PiMountains />
+          <MenuLabel>
+            <Text k="general.panoramaFromHere" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -101,7 +106,10 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <FaCrosshairs /> {m?.general.lookAtInPanorama}
+          <FaCrosshairs />
+          <MenuLabel>
+            <Text k="general.lookAtInPanorama" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
 
@@ -118,7 +126,10 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <FaBinoculars /> {m?.general.viewshedFromHere}
+          <FaBinoculars />
+          <MenuLabel>
+            <Text k="general.viewshedFromHere" />
+          </MenuLabel>
         </OnlineOnlyItem>
       )}
 
@@ -133,7 +144,10 @@ export function ViewFromHereItems({
             onAct?.();
           }}
         >
-          <PiCompassRoseBold /> {m?.general.toposcopeFromHere}
+          <PiCompassRoseBold />
+          <MenuLabel>
+            <Text k="general.toposcopeFromHere" />
+          </MenuLabel>
         </Dropdown.Item>
       )}
     </>

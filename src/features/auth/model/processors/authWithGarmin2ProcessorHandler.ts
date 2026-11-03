@@ -22,7 +22,7 @@ const handle: ProcessorHandler<typeof authWithGarmin2> = async ({
     expectedStatus: 200,
   });
 
-  await handleLoginResponse(res, getState, dispatch);
+  await handleLoginResponse(res, getState, dispatch, 'garmin');
 };
 
 export default handle;

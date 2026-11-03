@@ -1,14 +1,16 @@
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import matter from 'gray-matter';
 import htm from 'htm';
-import { marked } from 'marked';
 import vhtml from 'vhtml';
+import { renderMarkdown } from '../markdown-render.js';
+import { DOCUMENTS_IN_MANUAL } from '../src/manual/moved.js';
 import { hubs } from './hubs.js';
 import { objects } from './objects.js';
 import {
   appUrl,
   BASE_EU,
   BASE_SK,
+  type ChapterLink,
   fileName,
   HUB_LANGS,
   LANGS,
@@ -16,6 +18,7 @@ import {
   renderDocument,
   renderHome,
   renderHub,
+  renderMoved,
 } from './seo.js';
 
 const html = htm.bind(vhtml);
@@ -80,9 +83,41 @@ async function gen() {
     await writeFile(`../sitemap/${name}`, html);
   };
 
+  // The manual's chapters per language, for the homepage to link: only those
+  // written in that language, which alone have a prerender.
+  const chapters = new Map<Lang, (ChapterLink & { order: number })[]>();
+
+  for (const file of await readdir('../src/manual')) {
+    const m = file.match(/^(.+)\.([a-z]{2})\.md$/);
+
+    const lang = m?.[2] as Lang | undefined;
+
+    if (!m || !lang || !LANGS.includes(lang)) {
+      continue;
+    }
+
+    const { data } = matter(await readFile(`../src/manual/${file}`, 'utf-8'));
+
+    chapters.set(lang, [
+      ...(chapters.get(lang) ?? []),
+      {
+        key: m[1],
+        title: typeof data['title'] === 'string' ? data['title'] : m[1],
+        order: typeof data['order'] === 'number' ? data['order'] : 1_000_000,
+      },
+    ]);
+  }
+
   // Homepage, one prerender per UI language (cross-linked via hreflang).
   for (const lang of LANGS) {
-    await writePage('layers=X', lang, renderHome(lang));
+    await writePage(
+      'layers=X',
+      lang,
+      renderHome(
+        lang,
+        [...(chapters.get(lang) ?? [])].sort((a, b) => a.order - b.order),
+      ),
+    );
 
     pushUrl(appUrl('layers=X', lang));
   }
@@ -108,68 +143,89 @@ async function gen() {
     `Hub pages: ${hubs.length * HUB_LANGS.length} (${hubs.length} hubs × ${HUB_LANGS.length} languages)`,
   );
 
-  const documentsDir = '../src/documents';
+  // Documents and manual chapters are `<key>.<lang>.md`. The app resolves the
+  // right file from the bare `document=<key>` / `manual=<key>` param + the
+  // active `&lang=`, so the URL must NOT carry the language suffix. Files are
+  // grouped by key to emit per-language hreflang links.
+  for (const { dir, urlParam } of [
+    { dir: '../src/documents', urlParam: 'document' },
+    { dir: '../src/manual', urlParam: 'manual' },
+  ]) {
+    const docLangs = new Map<string, Lang[]>();
 
-  // Documents are `<key>.<lang>.md`. The app resolves the right file from the
-  // bare `document=<key>` param + the active `&lang=`, so the URL must NOT carry
-  // the language suffix. Group files by key to emit per-language hreflang links.
-  const docLangs = new Map<string, Lang[]>();
+    for (const file of await readdir(dir)) {
+      const m = file.match(/^(.+)\.([a-z]{2})\.md$/);
 
-  for (const file of await readdir(documentsDir)) {
-    const m = file.match(/^(.+)\.([a-z]{2})\.md$/);
+      if (!m) {
+        continue;
+      }
 
-    if (!m) {
-      continue;
+      const key = m[1];
+
+      const lang = m[2] as Lang;
+
+      if (!LANGS.includes(lang)) {
+        continue;
+      }
+
+      docLangs.set(key, [...(docLangs.get(key) ?? []), lang]);
     }
 
-    const key = m[1];
+    let docCount = 0;
 
-    const lang = m[2] as Lang;
+    for (const [key, langs] of docLangs) {
+      const param = `layers=X&${urlParam}=${key}`;
 
-    if (!LANGS.includes(lang)) {
-      continue;
+      const xDefaultLang: Lang = langs.includes('en')
+        ? 'en'
+        : langs.includes('sk')
+          ? 'sk'
+          : langs[0];
+
+      for (const lang of langs) {
+        const file = `${dir}/${key}.${lang}.md`;
+
+        // A YAML frontmatter `title:`; stripped from the body.
+        const { data, content } = matter(await readFile(file, 'utf-8'));
+
+        await writePage(
+          param,
+          lang,
+          renderDocument({
+            param,
+            lang,
+            langs,
+            xDefaultLang,
+            title: typeof data['title'] === 'string' ? data['title'] : key,
+            bodyHtml: renderMarkdown(content, { file, images: false }),
+          }),
+        );
+
+        pushUrl(appUrl(param, lang));
+
+        docCount++;
+      }
     }
 
-    docLangs.set(key, [...(docLangs.get(key) ?? []), lang]);
+    console.log(`${dir} pages: ${docCount} (${docLangs.size} keys)`);
   }
 
-  let docCount = 0;
-
-  for (const [key, langs] of docLangs) {
-    const docParam = `layers=X&document=${key}`;
-
-    const xDefaultLang: Lang = langs.includes('en')
-      ? 'en'
-      : langs.includes('sk')
-        ? 'sk'
-        : langs[0];
-
-    for (const lang of langs) {
-      const md = await readFile(`${documentsDir}/${key}.${lang}.md`, 'utf-8');
-
-      // Documents carry a YAML frontmatter `title:`; strip it from the body.
-      const { data, content } = matter(md);
+  // A moved document's old URL is indexed: its page points at the chapter,
+  // the English one where the chapter lacks the language. Not in the sitemap.
+  for (const [doc, chapter] of Object.entries(DOCUMENTS_IN_MANUAL)) {
+    for (const lang of chapters.keys()) {
+      const has = chapters.get(lang)?.some((c) => c.key === chapter);
 
       await writePage(
-        docParam,
+        `layers=X&document=${doc}`,
         lang,
-        renderDocument({
-          key,
+        renderMoved({
           lang,
-          langs,
-          xDefaultLang,
-          title: typeof data['title'] === 'string' ? data['title'] : key,
-          bodyHtml: await marked.parse(content),
+          target: appUrl(`layers=X&manual=${chapter}`, has ? lang : 'en'),
         }),
       );
-
-      pushUrl(appUrl(docParam, lang));
-
-      docCount++;
     }
   }
-
-  console.log(`Document pages: ${docCount} (${docLangs.size} documents)`);
 
   await writeFile('../sitemap/sitemap-core.txt', outSk.join('\n'));
   await writeFile('../sitemap/sitemap-core-eu.txt', outEu.join('\n'));

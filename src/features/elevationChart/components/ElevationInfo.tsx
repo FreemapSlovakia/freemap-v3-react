@@ -1,19 +1,22 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
 import { pointToTile } from '@mapbox/tilebelt';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCopyButton } from '@shared/hooks/useCopyButton.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import {
-  type IsTileLayerDef,
-  integratedLayerDefs,
-  isTileLayerDef,
-} from '@shared/mapDefinitions.js';
-import { pickSubdomain } from '@shared/tileUrl.js';
+import { layerName } from '@shared/layerName.js';
+import { type IsTileLayerDef, isTileLayerDef } from '@shared/mapDefinitions.js';
+import { useTileCoverages } from '@shared/tileCoverage.js';
+import { buildTileUrl, pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
 import { Fragment, useMemo } from 'react';
-import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { type ElevationReading, ElevationValue } from './ElevationValue.js';
@@ -51,6 +54,15 @@ export function ElevationInfo({
 
   const [x, y] = pointToTile(point.lon, point.lat, zoom);
 
+  // at the view's zoom, as the `z/x/y` shown beside the links
+  function tileAt(maxNativeZoom = Infinity) {
+    const z = Math.min(zoom, maxNativeZoom);
+
+    const [x, y] = pointToTile(point.lon, point.lat, z);
+
+    return [z, x, y] as const;
+  }
+
   function substitute({
     url,
     maxNativeZoom,
@@ -61,41 +73,57 @@ export function ElevationInfo({
       .map((scale) => [scale, Math.abs(devicePixelRatio - scale)] as const)
       .reduce((min, val) => (val[1] < min[1] ? val : min));
 
-    const z =
-      maxNativeZoom === undefined || maxNativeZoom >= zoom
-        ? zoom
-        : maxNativeZoom;
-
-    const [x, y] = pointToTile(point.lon, point.lat, z);
+    const [z, x, y] = tileAt(maxNativeZoom);
 
     return (
-      url
-        .replace('{x}', String(x))
-        .replace('{y}', String(y))
-        .replace('{z}', String(z))
-        .replace('{s}', pickSubdomain(subdomains)) +
+      buildTileUrl(url, x, y, z, pickSubdomain(subdomains)) +
       (scale !== 1 ? `@${scale}x` : '')
     );
   }
 
   const m = useMessages();
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const layers = useAppSelector(drawnTypesSelector);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
   const tileLayerDefs = [...integratedLayerDefs, ...customLayers].filter(
     isTileLayerDef,
   );
 
-  const tileUrls = layers
+  const shownDefs = layers
     .map((type) => tileLayerDefs.find((def) => def.type === type))
     .filter((def): def is (typeof tileLayerDefs)[0] => Boolean(def))
-    .filter((def) => def.minZoom !== undefined && def.minZoom <= zoom) // TODO consider scale?
-    .map((def) => ({
+    .filter((def) => def.minZoom !== undefined && def.minZoom <= zoom); // TODO consider scale?
+
+  const coverages = useTileCoverages(
+    shownDefs.flatMap((def) =>
+      'detail' in def && def.detail ? [def.detail.coverageUrl] : [],
+    ),
+  );
+
+  // A layer with a detail links the detail's tile where it has data there.
+  const tileUrls = shownDefs.map((def) => {
+    const detail = 'detail' in def ? def.detail : undefined;
+
+    const coverage = detail && coverages.get(detail.coverageUrl);
+
+    const useDetail =
+      detail &&
+      coverage &&
+      coverage(...tileAt(detail.maxNativeZoom)) !== 'none';
+
+    return {
       ...def,
-      tileUrl: substitute(def),
-    }));
+      tileUrl: substitute(
+        useDetail
+          ? { ...def, url: detail.url, maxNativeZoom: detail.maxNativeZoom }
+          : def,
+      ),
+    };
+  });
 
   const [format, setFormat] = usePersistentState<number>(
     'fm.ele.gpsFormat',
@@ -143,16 +171,15 @@ export function ElevationInfo({
       {!window.fmEmbedded && (
         <div>
           {tileMessage}:{' '}
-          <Alert.Link
+          <a
             onClick={(e) => {
               e.preventDefault();
               dispatch(searchSetQuery({ query: `${zoom}/${x}/${y}` }));
             }}
             href={`#q=${encodeURIComponent(`${zoom}/${x}/${y}`)}`}
-            target="_blank"
           >
             {zoom}/{x}/{y}
-          </Alert.Link>
+          </a>
           {tileUrls.length > 0 && (
             <>
               {' '}
@@ -160,11 +187,13 @@ export function ElevationInfo({
               {tileUrls.map((def, i) => (
                 <Fragment key={def.type}>
                   {i > 0 ? ', ' : null}
-                  <Alert.Link href={def.tileUrl} target="_blank">
-                    {'name' in def
-                      ? (def.name ?? def.type)
-                      : (m?.mapLayers.letters[def.type] ?? def.type)}
-                  </Alert.Link>
+                  <a
+                    href={def.tileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {layerName(def, m) ?? def.type}
+                  </a>
                 </Fragment>
               ))}
               )

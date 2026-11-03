@@ -27,7 +27,6 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
                 <li>
                   podrobné stínování Slovenska a Česka ve vysokém rozlišení
                 </li>
-                <li>mapy založené na WMS</li>
               </ul>
             }
           >
@@ -50,7 +49,7 @@ const cs: DeepPartialWithRequiredObjects<PremiumMessages> = {
       <p className="mb-0">Freemap zůstává bezplatný a otevřený.</p>
     </>
   ),
-  dtmAreaNames: { gb: 'Anglie' },
+  dtmAreaNames: { en: 'Anglie', wls: 'Wales' },
   purchaseAfterLogin: (
     <>
       Zvolením poskytovatele přihlášení se přihlásíte nebo si vytvoříte

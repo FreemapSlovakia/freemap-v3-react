@@ -1,5 +1,6 @@
 import { clearMapFeatures } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { AttributionDef } from '@shared/mapDefinitions.js';
 import type { TerrainProgress } from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
@@ -27,6 +28,11 @@ export interface ViewshedRenderInfo {
   radiusKm: number;
   /** Metres above sea level, eye height included. */
   eyeElevation: number;
+  /**
+   * What the service says this disc was answered from. Empty where it reported
+   * nothing, which credits every model instead.
+   */
+  attributions: AttributionDef[];
 }
 
 export interface ViewshedState {

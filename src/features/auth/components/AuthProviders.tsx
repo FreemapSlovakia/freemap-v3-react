@@ -1,7 +1,13 @@
+import type { RootState } from '@app/store/store.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import type { CSSProperties, ReactElement, ReactNode } from 'react';
+import {
+  type CSSProperties,
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+} from 'react';
 import { Button } from 'react-bootstrap';
 import {
   FaApple,
@@ -12,7 +18,7 @@ import {
   FaStrava,
 } from 'react-icons/fa';
 import { SiGarmin, SiOpenstreetmap } from 'react-icons/si';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import {
   authDisconnect,
   authWithApple,
@@ -21,11 +27,12 @@ import {
   authWithGoogle,
   authWithPopupOAuth,
 } from '../model/actions.js';
-import type { AuthProvider } from '../model/types.js';
+import { AUTH_PROVIDER_LABELS, type AuthProvider } from '../model/types.js';
+import { isPopupOAuthProvider } from '../popupOAuthProviders.js';
+import { prefetchOAuthClientId } from '../startPopupOAuth.js';
 
 type ProviderDef = {
   provider: AuthProvider;
-  label: string;
   icon: ReactNode;
   style: CSSProperties;
 };
@@ -35,49 +42,41 @@ type ProviderDef = {
 const PROVIDERS: ProviderDef[] = [
   {
     provider: 'google',
-    label: 'Google',
     icon: <FaGoogle />,
     style: { backgroundColor: '#DB4437', color: '#fff' },
   },
   {
     provider: 'facebook',
-    label: 'Facebook',
     icon: <FaFacebook />,
     style: { backgroundColor: '#3b5998', color: '#fff' },
   },
   {
     provider: 'apple',
-    label: 'Apple',
     icon: <FaApple />,
     style: { backgroundColor: '#000', color: '#fff' },
   },
   {
     provider: 'microsoft',
-    label: 'Microsoft',
     icon: <FaMicrosoft />,
     style: { backgroundColor: '#2f2f2f', color: '#fff' },
   },
   {
     provider: 'osm',
-    label: 'OpenStreetMap',
     icon: <SiOpenstreetmap />,
     style: { backgroundColor: '#8bdc81', color: '#585858' },
   },
   {
     provider: 'garmin',
-    label: 'Garmin',
     icon: <SiGarmin className="fm-icon-wordmark" />,
     style: { backgroundColor: '#1791FF', color: '#fff' },
   },
   {
     provider: 'strava',
-    label: 'Strava',
     icon: <FaStrava />,
     style: { backgroundColor: '#fc4c02', color: '#fff' },
   },
   {
     provider: 'github',
-    label: 'GitHub',
     icon: <FaGithub />,
     style: { backgroundColor: '#24292e', color: '#fff' },
   },
@@ -130,6 +129,25 @@ export function AuthProviders({ mode }: Props): ReactElement {
   const cookieConsentResult = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult,
   );
+
+  const store = useStore<RootState>();
+
+  // For the popup buttons shown, so a click can open the popup at once.
+  useEffect(() => {
+    if (mode === 'disconnect') {
+      return;
+    }
+
+    for (const { provider } of PROVIDERS) {
+      if (
+        isPopupOAuthProvider(provider) &&
+        isProviderAvailable(provider, mode) &&
+        (mode === 'login' || !authProviders?.includes(provider))
+      ) {
+        prefetchOAuthClientId(provider, store.getState);
+      }
+    }
+  }, [mode, store, authProviders]);
 
   const handleClick = async (provider: AuthProvider) => {
     if (mode === 'disconnect') {
@@ -184,7 +202,7 @@ export function AuthProviders({ mode }: Props): ReactElement {
           disabled={disabled(def.provider)}
         >
           {def.icon}
-          &ensp;{def.label}
+          &ensp;{AUTH_PROVIDER_LABELS[def.provider]}
         </Button>
       ))}
     </div>

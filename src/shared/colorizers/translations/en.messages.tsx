@@ -4,11 +4,18 @@ const en: ColorizerMessages = {
   colorizeBy: 'Colorize by',
   legend: 'Legend',
   steepnessScale: 'Steepness range',
+  curvatureEnds: {
+    straight: 'Straight',
+    winding: 'Winding',
+  },
   mode: {
     none: 'Inactive',
     elevation: 'Elevation',
     steepness: 'Steepness',
     speed: 'Speed',
+    averageSpeed: 'Expected speed',
+    curvature: 'Curviness',
+    maxSpeed: 'Speed limit',
     heartRate: 'Heart rate',
     cadence: 'Cadence',
     power: 'Power',

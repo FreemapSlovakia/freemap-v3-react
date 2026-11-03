@@ -1,0 +1,163 @@
+## Interface, search and account
+
+### Search
+
+- Access: the search box at the top of the page ("Search places and functions")
+
+The box's dropdown ends with a **Lookup style** row opening the modal of that name (see [OSM data](/llms-osm.md)) and a **Manual** row opening the manual's Search chapter; while the box is empty, its ▾ caret opens the dropdown with those two rows alone. They are not shown in an embedded map.
+
+The box also finds POI types: from two characters on, the types matching the query are listed under an **Objects (POIs)** caption as checkboxes that switch them on the map (see [OSM data](/llms-osm.md)). Picking one leaves the query and the list up, so several can be switched on in a row.
+
+The box also finds the app's own functions, so a tool, a dialog, a help document or a map layer can be reached by name instead of through the menus: from the second character on, the matching ones are listed above the places, under a **Functions** caption and a **Maps** one, with the matched letters in bold. Typing "weather" offers the weather-radar layer, "export" the three export dialogs, "shading" the shading layers. Matching ignores case and accents and accepts gaps (as in a code editor's command palette), and each function carries synonyms of its own, so it is found by words its label doesn't use. Picking one does what its menu item does; the functions an embedded map has no menus for are not offered there.
+
+Searches the map by place name, category, or coordinates. Suggestions appear as you type, from the third character on, biased towards the middle of the map you are looking at; pressing Enter or the search button asks for a longer list of the same. Results may come from several sources — place-name (forward) and reverse geocoding, both answered by Freemap's own Photon instance over OpenStreetMap data and localized into the UI language, nearby and surrounding POIs (Freemap's own OSM query API, Europe only), raw coordinates, OSM elements, and WMS feature info. A geocoded hit arrives as a point; its outline and full tags are fetched from OSM once it is picked. An element can also be asked for by id — `n123` / `w456` / `r789`, the spelled-out `node/123` or `way 456`, or a link to an element's osm.org page (or its history) — which is read locally and offered as a row carrying the id alone; the element itself is fetched when that row is picked. A one-letter prefix has to be tight and at least three digits (`n123`), so road refs such as `R2` or `N 118` stay queries for the geocoder. Pointing at a result in the list (or arrowing onto it) draws it on the map, so it can be found without being picked — the map doesn't move and nothing is loaded for it. Picking a result goes to it and shows it on the map for as long as it stays selected — closing its selection toolbar (× or <kbd>Esc</kbd>), picking the next result, or selecting anything else takes it off again. A 📌 **Keep on the map** button on that toolbar makes it stay instead: kept results remain on the map beside one another and beside whatever is being looked at, so several can be compared at once. Once a result is kept, that button gives way to the 🗑 delete one beside the ×, so the toolbar always offers the one thing that can be done about the result being on the map. Clicking one on the map picks it out of them. The selected result is drawn in the selection color instead of the configured result color, the same way a selected POI is; the selection toolbar and the details popup act on it. Its ⋮ menu turns the result into features of Drawing and data — through the conversion dialog described under [Drawing and data](/llms-drawing.md), which asks what to take along and how much to simplify — and carries the place actions described under Map details — inline, above the "Open in…" submenu — and, last, **Manual** (the Search chapter). A result that is merely being looked at has no delete button, going as it does the moment it stops being looked at; <kbd>Del</kbd> takes either kind off outright. Only kept OSM elements go into the URL, each with its own `osm-node=` / `osm-way=` / `osm-relation=` param, so a link restores all of them — in one query however many it names.
+
+### UI Language switcher
+
+- Access: Main menu > Language
+- Available languages: Slovak, Czech, Hungarian, English, Polish, German, Italian, Slovenian, French
+
+### Account
+
+- Access: Main menu > Account
+- Keyboard shortcut: <kbd>e</kbd> <kbd>a</kbd>
+- URL path: `/#show=account`
+
+Available only to logged-in users. Logged-out users instead see a **Log in** item in the same place, which opens the login provider chooser (see Login providers below).
+
+The Account modal has four collapsible sections (below); from the buttons at the bottom the user can also log out or delete their account.
+
+#### Purchases
+
+- Shows current premium status (e.g. "premium access until <date>", or "premium access, your subscription renews automatically" while an auto-renewing subscription is running) and the credit balance, with a **Buy credits** button
+- History of purchases (date and item)
+- Users can purchase yearly premium access and/or credits; a user with a running subscription is shown their premium status instead of purchase options
+- **Manage payments** — shown to anyone who ever paid through Polar; opens the Polar customer portal in a new tab (cancel the subscription, change the payment method, download invoices). It does not cover payments made through Rovas
+- Yearly premium costs 15 €; it is bought either as an auto-renewing subscription (which keeps the price it was started at for as long as it stays active, and can be cancelled at any time) or as a one-time year (which keeps the price for that year only). Subscriptions started before 1 September 2026 keep their 8 € price
+- Credits are currently spent only on "Offline maps export" (see [Sharing and export](/llms-export.md))
+- Yearly premium allows:
+  - Removal of the ad banner
+  - Access to premium photos (users can mark uploaded photos as premium-only)
+  - Access to higher map zoom levels for specific map layers (see the layer registry in [Map Layers](/llms-layers.md))
+  - Multimodal routing (combining several transport modes in one route)
+  - "Optimize order" in the route planner (reordering the waypoints to minimize travel time)
+  - Colorizing routes and tracks in every mode except Elevation, Speed and Time — those three are free, the rest carry a gem and are locked (the option is disabled, the gem opens the purchase flow)
+  - Weather radar: up to 6 hours of history instead of 2, plus the 1-hour forecast (the `R` overlay)
+  - Viewshed: looking further than 20 km, and detail past what the free pixel budget buys at the chosen range — that budget is what 20 km at the coarsest tier costs, so a shorter viewshed spends it on detail instead (10 km reaches the second tier, 5 km the fourth) (the `v` overlay)
+  - Panorama: renders costing more rays than the free allowance — finer detail, and more rays per pixel — and a maximum visible distance beyond 300 km
+  - High-resolution elevation data in supported countries (used by the elevation API for the chart, colorizing, and elevation fill); currently Slovakia (DMR 5.0: ÚGKK SR), Czechia (DMR 5G: ČÚZK), Austria (ALS DTM: Geoland.at), Switzerland (swissALTI3D: © swisstopo), Italy (HR-DTM 5 m: IRPI-CNR), Slovenia (DMR: Ministrstvo za okolje in prostor), Spain (MDT02: IGN/CNIG), Sweden (Markhöjdmodell: Lantmäteriet), France (RGE ALTI: IGN), Poland (NMT: GUGiK), Finland (Korkeusmalli 2 m: Maanmittauslaitos), Croatia (DMR: Državna geodetska uprava), Norway (DTM: Kartverket, NLOD 2.0), Luxembourg (MNT LiDAR 2024: Administration du cadastre et de la topographie, CC0), England (LIDAR Composite DTM 1 m: Environment Agency, OGL v3), Wales (LiDAR DTM 1 m: Welsh Government and Natural Resources Wales, OGL v3), Belgium (Wallonia — MNT 1 m 2021–2022: © Service public de Wallonie, CC BY 4.0, modified; Flanders — DHMV II 1 m, Bron: Digitaal Vlaanderen), Germany (each state's DGM1 from its survey office), the Netherlands (AHN5, CC0), Denmark (Danmarks Højdemodel: Klimadatastyrelsen, CC BY 4.0) and Estonia (DTM 1 m: Maa- ja Ruumiamet), with more countries being added — the premium offer lists them as the elevation API reports them; past their borders a premium read falls back to a global 30 m model (GEDTM30), while without premium the elevation API answers from SRTM everywhere
+
+#### Personal information
+
+- Profile picture (choose / remove)
+- Name (required) and email address
+- "About me" description
+
+#### Login providers
+
+Supported login providers:
+
+- Apple
+- Facebook
+- Google
+- OpenStreetMap
+- Garmin
+- GitHub
+- Microsoft
+- Strava — login and connect work only on `www.freemap.sk`, because Strava's API app accepts only that callback domain; disconnecting works everywhere
+
+For each provider the modal shows either a **Connect** button (to link it) or a **Disconnect** button (if already linked), so multiple providers can be linked to a single Freemap account.
+
+#### App tokens
+
+Lets another application or a script use the Freemap API as the user, without a login. Any logged-in user can create any number of tokens, premium or not.
+
+- **New token** asks for a note, the permissions and an expiry (never, 30, 90 or 365 days, or a chosen date). The token (`fm_…`) is shown once, with a copy button; only its hash is kept.
+- Permissions: view photos (including premium photos, when the account has premium), upload/edit/rate/comment photos, view My maps, change My maps, view tracked devices, manage tracked devices, and the premium zooms of the outdoor map, the terrain shadings and the aerial imagery in other apps.
+- A token never reaches the account itself: not the profile, login providers, purchases, logout, account deletion or other tokens.
+- The list shows each token's note, permissions, creation date, expiry and last use with the client's user agent. **Edit token** changes its note, permissions and expiry (the token itself stays the same); **Delete** revokes it at once.
+- Usage: send `Authorization: Bearer fm_…` with each request to `https://backend.freemap.sk`; a WebSocket connection takes it as the `authToken` query parameter. Even on endpoints that also work without login, an unknown, deleted or expired token gets HTTP 401, and a request needing a permission the token lacks gets HTTP 403.
+- Outdoor map zooms 19+ (the base map, KST and the overlays): served to the Freemap web app — the free quarter of tiles to anyone, the rest to premium accounts — to JOSM without a token, and to other apps such as Locus only with the token of a premium account holding that permission, as `https://outdoor.tiles.freemap.sk/{z}/{x}/{y}?token=fm_…` or an `Authorization` header. Other websites get them in no case. A refused tile is an image: for an app, how to add a token; for another website, freemap@freemap.sk to contact.
+- Terrain shading zooms 16+ (parametric shading at `https://terrain.tiles.freemap.sk`, and the detailed Slovak shading at `https://sk-hires-shading.tiles.freemap.sk`): the same, with the terrain-shading permission for the token. The detailed shading is also open to iD on openstreetmap.org.
+- Aerial imagery zoom 20 (the Slovak and Czech orthophoto at `https://ortofoto.tiles.freemap.sk`): the same, with the aerial permission. It is also open to iD on openstreetmap.org.
+- Locus Map and OruxMaps: the _Maps for GPS devices_ page installs the online maps into Locus from one link and downloads them for OruxMaps as `onlinemapsources.xml`; both carry the same maps. Logged in, either creates a token noted "Map apps" with the three tile permissions, which every later install reuses and resets to those permissions, so a premium account gets its premium zooms there. Renaming that token makes the next install create a new one. The page also lists every map's tile URL template for other apps.
+
+### Fullscreen
+
+- Access: Main menu > Fullscreen (reads "Exit fullscreen mode" while fullscreen)
+
+Not offered in the installed app, which has no browser chrome to escape, nor on iOS, whose Safari has no fullscreen to enter.
+
+### Clear map elements
+
+- Access: Main menu > Clear map elements
+- Keyboard shortcut: <kbd>g</kbd> <kbd>c</kbd>
+
+Clears the data layer (all interactive map elements of various tools) from the map.
+
+### Info & help
+
+- Access: Info & help
+
+Opens a submenu:
+
+- Manual
+- Map legend
+- Contacts
+- OpenStreetMap documentation
+- Advertise with Us
+- **Reset application** — clears all locally stored settings (signing you out) and reloads the page; confirmed first
+
+Most items open a modal with the selected topic; **Reset application** instead wipes the persisted state and reloads.
+
+The **Manual** is the user guide, in chapters listed beside the open one (a drop-down on a narrow screen), with screenshots, and a **Search the manual** field above the list (on a narrow screen in the header beside the drop-down, its results then in place of the text) that finds chapters by title and keywords and the sections of any chapter containing every word typed (ignoring case and accents), with an excerpt; picking one scrolls to that section. The chapters are: Getting started (`getting-started` — the screen, moving the map, choosing a map, search, locating, the context menu, links), Search (`search` — places, coordinates and OSM elements, the picked result's toolbar and keeping results, and finding functions, maps, chapters and POI types), Maps (`maps` — base maps and overlays, the Map layers panel, presets, the map manager and library, the legend, brightness and preferences), Custom maps (`custom-maps` — own image-tile, vector and WMS sources), Terrain shading (`shading` — the shading maps, their presets and settings), Weather radar (`weather-radar` — the timeline, updates, what premium adds), Route finder (`route-planner`), Drawing and measuring (`drawing`), Tracks and files (`tracks` — importing, the elevation profile, colorizing, export), Photos (`photos`), Panorama (`panorama`), Viewshed (`viewshed`), Toposcope (`toposcope`), Objects (POIs) (`objects`), Map details (`map-details`), Map changes (`changesets`), OSM notes (`osm-notes` — the overlay, reading a note's comments, and passing it to OpenStreetMap, JOSM or iD), My maps (`my-maps`), Live tracking (`tracking` — including how to set up a tracked device), GPS recorder (`gps-recorder` — recording with the Android recorder app, its settings and the problems it reports), Offline use (`offline`), Map export to image/document (`map-export`), Maps in other apps and devices (`devices` — Garmin, Locus and OruxMaps, opening the place elsewhere, embedding, the Geocaching browser extension), Account and login (`account` — login providers, personal information, app tokens, logging out, deleting the account), Premium and credits (`premium` — what premium access adds, its price and subscription, credits, how to buy, the legal documents and the seller), AI assistants (`ai` — pointing an assistant at llms.txt, and enabling and using the WebMCP tools in Chrome), Keyboard shortcuts (`shortcuts`) and About Freemap and OpenStreetMap (`about` — the association, contributing to OSM, community links, and using the maps elsewhere: the attribution the licenses require and where to find it). URL path: `/#show=manual` opens the first chapter, `/#show=manual/<chapter>` a given one; `?manual=<chapter>` does too. Old links to the documents these replaced (`#document=shortcuts`, `tracking`, `garmin`, `geocaching`, `osm`, `freemap`, `attribution`, `premium`) open the matching chapter. Each chapter is also offered by the search box, and the ⋮ menu of a toolbar ends with **Manual**, which opens that toolbar's chapter — where it would be the menu's only item, the toolbar has a book button instead. A modal with a chapter about it has a book button in its header, left of the close button (the map manager's opens Custom maps while its custom map form is shown), and the panorama, toposcope and elevation profile windows end their toolbar with a **Manual** button. <kbd>F1</kbd> opens the chapter about what is in front: the open modal's, else that of a selected OSM note or search result, else that of the tool taking map clicks, else of the newest other open tool (the elevation profile alone opens Tracks), else the first; it works over a modal and in a text field too, but not while a modal waits for a pick on the map. <kbd>?</kbd> opens Keyboard shortcuts. Neither key works in an embedded map. Chapters exist in English and Slovak (Live tracking also in Czech, German, Hungarian, Italian and Polish); other languages get the English text.
+
+The **Advertise with Us** page (also opened from the "place your own ad here" banner) describes the audience, where the ad appears in the interface, the accepted formats, and the address to ask for an offer at.
+
+The map's **ⓘ** → **©** Copyright item lists the sources to credit for what is currently shown: the active layers' map, data and picture credits, plus what a standing route or isochrone adds. A route is OpenStreetMap-derived whatever layer is drawn under it, so it credits OSM data even over aerial imagery; a GraphHopper one also credits Sonny's LiDAR DTM (the terrain model the router is weighted by, which shapes every route it returns, not only the profiles that show its values), and an OSRM one credits OSRM / FOSSGIS e. V., the volunteers whose server answered. Wherever OpenStreetMap data is credited, a "report a map error" link to openstreetmap.org/fixthemap sits beside it — in the list of links only, not in the attribution baked into an exported image, where a link would be inert. The first time each of these sources contributes in a session, the attribution toast is raised, the same way switching to a new map layer raises it.
+
+The **Map legend** modal is specific to the currently active map and explains its symbols, grouped into collapsible categories, listed alphabetically by their name in the current language with the catch-all **Other** kept last (Accommodation and shelter, Barriers, Borders, Culture and entertainment, Facilities, Finance, Food & Drink, Healthcare, Historical objects, Institutions, Land cover, Man-made structures, Natural features, Places of worship, Railways, Roads and paths, Shops, Sports and leisure, Terrain, Tourism, Transport, Water, Other). The outdoor map's legend has a search box above the categories that filters the symbols by their name, by their OSM tags (`key=value`) or by a category name; from two characters on the matching categories are laid out open one under another instead of collapsed, and a query nothing answers says so. The legend content differs per map type and is also available for WMS maps: built-in, from the map library's catalog, and custom. The KST map and each of the outdoor overlays (`x…`) get a legend of only what that layer draws, with the samples drawn transparent, as the overlay is; a legend holding a single category lists its symbols directly, without the search box or the collapsible section. The OpenStreetMap layer's legend is the OpenStreetMap Wiki's key: with that layer alone it opens there directly, and beside other legend-bearing layers its section links to it. With several legend-bearing layers on, each has its own collapsible section. It can also be opened from the map's **ⓘ** info button (<kbd>m</kbd> <kbd>l</kbd>).
+
+### Support Freemap
+
+- Access: Main menu > Support Freemap
+- URL path: `/#show=support-us`
+
+### Social and app buttons
+
+At the bottom of the main menu there is a row of buttons: links to Mastodon, [Facebook](https://www.facebook.com/FreemapSlovakia), [YouTube](https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ) and [GitHub](https://www.github.com/FreemapSlovakia); the mobile apps on Google Play and the App Store; and a **Services status** link.
+
+### UI theme switcher
+
+At the bottom right of the main menu, there are buttons to switch the app UI theme: Light / Dark / Auto.
+
+### Map context menu (right-click)
+
+Right-clicking (or long-pressing) a location on the map opens a context menu with actions for that point. The same list is carried inline by every ⋮ menu that knows a place — see below:
+
+- Center a map here
+- Find coordinates and elevation
+- Query nearby features
+- Show nearby photos
+- Add here a point
+- Start here drawing a line or measurement
+- Route from here
+- Route to here
+- Panorama from here
+- Look at this in the panorama (only while a panorama has been rendered — turns that picture to face the clicked point instead of rendering anything)
+- Viewshed from here (turns the `v` overlay on and computes it from that point)
+- Toposcope from here (only while points are drawn on the map — the dial's rays are those points, so with none it would stand on an empty dial; the toposcope tool's own ◎ button is the way in from nothing)
+- Share location (hands the place to the device's share sheet as a `geo:` link, with the page in view alongside it)
+- Open in… (submenu; the same targets as in the main menu, but acting on the clicked point rather than the map centre)
+
+Anything else that stands somewhere — a drawing point, a route waypoint, a search result or object, a track-viewer waypoint, a photo, a panorama or viewshed viewpoint — offers that same list inline in its own ⋮ menu, **Open in…** last, acting on that feature's position instead of a clicked point. An embedded map is the exception: the drawing, routing and view entries need tools it never opens, so there they are left out of the list wherever it appears, and the toolbars that build their menu out of `ResponsiveActions` (search results, objects, the panorama and viewshed viewpoints, route waypoints) carry no place actions at all.
+
+### Info button
+
+A round **ⓘ** info button at the bottom-right corner of the map opens a small popover with:
+
+- Copyright
+- Map legend (<kbd>m</kbd> <kbd>l</kbd>)
+- Privacy policy
+- Terms of service
+- Refund policy (not in an embedded map, which sells nothing; the privacy policy and terms of service stay, both applying to the visitor either way)

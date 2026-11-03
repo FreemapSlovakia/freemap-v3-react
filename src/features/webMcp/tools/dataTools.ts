@@ -24,7 +24,6 @@ const EXPORTABLES: Exportable[] = [
   'drawingAreas',
   'drawingPoints',
   'tracking',
-  'import',
   'search',
 ];
 

@@ -266,17 +266,17 @@ function collectChannels(
 
   const multi = segments.length > 1;
 
-  const channels: Record<string, unknown> = {};
+  const channels: Record<string, unknown> = Object.fromEntries(
+    names.values().map((name) => {
+      const perSegment = segments.map(
+        (segment) =>
+          segment.channels.get(name) ??
+          new Array<null>(segment.positions.length).fill(null),
+      );
 
-  for (const name of names) {
-    const perSegment = segments.map(
-      (segment) =>
-        segment.channels.get(name) ??
-        new Array<null>(segment.positions.length).fill(null),
-    );
-
-    channels[name] = multi ? perSegment : perSegment[0];
-  }
+      return [name, multi ? perSegment : perSegment[0]];
+    }),
+  );
 
   return channels;
 }
@@ -291,6 +291,15 @@ function commonProperties(el: Element): Record<string, unknown> {
     if (value !== undefined) {
       properties[tag] = value;
     }
+  }
+
+  // A track's or a route's own number; a waypoint has none.
+  const numberText = textOf(childNamed(el, 'number'))?.trim();
+
+  const number = numberText ? Number(numberText) : Number.NaN;
+
+  if (Number.isInteger(number) && number >= 0) {
+    properties['number'] = number;
   }
 
   const links = childrenNamed(el, 'link').map((link) => ({

@@ -20,6 +20,8 @@ import {
   changesetsSetLastFetchedBBox,
   changesetsSetParams,
 } from './actions.js';
+import { hasBbox, OSM_API, parseChangeset } from './changesetDiff.js';
+import { DEFAULT_DAYS } from './reducer.js';
 
 export const changesetsTrackProcessor: Processor = {
   stateChangePredicate: (state) =>
@@ -39,8 +41,10 @@ export const changesetsTrackProcessor: Processor = {
   },
 };
 
+// Its own toast id, apart from the inspector's `changeset.inspector`; this
+// refetches whenever any tool opens.
 export const changesetsProcessor: Processor = {
-  id: 'changeset.detail',
+  id: 'changesets.list',
   actionCreator: [changesetsSetParams, changesetsRefresh, openTool],
   statePredicate: (state) => isToolOpen(state, 'changesets'),
   handle: async ({ dispatch, getState, toastError }) => {
@@ -53,7 +57,7 @@ export const changesetsProcessor: Processor = {
 
     const { days, authorName } = state.changesets;
 
-    const days2 = days ?? 3;
+    const days2 = days ?? DEFAULT_DAYS;
 
     try {
       if (
@@ -67,7 +71,7 @@ export const changesetsProcessor: Processor = {
 
         dispatch(
           toastsAdd({
-            id: 'changeset.detail',
+            id: 'changesets.list',
             messageKey: 'tooBig',
             messageLoader: loadChangesetsMessages,
             cancelType: [
@@ -84,11 +88,11 @@ export const changesetsProcessor: Processor = {
         return;
       }
 
-      dispatch(toastsRemove('changeset.detail'));
+      dispatch(toastsRemove('changesets.list'));
 
       const t = new Date();
 
-      t.setDate(t.getDate() - (state.changesets.days ?? 3));
+      t.setDate(t.getDate() - (state.changesets.days ?? DEFAULT_DAYS));
 
       const fromTime = `${t.getFullYear()}/${
         t.getMonth() + 1
@@ -107,7 +111,7 @@ export const changesetsProcessor: Processor = {
         const res = await httpRequest({
           getState,
           url:
-            `${process.env['OSM_API_URL']}/api/0.6/changesets?` +
+            `${OSM_API}/changesets?` +
             objectToURLSearchParams({
               bbox,
               time: fromTime + (toTime0 ? `,${toTime0}` : ''),
@@ -117,7 +121,6 @@ export const changesetsProcessor: Processor = {
           cancelActions: [
             changesetsSetParams,
             changesetsRefresh,
-            selectFeature,
             clearMapFeatures,
           ],
           statePredicate: changesetsClosed,
@@ -133,54 +136,16 @@ export const changesetsProcessor: Processor = {
         const arrayOfrawChangesets = Array.from(rawChangesets);
 
         const changesetsFromThisRequest = arrayOfrawChangesets
-          .map((rawChangeset) => {
-            const minLat = parseFloat(
-              rawChangeset.getAttribute('min_lat') ?? '',
-            );
-
-            const maxLat = parseFloat(
-              rawChangeset.getAttribute('max_lat') ?? '',
-            );
-
-            const minLon = parseFloat(
-              rawChangeset.getAttribute('min_lon') ?? '',
-            );
-
-            const maxLon = parseFloat(
-              rawChangeset.getAttribute('max_lon') ?? '',
-            );
-
-            const descriptionTag = Array.from(
-              rawChangeset.getElementsByTagName('tag'),
-            ).find((tag) => tag.getAttribute('k') === 'comment');
-
-            const changeset: Changeset = {
-              userName: rawChangeset.getAttribute('user') ?? '???',
-              id: Number(rawChangeset.getAttribute('id') ?? '???'),
-              centerLat: (minLat + maxLat) / 2.0,
-              centerLon: (minLon + maxLon) / 2.0,
-              closedAt: new Date(
-                rawChangeset.getAttribute('closed_at') ?? '???',
-              ),
-              description: descriptionTag?.getAttribute('v') ?? '???',
-            };
-
-            return changeset;
-          })
-          .filter(
-            (changeset) =>
-              changeset.centerLat > 47.63617 &&
-              changeset.centerLat < 49.66746 &&
-              changeset.centerLon > 16.69965 &&
-              changeset.centerLon < 22.67475,
-          );
+          .map(parseChangeset)
+          // An empty changeset has no bbox to place it by.
+          .filter(hasBbox);
 
         const allChangesetsSoFar = [...changesetsFromPreviousRequest];
 
         const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
 
         for (const ch of changesetsFromThisRequest) {
-          if (allChangesetSoFarIDs.indexOf(ch.id) < 0) {
+          if (!allChangesetSoFarIDs.includes(ch.id)) {
             // occasionally the changeset may already be here from previous ajax request
             allChangesetsSoFar.push(ch);
           }
@@ -201,7 +166,7 @@ export const changesetsProcessor: Processor = {
         if (allChangesetsSoFar.length === 0) {
           dispatch(
             toastsAdd({
-              id: 'changeset.detail',
+              id: 'changesets.list',
               messageKey: 'notFound',
               messageLoader: loadChangesetsMessages,
               cancelType: [

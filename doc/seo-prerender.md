@@ -24,15 +24,16 @@ What it generates:
 
   There is also no hub for the GPS recorder: the tool is Android-only (`gpsRecorderAvailableSelector`), and `tool=` drops a tool the device cannot offer, so the page would have landed most searchers on a map with nothing opened.
 
-  **Descriptions belong near 160 characters** — a search result truncates the tail, so a premium or coverage caveat put last is the part that disappears. Every hub whose copy carries such a caveat is held under that (the cadastre and `layers=Z` premium zooms, the radar band, the viewshed and panorama bare-earth limit, the credits cost of the offline export, and offline maps needing no other app); measure the copy **expanded**, since `{brand}` grows by three characters. Many hubs without a caveat still run to ~240 — mostly the non-`sk`/`en` translations, which came out longer than the English they were written from. Trimming those is a worthwhile follow-up, not a correctness problem.
+  **Descriptions belong near 160 characters** — a search result truncates the tail, so a premium or coverage caveat put last is the part that disappears. Every hub whose copy carries such a caveat is held under that (the cadastre and aerial `layers=S` premium zooms, the radar band, the viewshed and panorama bare-earth limit, the credits cost of the offline export, and offline maps needing no other app); measure the copy **expanded**, since `{brand}` grows by three characters. Many hubs without a caveat still run to ~240 — mostly the non-`sk`/`en` translations, which came out longer than the English they were written from. Trimming those is a worthwhile follow-up, not a correctness problem.
 
   Note `premiumFromZoom` is *not* a minimum zoom — the layer works below it and is paywalled at and above it (`coords.z >= premiumFromZoom`). Reading it the other way is a mistake the cadastre copy shipped with once.
 
   Copy outside `sk`/`en` has not had a native review — the same caveat the POI page copy carries.
 - **Per-feature POI pages** — `objects.ts`, see below.
-- **Document pages** — `layers=X&document=<name>&lang=<lang>` rendered from `src/documents/<key>.<lang>.md`; each document appears only in the languages it has a markdown file for.
+- **Document pages** — `layers=X&document=<name>&lang=<lang>` rendered from `src/documents/<key>.<lang>.md`, and **manual chapters** — `layers=X&manual=<chapter>&lang=<lang>` from `src/manual/<chapter>.<lang>.md`; each appears only in the languages it has a markdown file for. Both go through `markdown-render.js`, the app loader's renderer, so `:FaIcon:` glyphs come out as SVG; images are left out, their URLs being the app bundle's. Their `#show=manual/…` and `#show=document/…` links become these pages' URLs (a crawler fetches no hash link), and the meta description is the page's first paragraph. The homepage lists the chapters written in its language.
+- **Moved documents** — a document turned into a chapter (`src/manual/moved.ts`) keeps a page at its old `layers=X&document=<old>` URL, in every language the manual has: a canonical and a refresh to the chapter (in English where the chapter lacks the language), so the old indexed URL hands its standing on instead of falling back to the homepage. It is not listed in the sitemap.
 - **Sitemaps** — two indexes:
-  - `sitemap-index.xml` → freemap.sk: `sitemap-core.txt` (sk/cs homepages, hubs, documents, `llms.txt`) + the `sitemap-feat-<lang>-*.txt` POI shards for sk/cs.
+  - `sitemap-index.xml` → freemap.sk: `sitemap-core.txt` (sk/cs homepages, hubs, documents, manual chapters, `llms.txt`) + the `sitemap-feat-<lang>-*.txt` POI shards for sk/cs.
   - `sitemap-index-eu.xml` → freemap.eu: `sitemap-core-eu.txt` (international pages, `llms.txt`) + POI shards for the eu languages.
   - Shards are chunked at 45 000 URLs (the per-file limit is 50 000). `index.ts` routes every URL/shard to the sk or eu bucket by its home domain.
 
@@ -141,6 +142,6 @@ Each entry document links its own manifest, which is what makes the install prom
 
 ## Keeping it in sync
 
-`hubs.ts` copy is hand-maintained and distilled from `src/static/llms.txt` and the layer registry (`src/shared/mapDefinitions.tsx`). **When layers or tools change, update `hubs.ts` in the same change set** — a new hub needs all 9 languages, since every language is rendered — the same drift discipline that applies to `llms.txt` itself (see [CLAUDE.md](../CLAUDE.md)).
+`hubs.ts` copy is hand-maintained and distilled from `src/static/llms.txt` and the layer registry (`src/shared/mapLibrary/`). **When layers or tools change, update `hubs.ts` in the same change set** — a new hub needs all 9 languages, since every language is rendered — the same drift discipline that applies to `llms.txt` itself (see [CLAUDE.md](../CLAUDE.md)).
 
 **Adding a UI language** also means an `entryDocs` row in `rspack.config.ts` — the bootstrap copy for the no-JS / error / loading states, plus the manifest's `appDescription` and shortcut labels. Miss it and that language falls back to the domain's default entry document with no error anywhere; `rspack.config.ts` is outside `tsconfig.json`, so `tsc` cannot help. A build-time guard against `translation-manager/templates.json` covers it, which is how `sl` and `fr` stopped being missing. nginx needs no change — its language map is generic.

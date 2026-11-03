@@ -1,12 +1,18 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { clsx } from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap';
-import { FaCamera, FaInfoCircle, FaTimes, FaTrophy } from 'react-icons/fa';
+import { FaCamera, FaInfoCircle, FaTrophy } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
@@ -130,18 +136,21 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> <FaTrophy /> {gm?.stats.leaderboard}
+          <FaCamera /> <FaTrophy /> <Text m={gm} k="stats.leaderboard" />
         </Modal.Title>
+        <ManualHeaderButton chapter="photos" />
       </Modal.Header>
       <Modal.Body className={clsx('d-flex', 'flex-column', classes.body)}>
         <OfflineAlert />
 
         <Alert variant="info" className="py-2">
-          <FaInfoCircle /> {gm?.excludesWikimedia}
+          <FaInfoCircle /> <Text m={gm} k="excludesWikimedia" />
         </Alert>
 
         <Form.Group className="mb-2">
-          <Form.Label>{gm?.stats.timePeriod}</Form.Label>
+          <Form.Label>
+            <Text m={gm} k="stats.timePeriod" />
+          </Form.Label>
           <Form.Select
             value={period}
             onChange={(e) => setPeriod(e.currentTarget.value)}
@@ -161,24 +170,32 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
             case 'error':
               return (
                 <Alert variant="danger">
-                  {m?.general.loadError({ err: state.error })}
+                  <Text>
+                    {(m) => m.general.loadError({ err: state.error })}
+                  </Text>
                 </Alert>
               );
             case 'success':
               return (
                 <>
-                  <h5 className="mt-2 mb-3">{gm?.stats.perUser}</h5>
+                  <h5 className="mt-2 mb-3">
+                    <Text m={gm} k="stats.perUser" />
+                  </h5>
 
                   <Table striped bordered>
                     <thead>
                       <tr>
                         <th className="text-end">#</th>
-                        <th>{gm?.stats.user}</th>
+                        <th>
+                          <Text m={gm} k="stats.user" />
+                        </th>
                         <th className="text-end">
                           <span className="d-none d-sm-inline">
-                            {gm?.stats.numberOfPhotos}
+                            <Text m={gm} k="stats.numberOfPhotos" />
                           </span>
-                          <span className="d-sm-none">{gm?.stats.photos}</span>
+                          <span className="d-sm-none">
+                            <Text m={gm} k="stats.photos" />
+                          </span>
                         </th>
                       </tr>
                     </thead>
@@ -237,10 +254,12 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                               }}
                             >
                               <span className={classes.moreBtn}>
-                                {gm?.stats.more}&hellip;
+                                <Text m={gm} k="stats.more" />
+                                &hellip;
                               </span>
                               <span className={classes.lessBtn}>
-                                {gm?.stats.less}&hellip;
+                                <Text m={gm} k="stats.less" />
+                                &hellip;
                               </span>
                             </Button>
                           </td>
@@ -249,23 +268,29 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                     </tbody>
                   </Table>
 
-                  <h5 className="mt-2 mb-3">{gm?.stats.perUserPerCountry}</h5>
+                  <h5 className="mt-2 mb-3">
+                    <Text m={gm} k="stats.perUserPerCountry" />
+                  </h5>
 
                   <Table striped bordered className="mb-0">
                     <thead>
                       <tr>
                         <th className="text-center">
                           <span className="d-none d-sm-inline">
-                            {gm?.stats.country}
+                            <Text m={gm} k="stats.country" />
                           </span>
                         </th>
                         <th className="text-end">#</th>
-                        <th>{gm?.stats.user}</th>
+                        <th>
+                          <Text m={gm} k="stats.user" />
+                        </th>
                         <th className="text-end">
                           <span className="d-none d-sm-inline">
-                            {gm?.stats.numberOfPhotos}
+                            <Text m={gm} k="stats.numberOfPhotos" />
                           </span>
-                          <span className="d-sm-none">{gm?.stats.photos}</span>
+                          <span className="d-sm-none">
+                            <Text m={gm} k="stats.photos" />
+                          </span>
                         </th>
                       </tr>
                     </thead>
@@ -340,10 +365,12 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                     }}
                                   >
                                     <span className={classes.moreBtn}>
-                                      {gm?.stats.more}&hellip;
+                                      <Text m={gm} k="stats.more" />
+                                      &hellip;
                                     </span>
                                     <span className={classes.lessBtn}>
-                                      {gm?.stats.less}&hellip;
+                                      <Text m={gm} k="stats.less" />
+                                      &hellip;
                                     </span>
                                   </Button>
                                 </td>
@@ -359,11 +386,9 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
           }
         })()}
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

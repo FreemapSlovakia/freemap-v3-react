@@ -19,9 +19,17 @@ So `npx rspack build --mode production` does **not** produce a production build 
 
 Plain `.css` / `.module.css` files in `src/` use native CSS nesting (`&`). The rspack pipeline runs them through `css-loader` only — **no PostCSS/autoprefixer** — so nesting ships verbatim unless lowered. Browsers without nesting support (Firefox < 117 incl. **ESR 115**, Chrome < 112, Safari < 16.5) then drop those rules → broken layout (e.g. `&>*{pointer-events:auto}` on toolbars and `[data-bs-theme=dark] &` theming vanish).
 
-CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with a `cssTargets` browserslist array (`'firefox >= 115'`, …) in `rspack.config.ts`, **not** cssnano (`css-minimizer-webpack-plugin`), which does not downlevel nesting. LightningCSS flattens nesting and adds prefixes for those targets. JS is intentionally **not** downleveled — these browsers run the ES output fine; nesting was the only gap.
+CSS minification therefore uses `rspack.LightningCssMinimizerRspackPlugin` with the `browserTargets` browserslist array (`'firefox >= 115'`, …) in `rspack.config.ts`, **not** cssnano (`css-minimizer-webpack-plugin`), which does not downlevel nesting. LightningCSS flattens nesting and adds prefixes for those targets.
 
-**Don't** revert to cssnano or remove `cssTargets`. Lowering only runs in the prod minifier, so dev (style-loader, modern browser) is unaffected — verify real output with `DEPLOYMENT=prod npx rspack build`, then grep `dist/*.css` for stray `&` (should be 0).
+**Don't** revert to cssnano or remove `browserTargets`. Lowering only runs in the prod minifier, so dev (style-loader, modern browser) is unaffected — verify real output with `DEPLOYMENT=prod npx rspack build`, then grep `dist/*.css` for stray `&` (should be 0).
+
+## JS built-ins are polyfilled per use
+
+The `builtin:swc-loader` rule sets `env: { targets: browserTargets, mode: 'usage', coreJs }`, so app code may use recent built-ins (`toSorted`, `findLast`, Set methods, …): SWC injects the core-js module for each one the targets lack, and lowers syntax only as far as they need. Without `env` SWC lowers everything to its default ES5-era target, a much larger bundle.
+
+- Only `src/` is covered — `node_modules` is excluded from the rule, so a dependency using a newer built-in is not polyfilled.
+- Detection is by method name, with one exception: SWC does not detect calls to the ES2025 Set methods (`union`, `difference`, `isSubsetOf`, …). They are polyfilled because any `new Set(` in `src/` injects all of them, and `main` and `sw` both construct Sets. A Set method called only on a Set some dependency created would not be covered.
+- Keep the `coreJs` version in step with the installed `core-js`; an older value omits newer polyfills.
 
 ## A stylesheet reached only from lazy chunks is emitted into every one of them
 
@@ -93,18 +101,18 @@ Symptom of breakage: `classes['typo']` stops being a type error (the ambient `Re
 
 ## maplibre-gl's worker is a build-emitted asset, not a bundled module
 
-Since v6, maplibre-gl no longer inlines its worker. It ships `dist/maplibre-gl-worker.mjs`, resolves it from `import.meta.url` at runtime, and that file `import`s `dist/maplibre-gl-shared.mjs` as a literal `./` sibling. Under a bundler `import.meta.url` points at the bundle, so the auto-detection yields `''` and `new Worker('')` — the map silently fails. rspack even bakes the build machine's `file:///home/…` path into the output. Consumers must call `setWorkerUrl()`; `MaplibreLayer.tsx` does, at module scope.
+Since v6, maplibre-gl no longer inlines its worker. It ships `dist/maplibre-gl-worker.mjs` and resolves it from `import.meta.url` at runtime. Under a bundler `import.meta.url` points at the bundle, so the auto-detection yields `''` and `new Worker('')` — the map silently fails. rspack even bakes the build machine's `file:///home/…` path into the output. Consumers must call `setWorkerUrl()`; `MaplibreLayer.tsx` does, at module scope.
 
 The wiring (`rspack.config.ts` + `maplibreWorkerLoader.js`):
 
 - A rule matching `maplibre-gl-worker.mjs` makes it `type: 'asset/resource'`. It has to come **after** the generic `.mjs` rule, which would otherwise force it back to `javascript/auto` and bundle it as a module.
-- `maplibreWorkerLoader.js` reads the shared sibling, emits it, and rewrites the worker's import to the emitted name. Nothing else can rewrite that specifier — it's inside an asset the bundler treats as opaque bytes. The loader errors out if the specifier ever disappears.
-- Both are emitted as **`.js`**, not `.mjs`: nginx's stock `mime.types` has no `.mjs` entry, and a module worker served as `application/octet-stream` is rejected by the browser (it would also miss `gzip_types`).
-- Both carry a **content hash**. The offline shell (`offlineStaticCache.ts`) only re-fetches assets whose URL changed, so stable names would pin an old worker against a new bundle after a redeploy.
-- `TerserPlugin` **excludes** them. They're already minified, and re-minifying the two halves separately risks breaking the ESM bindings between them.
+- `maplibreWorkerLoader.js` strips the worker's `sourceMappingURL` (maplibre's maps aren't emitted) and errors out if the worker ever imports another module: that specifier sits inside an asset the bundler treats as opaque bytes, so nothing would rewrite it to the emitted name. 6.0–6.12 did split out a `maplibre-gl-shared.mjs` sibling, which the loader had to emit by hand; 6.13 made the worker self-contained again and left the shared files as empty deprecated stubs.
+- It is emitted as **`.js`**, not `.mjs`: nginx's stock `mime.types` has no `.mjs` entry, and a module worker served as `application/octet-stream` is rejected by the browser (it would also miss `gzip_types`).
+- It carries a **content hash**. The offline shell (`offlineStaticCache.ts`) only re-fetches assets whose URL changed, so a stable name would pin an old worker against a new bundle after a redeploy.
+- `TerserPlugin` **excludes** it — already minified.
 - `ignoreWarnings` drops maplibre's "Critical dependency: the request of a dependency is an expression" — that's the `new Worker(url)` call, which is the intended design here.
 
-Cheap check that the pair still links after a maplibre bump: `cd dist && node --input-type=module -e "import('./maplibre-gl-worker.<hash>.js')"`. `ReferenceError: self is not defined` means the modules linked and only evaluation hit a browser global — that's a pass. A `SyntaxError` about a missing export means the two halves are mismatched.
+Cheap check after a maplibre bump: `cd dist && node --input-type=module -e "import('./maplibre-gl-worker.<hash>.js')"`. `ReferenceError: self is not defined` means it parsed and only evaluation hit a browser global — that's a pass.
 
 Also note v6 requires WebGL2, so the vector layers are simply unavailable on devices that lack it.
 

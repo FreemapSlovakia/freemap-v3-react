@@ -8,10 +8,27 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Vir',
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmorska višina',
+  terrain: {
+    prominence: 'Prominenca',
+    keyCol: 'Ključno sedlo',
+    isolation: 'Izolacija',
+    showRoute: 'Prikaži pot do višjega terena',
+    hideRoute: 'Skrij pot',
+    depth: 'Globina sedla',
+    keyColOf: 'Ključno sedlo vrha',
+    showOnMap: 'Prikaži na zemljevidu',
+    route: 'Pot do višjega terena',
+    summitElevation: 'Višina vrha',
+    saddleElevation: 'Višina sedla',
+    fromMarker: ({ distance }) => `${distance} od oznake`,
+  },
+  routeFetchError: ({ err }) =>
+    addError(getMessages()!, 'Napaka pri pridobivanju poti', err),
   showDetails: 'Podrobnosti',
+  moreGeneralTypes: 'Splošnejše vrste',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (zgodovina)',
-  type: 'Tip',
+  history: 'Zgodovina',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Za prikaz objektov po njihovem tipu morate povečati vsaj na raven ${minZoom}.`,
@@ -33,6 +50,7 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     button: 'Slog oznake',
     title: 'Slog oznake objekta',
   },
+  showAllAsLookup: 'Prikaži vse kot Najdbe',
 };
 
 export default sl;

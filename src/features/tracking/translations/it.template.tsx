@@ -1,4 +1,4 @@
-import { DocumentLink } from '@features/documents/components/DocumentLink.js';
+import { ManualLink } from '@features/documents/components/ManualLink.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { FaKey } from 'react-icons/fa';
 import type { TrackingMessages } from './TrackingMessages.js';
@@ -15,31 +15,31 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     </>
   ),
   trackedDevices: {
-    button: 'Visto',
-    modalTitle: 'Dispositivi visti',
-    desc: 'Gestisci i dispositivi viti per vedere la posizione dei tuoi amici.',
+    button: 'Seguiti',
+    modalTitle: 'Dispositivi seguiti',
+    desc: 'Gestisca i dispositivi seguiti per vedere la posizione dei suoi amici.',
     modifyTitle: (name) => (
       <>
-        Modifica nome dispositivo <i>{name}</i>
+        Modifica dispositivo osservato <i>{name}</i>
       </>
     ),
     createTitle: (name) => (
       <>
-        Vedi dispositivo <i>{name}</i>
+        Nuovo dispositivo osservato <i>{name}</i>
       </>
     ),
     storageWarning:
-      "Tieni presente che l'elenco dei dispositivi si riflette solo nell'URL della pagina. Se vuoi salvarlo, usa la funzione 'Le mie mappe'.",
+      "Tenga presente che l'elenco dei dispositivi si riflette solo nell'URL della pagina. Se vuole salvarlo, usi la funzione 'Le mie mappe'.",
   },
   accessToken: {
-    token: 'Watch Token',
+    token: 'Token di osservazione',
     timeFrom: 'Da',
     timeTo: 'A',
-    listingLabel: 'Etichetta inserzione',
+    listingLabel: "Etichetta nell'elenco",
     note: 'Note',
     delete: (token) => (
       <>
-        Vuoi davvero eliminare il token <i>{token}</i>?
+        Vuole davvero eliminare il token <i>{token}</i>?
       </>
     ),
     deleteTitle: 'Eliminazione del token',
@@ -47,48 +47,48 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
   accessTokens: {
     modalTitle: (deviceName) => (
       <>
-        Watch Tokens per <i>{deviceName}</i>
+        Token di osservazione per <i>{deviceName}</i>
       </>
     ),
     desc: (deviceName) => (
       <>
-        Definisci gli watch token per condividere la posizione del tuo
-        dispositivo <i>{deviceName}</i> con i tuoi amici.
+        Definisca i token di osservazione per condividere la posizione del suo
+        dispositivo <i>{deviceName}</i> con i suoi amici.
       </>
     ),
     createTitle: (deviceName) => (
       <>
-        Aggiungi Watch Token per <i>{deviceName}</i>
+        Nuovo token di osservazione per <i>{deviceName}</i>
       </>
     ),
     modifyTitle: ({ token, deviceName }) => (
       <>
-        Modifica Watch Token <i>{token}</i> per <i>{deviceName}</i>
+        Modifica token di osservazione <i>{token}</i> per <i>{deviceName}</i>
       </>
     ),
   },
   trackedDevice: {
-    token: 'Watch Token',
+    token: 'Token di osservazione',
     label: 'Etichetta',
     fromTime: 'Da',
-    maxAge: 'Durata Massima',
-    maxCount: 'Conteggio massimo',
-    splitDistance: 'Dividi distanza',
-    splitDuration: 'Divita durata',
+    maxAge: 'Età massima',
+    maxCount: 'Numero massimo',
+    splitDistance: 'Distanza di divisione',
+    splitDuration: 'Pausa di divisione',
     color: 'Colore',
     width: 'Larghezza',
   },
   devices: {
     traccarQrCode: 'Codice QR Traccar',
-    button: 'Miei dispositivi',
-    modalTitle: 'Miei dispositivi tracciati',
-    createTitle: 'Crea dispositivo di tracciamento',
-    watchTokens: 'Watch token',
+    button: 'I miei dispositivi',
+    modalTitle: 'I miei dispositivi tracciati',
+    createTitle: 'Nuovo dispositivo di tracciamento',
+    watchTokens: 'Token di osservazione',
     watchPrivately: 'Guarda privatamente',
     watch: 'Guarda',
     delete: (name) => (
       <>
-        Vuoi davvero eliminare il dispositivo <i>{name}</i>?
+        Vuole davvero eliminare il dispositivo <i>{name}</i>?
       </>
     ),
     deleteTitle: 'Eliminazione dispositivo',
@@ -100,21 +100,21 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
     desc: () => (
       <>
         <p>
-          Gestisci i tuoi dispositivi in modo che gli altri possano vedere la
-          tua posizione se loro il token (puoi crearlo tramite <FaKey /> ).
+          Gestisca i suoi dispositivi in modo che gli altri possano vedere la
+          sua posizione se loro il token (può crearlo tramite <FaKey /> ).
         </p>
         <hr />
-        <DocumentLink doc="tracking">
+        <ManualLink chapter="tracking">
           Come configurare il dispositivo tracciato
-        </DocumentLink>
+        </ManualLink>
       </>
     ),
   },
   device: {
     token: 'Token di traccia',
     name: 'Nome',
-    maxAge: 'Durata massima',
-    maxCount: 'Conteggio massimo',
+    maxAge: 'Età massima',
+    maxCount: 'Numero massimo',
     generatedToken: 'sarà rigenerato al salvataggio',
   },
   visual: {

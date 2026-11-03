@@ -1,3 +1,4 @@
+import type { OsmObjectLinks } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ResponsiveActions } from '@shared/components/ResponsiveActions.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
@@ -11,6 +12,10 @@ type Props = LatLon & {
   /** Views this place is already the subject of; see `ViewFromHereItems`. */
   omit?: readonly ViewFromHere[];
   onAct?: () => void;
+  /** See `OpenInExternalTargetItems`. */
+  osmObject?: OsmObjectLinks;
+  /** See `usePlaceActions`. */
+  selection?: boolean;
   size?: ButtonProps['size'];
   variant?: string;
   className?: string;
@@ -19,6 +24,8 @@ type Props = LatLon & {
    * the place comes before what any menu can.
    */
   children?: ReactNode;
+  /** `Action`s ending the menu, after the place's own (such as Manual). */
+  after?: ReactNode;
 };
 
 /**
@@ -30,6 +37,7 @@ export function PlaceActionsButton({
   variant,
   className,
   children,
+  after,
   lat,
   lon,
   ...props
@@ -40,12 +48,12 @@ export function PlaceActionsButton({
 
   const own = Children.count(children) > 0;
 
-  return actions.length === 0 && !own ? null : (
+  return actions.length === 0 && !own && !after ? null : (
     <ResponsiveActions
       size={size}
       variant={variant}
       className={className}
-      toggleLabel={m?.general.placeActions}
+      toggleLabel={m?.general.locationActions}
       onSelect={onSelect}
     >
       {children}
@@ -53,6 +61,10 @@ export function PlaceActionsButton({
       {own && actions.length > 0 && <ActionDivider />}
 
       {actions}
+
+      {after && <ActionDivider />}
+
+      {after}
     </ResponsiveActions>
   );
 }

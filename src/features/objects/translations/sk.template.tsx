@@ -8,10 +8,27 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Zdroj',
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmorská výška',
+  terrain: {
+    prominence: 'Prominencia',
+    keyCol: 'Kľúčové sedlo',
+    isolation: 'Izolácia',
+    showRoute: 'Zobraziť cestu k vyššiemu terénu',
+    hideRoute: 'Skryť cestu',
+    depth: 'Hĺbka sedla',
+    keyColOf: 'Kľúčové sedlo vrcholu',
+    showOnMap: 'Zobraziť na mape',
+    route: 'Cesta k vyššiemu terénu',
+    summitElevation: 'Výška vrcholu',
+    saddleElevation: 'Výška sedla',
+    fromMarker: ({ distance }) => `${distance} od značky`,
+  },
+  routeFetchError: ({ err }) =>
+    addError(getMessages()!, 'Nastala chyba pri získavaní cesty', err),
   showDetails: 'Podrobnosti',
+  moreGeneralTypes: 'Všeobecnejšie typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (história)',
-  type: 'Typ',
+  history: 'História',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Vyhľadávanie miest je možné až od priblíženia úrovne ${minZoom}.`,
@@ -33,6 +50,7 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     button: 'Štýl značky',
     title: 'Štýl značky objektu',
   },
+  showAllAsLookup: 'Zobraziť všetko ako Nález',
 };
 
 export default sk;

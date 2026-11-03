@@ -27,10 +27,15 @@ jobs:
       # A prebuilt release rather than apt: `apt-get` blocks on the dpkg lock
       # the runner's own unattended-upgrades still holds, with no timeout and
       # no output, and `build:proto` is the only thing that needs protoc.
-      - uses: arduino/setup-protoc@v3
+      - name: Install protoc
         timeout-minutes: 4
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          PROTOC_VERSION: '36.2'
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/protoc.zip" \
+            "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/protoc-$PROTOC_VERSION-linux-x86_64.zip"
+          unzip -q "$RUNNER_TEMP/protoc.zip" -d "$RUNNER_TEMP/protoc"
+          echo "$RUNNER_TEMP/protoc/bin" >> "$GITHUB_PATH"
 
       - uses: pnpm/action-setup@v6
         with:

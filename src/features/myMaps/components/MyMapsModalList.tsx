@@ -1,7 +1,14 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useEventsMessages } from '@features/events/translations/useEventsMessages.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmDismissButton,
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import {
   useConfirm,
   useConfirmChoice,
@@ -20,7 +27,6 @@ import { makeLabelComparator } from '@shared/stringUtils.js';
 import { type ReactElement, useMemo, useState } from 'react';
 import {
   Badge,
-  Button,
   Dropdown,
   Form,
   InputGroup,
@@ -86,7 +92,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   const sortedMaps = useMemo(() => {
     const byName = makeLabelComparator(language);
 
-    return [...maps].sort((a, b) =>
+    return maps.toSorted((a, b) =>
       byName(a.name || undefined, b.name || undefined),
     );
   }, [maps, language]);
@@ -247,14 +253,19 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             </Dropdown.Toggle>
 
             <FmDropdownMenu>
-              <Dropdown.Header>{mm?.offline}</Dropdown.Header>
+              <Dropdown.Header>
+                <Text m={mm} k="offline" />
+              </Dropdown.Header>
 
               <OnlineOnlyItem
                 as="button"
                 disabled={maps.length === 0}
                 onClick={() => dispatch(mapsSetAllOffline(true))}
               >
-                <BiWifiOff /> {mm?.makeAllOffline}
+                <BiWifiOff />
+                <MenuLabel>
+                  <Text m={mm} k="makeAllOffline" />
+                </MenuLabel>
               </OnlineOnlyItem>
 
               <Dropdown.Item
@@ -262,7 +273,10 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 disabled={offlineIds.length === 0}
                 onClick={() => dispatch(mapsSetAllOffline(false))}
               >
-                <FaTimes /> {mm?.removeAllOffline}
+                <FaTimes />
+                <MenuLabel>
+                  <Text m={mm} k="removeAllOffline" />
+                </MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Item
@@ -272,14 +286,19 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 disabled={!outbox.some((entry) => !entry.blocked)}
                 onClick={() => dispatch(mapsSyncOutbox({ manual: true }))}
               >
-                <FaCloudUploadAlt /> {mm?.syncNow}
+                <FaCloudUploadAlt />
+                <MenuLabel>
+                  <Text m={mm} k="syncNow" />
+                </MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>
         </div>
 
         {filteredMaps.length === 0 && orphans.length === 0 ? (
-          <p className="text-muted mb-0">{mm?.noMapFound}</p>
+          <p className="text-muted mb-0">
+            <Text m={mm} k="noMapFound" />
+          </p>
         ) : (
           <ListGroup>
             {filteredMaps.map((map) => {
@@ -304,7 +323,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                       {map.name}
                       {isOffline && (
                         <Badge bg="secondary" className="ms-1">
-                          <BiWifiOff /> {mm?.offline}
+                          <BiWifiOff /> <Text m={mm} k="offline" />
                         </Badge>
                       )}
                       <MapSyncStatus mapId={map.id} className="ms-1" />
@@ -312,12 +331,12 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
                     <small className="text-muted">
                       <span className="text-nowrap">
-                        {m?.general.createdAt}:{' '}
+                        <Text k="general.createdAt" />:{' '}
                         <strong>{dateFormat.format(map.createdAt)}</strong>
                       </span>
                       {' · '}
                       <span className="text-nowrap">
-                        {m?.general.modifiedAt}:{' '}
+                        <Text k="general.modifiedAt" />:{' '}
                         <strong>{dateFormat.format(map.modifiedAt)}</strong>
                       </span>
                     </small>
@@ -346,7 +365,10 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                             as="button"
                             onClick={() => handleLoad(map.id, false)}
                           >
-                            <FaShapes /> {mm?.loadExclMapAndPosition}
+                            <FaShapes />
+                            <MenuLabel>
+                              <Text m={mm} k="loadExclMapAndPosition" />
+                            </MenuLabel>
                           </Dropdown.Item>
                         }
                         showFrom="sm"
@@ -472,19 +494,20 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
         )}
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button onClick={onAdd} disabled={!online}>
-          <FaPlus /> {mm?.addNew}
-        </Button>
+      <FmModalFooter>
+        <FmFooterButton
+          onClick={onAdd}
+          disabled={!online}
+          icon={<FaPlus />}
+          label={mm?.addNew}
+        />
 
         {/* Beside the button, not in it: a disabled one takes no pointer
             events, so a badge inside could never be asked what it means. */}
         <OfflineBadge />
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </>
   );
 }

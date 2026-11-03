@@ -1,8 +1,9 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { type ActiveModal, encodeActiveModal } from '@app/store/activeModal.js';
-import type { MouseEvent, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Anchor } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
+import { inAppLink } from '../inAppLink.js';
 
 /**
  * Builds the `href`/`onClick` pair that opens a modal in-page. A factory
@@ -17,14 +18,9 @@ export function useModalLink() {
     // them as `href="#"` with role=button.
     const show = encodeActiveModal(modal);
 
-    return {
-      href: show === null ? undefined : `#show=${show}`,
-      onClick: (e: MouseEvent) => {
-        e.preventDefault();
-
-        dispatch(setActiveModal(modal));
-      },
-    };
+    return inAppLink(show === null ? undefined : `#show=${show}`, () =>
+      dispatch(setActiveModal(modal)),
+    );
   };
 }
 

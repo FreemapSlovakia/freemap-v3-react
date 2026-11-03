@@ -6,19 +6,22 @@ import {
   authWithPopupOAuth,
 } from '@features/auth/model/actions.js';
 import {
+  changesetsInspect,
+  changesetsReturnToHistory,
+} from '@features/changesets/model/actions.js';
+import {
   dataViewerDelete,
   dataViewerDeleteFeature,
+  dataViewerDetachHole,
+  dataViewerEditFeatures,
+  dataViewerMakeHole,
   dataViewerSetData,
 } from '@features/dataViewer/model/actions.js';
 import { documentShow } from '@features/documents/model/actions.js';
 import {
-  drawingLineAddPoint,
-  drawingLineContinue,
-  drawingLineJoinFinish,
-  drawingLineSetLines,
-} from '@features/drawing/model/actions/drawingLineActions.js';
-import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
-import { objectsSetResult } from '@features/objects/model/actions.js';
+  objectsSetResult,
+  setDetailsShown,
+} from '@features/objects/model/actions.js';
 import {
   routePlannerAddPoint,
   routePlannerDelete,
@@ -28,19 +31,20 @@ import {
   searchSelectResult,
   searchUnselectResult,
 } from '@features/search/model/actions.js';
+import { trackingActions } from '@features/tracking/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
-import { isMapClickTool } from '@shared/toolDefinitions.js';
+import { isDrawTool, isMapClickTool } from '@shared/toolDefinitions.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import {
   clearMapFeatures,
   closeTool,
   convertToDrawing,
-  deleteFeature,
   hideInfoBar,
   infoBarShown,
   openTool,
   type Selection,
   selectFeature,
+  selectionRenumbered,
   setActiveModal,
   setEmbedFeatures,
   setErrorTicketId,
@@ -63,6 +67,10 @@ export interface MainState {
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
+  /** Whether the selected feature's details toast is wanted; set anew by every selecting. */
+  detailsShown: boolean;
+  /** The selection came without its details, so its toolbar offers them. */
+  detailsOnRequest: boolean;
   hiddenInfoBars: Record<string, number>;
   shownInfoBars: Record<string, number>;
 }
@@ -74,9 +82,17 @@ export const mainInitialState: MainState = {
   errorTicketId: undefined,
   embedFeatures: [],
   selection: null,
+  detailsShown: true,
+  detailsOnRequest: false,
   hiddenInfoBars: {},
   shownInfoBars: {},
 };
+
+function clearTrackingSelection(state: MainState, token: string) {
+  if (state.selection?.type === 'tracking' && state.selection.id === token) {
+    state.selection = null;
+  }
+}
 
 /**
  * Whether the selected feature belongs to `tool` — such a tool keeps the
@@ -85,12 +101,9 @@ export const mainInitialState: MainState = {
  */
 function ownsSelection(tool: Tool, selection: Selection | null): boolean {
   switch (selection?.type) {
-    case 'draw-points':
-      return tool === 'draw-points';
-
-    case 'draw-line-poly':
-    case 'line-point':
-      return tool === 'draw-lines' || tool === 'draw-polygons';
+    case 'feature':
+    case 'vertex':
+      return isDrawTool(tool);
 
     case 'objects':
       return tool === 'objects';
@@ -119,11 +132,9 @@ const convertSourceTools: Record<
   objects: 'objects',
   'objects-geometry': 'objects',
   'planned-route': 'route-planner',
-  track: 'import-file',
   changesets: 'changesets',
   'search-result': undefined,
-  // The live feed goes on after the copy, so tracking keeps its toolbar.
-  tracking: undefined,
+  geojson: undefined,
 };
 
 export const mainReducer = createReducer(mainInitialState, (builder) => {
@@ -143,6 +154,11 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         return;
       }
 
+      // Drawing is a mode of the map features' toolbar, which comes up with it.
+      if (isDrawTool(tool) && !state.panelTools.includes('import-file')) {
+        state.panelTools.push('import-file');
+      }
+
       // Taking the map-click slot from another tool leaves the selected feature
       // behind; reopening the one the feature belongs to keeps it, so reaching
       // for a feature's tool from its selection toolbar doesn't throw the
@@ -157,7 +173,11 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(closeTool, (state, action) => {
       const tool = action.payload;
 
-      if (state.mapTool === tool) {
+      // Its toolbar holds the draw modes, so they go with it.
+      if (
+        state.mapTool === tool ||
+        (tool === 'import-file' && isDrawTool(state.mapTool))
+      ) {
         state.mapTool = null;
       }
 
@@ -167,6 +187,20 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
+    })
+    // An element belongs to the changeset inspected; another one has others.
+    .addCase(changesetsInspect, (state) => {
+      if (state.selection?.type === 'changeset-element') {
+        state.selection = null;
+      }
+    })
+    // Back from a history's changeset to its element, selected and detailed.
+    .addCase(changesetsReturnToHistory, (state, { payload }) => {
+      state.selection = payload.selection;
+
+      state.detailsShown = true;
+
+      state.detailsOnRequest = false;
     })
     .addCase(setActiveModal, (state, action) => {
       state.activeModal = action.payload;
@@ -182,22 +216,28 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(setEmbedFeatures, (state, action) => {
       state.embedFeatures = action.payload;
     })
-    .addCase(drawingLineContinue, (state, action) => {
-      state.selection = {
-        type: 'draw-line-poly',
-        id: action.payload.lineIndex,
-      };
-    })
     // Only a result selects: clearing one leaves the selection to whoever
     // cleared it, so a `search` selection can't outlive the result behind it.
     .addCase(searchSelectResult, (state, action) => {
       const { payload } = action;
 
       if (payload && (payload.select ?? true)) {
+        const same =
+          state.selection?.type === 'search' &&
+          featureIdsEqual(state.selection.id, payload.result.id);
+
         state.selection = {
           type: 'search',
           id: payload.result.id,
         };
+
+        // Re-picking the selected feature opens its details, never closes them,
+        // and keeps its toggle.
+        const shows = payload.details ?? true;
+
+        state.detailsOnRequest = (same && state.detailsOnRequest) || !shows;
+
+        state.detailsShown = (same && state.detailsShown) || shows;
       }
     })
     // The other shown results stay, but nothing is acted upon until one of them
@@ -220,6 +260,51 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       }
 
       state.selection = action.payload;
+
+      // Re-selecting the selected feature is how its details come back after ×.
+      state.detailsShown = true;
+
+      state.detailsOnRequest = false;
+    })
+    .addCase(selectionRenumbered, (state, action) => {
+      state.selection = action.payload;
+    })
+    // The inner polygon becomes its parent's hole and leaves the list.
+    .addCase(dataViewerMakeHole, (state, { payload: { index, parent } }) => {
+      const { selection } = state;
+
+      if (selection?.type !== 'feature' && selection?.type !== 'vertex') {
+        return;
+      }
+
+      const shifted = (id: number) => (id > index ? id - 1 : id);
+
+      state.selection =
+        selection.id === index
+          ? { type: 'feature', id: shifted(parent) }
+          : { ...selection, id: shifted(selection.id) };
+    })
+    // The ring becomes a polygon of its own, right after its parent.
+    .addCase(dataViewerDetachHole, (state, { payload: { index, part } }) => {
+      const { selection } = state;
+
+      if (selection?.type !== 'feature' && selection?.type !== 'vertex') {
+        return;
+      }
+
+      if (selection.id > index) {
+        state.selection = { ...selection, id: selection.id + 1 };
+      } else if (selection.id === index && selection.part !== undefined) {
+        state.selection =
+          selection.part === part
+            ? { type: 'feature', id: index + 1 }
+            : selection.part > part
+              ? { ...selection, part: selection.part - 1 }
+              : selection;
+      }
+    })
+    .addCase(setDetailsShown, (state, action) => {
+      state.detailsShown = action.payload;
     })
     .addCase(convertToDrawing, (state, action) => {
       const { payload } = action;
@@ -243,8 +328,8 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     // An object that is no longer among the found ones can't be the selected
     // feature: nothing would render its toolbar, so the selection would sit
     // there with no way to reach it and no way to let it go. Reached by the
-    // filter being cleared, by the objects being handed to another feature, and
-    // by panning until the object drops out of what the search answers.
+    // filter being cleared and by the objects being handed to another feature;
+    // panning keeps the selected one (`keepSelected`).
     .addCase(objectsSetResult, (state, action) => {
       const { selection } = state;
 
@@ -257,26 +342,21 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
         state.selection = null;
       }
     })
-    .addCase(drawingLineJoinFinish, (state, { payload }) => {
-      state.selection = payload.selection;
+    .addCase(trackingActions.setTrackedDevices, (state, action) => {
+      const { selection } = state;
+
+      if (
+        selection?.type === 'tracking' &&
+        !action.payload.some((device) => device.token === selection.id)
+      ) {
+        state.selection = null;
+      }
     })
-    .addCase(drawingLineAddPoint, (state, { payload }) => {
-      state.selection = {
-        type: 'draw-line-poly',
-        id: payload.indexOfLineToSelect,
-      };
+    .addCase(trackingActions.delete, (state, { payload }) => {
+      clearTrackingSelection(state, payload.token);
     })
-    .addCase(drawingPointAdd, (state, { payload }) => {
-      state.selection = {
-        type: 'draw-points',
-        id: payload.id,
-      };
-    })
-    .addCase(drawingLineSetLines, (state) => {
-      state.selection =
-        state.selection?.type === 'line-point'
-          ? { type: 'draw-line-poly', id: state.selection.lineIndex }
-          : null;
+    .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) => {
+      clearTrackingSelection(state, payload);
     })
     .addCase(hideInfoBar, (state, action) => {
       state.hiddenInfoBars[action.payload.key] = action.payload.ts;
@@ -309,33 +389,39 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
             selection: { type: 'route-point', id: action.payload.position },
           };
     })
-    // Loading renumbers the imported features and deleting takes them away, so
-    // a selection that survived either would name another feature or none. What
+    // Loading renumbers the features and deleting takes them away, so a
+    // selection that survived either would name another feature or none. What
     // a fresh load selects instead is `dataViewerSetTrackDataProcessor`.
     .addMatcher(
-      isAnyOf(dataViewerSetData, dataViewerDelete, dataViewerDeleteFeature),
+      isAnyOf(
+        dataViewerSetData,
+        dataViewerEditFeatures,
+        dataViewerDelete,
+        dataViewerDeleteFeature,
+      ),
       (state) => {
-        if (state.selection?.type === 'data-viewer') {
+        if (
+          state.selection?.type === 'feature' ||
+          state.selection?.type === 'vertex'
+        ) {
           state.selection = null;
         }
       },
     )
-    .addMatcher(isAnyOf(drawingLineSetLines, deleteFeature), (state) => {
-      state.selection =
-        state.selection?.type === 'line-point'
-          ? { type: 'draw-line-poly', id: state.selection.lineIndex }
-          : null;
+    .addMatcher(authWithPopupOAuth.match, (state, action) => {
+      // A modal that started the authorization for its own follow-up stays
+      // open, showing it as its busy state (`OAUTH_PROGRESS_ID`).
+      if (
+        !action.payload.successAction ||
+        state.activeModal?.type === 'login'
+      ) {
+        state.activeModal = null;
+      }
     })
     .addMatcher(
-      isAnyOf(
-        authWithFacebook,
-        authWithGoogle,
-        authWithPopupOAuth,
-        authWithGarmin,
-        authWithApple,
-      ),
+      isAnyOf(authWithFacebook, authWithGoogle, authWithGarmin, authWithApple),
       (state) => {
-        state.activeModal = null; // state.activeModal === 'login' ? null : state.activeModal
+        state.activeModal = null;
       },
     );
 });

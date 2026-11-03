@@ -1,10 +1,22 @@
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  drawnTypesSelector,
+  integratedLayerDefsSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { Checkbox } from '@shared/components/Checkbox.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, type ReactNode, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaDatabase } from 'react-icons/fa';
@@ -18,9 +30,11 @@ import { useMapDetailsMessages } from '../translations/useMapDetailsMessages.js'
 export function MapDetailsMenu(): ReactElement | null {
   const [sourcesOpen, setSourcesOpen] = useState(false);
 
-  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+  const customLayerDefs = useAppSelector(resolvedCustomLayersSelector);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+
+  const layers = useAppSelector(drawnTypesSelector);
 
   const excludeSources = new Set(
     useAppSelector((state) => state.mapDetails.excludeSources),
@@ -36,6 +50,8 @@ export function MapDetailsMenu(): ReactElement | null {
   const mdm = useMapDetailsMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const sources: {
     key: MapDetailsSource;
@@ -55,7 +71,7 @@ export function MapDetailsMenu(): ReactElement | null {
     })),
     ...activeWmsLayerDefs.map((def) => ({
       key: `wms:${def.type}` as MapDetailsSource,
-      name: `${def.custom ? def.name : m?.mapLayers.letters[def.type]} (WMS)`,
+      name: `${layerLabel(def, m)} (WMS)`,
       selected: !excludeSources.has(`wms:${def.type}`),
     })),
   ];
@@ -84,7 +100,7 @@ export function MapDetailsMenu(): ReactElement | null {
         <LongPressTooltip
           label={
             <>
-              {mdm?.sources}:{' '}
+              <Text m={mdm} k="sources" />:{' '}
               {selectedNames.length
                 ? selectedNames.flatMap((n, i) => (i ? [', ', n] : [n]))
                 : '—'}
@@ -94,7 +110,10 @@ export function MapDetailsMenu(): ReactElement | null {
           {({ props }) => (
             <Dropdown.Toggle variant="secondary" {...props}>
               <FaDatabase />
-              <span className="d-none d-sm-inline"> {mdm?.sources}:</span>{' '}
+              <span className="d-none d-sm-inline">
+                {' '}
+                <Text m={mdm} k="sources" />:
+              </span>{' '}
               {selectedNames.length}
             </Dropdown.Toggle>
           )}
@@ -108,11 +127,16 @@ export function MapDetailsMenu(): ReactElement | null {
               eventKey={source.key}
               active={source.selected}
             >
-              <Checkbox value={source.selected} /> {source.name}
+              <Checkbox value={source.selected} />
+              <MenuLabel>{source.name}</MenuLabel>
             </Dropdown.Item>
           ))}
         </FmDropdownMenu>
       </Dropdown>
+
+      <ResponsiveActions toggleLabel={m?.general.actions}>
+        <Action {...manualAction('map-details')} />
+      </ResponsiveActions>
     </ToolMenu>
   );
 }

@@ -1,17 +1,18 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Alert, Button, Modal } from 'react-bootstrap';
-import {
-  FaExclamationTriangle,
-  FaGem,
-  FaSignInAlt,
-  FaTimes,
-} from 'react-icons/fa';
+import { Alert, Modal } from 'react-bootstrap';
+import { FaExclamationTriangle, FaGem, FaSignInAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAuthMessages } from '../translations/useAuthMessages.js';
 import { AuthProviders } from './AuthProviders.js';
@@ -44,7 +45,7 @@ export default function LoginModal({ show }: Props): ReactElement {
   const renderPremiumInfo = () =>
     purchaseOnLogin?.type === 'premium' ? (
       <Alert variant="primary">
-        <FaGem /> {prm?.purchaseAfterLogin}
+        <FaGem /> <Text m={prm} k="purchaseAfterLogin" />
       </Alert>
     ) : null;
 
@@ -52,8 +53,9 @@ export default function LoginModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaSignInAlt /> {m?.mainMenu.logIn}
+          <FaSignInAlt /> <Text k="mainMenu.logIn" />
         </Modal.Title>
+        <ManualHeaderButton chapter="account" />
       </Modal.Header>
 
       <Modal.Body>
@@ -61,22 +63,23 @@ export default function LoginModal({ show }: Props): ReactElement {
 
         {cookieConsentResult === null && (
           <Alert variant="warning">
-            <FaExclamationTriangle /> {m?.general.noCookies()}
+            <FaExclamationTriangle />{' '}
+            <Text>{(m) => m.general.noCookies()}</Text>
           </Alert>
         )}
 
         {renderPremiumInfo()}
 
-        <p>{am?.logInWith}:</p>
+        <p>
+          <Text m={am} k="logInWith" />:
+        </p>
 
         <AuthProviders mode="login" />
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.close} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

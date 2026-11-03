@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { LabelVisibility } from '@shared/labelVisibility.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
@@ -29,6 +30,10 @@ export const objectsSetStyle = createAction<{
   color: string;
 }>('OBJECTS_SET_STYLE');
 
+export const objectsSetLabelVisibility = createAction<LabelVisibility>(
+  'OBJECTS_SET_LABEL_VISIBILITY',
+);
+
 /**
  * Shows an object as a lookup result — or, with no `id`, every visible one at
  * once, which hands them over for good: they are taken off as objects, the way
@@ -38,11 +43,32 @@ export const objectsShowAsLookup = createAction<{ id?: OsmFeatureId }>(
   'OBJECTS_SHOW_AS_LOOKUP',
 );
 
-/**
- * Whether the details toast accompanies the selected feature. The toast is a
- * view of this preference and the current selection, so this is what both the
- * selection toolbars' details toggle and the toast's own × switch.
- */
-export const objectsSetShowDetails = createAction<boolean>(
-  'OBJECTS_SET_SHOW_DETAILS',
+/** Draws a peak's prominence route, fetched for the purpose. */
+export const objectsRouteRequest = createAction<{ osmId: number }>(
+  'OBJECTS_ROUTE_REQUEST',
 );
+
+export const objectsRouteSet = createAction<{
+  osmId: number;
+  coordinates: [number, number][];
+}>('OBJECTS_ROUTE_SET');
+
+export const objectsRouteClear = createAction('OBJECTS_ROUTE_CLEAR');
+
+/**
+ * What the details toast can mark: a peak's key col, or the summit or saddle
+ * point the terrain shows near the node.
+ */
+export type TerrainMarkKind = 'keyCol' | 'point';
+
+/** A mark, by the OSM node id of the peak or saddle it belongs to. */
+export type TerrainMark = LatLon & { osmId: number; poi: 'peak' | 'saddle' };
+
+/** Puts a mark on the map; `null` takes it off. */
+export const objectsTerrainMark = createAction<{
+  kind: TerrainMarkKind;
+  mark: TerrainMark | null;
+}>('OBJECTS_TERRAIN_MARK');
+
+/** Shows or hides the selected feature's details toast, until the next selecting. */
+export const setDetailsShown = createAction<boolean>('SET_DETAILS_SHOWN');

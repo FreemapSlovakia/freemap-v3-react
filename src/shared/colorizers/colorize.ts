@@ -1,10 +1,107 @@
 import {
+  lineSegments,
   lowerBound,
+  segmentDistances,
   smoothSeries,
   trackTimeSegments,
 } from '@shared/geoutils.js';
-import type { Feature, LineString } from 'geojson';
+import type { Feature, LineString, MultiLineString } from 'geojson';
+import type { ReactNode } from 'react';
+import type { Messages } from '@/translations/messagesInterface.js';
 import type { ColorizerMessages } from './translations/ColorizerMessages.js';
+
+type ScaleTick = { t: number; label: ReactNode; inside?: boolean };
+
+/** How a mode's palette positions read as values, for the legend and readouts. */
+export type ColorizeScale = {
+  /** Shown once next to the legend label (e.g. `%`), not repeated on each tick. */
+  unit?: string;
+  ticks: ScaleTick[];
+  /** The value at a palette position, 0 to 1, as text. */
+  valueAt?: (t: number) => string;
+  /** Has more ticks than the legend's default width holds. */
+  wide?: boolean;
+};
+
+/** What a fixed scale labels itself with. */
+export type ScaleContext = {
+  cm: ColorizerMessages;
+  cardinals: Messages['cardinals'];
+  language: string;
+  steepnessScale: number;
+};
+
+/** A number with a fixed count of decimals, and its unit if given. */
+export function formatScaleNumber(
+  value: number,
+  digits: number,
+  language: string,
+  unit?: string,
+  options?: Intl.NumberFormatOptions,
+): string {
+  return `${value.toLocaleString(language, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+    ...options,
+  })}${unit ? ` ${unit}` : ''}`;
+}
+
+/**
+ * A straight scale from `min` to `max`, ticked at the given palette positions;
+ * numbered with `digits`, or labelled by `format`.
+ */
+export function linearScale(
+  { min, max }: { min: number; max: number },
+  language: string,
+  ticks: number[],
+  {
+    digits = 0,
+    unit,
+    format,
+    wide,
+  }: {
+    digits?: number;
+    unit?: string;
+    format?: (value: number) => string;
+    wide?: boolean;
+  } = {},
+): ColorizeScale {
+  const at = (t: number) => min + t * (max - min);
+
+  const label = (t: number) =>
+    format ? format(at(t)) : formatScaleNumber(at(t), digits, language);
+
+  return {
+    unit,
+    wide,
+    valueAt: (t) =>
+      format ? label(t) : formatScaleNumber(at(t), digits, language, unit),
+    ticks: ticks.map((t) => ({ t, label: label(t) })),
+  };
+}
+
+/** Min/max of finite numbers, or null if fewer than two distinct values. */
+export function span(
+  values: Iterable<number>,
+): { min: number; max: number } | null {
+  let min = Infinity;
+
+  let max = -Infinity;
+
+  for (const v of values) {
+    if (Number.isFinite(v)) {
+      if (v < min) {
+        min = v;
+      }
+
+      if (v > max) {
+        max = v;
+      }
+    }
+  }
+
+  return max > min ? { min, max } : null;
+}
 
 export type HotlinePalette = Array<{
   r: number;
@@ -103,18 +200,56 @@ export type PathDetailSpan = { start: number; end: number; value: string };
 
 export type PathDetails = Record<string, PathDetailSpan[]>;
 
-/** Where {@link PathDetailSpan}s ride on the feature being colorized. */
+/**
+ * Where {@link PathDetailSpan}s ride on the feature being colorized: one
+ * {@link PathDetails} per part of the line, so a multi-segment track keeps its
+ * spans to itself without being cut into features to carry them.
+ */
 export const PATH_DETAILS_PROP = 'fm:pathDetails';
 
+/** The spans a single line is painted with. */
 export function readPathDetails(
   feature: Feature<LineString>,
   key: string,
 ): PathDetailSpan[] | undefined {
+  return readPathDetailsParts(feature)?.[0]?.[key];
+}
+
+/**
+ * Every part's spans. Saved tracks may hold one object measured along the
+ * whole line, which is cut into parts here.
+ */
+export function readPathDetailsParts(
+  feature: Feature,
+): PathDetails[] | undefined {
   const details = feature.properties?.[PATH_DETAILS_PROP] as
+    | PathDetails[]
     | PathDetails
     | undefined;
 
-  return details?.[key];
+  if (!details || Array.isArray(details)) {
+    return details;
+  }
+
+  const { geometry } = feature;
+
+  return geometry?.type === 'MultiLineString'
+    ? perPartPathDetails(details, geometry)
+    : [details];
+}
+
+/**
+ * `details` as one entry per part of `geometry`, each clipped to its own part
+ * and measured from its start. The axis skips the gap between two parts, as
+ * the distance a colorizer walks over the parts does.
+ */
+function perPartPathDetails(
+  details: PathDetails,
+  geometry: LineString | MultiLineString,
+): PathDetails[] {
+  return segmentDistances(lineSegments(geometry)).map((distances) =>
+    clipPathDetails(details, distances[0] ?? 0, distances.at(-1) ?? 0),
+  );
 }
 
 /** The spans covering `[from, to]`, measured from `from`. */
@@ -308,13 +443,22 @@ export interface Colorizer {
   // Derived from the elevation coordinate, so it benefits from the same
   // fill/override prompt the elevation chart uses.
   needsElevation?: boolean;
-  // Describes the legend for a per-feature-normalized scalar mode: its unit and
-  // the smoothed per-point series the colorizer maps to color, so the legend can
-  // label real min/max from the same numbers (not raw). Co-located with the
-  // colorizer that owns the unit and source field. Absent for fixed-scale
-  // (steepness, battery, GSM), categorical (heading), and time modes.
+  // The legend of a per-feature-normalized scalar mode: its unit, and the
+  // smoothed series it colors by, so the labels match the line, not raw samples.
   legend?: {
-    unit: string;
+    unit?: string;
+    // Its values are smoothed by zoom, so a zoom change rescans them.
+    smoothed?: true;
+    // Its labels are wide, so the bar is too.
+    wide?: true;
+    // Decimals to label it with; 0 when omitted.
+    digits?: number;
+    // Labels values other than as numbers, e.g. timestamps as times of day; made
+    // for the line's range, as a time needs its date only on a long one.
+    format?: (
+      language: string,
+      range: { min: number; max: number },
+    ) => (value: number) => string;
     values: (
       feature: Feature<LineString>,
       options?: ColorizeOptions,
@@ -327,6 +471,10 @@ export interface Colorizer {
     features: Feature<LineString>[],
     messages: ColorizerMessages,
   ) => CategoryShare[];
+  // The name of the category painted at a palette position, for a readout.
+  categoryAt?: (color: number, messages: ColorizerMessages) => string;
+  // The legend of a scale that means the same on every line.
+  scale?: (context: ScaleContext) => ColorizeScale;
   // Set by a mode that paints stretches the router reported rather than a value
   // per point. Such a line changes color across two coincident points, so
   // Leaflet's vertex simplification has to be off for it (`smoothFactor`); it

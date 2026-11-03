@@ -1,60 +1,184 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import type { ReactElement } from 'react';
+import { Text } from '@features/l10n/Text.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
-  Button,
-  ButtonToolbar,
-  Dropdown,
-  DropdownButton,
-} from 'react-bootstrap';
+  FmFooterButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { type ReactElement, useState } from 'react';
+import { Dropdown, Form } from 'react-bootstrap';
+import { BsCircleFill, BsTransparency } from 'react-icons/bs';
+import { FaPlus, FaSwatchbook, FaTrash } from 'react-icons/fa';
 import { SHADING_COMPONENT_TYPES } from '../model/Shading.js';
+import {
+  ARTISTIC_PRESETS,
+  isOpaquePreset,
+  MAP_PRESETS,
+  type ShadingPreset,
+} from '../model/shadingPresets.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
 
 type Props = {
   canRemove: boolean;
+  /** An overlay without a background can have one added. */
+  canAddBackground: boolean;
+  canAddComponent: boolean;
   onAdd: (type: string | null) => void;
   onRemove: () => void;
+  /** `append` adds the preset's components rather than replacing the shading. */
+  onPreset: (preset: ShadingPreset, append: boolean) => void;
+  /** A preset keeps an optional background or gets a white one; ignored while appending. */
+  withBackground: boolean;
+  onWithBackgroundChange: (withBackground: boolean) => void;
 };
 
 export function ShadingToolbar({
   canRemove,
+  canAddBackground,
+  canAddComponent,
   onAdd,
   onRemove,
+  onPreset,
+  withBackground,
+  onWithBackgroundChange,
 }: Props): ReactElement {
   const m = useMessages();
 
   const sm = useShadingMessages();
 
-  return (
-    <ButtonToolbar>
-      <DropdownButton
-        id="add-shading-button"
-        title={sm?.add}
-        variant="success"
-        onSelect={onAdd}
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const [append, setAppend] = useState(false);
+
+  const presetItem = (preset: ShadingPreset) => {
+    const alwaysOpaque = isOpaquePreset(preset);
+
+    const opaque = alwaysOpaque || (withBackground && !append);
+
+    return (
+      <Dropdown.Item
+        as="button"
+        key={preset}
+        eventKey={preset}
+        disabled={append && alwaysOpaque}
       >
-        {SHADING_COMPONENT_TYPES.map((st) => (
-          <Dropdown.Item
-            as="button"
-            key={st}
-            eventKey={st}
-            className="text-nowrap"
-          >
-            {sm?.types[st]}
-          </Dropdown.Item>
-        ))}
+        {opaque ? (
+          <BsCircleFill className="text-secondary" />
+        ) : (
+          <BsTransparency className="text-secondary" />
+        )}
+        <MenuLabel>
+          <Text m={sm} k={`presetNames.${preset}`} />
+        </MenuLabel>
+      </Dropdown.Item>
+    );
+  };
 
-        <Dropdown.Divider />
-        <Dropdown.Item as="button" eventKey="contour" className="text-nowrap">
-          {sm?.contour}
-        </Dropdown.Item>
-        <Dropdown.Item as="button" eventKey="fog" className="text-nowrap">
-          {sm?.fogInversion}
-        </Dropdown.Item>
-      </DropdownButton>
+  return (
+    // One line: Remove's label gives way to its tooltip when room runs out.
+    <FmModalFooter
+      as="div"
+      className="d-flex flex-nowrap gap-1 mt-2 text-nowrap"
+    >
+      <Dropdown onSelect={onAdd}>
+        <Dropdown.Toggle id="add-shading-button" variant="success">
+          <FaPlus /> <Text m={sm} k="add" />
+        </Dropdown.Toggle>
 
-      <Button disabled={!canRemove} variant="danger" onClick={onRemove}>
-        {m?.general.remove}
-      </Button>
-    </ButtonToolbar>
+        {/* Fixed, so the panel's own scroller doesn't clip it. */}
+        <FmDropdownMenu>
+          {canAddBackground && (
+            <>
+              <Dropdown.Item as="button" eventKey="background">
+                <MenuLabel>
+                  <Text m={sm} k="background" />
+                </MenuLabel>
+              </Dropdown.Item>
+
+              <Dropdown.Divider />
+            </>
+          )}
+
+          {SHADING_COMPONENT_TYPES.map((st) => (
+            <Dropdown.Item
+              as="button"
+              key={st}
+              eventKey={st}
+              disabled={!canAddComponent}
+            >
+              <MenuLabel>
+                <Text m={sm} k={`types.${st}`} />
+              </MenuLabel>
+            </Dropdown.Item>
+          ))}
+        </FmDropdownMenu>
+      </Dropdown>
+
+      <FmFooterButton
+        variant="danger"
+        icon={<FaTrash />}
+        label={m?.general.remove}
+        disabled={!canRemove}
+        onClick={onRemove}
+      />
+
+      <Dropdown
+        className="ms-auto"
+        onSelect={(key) =>
+          key !== null && onPreset(key as ShadingPreset, append)
+        }
+      >
+        <LongPressTooltip label={sm?.presets}>
+          {({ props }) => (
+            <Dropdown.Toggle variant="secondary" {...props}>
+              <FaSwatchbook />
+            </Dropdown.Toggle>
+          )}
+        </LongPressTooltip>
+
+        <FmDropdownMenu>
+          <Form.Check
+            id="shading-preset-append"
+            className="mx-3 my-1 text-nowrap"
+            label={sm?.addToExisting}
+            checked={append}
+            onChange={(e) => setAppend(e.currentTarget.checked)}
+          />
+
+          <Form.Check
+            id="shading-preset-with-background"
+            className="mx-3 my-1 text-nowrap"
+            label={sm?.withBackground}
+            checked={withBackground && !append}
+            disabled={append}
+            onChange={(e) => onWithBackgroundChange(e.currentTarget.checked)}
+          />
+
+          <Dropdown.Divider />
+
+          <Dropdown.Header>
+            <Text m={sm} k="mapPresetsHeader" />
+          </Dropdown.Header>
+
+          {MAP_PRESETS.map(presetItem)}
+
+          <Dropdown.Divider />
+
+          <Dropdown.Header>
+            <Text m={sm} k="artisticPresetsHeader" />
+          </Dropdown.Header>
+
+          {ARTISTIC_PRESETS.toSorted((a, b) =>
+            (sm?.presetNames[a] ?? a).localeCompare(
+              sm?.presetNames[b] ?? b,
+              language,
+            ),
+          ).map(presetItem)}
+        </FmDropdownMenu>
+      </Dropdown>
+    </FmModalFooter>
   );
 }

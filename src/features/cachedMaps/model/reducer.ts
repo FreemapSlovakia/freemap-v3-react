@@ -28,6 +28,10 @@ export interface CachedMapsState {
   view: 'list' | 'add' | 'edit';
   /** The map the `edit` view is showing. */
   editId: string | null;
+  /** The source map the `add` view starts with. */
+  addSource: string | null;
+  /** The map the list picks out, as just saved. */
+  highlight: string | null;
   /** What the browse cache holds; `null` until it has been read. */
   browseStats: BrowseCacheStats | null;
 }
@@ -36,6 +40,8 @@ export const cachedMapsInitialState: CachedMapsState = {
   activeDownloads: {},
   view: 'list',
   editId: null,
+  addSource: null,
+  highlight: null,
   browseStats: null,
 };
 
@@ -52,6 +58,8 @@ export const cachedMapsReducer = createReducer(
         };
 
         state.view = 'list';
+
+        state.highlight = payload.type;
       })
       .addCase(cacheTilesProgress, (state, { payload }) => {
         const dl = state.activeDownloads[payload.type];
@@ -87,6 +95,8 @@ export const cachedMapsReducer = createReducer(
 
         state.view = 'list';
         state.editId = null;
+        state.addSource = null;
+        state.highlight = payload.next.type;
       })
       .addCase(cacheTilesComplete, (state, { payload }) => {
         delete state.activeDownloads[payload.id];
@@ -115,15 +125,25 @@ export const cachedMapsReducer = createReducer(
         if (payload?.type === 'offline-maps') {
           state.view = 'list';
           state.editId = null;
+          state.addSource = null;
+          state.highlight = null;
         }
       })
       .addCase(cachedMapsSetView, (state, { payload }) => {
+        state.highlight = null;
+
         if (typeof payload === 'string') {
           state.view = payload;
           state.editId = null;
+          state.addSource = null;
+        } else if ('add' in payload) {
+          state.view = 'add';
+          state.editId = null;
+          state.addSource = payload.add;
         } else {
           state.view = 'edit';
           state.editId = payload.edit;
+          state.addSource = null;
         }
       }),
 );

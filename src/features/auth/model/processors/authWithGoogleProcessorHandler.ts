@@ -30,7 +30,7 @@ const handle: ProcessorHandler<typeof authWithGoogle> = async ({
       },
     });
 
-    await handleLoginResponse(res, getState, dispatch);
+    await handleLoginResponse(res, getState, dispatch, 'google');
   } catch (err) {
     if (!hasProperty(err, 'type') || String(err['type']) !== 'popup_closed') {
       throw err;

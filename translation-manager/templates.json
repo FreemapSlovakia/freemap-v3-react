@@ -16,6 +16,7 @@
     "src/features/tracking/translations/{LANG}.tsx",
     "src/features/mapFeaturesExport/translations/{LANG}.tsx",
     "src/features/objects/translations/{LANG}.tsx",
+    "src/features/osmNotes/translations/{LANG}.tsx",
     "src/features/changesets/translations/{LANG}.tsx",
     "src/features/dataViewer/translations/{LANG}.tsx",
     "src/features/gpsRecorder/translations/{LANG}.tsx",

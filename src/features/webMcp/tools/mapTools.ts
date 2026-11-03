@@ -2,10 +2,23 @@ import type { RootState } from '@app/store/store.js';
 import { getMessages } from '@features/l10n/messagesStore.js';
 import {
   mapFitBbox,
+  mapPresetToggle,
   mapRefocus,
   mapToggleLayer,
 } from '@features/map/model/actions.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { presetIdOf } from '@features/map/model/mapPreset.js';
+import { resolvedCustomLayersSelector } from '@features/map/model/selectors.js';
+import {
+  integratedLayerDefMapSelector,
+  libraryIndexSelector,
+  presetKindsSelector,
+} from '@features/mapLibrary/model/selectors.js';
+import { layerName } from '@shared/layerName.js';
+import type { IntegratedLayerDef } from '@shared/mapDefinitions.js';
+import {
+  loadIntegratedLayerDef,
+  mapIndex,
+} from '@shared/mapLibrary/mapIndex.js';
 import z from 'zod';
 import { defineTool } from '../tool.js';
 
@@ -13,21 +26,29 @@ const LatSchema = z.number().min(-90).max(90).describe('WGS-84 latitude');
 
 const LonSchema = z.number().min(-180).max(180).describe('WGS-84 longitude');
 
-/** Every layer code the map knows about, integrated and user-added alike. */
-function layerCatalog(state: RootState) {
+/**
+ * Every layer code the map knows about, integrated and user-added alike; zooms
+ * come from `loaded`, so only for library maps whose bodies are in it.
+ */
+function layerCatalog(
+  state: RootState,
+  loaded: Readonly<
+    Record<string, IntegratedLayerDef>
+  > = integratedLayerDefMapSelector(state),
+) {
   const m = getMessages();
 
   return [
-    ...integratedLayerDefs.map((def) => ({
+    ...libraryIndexSelector(state).map((def) => ({
       code: def.type,
-      name: m?.mapLayers.letters[def.type] ?? def.type,
+      name: layerName(def, m) ?? def.type,
       kind: def.layer,
-      minZoom: def.minZoom,
-      premiumFromZoom: def.premiumFromZoom,
+      minZoom: loaded[def.type]?.minZoom,
+      premiumFromZoom: loaded[def.type]?.premiumFromZoom,
       countries: def.countries,
       experimental: def.experimental,
     })),
-    ...state.map.customLayers.map((def) => ({
+    ...resolvedCustomLayersSelector(state).map((def) => ({
       code: def.type,
       name: def.name ?? def.type,
       kind: def.layer,
@@ -142,8 +163,22 @@ export const mapTools = [
     description:
       'Lists the map layers this app offers, with the one-letter code each is switched on by. A "base" layer is the map itself (only one at a time); an "overlay" is drawn on top of it (any number). premiumFromZoom marks a layer that needs a paid account past that zoom.',
     input: z.object({}),
-    execute(_args, { store }) {
-      return layerCatalog(store.getState());
+    async execute(_args, { store }) {
+      // A map that fails to load is still listed, only without its zooms.
+      const defs = await Promise.all(
+        mapIndex.map(({ type }) =>
+          loadIntegratedLayerDef(type).catch(() => undefined),
+        ),
+      );
+
+      const state = store.getState();
+
+      return layerCatalog(state, {
+        ...integratedLayerDefMapSelector(state),
+        ...Object.fromEntries(
+          defs.flatMap((def) => (def ? [[def.type, def]] : [])),
+        ),
+      });
     },
   }),
 
@@ -184,8 +219,16 @@ export const mapTools = [
             .map((layer) => layer.code),
         );
 
+        const presetKinds = presetKindsSelector(state);
+
         for (const code of store.getState().map.layers) {
-          if (isOverlay.has(code) && !wanted.has(code)) {
+          const presetId = presetIdOf(code);
+
+          if (presetId !== undefined) {
+            if (presetKinds[presetId] === 'overlay') {
+              store.dispatch(mapPresetToggle({ id: presetId, enable: false }));
+            }
+          } else if (isOverlay.has(code) && !wanted.has(code)) {
             store.dispatch(mapToggleLayer({ type: code, enable: false }));
           }
         }

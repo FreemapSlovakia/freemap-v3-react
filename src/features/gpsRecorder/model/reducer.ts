@@ -72,7 +72,7 @@ export function mergePoints(
   // batch needs ordering — re-sorting the whole track per fix would be
   // quadratic over a long recording.
   if (incoming.every((point) => point.seq > maxSeq)) {
-    return [...current, ...[...incoming].sort((a, b) => a.seq - b.seq)];
+    return [...current, ...incoming.toSorted((a, b) => a.seq - b.seq)];
   }
 
   const bySeq = new Map(current.map((point) => [point.seq, point]));

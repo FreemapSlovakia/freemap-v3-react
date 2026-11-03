@@ -22,7 +22,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Thank you.
 </p>`;
 
-const outdoorMap = 'Hiking, Bicycle, Ski, Riding';
+const outdoorMap = 'Outdoor';
 
 const messages: Messages = {
   general: {
@@ -47,7 +47,14 @@ const messages: Messages = {
     eyeHeight: 'Eye height',
     eyeHeightHint:
       'How high above the ground you are standing — a tower or a drone, not the elevation itself.',
-    maxVisibleDistance: 'Maximum visible distance',
+    maxVisibleDistance: 'Max. visible distance',
+    info: 'Information',
+    terrain: {
+      bareEarth:
+        'The terrain model is bare earth: forests and buildings are invisible, so ground a forest would hide is treated as open. This is by far the largest source of error.',
+      coverage:
+        'Detail varies by country. Where a national laser-scanned model exists the near field is sharp; elsewhere a global 30 m model answers.',
+    },
     copyCode: 'Copy code',
     loading: 'Loading…',
     ok: 'OK',
@@ -55,6 +62,13 @@ const messages: Messages = {
     closeWithoutSaving: 'Close the window with unsaved changes?',
     resetToDefaults: 'Reset to default',
     back: 'Back',
+    valueRange: ({ min, max }) => (
+      <>
+        Enter a value between {min} and {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Enter a value above {min}.</>,
+    invalidUrl: 'Enter a URL starting with http:// or https://.',
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -68,17 +82,16 @@ const messages: Messages = {
     add: 'Add new',
     clear: 'Clear',
     convertToDrawing: 'Convert to drawing',
+    toggleObjectType: 'Click to show or hide objects of this type',
+    hideObjectType: ({ name }) => <>Hide type “{name}”</>,
     copyToDrawing: 'Copy to drawing',
     copyTo: ({ tool }) => <>Copy to {tool}</>,
-    convertTo: ({ tool }) => <>Convert to {tool}</>,
     convertAllToDrawing: 'Convert all to drawing',
-    convertAllTo: ({ tool }) => <>Convert all to {tool}</>,
     openIn: ({ what }) => <>Open in {what}</>,
     panoramaFromHere: 'Panorama from here',
     viewshedFromHere: 'Viewshed from here',
     toposcopeFromHere: 'Toposcope from here',
     lookAtInPanorama: 'Look at this in the panorama',
-    placeActions: 'What to do with this place',
     locationActions: 'Location actions',
     convert: {
       geometry: 'Geometry',
@@ -114,6 +127,7 @@ const messages: Messages = {
     saved: 'Saved.',
     visual: 'Display',
     drawingTool: 'Drawing tool',
+    noDrawingTool: 'Select',
     copyOk: 'Copied to clipboard.',
     noCookies: () => (
       <>
@@ -198,11 +212,10 @@ const messages: Messages = {
     objects: 'Objects (POIs)',
     photos: 'Photos',
     events: 'Events',
-    measurement: 'Drawing and measurement',
     drawPoints: 'Point drawing',
     drawLines: 'Line drawing',
     drawPolygons: 'Polygon drawing',
-    dataViewer: 'Tracks and data',
+    dataViewer: 'Drawing and data',
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
@@ -240,6 +253,7 @@ const messages: Messages = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Services status',
     language: 'Language',
+    manual: 'Manual',
   },
 
   main: {
@@ -295,7 +309,7 @@ const messages: Messages = {
     buttonTitle: 'Search',
     placeholder: 'Search places and functions',
     result: 'Lookup',
-    showMore: 'Show more…',
+    showMore: 'Show more',
     keepOnMap: 'Keep on the map',
     offlineHint:
       'Without an internet connection only coordinates, a bounding box, tile numbers (z/x/y) or pasted GeoJSON can be found.',
@@ -321,56 +335,107 @@ const messages: Messages = {
       keywords: {
         'tool-route-planner':
           'navigation, directions, itinerary, trip, plan a route',
-        'tool-objects': 'points of interest, poi, places, amenities',
         'tool-draw-points': 'drawing, marker, pin, annotate, note',
         'tool-draw-lines': 'drawing, measure distance, length, ruler, path',
         'tool-draw-polygons': 'drawing, measure area, region',
-        'tool-import-file': 'gpx, kml, kmz, tcx, geojson, import, upload, open',
+        'tool-import-file':
+          'tracks, gpx, kml, kmz, tcx, geojson, import, upload, open',
         'tool-map-details': 'identify, inspect, what is here, wms',
         'tool-changesets': 'osm edits, editors, contributions, mappers',
         'tool-tracking': 'share position, watch device, real time, locator',
         'tool-toposcope': 'peaks, summits, horizon, view board',
         'tool-panorama': '360, terrain view, peaks, horizon',
         'tool-gps-recorder': 'record track, logger, recording',
-        'modal-account': 'profile, my account, settings, log out',
+        'modal-account':
+          'profile, my account, settings, log out, app token, api key',
         'modal-login': 'sign in, account',
         'modal-my-maps': 'saved maps, save map, share map',
         'modal-map-features-export':
           'export, gpx, geojson, download data, save features',
         'modal-map-to-document-export':
-          'export, print, pdf, png, jpeg, svg, image, poster',
+          'export, print, pdf, png, jpeg, webp, svg, image, poster',
         'modal-offline-map-export':
           'export, offline, download tiles, mbtiles, sd card',
         'modal-embed': 'iframe, website, html code',
         'modal-support-us': 'donate, contribute, sponsor, money',
         'modal-legend': 'symbols, map key',
+        'modal-manual': 'help, guide, documentation, how to, tutorial',
+        'manual-getting-started': 'basics, introduction, first steps, help',
+        'manual-shortcuts': 'keyboard, keys, hotkeys, chords',
+        'manual-search':
+          'help, find, lookup, geocoding, coordinates, address, place, keep on the map',
+        'manual-osm-notes':
+          'help, report, bug, error, mistake, openstreetmap, josm, id',
+        'manual-route-planner':
+          'help, navigation, directions, waypoints, plan a route, how to',
+        'manual-maps':
+          'help, layers, base map, overlay, map manager, library, install, preset, legend, opacity',
+        'manual-custom-maps':
+          'help, own map, wms, tms, tiles url, add map source',
+        'manual-shading':
+          'help, hillshade, relief, terrain, sky view, openness, lidar, dem',
+        'manual-weather-radar':
+          'help, rain, precipitation, weather, forecast, storm, animation',
+        'manual-panorama': 'help, 360, view, peaks, horizon, terrain render',
+        'manual-viewshed':
+          'help, visibility, line of sight, what can be seen, view from',
+        'manual-toposcope':
+          'help, direction dial, peaks, summits, orientation table, print',
+        'manual-map-export':
+          'help, print, pdf, png, svg, jpeg, webp, image, poster, export map',
+        'manual-objects':
+          'help, poi, points of interest, places, categories, amenities, osm',
+        'manual-map-details':
+          'help, identify, what is here, features, osm element, history, wms',
+        'manual-changesets':
+          'help, osm edits, changesets, mappers, contributions, recent changes',
+        'manual-my-maps':
+          'help, saved maps, save map, share map, account, unsaved',
+        'manual-account':
+          'help, login, sign in, log out, profile, app token, api key, delete account',
+        'manual-gps-recorder':
+          'help, record track, recording, logger, android, background',
+        'manual-ai':
+          'help, ai, llm, chatgpt, claude, gemini, assistant, agent, webmcp, llms.txt',
+        'manual-drawing': 'help, measure, distance, area, line, polygon, point',
+        'manual-tracks':
+          'help, gpx, kml, track, import, elevation profile, colorize, export',
+        'manual-photos': 'help, gallery, upload, pictures, how to',
+        'manual-tracking':
+          'help, live tracking, share position, device setup, locus, osmand',
+        'manual-offline': 'help, download maps, no connection, cache, offline',
+        'manual-devices':
+          'help, garmin, locus, oruxmaps, geocaching, embed, open in app',
+        'manual-premium':
+          'help, subscription, price, payment, credits, buy, ads, cancel, refund',
+        'manual-about':
+          'openstreetmap, osm, association, community, contribute, mapping, license, licence, attribution, copyright, commercial use',
         'modal-about': 'contact, e-mail, feedback',
-        'modal-map-layers-config': 'layers, manage maps, order, opacity',
-        'modal-custom-maps': 'own map, wms, tms, add map source',
+        'modal-map-manager':
+          'installed maps, available maps, map library, catalog, catalogue, install, uninstall, add maps, more maps, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',
         'modal-offline-maps': 'downloaded maps, storage',
         'modal-browse-cache': 'cached tiles, storage',
         'modal-map-preferences': 'settings, options, overlay opacity',
         'modal-elevation-settings': 'altitude, profile, chart settings',
         'clear-map-features': 'remove all, erase, reset map',
-        'layer-X': 'outdoor, hiking, cycling, freemap',
+        'layer-X': 'hiking, cycling, skiing, riding, freemap',
         'layer-XK': 'hiking trails, markers, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, orthophoto, imagery',
-        'layer-Z': 'satellite, orthophoto, imagery',
         'layer-J1': 'satellite, orthophoto, imagery',
         'layer-J2': 'satellite, orthophoto, imagery',
+        'layer-J3': 'satellite, orthophoto, imagery',
         'layer-d': 'transit, buses, trains, timetables',
         'layer-I': 'pictures, gallery, photographs',
         'layer-w': 'wiki, articles',
+        'layer-n': 'openstreetmap, bugs, errors, issues, reports, mapping',
         'layer-R': 'weather, rain, precipitation, storm, forecast',
         'layer-v': 'visibility, line of sight, seen from, panorama, terrain',
-        'layer-5': 'hillshade, relief, terrain, elevation',
         'layer-6': 'hillshade, relief, surface, elevation',
         'layer-7': 'hillshade, relief, terrain, elevation, lidar',
-        'layer-8': 'hillshade, relief, terrain, elevation, lidar',
-        'layer-h': 'hillshade, relief, slope, aspect, custom shading',
-        'layer-z': 'hillshade, relief, slope, aspect, custom shading',
-        'layer-y': 'hillshade, relief, slope, aspect, custom shading',
+        'layer-h':
+          'hillshade, relief, terrain, elevation, slope, aspect, custom shading',
+        'layer-c': 'color, blank, background, plain, tint, fill',
         'layer-l1': 'forest roads, nlc',
         'layer-l2': 'forest roads, nlc',
         'layer-VO': 'vector',
@@ -382,6 +447,15 @@ const messages: Messages = {
         'layer-WGE': 'geology, rocks',
         'layer-WKA': 'parcels, land registry',
         'layer-wka': 'parcels, land registry',
+        'layer-xs': 'sac scale, grade, alpine, scrambling, overlay',
+        'layer-xq': 'surface, road condition, rough, bumpy, potholes, overlay',
+        'layer-xm': 'mountain bike, singletrack, enduro, downhill, overlay',
+        'layer-xh': 'routes, waymarks, guideposts, signposts, overlay',
+        'layer-xb': 'cycling, bike, mtb, routes, overlay',
+        'layer-xl': 'skiing, cross-country, routes, overlay',
+        'layer-xr': 'riding, equestrian, bridleway, routes, overlay',
+        'layer-xa': 'hybrid, aerial, satellite, orthophoto, labels, overlay',
+        'layer-xc': 'contours, isolines, elevation, altitude, relief, overlay',
         'layer-WHC': 'water chemistry, hydrology',
       },
     },
@@ -396,45 +470,51 @@ const messages: Messages = {
     layers: 'Maps',
     switch: 'Maps',
     photoFilterWarning: 'Photo filtering is active',
-    interactiveLayerWarning: 'Map items layer is hidden',
+    interactiveLayerWarning: 'Data layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     outsideViewWarning: 'The current view is outside this map',
     offlineWarning: 'This map is not saved for offline use',
     letters: {
       S: 'Aerial',
-      Z: 'Aerial',
       J1: 'Aerial (2017-2019)',
       J2: 'Aerial (2020-2022)',
+      J3: 'Aerial (2022-2023)',
       O: 'OpenStreetMap',
       d: 'Public transport (ÖPNV)',
       X: outdoorMap,
       XK: 'KST Hiking Trails',
-      i: 'Data layer',
       I: 'Photos',
       A: 'Events',
       l1: 'Forest tracks NLC (2017)',
       l2: 'Forest tracks NLC',
       w: 'Wikipedia',
+      n: 'OSM notes',
       R: 'Weather radar',
       v: 'Viewshed',
       M: 'Wikimedia Commons photos',
-      '5': 'Terrain shading',
       '6': 'Surface shading',
       '7': 'Detailed terrain shading',
-      '8': 'Detailed terrain shading',
       VO: 'OpenStreetMap Vector',
       VS: 'Streets Vector',
       VD: 'Dataviz Vector',
       VT: 'Outdoor Vector',
-      h: 'Parametric shading',
-      z: 'Parametric shading',
-      y: 'Parametric shading',
+      h: 'Parametric terrain shading',
+      c: 'Solid colour',
       WDZ: 'Tree Composition',
       WLT: 'Forest Types',
       WGE: 'Geological',
       WKA: 'Cadastre',
       wka: 'Cadastre',
       WHC: 'Hydrochemic',
+      xs: 'Hiking difficulty',
+      xq: 'Road smoothness',
+      xm: 'MTB difficulty',
+      xh: 'Hiking trails',
+      xb: 'Bicycle trails',
+      xl: 'Ski trails',
+      xr: 'Horse trails',
+      xa: 'Outdoor map without base',
+      xc: 'Contour lines',
     },
     customBase: 'Custom map',
     type: {
@@ -454,12 +534,13 @@ const messages: Messages = {
       ),
       photosCc: 'various Creative Commons licenses',
     },
-    layersConfiguration: 'Layers configuration',
-    customMaps: 'Custom maps',
-    addCustomMap: 'Add custom map',
+    mapManager: 'Map manager',
+    installedMaps: 'Installed maps',
+    availableMaps: 'Available maps',
+    allMatchesInManager: 'All matches in the map manager',
+    newCustomMap: 'New custom map',
     activate: 'Activate',
-    customMapsEmptyMessage:
-      'No custom maps defined yet. Add one to display your own map source.',
+    layersPanel: 'Map layers',
     base: 'Base layers',
     overlay: 'Overlay layers',
     technology: 'Type',
@@ -468,6 +549,7 @@ const messages: Messages = {
       maplibre: 'Vector (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Parametric shading',
+      color: 'Color',
     },
     url: 'URL',
     minZoom: 'Min Zoom',
@@ -482,8 +564,9 @@ const messages: Messages = {
       base: 'Base',
       overlay: 'Overlay',
     },
-    zIndex: 'Z-Index',
     preferences: 'Map preferences',
+    brightness: 'Map brightness',
+    featuresOpacity: 'Data layer opacity',
     maxZoom: 'Max zoom',
     zoomSnap: 'Zoom step',
     zoomSnapFree: 'Free',
@@ -494,9 +577,16 @@ const messages: Messages = {
     resolutionScaleAuto: 'Auto (device default)',
     resolutionScaleHelp:
       "Simulates display pixel density. Affects which tile variant is fetched. If a layer doesn't offer the requested variant, the highest available one is used instead.",
+    pixelExact: 'Pixel-exact tiles',
+    pixelExactHelp:
+      'Puts each tile pixel on exactly one screen pixel, so tiles stay sharp on a display with a fractional pixel ratio such as 1.25 or 1.75. The map then looks slightly larger or smaller. Replaces the resolution scale, and is exact on the zoom levels the zoom step lands on.',
     featureScale: 'Feature size',
     featureScaleHelp:
       'Enlarges rendered labels and lines. Has no effect on satellite, shading, WMS, or vector (MapLibre) layers.',
+    background: 'Map background',
+    backgroundHelp:
+      'Shows wherever no layer draws: with no base map on, beside a base map that covers only part of the world or is transparent, and where tiles are still loading.',
+    backgroundCheckerboard: 'Checkerboard',
     lookupStyle: 'Lookup style',
     resetApp: 'Reset application',
     resetAppConfirm:
@@ -508,7 +598,7 @@ const messages: Messages = {
       </>
     ),
     offlineMaps: 'Offline maps',
-    browseCache: 'Cache while browsing',
+    browseCache: 'Caching while browsing',
     legacy: 'legacy',
     legacyMapWarning: ({ from, to }) => (
       <>

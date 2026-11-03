@@ -3,21 +3,17 @@ import z from 'zod';
 
 export const DocumentSchema = z.enum([
   'advertise',
-  'attribution',
   'dvePercenta',
   'exports',
-  'freemap',
-  'garmin',
-  'geocaching',
-  'osm',
   'privacyPolicy',
   'termsOfService',
   'refundPolicy',
-  'premium',
-  'shortcuts',
-  'tracking',
 ]);
 
 export type Document = z.infer<typeof DocumentSchema>;
 
 export const documentShow = createAction<Document | null>('DOCUMENT_SHOW');
+
+export const locusInstall = createAction('LOCUS_INSTALL');
+
+export const oruxMapsDownload = createAction('ORUX_MAPS_DOWNLOAD');

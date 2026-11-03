@@ -1,5 +1,5 @@
 ---
-title: Exporty máp
+title: Mapy pre GPS zariadenia
 ---
 
 Freemap Slovakia vytvára pravidelné exporty mapy pre rôzne mobilné aplikácie/zariadenia. Tu si ich môžete stiahnuť. Ak tu nie je uvedený postup inštalácie mapy pre Vašu aplikáciu/zariadenie, je potrebné ho hľadať na webovej stránke Vami používanej aplikácie/zariadenia.
@@ -8,7 +8,7 @@ Mapové dáta © OpenStreetMap prispievatelia. Licencované pod ODbL 1.0.
 
 ## Mobilné aplikácie (Android / iOS)
 
-Priame stiahnutie mapy Slovenska a Freemap štýlu pre program niektoré programy:
+Priame stiahnutie mapy Slovenska a Freemap štýlu pre niektoré programy:
 
 **Upozornenie:** odkazy sú funkčné len cez prehliadač v mobilnom telefóne s nainštalovanou aplikáciou
 
@@ -32,7 +32,7 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 Dodatočné mapy pre Locus
 
-- [Ortofotomozaika SR, DMR5 hillshading, Lesné cesty NLC (online)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-providers.xml)
+- [Outdoorová mapa, turistické trasy KST, vrstvy trás a vrstevníc, detailné a DMP1 tieňovanie, ortofotomozaika, lesné cesty NLC (online)](locus-actions://https/backend.freemap.sk/locus/install) — po prihlásení odkaz pridá aj aplikačný token „Map apps“, vďaka ktorému s prémiovým prístupom uvidíte aj najpodrobnejšie zobrazenie
 - [Lesné cesty NLC (offline)](locus-actions://https/download.freemap.sk/LocusMap/xml/locus-provider-nlc.xml)
 
 ### OruxMaps
@@ -52,6 +52,10 @@ Staršia verzia (mapa aktualizovaná, štýl už nie)
 
 - [štýl pre mapu V3](orux-mf-theme://download.freemap.sk/LocusMap/orux_theme.zip)
 - [mapa Slovensko V3](orux-map://download.freemap.sk/LocusMap/slovakia-topo-osm-srtm.zip)
+
+Doplnkové mapy pre OruxMaps:
+
+- [Outdoorová mapa, turistické trasy KST, vrstvy trás a vrstevníc, detailné a DMP1 tieňovanie, ortofotomozaika, lesné cesty NLC (online)](https://backend.freemap.sk/oruxmaps/onlinemapsources.xml) — súbor uložte do priečinka `oruxmaps/mapfiles/customonlinemaps/`, reštartujte OruxMaps a obnovte zoznam máp. Starší súbor od Freemapu nahraďte, súbor s mapami iných poskytovateľov s ním zlúčte. Po prihlásení súbor obsahuje aj aplikačný token „Map apps“, vďaka ktorému s prémiovým prístupom uvidíte aj najpodrobnejšie zobrazenie.
 
 ### BackCountry Navigator
 
@@ -98,6 +102,37 @@ Pokiaľ používate aplikáciu, ktorá vie zobraziť mapy vo formáte mapsforge,
 - [POI Česká republika](https://download.freemap.sk/LocusMap/freemapV5-czech-poi.zip)
 
 Uvedené mapy vo formáte mapsforge sa aktualizujú každý utorok a piatok.
+
+### Online mapy pre iné aplikácie
+
+Do aplikácie, ktorá vie pridať vlastnú online mapu (dlaždice XYZ), zadajte niektorú z týchto adries:
+
+| Mapa | Adresa | Zoom | Prémium od |
+| --- | --- | --- | --- |
+| Outdoorová mapa <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Turistické trasy KST <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Outdoorová mapa bez podkladu <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
+| Turistické trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Cyklotrasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Lyžiarske trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Jazdecké trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
+| Náročnosť MTB <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Náročnosť chodníkov (SAC) <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Zjazdnosť ciest <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Vrstevnice <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
+| Detailné tieňovanie (SR) | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 16 |
+| Tieňovanie DMP1 (SR) | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–18 | |
+| Ortofotomozaika SR a ČR | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 20 |
+| Ortofotomozaika SR 2017–2019 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Ortofotomozaika SR 2020–2022 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
+| Ortofotomozaika ČR 2022–2023 | <code>https://<wbr>ortofoto-cz-2022-2023<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | |
+| Lesné cesty NLC (SR) | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code> | 11–15 | |
+
+- <sup>1</sup> Priehľadná vrstva, ktorá sa kladie na inú mapu.
+- <sup>2</sup> Pre displeje s vysokým rozlíšením pridajte za `{y}` príponu `@2x`, `@3x` alebo `@4x`.
+- Ak aplikácia zapisuje premenné inak, napr. `{zoom}` namiesto `{z}`, upravte adresu podľa nej.
+- Najpodrobnejšie zobrazenie (stĺpec _Prémium od_) vyžaduje prémiový prístup: vytvorte si v menu _Účet › Aplikačné tokeny_ token s oprávneniami na prémiové zobrazenie turistickej mapy, tieňovaní terénu a leteckej mapy a pripíšte ho k adrese ako `?token=fm_…`.
+- Uveďte zdroj: _© prispievatelia OpenStreetMap a Freemap Slovakia_ (outdoorová mapa a vrstvy), _LLS: ÚGKK SR_ (tieňovanie), _GKÚ Bratislava, NLC a ČÚZK_ (ortofotomozaiky), _Národné lesnícke centrum_ (lesné cesty). Outdoorová mapa a KST navyše využívajú výškové dáta podľa oblasti, ktoré tiež treba uviesť: každá ich dlaždica uvádza kódy týchto dát v hlavičke `X-Attribution` a ich význam je na [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
 ## Garmin mapa <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 

@@ -3,12 +3,13 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
 } from '@app/store/actions.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -26,11 +27,15 @@ import {
 } from '@shared/colorizers/index.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { DeleteButton } from '@shared/components/DeleteButton.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { MenuPortal } from '@shared/components/MenuPortal.js';
 import {
   Action,
+  ActionDivider,
   ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
@@ -39,6 +44,7 @@ import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { fixedPopperConfig } from '@shared/fixedPopperConfig.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useSimplifyPrompt } from '@shared/simplifyDialog.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import type { Feature, LineString } from 'geojson';
 import {
@@ -62,7 +68,6 @@ import {
   Form,
   InputGroup,
   ToggleButton,
-  ToggleButtonGroup,
 } from 'react-bootstrap';
 import { BiShapePolygon } from 'react-icons/bi';
 import {
@@ -81,7 +86,7 @@ import {
   FaStop,
   FaSync,
 } from 'react-icons/fa';
-import { MdShapeLine, MdTimeline } from 'react-icons/md';
+import { MdTimeline } from 'react-icons/md';
 import { PiGraph } from 'react-icons/pi';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -102,9 +107,9 @@ import {
   routePlannerSetPickMode,
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
-  routePlannerSetTransportType,
   routePlannerSwapEnds,
 } from '../model/actions.js';
+import { legTransports } from '../model/legTransports.js';
 import { pathDetailKeys, routeColorizeFeatures } from '../model/pathDetails.js';
 import {
   getFinish,
@@ -119,7 +124,7 @@ import { plannedRouteLines } from '../model/routeGeometry.js';
 import { MAX_ALTERNATIVES } from '../model/settingsReducer.js';
 import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
-import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
+import { RouteTransportSelect } from './RouteTransportSelect.js';
 
 const modeIcons: Record<RoutingMode, ReactElement> = {
   route: <MdTimeline />,
@@ -194,11 +199,11 @@ function MenuToggleGroup({
 
       <Dropdown.Header>
         {icon}
-        &nbsp;{title ?? '…'}
+        &nbsp;{title}
       </Dropdown.Header>
 
       <div className="px-3 pb-2">
-        <ToggleButtonGroup
+        <FitToggleButtonGroup
           className="d-flex"
           type="radio"
           name={name}
@@ -213,10 +218,10 @@ function MenuToggleGroup({
               variant="outline-primary"
               size="sm"
             >
-              {label ?? '…'}
+              {label}
             </ToggleButton>
           ))}
-        </ToggleButtonGroup>
+        </FitToggleButtonGroup>
       </div>
     </>
   );
@@ -252,21 +257,23 @@ function TripSettings() {
 
   const rpm = useRoutePlannerMessages();
 
-  const ghParams = rpm?.ghParams;
-
   return (
     <>
       <hr />
 
       <fieldset className="mx-4 mb-4 w-auto">
-        <legend>{ghParams?.tripParameters}</legend>
+        <legend>
+          <Text m={rpm} k="ghParams.tripParameters" />
+        </legend>
 
         <Form.Group
           controlId="distance"
           as="form"
           onSubmit={handleDistanceSubmit}
         >
-          <Form.Label>{ghParams?.distance}</Form.Label>
+          <Form.Label>
+            <Text m={rpm} k="ghParams.distance" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -283,7 +290,9 @@ function TripSettings() {
         </Form.Group>
 
         <Form.Group controlId="seed" as="form" onSubmit={handleSeedSubmit}>
-          <Form.Label className="mt-2">{ghParams?.seed}</Form.Label>
+          <Form.Label className="mt-2">
+            <Text m={rpm} k="ghParams.seed" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -371,8 +380,6 @@ function IsochroneSettings() {
     );
   };
 
-  const m = useMessages();
-
   const rpm = useRoutePlannerMessages();
 
   const ghParams = rpm?.ghParams;
@@ -382,14 +389,18 @@ function IsochroneSettings() {
       <hr />
 
       <fieldset className="mx-4 mb-4 w-auto">
-        <legend>{ghParams?.isochroneParameters}</legend>
+        <legend>
+          <Text m={rpm} k="ghParams.isochroneParameters" />
+        </legend>
 
         <Form.Group
           controlId="timeLimit"
           as="form"
           onSubmit={handleTimeLimitSubmit}
         >
-          <Form.Label>{ghParams?.timeLimit}</Form.Label>
+          <Form.Label>
+            <Text m={rpm} k="ghParams.timeLimit" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -402,7 +413,9 @@ function IsochroneSettings() {
               disabled={distanceLimit !== '0'}
             />
 
-            <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            <InputGroup.Text>
+              <Text k="general.minutes" />
+            </InputGroup.Text>
           </InputGroup>
         </Form.Group>
 
@@ -411,7 +424,9 @@ function IsochroneSettings() {
           as="form"
           onSubmit={handleDistanceLimitSubmit}
         >
-          <Form.Label className="mt-2">{ghParams?.distanceLimit}</Form.Label>
+          <Form.Label className="mt-2">
+            <Text m={rpm} k="ghParams.distanceLimit" />
+          </Form.Label>
 
           <InputGroup>
             <Form.Control
@@ -432,7 +447,9 @@ function IsochroneSettings() {
           as="form"
           onSubmit={handleBucketsSubmit}
         >
-          <Form.Label className="mt-2">{ghParams?.buckets}</Form.Label>
+          <Form.Label className="mt-2">
+            <Text m={rpm} k="ghParams.buckets" />
+          </Form.Label>
 
           <Form.Control
             type="number"
@@ -507,6 +524,8 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
+  const manualAction = useManualAction();
+
   const milestones = useAppSelector((state) => state.routePlanner.milestones);
 
   const homeLocation = useAppSelector(
@@ -548,8 +567,6 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const askSimplification = useSimplifyPrompt();
 
-  const convertToDataViewer = useConvertToDataViewer();
-
   const resultFound = routeFound || isochronesFound;
 
   // A single placed point is already worth a delete — it is what the next click
@@ -560,9 +577,11 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const colorizeBy = useRouteColorizeMode();
 
-  const premiumColorize = usePremiumColorizeLock(
-    useAppSelector(routePremiumUnlockedSelector),
-  );
+  const premiumUnlocked = useAppSelector(routePremiumUnlockedSelector);
+
+  const premiumColorize = usePremiumColorizeLock(premiumUnlocked);
+
+  const points = useAppSelector((state) => state.routePlanner.points);
 
   const colorizeLegend = useAppSelector(
     (state) => state.routePlannerSettings.colorizeLegend,
@@ -703,23 +722,38 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const activeTTDef = transportTypeDefs[activeTransportType];
 
-  // Only GraphHopper reports path details, and only the ones this profile asks
-  // for; a mode reading anything else can never be filled in here.
-  const offeredDetails = new Set(
-    activeTTDef.api === 'gh' ? pathDetailKeys(activeTransportType) : [],
-  );
+  // Only GraphHopper reports path details, and only the ones the legs' profiles
+  // ask for; a mode reading anything else can never be filled in here.
+  const offeredDetails = useMemo(() => {
+    const legs = legTransports(points, activeTransportType);
+
+    const transports =
+      activeMode === 'route' && premiumUnlocked && legs.length > 0
+        ? new Set(legs)
+        : [activeTransportType];
+
+    return new Set(
+      [...transports].flatMap((transport) =>
+        transportTypeDefs[transport].api === 'gh'
+          ? pathDetailKeys(transport)
+          : [],
+      ),
+    );
+  }, [points, activeTransportType, activeMode, premiumUnlocked]);
 
   const [routePlannerDropdownOpen, setRoutePlannerDropdownOpen] =
     useState(false);
 
   return (
-    <ToolMenu tool="route-planner">
-      <RoutePlannerTransportType
-        onChange={(transportType) =>
-          dispatch(routePlannerSetTransportType(transportType!))
-        }
-        value={activeTransportType}
-      />
+    <ToolMenu
+      tool="route-planner"
+      // Mirrors the click handler in RoutePlannerResult.
+      mapClicksIdle={
+        pickPointMode === null &&
+        !(activeTTDef?.api === 'gh' && activeMode !== 'route')
+      }
+    >
+      <RouteTransportSelect />
 
       {activeTTDef?.api === 'gh' && (
         <Dropdown
@@ -750,13 +784,15 @@ export default function RoutePlannerMenu(): ReactElement {
             )}
           </LongPressTooltip>
 
-          <Dropdown.Menu
-            className="fm-dropdown-fixed"
-            popperConfig={fixedPopperConfig}
-            as={GraphopperModeMenu}
-          >
-            {(['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]).map(
-              (mode) => (
+          <MenuPortal>
+            <Dropdown.Menu
+              className="fm-dropdown-fixed"
+              popperConfig={fixedPopperConfig}
+              as={GraphopperModeMenu}
+            >
+              {(
+                ['route', 'roundtrip', 'isochrone'] satisfies RoutingMode[]
+              ).map((mode) => (
                 <Dropdown.Item
                   as="button"
                   eventKey={mode}
@@ -764,13 +800,15 @@ export default function RoutePlannerMenu(): ReactElement {
                   title={rpm?.mode[mode]}
                   active={activeMode === mode}
                 >
-                  {modeIcons[mode]}{' '}
-                  {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
-                    '…'}
+                  {modeIcons[mode]}
+                  <MenuLabel>
+                    {rpm?.mode[mode === 'roundtrip' ? 'routndtrip-gh' : mode] ??
+                      '…'}
+                  </MenuLabel>
                 </Dropdown.Item>
-              ),
-            )}
-          </Dropdown.Menu>
+              ))}
+            </Dropdown.Menu>
+          </MenuPortal>
         </Dropdown>
       )}
 
@@ -786,7 +824,7 @@ export default function RoutePlannerMenu(): ReactElement {
           options={(['route', 'trip', 'roundtrip'] satisfies RoutingMode[]).map(
             (mode) => ({
               value: mode,
-              label: rpm?.mode[mode] ?? '…',
+              label: <Text m={rpm} k={`mode.${mode}`} />,
               icon: modeIcons[mode],
               title: rpm?.mode[mode],
             }),
@@ -832,27 +870,27 @@ export default function RoutePlannerMenu(): ReactElement {
           <FmDropdownMenu>
             <Dropdown.Item as="button" eventKey="pick">
               <FaMapMarkerAlt />
-              &nbsp;{rpm?.point.pick ?? '…'}
+              <MenuLabel>
+                <Text m={rpm} k="point.pick" />
+              </MenuLabel>
             </Dropdown.Item>
 
             <Dropdown.Item as="button" eventKey="current">
               <FaBullseye />
-              &nbsp;{rpm?.point.current ?? '…'}
+              <MenuLabel>
+                <Text m={rpm} k="point.current" />
+              </MenuLabel>
             </Dropdown.Item>
 
-            <Dropdown.Item
-              as="button"
-              className="d-flex align-items-center justify-content-between"
-              eventKey="home"
-            >
-              <span>
-                <FaHome />
-                &nbsp;{rpm?.point.home ?? '…'}
-              </span>
+            <Dropdown.Item as="button" eventKey="home">
+              <FaHome />
+              <MenuLabel>
+                <Text m={rpm} k="point.home" />
+              </MenuLabel>
               <Button
                 size="sm"
                 variant="secondary"
-                className="my-n1 ms-2"
+                className="my-n1 ms-auto flex-shrink-0"
                 title={rpm?.selectHomeLocation}
               >
                 <FaCrosshairs className="pe-none" />
@@ -864,7 +902,9 @@ export default function RoutePlannerMenu(): ReactElement {
               activeMode !== 'isochrone' && (
                 <Dropdown.Item as="button" eventKey="from-finish">
                   <FaStop color="#d9534f" />
-                  &nbsp;{rpm?.point.fromFinish ?? '…'}
+                  <MenuLabel>
+                    <Text m={rpm} k="point.fromFinish" />
+                  </MenuLabel>
                 </Dropdown.Item>
               )}
           </FmDropdownMenu>
@@ -922,29 +962,27 @@ export default function RoutePlannerMenu(): ReactElement {
               <FmDropdownMenu>
                 <Dropdown.Item as="button" eventKey="pick">
                   <FaMapMarkerAlt />
-                  &nbsp;
-                  {rpm?.point.pick ?? '…'}
+                  <MenuLabel>
+                    <Text m={rpm} k="point.pick" />
+                  </MenuLabel>
                 </Dropdown.Item>
 
                 <Dropdown.Item as="button" eventKey="current">
                   <FaBullseye />
-                  &nbsp;
-                  {rpm?.point.current ?? '…'}
+                  <MenuLabel>
+                    <Text m={rpm} k="point.current" />
+                  </MenuLabel>
                 </Dropdown.Item>
 
-                <Dropdown.Item
-                  as="button"
-                  className="d-flex align-items-center justify-content-between"
-                  eventKey="home"
-                >
-                  <span>
-                    <FaHome />
-                    &nbsp;{rpm?.point.home ?? '…'}
-                  </span>
+                <Dropdown.Item as="button" eventKey="home">
+                  <FaHome />
+                  <MenuLabel>
+                    <Text m={rpm} k="point.home" />
+                  </MenuLabel>
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="my-n1 ms-2"
+                    className="my-n1 ms-auto flex-shrink-0"
                     title={rpm?.selectHomeLocation}
                   >
                     <FaCrosshairs className="pe-none" />
@@ -954,7 +992,9 @@ export default function RoutePlannerMenu(): ReactElement {
                 {startPoint && (
                   <Dropdown.Item as="button" eventKey="from-start">
                     <FaPlay color="#409a40" />
-                    &nbsp;{rpm?.point.fromStart ?? '…'}
+                    <MenuLabel>
+                      <Text m={rpm} k="point.fromStart" />
+                    </MenuLabel>
                   </Dropdown.Item>
                 )}
               </FmDropdownMenu>
@@ -976,6 +1016,13 @@ export default function RoutePlannerMenu(): ReactElement {
 
               return;
             }
+
+            trackMatomo([
+              'trackEvent',
+              'RoutePlanner',
+              'colorize',
+              mode ?? 'none',
+            ]);
 
             dispatch(
               routePlannerColorizeBy(
@@ -1010,31 +1057,31 @@ export default function RoutePlannerMenu(): ReactElement {
         />
       )}
 
-      {resultFound && (
-        <ResponsiveActions
-          // The gap the buttons beside it are set in.
-          gap={1}
-          onSelect={handleMoreSelect}
-        >
-          {routeFound && (
-            <Action
-              label={m?.general.elevationProfile}
-              icon={<FaChartArea />}
-              // Breakpoints, not `fit`: this toolbar wraps onto a line of its
-              // own, where measuring what fits has no stable answer.
-              showFrom="lg"
-              showLabelFrom="xl"
-              active={elevationProfileIsVisible}
-              onClick={() => {
-                dispatch(
-                  elevationProfileIsVisible
-                    ? elevationChartClose()
-                    : elevationChartOpen({ type: 'route-planner' }),
-                );
-              }}
-            />
-          )}
+      <ResponsiveActions
+        // The gap the buttons beside it are set in.
+        gap={1}
+        onSelect={handleMoreSelect}
+      >
+        {routeFound && (
+          <Action
+            label={m?.general.elevationProfile}
+            icon={<FaChartArea />}
+            // Breakpoints, not `fit`: this toolbar wraps onto a line of its
+            // own, where measuring what fits has no stable answer.
+            showFrom="lg"
+            showLabelFrom="xl"
+            active={elevationProfileIsVisible}
+            onClick={() => {
+              dispatch(
+                elevationProfileIsVisible
+                  ? elevationChartClose()
+                  : elevationChartOpen({ type: 'route-planner' }),
+              );
+            }}
+          />
+        )}
 
+        {resultFound && (
           <Action
             label={m?.general.convertToDrawing}
             icon={<FaPencilAlt />}
@@ -1043,16 +1090,9 @@ export default function RoutePlannerMenu(): ReactElement {
               void convertRouteToDrawing();
             }}
           />
+        )}
 
-          <Action
-            label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
-            icon={<MdShapeLine />}
-            showFrom="never"
-            onClick={() => {
-              convertToDataViewer({ type: 'planned-route' });
-            }}
-          />
-
+        {resultFound && (
           <Action
             label={rpm?.style.menuItem}
             icon={<FaPaintBrush />}
@@ -1061,30 +1101,32 @@ export default function RoutePlannerMenu(): ReactElement {
               dispatch(setActiveModal({ type: 'route-planner-style' }));
             }}
           />
+        )}
 
-          {/* Only a route that came with the map is not already fresh. */}
-          {storedRouteShowing && (
-            <Action
-              label={rpm?.recompute}
-              icon={<FaSync />}
-              showFrom="never"
-              onClick={() => {
-                dispatch(routePlannerRecompute());
-              }}
-            />
-          )}
+        {/* Only a route that came with the map is not already fresh. */}
+        {resultFound && storedRouteShowing && (
+          <Action
+            label={rpm?.recompute}
+            icon={<FaSync />}
+            showFrom="never"
+            onClick={() => {
+              dispatch(routePlannerRecompute());
+            }}
+          />
+        )}
 
+        {resultFound && (
           <ActionItems>
             {routeFound && (
               <MenuToggleGroup
                 icon={<FaMapMarkerAlt />}
-                title={rpm?.milestones}
+                title={<Text m={rpm} k="milestones" />}
                 name="milestones"
                 // A group's value is a string, so the off state is spelled
                 // rather than being the `false` the setting holds.
                 value={milestones || 'off'}
                 options={[
-                  ['off', rpm?.milestonesOff],
+                  ['off', <Text key="off" m={rpm} k="milestonesOff" />],
                   ['abs', 'km'],
                   ['rel', '%'],
                 ]}
@@ -1103,7 +1145,7 @@ export default function RoutePlannerMenu(): ReactElement {
             {alternativesApplicable && !storedRouteShowing && (
               <MenuToggleGroup
                 icon={<FaRoute />}
-                title={rpm?.maxAlternatives}
+                title={<Text m={rpm} k="maxAlternatives" />}
                 name="maxAlternatives"
                 value={String(maxAlternatives)}
                 options={Array.from(
@@ -1120,35 +1162,43 @@ export default function RoutePlannerMenu(): ReactElement {
               <>
                 <Dropdown.Divider />
 
-                <Dropdown.Header>
-                  <FaRandom />
-                  &nbsp;{rpm?.optimize.label ?? '…'}
-                  &nbsp;
+                {/* A row, so the label truncates and not the gem. */}
+                <Dropdown.Header className="d-flex align-items-center gap-1">
+                  <FaRandom className="flex-shrink-0" />
+                  <MenuLabel>
+                    <Text m={rpm} k="optimize.label" />
+                  </MenuLabel>
                   <PremiumGem nested />
                 </Dropdown.Header>
 
                 {(
                   [
-                    ['optimize-fixed-start', rpm?.optimize.fixedStart],
-                    ['optimize-fixed-start-end', rpm?.optimize.fixedStartEnd],
-                    ['optimize-roundtrip', rpm?.optimize.roundtrip],
-                    ['optimize-free', rpm?.optimize.free],
+                    ['optimize-fixed-start', 'fixedStart'],
+                    ['optimize-fixed-start-end', 'fixedStartEnd'],
+                    ['optimize-roundtrip', 'roundtrip'],
+                    ['optimize-free', 'free'],
                   ] as const
-                ).map(([eventKey, label]) => (
+                ).map(([eventKey, key]) => (
                   <Dropdown.Item
                     as="button"
                     key={eventKey}
                     eventKey={eventKey}
                     disabled={optimizeBlocked || Boolean(becomePremium)}
                   >
-                    {label ?? '…'}
+                    <MenuLabel>
+                      <Text m={rpm} k={`optimize.${key}`} />
+                    </MenuLabel>
                   </Dropdown.Item>
                 ))}
               </>
             )}
           </ActionItems>
-        </ResponsiveActions>
-      )}
+        )}
+
+        <ActionDivider />
+
+        <Action {...manualAction('route-planner')} />
+      </ResponsiveActions>
 
       {hasRoute && <DeleteButton action={routePlannerDelete()} />}
     </ToolMenu>

@@ -35,7 +35,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     '-lastCommentedAt': 'from last comment',
   },
 
-  showDirection: 'Mutasd a fényképezés irányát',
+  showDirection: 'A fényképezés irányának megjelenítése',
 
   legendCategory: {
     mine: 'Sajátok',
@@ -45,7 +45,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
 
   c: {
-    mine: 'Különítsd el a sajátjaimat',
+    mine: 'A sajátjaim elkülönítése',
     userId: 'Szerző',
     rating: 'Értékelés',
     takenAt: 'Készítés dátuma',
@@ -128,6 +128,8 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premium:
       'Csak teljes hozzáféréssel rendelkező felhasználók számára elérhető',
     loadPreview: 'Előnézet betöltése',
+    notAdded:
+      'Nem sikerült minden fájlt hozzáadni – a mappák, a nem támogatott formátumok és az olvashatatlan fájlok kimaradnak.',
   },
   license: {
     label: 'Licenc',

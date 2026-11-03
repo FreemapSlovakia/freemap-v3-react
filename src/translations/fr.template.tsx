@@ -23,7 +23,7 @@ const getErrorMarkup = (ticketId?: string) => `
   Merci.
 </p>`;
 
-const outdoorMap = 'Randonnée, Vélo, Ski, Équitation';
+const outdoorMap = 'Outdoor';
 
 const messages: DeepPartialWithRequiredObjects<Messages> = {
   general: {
@@ -33,7 +33,14 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     eyeHeight: 'Hauteur des yeux',
     eyeHeightHint:
       'À quelle hauteur au-dessus du sol vous vous tenez — une tour ou un drone, pas l’altitude.',
-    maxVisibleDistance: 'Distance visible maximale',
+    maxVisibleDistance: 'Distance visible max.',
+    info: 'Informations',
+    terrain: {
+      bareEarth:
+        'Le modèle de terrain est le sol nu : les forêts et les bâtiments n’y figurent pas, si bien qu’un terrain qu’une forêt masquerait est tenu pour dégagé. C’est de loin la principale source d’erreur.',
+      coverage:
+        'Le détail varie selon les pays. Là où existe un modèle national issu d’un relevé laser, le premier plan est net ; ailleurs, c’est un modèle mondial à 30 m qui répond.',
+    },
     internalError: ({ ticketId }) => (
       <span dangerouslySetInnerHTML={{ __html: getErrorMarkup(ticketId) }} />
     ),
@@ -76,6 +83,13 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Fermer la fenêtre sans enregistrer les modifications ?',
     resetToDefaults: 'Réinitialiser par défaut',
     back: 'Retour',
+    valueRange: ({ min, max }) => (
+      <>
+        Saisissez une valeur comprise entre {min} et {max}.
+      </>
+    ),
+    valueAbove: ({ min }) => <>Saisissez une valeur supérieure à {min}.</>,
+    invalidUrl: 'Saisissez une URL commençant par http:// ou https://.',
     seconds: 'secondes',
     minutes: 'minutes',
     meters: 'mètres',
@@ -85,17 +99,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     add: 'Ajouter',
     clear: 'Effacer',
     convertToDrawing: 'Convertir en dessin',
+    toggleObjectType: 'Cliquez pour afficher ou masquer les objets de ce type',
+    hideObjectType: ({ name }) => <>Masquer le type « {name} »</>,
     copyToDrawing: 'Copier vers le dessin',
     copyTo: ({ tool }) => <>Copier vers {tool}</>,
-    convertTo: ({ tool }) => <>Convertir vers {tool}</>,
     convertAllToDrawing: 'Tout convertir en dessin',
-    convertAllTo: ({ tool }) => <>Tout convertir vers {tool}</>,
     openIn: ({ what }) => <>Ouvrir dans {what}</>,
     panoramaFromHere: 'Panorama d’ici',
     viewshedFromHere: 'Visibilité d’ici',
     toposcopeFromHere: 'Table d’orientation d’ici',
     lookAtInPanorama: 'Regarder cela dans le panorama',
-    placeActions: 'Que faire de ce lieu',
     locationActions: 'Actions pour ce lieu',
     convert: {
       geometry: 'Géométrie',
@@ -163,6 +176,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     newOptionText: 'Ajouter %value%',
     deleteButtonText: 'Retirer %value% de la liste',
     accept: 'Accepter',
+    externalService: 'Service tiers, soumis à des restrictions d’utilisation',
   },
   generic: {
     color: 'Couleur',
@@ -201,7 +215,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routePlanner: 'Planificateur d’itinéraire',
     objects: 'Objets (POI)',
     photos: 'Photos',
-    measurement: 'Dessin et mesure',
     drawPoints: 'Dessin de points',
     drawLines: 'Dessin de lignes',
     drawPolygons: 'Dessin de polygones',
@@ -242,6 +255,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     wikiLink: 'https://wiki.openstreetmap.org/wiki/FR:Page_principale',
     status: 'État des services',
     language: 'Langue',
+    manual: 'Manuel',
   },
   main: {
     title: shared.title,
@@ -287,7 +301,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     copyright: 'Droits d’auteur',
   },
   search: {
-    showMore: 'Afficher plus…',
+    showMore: 'Afficher plus',
     offlineHint:
       'Sans connexion Internet, seules les coordonnées, un cadre de délimitation, des numéros de tuile (z/x/y) ou du GeoJSON collé peuvent être trouvés.',
     fetchingError: ({ err }) => addError(messages, 'Erreur de recherche', err),
@@ -314,7 +328,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       keywords: {
         'tool-route-planner':
           'navigation, itinéraire, calcul de trajet, randonnée, vélo',
-        'tool-objects': "points d'intérêt, poi, lieux, commodités",
         'tool-draw-points': 'dessin, repère, marqueur, note',
         'tool-draw-lines':
           'dessin, mesurer la distance, longueur, règle, tracé',
@@ -336,41 +349,40 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-features-export':
           'export, gpx, geojson, télécharger les données',
         'modal-map-to-document-export':
-          'export, imprimer, pdf, png, jpeg, svg, image, affiche',
+          'export, imprimer, pdf, png, jpeg, webp, svg, image, affiche',
         'modal-offline-map-export':
           'export, hors ligne, télécharger les tuiles, mbtiles, carte sd',
         'modal-embed': 'iframe, intégrer, site web, code html',
         'modal-support-us': 'faire un don, soutenir, contribuer, argent',
         'modal-legend': 'symboles, légende de la carte',
+        'modal-manual': "aide, guide, mode d'emploi, documentation, help",
         'modal-about': 'contact, e-mail, avis',
-        'modal-map-layers-config': 'couches, gérer les cartes, ordre, opacité',
-        'modal-custom-maps':
-          'carte personnalisée, wms, tms, ajouter une source',
+        'modal-map-manager':
+          'cartes installées, cartes disponibles, bibliothèque de cartes, catalogue, installer, désinstaller, ajouter des cartes, plus de cartes, configuration des couches, couches, gérer les cartes, barre d’outils, menu, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',
         'modal-offline-maps': 'cartes téléchargées, stockage',
         'modal-browse-cache': 'cache, tuiles en cache, stockage',
         'modal-map-preferences': 'paramètres, options, opacité des calques',
         'modal-elevation-settings': 'profil altimétrique, altitude, graphique',
         'clear-map-features': 'tout effacer, supprimer, réinitialiser la carte',
-        'layer-X': 'plein air, randonnée, vélo, freemap',
+        'layer-X': 'plein air, randonnée, vélo, ski, équitation, freemap',
         'layer-XK': 'sentiers balisés, balisage, kst',
         'layer-O': 'osm, mapnik, standard',
         'layer-S': 'satellite, orthophoto, imagerie aérienne',
-        'layer-Z': 'satellite, orthophoto, imagerie aérienne',
         'layer-J1': 'satellite, orthophoto, imagerie aérienne',
         'layer-J2': 'satellite, orthophoto, imagerie aérienne',
+        'layer-J3': 'satellite, orthophoto, imagerie aérienne',
         'layer-d': 'transports en commun, bus, trains, horaires',
         'layer-I': 'images, galerie, photos',
         'layer-w': 'wiki, articles',
+        'layer-n': 'openstreetmap, erreurs, signalements, cartographie, note',
         'layer-R': 'météo, pluie, précipitations, orage, prévisions',
         'layer-v':
           'bassin de visibilité, ligne de vue, champ de vision, relief',
-        'layer-5': 'ombrage, relief, terrain, altitude',
         'layer-6': 'ombrage, relief, surface, altitude',
         'layer-7': 'ombrage, relief, terrain, altitude, lidar',
-        'layer-8': 'ombrage, relief, terrain, altitude, lidar',
-        'layer-h': 'ombrage, relief, pente, exposition, inversion',
-        'layer-z': 'ombrage, relief, pente, exposition, inversion',
-        'layer-y': 'ombrage, relief, pente, exposition, inversion',
+        'layer-h':
+          'ombrage, relief, terrain, altitude, pente, exposition, inversion',
+        'layer-c': 'couleur, vide, fond, uni, teinte, remplissage',
         'layer-l1': 'chemins forestiers, nlc',
         'layer-l2': 'chemins forestiers, nlc',
         'layer-VO': 'vectoriel',
@@ -382,6 +394,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-WGE': 'géologie, roches',
         'layer-WKA': 'parcelles, cadastre',
         'layer-wka': 'parcelles, cadastre',
+        'layer-xs': 'sac, cotation, alpinisme, calque',
+        'layer-xq': 'smoothness, revêtement, chaussée, nids-de-poule, calque',
+        'layer-xm': 'mtb, vélo de montagne, single, enduro, descente, calque',
+        'layer-xh': 'itinéraires, balisage, poteaux, calque',
+        'layer-xb': 'vélo, cyclisme, vtt, itinéraires, calque',
+        'layer-xl': 'ski, ski de fond, itinéraires, calque',
+        'layer-xr': 'équitation, cheval, itinéraires, calque',
+        'layer-xa':
+          'hybride, aérienne, satellite, orthophoto, étiquettes, calque',
+        'layer-xc':
+          'courbe de niveau, isohypses, altitude, relief, contours, calque',
         'layer-WHC': "chimie de l'eau, hydrologie",
       },
     },
@@ -400,35 +423,41 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       X: outdoorMap,
       XK: 'Sentiers de randonnée KST',
       S: 'Aérienne',
-      Z: 'Aérienne',
       J1: 'Aérienne (2017-2019)',
       J2: 'Aérienne (2020-2022)',
+      J3: 'Aérienne (2022-2023)',
       O: 'OpenStreetMap',
       d: 'Transports publics (ÖPNV)',
-      i: 'Couche de données',
       I: 'Photos',
       l1: 'Chemins forestiers NLC (2017)',
       l2: 'Chemins forestiers NLC',
       w: 'Wikipedia',
+      n: 'Notes OSM',
       R: 'Radar météo',
       v: 'Visibilité',
       M: 'Photos de Wikimedia Commons',
-      '5': 'Ombrage du terrain',
       '6': 'Ombrage de la surface',
       '7': 'Ombrage détaillé du terrain',
-      '8': 'Ombrage détaillé du terrain',
       VO: 'OpenStreetMap vectorielle',
       VS: 'Streets vectorielle',
       VD: 'Dataviz vectorielle',
       VT: 'Outdoor vectorielle',
-      h: 'Ombrage paramétrique',
-      z: 'Ombrage paramétrique',
-      y: 'Ombrage paramétrique',
+      h: 'Ombrage paramétrique du terrain',
+      c: 'Couleur unie',
       WDZ: 'Composition des essences',
       WLT: 'Types de forêts',
       WGE: 'Géologique',
       WKA: 'Cadastre',
       wka: 'Cadastre',
+      xs: 'Difficulté des sentiers',
+      xq: 'État des routes',
+      xm: 'Difficulté VTT',
+      xh: 'Sentiers de randonnée',
+      xb: 'Itinéraires cyclables',
+      xl: 'Pistes de ski',
+      xr: 'Sentiers équestres',
+      xa: 'Carte Outdoor sans fond',
+      xc: 'Courbes de niveau',
       WHC: 'Hydrochimique',
     },
     type: {
@@ -453,6 +482,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       maplibre: 'Vectoriel (MapLibre)',
       wms: 'WMS',
       parametricShading: 'Ombrage paramétrique',
+      color: 'Couleur',
     },
     layer: {
       layer: 'Couche',
@@ -474,17 +504,17 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Cartes',
     switch: 'Cartes',
     photoFilterWarning: 'Le filtrage des photos est actif',
-    interactiveLayerWarning: 'La couche des éléments de la carte est masquée',
+    interactiveLayerWarning: 'La couche de données est masquée',
     outsideViewWarning: 'La vue actuelle est en dehors de cette carte',
     offlineWarning:
       'Cette carte n’est pas enregistrée pour une utilisation hors ligne',
     customBase: 'Carte personnalisée',
-    layersConfiguration: 'Configuration des couches',
-    customMaps: 'Cartes personnalisées',
-    addCustomMap: 'Ajouter une carte personnalisée',
+    mapManager: 'Gestionnaire de cartes',
+    installedMaps: 'Cartes installées',
+    availableMaps: 'Cartes disponibles',
+    allMatchesInManager: 'Tous les résultats dans le gestionnaire de cartes',
+    newCustomMap: 'Nouvelle carte personnalisée',
     activate: 'Activer',
-    customMapsEmptyMessage:
-      'Aucune carte personnalisée définie pour le moment. Ajoutez-en une pour afficher votre propre source de carte.',
     base: 'Couches de base',
     overlay: 'Couches de superposition',
     technology: 'Type',
@@ -496,8 +526,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tiled: 'Charger en tuiles',
     tiledHelp:
       'Par défaut, un WMS est demandé sous la forme d’une seule image de toute la vue : une requête au lieu de dizaines, et des étiquettes qui ne sont pas coupées aux bords des tuiles. Activez les tuiles pour un serveur qui limite la taille de l’image ou qui met les tuiles en cache, au prix d’une rafale de requêtes par vue.',
-    zIndex: 'Z-Index',
     preferences: 'Préférences de la carte',
+    brightness: 'Luminosité de la carte',
+    featuresOpacity: 'Opacité de la couche de données',
     maxZoom: 'Zoom max.',
     zoomSnap: 'Pas du zoom',
     zoomSnapFree: 'Libre',
@@ -508,9 +539,16 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     resolutionScaleAuto: 'Auto (valeur par défaut de l’appareil)',
     resolutionScaleHelp:
       'Simule la densité de pixels de l’écran. Détermine quelle variante de tuiles est chargée. Si une couche n’offre pas la variante demandée, la plus élevée disponible est utilisée à la place.',
+    pixelExact: 'Tuiles au pixel près',
+    pixelExactHelp:
+      'Place chaque pixel de tuile sur exactement un pixel de l’écran, pour que les tuiles restent nettes sur un écran au rapport de pixels fractionnaire, comme 1,25 ou 1,75. La carte paraît alors un peu plus grande ou plus petite. Remplace l’échelle de résolution, et n’est exact qu’aux niveaux de zoom où s’arrête le pas du zoom.',
     featureScale: 'Taille des éléments',
     featureScaleHelp:
       'Agrandit les étiquettes et les lignes affichées. N’a aucun effet sur les couches satellite, d’ombrage, WMS ou vectorielles (MapLibre).',
+    background: 'Fond de carte',
+    backgroundHelp:
+      'Apparaît partout où aucune couche ne dessine : sans carte de base, à côté d’une carte de base qui ne couvre qu’une partie du monde ou est transparente, et là où des tuiles se chargent encore.',
+    backgroundCheckerboard: 'Damier',
     lookupStyle: 'Style du résultat',
     resetApp: 'Réinitialiser l’application',
     resetAppConfirm:
@@ -524,6 +562,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     offlineMaps: 'Cartes hors ligne',
     browseCache: 'Mise en cache pendant la navigation',
     legacy: 'obsolète',
+    layersPanel: 'Couches de la carte',
   },
   elevationChart: {
     ele: `Altitude [${masl}]`,

@@ -1,15 +1,20 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
-import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
-import { SelectDropdown } from '@shared/components/SelectDropdown.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
@@ -19,13 +24,7 @@ import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useTerrainProgress } from '@shared/hooks/useTerrainProgress.js';
 import { type ReactElement, useMemo } from 'react';
-import {
-  Button,
-  ButtonGroup,
-  ButtonToolbar,
-  Form,
-  ProgressBar,
-} from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, Spinner } from 'react-bootstrap';
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -35,7 +34,7 @@ import {
   FaSync,
   FaTimes,
 } from 'react-icons/fa';
-import { TbGridDots, TbRulerMeasure } from 'react-icons/tb';
+import { TbRulerMeasure } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { VIEWSHED_LAYER } from '../api.js';
 import {
@@ -49,24 +48,17 @@ import {
   viewshedGrantsSelector,
   viewshedOutdatedSelector,
 } from '../model/selectors.js';
+import { VIEWSHED_RADIUS_STEPS_KM } from '../model/settingsReducer.js';
 import {
-  GAMMA_MAX,
-  VIEWSHED_DETAIL_ORDER,
-  VIEWSHED_DETAILS,
-  VIEWSHED_RADIUS_STEPS_KM,
-  type ViewshedDetail,
-} from '../model/settingsReducer.js';
-import { grantedDetail, grantedRadiusKm, viewshedScale } from '../request.js';
+  FREE_RADIUS_MAX_KM,
+  grantedRadiusKm,
+  viewshedDetailTiers,
+  viewshedScale,
+} from '../request.js';
 import { useViewshedMessages } from '../translations/useViewshedMessages.js';
 
 /** Constant, so the menu doesn't rebuild its items on every render. */
 const VIEWPOINT_OMIT: ViewFromHere[] = ['viewshed'];
-
-/** Highest a target may be raised, metres — a mast, not a mountain. */
-const TARGET_HEIGHT_MAX = 100;
-
-/** Eye heights worth offering: a child on the ground up to a tower. */
-const EYE_MAX = 50;
 
 /**
  * Everything the viewshed is driven by. A layer rather than a tool, so its
@@ -82,17 +74,15 @@ export default function ViewshedMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
+  const manualAction = useManualAction();
+
   const { viewpoint, rendering, progress } = useAppSelector(
     (state) => state.viewshed,
   );
 
-  const settings = useAppSelector((state) => state.viewshedSettings);
-
   const premium = useAppSelector((state) => isPremium(state.auth.user));
 
   const prm = usePremiumMessages();
-
-  const becomePremium = useBecomePremium();
 
   const grants = useAppSelector(viewshedGrantsSelector);
 
@@ -110,18 +100,7 @@ export default function ViewshedMenu(): ReactElement {
     maximumFractionDigits: 1,
   });
 
-  const nfPercent = useNumberFormat({
-    style: 'percent',
-    maximumFractionDigits: 0,
-  });
-
-  const nfGamma = useNumberFormat({ maximumFractionDigits: 2 });
-
-  const bar = useTerrainProgress(
-    rendering,
-    progress,
-    VIEWSHED_DETAILS[grants.detail].expectedMs,
-  );
+  const bar = useTerrainProgress(rendering, progress);
 
   const outdated = useAppSelector(viewshedOutdatedSelector);
 
@@ -129,39 +108,21 @@ export default function ViewshedMenu(): ReactElement {
     viewshedAtRenderedViewpointSelector,
   );
 
-  const radiusOptions = useMemo(
+  // Only what the account may have: a slider that ran past the grant would
+  // stand where nothing is rendered, unlike a menu that can price each row.
+  const radiusSteps = useMemo(
     () =>
-      VIEWSHED_RADIUS_STEPS_KM.map((km) => ({
-        value: String(km),
-        label: nfKm.format(km),
-        extra:
-          grantedRadiusKm(km, premium) === km ? undefined : (
-            <PremiumGem nested />
-          ),
-      })),
-    [nfKm, premium],
+      VIEWSHED_RADIUS_STEPS_KM.filter(
+        (km) => grantedRadiusKm(km, premium) === km,
+      ),
+    [premium],
   );
 
-  // The ground each pixel covers, beside every tier: what a tier is worth
-  // depends on the range, and nothing else on the toolbar would say so.
-  const detailOptions = useMemo(
-    () =>
-      VIEWSHED_DETAIL_ORDER.map((detail) => ({
-        value: detail,
-        label: m?.details[detail],
-        extra: (
-          <>
-            {grantedDetail(detail, premium) === detail ? null : (
-              <PremiumGem nested />
-            )}
-            {/* Not a message — the same in every language. */}
-            <span className="text-body-secondary">
-              {nfM.format(viewshedScale(grants.radiusKm, detail))}/px
-            </span>
-          </>
-        ),
-      })),
-    [m, nfM, premium, grants.radiusKm],
+  // Against the reach being rendered, not the stored one: the tiers a short
+  // viewshed affords are not the tiers a long one does.
+  const detailTiers = useMemo(
+    () => viewshedDetailTiers(grants.radiusKm, premium),
+    [grants.radiusKm, premium],
   );
 
   return (
@@ -184,6 +145,30 @@ export default function ViewshedMenu(): ReactElement {
               </span>
             )}
           </LongPressTooltip>
+
+          {/* Beside the layer's own name, since it qualifies the whole overlay
+              rather than any one control. A mark rather than a panel: the
+              viewshed is a layer, so there is no window of its own to lay this
+              over the way the panorama does. */}
+          <span className="align-self-center me-2">
+            <HintMark
+              hint={
+                <>
+                  <p className="mb-1">
+                    <Text k="general.terrain.bareEarth" />
+                  </p>
+
+                  <p className="mb-1">
+                    <Text k="general.terrain.coverage" />
+                  </p>
+
+                  <p className="mb-0">
+                    <Text m={m} k="caveats.viewpoint" />
+                  </p>
+                </>
+              }
+            />
+          </span>
 
           {!hidden && (
             <>
@@ -209,155 +194,108 @@ export default function ViewshedMenu(): ReactElement {
                 />
               )}
 
-              <SelectDropdown
+              {/* The two that decide what a render costs, and they trade
+                  against each other — a shorter reach buys a finer raster for
+                  the same pixels. Together, as the panorama's frame is. */}
+              <SliderDropdown
+                icon={<TbRulerMeasure />}
                 // What is actually being rendered, not what is stored: an
                 // account whose premium lapsed keeps its wider choice, and
                 // showing that figure would be a lie.
-                value={String(grants.radiusKm)}
-                onSelect={(value) => {
-                  const asked = Number(value ?? grants.radiusKm);
-
-                  // Offering to buy what the distance costs, rather than
-                  // quietly storing a choice the next render would clamp away.
-                  if (grantedRadiusKm(asked, premium) !== asked) {
-                    becomePremium?.();
-                  } else {
-                    dispatch(viewshedSetSettings({ radiusKm: asked }));
-                  }
-                }}
-                options={radiusOptions}
-                toggleIcon={<TbRulerMeasure />}
-                name={gm?.general.maxVisibleDistance}
-                breakpoint="md"
-              />
-
-              <SelectDropdown
-                value={grants.detail}
-                onSelect={(value) => {
-                  const asked = (value ?? 'standard') as ViewshedDetail;
-
-                  if (grantedDetail(asked, premium) !== asked) {
-                    becomePremium?.();
-                  } else {
-                    dispatch(viewshedSetSettings({ detail: asked }));
-                  }
-                }}
-                options={detailOptions}
-                toggleIcon={<TbGridDots />}
-                name={m?.detail}
+                toggleLabel={`${nfKm.format(grants.radiusKm)} · ${nfM.format(viewshedScale(grants.radiusKm, grants.detail))}/px`}
+                name={m?.extent}
                 breakpoint="md"
                 // Says on the toolbar why the overlay is the coarse one; the
-                // tier names are only in the menu, which nobody opens to find
-                // out what they lack. The offer to buy is on the tiers.
+                // reason is otherwise only inside a menu nobody opens to find
+                // out what they lack.
                 toggleClassName={premium ? undefined : 'text-warning'}
                 toggleHint={premium ? undefined : prm?.higherDetail}
-              />
-
-              {/* The rest, which all cost a render but are set once and left:
-                  they sit behind a toggle rather than in reach of a stray
-                  click. */}
-              <SliderDropdown
-                icon={<FaCog />}
-                toggleLabel={m?.settings}
-                breakpoint="xxl"
               >
                 <LabeledSlider
-                  id="fm-viewshed-eye"
-                  label={gm?.general.eyeHeight}
-                  hint={gm?.general.eyeHeightHint}
-                  valueLabel={nfM.format(settings.eye)}
-                  min={0}
-                  max={EYE_MAX}
-                  step={0.1}
-                  value={settings.eye}
-                  onChange={(eye) => dispatch(viewshedSetSettings({ eye }))}
-                />
+                  id="fm-viewshed-radius"
+                  label={
+                    <>
+                      <Text k="general.maxVisibleDistance" />
 
-                {/* The faintness is in the pixels — the image's own alpha is
-                    the sine of the grazing angle — so this is the only control
-                    that can lift it; the layer's opacity can only take away. */}
-                <LabeledSlider
-                  id="fm-viewshed-gamma"
-                  label={m?.strength}
-                  valueLabel={
-                    settings.gamma === 1
-                      ? m?.strengthMeasured
-                      : nfGamma.format(settings.gamma)
+                      {!premium && <PremiumGem hint={m?.rangeHint} />}
+                    </>
                   }
-                  hint={m?.strengthHint}
-                  min={1}
-                  max={GAMMA_MAX}
-                  step={0.25}
-                  value={settings.gamma}
-                  onChange={(gamma) => dispatch(viewshedSetSettings({ gamma }))}
-                />
-
-                <LabeledSlider
-                  id="fm-viewshed-floor"
-                  label={m?.minOpacity}
-                  valueLabel={nfPercent.format(settings.alphaFloor)}
-                  hint={m?.minOpacityHint}
+                  valueLabel={nfKm.format(grants.radiusKm)}
                   min={0}
-                  max={1}
-                  step={0.05}
-                  value={settings.alphaFloor}
-                  onChange={(alphaFloor) =>
-                    dispatch(viewshedSetSettings({ alphaFloor }))
+                  max={radiusSteps.length - 1}
+                  value={Math.max(0, radiusSteps.indexOf(grants.radiusKm))}
+                  onChange={(index) =>
+                    dispatch(
+                      viewshedSetSettings({
+                        radiusKm: radiusSteps[index] ?? FREE_RADIUS_MAX_KM,
+                      }),
+                    )
                   }
                 />
 
                 <LabeledSlider
-                  id="fm-viewshed-target"
-                  label={m?.targetHeight}
-                  valueLabel={nfM.format(settings.targetHeight)}
-                  hint={m?.targetHeightHint}
+                  id="fm-viewshed-detail"
+                  label={
+                    <>
+                      <Text m={m} k="detail" />
+
+                      {!premium && <PremiumGem hint={prm?.higherDetail} />}
+                    </>
+                  }
+                  // The ground a pixel covers, not the tier's name: the figure
+                  // says what the tier is worth at this reach, which the name
+                  // cannot, and the names run to three words.
+                  valueLabel={`${nfM.format(viewshedScale(grants.radiusKm, grants.detail))}/px`}
                   min={0}
-                  max={TARGET_HEIGHT_MAX}
-                  step={1}
-                  value={settings.targetHeight}
-                  onChange={(targetHeight) =>
-                    dispatch(viewshedSetSettings({ targetHeight }))
+                  max={detailTiers.length - 1}
+                  value={Math.max(0, detailTiers.indexOf(grants.detail))}
+                  onChange={(index) =>
+                    dispatch(
+                      viewshedSetSettings({
+                        detail: detailTiers[index] ?? grants.detail,
+                      }),
+                    )
                   }
                 />
-
-                {/* Label above and the swatch across the menu, as the sliders
-                    above read: the colour is the row's value, not its unit. */}
-                <div className="d-flex flex-column">
-                  <Form.Label className="mb-0">{m?.color}</Form.Label>
-
-                  <RgbaColorPicker
-                    value={settings.color}
-                    onChange={(color) =>
-                      dispatch(viewshedSetSettings({ color }))
-                    }
-                    alpha={false}
-                  />
-                </div>
               </SliderDropdown>
+
+              {/* The rest all cost a render and are set once, so they sit in
+                  a modal rather than in reach of a stray click. */}
+              <LongPressTooltip label={m?.settings} breakpoint="xxl">
+                {({ props, label, labelClassName }) => (
+                  <Button
+                    variant="secondary"
+                    onClick={() =>
+                      dispatch(setActiveModal({ type: 'viewshed-settings' }))
+                    }
+                    {...props}
+                  >
+                    <FaCog />
+                    <span className={labelClassName}> {label}</span>
+                  </Button>
+                )}
+              </LongPressTooltip>
 
               {rendering ? (
                 <>
-                  {/* The queue position instead of a figure, where the row has
-                      no second line to put it on. */}
-                  <ProgressBar
-                    className="align-self-center"
-                    style={{ width: '8rem' }}
-                    striped
-                    animated
-                    variant={bar.variant}
-                    now={bar.now}
-                    label={
-                      bar.queued
-                        ? m?.queued({ ahead: bar.queued.ahead })
-                        : bar.label
-                    }
-                  />
+                  {/* The queue position instead of the seconds, where the row
+                      has no second line to put both on. A spinner rather than a
+                      bar, as in the panorama: the service's figure covers its
+                      marching, and the encode of a 10 Mpx overlay and its
+                      decode here are the rest. */}
+                  <span className="align-self-center d-flex align-items-center gap-2">
+                    <Spinner animation="border" size="sm" />
+
+                    {bar.queued
+                      ? m?.queued({ ahead: bar.queued.ahead })
+                      : bar.label}
+                  </span>
 
                   <Button
                     variant="secondary"
                     onClick={() => dispatch(viewshedCancel())}
                   >
-                    {gm?.general.cancel}
+                    <Text k="general.cancel" />
                   </Button>
                 </>
               ) : (
@@ -369,12 +307,16 @@ export default function ViewshedMenu(): ReactElement {
                         onClick={() => dispatch(viewshedRender())}
                         {...props}
                       >
-                        <FaSync /> {m?.update}
+                        <FaSync /> <Text m={m} k="update" />
                       </Button>
                     )}
                   </LongPressTooltip>
                 )
               )}
+
+              <ResponsiveActions toggleLabel={gm?.general.actions}>
+                <Action {...manualAction('viewshed')} />
+              </ResponsiveActions>
             </>
           )}
 

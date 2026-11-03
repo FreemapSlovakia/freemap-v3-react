@@ -1,7 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  mapByIdSelector,
+  mapEntryOf,
+} from '@features/mapLibrary/model/selectors.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
+import { layerName } from '@shared/layerName.js';
 
 type Props = {
   result: SearchResult;
@@ -12,27 +16,15 @@ export function SourceName({ result }: Props) {
 
   const isWms = result.source.startsWith('wms:');
 
-  const customLayerDefs = useAppSelector((state) => state.map.customLayers);
+  const wmsType = isWms ? result.source.slice(4) : undefined;
 
-  const wmsLayerDefs = !isWms
-    ? undefined
-    : [
-        ...integratedLayerDefs.map((def) => ({
-          ...def,
-          custom: false as const,
-        })),
-        ...customLayerDefs.map((def) => ({ ...def, custom: true as const })),
-      ].filter((def) => def.technology === 'wms');
-
-  const wmsDef = wmsLayerDefs?.find(
-    (def) => def.type === result.source.slice(4),
+  const wmsDef = useAppSelector((state) =>
+    wmsType === undefined
+      ? undefined
+      : mapEntryOf(mapByIdSelector(state)[wmsType]),
   );
 
-  const wmsMapName = !wmsDef
-    ? null
-    : wmsDef.custom
-      ? wmsDef.name
-      : m?.mapLayers.letters[wmsDef.type];
+  const wmsMapName = wmsDef && layerName(wmsDef, m);
 
   return (
     (m?.search.sources[isWms ? 'wms:' : result.source] ?? '') +

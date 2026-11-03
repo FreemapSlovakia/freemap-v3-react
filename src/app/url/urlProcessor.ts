@@ -1,10 +1,28 @@
+import { localTrack } from '@features/dataViewer/model/localTrack.js';
+import { snapshotKey } from '@features/dataViewer/trackStore.js';
+import {
+  isEmptySetup,
+  presetOnlyConfigs,
+} from '@features/map/model/layerSetup.js';
+import {
+  isSetupParam,
+  presetUrlParts,
+  SETUP_PARAM_PREFIX,
+  serializeSetup,
+} from '@features/map/model/layerSetupUrl.js';
+import { inlinePresets, presetIdOf } from '@features/map/model/mapPreset.js';
+import {
+  drawnTypesSelector,
+  presetByIdSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
+import { selectedOsmNoteId } from '@features/osmNotes/model/selectors.js';
 import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
+  serializePanoramaSky,
   serializePanoramaTilt,
   serializePanoramaViewpoint,
 } from '@features/panorama/panoramaUrl.js';
-import { serializeShading } from '@features/parameterizedShading/model/Shading.js';
 import { isPremium } from '@features/premium/premium.js';
 import { routeKey } from '@features/routePlanner/model/actions.js';
 import { serializeToposcope } from '@features/toposcope/toposcopeUrl.js';
@@ -13,7 +31,8 @@ import { grantedRadiusKm } from '@features/viewshed/request.js';
 import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
-import { integratedLayerDefMap } from '@shared/mapDefinitions.js';
+import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
+import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { encodeActiveModal } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
@@ -22,6 +41,7 @@ import {
   trackGeojsonIsSuitableForElevationChart,
 } from '../store/selectors.js';
 import type { RootState } from '../store/store.js';
+import { entryLoading } from './entryContent.js';
 import {
   getMapContentParts,
   pushDate,
@@ -30,7 +50,7 @@ import {
 } from './mapContentParts.js';
 import { stashUrl } from './sessionStash.js';
 import { serializeZoom } from './urlMapUtils.js';
-import { isUrlUpdatingEnabled } from './urlUpdating.js';
+import { isReplacingEntry, isUrlUpdatingEnabled } from './urlUpdating.js';
 
 // Browser-history policy for map viewport changes (pan/zoom): a contiguous run
 // of viewport-only changes collapses into a single history entry via
@@ -43,12 +63,13 @@ const VIEW_COALESCE_GAP_MS = 60_000;
 
 // Params that must not cost a history entry each. A change confined to these
 // replaces the current entry instead of pushing one, and is rate-limited below.
-// Two kinds qualify, for opposite reasons: the map's own viewport and the
-// panorama's bearing move as fast as a gesture, and the colorize params are
-// reader preferences a URL without them does not undo.
+// Three kinds qualify: what moves as fast as a gesture (the map's viewport, the
+// panorama's bearing), what is stepped through (the sky date), and reader
+// preferences a URL without them does not undo (the colorize params).
 const COALESCED_KEYS = new Set([
   'map',
   'panorama-az',
+  'panorama-date',
   // Not gesture-speed, but the same reason applies from the other end: a URL
   // without these does not turn colorizing off (see `handleColorize`), so an
   // entry standing for one would be an entry Back cannot honour.
@@ -85,6 +106,41 @@ const isContentPart =
 // nothing produces them at viewport speed.
 const REPLACE_MIN_INTERVAL_MS = 500;
 
+// A change to the same layer setups (`l.<id>`, a preset's `p.<n>.o` and
+// `p.<n>.l.<id>`) this soon after the last write replaces it, so an opacity
+// drag is one Back press.
+const SETUP_COALESCE_GAP_MS = 3000;
+
+/**
+ * A content write's setups, which of them differ from the last write's, and
+ * the rest of its content serialized.
+ */
+function setupWriteOf(
+  parts: readonly QueryPart[],
+  contentPart: (part: QueryPart) => boolean,
+) {
+  const setups: Record<string, string> = {};
+
+  const other: QueryPart[] = [];
+
+  for (const part of parts) {
+    if (isSetupParam(part[0])) {
+      setups[part[0]] = String(part[1]);
+    } else if (contentPart(part)) {
+      other.push(part);
+    }
+  }
+
+  const changed = [
+    ...new Set([...Object.keys(setups), ...Object.keys(lastWrittenSetups)]),
+  ]
+    .filter((key) => setups[key] !== lastWrittenSetups[key])
+    .sort()
+    .join('\n');
+
+  return { setups, changed, other: serializeQuery(other) };
+}
+
 let previousRest: unknown[] = [];
 
 let previousView: [number, number, number] | null = null;
@@ -100,6 +156,14 @@ let lastViewWriteTs = 0;
 let lastWriteTs = 0;
 
 let lastWrittenRest: string | null = null;
+
+// For the setup runs below: the URL but its setups, its setups, and which of
+// them the last write changed.
+let lastWrittenOther: string | null = null;
+
+let lastWrittenSetups: Record<string, string> = {};
+
+let lastChangedSetups = '';
 
 let rerunTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -180,9 +244,8 @@ function updateUrl(state: RootState, forced: boolean): void {
     trackViewerSettings,
     trackingSettings,
     gallery,
-    drawingPoints,
     changesets,
-    drawingLines,
+    changesetInspector,
     events: { filter: eventsFilter },
     main,
     tracking,
@@ -198,12 +261,26 @@ function updateUrl(state: RootState, forced: boolean): void {
     auth,
   } = state;
 
-  if (!isUrlUpdatingEnabled()) {
+  // The entry's content still being read (a snapshot, an import) belongs to it:
+  // written now, the URL would pair the previous step's features with its view.
+  if (
+    !isUrlUpdatingEnabled() ||
+    state.trackViewer.restoringStored !== null ||
+    entryLoading()
+  ) {
     // URL updating is suspended while the store is mutated programmatically
     // (a feature drag, or restoring state on popstate). End any in-progress
     // viewport-coalescing session so the first write after we resume starts a
     // fresh history entry instead of replacing the entry we navigated to.
     lastWriteWasViewOnly = false;
+
+    // Likewise a run of setup changes: continued, it would replace that entry.
+    lastChangedSetups = '';
+
+    // And the content last written, which Back can leave this behind: the same
+    // content written again (a modal reopened) would compare as view-only and
+    // replace the entry navigated to.
+    lastWrittenRest = null;
 
     // Drop an owed rewrite rather than running it: on a popstate restore the
     // entry it would replace is the one just navigated to. `previousView` has
@@ -241,17 +318,18 @@ function updateUrl(state: RootState, forced: boolean): void {
   const rest = [
     changesets.authorName,
     changesets.days,
-    drawingLines.lines,
+    changesetInspector.inspected?.id,
     gallery.activeImageId,
     gallery.filter,
     eventsFilter,
-    drawingPoints.points,
     main.activeModal,
     main.embedFeatures,
     main.selection,
     map.layers,
+    map.layerSetups,
     map.customLayers,
-    map.shading,
+    map.presets,
+    map.linkPresets,
     routePlanner,
     routePlanner.points,
     routePlanner.finishOnly,
@@ -275,6 +353,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     search.selectedResults,
     search.previewId,
     trackViewer.trackUID,
+    trackViewer.trackGeojson,
     // The derived id itself, not the fields behind it: the URL follows every
     // way a map can claim or release it — a load that starts, opens, or is
     // given up on — without this list having to name them.
@@ -297,6 +376,9 @@ function updateUrl(state: RootState, forced: boolean): void {
     panoramaSettings.altMin,
     panoramaSettings.altMax,
     panoramaSettings.fovDeg,
+    panoramaSettings.showSun,
+    panoramaSettings.showMoon,
+    panorama.skyDate,
     // The direction a slice faces, which is the whole of what changes when the
     // wedge is swung — without it the swing writes no URL at all and waits to
     // be noticed by an unrelated change.
@@ -331,9 +413,30 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   previousView = view;
 
-  const layers = map.layers
-    .filter((type) => type !== 'i' && integratedLayerDefMap[type])
-    .join('~');
+  // Presets go along as copies: whoever opens the link hasn't got them.
+  const inline = inlinePresets(
+    map.layers,
+    (id) => presetByIdSelector(state)[id],
+  );
+
+  // Custom maps by id too, in their place: `custom-layers=` carries them. An
+  // offline map is this device's alone, so a reload keeps it and another
+  // device drops it.
+  const linked = inline.layers.filter(
+    (type) =>
+      mapIndexById[type] ||
+      isCatalogId(type) ||
+      presetIdOf(type) !== undefined ||
+      map.customLayers.some((def) => def.type === type) ||
+      map.cachedMaps.some((cm) => cm.type === type),
+  );
+
+  const joined = linked.join('~');
+
+  // A lone id other than a built-in one could read as legacy concatenated
+  // layers (`XSOR7`); the `~` keeps it whole.
+  const layers =
+    linked.length === 1 && !mapIndexById[joined] ? `${joined}~` : joined;
 
   const queryParts: QueryPart[] = [
     [
@@ -346,13 +449,26 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['layers', layers]);
   }
 
-  if (
-    map.layers.some(
-      (layer) =>
-        integratedLayerDefMap[layer]?.technology === 'parametricShading',
-    )
-  ) {
-    queryParts.push(['shading', serializeShading(map.shading)]);
+  // Each layer's setup, so the link draws what is on screen; one at its
+  // defaults adds nothing.
+  for (const type of linked) {
+    const setup = map.layerSetups[type];
+
+    if (presetIdOf(type) === undefined && !isEmptySetup(setup)) {
+      queryParts.push([`${SETUP_PARAM_PREFIX}${type}`, serializeSetup(setup!)]);
+    }
+  }
+
+  for (const [type, config] of presetOnlyConfigs(
+    inline.presets,
+    linked,
+    map.layerSetups,
+  )) {
+    queryParts.push([`${SETUP_PARAM_PREFIX}${type}`, serializeSetup(config)]);
+  }
+
+  for (const preset of inline.presets) {
+    queryParts.push(...presetUrlParts(preset, preset.id));
   }
 
   // The map-click tool first, so a link that names several of them still
@@ -365,8 +481,7 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   {
     const chartParam =
-      elevationChart.target &&
-      serializeChartTarget(elevationChart.target, drawingLines.lines);
+      elevationChart.target && serializeChartTarget(elevationChart.target);
 
     if (chartParam) {
       queryParts.push(['elevation-chart', chartParam]);
@@ -388,8 +503,17 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const historyParts: QueryPart[] = mapId ? [] : queryParts;
 
-  const filteredCustomLayers = map.customLayers?.filter(({ type }) =>
-    map.layers.includes(type),
+  const drawn = drawnTypesSelector(state);
+
+  // With the servers its named maps are built on, which it can't draw without.
+  const sources = new Set(
+    map.customLayers.flatMap((def) =>
+      drawn.includes(def.type) && def.source ? [def.source] : [],
+    ),
+  );
+
+  const filteredCustomLayers = map.customLayers.filter(
+    ({ type }) => drawn.includes(type) || sources.has(type),
   );
 
   if (filteredCustomLayers.length) {
@@ -472,6 +596,16 @@ function updateUrl(state: RootState, forced: boolean): void {
     if (!full) {
       historyParts.push(['panorama-fov', String(panoramaSettings.fovDeg)]);
     }
+
+    const sky = serializePanoramaSky(panoramaSettings);
+
+    if (sky) {
+      historyParts.push(['panorama-sky', sky]);
+    }
+
+    if (panorama.skyDate) {
+      historyParts.push(['panorama-date', panorama.skyDate]);
+    }
   }
 
   // Where the viewshed is taken from and how far it looks; the overlay itself is
@@ -525,6 +659,10 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['changesets-author', changesets.authorName]);
   }
 
+  if (changesetInspector.inspected) {
+    queryParts.push(['changeset', changesetInspector.inspected.id]);
+  }
+
   // Which events are listed, not what the map holds — so it stays in the
   // address bar (and thus in a shared link) even under a saved map, and no map
   // document carries it.
@@ -570,7 +708,19 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['follow', main.selection?.id]);
   }
 
+  const noteId = selectedOsmNoteId(state);
+
+  if (noteId !== null) {
+    queryParts.push(['osm-note', String(noteId)]);
+  }
+
   const sq = mapId ? serializeQuery(historyParts) : undefined;
+
+  // The snapshot of local data this entry shows (`trackStore.ts`): every version
+  // is a step of its own, like any other content.
+  const local = localTrack(state);
+
+  const tr = local ? snapshotKey(local) : undefined;
 
   const urlSearch = serializeQuery(queryParts);
 
@@ -587,15 +737,16 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const restSignature = `${serializeQuery(
     queryParts.filter(contentPart),
-  )}\n${mapId ? serializeQuery(historyParts.filter(contentPart)) : ''}`;
+  )}\n${mapId ? serializeQuery(historyParts.filter(contentPart)) : ''}\n${tr ?? ''}`;
 
   const prevHistoryState = history.state as {
     sq?: string;
-    tr?: true;
+    tr?: string | true;
   } | null;
 
   const contentChanged =
     (mapId && sq !== prevHistoryState?.sq) ||
+    tr !== prevHistoryState?.tr ||
     urlSearch !== window.location.hash.slice(1);
 
   if (!contentChanged) {
@@ -605,6 +756,9 @@ function updateUrl(state: RootState, forced: boolean): void {
 
     return;
   }
+
+  // The entry's own content arriving, which becomes the entry, not a step.
+  const replacing = isReplacingEntry();
 
   // A change confined to the coalesced params replaces the current entry when
   // it continues a recent run of them (last write was also one, and within the
@@ -620,14 +774,33 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   const now = Date.now();
 
+  // Setups are content, so a view-only write leaves them as they were.
+  const setupWrite = viewOnly
+    ? undefined
+    : setupWriteOf(
+        mapId ? [...queryParts, ...historyParts] : queryParts,
+        contentPart,
+      );
+
+  // A slider dragged or boxes ticked on one layer: one entry for the run.
+  const setupRun =
+    setupWrite !== undefined &&
+    setupWrite.changed !== '' &&
+    setupWrite.changed === lastChangedSetups &&
+    setupWrite.other === lastWrittenOther &&
+    now - lastWriteTs < SETUP_COALESCE_GAP_MS;
+
   const method =
-    viewOnly &&
-    (!viewChanged ||
-      (lastWriteWasViewOnly && now - lastViewWriteTs < VIEW_COALESCE_GAP_MS))
+    replacing ||
+    setupRun ||
+    (viewOnly &&
+      (!viewChanged ||
+        (lastWriteWasViewOnly && now - lastViewWriteTs < VIEW_COALESCE_GAP_MS)))
       ? 'replaceState'
       : 'pushState';
 
-  if (method === 'replaceState' && !forced) {
+  // Not deferred: a rerun would no longer know to replace, and would push.
+  if (method === 'replaceState' && !forced && !replacing) {
     // Clamped because the clock can go backwards (an NTP correction mid-pan):
     // a negative age would schedule the rewrite further out than the interval
     // and `??=` never shortens a timer, freezing viewport updates until the
@@ -657,26 +830,25 @@ function updateUrl(state: RootState, forced: boolean): void {
   // SecurityError. Normalizing also self-heals the address bar.
   const path = window.location.pathname.replace(/\/{2,}/g, '/');
 
-  // `tr` says this entry was holding a track in the browser's own storage, so
-  // a reload of it puts the track back. Carried forward rather than
-  // recomputed: it belongs to the entry, and `trackStore` sets it on the
-  // current one when it writes.
-  //
   // A refusal throws on the way out, leaving none of the bookkeeping below
   // advanced — the entry this meant to leave is still the current one, and
   // nothing has been recorded that would let the next viewport change replace
   // it. The update is dropped rather than retried: `previousRest` and
   // `previousView` have already moved on, so only a further state change
   // derives the URL again.
-  history[method](
-    { sq, tr: prevHistoryState?.tr },
-    '',
-    path + (urlSearch ? `#${urlSearch}` : ''),
-  );
+  history[method]({ sq, tr }, '', path + (urlSearch ? `#${urlSearch}` : ''));
 
   lastWriteTs = now;
 
   lastWrittenRest = restSignature;
+
+  if (setupWrite) {
+    lastWrittenOther = setupWrite.other;
+
+    lastWrittenSetups = setupWrite.setups;
+  }
+
+  lastChangedSetups = setupWrite?.changed ?? '';
 
   lastWriteWasViewOnly = viewOnly;
 
@@ -698,29 +870,11 @@ function updateUrl(state: RootState, forced: boolean): void {
 }
 
 /**
- * `elevation-chart=` — which feature's profile is shown, and which of its lines
- * where that isn't implied. A drawn line is named by *position*, because that is
- * how the line itself is written (`line=`/`polygon=` are positional and carry no
- * id); a device by token, since which one is charted is not what `follow=` says.
+ * `elevation-chart=` — which feature's profile is shown; a device by token,
+ * since which one is charted is not what `follow=` says.
  */
 function serializeChartTarget(
   target: NonNullable<RootState['elevationChart']['target']>,
-  lines: RootState['drawingLines']['lines'],
-): string | null {
-  switch (target.type) {
-    case 'drawing': {
-      const index = lines.findIndex(({ id }) => id === target.lineId);
-
-      // The charted line is gone — deleting one writes the URL before the chart
-      // has closed. A bare `drawing` would name no line at all, and a Back to
-      // that entry would arm a request nothing can ever honour.
-      return index < 0 ? null : `drawing/${index}`;
-    }
-
-    case 'tracking':
-      return `tracking/${target.token}`;
-
-    default:
-      return target.type;
-  }
+): string {
+  return target.type === 'tracking' ? `tracking/${target.token}` : target.type;
 }

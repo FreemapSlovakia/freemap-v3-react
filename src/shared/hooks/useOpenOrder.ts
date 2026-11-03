@@ -20,7 +20,7 @@ export function orderByAppearance<T extends { id: string }>(
 
   return {
     order,
-    ordered: [...items].sort(
+    ordered: items.toSorted(
       (a, b) => order.indexOf(a.id) - order.indexOf(b.id),
     ),
   };

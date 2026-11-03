@@ -1,11 +1,17 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
 import clsx from 'clsx';
 import type { ReactElement } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
-import { FaTimes, FaUpload } from 'react-icons/fa';
+import { FaUpload } from 'react-icons/fa';
 import { MdShapeLine } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import { useLoadDataFiles } from '../hooks/useLoadDataFiles.js';
@@ -53,8 +59,9 @@ export default function DataViewerUploadModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <MdShapeLine /> <FaUpload /> {tvm?.uploadModal.title}
+          <MdShapeLine /> <FaUpload /> <Text m={tvm} k="uploadModal.title" />
         </Modal.Title>
+        <ManualHeaderButton chapter="tracks" />
       </Modal.Header>
 
       <Modal.Body>
@@ -66,15 +73,13 @@ export default function DataViewerUploadModal({ show }: Props): ReactElement {
               rather than raw MIME labels; validation still uses the prop. */}
           <input {...getInputProps({ accept: TRACK_FILE_EXTENSIONS })} />
 
-          {tvm?.uploadModal.drop}
+          <Text m={tvm} k="uploadModal.drop" />
         </div>
       </Modal.Body>
 
-      <Modal.Footer>
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+      <FmModalFooter>
+        <FmDismissButton label={m?.general.cancel} onClick={close} />
+      </FmModalFooter>
     </Modal>
   );
 }

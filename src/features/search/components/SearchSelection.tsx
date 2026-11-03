@@ -1,11 +1,12 @@
-import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
-import { useConvertToDataViewer } from '@features/dataViewer/hooks/useConvertToDataViewer.js';
+import { convertToDrawing } from '@app/store/actions.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { DetailsToggle } from '@features/objects/components/DetailsToggle.js';
+import { DetailsButton } from '@features/objects/components/DetailsButton.js';
 import { useObjectActions } from '@features/objects/components/useObjectActions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   Action,
+  ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Selection } from '@shared/components/Selection.js';
@@ -19,13 +20,7 @@ import { convertibleLines } from '@shared/simplifyTolerance.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
-import {
-  FaPaintBrush,
-  FaPencilAlt,
-  FaSearch,
-  FaThumbtack,
-} from 'react-icons/fa';
-import { MdShapeLine } from 'react-icons/md';
+import { FaPencilAlt, FaSearch, FaThumbtack } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { searchKeepResult } from '../model/actions.js';
 import {
@@ -44,7 +39,7 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
 
   const askConversion = useConvertPrompt();
 
-  const convertToDataViewer = useConvertToDataViewer();
+  const manualAction = useManualAction();
 
   const selectedResult = useAppSelector(activeSearchResultSelector);
 
@@ -52,20 +47,36 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
   // looked at, and goes when that stops.
   const kept = useAppSelector(activeSearchResultKeptSelector);
 
+  const shown =
+    selectedResult && !selectedResult.loading && !window.fmEmbedded && !hidden;
+
+  // Only a toolbar on screen takes the `j` chords from the map's view.
   const { actions, onSelect } = useObjectActions({
-    result: selectedResult ?? null,
+    result: shown ? selectedResult : null,
   });
 
-  return selectedResult &&
-    !selectedResult.loading &&
-    !window.fmEmbedded &&
-    !hidden ? (
-    // One button says what can be done about the result being on the map, and
-    // which one it is says what it is doing there: a result being looked at can
-    // be kept, and a kept one can be taken off. They share the slot the delete
-    // button holds on every other selection toolbar, right before the ×.
+  return shown ? (
+    // The pin and the delete are exclusive: a result being looked at can be
+    // kept, a kept one taken off — the latter through `deletable`, before the ×.
     <Selection icon={<FaSearch />} label={m?.search.result} deletable={kept}>
-      <DetailsToggle />
+      <DetailsButton />
+
+      {!kept && (
+        <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>
+          {({ label, labelClassName, props }) => (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(searchKeepResult(selectedResult.id));
+              }}
+              {...props}
+            >
+              <FaThumbtack />
+              <span className={labelClassName}> {label}</span>
+            </Button>
+          )}
+        </LongPressTooltip>
+      )}
 
       <ResponsiveActions
         gap={1}
@@ -100,43 +111,12 @@ export function SearchSelection({ hidden }: Props): ReactElement | null {
           showFrom="never"
         />
 
-        <Action
-          icon={<MdShapeLine />}
-          label={m?.general.convertTo({ tool: m?.tools.dataViewer })}
-          onClick={() => {
-            convertToDataViewer({ type: 'search-result' });
-          }}
-          showFrom="never"
-        />
-
-        <Action
-          icon={<FaPaintBrush />}
-          label={m?.mapLayers.lookupStyle}
-          onClick={() => {
-            dispatch(setActiveModal({ type: 'search-result-style' }));
-          }}
-          showFrom="never"
-        />
-
         {actions}
-      </ResponsiveActions>
 
-      {!kept && (
-        <LongPressTooltip breakpoint="sm" label={m?.search.keepOnMap}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                dispatch(searchKeepResult(selectedResult.id));
-              }}
-              {...props}
-            >
-              <FaThumbtack />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
+        <ActionDivider />
+
+        <Action {...manualAction('search')} />
+      </ResponsiveActions>
     </Selection>
   ) : null;
 }

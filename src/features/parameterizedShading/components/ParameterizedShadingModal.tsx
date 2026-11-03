@@ -1,25 +1,18 @@
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import Color from 'color';
+import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import type { ReactElement } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import type { Color as ColorType, ShadingComponent } from '../model/Shading.js';
+import { hexaToColor } from '../model/Shading.js';
+import {
+  DEFAULT_PRESET_PARAMS,
+  type ParameterizedPreset,
+  type PresetParams,
+} from '../model/shadingPresets.js';
 import { useShadingMessages } from '../translations/useShadingMessages.js';
-
-export type ParameterizedKind = 'contour' | 'fog';
-
-/** Parse an `#rrggbb`/`#rrggbbaa` string into a `[r, g, b, a]` shading color. */
-function hexaToColor(hexa: string): ColorType {
-  const c = Color(hexa);
-
-  return [
-    Math.round(c.red()),
-    Math.round(c.green()),
-    Math.round(c.blue()),
-    c.alpha(),
-  ];
-}
 
 const deElevation = (value: string | null) => value ?? '';
 
@@ -31,18 +24,46 @@ const deBelowColor = (value: string | null) => value ?? '#e6e6e6d0';
 
 const deAboveColor = (value: string | null) => value ?? '#e6e6e600';
 
+const deMinElevation = (value: string | null) => value ?? '0';
+
+const deMaxElevation = (value: string | null) => value ?? '3000';
+
+const deMetallicColor = (value: string | null) => value ?? '#ffffffff';
+
+const deDarkColor = (value: string | null) => value ?? '#000000ff';
+
+const deRepeats = (value: string | null) => value ?? '3';
+
+// 2 × repeats + 1 stops must fit the shader's 16 (`NUM_STOPS`).
+const MAX_REPEATS = 7;
+
+// Precious metals first, then dark tones for the colour between highlights.
+const METAL_COLORS = [
+  '#ffffff',
+  '#c0c0c0',
+  '#ffeb3b',
+  '#ffd700',
+  '#b87333',
+  '#cd7f32',
+  '#b76e79',
+  '#000000',
+  '#2a3439',
+  '#3d2b1f',
+  '#1a2a4a',
+];
+
 type Props = {
-  kind: ParameterizedKind | null;
+  kind: ParameterizedPreset | null;
   colorReliefMax: number;
   onClose: () => void;
-  onAdd: (component: ShadingComponent) => void;
+  onApply: (params: PresetParams) => void;
 };
 
 export function ParameterizedShadingModal({
   kind,
   colorReliefMax,
   onClose,
-  onAdd,
+  onApply,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -78,57 +99,99 @@ export function ParameterizedShadingModal({
     deAboveColor,
   );
 
+  const [minElevation, setMinElevation] = usePersistentState<string>(
+    'fm.shading.hypsometric.minElevation',
+    String,
+    deMinElevation,
+  );
+
+  const [maxElevation, setMaxElevation] = usePersistentState<string>(
+    'fm.shading.hypsometric.maxElevation',
+    String,
+    deMaxElevation,
+  );
+
+  const [metallicColor, setMetallicColor] = usePersistentState<string>(
+    'fm.shading.metallic.color',
+    String,
+    deMetallicColor,
+  );
+
+  const [darkColor, setDarkColor] = usePersistentState<string>(
+    'fm.shading.metallic.darkColor',
+    String,
+    deDarkColor,
+  );
+
+  const [repeats, setRepeats] = usePersistentState<string>(
+    'fm.shading.metallic.repeats',
+    String,
+    deRepeats,
+  );
+
+  const isBand = kind === 'contour' || kind === 'fog';
+
+  // Not `required`, so an empty field is merely unfinished rather than wrong:
+  // the elevation opens empty and reddening it on sight would read as broken.
+  const invalidElevation = isInvalidFloat(elevation, false, 0, colorReliefMax);
+
+  // A band taller than the terrain itself paints the whole map one colour.
+  const invalidWidth = isInvalidFloat(width, false, 0, colorReliefMax);
+
+  const invalidMinElevation = isInvalidFloat(
+    minElevation,
+    false,
+    0,
+    colorReliefMax,
+  );
+
+  // Above the bottom, where that is valid; a zero-height range has no tints.
+  const maxFloor =
+    minElevation === '' || invalidMinElevation ? 0 : Number(minElevation);
+
+  const invalidMaxElevation =
+    isInvalidFloat(maxElevation, false, maxFloor, colorReliefMax) ||
+    (maxElevation !== '' && Number(maxElevation) <= maxFloor);
+
+  const invalidRepeats = isInvalidInt(repeats, false, 1, MAX_REPEATS);
+
+  const invalid = isBand
+    ? elevation === '' || width === '' || invalidElevation || invalidWidth
+    : kind === 'hypsometric'
+      ? minElevation === '' ||
+        maxElevation === '' ||
+        invalidMinElevation ||
+        invalidMaxElevation
+      : repeats === '' || invalidRepeats;
+
   function handleSubmit() {
-    const ele = Number(elevation);
-
-    const w = Number(width);
-
-    if (Number.isNaN(ele) || Number.isNaN(w)) {
+    if (invalid) {
       return;
     }
 
-    const hwidth = w / 2;
-
-    const id = Math.random();
-
-    let component: ShadingComponent;
-
-    if (kind === 'fog') {
-      const below = hexaToColor(belowColor);
-
-      const above = hexaToColor(aboveColor);
-
-      component = {
-        id,
-        type: 'color-relief',
-        colorStops: [
-          { value: ele - hwidth, color: below },
-          { value: ele + hwidth, color: above },
-        ],
-        brightness: 0,
-        contrast: 1,
-      };
-    } else {
-      const color = hexaToColor(contourColor);
-
-      const transparent: ColorType = [color[0], color[1], color[2], 0];
-
-      component = {
-        id,
-        type: 'color-relief',
-        colorStops: [
-          { value: ele - hwidth, color: transparent },
-          { value: ele - hwidth, color },
-          { value: ele + hwidth, color },
-          { value: ele + hwidth, color: transparent },
-        ],
-        brightness: 0,
-        contrast: 1,
-      };
-    }
-
-    onAdd(component);
+    onApply({
+      ...DEFAULT_PRESET_PARAMS,
+      elevation: Number(elevation),
+      bandWidth: Number(width),
+      color: hexaToColor(
+        kind === 'contour'
+          ? contourColor
+          : kind === 'fog'
+            ? belowColor
+            : metallicColor,
+      ),
+      aboveColor: hexaToColor(aboveColor),
+      minElevation: Number(minElevation),
+      maxElevation: Number(maxElevation),
+      darkColor: hexaToColor(darkColor),
+      repeats: Number(repeats),
+    });
   }
+
+  const elevationRange = m?.general.valueRange({
+    min: '0 m',
+    max: `${colorReliefMax} m`,
+  });
 
   return (
     <Modal show={kind !== null} onHide={onClose} size="sm">
@@ -141,62 +204,90 @@ export function ParameterizedShadingModal({
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {kind === 'fog' ? sm?.fogInversion : sm?.contour}
+            {kind && <Text m={sm} k={`presetNames.${kind}`} />}
           </Modal.Title>
+          <ManualHeaderButton chapter="shading" />
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group className="mb-3" controlId="ps-elevation">
-            <Form.Label>{sm?.elevation}</Form.Label>
+          {isBand && (
+            <>
+              <Form.Group className="mb-3" controlId="ps-elevation">
+                <Form.Label>
+                  <Text m={sm} k="elevation" />
+                </Form.Label>
 
-            <InputGroup>
-              <Form.Control
-                type="number"
-                step="any"
-                value={elevation}
-                onChange={(e) => setElevation(e.currentTarget.value)}
-                autoFocus
-                min={0}
-                max={colorReliefMax}
-              />
+                <InputGroup hasValidation>
+                  <Form.Control
+                    type="number"
+                    step="any"
+                    value={elevation}
+                    onChange={(e) => setElevation(e.currentTarget.value)}
+                    autoFocus
+                    isInvalid={invalidElevation}
+                    min={0}
+                    max={colorReliefMax}
+                  />
 
-              <InputGroup.Text>m</InputGroup.Text>
-            </InputGroup>
-          </Form.Group>
+                  <InputGroup.Text>m</InputGroup.Text>
 
-          <Form.Group className="mb-3" controlId="ps-width">
-            <Form.Label>{sm?.elevationBandWidth}</Form.Label>
+                  <Form.Control.Feedback type="invalid">
+                    {elevationRange}
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Form.Group>
 
-            <InputGroup>
-              <Form.Control
-                type="number"
-                step="any"
-                min={0}
-                value={width}
-                onChange={(e) => setWidth(e.currentTarget.value)}
-              />
+              <Form.Group className="mb-3" controlId="ps-width">
+                <Form.Label>
+                  <Text m={sm} k="elevationBandWidth" />
+                </Form.Label>
 
-              <InputGroup.Text>m</InputGroup.Text>
-            </InputGroup>
-          </Form.Group>
+                <InputGroup hasValidation>
+                  <Form.Control
+                    type="number"
+                    step="any"
+                    min={0}
+                    max={colorReliefMax}
+                    value={width}
+                    onChange={(e) => setWidth(e.currentTarget.value)}
+                    isInvalid={invalidWidth}
+                  />
 
-          {kind === 'fog' ? (
+                  <InputGroup.Text>m</InputGroup.Text>
+
+                  <Form.Control.Feedback type="invalid">
+                    {elevationRange}
+                  </Form.Control.Feedback>
+                </InputGroup>
+              </Form.Group>
+            </>
+          )}
+
+          {kind === 'fog' && (
             <>
               <Form.Group className="mb-3">
-                <Form.Label>{sm?.belowColor}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="belowColor" />
+                </Form.Label>
 
                 <RgbaColorPicker value={belowColor} onChange={setBelowColor} />
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>{sm?.aboveColor}</Form.Label>
+                <Form.Label>
+                  <Text m={sm} k="aboveColor" />
+                </Form.Label>
 
                 <RgbaColorPicker value={aboveColor} onChange={setAboveColor} />
               </Form.Group>
             </>
-          ) : (
+          )}
+
+          {kind === 'contour' && (
             <Form.Group className="mb-3">
-              <Form.Label>{sm?.color}</Form.Label>
+              <Form.Label>
+                <Text m={sm} k="color" />
+              </Form.Label>
 
               <RgbaColorPicker
                 value={contourColor}
@@ -204,19 +295,131 @@ export function ParameterizedShadingModal({
               />
             </Form.Group>
           )}
+
+          {kind === 'hypsometric' && (
+            <Form.Group className="mb-3" controlId="ps-min-elevation">
+              <Form.Label>
+                <Text m={sm} k="minElevation" />
+              </Form.Label>
+
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="number"
+                  step="any"
+                  min={0}
+                  max={colorReliefMax}
+                  value={minElevation}
+                  onChange={(e) => setMinElevation(e.currentTarget.value)}
+                  autoFocus
+                  isInvalid={invalidMinElevation}
+                />
+
+                <InputGroup.Text>m</InputGroup.Text>
+
+                <Form.Control.Feedback type="invalid">
+                  {elevationRange}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+          )}
+
+          {kind === 'hypsometric' && (
+            <Form.Group className="mb-3" controlId="ps-max-elevation">
+              <Form.Label>
+                <Text m={sm} k="maxElevation" />
+              </Form.Label>
+
+              <InputGroup hasValidation>
+                <Form.Control
+                  type="number"
+                  step="any"
+                  min={maxFloor}
+                  max={colorReliefMax}
+                  value={maxElevation}
+                  onChange={(e) => setMaxElevation(e.currentTarget.value)}
+                  isInvalid={invalidMaxElevation}
+                />
+
+                <InputGroup.Text>m</InputGroup.Text>
+
+                <Form.Control.Feedback type="invalid">
+                  <Text>
+                    {(m) =>
+                      m.general.valueRange({
+                        min: `${maxFloor} m`,
+                        max: `${colorReliefMax} m`,
+                      })
+                    }
+                  </Text>
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+          )}
+
+          {kind === 'metallic' && (
+            <>
+              <Form.Group className="mb-3" controlId="ps-repeats">
+                <Form.Label>
+                  <Text m={sm} k="repeats" />
+                </Form.Label>
+
+                <Form.Control
+                  type="number"
+                  step={1}
+                  min={1}
+                  max={MAX_REPEATS}
+                  value={repeats}
+                  onChange={(e) => setRepeats(e.currentTarget.value)}
+                  autoFocus
+                  isInvalid={invalidRepeats}
+                />
+
+                <Form.Control.Feedback type="invalid">
+                  <Text>
+                    {(m) =>
+                      m.general.valueRange({
+                        min: '1',
+                        max: String(MAX_REPEATS),
+                      })
+                    }
+                  </Text>
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>
+                  <Text m={sm} k="highlightColor" />
+                </Form.Label>
+
+                <RgbaColorPicker
+                  value={metallicColor}
+                  onChange={setMetallicColor}
+                  presets={METAL_COLORS}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>
+                  <Text m={sm} k="darkColor" />
+                </Form.Label>
+
+                <RgbaColorPicker
+                  value={darkColor}
+                  onChange={setDarkColor}
+                  presets={METAL_COLORS}
+                />
+              </Form.Group>
+            </>
+          )}
         </Modal.Body>
 
         <Modal.Footer>
           <Button variant="secondary" onClick={onClose}>
-            {m?.general.cancel}
+            <Text k="general.cancel" />
           </Button>
 
-          <Button
-            type="submit"
-            variant="primary"
-            disabled={elevation === '' || width === ''}
-          >
-            {sm?.add}
+          <Button type="submit" variant="primary" disabled={invalid}>
+            <Text m={sm} k="apply" />
           </Button>
         </Modal.Footer>
       </Form>

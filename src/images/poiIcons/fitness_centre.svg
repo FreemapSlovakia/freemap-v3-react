@@ -1,3 +1,8 @@
-<svg width="20" height="11" viewBox="0 0 20 11" version="1.1" id="svg1" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-  <path d="M 3.5,1.5 V 9.5 H 6.5 V 1.5 Z M 13.5,1.5 V 9.5 H 16.5 V 1.5 Z M 1.5,3.5 V 7.5 H 2.5 V 3.5 Z M 7.5,4.5 V 6.5 H 12.5 V 4.5 Z M 17.5,3.5 V 7.5 H 18.5 V 3.5 Z" />
+<svg
+   width="17"
+   height="8"
+   viewBox="0 0 17 8"
+   xmlns="http://www.w3.org/2000/svg">
+  <path
+     d="M 2,0 V 8 H 5 V 0 Z m 10,0 v 8 h 3 V 0 Z M 0,2 V 6 H 1 V 2 Z m 6,1 v 2 h 5 V 3 Z M 16,2 v 4 h 1 V 2 Z" />
 </svg>

@@ -5,7 +5,10 @@ const cs: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   pickViewpoint: 'Vybrat v mapě',
   locate: 'Viditelnost z mé polohy',
   pickViewpointPrompt: 'Klikněte do mapy tam, odkud se chcete dívat',
-  detail: 'Kvalita / rychlost',
+  extent: 'Dosah a detail',
+  rangeHint:
+    'Pohled dál než 20 km je prémiová funkce: vzdálenost stojí viditelnost nejvíc — paprsků přibývá s obvodem a každý jde až na okraj.',
+  detail: 'Detail',
   details: {
     superfast: 'Nejnižší / nejrychlejší',
     fast: 'Nízká / rychlá',
@@ -25,6 +28,10 @@ const cs: DeepPartialWithRequiredObjects<ViewshedMessages> = {
   minOpacity: 'Nejnižší sytost',
   minOpacityHint:
     'Jak sytě je vykreslen viditelný terén, i když jej vidíte téměř zboku. Při 100 % je vrstva jen šablona: buď vidět, nebo ne, nic mezi tím.',
+  caveats: {
+    viewpoint:
+      'Viditelnost je na přesné stanoviště mnohem citlivější než panorama: pár metrů vedle vrcholu může připravit o celé kvadranty.',
+  },
   update: 'Aktualizovat',
   outdated: 'Vrstva je z předchozího stanoviště.',
   queued: ({ ahead }) =>

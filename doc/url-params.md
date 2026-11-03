@@ -7,7 +7,7 @@ Freemap syncs most application state through the **URL hash** (`#name=value&name
 
 Params are read from `document.location.hash || document.location.search` (so `?name=…` works as a fallback to `#name=…`).
 
-> Keep this file in sync when adding, renaming, or removing a URL param, and cross-update the hash-param mentions in [`src/static/llms.txt`](../src/static/llms.txt).
+> Keep this file in sync when adding, renaming, or removing a URL param, and cross-update the hash-param mentions in [`src/static/llms.txt`](../src/static/llms.txt) and its `llms-*.md` reference files.
 
 ## Conventions
 
@@ -22,7 +22,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | `map` | Viewport | r/w | `zoom/lat/lon` |
 | `geo` | Viewport via RFC 5870 geo URI | read-only | `geo:lat,lon[,ele][?z=zoom]` |
 | `layers` | Active base + overlay layers | r/w | `~`-separated layer codes (e.g. `X~I~w`) |
-| `shading` | Parametric shading | r/w | `bgColor!comp_params!…` |
+| `shading` | Parametric shading settings shared by the shading layers | r/w | `bgColor!comp_params!…`; a component's type may carry `~contrast~brightness` |
 | `custom-layers` | Custom WMS/TMS/MapLibre defs | r/w | JSON array |
 | `id` | Loaded saved-map id | r/w | map UUID |
 | `embed` | Embedded-mode feature flags | r/w | `,`-separated: `search`, `noMapSwitch`, `noLocateMe` |
@@ -36,6 +36,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | `tool` | Open tool's toolbar (older spelling) | read-only | read exactly like `tools` |
 | `show` | Open modal / viewer | r/w | `type` or `type/arg` (e.g. `gallery-viewer/123`, `wiki/en:Title`) |
 | `document`, `tip`, `image`, `wmc` | Legacy modal aliases → `show=…` | read-only | id |
+| `manual` | Alias of `show=manual/<chapter>`, for the SEO prerender (nginx serves no query holding a `/`) | read-only | chapter id |
 
 ## Route planner
 
@@ -49,12 +50,12 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | `iso-buckets`, `iso-distance-limit`, `iso-time-limit` | Isochrone params | r/w | integer |
 | `route-params-hash` | Premium route validation hash | r/w | string |
 
-## Track viewer
+## Drawing and data: sources and display
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `track-uid` | Saved track id | r/w | UUID |
-| `import-url` | External GPX/KML/TCX/GeoJSON to load | r/w | URL-encoded URL |
+| `track-uid` | Saved track id to import once; never written back | read-only | UUID |
+| `import-url` | External GPX/KML/TCX/GeoJSON to import once; never written back | read-only | URL-encoded URL |
 | `gpx-url`, `load` | Legacy aliases of `import-url` | read-only | URL |
 | `track-colorize-by` | Track colorization mode | r/w | mode id |
 | `track-style` | **Default style for unstyled imported features** | read-only | [style codec](#style-codec) |
@@ -80,8 +81,10 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | Param | Controls | R/W | Format |
 |---|---|---|---|
 | `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
+| `osm-note` | The selected OSM note, its thread in a toast; fetched when the layer hasn't loaded it. Absent, a selected note is let go | r/w | integer id |
 | `changesets-days` | Changesets time window | r/w | integer days |
 | `changesets-author` | Changesets author filter | r/w | username |
+| `changeset` | Changeset whose changes are on the map; opens the changesets tool | r/w | integer id |
 | `gallery-user-id`, `gallery-tag`, `gallery-rating-from`/`-to`, `gallery-taken-at-from`/`-to`, `gallery-created-at-from`/`-to`, `gallery-pano`, `gallery-premium` | Gallery filters | r/w | see source |
 | `track` | Live-tracking device + props | r/w | `token[/prop:value…]` |
 | `follow` | Followed live device | r/w | token or id |
@@ -94,9 +97,15 @@ These place standalone map annotations — markers, lines, filled areas — not 
 
 | Param | Controls | R/W | Format |
 |---|---|---|---|
-| `point` (repeatable), `info-point` | Drawing point(s) / markers | r/w | `lat/lon[<style fields>]` |
-| `line`, `polygon` (repeatable) | Drawing line / polygon | r/w | `lat/lon,lat/lon,…[<style fields>]` |
+| `point` (repeatable), `info-point` | Point(s) / markers | r/w | `lat/lon[/ele][,lat/lon[/ele]…][<style fields>]` |
+| `line`, `polygon` (repeatable) | Line / polygon | r/w | `vertex,vertex,…[<style fields>]` |
 | `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
+
+These params carry the whole Drawing and data collection, in order, whenever it fits: every feature must read back meaning the same (`featureToWire` round-trips it and compares — times as instants, a style as the one it resolves to, so `.000Z`, an offset or a simplestyle-only style still fit; coordinates at the link's 6 decimals), and the encoded params must stay within `URL_FEATURES_BUDGET` (8000 characters, `model/urlForm.ts`). Otherwise none of them are written and the collection lives in a browser snapshot named by `history.state.tr` (see [elevation-and-colorizers.md](./elevation-and-colorizers.md#local-data-has-history)). A `track-uid` or `import-url` link is read on its own; once its track is here, the entry is replaced by these params or a snapshot ([entry-content.md](./entry-content.md)).
+
+**Vertices with values.** A vertex is `lat/lon` followed by `/value` per column the `V` field names — `ele`, `time`, or any per-point channel key (`heart`, `cad`, …); an empty value is a gap, and trailing gaps are dropped. `time` is epoch seconds: the first value is absolute and each later one the difference from the previous one, in whole milliseconds. An empty vertex (`,,`) starts a new segment, making the line a `MultiLineString`. A channel holding anything but numbers cannot be written, which sends the collection to a snapshot. A polygon's rings carry their elevation the same way, each param its own `Vele`.
+
+**Multi-geometries.** A `point` with further comma-separated positions is a `MultiPoint`; they are read as members only when a style field or the end follows, since a legacy link wrote `,label` there. A `polygon` broken by `,,` is a `MultiPolygon`, one member per run of vertices, and its holes name their member after a dot (`H3.1`; none is the first). Either needs two members or more — one would read back as a plain point or polygon. A `GeometryCollection` has no link form and sends the collection to a snapshot.
 
 ## Toposcope
 
@@ -129,8 +138,11 @@ Nothing about the toposcope is kept in localStorage, and it is deliberately **no
 | `panorama` | Viewpoint | r/w | `lat,lon` (6 decimals) |
 | `panorama-az` | Bearing the view faces | r/w | whole degrees |
 | `panorama-tilt` | Vertical band framed | r/w | preset name (`standard` / `wide` / `flat`), or `altMin,altMax` degrees for a custom band |
+| `panorama-fov` | Horizontal view of a slice | r/w | degrees; written only for a slice, absent is the full turn — and under a slice `panorama-az` is the direction the slice faces |
+| `panorama-sky` | Which sky paths are drawn | r/w | `sun`, `moon`, `sun,moon` or `none`; not written for the default (sun only), which absent means; an invalid value is ignored |
+| `panorama-date` | Day the sky paths are drawn for | r/w | `YYYY-MM-DD`; absent is the reader's today, and today is never written; an invalid value is ignored |
 
-The picture itself is not in the link: arriving with a viewpoint renders it again, which is why the param is acted on only while `tools=panorama` is open — a render is seconds of somebody else's server, and without the panel there is nothing to render into. Everything else about the view (quality, vertical range, label density, whether it turns by itself) is a standing preference in the `panoramaSettings` slice, so it is in localStorage rather than in the link. The bearing is in `VIEWPORT_KEYS` in `urlProcessor.ts`, alongside `map`: params listed there are kept out of the content signature, so a change confined to them replaces the current history entry rather than pushing one. Anything that moves at gesture speed belongs there.
+The picture itself is not in the link: arriving with a viewpoint renders it again, which is why the params are acted on only while `tools=panorama` is open — a render is seconds of somebody else's server, and without the panel there is nothing to render into. The framing params override the reader's standing preferences in the `panoramaSettings` slice, since what the sender framed is part of what they show; the rest of the view (quality, label density, whether it turns by itself) stays in localStorage. `panorama-az` and `panorama-date` are in `COALESCED_KEYS` in `urlProcessor.ts`, alongside `map`: a change confined to them replaces the current history entry rather than pushing one.
 
 
 ## Style codec
@@ -145,12 +157,18 @@ Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). 
 | `F` | Fill color (RGBA hex) | `F%2300ff0033` |
 | `W` | Line width (number) | `W6` |
 | `D` | Dash array (comma-separated numbers) | `D4,4` |
-| `K` | Line cap — `b`utt / `s`quare (default round) | `Kb` |
-| `J` | Line join — `m`iter / `b`evel (default round) | `Jm` |
-| `S` | Marker shape — `s`quare / `r`ing (default pin) | `Sr` |
+| `K` | Line cap — `b`utt / `s`quare / `r`ound; absent, the viewer's default style decides | `Kb` |
+| `J` | Line join — `m`iter / `b`evel / `r`ound; absent, the viewer's default style decides | `Jm` |
+| `S` | Marker shape — `s`quare / `r`ing / `p`in; absent, the viewer's default style decides | `Sr` |
 | `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
 | `L` | Label (drawing geometry only) | `LMy point` |
 | `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |
+| `M` | Keys the editor owns but can't always reproduce, written back verbatim: a point's `sym`, `marker-symbol` or `icon` that no icon of ours says (an unmapped Garmin symbol, a KML image URL), simplestyle `marker-size`, and a `title` beside the `name` — key/value pairs like `P`'s (links only) | `Msym%1FFlag, Blue` |
+| `Q` | Properties whose values aren't strings — numbers, booleans, `null`, objects and arrays — as key/JSON pairs joined by `\x1f`, so they read back with their type; JSON escapes both separators inside a string (links only; a saved map's `lines` keep the plain shape) | `Qnumber%1F3%1Fflag%1Ftrue%1Fx%1Fnull` |
+| `H` | Hole of the polygon at this position among the `line`/`polygon` params, then `.member` for a multi-polygon's later member | `H0`, `H0.2` |
+| `V` | Columns of the vertex values, joined by `\x1f` (lines; a polygon ring only `ele`) | `Vele%1Ftime%1Fheart` |
+| `Y` | `fm:kind` — what the feature is (`track`, `route`, …) | `Ytrack` |
+| `G` | GPX element it came from (`_gpxType`, lines only) | `Gtrk` |
 
 Colors are RGBA hex; the alpha channel carries the opacity (e.g. `#3388ff33` ≈ 20 % opacity).
 

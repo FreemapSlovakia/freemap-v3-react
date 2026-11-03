@@ -12,10 +12,27 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Forrás',
   detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Magasság',
+  terrain: {
+    prominence: 'Prominencia',
+    keyCol: 'Kulcsnyereg',
+    isolation: 'Izoláció',
+    showRoute: 'Út mutatása a magasabb terephez',
+    hideRoute: 'Út elrejtése',
+    depth: 'Nyereg mélysége',
+    keyColOf: 'Kulcsnyerge ennek',
+    showOnMap: 'Megjelenítés a térképen',
+    route: 'Út a magasabb terephez',
+    summitElevation: 'Csúcs magassága',
+    saddleElevation: 'Nyereg magassága',
+    fromMarker: ({ distance }) => `${distance} a jelölőtől`,
+  },
+  routeFetchError: ({ err }) =>
+    addError(getMessages()!, 'Hiba az út lekérésekor', err),
   showDetails: 'Részletek',
+  moreGeneralTypes: 'Általánosabb típusok',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (előzmények)',
-  type: 'Típus',
+  history: 'Előzmények',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a ${minZoom}. szintre kell nagyítani.`,
@@ -38,6 +55,7 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyPoints: ({ limit }) =>
     `Az eredmény ${limit} objektumra lett korlátozva.`,
   markerShape: 'Jelölő alakja',
+  showAllAsLookup: 'Összes megjelenítése találatként',
 };
 
 export default hu;

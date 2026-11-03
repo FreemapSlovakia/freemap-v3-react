@@ -1,16 +1,80 @@
 export type ShadingMessages = {
   add: string;
+  apply: string;
+  inBrowser: string;
+  onServer: string;
+  revert: string;
   background: string;
-  contour: string;
-  fogInversion: string;
   elevation: string;
   elevationBandWidth: string;
   color: string;
   belowColor: string;
   aboveColor: string;
   exaggeration: string;
+  exaggerationHint: string;
   azimuth: string;
   lightElevation: string;
+  contrast: string;
+  brightness: string;
+  minElevation: string;
+  maxElevation: string;
+  highlightColor: string;
+  darkColor: string;
+  repeats: string;
+  contourInterval: string;
+  lineWidth: string;
+  radius: string;
+  /** A metre radius that at this zoom falls outside the pixels a tile holds. */
+  radiusOutOfRange: (args: { px: number; drawn: number }) => string;
+  skyMode: string;
+  skyModes: {
+    svf: string;
+    pos: string;
+    neg: string;
+  };
+  /** The colour picker's switch between one colour and a gradient. */
+  solid: string;
+  gradient: string;
+  /** Names the colour picker of a layer coloured by stops. */
+  colorGradient: string;
+  presets: string;
+  addToExisting: string;
+  withBackground: string;
+  mapPresetsHeader: string;
+  artisticPresetsHeader: string;
+  presetNames: {
+    classic: string;
+    outdoor: string;
+    multidirectional: string;
+    swiss: string;
+    hypsometric: string;
+    shadow: string;
+    plastic: string;
+    sepia: string;
+    night: string;
+    slope: string;
+    moonlight: string;
+    golden: string;
+    glacier: string;
+    mars: string;
+    ink: string;
+    blueprint: string;
+    neon: string;
+    watercolor: string;
+    autumn: string;
+    aspect: string;
+    lidar: string;
+    microRelief: string;
+    ridgesValleys: string;
+    skyView: string;
+    openness: string;
+    archaeological: string;
+    snow: string;
+    contour: string;
+    contourLines: string;
+    fog: string;
+    metallic: string;
+  };
   types: {
     'hillshade-igor': string;
     'hillshade-classic': string;
@@ -18,5 +82,8 @@ export type ShadingMessages = {
     'slope-classic': string;
     'color-relief': string;
     aspect: string;
+    curvature: string;
+    contours: string;
+    'sky-view': string;
   };
 };

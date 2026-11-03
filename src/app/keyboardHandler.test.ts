@@ -1,10 +1,16 @@
+import {
+  changesetsInspect,
+  changesetsShowHistory,
+} from '@features/changesets/model/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
 import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
+import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
 import { panoramaSetPicking } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
+import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import {
   CRS,
   type LatLngExpression,
@@ -15,6 +21,7 @@ import {
 } from 'leaflet';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { handleEvent, handleMapKey } from './keyboardHandler.js';
+import { closeTool, selectFeature, setActiveModal } from './store/actions.js';
 import type { RootState } from './store/store.js';
 
 /**
@@ -56,11 +63,19 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     wiki: { preview: null, loading: false },
     homeLocation: { selectingHomeLocation: false },
     mapArea: { selecting: null },
+    mapLibrary: { preview: null },
     toposcope: { pickingCenter: false },
     panorama: { picking: null },
+    viewshed: { pickingViewpoint: false },
     elevationChart: { target: null },
-    drawingLines: { joinWith: undefined, drawing: false },
-    trackViewer: { joinWith: null, splitting: false },
+    trackViewer: {
+      joinWith: null,
+      splitting: false,
+      drawing: null,
+      holeFor: null,
+    },
+    changesetInspector: { inspected: null, history: null },
+    osmNotes: { selected: null },
     ...overrides,
   } as unknown as RootState;
 }
@@ -273,6 +288,18 @@ describe('handleEvent — Escape', () => {
     ).toEqual(panoramaSetPicking(null));
   });
 
+  it('leaves the viewshed viewpoint picking before anything else', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          viewshed: { pickingViewpoint: true },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toEqual(viewshedSetPickingViewpoint(false));
+  });
+
   // The modal closes itself on its own document listener, which runs only
   // while the key has not been claimed here first.
   it('leaves the key to a modal in the foreground', () => {
@@ -301,6 +328,125 @@ describe('handleEvent — Escape', () => {
     ).toEqual(mapAreaSelectCancel());
   });
 
+  describe('in an inspected changeset, steps back one level per press', () => {
+    const inspected = {
+      inspected: { id: 1, changeset: null, diff: [] },
+      history: null,
+    };
+
+    it('deselects the selected element first', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesetInspector: inspected,
+            main: {
+              activeModal: null,
+              selection: { type: 'changeset-element', id: 'way/2' },
+              mapTool: 'draw-lines',
+            },
+          }),
+        ),
+      ).toEqual(selectFeature(null));
+    });
+
+    it('then closes the map-click tool beside it', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesetInspector: inspected,
+            main: { activeModal: null, selection: null, mapTool: 'draw-lines' },
+          }),
+        ),
+      ).toEqual(closeTool('draw-lines'));
+    });
+
+    it('then ends the inspection', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesetInspector: inspected,
+            main: { activeModal: null, selection: null, mapTool: null },
+          }),
+        ),
+      ).toEqual(changesetsInspect(null));
+    });
+  });
+
+  describe('in an element history', () => {
+    const history = {
+      id: { type: 'osm', elementType: 'node', id: 2 },
+      name: 'Hut',
+      selection: {
+        type: 'search',
+        id: { type: 'osm', elementType: 'node', id: 2 },
+      },
+    };
+
+    it('returns from a changeset to the history, after the map-click tool', () => {
+      const changesetInspector = {
+        inspected: { id: 1, changeset: null, diff: [] },
+        history,
+      };
+
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesetInspector,
+            main: { activeModal: null, selection: null, mapTool: 'draw-lines' },
+          }),
+        ),
+      ).toEqual(closeTool('draw-lines'));
+
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            changesetInspector,
+            main: { activeModal: null, selection: null, mapTool: null },
+          }),
+        ),
+      ).toEqual(changesetsInspect(null));
+    });
+
+    const shownIn = (selectedResults: unknown[]) =>
+      makeState({
+        changesetInspector: { inspected: null, history },
+        main: {
+          activeModal: null,
+          selection: history.selection,
+          mapTool: null,
+          detailsShown: true,
+        },
+        search: { selectedResults },
+      });
+
+    it('closes the history before its element is deselected', () => {
+      expect(
+        handleEvent(esc(), shownIn([{ id: history.id, loading: false }])),
+      ).toEqual(changesetsShowHistory(null));
+    });
+
+    it('leaves a history its element’s details no longer show', () => {
+      expect(handleEvent(esc(), shownIn([]))).toEqual(selectFeature(null));
+    });
+  });
+
+  it('ends a library preview, back to the library it hides', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          main: { activeModal: { type: 'map-manager' } },
+          mapLibrary: { preview: { type: 'Z0001', restore: ['X'] } },
+        }),
+      ),
+    ).toEqual(mapLibraryPreviewEnd({ keep: false }));
+  });
+
   it('cancels home-location picking before closing the chart', () => {
     expect(
       handleEvent(
@@ -323,5 +469,107 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toEqual(mapAreaSelectCancel());
+  });
+});
+
+describe('handleEvent — F1', () => {
+  const f1 = () => press('F1', { code: 'F1', cancelable: true });
+
+  const withMain = (main: Record<string, unknown>) =>
+    makeState({
+      main: { activeModal: null, mapTool: null, panelTools: [], ...main },
+    });
+
+  it("opens the map-click tool's chapter, not the toolbar drawing brings", () => {
+    expect(
+      handleEvent(
+        f1(),
+        withMain({
+          mapTool: 'draw-lines',
+          panelTools: ['panorama', 'import-file'],
+        }),
+      ),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'drawing' }));
+  });
+
+  it("opens a selected note's chapter before a tool's", () => {
+    expect(
+      handleEvent(
+        f1(),
+        makeState({
+          main: { activeModal: null, mapTool: 'route-planner', panelTools: [] },
+          osmNotes: { selected: { id: 1 } },
+        }),
+      ),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'osm-notes' }));
+  });
+
+  it('opens the newest toolbar tool without a map-click one', () => {
+    expect(
+      handleEvent(f1(), withMain({ panelTools: ['map-details', 'panorama'] })),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'panorama' }));
+  });
+
+  it("opens the chapter of the modal's header button", () => {
+    document.body.innerHTML =
+      '<div class="modal show"><a data-manual-chapter="offline"></a></div>';
+
+    try {
+      expect(
+        handleEvent(
+          f1(),
+          withMain({
+            activeModal: { type: 'cached-maps' },
+            mapTool: 'route-planner',
+          }),
+        ),
+      ).toEqual(setActiveModal({ type: 'manual', chapter: 'offline' }));
+    } finally {
+      document.body.innerHTML = '';
+    }
+  });
+
+  it("falls back to the tool's chapter over a modal without one", () => {
+    expect(
+      handleEvent(
+        f1(),
+        withMain({
+          activeModal: { type: 'current-drawing-properties' },
+          mapTool: 'draw-lines',
+        }),
+      ),
+    ).toEqual(setActiveModal({ type: 'manual', chapter: 'drawing' }));
+  });
+
+  it('leaves a modal paused for picking on the map alone', () => {
+    const event = f1();
+
+    expect(
+      handleEvent(
+        event,
+        makeState({
+          main: { activeModal: { type: 'offline-map-export' } },
+          mapArea: { selecting: 'export' },
+        }),
+      ),
+    ).toBeUndefined();
+
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('opens the first chapter with nothing open', () => {
+    expect(handleEvent(f1(), withMain({}))).toEqual(
+      setActiveModal({ type: 'manual', chapter: undefined }),
+    );
+  });
+
+  it('leaves an open manual where it is, but keeps the browser help shut', () => {
+    const event = f1();
+
+    expect(
+      handleEvent(event, withMain({ activeModal: { type: 'manual' } })),
+    ).toBeUndefined();
+
+    expect(event.defaultPrevented).toBe(true);
   });
 });

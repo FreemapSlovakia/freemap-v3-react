@@ -3,7 +3,6 @@ import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware
 import type { RootState } from '@app/store/store.js';
 import { isPremium } from '@features/premium/premium.js';
 import type { CancelTriggers } from '@shared/cancelRegister.js';
-import { sameLatLon } from '@shared/geoutils.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { terrainErrorCode } from '@shared/terrainService.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -14,9 +13,7 @@ import { labelsFromPeaks } from '../../labels/fromPeaks.js';
 import {
   buildPanoramaRequest,
   grantedPanorama,
-  PANORAMA_PREVIEW_QUALITY,
   type PanoramaGrants,
-  panoramaExpectedMs,
   panoramaRenderKey,
 } from '../../quality.js';
 import {
@@ -24,13 +21,13 @@ import {
   isCurrentPanoramaRender,
   setPanoramaRenderData,
 } from '../../renderHolder.js';
+import { setPanoramaProgress } from '../../viewStore.js';
 import {
   panoramaCancel,
   panoramaClear,
   panoramaPick,
   panoramaRender,
   panoramaSetError,
-  panoramaSetProgress,
   panoramaSetRender,
   panoramaSetRendering,
 } from '../actions.js';
@@ -55,10 +52,10 @@ const CANCEL: CancelTriggers = {
 
 /**
  * One render, of what was asked for rather than of whatever the state says by
- * the time it runs. The two passes are up to forty seconds apart, and dragging
- * the eye marker moves the viewpoint without cancelling or starting anything —
- * so re-reading the state here would have the second pass quietly render
- * somewhere the user never asked to see, and record it as though they had.
+ * the time it runs: a render is tens of seconds, and dragging the eye marker
+ * moves the viewpoint without cancelling or starting anything — so re-reading
+ * the state here would publish a picture of somewhere the user never asked to
+ * see, and record it as though they had.
  *
  * Answers with what the service said of it, or `null` where something has
  * replaced this render since and there is nothing more to do.
@@ -68,35 +65,39 @@ async function renderPass(
   settings: PanoramaSettingsState,
   grants: PanoramaGrants,
   renderAz: number,
-  preview: boolean,
   getState: () => RootState,
   dispatch: Dispatch,
-  farM?: number | null,
 ): Promise<PanoramaMeta | null> {
   const id = claimPanoramaRender();
 
-  const { meta, imageUrl, depth, image } = await renderPanorama(
-    buildPanoramaRequest(viewpoint, settings, grants, renderAz, farM),
+  const { meta, bitmap, depth } = await renderPanorama(
+    buildPanoramaRequest(viewpoint, settings, grants, renderAz),
     getState,
     CANCEL,
-    (progress) => dispatch(panoramaSetProgress(progress)),
+    setPanoramaProgress,
     () => isCurrentPanoramaRender(id),
   );
 
   if (!isCurrentPanoramaRender(id)) {
-    URL.revokeObjectURL(imageUrl);
+    bitmap?.close();
 
     return null;
   }
 
-  setPanoramaRenderData({ id, imageUrl, depth, image });
+  // A picture that would not decode is a failed render, not a blank panel: the
+  // viewer has nothing to draw, and every readout it carries answers for pixels
+  // that are not there.
+  if (!bitmap) {
+    throw new Error('panorama image could not be decoded');
+  }
+
+  setPanoramaRenderData({ id, bitmap, depth });
 
   dispatch(
     panoramaSetRender({
       id,
       viewpoint,
       key: panoramaRenderKey(viewpoint, settings, grants, renderAz),
-      preview,
       eyeElevation: meta.eye_elevation,
       width: meta.width,
       height: meta.height,
@@ -107,6 +108,7 @@ async function renderPass(
       stepDeg: meta.step_deg,
       depthLift: settings.depthLift,
       rangeM: grants.rangeKm * 1000,
+      attributions: meta.sources,
       labels: labelsFromPeaks(meta.peaks ?? []),
     }),
   );
@@ -114,88 +116,43 @@ async function renderPass(
   return meta;
 }
 
-/**
- * Under this the preview pass is not worth its own round trip: it exists to put
- * a picture up during a long wait, and a narrow slice at a middling tier is
- * already there before one would have landed.
- */
-const PREVIEW_WORTH_MS = 4000;
-
 const handle: ProcessorHandler = async ({ getState, dispatch }) => {
-  const { viewpoint, render, renderAz } = getState().panorama;
+  const { viewpoint, renderAz } = getState().panorama;
 
   if (!viewpoint) {
     return;
   }
 
-  // A picture of this very place is already up — a tier, a band or a look
-  // changed, not the viewpoint — so there is already something to turn around
-  // in while the render runs, and it is a better picture than the preview would
-  // be. Waiting behind it also keeps the mark and its readings, which every
-  // render clears.
-  const standing = render !== null && sameLatLon(render.viewpoint, viewpoint);
+  // Whatever the pass that ended last said. The panel only shows this while a
+  // render is in flight, but the first tick of the new one is a second or two
+  // off and the old phase would stand in for it.
+  setPanoramaProgress(null);
 
   const settings = getState().panoramaSettings;
 
-  // The finer tiers and the farther views are premium's. Asking for more
-  // without it would only have the service clamp it back, so the request says
-  // what the account can have.
+  // The finer tiers and the farther views are premium's, and nothing on the
+  // service's side says so, so the request is where the account is held to what
+  // it may have.
   const grants = grantedPanorama(settings, isPremium(getState().auth.user));
 
-  trackMatomo(['trackEvent', 'Panorama', 'render', grants.quality]);
+  trackMatomo([
+    'trackEvent',
+    'Panorama',
+    'render',
+    `${Math.round(grants.pxPerDeg)}px/°×${grants.raysPerPixel}`,
+  ]);
 
   dispatch(panoramaSetRendering(true));
 
   try {
-    // The cheapest pass first, so a long render happens behind a picture the
-    // user can already turn around in — which is the whole of what it is for,
-    // and why a picture of the same place standing there does instead. It is
-    // the coarsest tier there is, so where it does run it adds a few percent to
-    // a detailed render rather than the third again a middling one would cost.
-    //
-    // Both passes ask for peaks, and the names are redrawn when the second
-    // lands. It is not free — the peak pass costs a render about two seconds,
-    // and the payload is the larger half — but the labels then answer for the
-    // picture being looked at: visibility is decided by the rays a tier cast,
-    // so only the detailed pass knows which marginal summits it actually drew.
-    let farM: number | null = null;
-
-    if (
-      !standing &&
-      grants.quality !== PANORAMA_PREVIEW_QUALITY &&
-      panoramaExpectedMs(grants.quality, settings.fovDeg) > PREVIEW_WORTH_MS
-    ) {
-      const meta = await renderPass(
-        viewpoint,
-        settings,
-        { ...grants, quality: PANORAMA_PREVIEW_QUALITY },
-        renderAz,
-        true,
-        getState,
-        dispatch,
-      );
-
-      if (!meta) {
-        return;
-      }
-
-      // A gradient asking for `auto` measures the frame it is rendering, and
-      // the two passes sample it differently, so the second one is pinned to
-      // what the first found rather than left to recolour the picture under
-      // someone already looking at it.
-      farM = meta.far_distance ?? null;
-    }
-
     if (
       !(await renderPass(
         viewpoint,
         settings,
         grants,
         renderAz,
-        false,
         getState,
         dispatch,
-        farM,
       ))
     ) {
       return;

@@ -1,0 +1,65 @@
+## Routes and tracks
+
+### Route finder
+
+- Access: Main menu > Route finder
+- Keyboard shortcut: <kbd>g</kbd> <kbd>r</kbd>
+- URL path: `/#tools=route-planner`
+
+Toggles the route finder toolbar, which has: a transport/router selector, a mode selector, **Start** and **Finish** point pickers, a swap-endpoints button, and a close button.
+
+Routing is based on a Freemap-hosted GraphHopper or third-party OSRM router.
+A route can contain multiple midpoints.
+In "Ordered" (point-to-point) mode a premium route can be multimodal: each segment between two points has its own transport, "Straight line" included. The toolbar's transport is the one the next added segment takes; once the route has segments, its menu offers **Apply to**: *Whole route*, *Last part* (the trailing run of segments with that transport — offered when other segments differ) or *New segments* (the drawn segments are kept). Clicking a segment selects it, and its own transport menu offers *This segment*, *Whole part* (the neighbouring segments with the same transport) and *Same transport* (every segment with that transport). **Shift+click** on the map adds the new start or finish joined to the route by a straight line, without changing the transport of the other segments.
+
+Where routing finds no way through — for the whole route, or for one leg of a multimodal one — the map draws a straight red dotted line between those waypoints instead. That stretch is treated as what it is rather than as a route: colorize leaves it alone (so the dotted line still shows), and the elevation profile draws a straight line across it rather than the terrain under it, which keeps the ridges it happens to cross out of the climb totals. The rest of the route is unaffected. A wholly failed route also reports a duration of zero, there being nothing routed to estimate one from; where only one leg failed, its straight line is given the pace of the legs that did route, so the total reads as an estimate rather than as nothing.
+
+The **Start**/**Finish** (and midpoint) pickers offer: Select on the map, Your position, or Home position.
+
+Supported vehicles (the transport dropdown also offers "Straight line" for fully manual routing):
+
+- GraphHopper
+  - Car
+  - Car (4WD)
+  - Car (avoid tolls) — experimental
+  - Motorcycle
+  - Bicycle
+  - E-bike — experimental
+  - Gravel bike — experimental
+  - Racing bike
+  - Mountain bike
+  - Walking
+  - Stroller / wheelchair — experimental
+  - Hiking
+  - Easy hiking — experimental
+- OSRM
+  - Car
+  - Bicycle
+  - Walking
+
+The profiles marked experimental are new and still being tuned; the dropdown marks them with a flask. Bicycle, Walking and Car appear under both engines. The GraphHopper ones are the self-hosted router — weighted by the terrain model, so they avoid climbs, and the only ones that offer isochrones, round trips and the colorize modes that read the router's own data.
+
+Routing modes:
+
+- GraphHopper
+  - Ordered
+  - Roundtrip
+  - Isochrones
+- OSRM
+  - Ordered
+  - Visiting places
+  - Visiting places (roundtrip)
+
+Once a route is found the toolbar also offers:
+
+- **Colorize by** (dropdown) — Inactive, then the modes in groups set off by dividers: Elevation, Steepness / Time, Speed, Expected speed, Heading / Surface, Smoothness, Road type, Track grade, Curviness, Speed limit, Hiking difficulty, MTB difficulty, Waymark color (only modes the route has data for are shown; every mode except Elevation, Speed and Time is premium — badged with a gem and disabled without premium access); for the elevation profile and elevation/steepness colorize, premium users get every point sampled from the terrain model (high-resolution where available), while others keep the router's own elevation and only have missing values filled on demand. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar; hovering over its scale, or touching and dragging along it, reads out the exact value at that point
+  - **Steepness** is not a straight ramp: the colour follows an inverse-hyperbolic-sine curve bending at 1 %, so gentle grades get most of the palette and steep ones compress — a road route whose whole range is a couple of per cent was otherwise a uniformly black line. Where the palette **ends** is a setting, a slider in this dropdown right under the Steepness row (**Steepness range**, ±5 / 10 / 15 / 25 / 40 / 60 / 100 %, default 100 % = 45°, saved in local storage and shared with Drawing and data and live tracking). No single value suits every route — measured against real ones, the widest that clamps almost nothing is 5 % for a road ride, 15 % for a car, 25 % on rolling hills and 60 % in the Tatras. The legend labels seven evenly spaced ticks with the grades they stand for, so it re-labels itself as the slider moves; colours mean the same grade on every route at a given setting
+  - Surface, Smoothness, Road type, Track grade, Curviness, Speed limit, Expected speed, the two difficulty ratings and Waymark color come from the router itself and so are offered on GraphHopper routes only. **Expected speed** is the speed the chosen profile expects on each stretch (km/h, scaled from the route's slowest to its fastest stretch) — what a planned route has in place of Speed, which needs recorded timestamps. **Curviness** shows how winding the way is, on one fixed scale from Straight to Winding so a color means the same on every route. **Speed limit** is the legal limit on one fixed scale for every route, from 0 to 140 km/h, with a purple of its own for no limit (∞, e.g. an unrestricted Autobahn); where a way has no limit tagged, the router uses the country's default, so a forest path shows the rural limit. The four describing the way — including Track grade (OSM `tracktype`, grade 1 solid to grade 5 soft, what a forest road is actually like to ride or drive, which the surface alone doesn't say) and Smoothness (how rough the going is, grouped into Good / Intermediate / Bad / Very bad / Impassable) — are asked for on every profile; the difficulty scales are the profile's own, so Hiking difficulty (the SAC scale) appears on foot and hiking routes and MTB difficulty (the S scale) on the three bike ones. **Waymark color** is one mode whose meaning follows the profile the same way: it draws the route in the colors of the waymarked routes it is on, read from `osmc:symbol` or `colour` — the `route=hiking`/`route=foot` relations for a walking profile, the `route=bicycle`/`route=mtb` ones for a riding profile, since a walker and a rider follow different signs down the same lane. A car follows neither, so the mode is not offered for one. A way can carry both kinds and they can differ, which is why the profile picks rather than the mode. A stretch carrying several routes of different colors is painted in whichever of them the stretches around it also carry, so the line changes color only where the marking forces it to — yellow → yellow+blue → yellow stays yellow throughout — and where the change has to happen somewhere, the shared stretch goes to whichever trail the route follows further: purple 100 m → purple+yellow 200 m → yellow 200 m is drawn purple for 100 m and yellow for 400 m, not the other way round. A stretch on no marked route falls to a grey **Unmarked** category — named that rather than Unknown, since the router was asked about it and answered that there is no waymark — and it does not interrupt the above: the color carries across it and resumes after. A stretch nobody asked about is different and is drawn as **no data** (the thinner, dimmer neutral line) rather than counted as Unmarked: a car leg or an OSRM leg of a multimodal route is never sent either mask. In a multimodal route the walked and ridden parts are read as **separate networks** — they merely share a palette, so a red hiking trail never decides the color of a cycle route whose own marking runs blue. Where two colors run exactly as far as each other the change falls as late as it can, and where nothing else decides, the first of red, blue, green, yellow, black, orange, purple, white wins — the order the waymarks run from long-distance down to local. `other` is never in that contest: it stands for a color that could not be named, so it takes a stretch only where it is the sole marking there. These are the same eight colors the outdoor map draws its own trail lines in, with `other` its grey for anything else, so a route matches the trails under it. Apart from Expected speed, Curviness and Speed limit, which change color as sharply but along a scale, and draw a stretch the router has no value for as no data, these modes paint named categories rather than a scale: the route is drawn in flat colors that change exactly where the value does, stretches the router has no value for get their own grey **Unknown** category (Waymark color is the exception described above, splitting that into Unmarked and no data), and the legend lists the categories the route actually holds with how far each one runs — asphalt vs. gravel vs. ground in kilometres, so it doubles as a summary of what the route is made of, down to how much of it nobody has mapped. A mode whose data is missing from the whole route is not offered at all, rather than offered and painting the line grey end to end
+- **More** (⋮ menu) — **Elevation profile** (chart with total climb/descent; it leaves the menu for a button of its own on a toolbar with room for one, keeping its label where there is more room still), Convert to drawing (the route is added to Drawing and data as the data export writes it: one line per same-mode stretch in that mode's color, keeping the router's elevation, plus a named point per start/finish/stop — an isochrone as its bands; a long route asks for a maximum deviation first, offered already filled in with one derived from how many vertices it has; see [Drawing and data](/llms-drawing.md)), **Route style…** (opens a modal with sliders for line width, line opacity, and marker opacity; saved in local storage), **Recompute route** (shown only while the route on screen is the one the open map has stored; asks the router again — a saved map draws the route it was saved with, and returns to it whenever the waypoints, mode and transport come back to what it was saved for, so this is the only way to pick up a changed routing graph; it marks the map as having unsaved changes), **Milestones** (Off / km / %, one choice — the markers count distance along the route or percentage of it), **Max routes to offer** (1–5, default 2, saved in local storage; shown only for point-to-point routing between exactly two waypoints under one transport, which is all either router computes alternatives for — a midpoint takes it away. It is a ceiling, not a promise: the router returns fewer where nothing else is both near enough in time and different enough to be worth offering, and on long inter-city routes that is often just one), and (premium; GraphHopper "Ordered" mode with 3+ points, single transport) **Optimize order** — reorders the waypoints to minimize total travel time, with variants: keep start fixed, keep start and finish fixed, round trip (return to start), or free (reorder all)
+- **Delete** (🗑) — removes the result together with its start/finish/stop points. It appears as soon as the first point is placed, so a half-built route can be dropped as well
+
+Selecting a start, finish or midpoint marker opens its own toolbar, carrying a ⋮ menu with the place actions for where that waypoint stands and an **Open in…** submenu below them, and 🗑 to remove just it.
+
+Isochrone mode is set up in the mode menu itself: a time limit or a distance limit (whichever is filled in), the number of reachability bands (up to 5), and a **Travel to the point** checkbox that turns the rings around — they then cover where a journey to the point can start rather than where one from it can end, which differs wherever one-way streets and turn restrictions do.
+
+An isochrone result offers the same **Delete** button and a reduced ⋮ menu with only Convert to drawing (one drawing polygon per reachability band, keeping any inner rings it has as holes, with the same simplification question when the rings are detailed enough to warrant it) and **Route style…** (the line width and opacity apply to the rings). It also counts as the "found route" source in the map data export and the map-to-document export, which always carry the route's start/finish/stop markers (named Start/Finish/Stop N in the data formats, which also carry the pin and its glyph — the play/stop icon, or the stop's number; on a rendered document the marker glyph speaks for itself, so no text label is drawn) and paint the route in the same transport-mode colors, width and opacity the map uses. Each ring is named after the limit it reaches — "Isochrone 30 min", or "Isochrone 5.00 km" for a distance-limited one — in the drawing, in the exported files, and as the label drawn on an exported document.

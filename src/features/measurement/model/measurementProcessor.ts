@@ -5,12 +5,8 @@ import {
 } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
-import {
-  lineLength,
-  measuredRings,
-  ringsArea,
-  ringsPerimeter,
-} from '@features/drawing/measureLine.js';
+import { isCompleteFeature } from '@features/dataViewer/vertexEditing.js';
+import { ringsArea, ringsPerimeter } from '@features/drawing/measureLine.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import type { ElevationInfoBaseProps } from '@features/elevationChart/components/ElevationInfo.js';
 import { loadMeasurementMessages } from '@features/measurement/translations/loadMeasurementMessages.js';
@@ -24,6 +20,7 @@ import { isAbortError } from '@shared/isAbortError.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
+import { length as turfLength } from '@turf/length';
 
 // Every measurement readout pins a fixed geographic target (a drawn geometry or
 // a picked point), so panning/zooming the map must not dismiss it — only a
@@ -43,8 +40,8 @@ export const measurementStale = (state: RootState) => {
 
   return (
     !isDrawTool(mapTool) &&
-    selection?.type !== 'draw-line-poly' &&
-    selection?.type !== 'line-point'
+    selection?.type !== 'feature' &&
+    selection?.type !== 'vertex'
   );
 };
 
@@ -60,16 +57,11 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         main: { selection },
       } = getState();
 
-      let id;
-
       const measureKey = action.payload.position
         ? 'position'
-        : selection?.type === 'draw-line-poly' ||
-            selection?.type === 'draw-points'
-          ? `${selection.type}:${selection.id}`
-          : selection?.type === 'line-point'
-            ? `line-point:${selection.lineIndex}`
-            : (selection?.type ?? 'none');
+        : selection?.type === 'feature' || selection?.type === 'vertex'
+          ? `feature:${selection.id}`
+          : (selection?.type ?? 'none');
 
       if (measureKey !== lastMeasureKey) {
         lastMeasureKey = measureKey;
@@ -161,66 +153,53 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
         return;
       }
 
-      if (
-        selection?.type === 'draw-line-poly' ||
-        selection?.type === 'draw-points'
-      ) {
-        id = selection.id;
-
-        if (id === undefined) {
-          return;
-        }
-      } else if (selection?.type === 'line-point') {
-        id = selection.lineIndex;
-      } else {
+      if (selection?.type !== 'feature' && selection?.type !== 'vertex') {
         return;
       }
 
-      if (
-        selection.type === 'draw-line-poly' ||
-        selection.type === 'line-point'
+      const feature =
+        getState().trackViewer.trackGeojson?.features[selection.id];
+
+      const geometry = feature?.geometry;
+
+      if (geometry?.type === 'Point') {
+        const [lon, lat] = geometry.coordinates;
+
+        await measurePoint({ lat: lat!, lon: lon! });
+      } else if (geometry?.type === 'Polygon' && isCompleteFeature(feature!)) {
+        const rings = geometry.coordinates.filter((ring) => ring.length > 3);
+
+        dispatch(
+          toastsAdd({
+            style: 'info',
+            messageKey: 'areaInfo',
+            messageLoader: loadMeasurementMessages,
+            messageParams: {
+              area: ringsArea(rings),
+              perimeter: ringsPerimeter(rings) / 1000,
+            },
+            id: 'measurementInfo',
+            cancelType,
+            statePredicate: measurementStale,
+          }),
+        );
+      } else if (
+        (geometry?.type === 'LineString' ||
+          geometry?.type === 'MultiLineString') &&
+        isCompleteFeature(feature!)
       ) {
-        const { lines } = getState().drawingLines;
-
-        const line = lines[id];
-
-        const { points, type } = line;
-
-        if (type === 'polygon' && points.length > 2) {
-          const rings = measuredRings(line, lines);
-
-          dispatch(
-            toastsAdd({
-              style: 'info',
-              messageKey: 'areaInfo',
-              messageLoader: loadMeasurementMessages,
-              messageParams: {
-                area: ringsArea(rings),
-                perimeter: ringsPerimeter(rings) / 1000,
-              },
-              id: 'measurementInfo',
-              cancelType,
-              statePredicate: measurementStale,
-            }),
-          );
-        } else if (type === 'line' && points.length > 1) {
-          dispatch(
-            toastsAdd({
-              style: 'info',
-              messageKey: 'distanceInfo',
-              messageLoader: loadMeasurementMessages,
-              messageParams: {
-                length: lineLength(line) / 1000,
-              },
-              id: 'measurementInfo',
-              cancelType,
-              statePredicate: measurementStale,
-            }),
-          );
-        }
-      } else if (selection?.type === 'draw-points' || action.payload.position) {
-        await measurePoint(
-          getState().drawingPoints.points[selection.id].coords,
+        dispatch(
+          toastsAdd({
+            style: 'info',
+            messageKey: 'distanceInfo',
+            messageLoader: loadMeasurementMessages,
+            messageParams: {
+              length: turfLength(feature!, { units: 'kilometers' }),
+            },
+            id: 'measurementInfo',
+            cancelType,
+            statePredicate: measurementStale,
+          }),
         );
       }
     } catch (err) {

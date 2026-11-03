@@ -5,21 +5,20 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  style: {
-    title: 'Alapértelmezett stílus',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Felosztás',
     pick: 'Kattintson a nyomvonalra a felosztás helyén',
     here: 'Felosztás itt',
-    segments: 'Felosztás szakaszokra',
   },
   join: {
     action: 'Összefűzés',
     asLine: 'Összefűzés egy vonallá',
     asSegments: 'Összefűzés szakaszok megtartásával',
-    pick: 'Kattintson a nyomvonalra, amellyel összefűzi',
+    pick: 'Kattintson a hozzáfűzendő nyomvonalra',
+    pickEnd: 'Válasszon pontot a vonalak összekapcsolásához',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Utakhoz illesztés',
     title: 'Utakhoz illesztés',
@@ -40,13 +39,12 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Feltöltés',
   unnamedTrack: ({ n }) => `${n}. nyomvonal`,
-  convertLossWarning:
-    'A rajzzá alakítás lecseréli a nyomvonalat, és eldobja a rögzített adatait (magasság, pulzusszám, sebesség, idő).',
   simplifyAll: 'Összes egyszerűsítése',
   moreInfo: 'További információ',
+  breakApart: 'Szétbontás részekre',
   saveAsMap: 'Mentés a térképeim közé',
   loginToSaveMap:
-    'A nyomvonal a térképeid közé mentéséhez először jelentkezz be.',
+    'A nyomvonal a térképei közé mentéséhez először jelentkezzen be.',
   details: {
     startTime: 'Indulási idő',
     finishTime: 'Érkezési idő',
@@ -74,18 +72,50 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Hozzáfűzés',
     replace: 'Csere',
   },
+  trace: {
+    streams: 'Vízfolyások kirajzolása',
+    forests: 'Erdők kirajzolása',
+    streamsHelp:
+      'A kijelölt sokszögön belül a nagy felbontású domborzatmodellből vezeti le a vízfolyások vonalait. OpenStreetMapbe való térképezéshez hasznos.',
+    forestsHelp:
+      'A kijelölt sokszögön belül a kiválasztott LiDAR-pontosztályok által fedett területek kirajzolására szolgál. Elsősorban a felszínborítás OpenStreetMapbe való térképezéséhez hasznos.',
+    pixelSize: 'Pixelméret',
+    pixelSizeHint: 'Üresen a domborzatmodell saját felbontása.',
+    threshold: 'Legkisebb vízgyűjtő terület',
+    minLength: 'Legkisebb vízfolyáshossz',
+    simplify: 'Egyszerűsítési tűrés',
+    classes: 'Pontosztályok',
+    classNames: {
+      lowVegetation: 'Alacsony növényzet',
+      mediumVegetation: 'Közepes növényzet',
+      highVegetation: 'Magas növényzet',
+      building: 'Épületek',
+      water: 'Víz',
+    },
+    output: 'Eredmény',
+    outputJosm: 'Megnyitás JOSM-ben',
+    outputOsm: 'Letöltés OSM XML-ként',
+    outputGeojson: 'Letöltés GeoJSON-ként',
+    tooBig: ({ max }) => `A sokszög túl nagy; a határ ${max}.`,
+    run: 'Kirajzolás',
+    legacy: ({ phrase, item }) => (
+      <>
+        A <code>{phrase}</code> <i>easter egg</i> helyett a kijelölt sokszög ⋮
+        menüjének <i>{item}</i> elemét használja.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Magassági adatok',
-    introNone: 'Ennek a nyomvonalnak nincsenek magassági adatai.',
-    introPartial: 'A nyomvonal néhány pontjáról hiányzik a magasság.',
+    introNone: 'Még nincsenek magassági adatok.',
+    introPartial: 'Néhány pontról hiányzik a magasság.',
     introFull:
-      'A nyomvonalnak már vannak magassági adatai, de egy domborzatmodell ' +
-      'gyakran pontosabb.',
-    premiumHiRes: (premiumLink) => (
+      'Már vannak magassági adatok, de egy domborzatmodell gyakran pontosabb.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        {premiumLink('Prémium hozzáféréssel')} a magassági adatokat a támogatott
-        országokban nagy felbontású nemzeti modellből mintavételezzük — egyelőre
-        Szlovákia (DMR 5.0: ÚGKK SR), továbbiak hamarosan.
+        {premiumLink('Prémium hozzáféréssel')} a magassági adatokat{' '}
+        {countries('számos európai országban')} nagy felbontású nemzeti
+        domborzatmodellekből mintavételezzük.
       </>
     ),
     question: 'Mit szeretne tenni?',
@@ -100,11 +130,12 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'a nyomvonalban tárolt magasság használata',
     add: 'Magasság hozzáadása',
     update: 'Magasság frissítése',
-    updateConfirm: 'Lecseréli a nyomvonal magasságát a domborzatmodellre?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'A hiányzó magasság ki lett töltve.'
-        : 'A magasság felül lett írva.',
+        : mode === 'clear'
+          ? 'A magasság törölve lett.'
+          : 'A magasság felül lett írva.',
   },
   fetchingError: ({ err }) =>
     addError(
@@ -119,7 +150,7 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Néhány fájlt nem sikerült betölteni: ${names}.`,
   unsaved: 'Nem mentett',
   unsavedTooltip:
-    'Ez a nyomvonal nem szerepel egyetlen mentett térképen sem, és nem része a hivatkozásnak – csak ebben a böngészőben marad meg, ezért a hivatkozás megosztásával nem osztja meg. Mentse a térképei közé, hogy megmaradjon.',
+    'Ezek az adatok nem férnek el az oldal címében (URL), és egyetlen mentett térképen sem szerepelnek – csak ebben a böngészőben maradnak meg. Mentse őket a térképei közé, hogy megmaradjanak.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a nyomvonal illesztésekor', err),
 };

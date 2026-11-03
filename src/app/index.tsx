@@ -106,7 +106,7 @@ getCachedTileMaps()
 // The service worker takes the browse-cache policy from IndexedDB, which only
 // the processors write — so hand it the rehydrated settings once at startup, or
 // storage cleared behind the app's back would leave it working from stale ones.
-syncBrowseCache(store.getState()).catch((err) => {
+syncBrowseCache(store.getState).catch((err) => {
   console.warn('Publishing the browse-cache settings failed:', err);
 });
 
@@ -207,6 +207,12 @@ createRoot(rootElement).render(
   </Provider>,
 );
 
+// Tells the startup check in index.ejs that `main` ran.
+window.fmStarted = true;
+
+// index.ejs's offer of the cached build, for a slow start
+document.getElementById('fm-skip-network')?.remove();
+
 if (process.env['NODE_ENV'] === 'production') {
   await window.navigator.serviceWorker
     ?.register('/sw.js')
@@ -234,8 +240,18 @@ if (process.env['NODE_ENV'] === 'production') {
     });
 }
 
+// Firefox offers on every call, even after a decline (bug 1084425), so it gets
+// one offer per browser; Chromium remembers a decline itself.
 try {
-  window.navigator.registerProtocolHandler?.('geo', '/?geo=%s');
+  if (window.navigator.registerProtocolHandler) {
+    if (!navigator.userAgent.includes('Firefox/')) {
+      window.navigator.registerProtocolHandler('geo', '/?geo=%s');
+    } else if (!localStorage.getItem('fm.geoHandlerOffered')) {
+      localStorage.setItem('fm.geoHandlerOffered', '1');
+
+      window.navigator.registerProtocolHandler('geo', '/?geo=%s');
+    }
+  }
 } catch {
   // browsers can reject; ignore
 }

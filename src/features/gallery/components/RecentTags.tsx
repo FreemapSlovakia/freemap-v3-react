@@ -1,3 +1,4 @@
+import { Text } from '@features/l10n/Text.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
@@ -42,7 +43,9 @@ export function RecentTags({
     >
       <div>{prefix}</div>
 
-      <div className="flex-shrink-0">{gm?.recentTags}</div>
+      <div className="flex-shrink-0">
+        <Text m={gm} k="recentTags" />
+      </div>
 
       <div className="d-flex gap-1 overflow-auto">
         {tags.map((tag) => (

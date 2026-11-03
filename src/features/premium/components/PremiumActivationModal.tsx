@@ -1,7 +1,14 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { purchase, setActiveModal } from '@app/store/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
+import {
+  FmDismissButton,
+  FmModalFooter,
+} from '@shared/components/FmModalFooter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -9,7 +16,7 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import { PREMIUM_PRICE_EUR } from '@shared/premiumPricing.js';
 import type { ReactElement } from 'react';
 import { Alert, Button, ButtonGroup, Dropdown, Modal } from 'react-bootstrap';
-import { FaGem, FaRegGem, FaStopwatch, FaTimes } from 'react-icons/fa';
+import { FaGem, FaRegGem, FaStopwatch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useDtmCountryNames } from '../hooks/useDtmCountryNames.js';
 import {
@@ -69,14 +76,17 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaGem /> {prm?.title}
+          <FaGem /> <Text m={prm} k="title" />
         </Modal.Title>
+        <ManualHeaderButton chapter="premium" />
       </Modal.Header>
 
       <Modal.Body>
         <OfflineAlert />
 
-        {prm?.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
+        <Text m={prm}>
+          {(prm) => prm.commonHeader(PREMIUM_PRICE_EUR, dtmCountries)}
+        </Text>
 
         {premiumExpiration && (
           <Alert variant="info" className="mt-3 mb-0">
@@ -91,18 +101,24 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
             {/* Only where it can't be read as describing premium already held. */}
             {!premiumExpiration && (
               <p className="mt-3 mb-0 text-body-secondary">
-                {prm?.subscriptionReassurance({ price: PREMIUM_PRICE_EUR })}
+                <Text m={prm}>
+                  {(prm) =>
+                    prm.subscriptionReassurance({ price: PREMIUM_PRICE_EUR })
+                  }
+                </Text>
               </p>
             )}
 
             <hr />
 
-            <p className="mb-0 text-body-secondary">{prm?.chronsHint}</p>
+            <p className="mb-0 text-body-secondary">
+              <Text m={prm} k="chronsHint" />
+            </p>
           </>
         )}
       </Modal.Body>
 
-      <Modal.Footer>
+      <FmModalFooter>
         {!subscribed && (
           <Dropdown as={ButtonGroup}>
             <Button
@@ -110,7 +126,7 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
               disabled={!online}
               onClick={() => buy({ recurring: true })}
             >
-              <FaGem /> {prm?.paySubscription}
+              <FaGem /> <Text m={prm} k="paySubscription" />
             </Button>
 
             <Dropdown.Toggle
@@ -124,28 +140,33 @@ export default function PremiumActivationModal({ show }: Props): ReactElement {
               <Dropdown.Item
                 as="button"
                 disabled={!online}
-                className="text-nowrap"
                 onClick={() => buy({ recurring: false })}
               >
-                <FaRegGem /> {prm?.payOnce}
+                <FaRegGem />
+                <MenuLabel>
+                  <Text m={prm} k="payOnce" />
+                </MenuLabel>
               </Dropdown.Item>
 
               <Dropdown.Item
                 as="button"
                 disabled={!online}
-                className="text-nowrap"
                 onClick={() => buy({ via: 'rovas' })}
               >
-                <FaStopwatch /> {prm?.payWithChrons}
+                <FaStopwatch />
+                <MenuLabel>
+                  <Text m={prm} k="payWithChrons" />
+                </MenuLabel>
               </Dropdown.Item>
             </FmDropdownMenu>
           </Dropdown>
         )}
 
-        <Button variant="dark" onClick={close}>
-          <FaTimes /> {subscribed ? m?.general.close : m?.general.cancel}
-        </Button>
-      </Modal.Footer>
+        <FmDismissButton
+          label={subscribed ? m?.general.close : m?.general.cancel}
+          onClick={close}
+        />
+      </FmModalFooter>
     </Modal>
   );
 }

@@ -7,6 +7,8 @@ type Props = {
   id: string;
   /** Names the setting, above the slider. */
   label: ReactNode;
+  /** Before the name. */
+  icon?: ReactNode;
   /** Says where it stands, beside the name. */
   valueLabel: ReactNode;
   /** What the setting means, behind the name, for one whose name can't carry it. */
@@ -18,6 +20,34 @@ type Props = {
   onChange: (value: number) => void;
 };
 
+// The mark stays with the name's last word when the name wraps.
+function withHint(label: ReactNode, hint: ReactNode): ReactNode {
+  if (!hint) {
+    return label;
+  }
+
+  if (typeof label !== 'string') {
+    return (
+      <>
+        {label}
+        <HintMark hint={hint} />
+      </>
+    );
+  }
+
+  const cut = label.lastIndexOf(' ') + 1;
+
+  return (
+    <>
+      {label.slice(0, cut)}
+      <span className="text-nowrap">
+        {label.slice(cut)}
+        <HintMark hint={hint} />
+      </span>
+    </>
+  );
+}
+
 /**
  * A range with its name, where it stands, and what it means — in a settings
  * form or in a `SliderDropdown`, which is why it is not in that file.
@@ -25,6 +55,7 @@ type Props = {
 export function LabeledSlider({
   id,
   label,
+  icon,
   valueLabel,
   hint,
   min,
@@ -40,8 +71,8 @@ export function LabeledSlider({
           labels with a column of centred values between them. */}
       <div className="d-flex justify-content-between align-items-baseline gap-2">
         <Form.Label className="mb-0" htmlFor={id}>
-          {label}
-          <HintMark hint={hint} />
+          {icon && <>{icon} </>}
+          {withHint(label, hint)}
         </Form.Label>
 
         <span className="fw-semibold text-end">{valueLabel}</span>

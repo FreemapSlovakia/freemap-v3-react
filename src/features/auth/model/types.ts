@@ -1,7 +1,19 @@
-import { LayerSettingsSchema } from '@features/map/model/actions.js';
+import {
+  LayerSettingsSchema,
+  LayersSettingsCompatSchema,
+} from '@features/map/model/actions.js';
+import {
+  LayerSetupSchema,
+  LayerSetupsCompatSchema,
+} from '@features/map/model/layerSetup.js';
+import {
+  MapPresetArrayCompatSchema,
+  MapPresetSchema,
+} from '@features/map/model/mapPreset.js';
 import {
   CustomLayerDefArrayCompatSchema,
   CustomLayerDefSchema,
+  NamedMapDefSchema,
 } from '@shared/mapDefinitions.js';
 import { IsoDateSchema, LatLonSchema } from '@shared/types/common.js';
 import z from 'zod';
@@ -18,6 +30,18 @@ export const AuthProviderSchema = z.enum([
 ]);
 
 export type AuthProvider = z.infer<typeof AuthProviderSchema>;
+
+/** Brand names, the same in every language. */
+export const AUTH_PROVIDER_LABELS: Record<AuthProvider, string> = {
+  facebook: 'Facebook',
+  osm: 'OpenStreetMap',
+  garmin: 'Garmin',
+  google: 'Google',
+  apple: 'Apple',
+  github: 'GitHub',
+  strava: 'Strava',
+  microsoft: 'Microsoft',
+};
 
 export const RoleSchema = z.enum([
   'userManager',
@@ -84,20 +108,60 @@ export const PurchasesResponseSchema = z.object({
 
 export type PurchasesResponse = z.infer<typeof PurchasesResponseSchema>;
 
+export const AppTokenScopeSchema = z.enum([
+  'gallery:read',
+  'gallery:write',
+  'maps:read',
+  'maps:write',
+  'tracking:read',
+  'tracking:write',
+  'tiles:outdoor',
+  'tiles:shading',
+  'tiles:aerial',
+]);
+
+export type AppTokenScope = z.infer<typeof AppTokenScopeSchema>;
+
+export const AppTokenSchema = z.object({
+  id: z.number(),
+  note: z.string().nullable(),
+  scopes: z.array(z.string()),
+  createdAt: IsoDateSchema,
+  expiresAt: IsoDateSchema.nullable(),
+  lastUsedAt: IsoDateSchema.nullable(),
+  lastUserAgent: z.string().nullable(),
+});
+
+export type AppToken = z.infer<typeof AppTokenSchema>;
+
+export const CreatedAppTokenSchema = z.object({
+  ...AppTokenSchema.shape,
+  token: z.string(),
+});
+
 export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
-  customLayers: z.array(CustomLayerDefSchema).optional(),
+  layerSetups: z.record(z.string(), LayerSetupSchema).optional(),
+  customLayers: z
+    .array(z.union([CustomLayerDefSchema, NamedMapDefSchema]))
+    .optional(),
+  presets: z.array(MapPresetSchema).optional(),
   maxZoom: z.number().optional(),
 });
 
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
-// Strict UserSettingsSchema with the customLayers field swapped for the
-// lenient compat schema (filters out invalid items, upgrades legacy tile
-// shapes). Use for parsing settings from persisted/server payloads.
+// Strict UserSettingsSchema with the lists swapped for lenient compat schemas
+// (filtering out invalid items, upgrading legacy shapes). Use for parsing
+// settings from persisted/server payloads. A key that doesn't parse is left
+// out on its own: failing the whole object would drop every key, and the next
+// save would then send the defaults over them.
 export const UserSettingsCompatSchema = z.object({
-  ...UserSettingsSchema.shape,
-  customLayers: CustomLayerDefArrayCompatSchema.optional(),
+  layersSettings: LayersSettingsCompatSchema.optional().catch(undefined),
+  layerSetups: LayerSetupsCompatSchema.optional().catch(undefined),
+  customLayers: CustomLayerDefArrayCompatSchema.optional().catch(undefined),
+  presets: MapPresetArrayCompatSchema.optional().catch(undefined),
+  maxZoom: UserSettingsSchema.shape.maxZoom.catch(undefined),
 });
 
 export const UserSchema = z.object({
@@ -123,6 +187,8 @@ export const UserSchema = z.object({
     .default('none'),
   sendGalleryEmails: z.boolean(),
   hasPicture: z.boolean(),
+  // Whether the API holds an OSM token that may upload GPS traces.
+  osmGpxAuthorized: z.boolean().default(false),
   settings: UserSettingsSchema.optional(),
 });
 

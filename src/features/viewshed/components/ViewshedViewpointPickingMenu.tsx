@@ -13,6 +13,7 @@ export default function ViewshedViewpointPickingMenu(): ReactElement {
     <PickingMenu
       prompt={m?.pickViewpointPrompt}
       onCancel={() => dispatch(viewshedSetPickingViewpoint(false))}
+      cancelKbd="Esc"
     />
   );
 }

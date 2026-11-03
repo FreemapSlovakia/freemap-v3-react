@@ -1,17 +1,25 @@
-import { openInExternalApp } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
+import {
+  type ExternalTarget,
+  type OsmObjectLinks,
+  openInExternalApp,
+} from '@app/store/actions.js';
 import { OpenInExternalTargetItems } from '@features/openInExternalApp/components/OpenInExternalAppMenuItems.js';
+import { useSelectionOpener } from '@features/openInExternalApp/selectionOpener.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import type { SelectCallback } from '@restart/ui/types';
 import { LocationActionItems } from '@shared/components/LocationActionItems.js';
-import { ActionSubmenu } from '@shared/components/ResponsiveActions.js';
+import {
+  ActionDivider,
+  ActionItems,
+  ActionSubmenu,
+} from '@shared/components/ResponsiveActions.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { EventKey } from '@shared/hooks/useMenuHandler.js';
 import type { LatLon } from '@shared/types/common.js';
 import { afterPrefix } from '@shared/types/typeUtils.js';
 import type { ReactNode } from 'react';
-import { FaExternalLinkAlt, FaMapPin } from 'react-icons/fa';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = {
@@ -24,25 +32,53 @@ type Props = {
   omit?: readonly ViewFromHere[];
   /** Run after any of them — a panel over the map closes itself here. */
   onAct?: () => void;
+  /** See `OpenInExternalTargetItems`. */
+  osmObject?: OsmObjectLinks;
+  /** The place is the selection's, so the `j` chords open it. */
+  selection?: boolean;
 };
 
 /**
- * What can be done with a place on the map, behind two submenus: everything the
- * map's own context menu offers, and the other maps. Spread into a toolbar's
- * `ResponsiveActions`, whose `onSelect` this also answers — the external-app
- * items act through their `eventKey`.
+ * What can be done with a place on the map: everything the map's own context
+ * menu offers, flat, and the other maps behind a submenu. Spread into a
+ * toolbar's `ResponsiveActions`, whose `onSelect` this also answers — the
+ * external-app items act through their `eventKey`.
  */
-export function usePlaceActions({ at, omit, onAct }: Props): {
+export function usePlaceActions({
+  at,
+  omit,
+  onAct,
+  osmObject,
+  selection,
+}: Props): {
   actions: ReactNode[];
   onSelect: SelectCallback;
 } {
-  const m = useMessages();
-
   const oeam = useOpenInExternalAppMessages();
 
   const dispatch = useDispatch();
 
   const zoom = useAppSelector((state) => state.map.zoom);
+
+  const open = (where: ExternalTarget) => {
+    if (!at) {
+      return;
+    }
+
+    dispatch(
+      openInExternalApp({
+        where,
+        ...at,
+        zoom,
+        includePoint: true,
+        osmObject,
+      }),
+    );
+
+    onAct?.();
+  };
+
+  useSelectionOpener(selection && at ? open : null);
 
   const actions: ReactNode[] = [];
 
@@ -50,20 +86,24 @@ export function usePlaceActions({ at, omit, onAct }: Props): {
   // with nothing and leave the menu holding dividers.
   if (at && !window.fmEmbedded) {
     actions.push(
-      <ActionSubmenu
-        key="location"
-        label={m?.general.locationActions}
-        icon={<FaMapPin />}
-      >
+      <ActionItems key="location">
         <LocationActionItems {...at} omit={omit} onAct={onAct} />
-      </ActionSubmenu>,
+      </ActionItems>,
+
+      <ActionDivider key="open-in-divider" />,
 
       <ActionSubmenu
         key="open-in"
         label={oeam?.openIn}
         icon={<FaExternalLinkAlt />}
       >
-        <OpenInExternalTargetItems {...at} zoom={zoom} includePoint />
+        <OpenInExternalTargetItems
+          {...at}
+          zoom={zoom}
+          includePoint
+          osmObject={osmObject}
+          showKbdShortcut={selection}
+        />
       </ActionSubmenu>,
     );
   }
@@ -77,10 +117,8 @@ export function usePlaceActions({ at, omit, onAct }: Props): {
           ? undefined
           : afterPrefix(eventKey as EventKey, 'open-');
 
-      if (where !== undefined && at) {
-        dispatch(openInExternalApp({ where, ...at, zoom, includePoint: true }));
-
-        onAct?.();
+      if (where !== undefined) {
+        open(where);
       }
     },
   };

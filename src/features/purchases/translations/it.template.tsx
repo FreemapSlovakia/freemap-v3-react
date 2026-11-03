@@ -3,14 +3,14 @@ import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const it: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   purchases: 'Acquisti',
-  premiumExpired: (at) => <>Il tuo accesso premium è scaduto il {at}</>,
+  premiumExpired: (at) => <>Il suo accesso premium è scaduto il {at}</>,
   date: 'Data',
   item: 'Elemento',
-  notPremiumYet: 'Non hai ancora un accesso premium.',
+  notPremiumYet: 'Non ha ancora un accesso premium.',
   awaitingBankPayment:
     'Siamo in attesa della conferma del bonifico bancario. Il premium si attiverà dopo la ricezione del pagamento.',
   bankPaymentFailed:
-    'Alcuni bonifici bancari sono stati rifiutati o sono scaduti. Se pensi che sia un errore, contatta il supporto.',
+    'Alcuni bonifici bancari sono stati rifiutati o sono scaduti. Se pensa che sia un errore, contatti il supporto.',
   bankIntentStatus: {
     pending_settlement:
       'Il bonifico bancario è stato creato ed è in attesa di regolamento.',
@@ -28,7 +28,7 @@ const it: DeepPartialWithRequiredObjects<PurchasesMessages> = {
   credits: (amount) => <>Crediti ({amount})</>,
   managePayments: 'Gestisci i pagamenti',
   managePaymentsHint:
-    'Apre il portale clienti di Polar, il nostro fornitore di pagamenti, dove puoi annullare l’abbonamento, cambiare il metodo di pagamento e scaricare le fatture. Riguarda solo ciò che è stato pagato tramite Polar, non tramite Rovas.',
+    'Apre il portale clienti di Polar, il nostro fornitore di pagamenti, dove può annullare l’abbonamento, cambiare il metodo di pagamento e scaricare le fatture. Riguarda solo ciò che è stato pagato tramite Polar, non tramite Rovas.',
 };
 
 export default it;

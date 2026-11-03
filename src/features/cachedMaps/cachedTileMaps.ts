@@ -4,6 +4,7 @@ import type {
   IsTileLayerDef,
   IsWmsLayerDef,
 } from '@shared/mapDefinitions.js';
+import type { LicenseDict } from '@shared/tileLicenses.js';
 import { pickTileScale } from '@shared/tileUrl.js';
 
 export type CachedTileMapDef = CustomLayerDef<
@@ -16,7 +17,17 @@ export type CachedTileMapDef = CustomLayerDef<
   cacheName: string;
   createdAt: string;
   sizeBytes: number;
-  attribution?: AttributionDef[];
+  /**
+   * The union of the dataset codes the downloaded tiles reported, absent when
+   * any of them didn't — the map is then credited from its source layer, which
+   * names more sources than it holds rather than fewer.
+   */
+  attributionCodes?: string[];
+  /**
+   * What those codes mean, taken from the renderer at download time. An offline
+   * map can't ask, so it carries the answer.
+   */
+  attributionLicenses?: LicenseDict;
   /**
    * The `@Nx` variant the tiles are stored at (1 = plain tiles). A cached map
    * holds exactly one, so it is rendered at this scale whatever the screen and
@@ -29,12 +40,25 @@ export type CachedTileMapDef = CustomLayerDef<
    * what was downloaded and nothing else. Absent counts as on.
    */
   networkFallback?: boolean;
+  /**
+   * The API type its tiles are of — a stand-in's, where it differs from
+   * `sourceType`; see `exportedAs`.
+   */
+  exportType?: string;
+  /** Where a stand-in's tiles have data. */
+  coverageUrl?: string;
+  /** The source's credit as downloaded, for when the source isn't loaded. */
+  attribution?: AttributionDef[];
 };
 
 /**
  * Whether two versions of a map cover the same tiles — an edit that changed
  * only the name has nothing to download or prune.
  */
+/** Whether every one of its tiles has been downloaded. */
+export const isCachedMapComplete = (cm: CachedTileMapDef): boolean =>
+  cm.downloadedCount === cm.tileCount;
+
 export function sameCoverage(
   a: CachedTileMapDef,
   b: CachedTileMapDef,

@@ -5,7 +5,10 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Mesto opazovanja izberite z gumbom {icon} spodaj.</>
   ),
-  rendering: 'Izrisovanje panorame…',
+  preparing: 'Panorama se pripravlja…',
+  rendering: 'Izračun panorame…',
+  encoding: 'Stiskanje slike…',
+  decoding: 'Razpakiranje slike…',
   queued: ({ ahead }) =>
     ahead === 0
       ? 'Čakanje na izrisovalnik…'
@@ -34,13 +37,12 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Nastavitve panorame',
     tiltHint:
       'Koliko neba in tal zajame slika — kota nad obzorjem in pod njim.',
-    custom: 'Natančna kota',
     depthLift: 'Razgrni daljavo',
     depthLiftOff: 'Verni pogled',
     depthLiftHint:
-      'Dvigne oddaljeno površje, tako da se daljna pogorja ločijo od grebenov pred njimi — tako kot na ročno narisani panorami. S tem pridejo na sliko tudi vrhovi, ki jih od tod v resnici ne bi videli; njihova imena so označena.',
+      'Dvigne oddaljeno površje, tako da se daljna pogorja ločijo od grebenov pred njimi — tako kot na ročno narisani panorami. S tem pridejo na sliko tudi vrhovi, ki jih od tod v resnici ne bi videli; njihova imena so označena. Poti sonca in lune se nanjo ne rišejo.',
     rangeHint:
-      'Površje nad 300 km sodi k premiju. Vsak dodatni kilometer se prehodi po vsakem žarku slike, zato daljši pogled izrisovalnik stane sorazmerno več.',
+      'Površje nad 300 km je funkcija premija. Vsak dodatni kilometer se prehodi po vsakem žarku slike, zato daljši pogled izrisovalnik stane sorazmerno več.',
     look: 'Videz',
     looks: {
       natural: 'Naraven',
@@ -68,24 +70,42 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Površje onkraj te razdalje se ne nariše, namesto da bi bilo ploskovno zapolnjeno z zadnjo barvo, tako da se ves preliv porabi za to, kar slika kaže. Vrhovi, ki stojijo na njem, niso poimenovani.',
   },
-  preview: 'Predogled',
   quality: {
-    label: 'Kakovost / hitrost',
-    superfast: 'Najnižja / najhitrejša',
-    fast: 'Nizka / hitra',
-    standard: 'Standardna',
-    detailed: 'Podrobna / počasna',
-    finest: 'Najfinejša / najpočasnejša',
+    detail: 'Podrobnost',
   },
+  frame: 'Izrez in podrobnost',
   tilt: {
     label: 'Navpični obseg',
     standard: 'Standarden',
     wide: 'Visok',
     flat: 'Nizek',
+    below: 'Pod obzorjem',
+    above: 'Nad obzorjem',
   },
   fov: {
     label: 'Vodoravni obseg',
     full: 'Naokoli',
+  },
+  sky: {
+    title: 'Sonce in luna',
+    sun: 'Pot sonca',
+    moon: 'Pot lune',
+    date: 'Dan',
+    dateHint:
+      'Časi so v časovem pasu te naprave in označujejo, kdaj za terenom izgine zadnji delček diska ali se prikaže prvi. Teren je gola zemlja, zato ga drevesa in stavbe lahko zakrijejo prej.',
+    today: 'Danes',
+    lit: (percent) => `osvetljena ${percent}`,
+    elevation: (deg) => `višina ${deg}`,
+    overTerrain: (deg) => `${deg} nad terenom`,
+    belowTerrain: (deg) => `${deg} pod terenom`,
+    unfolded: (
+      <>
+        Ne na razgrnjeni sliki: njeno oddaljeno površje je narisano višje, kot
+        stoji, zato bi poti sekale obzorje na napačnih mestih. V nastavitvah
+        panorame nastavite <i>Razgrni daljavo</i> na <i>Verni pogled</i> in
+        posodobite.
+      </>
+    ),
   },
   labels: {
     title: 'Imena vrhov',
@@ -112,9 +132,16 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Čist zrak',
     hazeHint:
       'Kako daleč mora biti vrh, da megla šteje več kakor vrh sam. Nad trikratnikom te razdalje ni poimenovano nič več.',
-    showEle: 'Prikaži nadmorske višine',
-    showEleHint:
-      'Pod ime vsakega vrha izpiše njegovo višino. Napis je tedaj dvovrstičen, zato jih gre na sliko manj.',
+    subLine: 'Pod imenom',
+    subLineHint:
+      'Kaj pove druga vrstica napisa vsakega vrha. Če je vklopljeno karkoli od tega, je vsak napis dvovrstičen, zato jih gre na sliko manj. Prominenca (P) je, koliko se vrh dviga nad najnižjim sedlom na poti do višjega površja; izolacija (I) je, kako daleč je to višje površje.',
+    subLineParts: {
+      ele: 'Višina',
+      distance: 'Razdalja',
+      prominence: 'Prominenca',
+      isolation: 'Izolacija',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Poimenuj razkrite vrhove',
     showRevealedHint:
       'Vrhovi, ki jih je razgrnitev daljave potegnila izza bližjega grebena: narisani so, a od tod jih v resnici ni videti. Njihova imena so bledejša in kadar ni prostora za oba, ima prednost vrh, ki ga je videti.',
@@ -145,11 +172,6 @@ const sl: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Panorame ni bilo mogoče izrisati.',
   },
   caveats: {
-    title: 'Kaj slika kaže in česa ne',
-    bareEarth:
-      'Model površja je gola zemlja: gozdov in stavb v njem ni, zato je pogled, ki bi ga zakril gozd, narisan kot prost. To je daleč največji vir odstopanj.',
-    coverage:
-      'Podrobnost se razlikuje po državah. Kjer obstaja državni lasersko skenirani model, je bližnja okolica ostra; drugod odgovarja globalni 30-metrski model.',
     viewpoint:
       'Oko je postavljeno na najvišjo točko v obsegu nekaj metrov od vašega klika, da razgleda z vrha ne pokvari skala poleg vas.',
     depthLift:

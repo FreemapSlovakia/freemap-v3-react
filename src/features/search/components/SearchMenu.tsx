@@ -1,21 +1,38 @@
+import type { RootState } from '@app/store/store.js';
+import { useOpenManual } from '@features/documents/hooks/useOpenManual.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
+import { objectsSetFilter } from '@features/objects/model/actions.js';
+import type { ObjectCategory } from '@features/objects/objectCategories.js';
+import { sameFilter } from '@features/objects/useMatchedCategories.js';
+import { usePoiMatches } from '@features/objects/usePoiMatches.js';
 import { isLocalSearchQuery } from '@features/search/localQuery.js';
+import { pickShowsDetailsSelector } from '@features/search/model/selectors.js';
+import { elementTypeIcon } from '@osm/elementTypeIcons.js';
 import {
   getOsmAddress,
   getOsmName,
+  joinGenericNameParts,
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
-import { useGenericNameResolver } from '@osm/useGenericNameResolver.js';
+import { useGenericNameParts } from '@osm/useGenericNameResolver.js';
+import { Checkbox } from '@shared/components/Checkbox.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  LongPressTooltip,
+  type TooltipTargetProps,
+} from '@shared/components/LongPressTooltip.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { useModalLink } from '@shared/components/ShowModalLink.js';
+import { isClosedGeometry } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -26,6 +43,7 @@ import {
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import clsx from 'clsx';
+import type { Geometry } from 'geojson';
 import {
   type ChangeEvent,
   type ComponentPropsWithoutRef,
@@ -47,14 +65,16 @@ import {
   InputGroup,
 } from 'react-bootstrap';
 import {
+  FaBook,
   FaCaretDown,
   FaCaretUp,
   FaDrawPolygon,
+  FaPaintBrush,
   FaSearch,
 } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import {
   type CommandMatch,
   useCommandMatches,
@@ -101,12 +121,20 @@ const minQueryLength = 3;
 /** Long enough that a typed word is one lookup rather than one per letter. */
 const suggestDelayMs = 300;
 
-const typeSymbol: Record<OsmFeatureId['elementType'], ReactNode> = {
-  node: <GoDotFill />,
-  way: <MdPolyline />,
-  relation: <FaDrawPolygon />,
-};
+/** An OSM element's type; a way that came closed as such. */
+function typeSymbol(
+  elementType: OsmFeatureId['elementType'],
+  geometry: Geometry | null | undefined,
+): ReactNode {
+  const Icon = elementTypeIcon(
+    elementType,
+    Boolean(geometry && isClosedGeometry(geometry)),
+  );
 
+  return <Icon />;
+}
+
+// Not the OSM element icons: a WMS feature is no OSM element.
 const wmsShapeSymbol: Record<string, ReactNode> = {
   Point: <GoDotFill />,
   MultiPoint: <GoDotFill />,
@@ -141,9 +169,17 @@ HideArrow.displayName = 'HideArrow';
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();
 
+  const modalLink = useModalLink();
+
+  const styleLink = modalLink({ type: 'search-result-style' });
+
+  const openManual = useOpenManual('toolbar');
+
   const online = useOnline();
 
   const dispatch = useDispatch();
+
+  const store = useStore<RootState>();
 
   const results = useAppSelector((state) => state.search.results);
 
@@ -205,6 +241,21 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   );
 
   const mapMatches = commands.filter(({ command }) => command.kind === 'map');
+
+  const manualMatches = commands.filter(
+    ({ command }) => command.kind === 'manual',
+  );
+
+  const objectsActive = useAppSelector((state) => state.objects.active);
+
+  // The POI categories the query names, which switch what the map shows rather
+  // than going somewhere. Offline they are left out: the objects are fetched.
+  const poiMatches = usePoiMatches(
+    !online || isLocalSearchQuery(value) ? '' : value,
+  );
+
+  const activeIndexOf = (key: string) =>
+    objectsActive.findIndex((item) => sameFilter(item, key));
 
   // Offline the box still finds what the query itself carries; anything else
   // has to be asked of the geocoder, and only that goes dead.
@@ -304,6 +355,26 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         return;
       }
 
+      // A category is a checkbox, not a destination: the query stays, the list
+      // stays up (`autoClose="outside"`), and only the tick changes.
+      if (eventKey.startsWith('poi-')) {
+        const key = eventKey.slice(4);
+
+        trackMatomo(['trackEvent', 'Search', 'poi', key]);
+
+        const index = objectsActive.findIndex((item) => sameFilter(item, key));
+
+        dispatch(
+          objectsSetFilter(
+            index > -1
+              ? objectsActive.toSpliced(index, 1)
+              : [...objectsActive, key],
+          ),
+        );
+
+        return;
+      }
+
       if (eventKey.startsWith('cmd-')) {
         const id = eventKey.slice(4);
 
@@ -346,12 +417,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         // Enter is the rarity, so counting one would count almost nothing.
         trackMatomo(['trackEvent', 'Search', 'pick', result.source]);
 
-        dispatch(searchSelectResult({ result }));
+        dispatch(
+          searchSelectResult({
+            result,
+            details: pickShowsDetailsSelector(store.getState(), result),
+          }),
+        );
       }
 
       setOpen(false);
     },
-    [commands, query, results, dispatch],
+    [commands, query, results, objectsActive, dispatch, store],
   );
 
   const showMore = useCallback(() => {
@@ -371,36 +447,49 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const shownCommandsRef = useRef('');
 
+  const shownPoiRef = useRef('');
+
   useEffect(() => {
     const commandKey = commands.map(({ command }) => command.id).join();
 
+    const poiKey = poiMatches.map(({ category }) => category.key).join();
+
     if (
       results === shownResultsRef.current &&
-      commandKey === shownCommandsRef.current
+      commandKey === shownCommandsRef.current &&
+      poiKey === shownPoiRef.current
     ) {
       return;
     }
 
+    const newResults = results !== shownResultsRef.current;
+
     shownResultsRef.current = results;
 
     shownCommandsRef.current = commandKey;
+
+    shownPoiRef.current = poiKey;
 
     if (results.length) {
       const active = document.activeElement;
 
       if (!inputRef.current || active === inputRef.current) {
         setOpen(true);
-      } else if (!holdsFocus(active)) {
-        // Nothing is being typed into — the map, a button, or nothing at all
-        // has the focus — so take it back and show what arrived. The map
-        // counts: Leaflet's container is focusable, so map-details results
-        // arrive with it holding the focus.
+      } else if (newResults && !holdsFocus(active)) {
+        // Only for results that have just arrived. The categories land a chunk
+        // fetch later, and a row of the open list holds the focus without
+        // `holdsFocus` counting it — so taking the caret back for them would
+        // pull the user out of the list they are arrowing through.
+        // Otherwise nothing is being typed into — the map, a button, or
+        // nothing at all has the focus — so take it back and show what
+        // arrived. The map counts: Leaflet's container is focusable, so
+        // map-details results arrive with it holding the focus.
         inputRef.current.focus();
       }
       // Otherwise the user has moved on to something of their own. Suggestions
       // land a keystroke's delay plus a round trip later, so taking the caret
       // back here would pull it out of whatever they are filling in now.
-    } else if (commands.length) {
+    } else if (commands.length || poiMatches.length) {
       // Answered from here rather than fetched, so the caret is in the box
       // already — unless the list was rebuilt by something else entirely
       // (signing in, a layer going), which is no reason to take the focus.
@@ -411,7 +500,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, commands]);
+  }, [results, commands, poiMatches]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -465,8 +554,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const handleInputFocus = useCallback(() => {
     setInputFocused(true);
 
-    setOpen(results.length > 0 || commands.length > 0);
-  }, [results, commands]);
+    // Only ever opens. The caret opens the list and then focuses the input, so
+    // closing here would shut an empty box's list again on the way in.
+    setOpen(
+      (open) =>
+        open ||
+        results.length > 0 ||
+        commands.length > 0 ||
+        poiMatches.length > 0,
+    );
+  }, [results, commands, poiMatches]);
 
   const handleInputBlur = useCallback(() => {
     setInputFocused(false);
@@ -510,10 +607,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   let prevSource: SearchSource | undefined;
 
   return (
-    <Form onSubmit={handleSearch} style={{ display: hidden ? 'none' : '' }}>
+    <Form
+      onSubmit={handleSearch}
+      // Hiding is a class, not an inline style — bootstrap's display utilities
+      // are `!important`, which an inline `display: none` loses to.
+      className={clsx('gap-1 align-items-center', hidden ? 'd-none' : 'd-flex')}
+    >
+      {/* Closing is explicit in `handleSelect`, so that a category row — which
+          is a checkbox — can decline to. */}
       <Dropdown
         as={ButtonGroup}
         show={open}
+        autoClose="outside"
         onSelect={handleSelect}
         onToggle={handleToggle}
       >
@@ -533,7 +638,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               autoComplete="off"
             />
 
-            {results.length || commands.length ? (
+            {/* An empty box has nothing to submit, so the caret takes the
+                button's place: it opens the list's own settings row. */}
+            {results.length ||
+            commands.length ||
+            poiMatches.length ||
+            (!value && !window.fmEmbedded) ? (
               <Button variant="secondary" onClick={handleCaretClick}>
                 {open ? <FaCaretUp /> : <FaCaretDown />}
               </Button>
@@ -571,7 +681,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         >
           {functionMatches.length > 0 && (
             <div className="dropdown-caption-divider">
-              {m?.search.commands.caption}
+              <Text k="search.commands.caption" />
             </div>
           )}
 
@@ -581,12 +691,37 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
           {mapMatches.length > 0 && (
             <div className="dropdown-caption-divider">
-              {m?.mapLayers.layers}
+              <Text k="mapLayers.layers" />
             </div>
           )}
 
           {mapMatches.map((match) => (
             <CommandItem key={match.command.id} match={match} />
+          ))}
+
+          {manualMatches.length > 0 && (
+            <div className="dropdown-caption-divider">
+              <Text k="mainMenu.manual" />
+            </div>
+          )}
+
+          {manualMatches.map((match) => (
+            <CommandItem key={match.command.id} match={match} />
+          ))}
+
+          {poiMatches.length > 0 && (
+            <div className="dropdown-caption-divider">
+              <Text k="tools.objects" />
+            </div>
+          )}
+
+          {poiMatches.map(({ category, positions }) => (
+            <PoiItem
+              key={category.key}
+              category={category}
+              positions={positions}
+              active={activeIndexOf(category.key) > -1}
+            />
           ))}
 
           {results.map((result) => {
@@ -598,6 +733,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             // what the caption above announced.
             const divider =
               (commands.length > 0 ||
+                poiMatches.length > 0 ||
                 !(
                   [
                     'nominatim-forward',
@@ -675,19 +811,104 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 }
               }}
             >
-              <small>{m?.search.showMore}</small>
+              <small>
+                <Text k="search.showMore" />
+              </small>
 
-              {inputFocused && (
-                <>
-                  {' '}
-                  <kbd>Enter</kbd>
-                </>
-              )}
+              {inputFocused && <kbd>Enter</kbd>}
             </Dropdown.Item>
+          )}
+
+          {!window.fmEmbedded && (
+            <>
+              {(results.length > 0 ||
+                commands.length > 0 ||
+                poiMatches.length > 0) && <Dropdown.Divider />}
+
+              <Dropdown.Item
+                {...styleLink}
+                // A modal of its own follows, which the list must not stay up
+                // behind now that selecting no longer closes it.
+                onClick={(e) => {
+                  styleLink.onClick(e);
+
+                  setOpen(false);
+                }}
+              >
+                <FaPaintBrush />
+                <MenuLabel>
+                  <Text k="mapLayers.lookupStyle" />
+                </MenuLabel>
+              </Dropdown.Item>
+
+              <Dropdown.Item
+                href="#show=manual/search"
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  openManual('search');
+
+                  setOpen(false);
+                }}
+              >
+                <FaBook />
+                <MenuLabel>
+                  <Text k="mainMenu.manual" />
+                </MenuLabel>
+              </Dropdown.Item>
+            </>
           )}
         </FmDropdownMenu>
       </Dropdown>
     </Form>
+  );
+}
+
+/** A POI category the query named: a checkbox that switches it on the map. */
+function PoiItem({
+  category,
+  positions,
+  active,
+}: {
+  category: ObjectCategory;
+  positions: number[];
+  active: boolean;
+}) {
+  const img = resolveGenericName(
+    osmTagToIconMapping,
+    Object.fromEntries(
+      category.tags.map(({ key, value }) => [key, value ?? '*']),
+    ),
+  );
+
+  return (
+    <Dropdown.Item
+      as="button"
+      type="button"
+      eventKey={`poi-${category.key}`}
+      active={active}
+    >
+      {/* Laid out as a result row is, so one icon column and one mark column
+          run down the whole list. */}
+      <div className={clsx('d-flex gap-2 align-items-center', classes.result)}>
+        {img.length > 0 ? (
+          <IconGlyph poi={img[0]} />
+        ) : (
+          <span
+            className="flex-shrink-0"
+            style={{ width: '1em', height: '1em' }}
+          />
+        )}
+
+        <div className="flex-grow-1 text-truncate">
+          <Highlight text={category.name} at={positions} />
+        </div>
+
+        <div className="flex-shrink-0">
+          <Checkbox value={active} />
+        </div>
+      </div>
+    </Dropdown.Item>
   );
 }
 
@@ -707,12 +928,12 @@ function CommandItem({ match }: { match: CommandMatch }) {
   const label = (
     <>
       {command.layerDef ? (
-        <MapLayerItem def={command.layerDef} label={highlighted} />
+        <MapLayerItem def={command.layerDef} label={highlighted} truncate />
       ) : (
         <>
           {command.icon}
 
-          {highlighted}
+          <MenuLabel>{highlighted}</MenuLabel>
         </>
       )}
 
@@ -765,11 +986,11 @@ function Highlight({ text, at }: { text: string; at: number[] }) {
 }
 
 function Result({ value }: { value: SearchResult }) {
-  const m = useMessages();
-
   const tags = value.geojson.properties ?? {};
 
-  const genericName = useGenericNameResolver(value);
+  const kinds = useGenericNameParts(value);
+
+  const genericName = joinGenericNameParts(kinds);
 
   const language = useEffectiveChosenLanguage();
 
@@ -785,8 +1006,36 @@ function Result({ value }: { value: SearchResult }) {
 
   const img = resolveGenericName(osmTagToIconMapping, tags);
 
-  return (
-    <div className={clsx('d-flex flex-column mx-n2', classes.result)}>
+  const nameRef = useRef<HTMLDivElement>(null);
+
+  const addressRef = useRef<HTMLElement>(null);
+
+  const [truncated, setTruncated] = useState(false);
+
+  // Measured ahead of the hover: the tooltip decides on its first pointerenter.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: new text can overflow without a resize
+  useEffect(() => {
+    const els = [nameRef.current, addressRef.current].filter(
+      (el): el is HTMLElement => el !== null,
+    );
+
+    const measure = () => {
+      setTruncated(els.some((el) => el.scrollWidth > el.clientWidth));
+    };
+
+    measure();
+
+    const ro = new ResizeObserver(measure);
+
+    for (const el of els) {
+      ro.observe(el);
+    }
+
+    return () => ro.disconnect();
+  }, [name, genericName, address]);
+
+  const row = (props?: TooltipTargetProps) => (
+    <div {...props} className={clsx('d-flex flex-column', classes.result)}>
       <div className="d-flex gap-2 align-items-center">
         {img.length > 0 ? (
           <IconGlyph poi={img[0]} />
@@ -806,26 +1055,62 @@ function Result({ value }: { value: SearchResult }) {
         {/* The name carries the emphasis, so the kind of thing reads the same
             whether it follows one or stands as the whole row — a list of
             unnamed features would otherwise be muted from top to bottom. */}
-        <div className="flex-grow-1 text-truncate">
+        <div className="flex-grow-1 text-truncate" ref={nameRef}>
           {name && <span className="fw-semibold">{name}</span>}
 
           {genericName ? (
             <span className={clsx(name && 'ms-2')}>{genericName}</span>
           ) : (
-            !name && m?.general.unknown
+            !name && <Text k="general.unknown" />
           )}
         </div>
 
         <div className="flex-shrink-0" style={{ opacity: 0.25 }}>
           {value.id.type === 'osm'
-            ? typeSymbol[value.id.elementType]
+            ? typeSymbol(
+                value.id.elementType,
+                value.geojson.type === 'Feature'
+                  ? value.geojson.geometry
+                  : undefined,
+              )
             : value.id.type === 'wms' && tags['Shape']
               ? (wmsShapeSymbol[tags['Shape'] as string] ?? null)
               : null}
         </div>
       </div>
 
-      {address && <small className="ms-4 text-truncate">{address}</small>}
+      {address && (
+        <small className="ms-4 text-truncate" ref={addressRef}>
+          {address}
+        </small>
+      )}
     </div>
+  );
+
+  // Always wrapped, so the row is never re-created under the observer above;
+  // the props reach it only when something is cut, since they capture the
+  // context menu and would cost a link row its "Open link in new tab".
+  return (
+    <LongPressTooltip
+      label={
+        <>
+          {name && <div className="fw-semibold">{name}</div>}
+
+          {kinds.length > 1 ? (
+            <ul className="mb-0 ps-3">
+              {kinds.map((kind) => (
+                <li key={kind.text}>{kind.text}</li>
+              ))}
+            </ul>
+          ) : (
+            kinds[0] && <div>{kinds[0].text}</div>
+          )}
+
+          {address && <div>{address}</div>}
+        </>
+      }
+    >
+      {({ props }) => row(truncated ? props : undefined)}
+    </LongPressTooltip>
   );
 }

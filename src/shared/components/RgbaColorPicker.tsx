@@ -12,6 +12,8 @@ type Props = {
   style?: CSSProperties;
   /** Allow editing the alpha channel; when `false` the result is `#rrggbb`. */
   alpha?: boolean;
+  /** Offered ahead of the recently used colours. */
+  presets?: string[];
 };
 
 const checkerBg: CSSProperties = {
@@ -27,6 +29,7 @@ export function RgbaColorPicker({
   className,
   style,
   alpha = true,
+  presets,
 }: Props): ReactElement {
   const recentColors = useAppSelector(
     (state) => state.drawingSettings.recentColors,
@@ -79,7 +82,8 @@ export function RgbaColorPicker({
               }}
               width={236}
               height={120}
-              presets={recentColors}
+              // The picker shows only the first 18.
+              presets={presets ? [...presets, ...recentColors] : recentColors}
               hideOpacity={!alpha}
               hideControls
               hideColorTypeBtns
@@ -92,21 +96,24 @@ export function RgbaColorPicker({
         </Popover>
       }
     >
+      {/* Framed like Bootstrap's own colour input, so a pale colour still
+          stands apart from the field. */}
       <button
         type="button"
-        className={`form-control p-0${className ? ` ${className}` : ''}`}
+        className={`form-control${className ? ` ${className}` : ''}`}
         style={{
           cursor: 'pointer',
           height: 'calc(1.5em + 0.75rem + 2px)',
-          ...checkerBg,
+          padding: '0.375rem',
           ...style,
         }}
-        aria-label="Pick color"
       >
         <div
-          className="w-100 h-100"
-          style={{ background: value, borderRadius: 'inherit' }}
-        />
+          className="w-100 h-100 overflow-hidden"
+          style={{ ...checkerBg, borderRadius: 'var(--bs-border-radius-sm)' }}
+        >
+          <div className="w-100 h-100" style={{ background: value }} />
+        </div>
       </button>
     </OverlayTrigger>
   );

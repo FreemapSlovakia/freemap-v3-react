@@ -1,15 +1,17 @@
+import type { TraceKind } from '@features/dataViewer/traceServices.js';
 import {
   type Document,
   DocumentSchema,
 } from '@features/documents/model/actions.js';
+import type { BatchKind } from '@shared/batchProperties.js';
 import z from 'zod';
+import { DOCUMENTS_IN_MANUAL } from '@/manual/moved.js';
 
 const URL_MODAL_IDS = [
   'about',
   'account',
   'browse-cache',
   'credits-purchase',
-  'custom-maps',
   'drawing-properties',
   'elevation-settings',
   'embed',
@@ -21,8 +23,9 @@ const URL_MODAL_IDS = [
   'gps-recorder-settings',
   'legend',
   'login',
+  'manual',
   'map-features-export',
-  'map-layers-config',
+  'map-manager',
   'map-preferences',
   'map-to-document-export',
   'my-maps',
@@ -35,24 +38,31 @@ const URL_MODAL_IDS = [
   'search-result-style',
   'support-us',
   'toposcope-settings',
-  'track-viewer-style',
   'track-viewer-match',
+  'track-viewer-osm-upload',
   'tracking-my',
   'tracking-watched',
+  'viewshed-settings',
 ] as const;
 
 export const UrlModalIdSchema = z.enum(URL_MODAL_IDS);
 
 /** Legacy modal ids (from old shared links) mapped to their current name. */
 const MODAL_RENAMES: Record<string, string> = {
+  'track-viewer-style': 'drawing-properties',
   'export-map': 'map-to-document-export',
   'export-gpx': 'map-features-export',
   'export-map-features': 'map-features-export',
   'export-pdf': 'map-to-document-export',
   'download-map': 'offline-map-export',
   supportUs: 'support-us',
-  mapSettings: 'map-layers-config',
-  'map-settings': 'map-layers-config',
+  mapSettings: 'map-manager',
+  'map-settings': 'map-manager',
+  'map-layers-config': 'map-manager',
+  'custom-maps': 'map-manager',
+  'map-library': 'map-manager',
+  'installed-maps': 'map-manager',
+  'available-maps': 'map-manager',
   'remove-ads': 'premium',
   'upload-track': 'file-import',
   'buy-credits': 'credits-purchase',
@@ -69,23 +79,37 @@ const MODAL_RENAMES: Record<string, string> = {
  */
 const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
   'browse-cache',
-  'custom-maps',
   'elevation-settings',
-  'map-layers-config',
+  'map-manager',
   'map-preferences',
   'offline-maps',
   'premium',
+  'track-viewer-osm-upload',
 ]);
 
-// The two that name no id of their own: they edit whatever is selected, which
-// a `show=` in a shared link knows nothing about.
+// One that names no id of its own: it edits whatever is selected, which a
+// `show=` in a shared link knows nothing about.
 export const ModalIdSchema = z.enum([
   ...URL_MODAL_IDS,
-  'current-drawing-properties',
   'data-viewer-properties',
+  'data-viewer-vertex',
 ]);
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
+
+/** Which form the library shows: a custom map's or a preset's; a new one's without `edit`. */
+export type CustomMapRequest = {
+  /** The custom map or preset to edit. */
+  edit?: string;
+  /** A new preset of what is on the map, asked for by the Map layers panel. */
+  addPreset?: boolean;
+  /** A copy of this preset (a link's, or a duplicate) as the account's own, in its place on the map. */
+  addPresetFrom?: string;
+  /** A named map of this drawing of a map, in its place; see `mapNamedMapCreate`. */
+  addNamedFrom?: { type: string; preset?: string };
+  /** Cancel closes the modal rather than going back to the list. */
+  closeOnCancel?: boolean;
+};
 
 /**
  * The open modal/overlay. A discriminated union so a modal can carry an
@@ -93,10 +117,32 @@ export type ModalId = z.infer<typeof ModalIdSchema>;
  * at a time. `null` means no modal.
  */
 export type ActiveModal =
-  | { type: Exclude<ModalId, 'tracking-watched' | 'my-maps' | 'events'> }
+  | {
+      type: Exclude<
+        ModalId,
+        'tracking-watched' | 'my-maps' | 'map-manager' | 'manual' | 'events'
+      >;
+    }
+  /** Without `chapter`, the first one. */
+  | { type: 'manual'; chapter?: string }
   | { type: 'my-maps'; add?: boolean }
   | { type: 'events'; create?: { mapId?: string } }
+  /**
+   * The map manager. With `customMap` it shows the form for one; see
+   * `CustomMapRequest`. `highlight` picks out that map in the list; `query`
+   * fills in its search.
+   */
+  | {
+      type: 'map-manager';
+      customMap?: CustomMapRequest;
+      highlight?: string;
+      query?: string;
+    }
   | { type: 'tracking-watched'; token?: string }
+  /** The properties of every feature of a kind at once. */
+  | { type: 'data-viewer-batch-properties'; kind: BatchKind }
+  /** What to trace within the selected polygon. */
+  | { type: 'data-viewer-trace'; kind: TraceKind; legacy?: boolean }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
   | { type: 'wiki'; key: string };
@@ -118,12 +164,14 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
         : 'tracking-watched';
     case 'document':
       return `document/${modal.key}`;
+    case 'manual':
+      return modal.chapter ? `manual/${modal.chapter}` : 'manual';
     case 'gallery-viewer':
       return `gallery-viewer/${modal.id}`;
     case 'wiki':
       return `wiki/${modal.key}`;
     default:
-      // Only URL-serializable ids go in `show=`; current-drawing-properties doesn't.
+      // Only URL-serializable ids go in `show=`; data-viewer-properties doesn't.
       return UrlModalIdSchema.safeParse(modal.type).success ? modal.type : null;
   }
 }
@@ -156,10 +204,18 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
         ? { type: 'tracking-watched', token: arg }
         : { type: 'tracking-watched' };
     case 'document': {
+      const chapter = arg === undefined ? undefined : DOCUMENTS_IN_MANUAL[arg];
+
+      if (chapter !== undefined) {
+        return { type: 'manual', chapter };
+      }
+
       const r = DocumentSchema.safeParse(arg);
 
       return r.success ? { type: 'document', key: r.data } : null;
     }
+    case 'manual':
+      return arg ? { type: 'manual', chapter: arg } : { type: 'manual' };
     case 'gallery-viewer': {
       const id = Number(arg);
 
@@ -189,20 +245,19 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
  * few call sites that open a modal chosen at runtime.
  *
  * Each branch returns a literal that TypeScript checks against `ActiveModal`,
- * so the value is always a valid member (no cast). The `my-maps` and
- * `tracking-watched` branches narrow those two ids off — their members carry an
- * optional field — leaving the default's `modalId` matching the catch-all
- * member exactly. A `ModalId` that gained a *required* field would then fail to
- * type-check here, forcing it to be handled rather than silently producing an
- * incomplete modal.
+ * so the value is always a valid member (no cast). The first branch narrows off
+ * the ids whose members carry an optional field, leaving the default's
+ * `modalId` matching the catch-all member exactly. A `ModalId` that gained a
+ * *required* field would then fail to type-check here, forcing it to be handled
+ * rather than silently producing an incomplete modal.
  */
 export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
-      return { type: modalId };
+    case 'map-manager':
     case 'events':
-      return { type: modalId };
     case 'tracking-watched':
+    case 'manual':
       return { type: modalId };
     default:
       return { type: modalId };

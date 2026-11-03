@@ -1,6 +1,9 @@
 import type { RootState } from '@app/store/store.js';
-import { drawingPointAdd } from '@features/drawing/model/actions/drawingPointActions.js';
+import { pointToFeature } from '@features/dataViewer/drawingWire.js';
+import { dataViewerAddFeatures } from '@features/dataViewer/model/actions.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
@@ -9,6 +12,7 @@ import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -70,6 +74,7 @@ import {
   galleryShowOnTheMap,
   gallerySubmitComment,
   gallerySubmitStars,
+  type Picture,
 } from '../model/actions.js';
 import { pictureIdToPath } from '../pictureIdPath.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
@@ -152,6 +157,27 @@ const SHARED_IMAGE_WIDTH = 3840;
 const READOUT_STAR_SIZE = 20;
 const RATING_STAR_SIZE = 24;
 
+const divider = <span className={classes.divider} />;
+
+// The flex row's gap already supplies half the spacing.
+const rowDivider = <span className={clsx(classes.divider, 'mx-1')} />;
+
+// The photo whose details are on screen, with its Commons metadata if any.
+interface ShownDetails {
+  image: Picture;
+  meta: WikimediaMeta | null;
+}
+
+// A premium photo is hidden from all but premium users and its author.
+function premiumLocked(
+  image: Picture | null,
+  user: RootState['auth']['user'],
+): boolean {
+  return (
+    Boolean(image?.premium) && !isPremium(user) && user?.id !== image?.user?.id
+  );
+}
+
 // The modal content's CSS width by Bootstrap breakpoint (xl / lg / smaller),
 // shared by the image-fetch width, the display rescale, and the pano canvas.
 function modalContentWidth(): number {
@@ -203,7 +229,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const imageIds = useAppSelector((state) => state.gallery.imageIds);
 
-  const image = useAppSelector((state) => state.gallery.image);
+  const storedImage = useAppSelector((state) => state.gallery.image);
+
+  const imageFetchFailed = useAppSelector(
+    (state) => state.gallery.imageFetchFailed,
+  );
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -244,22 +274,28 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const becomePremium = useBecomePremium();
 
+  const [shown, setShown] = useState<ShownDetails | null>(null);
+
   if (reduxActiveImageId !== activeImageId) {
     setLoading(true);
 
     setActiveImageId(reduxActiveImageId);
 
     setCommentFocused(false);
+
+    if (activeImageId === null) {
+      setShown(null);
+    }
   }
 
   // Wikimedia photos have a negative id (internal `-pageId`). Deriving this from
   // the id — not `image.source` — means we know it's a Commons photo before its
   // picture record loads, so we never point <img> at our own server for it (a
   // 404 that would flash a broken image instead of the spinner).
-  const isWikimedia = activeImageId !== null && activeImageId < 0;
+  const liveWikimedia = activeImageId !== null && activeImageId < 0;
 
   // Commons pageId of the current Wikimedia photo (id = -pageId), or null.
-  const wmPageId = isWikimedia ? -activeImageId : null;
+  const wmPageId = liveWikimedia ? -activeImageId : null;
 
   // Metadata is read from the cache during render, keyed on the id alone — so a
   // prefetched neighbour is shown instantly, without waiting for the Redux
@@ -270,12 +306,52 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       ? undefined
       : commonsCache.current.get(`${language}/${wmPageId}`);
 
-  const commonsMeta =
+  const liveMeta =
     commonsEntry && commonsEntry !== 'error' ? commonsEntry : null;
 
   // Whether the current Wikimedia photo's image/metadata failed to load — so we
   // can show an error instead of an endless spinner.
   const commonsError = commonsEntry === 'error';
+
+  const liveImage = storedImage?.id === activeImageId ? storedImage : null;
+
+  // Own photos carry the pano flag server-side; Commons 360s have no GPano/XMP,
+  // so they're detected from their exact 2:1 dimensions in the fetched metadata.
+  const pano = liveWikimedia
+    ? Boolean(liveMeta?.pano)
+    : Boolean(liveImage?.pano);
+
+  const liveDisabledPremium = premiumLocked(liveImage, user);
+
+  // Whether the photo area shows the current photo rather than a spinner.
+  const photoShown = !loading || pano || liveDisabledPremium || commonsError;
+
+  // Everything around the photo keeps showing the previous one's details until
+  // the new photo is on screen and its record has landed, so it swaps at once.
+  const fresh: ShownDetails | null =
+    photoShown && liveImage ? { image: liveImage, meta: liveMeta } : null;
+
+  if (fresh && (fresh.image !== shown?.image || fresh.meta !== shown.meta)) {
+    setShown(fresh);
+  }
+
+  // After a failed fetch the old details must not linger beside this photo.
+  const recordPending = !liveImage && !imageFetchFailed;
+
+  const details = fresh ?? (recordPending || !photoShown ? shown : null);
+
+  const image = details?.image ?? null;
+
+  // With no record to show, the header still credits a Commons photo.
+  const shownId = details ? details.image.id : activeImageId;
+
+  const isWikimedia = shownId !== null && shownId < 0;
+
+  const commonsMeta = details ? details.meta : liveMeta;
+
+  // Controls act on the stored record, so they're inert while the previous
+  // photo's details are on screen.
+  const detailsStale = image !== null && image !== liveImage;
 
   useEffect(() => {
     function handleFullscreenChange() {
@@ -370,20 +446,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const premium = Boolean(image?.premium);
 
-  const disabledPremium =
-    premium && !isPremium(user) && user?.id !== image?.user?.id;
-
-  // Own photos carry the pano flag server-side; Commons 360s have no GPano/XMP,
-  // so they're detected from their exact 2:1 dimensions in the fetched metadata.
-  // Gating the Wikimedia case on `commonsMeta` also stops a stale previous
-  // record from hijacking the render into the pannellum branch (blank canvas)
-  // while a Commons photo's metadata loads.
-  const pano = isWikimedia ? Boolean(commonsMeta?.pano) : Boolean(image?.pano);
+  const disabledPremium = premiumLocked(image, user);
 
   // The equirectangular image pannellum renders: our own image endpoint, or a
   // width-capped Commons thumbnail (from wikimediaMeta) for a Wikimedia pano.
-  const panoUrl = isWikimedia
-    ? commonsMeta?.panoUrl
+  const panoUrl = liveWikimedia
+    ? liveMeta?.panoUrl
     : `${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`;
 
   const p = activeImageId !== null && pano && Boolean(panoUrl);
@@ -419,18 +487,23 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     }
   }, []);
 
+  // Deletes the stored record, so only when it is the one on screen — also
+  // after the prompt, during which the arrow keys still switch photos.
   const handleDelete = useCallback(async () => {
     if (
-      await confirm({
+      image &&
+      image === liveImage &&
+      (await confirm({
         title: gm?.viewer.deleteTitle,
-        message: gm?.viewer.deletePrompt(image?.title),
+        message: gm?.viewer.deletePrompt(image.title),
         confirmLabel: m?.general.delete,
         confirmStyle: 'danger',
-      })
+      })) &&
+      store.getState().gallery.image === image
     ) {
       dispatch(galleryDeletePicture());
     }
-  }, [dispatch, confirm, m, gm, image?.title]);
+  }, [dispatch, confirm, m, gm, image, liveImage, store]);
 
   useEffect(() => {
     function handler(e: KeyboardEvent) {
@@ -592,10 +665,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const mainImageSrc =
     activeImageId === null
       ? undefined
-      : isWikimedia
-        ? commonsMeta
+      : liveWikimedia
+        ? liveMeta
           ? wikimediaImageUrl(
-              commonsMeta,
+              liveMeta,
               isFullscreen
                 ? displayPixelWidth()
                 : Math.min(displayPixelWidth(), WINDOWED_MAX_WIDTH),
@@ -636,23 +709,21 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryQuickAddTag(tag));
   };
 
-  // Fallback Commons file-page link derived from the active pageId (id =
-  // -pageId), for when the metadata's descriptionUrl hasn't loaded yet (e.g.
-  // first open) — so the link is never empty.
-  const commonsPageUrl =
-    isWikimedia && activeImageId !== null
-      ? `https://commons.wikimedia.org/?curid=${-activeImageId}`
-      : undefined;
+  // Fallback Commons file-page link from the shown photo's id (-pageId), for
+  // when its metadata failed to load — so the link is never empty.
+  const commonsPageUrl = isWikimedia
+    ? `https://commons.wikimedia.org/?curid=${-shownId}`
+    : undefined;
 
   // "Open in external app" points at the Commons file page for Wikimedia photos,
   // and at the raw image for gallery photos.
   const publicUrl = isWikimedia
     ? (commonsMeta?.descriptionUrl ?? commonsPageUrl ?? '')
-    : `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}/image`;
+    : `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(shownId ?? 0)}/image`;
 
   let url = publicUrl;
 
-  if (!isWikimedia && activeImageId === image?.id && image.hmac) {
+  if (!isWikimedia && image?.hmac) {
     url += `?hmac=${encodeURIComponent(image.hmac)}`;
   }
 
@@ -711,7 +782,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const statusOverlay = commonsError ? (
     <div className="text-center text-body-secondary">
       <FaImage size={48} className="opacity-50" />
-      <div>{gm?.viewer.imageUnavailable}</div>
+      <div>
+        <Text m={gm} k="viewer.imageUnavailable" />
+      </div>
     </div>
   ) : (
     <Spinner animation="border" role="status" variant="primary" />
@@ -727,7 +800,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCamera /> {gm?.viewer.title}{' '}
+          <FaCamera /> <Text m={gm} k="viewer.title" />{' '}
           {imageIds && (
             <Form.Select
               value={index}
@@ -745,6 +818,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           {imageIds ? ` / ${imageIds.length} ` : ''}
           {displayTitle && `· ${displayTitle}`}
         </Modal.Title>
+
+        <ManualHeaderButton chapter="photos" />
       </Modal.Header>
 
       <Modal.Body>
@@ -769,15 +844,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                           }
                     }
                   />
-                ) : disabledPremium ? (
+                ) : liveDisabledPremium ? (
                   <Alert variant="warning" className="text-center mb-0">
-                    {gm?.viewer.premiumOnly}
+                    <Text m={gm} k="viewer.premiumOnly" />
 
                     {becomePremium && (
                       <>
                         <br />
                         <Button onClick={becomePremium} className="mt-3">
-                          <FaGem /> {prm?.becomePremium}
+                          <FaGem /> <Text m={prm} k="becomePremium" />
                         </Button>
                       </>
                     )}
@@ -890,19 +965,27 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           </div>
 
           {image && (
-            <div className={clsx(classes.footer, 'mt-3')}>
+            <div className={clsx(classes.footer, 'mt-3')} inert={detailsStale}>
               {isFullscreen && imageIds && (
-                <>{`${index + 1} / ${imageIds.length}`} ｜ </>
+                <>
+                  {`${index + 1} / ${imageIds.length}`}
+                  {divider}
+                </>
               )}
 
-              {isFullscreen && displayTitle && <>{displayTitle} ｜ </>}
+              {isFullscreen && displayTitle && (
+                <>
+                  {displayTitle}
+                  {divider}
+                </>
+              )}
 
               {/* Whoever gets the photo itself; the rest are already reading an
                   alert that says it. */}
               {premium && !disabledPremium && (
                 <>
                   <PremiumGem noOffer hint={gm?.viewer.premiumPhoto} />
-                  {'｜ '}
+                  {divider}
                 </>
               )}
 
@@ -915,21 +998,21 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         <a
                           href={commonsMeta.artistUrl}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                         >
                           {commonsMeta.artist}
                         </a>
                       ) : (
                         commonsMeta.artist
                       )}
-                      {' ｜ '}
+                      {divider}
                     </>
                   )}
                   <SiWikimediacommons />{' '}
                   <a
                     href={commonsMeta?.descriptionUrl ?? commonsPageUrl}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     Wikimedia Commons
                   </a>
@@ -949,18 +1032,22 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {isWikimedia && createdAt && (
                 <>
-                  {' ｜ '}
-                  {gm?.viewer.uploadedOn(
-                    <b key={createdAt.getTime()}>
-                      {dateFormat.format(createdAt)}
-                    </b>,
-                  )}
+                  {divider}
+                  <Text m={gm}>
+                    {(gm) =>
+                      gm.viewer.uploadedOn(
+                        <b key={createdAt.getTime()}>
+                          {dateFormat.format(createdAt)}
+                        </b>,
+                      )
+                    }
+                  </Text>
                 </>
               )}
 
               {(capturedDate || capturedRaw) && (
                 <>
-                  {' ｜ '}
+                  {divider}
                   {capturedDate ? (
                     gm?.viewer.captured(
                       <b key={capturedDate.getTime()}>
@@ -979,12 +1066,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {azimuth != null && (
                 <>
-                  {' ｜ '}
+                  {divider}
                   <Azimuth value={azimuth} size={READOUT_STAR_SIZE} />
                 </>
               )}
 
-              {' ｜ '}
+              {divider}
 
               <Rating
                 className={classes.stars}
@@ -993,7 +1080,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 readonly
               />
 
-              {tags && tags.length > 0 && ' ｜ '}
+              {tags && tags.length > 0 && divider}
 
               {tags?.map((tag) => (
                 <Fragment key={tag}>
@@ -1004,11 +1091,14 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {badgeLicense ? (
                 <>
-                  {' ｜ '}
+                  {divider}
                   <LongPressTooltip
                     label={
                       <>
-                        {gm?.license.descriptions[badgeLicense]}
+                        <Text
+                          m={gm}
+                          k={`license.descriptions.${badgeLicense}`}
+                        />
                         {!isWikimedia &&
                           image.licenseSince &&
                           gm?.license.since && (
@@ -1026,7 +1116,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       // padding on an inline box moves nothing.
                       <span {...props} className="py-2">
                         <LicenseBadge licenseId={badgeLicense} />{' '}
-                        <a href={licenseUrl} target="license" rel="noreferrer">
+                        <a
+                          href={licenseUrl}
+                          target="license"
+                          rel="noopener noreferrer"
+                        >
                           {licenseName}
                         </a>
                       </span>
@@ -1037,12 +1131,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 isWikimedia &&
                 commonsMeta?.license && (
                   <>
-                    {' ｜ '}
+                    {divider}
                     {commonsMeta.licenseUrl ? (
                       <a
                         href={commonsMeta.licenseUrl}
                         target="license"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                       >
                         {commonsMeta.license}
                       </a>
@@ -1053,13 +1147,20 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 )
               )}
 
-              {displayDescription && ` ｜ ${displayDescription}`}
+              {displayDescription && (
+                <>
+                  {divider}
+                  {displayDescription}
+                </>
+              )}
 
               {!isFullscreen && editModel && (
                 <Form id="gallery-edit-form" onSubmit={handleSave}>
                   <hr />
 
-                  <h5>{gm?.viewer.modify}</h5>
+                  <h5>
+                    <Text m={gm} k="viewer.modify" />
+                  </h5>
 
                   <fieldset disabled={!online}>
                     <GalleryEditForm
@@ -1077,7 +1178,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>
                   <hr />
 
-                  <h5>{gm?.viewer.comments}</h5>
+                  <h5>
+                    <Text m={gm} k="viewer.comments" />
+                  </h5>
 
                   {!comments ? null : comments.length ? (
                     comments.map((c) => (
@@ -1088,7 +1191,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     ))
                   ) : (
                     <p>
-                      <i>{gm?.viewer.noComments}</i>
+                      <i>
+                        <Text m={gm} k="viewer.noComments" />
+                      </i>
                     </p>
                   )}
 
@@ -1119,14 +1224,17 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                               comment.length < 1 || disabledPremium || !online
                             }
                           >
-                            {gm?.viewer.addComment}
+                            <Text m={gm} k="viewer.addComment" />
                           </Button>
                         </InputGroup>
 
                         {isWikimedia && commentFocused && (
                           <Alert variant="warning" className="mt-2 mb-0">
                             <SiWikimediacommons />{' '}
-                            {gm?.viewer.wikimediaCommentNotNotified}
+                            <Text
+                              m={gm}
+                              k="viewer.wikimediaCommentNotNotified"
+                            />
                           </Alert>
                         )}
                       </Form.Group>
@@ -1136,7 +1244,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   {user && (
                     <div className="d-flex flex-wrap gap-1 align-items-center mb-3">
                       <span className="flex-shrink-0">
-                        {gm?.viewer.yourRating}
+                        <Text m={gm} k="viewer.yourRating" />
                       </span>
 
                       {disabledPremium ? null : (
@@ -1156,13 +1264,13 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         <RecentTags
                           existingTags={tags}
                           onAdd={handleTagAdd}
-                          prefix={<div>｜</div>}
+                          prefix={rowDivider}
                         />
                       )}
 
                       {editModel === null && canEdit && (
                         <>
-                          ｜
+                          {rowDivider}
                           <Form.Check
                             id="chk-fast-premium"
                             label={gm?.uploadModal.premium}
@@ -1190,7 +1298,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               form="gallery-edit-form"
               disabled={!online}
             >
-              <FaSave /> {m?.general.save}
+              <FaSave /> <Text k="general.save" />
             </Button>
           ) : (
             <LongPressTooltip breakpoint="sm" label={m?.general.modify} kbd="m">
@@ -1198,6 +1306,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <Button
                   variant="secondary"
                   disabled={!online}
+                  inert={detailsStale}
                   onClick={() => {
                     dispatch(galleryEditPicture());
                   }}
@@ -1218,6 +1327,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 onClick={handleDelete}
                 variant="danger"
                 disabled={!online}
+                inert={detailsStale}
                 {...props}
               >
                 <FaTrash />
@@ -1289,21 +1399,24 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       <Dropdown.Item
                         as="button"
                         onClick={() => {
-                          const { drawingSettings, drawingPoints } =
-                            store.getState();
+                          const { color, markerType } =
+                            store.getState().drawingSettings.style;
 
                           dispatch(
-                            drawingPointAdd({
-                              id: drawingPoints.points.length,
-                              coords: { lat, lon },
-                              color: drawingSettings.style.color,
-                              markerType: drawingSettings.style.markerType,
-                              icon: 'fa:camera',
-                              // The title, where there is one; a photo without
-                              // one leaves the point unlabelled rather than
-                              // showing the placeholder.
-                              label: '{p:name}',
-                              props: photoProps,
+                            dataViewerAddFeatures({
+                              features: [
+                                pointToFeature({
+                                  coords: { lat, lon },
+                                  color,
+                                  markerType,
+                                  icon: 'fa:camera',
+                                  // The title, where there is one; a photo
+                                  // without one leaves the point unlabelled
+                                  // rather than showing the placeholder.
+                                  label: '{p:name}',
+                                  props: photoProps,
+                                }),
+                              ],
                             }),
                           );
 
@@ -1312,7 +1425,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                           close();
                         }}
                       >
-                        <FaPencilAlt /> {m?.general.copyToDrawing}
+                        <FaPencilAlt />
+                        <MenuLabel>
+                          <Text k="general.copyToDrawing" />
+                        </MenuLabel>
                       </Dropdown.Item>
                     }
                   >
@@ -1332,7 +1448,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               dispatch(galleryEditPicture());
             }}
           >
-            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FaTimes /> <Text k="general.cancel" /> <kbd>Esc</kbd>
           </Button>
         ) : (
           <LongPressTooltip label={m?.general.close} breakpoint="md" kbd="Esc">

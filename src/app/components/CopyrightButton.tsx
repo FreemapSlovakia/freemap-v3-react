@@ -1,14 +1,21 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
+import { hasLegend } from '@features/legend/legendLayers.js';
+import {
+  drawnTypesSelector,
+  libraryIndexSelector,
+  resolvedCustomLayersSelector,
+} from '@features/mapLibrary/model/selectors.js';
 import { Chord } from '@shared/components/Chord.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { integratedLayerDefs } from '@shared/mapDefinitions.js';
-import { type ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaFileContract,
@@ -23,29 +30,13 @@ import { useAttributionInfo } from './useAttributionInfo.js';
 export function CopyrightButton(): ReactElement {
   const m = useMessages();
 
-  const skCs = useAppSelector((state) =>
-    ['sk', 'cs'].includes(state.l10n.language),
-  );
+  const customLayers = useAppSelector(resolvedCustomLayersSelector);
 
-  const customLayers = useAppSelector((state) => state.map.customLayers);
+  const layers = useAppSelector(drawnTypesSelector);
 
-  const layers = useAppSelector((state) => state.map.layers);
+  const libraryIndex = useAppSelector(libraryIndexSelector);
 
-  const legendLayers = useMemo(
-    () =>
-      new Set([
-        ...(skCs ? ['A', 'T', 'C', 'K'] : []),
-        'X',
-        'O',
-        ...[...integratedLayerDefs, ...customLayers]
-          .filter((def) => def.technology === 'wms')
-          .map((def) => def.type),
-      ]),
-
-    [customLayers, skCs],
-  );
-
-  const showLegendButton = layers.some((type) => legendLayers.has(type));
+  const showLegendButton = hasLegend(layers, libraryIndex, customLayers);
 
   const modalLink = useModalLink();
 
@@ -54,7 +45,7 @@ export function CopyrightButton(): ReactElement {
   return (
     <Toolbar className="me-2 mb-2">
       <Dropdown>
-        <LongPressTooltip label={m?.general.infoAndLegal ?? '…'}>
+        <LongPressTooltip label={m?.general.infoAndLegal}>
           {({ props }) => (
             <Dropdown.Toggle
               bsPrefix="fm-dropdown-toggle-nocaret"
@@ -73,12 +64,18 @@ export function CopyrightButton(): ReactElement {
             as="button"
             onClick={() => showAttribution()}
           >
-            <FaRegCopyright /> {m?.main.copyright}
+            <FaRegCopyright />
+            <MenuLabel>
+              <Text k="main.copyright" />
+            </MenuLabel>
           </Dropdown.Item>
 
           {showLegendButton && (
             <OnlineOnlyItem {...modalLink({ type: 'legend' })}>
-              <FaList /> {m?.mainMenu.mapLegend}
+              <FaList />
+              <MenuLabel>
+                <Text k="mainMenu.mapLegend" />
+              </MenuLabel>
               <MenuGutter>
                 <Chord modal="legend" />
               </MenuGutter>
@@ -89,14 +86,20 @@ export function CopyrightButton(): ReactElement {
             key="privacyPolicy"
             {...modalLink({ type: 'document', key: 'privacyPolicy' })}
           >
-            <FaLock /> {m?.general.privacyPolicy}
+            <FaLock />
+            <MenuLabel>
+              <Text k="general.privacyPolicy" />
+            </MenuLabel>
           </Dropdown.Item>
 
           <Dropdown.Item
             key="termsOfService"
             {...modalLink({ type: 'document', key: 'termsOfService' })}
           >
-            <FaFileContract /> {m?.general.termsOfService}
+            <FaFileContract />
+            <MenuLabel>
+              <Text k="general.termsOfService" />
+            </MenuLabel>
           </Dropdown.Item>
 
           {/* Terms of a purchase, and an embed sells nothing — its premium gem
@@ -108,7 +111,10 @@ export function CopyrightButton(): ReactElement {
               key="refundPolicy"
               {...modalLink({ type: 'document', key: 'refundPolicy' })}
             >
-              <FaMoneyBillWave /> {m?.general.refundPolicy}
+              <FaMoneyBillWave />
+              <MenuLabel>
+                <Text k="general.refundPolicy" />
+              </MenuLabel>
             </Dropdown.Item>
           )}
         </FmDropdownMenu>

@@ -123,6 +123,8 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     showPreview: 'Automaticky zobrazit náhledy (náročnější na výkon a paměť)',
     loadPreview: 'Načíst náhled',
     premium: 'Zpřístupnit pouze uživatelům s prémiovým přístupem',
+    notAdded:
+      'Nepodařilo se přidat všechny soubory – složky, nepodporované formáty a nečitelné soubory se přeskakují.',
   },
   license: {
     label: 'Licence',

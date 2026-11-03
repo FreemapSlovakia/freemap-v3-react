@@ -1,6 +1,7 @@
 import { AuthProviders } from '@features/auth/components/AuthProviders.js';
 import { AuthProviderSchema } from '@features/auth/model/types.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
+import { Text } from '@features/l10n/Text.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 
@@ -17,7 +18,9 @@ export function AuthProvidersSection(): ReactElement | null {
     <>
       {user.authProviders.length < AuthProviderSchema.options.length && (
         <>
-          <p>{am?.connectLabel}</p>
+          <p>
+            <Text m={am} k="connectLabel" />
+          </p>
 
           <AuthProviders mode="connect" />
 
@@ -25,7 +28,9 @@ export function AuthProvidersSection(): ReactElement | null {
         </>
       )}
 
-      <p>{am?.disconnectLabel}</p>
+      <p>
+        <Text m={am} k="disconnectLabel" />
+      </p>
 
       <AuthProviders mode="disconnect" />
     </>

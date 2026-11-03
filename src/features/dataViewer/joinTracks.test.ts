@@ -29,13 +29,13 @@ const run = (from: number, n: number) =>
 const cp = (feature: TrackLine) =>
   feature.properties!['coordinateProperties'] as Record<string, unknown>;
 
-const surfaceOf = (feature: TrackLine) =>
+/** The `surface` spans of one part of a track, which is what carries them. */
+const surfaceOf = (feature: TrackLine, part = 0) =>
   (
-    feature.properties![PATH_DETAILS_PROP] as Record<
-      string,
-      { start: number; end: number; value: string }[]
-    >
-  )['surface']!;
+    feature.properties![PATH_DETAILS_PROP] as {
+      surface: { start: number; end: number; value: string }[];
+    }[]
+  )[part]!['surface']!;
 
 const times = (from: number, n: number) =>
   Array.from(
@@ -128,6 +128,54 @@ describe('joinTrackFeatures — order', () => {
   });
 });
 
+describe('joinTrackFeatures — picked ends', () => {
+  it('meets at the ends picked, however far the others are', () => {
+    // The nearest pairing would join 2 to 3; the picked one is 0 to 5.
+    const joined = joinTrackFeatures(line(run(0, 3)), line(run(3, 3)), 'line', {
+      a: 'start',
+      b: 'end',
+    });
+
+    expect(joined.geometry.coordinates).toEqual([...run(3, 3), ...run(0, 3)]);
+  });
+
+  it("takes the other line's nearer end when only its own is picked", () => {
+    const joined = joinTrackFeatures(
+      line(run(0, 3)),
+      line(run(10, 3)),
+      'line',
+      { a: 'start' },
+    );
+
+    // 0 meets 10, the nearer of 10 and 12, turning the first line round.
+    expect(joined.geometry.coordinates).toEqual([
+      [2, 0],
+      [1, 0],
+      ...run(0, 1),
+      ...run(10, 3),
+    ]);
+  });
+
+  it('turns a timed track round only where the picked ends leave no other way', () => {
+    const timed = line(run(3, 3), {
+      coordinateProperties: { times: times(0, 3) },
+    });
+
+    const joined = joinTrackFeatures(timed, line(run(9, 3)), 'line', {
+      a: 'end',
+      b: 'end',
+    });
+
+    // The untimed one is turned instead.
+    expect(joined.geometry.coordinates).toEqual([
+      ...run(3, 3),
+      [11, 0],
+      [10, 0],
+      [9, 0],
+    ]);
+  });
+});
+
 describe('joinTrackFeatures — properties', () => {
   it('merges the names and keeps the first track’s own metadata', () => {
     const joined = joinTrackFeatures(
@@ -140,6 +188,45 @@ describe('joinTrackFeatures — properties', () => {
     expect(joined.properties?.['desc']).toBe('mine');
     // What only the other track has is worth keeping.
     expect(joined.properties?.['src']).toBe('watch');
+  });
+
+  it('merges a templated label as rendered, as plain text', () => {
+    const joined = joinTrackFeatures(
+      line(run(0, 3), {
+        name: 'old',
+        'freemap:label': '{p:n}',
+        'freemap:props': { n: 'A' },
+      }),
+      line(run(3, 3), { name: 'B' }),
+      'line',
+    );
+
+    expect(joined.properties).toMatchObject({
+      name: 'A, B',
+      'freemap:label': 'A, B',
+    });
+  });
+
+  it('takes no label or table from the second track under the first’s', () => {
+    const joined = joinTrackFeatures(
+      line(run(0, 3), { name: 'Trip' }),
+      line(run(3, 3), { 'freemap:label': '[{p:x}]', 'freemap:props': {} }),
+      'line',
+    );
+
+    expect(joined.properties).toMatchObject({ name: 'Trip' });
+    expect(joined.properties).not.toHaveProperty('freemap:label');
+    expect(joined.properties).not.toHaveProperty('freemap:props');
+  });
+
+  it('takes the second track’s label where the first has none', () => {
+    const joined = joinTrackFeatures(
+      line(run(0, 3), { name: '' }),
+      line(run(3, 3), { name: 'B' }),
+      'line',
+    );
+
+    expect(joined.properties?.['name']).toBe('B');
   });
 
   it('cuts the channels of both to the joined points', () => {
@@ -184,14 +271,14 @@ describe('joinTrackFeatures — properties', () => {
           [0, 0],
           [0.001, 0],
         ],
-        { [PATH_DETAILS_PROP]: { surface: spans } },
+        { [PATH_DETAILS_PROP]: [{ surface: spans }] },
       ),
       line(
         [
           [0.001, 0],
           [0.002, 0],
         ],
-        { [PATH_DETAILS_PROP]: { surface: spans } },
+        { [PATH_DETAILS_PROP]: [{ surface: spans }] },
       ),
       'line',
     );
@@ -269,19 +356,8 @@ describe('joinTrackFeatures — segments', () => {
 });
 
 describe('joinTrackFeatures — path details across a segment gap', () => {
-  // Two ~111 m segments with a ~1001 m gap between them, measured as the joined
-  // line measures it: every edge, the gap included.
-  const cum = cumulativeDistances([
-    [0, 0],
-    [0.001, 0],
-    [0.01, 0],
-    [0.011, 0],
-  ]);
-
-  // The track's own axis leaves the gap out, so its second segment starts where
-  // its first ended.
-  const secondSegment = cum[1]!;
-
+  // Two ~111 m segments with a ~1001 m gap between them. The track's own axis
+  // leaves the gap out, so each part's spans are measured on their own.
   const gapped = multiLine(
     [
       [
@@ -294,39 +370,64 @@ describe('joinTrackFeatures — path details across a segment gap', () => {
       ],
     ],
     {
-      [PATH_DETAILS_PROP]: {
-        surface: [
-          { start: 10, end: 100, value: 'asphalt' },
-          {
-            start: secondSegment + 20,
-            end: secondSegment + 90,
-            value: 'gravel',
-          },
-        ],
-      },
+      [PATH_DETAILS_PROP]: [
+        { surface: [{ start: 10, end: 100, value: 'asphalt' }] },
+        { surface: [{ start: 20, end: 90, value: 'gravel' }] },
+      ],
     },
   );
 
-  it('moves the spans past the gap the joined line counts as an edge', () => {
+  it('keeps the gap, and each segment its spans', () => {
     const joined = joinTrackFeatures(gapped, line(run(1, 2)), 'line');
 
-    const surface = surfaceOf(joined);
+    // Only the seam closes: the gap stays a gap.
+    expect(joined.geometry.type).toBe('MultiLineString');
 
-    // The first segment is measured the same way round either axis.
-    expect(surface[0]!.start).toBeCloseTo(10, 6);
-    expect(surface[0]!.end).toBeCloseTo(100, 6);
+    expect(joined.geometry.coordinates).toHaveLength(2);
 
-    expect(surface[1]!.start).toBeCloseTo(cum[2]! + 20, 6);
-    expect(surface[1]!.end).toBeCloseTo(cum[2]! + 90, 6);
+    expect(surfaceOf(joined, 0)).toEqual([
+      { start: 10, end: 100, value: 'asphalt' },
+    ]);
+
+    // The second segment now runs on into the joined line, from its own start.
+    expect(surfaceOf(joined, 1)[0]!.start).toBeCloseTo(20, 6);
+    expect(surfaceOf(joined, 1)[0]!.end).toBeCloseTo(90, 6);
+  });
+
+  it('keeps each segment its spans when the track is turned round', () => {
+    // Ends where `gapped` ends, so `gapped` is reversed to meet it.
+    const joined = joinTrackFeatures(
+      line([
+        [0.02, 0],
+        [0.011, 0],
+      ]),
+      gapped,
+      'line',
+    );
+
+    // Laid down as a and the reversed second segment, then the gap, then the
+    // reversed first segment on its own.
+    const [seam, rest] = (
+      joined.geometry as { coordinates: number[][][] }
+    ).coordinates.map(cumulativeDistances);
+
+    expect(surfaceOf(joined, 0)[0]!.value).toBe('gravel');
+    expect(surfaceOf(joined, 0)[0]!.start).toBeCloseTo(seam!.at(-1)! - 90, 3);
+    expect(surfaceOf(joined, 0)[0]!.end).toBeCloseTo(seam!.at(-1)! - 20, 3);
+
+    expect(surfaceOf(joined, 1)[0]!.value).toBe('asphalt');
+    expect(surfaceOf(joined, 1)[0]!.start).toBeCloseTo(rest!.at(-1)! - 100, 3);
+    expect(surfaceOf(joined, 1)[0]!.end).toBeCloseTo(rest!.at(-1)! - 10, 3);
   });
 
   it('leaves them alone when the segments are kept apart', () => {
     const joined = joinTrackFeatures(gapped, line(run(1, 2)), 'segments');
 
-    expect(surfaceOf(joined)[1]).toEqual({
-      start: secondSegment + 20,
-      end: secondSegment + 90,
-      value: 'gravel',
-    });
+    // Each part's spans already measure from that part's own start.
+    expect(surfaceOf(joined, 1)).toHaveLength(1);
+
+    expect(surfaceOf(joined, 1)[0]!.start).toBeCloseTo(20, 6);
+
+    expect(surfaceOf(joined, 1)[0]!.end).toBeCloseTo(90, 6);
   });
 });

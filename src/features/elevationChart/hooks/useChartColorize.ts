@@ -17,9 +17,13 @@ import {
   type Colorizer,
   colorizeGeometrySource,
 } from '@shared/colorizers/colorize.js';
-import { colorizers } from '@shared/colorizers/index.js';
+import { type ColorizingMode, colorizers } from '@shared/colorizers/index.js';
 import { unlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
-import { cumulativeDistances, distanceTo } from '@shared/geoutils.js';
+import {
+  cumulativeDistances,
+  distanceTo,
+  lowerBound,
+} from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Feature, LineString } from 'geojson';
 import { useMemo } from 'react';
@@ -31,6 +35,8 @@ export interface ColorizedAtDistance {
   color: number;
   /** The mode has no value here; the chart paints it neutral. */
   gap: boolean;
+  /** Index of the line in `features` it was colorized on, scaled by its own. */
+  source?: number;
 }
 
 /**
@@ -68,6 +74,9 @@ export function useChartColorize(
 ): {
   colorizer: Colorizer | null;
   stops: ColorizedAtDistance[];
+  /** What is colorized: the mode, and the lines its scale is read from. */
+  mode: ColorizingMode | null;
+  features: Feature<LineString>[];
 } {
   const target = useAppSelector((state) => state.elevationChart.target);
 
@@ -256,7 +265,7 @@ export function useChartColorize(
 
   return useMemo(() => {
     if (!colorizer || sources.length === 0) {
-      return { colorizer: null, stops: EMPTY_STOPS };
+      return { colorizer: null, stops: EMPTY_STOPS, mode: null, features };
     }
 
     const stops: ColorizedAtDistance[] = [];
@@ -275,7 +284,7 @@ export function useChartColorize(
       }
     };
 
-    for (const { feature, start } of sources) {
+    for (const [source, { feature, start }] of sources.entries()) {
       const base = start ?? covered;
 
       skipTo(base);
@@ -301,6 +310,7 @@ export function useChartColorize(
           distance: base + walked,
           color: point.color,
           gap: Boolean(point.gap),
+          source,
         });
 
         previous = point;
@@ -308,13 +318,54 @@ export function useChartColorize(
 
       // The feature's own length, not how far its colors reached: a mode that
       // painted none of it still moves the axis on to the next source.
-      covered =
+      const end =
         base +
         (cumulativeDistances(feature.geometry.coordinates).at(-1) ?? walked);
+
+      // The map leaves such a line plain, so it has no value here either.
+      if (!points?.length) {
+        stops.push({ distance: base, color: 0, gap: true });
+
+        stops.push({ distance: end, color: 0, gap: true });
+      }
+
+      covered = end;
     }
 
     skipTo(profileMeters);
 
-    return { colorizer, stops };
-  }, [colorizer, sources, level, steepnessScale, profileMeters]);
+    return { colorizer, stops, mode, features };
+  }, [
+    colorizer,
+    sources,
+    level,
+    steepnessScale,
+    profileMeters,
+    mode,
+    features,
+  ]);
+}
+
+/**
+ * The stop nearest a distance along the profile, or the end stop past an end;
+ * undefined where the mode has no value. Not interpolated: heading wraps.
+ */
+export function stopAtDistance(
+  stops: ColorizedAtDistance[],
+  distance: number,
+): ColorizedAtDistance | undefined {
+  const i = lowerBound(stops.length, (k) => stops[k]!.distance >= distance);
+
+  const after = stops[i];
+
+  const before = stops[i - 1];
+
+  if (after?.gap || before?.gap) {
+    return undefined;
+  }
+
+  return !before ||
+    (after && after.distance - distance <= distance - before.distance)
+    ? after
+    : before;
 }

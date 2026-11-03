@@ -3,6 +3,7 @@ import type { DocumentsMessages } from './DocumentsMessages.js';
 
 const cs: DeepPartialWithRequiredObjects<DocumentsMessages> = {
   errorLoading: 'Dokument se nepodařilo načíst.',
+  searchManual: 'Hledat v příručce',
 };
 
 export default cs;

@@ -17,14 +17,19 @@ const fr: DeepPartialWithRequiredObjects<CachedMapsMessages> = {
     </>
   ),
   cachedSuccess: ({ name }) => `Carte « ${name} » mise en cache avec succès.`,
-  cacheOfflineMap: 'Mettre la carte en cache pour un usage hors ligne',
-  modifyOfflineMap: 'Modifier la carte hors ligne',
+  newOfflineMap: 'Nouvelle carte hors ligne',
+  modifyOfflineMap: (name) => (
+    <>
+      Modifier la carte hors ligne <i>{name}</i>
+    </>
+  ),
   deviceOnly:
     'La carte hors ligne est enregistrée uniquement dans ce navigateur, sur cet appareil.',
   deviceOnlyHint:
     'Pour l’avoir dans un autre navigateur ou sur un autre appareil, il faut y créer la carte hors ligne.',
   toDownload: 'À télécharger',
   addOfflineMap: 'Ajouter une carte hors ligne',
+  showInInstalledMaps: 'Afficher dans les cartes installées',
   emptyMessage:
     'Aucune carte hors ligne enregistrée pour le moment. Ajoutez-en une pour utiliser les cartes sans connexion Internet.',
   zoom: 'Zoom',

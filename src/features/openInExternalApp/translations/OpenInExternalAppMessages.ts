@@ -12,6 +12,8 @@ export type OpenInExternalAppMessages = {
   josm: string;
   id: string;
   window: string;
+  /** Any installed map app, through Android's `geo:` app picker. */
+  geoApp: string;
   url: string;
   image: string;
 };

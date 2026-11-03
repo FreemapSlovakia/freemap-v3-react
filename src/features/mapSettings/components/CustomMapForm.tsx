@@ -1,5 +1,11 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { useBreakpointMatches } from '@shared/breakpoints.js';
+import { Text } from '@features/l10n/Text.js';
+import {
+  CATEGORY_GROUPS,
+  type CategoryGroup,
+  categoryGroup,
+} from '@features/mapLibrary/filters.js';
+import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -9,7 +15,6 @@ import { type Layer, wms } from '@shared/wms.js';
 import clsx from 'clsx';
 import {
   type ChangeEvent,
-  Fragment,
   type ReactElement,
   useCallback,
   useEffect,
@@ -20,15 +25,19 @@ import {
   Alert,
   Button,
   ButtonGroup,
+  Col,
   Form,
-  ListGroup,
-  ListGroupItem,
+  Row,
   Spinner,
   ToggleButton,
 } from 'react-bootstrap';
-import { FaAngleDown, FaAngleRight } from 'react-icons/fa';
-import { MdDashboardCustomize } from 'react-icons/md';
+import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
 import classes from './CustomMapForm.module.css';
+import {
+  type CustomMapTechnology,
+  CustomMapTypeField,
+} from './CustomMapTypeField.js';
+import { WmsLayerTree } from './WmsLayerTree.js';
 
 type Props = {
   type: string;
@@ -38,15 +47,18 @@ type Props = {
 
 type Model = {
   name: string;
+  category: CategoryGroup;
   iconSpec?: string;
   url: string;
   minZoom: string;
   maxNativeZoom: string;
   layer: 'base' | 'overlay';
-  zIndex: string;
+  /** Kept as stored, not edited: the map's default place in the stack. */
+  zIndex?: number;
   scaleWithDpi: boolean;
   extraScales: string[];
-  technology: 'tile' | 'maplibre' | 'wms' | 'parametricShading';
+  technology: CustomMapTechnology;
+  /** A WMS map's default layers, drawn until its setup ticks others. */
   layers: string[];
   tiled: boolean;
   /** Read from the capabilities rather than typed, so it has no field. */
@@ -58,6 +70,8 @@ const ZOOM_0_RESOLUTION = 156543.03392804097;
 
 /** The pixel size a WMS scale denominator is defined against, in metres. */
 const WMS_PIXEL_SIZE = 0.00028;
+
+const URL_RE = /^https?:\/\/\w+/;
 
 function flatten(layers: Layer[]): Layer[] {
   return layers.flatMap((layer) => [layer, ...flatten(layer.children)]);
@@ -123,10 +137,11 @@ function bboxForSelection(
     : undefined;
 }
 
-function valueToModel(value?: CustomLayerDef) {
+function valueToModel(value?: CustomLayerDef): Model {
   return {
     url: value?.url ?? '',
     name: value?.name ?? '',
+    category: categoryGroup(value?.category),
     iconSpec: value?.iconSpec,
     minZoom: value?.minZoom === undefined ? '' : value.minZoom.toString(),
     maxNativeZoom:
@@ -134,10 +149,7 @@ function valueToModel(value?: CustomLayerDef) {
         ? value.maxNativeZoom.toString()
         : '',
     layer: value?.layer ?? 'base',
-    zIndex:
-      value && 'zIndex' in value && value.zIndex !== undefined
-        ? value.zIndex.toString()
-        : '',
+    zIndex: value && 'zIndex' in value ? value.zIndex : undefined,
     scaleWithDpi:
       value && 'scaleWithDpi' in value && value.scaleWithDpi
         ? value.scaleWithDpi
@@ -186,6 +198,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     setModel((model) => {
       const changed =
         model.name !== newModel.name ||
+        model.category !== newModel.category ||
         model.iconSpec !== newModel.iconSpec ||
         model.url !== newModel.url ||
         model.minZoom !== newModel.minZoom ||
@@ -223,12 +236,6 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       return;
     }
 
-    const zIndex = model.zIndex ? parseInt(model.zIndex, 10) : undefined;
-
-    if (zIndex !== undefined && Number.isNaN(zIndex)) {
-      return;
-    }
-
     if (!model.url) {
       onChange(undefined);
 
@@ -238,9 +245,10 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     const common = {
       type,
       name: model.name,
+      category: model.category === 'other' ? undefined : model.category,
       iconSpec: model.iconSpec,
       layer: model.layer,
-      zIndex,
+      zIndex: model.zIndex,
     };
 
     switch (model.technology) {
@@ -283,25 +291,12 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
         });
 
         break;
-      case 'parametricShading':
-        onChange({
-          ...common,
-          technology: 'parametricShading',
-          url: model.url,
-          minZoom,
-          maxNativeZoom,
-          scaleWithDpi: model.scaleWithDpi,
-        });
-
-        break;
     }
   }, [type, model, onChange]);
 
   const m = useMessages();
 
-  // The technology labels are long enough that their joined group can't fit a
-  // phone, so below `sm` it stacks instead of widening the form.
-  const { sm } = useBreakpointMatches();
+  const msm = useMapSettingsMessages();
 
   const [wmsLayersFetchError, setWmsLayersFetchError] = useState<string>();
 
@@ -319,6 +314,9 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   };
 
   const [loadingLayers, setLoadingLayers] = useState(false);
+
+  // Only what has been typed can be wrong; the field opens empty for a new map.
+  const invalidUrl = model.url !== '' && !URL_RE.test(model.url);
 
   const handleLoadLayersClick = () => {
     setLoadingLayers(true);
@@ -352,26 +350,8 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
       });
   };
 
-  const handleLayerSelect = (name: string | null) => {
-    if (name === null) {
-      return;
-    }
-
+  const handleLayersChange = (next: string[]) => {
     setModel((model) => {
-      let found = false;
-
-      const next = model.layers.filter((n) => {
-        if (n === name) {
-          found = true;
-        }
-
-        return n !== name;
-      });
-
-      if (!found) {
-        next.push(name);
-      }
-
       const zoom = minZoomForSelection(layersTree ?? [], next, lat);
 
       const bbox = bboxForSelection(layersTree ?? [], next);
@@ -393,89 +373,43 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
     });
   };
 
-  const [expanded, setExpanded] = useState<string[]>([]);
+  const layerField = (
+    <div className="d-flex gap-3 mt-3">
+      <Form.Group>
+        <Form.Label className="d-block">
+          <Text k="mapLayers.layer.layer" />
+        </Form.Label>
 
-  function renderLayers(layers: Layer[] | undefined, path: number[] = []) {
-    return layers?.map((layer, i) => {
-      const id = [...path, i].join(',');
-
-      return (
-        <Fragment key={id}>
-          <ListGroupItem
-            eventKey={layer.name ?? undefined}
-            active={layer.name ? model.layers.includes(layer.name) : undefined}
-            action={layer.name !== null}
-            as={
-              layer.children.length > 0
-                ? ('div' as unknown as 'button') // to add type
-                : 'button'
-            }
-            type="button"
-          >
-            {path.map((_, i) => (
-              <span key={i} className="ps-4" />
-            ))}
-
-            {layer.children.length > 0 && (
-              <button
-                className="border-0 bg-transparent ms-n2 mx-0"
-                style={{ width: '2rem' }}
-                type="button"
-                data-name={id}
-                onClick={(e) => {
-                  e.stopPropagation();
-
-                  setExpanded((prev) => {
-                    let found = false;
-
-                    const next = prev.filter((a) => {
-                      if (a === id) {
-                        found = true;
-                      }
-
-                      return a !== id;
-                    });
-
-                    if (!found) {
-                      next.push(id);
-                    }
-
-                    return next;
-                  });
-                }}
-              >
-                {expanded.includes(id) ? <FaAngleDown /> : <FaAngleRight />}
-              </button>
-            )}
-
-            <span className={clsx(layer.children.length === 0 && 'ms-4')}>
-              {layer.title}
-            </span>
-          </ListGroupItem>
-
-          {layer.children.length > 0 ? (
-            <div
-              className={clsx(
-                classes.listGroupNested,
-                expanded.includes(id) || 'd-none',
-              )}
+        <ButtonGroup>
+          {(['base', 'overlay'] as const).map((layer) => (
+            <ToggleButton
+              key={layer}
+              id={`layer-${layer}`}
+              type="radio"
+              name="layer"
+              variant="outline-primary"
+              value={layer}
+              checked={model.layer === layer}
+              onChange={() =>
+                setModelWithVersion((model) => ({ ...model, layer }))
+              }
             >
-              {renderLayers(layer.children, [...path, i])}
-            </div>
-          ) : null}
-        </Fragment>
-      );
-    });
-  }
+              <Text k={`mapLayers.layer.${layer}`} />
+            </ToggleButton>
+          ))}
+        </ButtonGroup>
+      </Form.Group>
+    </div>
+  );
 
   return (
     <div>
-      <div className="d-flex gap-3 align-items-end">
+      <div className="d-flex gap-2 align-items-end">
         <Form.Group controlId="name" className="flex-grow-1 min-w-0">
           <Form.Label
             className={clsx('d-flex', 'align-items-end', classes.gridSpan)}
           >
-            {m?.general.name}
+            <Text k="general.name" />
           </Form.Label>
 
           <Form.Control
@@ -488,63 +422,77 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
 
         <Form.Group>
           <Form.Label className="d-block" htmlFor="customMapIcon">
-            {m?.general.icon}
+            <Text k="general.icon" />
           </Form.Label>
 
           <IconPicker
             id="customMapIcon"
             selected={model.iconSpec}
             onSelect={handleIconSelect}
-            placeholder={<MdDashboardCustomize />}
+            placeholder={CUSTOM_MAP_ICONS[model.technology]}
           />
         </Form.Group>
       </div>
 
-      <Form.Group className="mt-3">
-        <Form.Label className="d-block">{m?.mapLayers.technology}</Form.Label>
+      <CustomMapTypeField
+        value={model.technology}
+        onChange={(technology) =>
+          setModelWithVersion((model) => ({ ...model, technology }))
+        }
+      />
 
-        <ButtonGroup vertical={!sm}>
-          {(['tile', 'maplibre', 'wms'] as const).map((technology) => (
-            <ToggleButton
-              key={technology}
-              id={`tech-${technology}`}
-              type="radio"
-              name="technology"
-              variant="outline-primary"
-              value={technology}
-              checked={model.technology === technology}
-              onChange={handlers.technology}
-            >
-              {m?.mapLayers.technologies[technology]}
-            </ToggleButton>
+      <Form.Group controlId="category" className="mt-3">
+        <Form.Label>
+          <Text m={msm} k="filters.category" />
+        </Form.Label>
+
+        <Form.Select
+          value={model.category}
+          onChange={(e) =>
+            setModelWithVersion((model) => ({
+              ...model,
+              category: e.currentTarget.value as CategoryGroup,
+            }))
+          }
+        >
+          {CATEGORY_GROUPS.map((category) => (
+            <option key={category} value={category}>
+              {msm?.filters[category]}
+            </option>
           ))}
-        </ButtonGroup>
+        </Form.Select>
       </Form.Group>
 
-      {/* URL */}
-      {model.technology !== 'parametricShading' && (
-        <Form.Group controlId="url" className="mt-3">
-          <Form.Label>{m?.mapLayers.url}</Form.Label>
+      <Form.Group controlId="url" className="mt-3">
+        <Form.Label className="required">
+          <Text k="mapLayers.url" />
+        </Form.Label>
 
-          <Form.Control
-            className={classes.gridSpan}
-            type="text"
-            value={model.url}
-            onChange={handlers.url}
-          />
-        </Form.Group>
-      )}
+        <Form.Control
+          className={classes.gridSpan}
+          type="text"
+          value={model.url}
+          isInvalid={invalidUrl}
+          onChange={handlers.url}
+        />
+
+        <Form.Control.Feedback type="invalid">
+          <Text k="general.invalidUrl" />
+        </Form.Control.Feedback>
+      </Form.Group>
 
       {model.technology === 'wms' && (
         <>
           <Button
             className={clsx('mt-3', classes.gridSpan)}
             onClick={handleLoadLayersClick}
-            disabled={!model.url.match(/^https?:\/\/\w+/) || loadingLayers}
+            disabled={!URL_RE.test(model.url) || loadingLayers}
           >
             <Spinner className="invisible" size="sm" />
 
-            <span className="mx-2">{m?.mapLayers.loadWmsLayers}</span>
+            <span className="mx-2">
+              <Text k="mapLayers.loadWmsLayers" />
+            </span>
 
             <Spinner
               className={loadingLayers ? 'visible' : 'invisible'}
@@ -558,21 +506,27 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
             </Alert>
           )}
 
-          <ListGroup
-            className={clsx('mt-3', classes.gridSpan, 'overflow-auto')}
+          <WmsLayerTree
+            className={clsx('mt-3', classes.gridSpan)}
             style={{ maxHeight: '400px' }}
-            onSelect={handleLayerSelect}
-          >
-            {renderLayers(layersTree)}
-          </ListGroup>
+            layers={layersTree}
+            selected={model.layers}
+            onChange={handleLayersChange}
+          />
         </>
       )}
 
       {/* Min/Max zoom */}
-      {model.technology !== 'parametricShading' && (
-        <>
+
+      {/* Halves rather than two natural widths: the labels differ in
+              length, so natural ones leave a gap after the shorter field.
+              End-aligned, since the longer label wraps to two lines. */}
+      <Row className="align-items-end gx-3">
+        <Col xs={12} sm={6}>
           <Form.Group controlId="minZoom" className="mt-3">
-            <Form.Label>{m?.mapLayers.minZoom}</Form.Label>
+            <Form.Label>
+              <Text k="mapLayers.minZoom" />
+            </Form.Label>
 
             <Form.Control
               type="number"
@@ -581,9 +535,13 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
               onChange={handleMinZoomChange}
             />
           </Form.Group>
+        </Col>
 
+        <Col xs={12} sm={6}>
           <Form.Group controlId="maxNativeZoom" className="mt-3">
-            <Form.Label>{m?.mapLayers.maxNativeZoom}</Form.Label>
+            <Form.Label>
+              <Text k="mapLayers.maxNativeZoom" />
+            </Form.Label>
 
             <Form.Control
               type="number"
@@ -592,96 +550,65 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
               onChange={handlers.maxNativeZoom}
             />
           </Form.Group>
+        </Col>
+      </Row>
 
-          {/* Extra scales + checkbox */}
-          {model.technology === 'tile' && (
-            <div className="mt-3">
-              <Form.Label>{m?.mapLayers.extraScales}</Form.Label>
+      {/* Extra scales + checkbox */}
+      {model.technology === 'tile' && (
+        <div className="mt-3">
+          <Form.Label>
+            <Text k="mapLayers.extraScales" />
+          </Form.Label>
 
-              <div className="d-flex gap-2 flex-wrap">
-                {model.technology === 'tile' &&
-                  [...model.extraScales, ''].map((a, i) => (
-                    <Form.Control
-                      style={{ width: '4rem' }}
-                      key={i}
-                      type="number"
-                      min={1}
-                      step={1}
-                      value={a}
-                      onChange={(e) => {
-                        const extraScales = [...model.extraScales];
-                        extraScales[i] = e.currentTarget.value;
-                        setModel((model) => ({
-                          ...model,
-                          extraScales: extraScales.filter(Boolean),
-                        }));
-                      }}
-                    />
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {/* A WMS is always asked for the display's own density. */}
-          {model.technology !== 'wms' && (
-            <Form.Check
-              className="mt-3"
-              id="chk-scale-dpi"
-              label={m?.mapLayers.scaleWithDpi}
-              checked={model.scaleWithDpi}
-              onChange={handlers.scaleWithDpi}
-            />
-          )}
-
-          {model.technology === 'wms' && (
-            <div className="mt-3 d-flex">
-              <Form.Check
-                id="chk-tiled"
-                label={m?.mapLayers.tiled}
-                checked={model.tiled}
-                onChange={handlers.tiled}
-              />
-
-              <HintMark hint={m?.mapLayers.tiledHelp} />
-            </div>
-          )}
-        </>
+          <div className="d-flex gap-2 flex-wrap">
+            {model.technology === 'tile' &&
+              [...model.extraScales, ''].map((a, i) => (
+                <Form.Control
+                  style={{ width: '4rem' }}
+                  key={i}
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={a}
+                  onChange={(e) => {
+                    const extraScales = [...model.extraScales];
+                    extraScales[i] = e.currentTarget.value;
+                    setModel((model) => ({
+                      ...model,
+                      extraScales: extraScales.filter(Boolean),
+                    }));
+                  }}
+                />
+              ))}
+          </div>
+        </div>
       )}
 
-      <Form.Group className="mt-3">
-        <Form.Label className="d-block">{m?.mapLayers.layer.layer}</Form.Label>
+      {/* A WMS is always asked for the display's own density. */}
+      {model.technology !== 'wms' && (
+        <Form.Check
+          className="mt-3"
+          id="chk-scale-dpi"
+          label={m?.mapLayers.scaleWithDpi}
+          checked={model.scaleWithDpi}
+          onChange={handlers.scaleWithDpi}
+        />
+      )}
 
-        <ButtonGroup>
-          {(['base', 'overlay'] as const).map((layer) => (
-            <ToggleButton
-              key={layer}
-              id={`layer-${layer}`}
-              type="radio"
-              name="layer"
-              variant="outline-primary"
-              value={layer}
-              checked={model.layer === layer}
-              onChange={handlers.layer}
-            >
-              {m?.mapLayers.layer[layer]}
-            </ToggleButton>
-          ))}
-        </ButtonGroup>
-      </Form.Group>
-
-      {model.layer === 'overlay' && (
-        <Form.Group controlId="zIndex" className="mt-3">
-          <Form.Label>{m?.mapLayers.zIndex}</Form.Label>
-
-          <Form.Control
-            className={model.layer === 'overlay' ? 'visible' : 'invisible'}
-            type="number"
-            min={0}
-            value={model.zIndex}
-            onChange={handlers.zIndex}
+      {model.technology === 'wms' && (
+        <div className="mt-3 d-flex">
+          <Form.Check
+            id="chk-tiled"
+            label={m?.mapLayers.tiled}
+            checked={model.tiled}
+            onChange={handlers.tiled}
           />
-        </Form.Group>
+
+          <HintMark hint={m?.mapLayers.tiledHelp} />
+        </div>
       )}
+
+      {layerField}
     </div>
   );
 }

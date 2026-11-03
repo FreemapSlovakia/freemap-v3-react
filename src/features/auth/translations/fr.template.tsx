@@ -23,8 +23,10 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     addError(getMessages()!, 'Erreur de vérification de la connexion', err),
   logOutError: ({ err }) =>
     addError(getMessages()!, 'Erreur de déconnexion', err),
+  appTokens: { scopeNames: {} },
   connectLabel: 'Connecter',
-  connectSuccess: 'Connecté',
+  connectSuccess: ({ provider }) =>
+    `Votre compte ${provider} a été associé à votre compte Freemap. Vous pouvez désormais aussi vous connecter avec.`,
   disconnectLabel: 'Déconnecter',
   disconnectSuccess: 'Déconnecté',
   logInWith: 'Choisissez un fournisseur de connexion',

@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -19,10 +20,16 @@ import {
 import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import {
+  Action,
+  ActionDivider,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
@@ -45,6 +52,8 @@ export function TrackingMenu(): ReactElement {
   const cm = useColorizerMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const online = useOnline();
 
@@ -115,6 +124,12 @@ export function TrackingMenu(): ReactElement {
     () => hasDrawableSegment(tracks, trackedDevices),
     [tracks, trackedDevices],
   );
+
+  const manual = [
+    <ActionDivider key="manual-divider" />,
+
+    <Action key="manual" {...manualAction('tracking')} />,
+  ];
 
   return (
     <ToolMenu tool="tracking">
@@ -188,6 +203,8 @@ export function TrackingMenu(): ReactElement {
             return;
           }
 
+          trackMatomo(['trackEvent', 'Tracking', 'colorize', mode ?? 'none']);
+
           dispatch(
             trackingActions.setColorizeBy(
               ColorizingModeSchema.nullable().parse(
@@ -238,7 +255,13 @@ export function TrackingMenu(): ReactElement {
         </LongPressTooltip>
       )}
 
-      {convertible && <TrackingConvertMenu />}
+      {convertible ? (
+        <TrackingConvertMenu>{manual}</TrackingConvertMenu>
+      ) : (
+        <ResponsiveActions toggleLabel={m?.general.actions}>
+          {manual}
+        </ResponsiveActions>
+      )}
     </ToolMenu>
   );
 }

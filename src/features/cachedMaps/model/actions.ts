@@ -57,8 +57,9 @@ export const cachedMapEdited = createAction<{
   next: CachedTileMapDef;
 }>('CACHED_MAP_EDITED');
 
+/** `{ add }` opens the add form with that map picked as its source. */
 export const cachedMapsSetView = createAction<
-  'list' | 'add' | { edit: string }
+  'list' | 'add' | { add: string } | { edit: string }
 >('CACHED_MAPS_SET_VIEW');
 
 export const cachedMapsSetSettings = createAction<Partial<BrowseCacheConfig>>(

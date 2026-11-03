@@ -5,7 +5,10 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
   pickHint: ({ icon }) => (
     <>Choisissez d’où regarder avec le bouton {icon} ci-dessous.</>
   ),
+  preparing: 'Préparation du panorama…',
   rendering: 'Rendu du panorama…',
+  encoding: "Compression de l'image…",
+  decoding: "Décompression de l'image…",
   queued: ({ ahead }) =>
     ahead === 0
       ? 'En attente du moteur de rendu…'
@@ -32,13 +35,12 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     title: 'Paramètres du panorama',
     tiltHint:
       'La quantité de ciel et de sol que contient l’image — les angles au-dessus et au-dessous de l’horizon.',
-    custom: 'Angles exacts',
     depthLift: 'Déplier la distance',
     depthLiftOff: 'Vue fidèle',
     depthLiftHint:
-      'Relève le relief lointain, de sorte que les chaînes éloignées se détachent des crêtes qui les précèdent, comme sur un panorama dessiné à la main. Cela fait aussi entrer dans l’image des sommets que vous ne verriez pas réellement d’ici ; leurs noms sont signalés.',
+      'Relève le relief lointain, de sorte que les chaînes éloignées se détachent des crêtes qui les précèdent, comme sur un panorama dessiné à la main. Cela fait aussi entrer dans l’image des sommets que vous ne verriez pas réellement d’ici ; leurs noms sont signalés. Les courses du soleil et de la lune n’y sont pas tracées.',
     rangeHint:
-      'Le relief au-delà de 300 km relève du premium. Chaque kilomètre supplémentaire est parcouru le long de chaque rayon de l’image : une vue plus lointaine coûte donc proportionnellement plus au moteur de rendu.',
+      'Le relief au-delà de 300 km est une fonction premium. Chaque kilomètre supplémentaire est parcouru le long de chaque rayon de l’image : une vue plus lointaine coûte donc proportionnellement plus au moteur de rendu.',
     look: 'Style',
     looks: {
       natural: 'Naturel',
@@ -66,24 +68,42 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     gradientClipHint:
       'Le relief au-delà de cette distance est omis plutôt que peint à plat dans la dernière couleur, de sorte que tout le dégradé se dépense sur ce que l’image montre. Les sommets qui s’y trouvent ne sont pas nommés.',
   },
-  preview: 'Aperçu',
   quality: {
-    label: 'Qualité / vitesse',
-    superfast: 'Minimale / la plus rapide',
-    fast: 'Basse / rapide',
-    standard: 'Standard',
-    detailed: 'Détaillée / lente',
-    finest: 'Maximale / la plus lente',
+    detail: 'Détail',
   },
+  frame: 'Cadrage et détail',
   tilt: {
     label: 'Étendue verticale',
     standard: 'Standard',
     wide: 'Haute',
     flat: 'Basse',
+    below: "Sous l'horizon",
+    above: "Au-dessus de l'horizon",
   },
   fov: {
     label: 'Étendue horizontale',
     full: 'Tout autour',
+  },
+  sky: {
+    title: 'Soleil et lune',
+    sun: 'Course du soleil',
+    moon: 'Course de la lune',
+    date: 'Jour',
+    dateHint:
+      'Les heures sont dans le fuseau horaire de cet appareil et indiquent quand le dernier croissant du disque passe derrière le relief ou quand le premier réapparaît. Le relief est le sol nu : arbres et bâtiments peuvent le cacher plus tôt.',
+    today: 'Aujourd’hui',
+    lit: (percent) => `éclairée à ${percent}`,
+    elevation: (deg) => `hauteur ${deg}`,
+    overTerrain: (deg) => `${deg} au-dessus du relief`,
+    belowTerrain: (deg) => `${deg} sous le relief`,
+    unfolded: (
+      <>
+        Pas sur une image dépliée : son relief lointain est dessiné plus haut
+        qu’il ne se trouve, et les courses couperaient l’horizon aux mauvais
+        endroits. Dans les réglages du panorama, mettez{' '}
+        <i>Déplier la distance</i> sur <i>Vue fidèle</i> et mettez à jour.
+      </>
+    ),
   },
   labels: {
     title: 'Noms des sommets',
@@ -110,9 +130,16 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     hazeOff: 'Air limpide',
     hazeHint:
       'À quelle distance un sommet doit se trouver pour que la brume compte plus que le sommet lui-même. Au-delà du triple de cette distance, plus rien n’est nommé.',
-    showEle: 'Afficher les altitudes',
-    showEleHint:
-      'Écrit l’altitude sous le nom de chaque sommet. L’étiquette fait alors deux lignes, si bien qu’il en tient moins dans l’image.',
+    subLine: 'Sous le nom',
+    subLineHint:
+      'Ce que dit la deuxième ligne de l’étiquette de chaque sommet. Dès que l’un d’eux est activé, chaque étiquette fait deux lignes, si bien qu’il en tient moins. La proéminence (P) est la hauteur dont le sommet s’élève au-dessus du col le plus bas sur le chemin d’un relief plus haut ; l’isolement (I), la distance de ce relief plus haut.',
+    subLineParts: {
+      ele: 'Altitude',
+      distance: 'Distance',
+      prominence: 'Proéminence',
+      isolation: 'Isolement',
+    },
+    subLineAbbr: { prominence: 'P', isolation: 'I' },
     showRevealed: 'Nommer les sommets révélés',
     showRevealedHint:
       'Sommets que le dépliement de la distance a fait sortir de derrière une crête plus proche : ils sont dessinés, mais on ne les voit pas réellement d’ici. Leurs noms sont plus pâles et, quand la place manque pour les deux, la priorité va au sommet que l’on voit.',
@@ -143,11 +170,6 @@ const fr: DeepPartialWithRequiredObjects<PanoramaMessages> = {
     failed: 'Le panorama n’a pas pu être rendu.',
   },
   caveats: {
-    title: 'Ce que l’image montre et ce qu’elle ne montre pas',
-    bareEarth:
-      'Le modèle de terrain est le sol nu : les forêts et les bâtiments n’y figurent pas, si bien qu’une vue qu’une forêt masquerait est dessinée comme dégagée. C’est de loin la principale source d’erreur.',
-    coverage:
-      'Le détail varie selon les pays. Là où existe un modèle national issu d’un relevé laser, le premier plan est net ; ailleurs, c’est un modèle mondial à 30 m qui répond.',
     viewpoint:
       'L’œil est placé sur le point le plus haut à quelques mètres de votre clic, pour qu’un rocher voisin ne gâche pas la vue depuis le sommet.',
     depthLift:

@@ -3,13 +3,42 @@ import { resolveGenericName } from '@osm/osmNameResolver.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { poiIcons } from '@osm/poiIcons.js';
 import type { IconSvg } from '@shared/components/RichMarker.js';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
 // The `icon` field on a drawing point is one of these forms.
 export type IconSpec =
   | { kind: 'fa'; name: string }
   | { kind: 'poi'; name: string }
   | { kind: 'text'; text: string };
+
+// Icons that took the map renderer's file name, so the two sets stay in sync,
+// and the borrowed drawings the renderer's own replaced — a borrowed icon is
+// bundled only while the tag mapping names it. A spec stored before that (by
+// hand, or by converting map features to drawing) still names the old icon.
+const renamedPoi: Record<string, string> = {
+  'maki:art-gallery': 'gallery',
+  'temaki:camper_trailer': 'caravan_site',
+  'temaki:storage_tank': 'storage_tank',
+  'temaki:telescope': 'telescope_dome',
+  'temaki:vending_lockers': 'parcel_locker',
+  'temaki:wind_turbine': 'generator_wind',
+  bell_tower: 'tower_bell_tower',
+  diy: 'doityourself',
+  emergency_phone: 'phone',
+  ferry: 'ferry_terminal',
+  golf: 'golf_course',
+  heliport: 'helipad',
+  hillclimbing: 'climbing',
+  iceskating: 'ice_skating',
+  library: 'books',
+  mast_other: 'mast',
+  office: 'information_office',
+  pitch: 'running',
+  rental_bicycle: 'bicycle_rental',
+  rental_car: 'car_rental',
+  skiing_downhill: 'skiing',
+  tower_other: 'tower',
+};
 
 export function parseIconSpec(icon: string | undefined): IconSpec | undefined {
   if (!icon) {
@@ -21,7 +50,13 @@ export function parseIconSpec(icon: string | undefined): IconSpec | undefined {
   }
 
   if (icon.startsWith('poi:')) {
-    return { kind: 'poi', name: icon.slice(4) };
+    const name = icon.slice(4);
+
+    // `hasOwn`, or a spec naming `toString` would resolve to Object's own.
+    return {
+      kind: 'poi',
+      name: Object.hasOwn(renamedPoi, name) ? renamedPoi[name] : name,
+    };
   }
 
   // Anything else is literal text; only the first 2 chars fit in the marker.
@@ -559,13 +594,37 @@ export function loadAllIcons(): Promise<IconDefinition[]> {
         iconCache.set(def.iconName, def);
       }
 
+      iconsLoaded = true;
+
+      for (const listener of iconsLoadedListeners) {
+        listener();
+      }
+
       return [...byName.values()]
         .filter((def) => pickerAllowlist.has(def.iconName))
         .sort((a, b) => a.iconName.localeCompare(b.iconName));
     },
+    (err) => {
+      // Forgotten, so the next caller retries rather than getting this failure.
+      allIconsPromise = undefined;
+
+      throw err;
+    },
   );
 
   return allIconsPromise;
+}
+
+let iconsLoaded = false;
+
+const iconsLoadedListeners = new Set<() => void>();
+
+function subscribeIconsLoaded(listener: () => void) {
+  iconsLoadedListeners.add(listener);
+
+  return () => {
+    iconsLoadedListeners.delete(listener);
+  };
 }
 
 /**
@@ -595,27 +654,23 @@ export async function getFaIcon(
 export function useFaIcon(
   name: string | undefined,
 ): IconDefinition | undefined {
-  const [, force] = useState(0);
-
-  const cached = name ? iconCache.get(name) : undefined;
+  // Subscribed rather than read off `iconCache`, which the React Compiler would
+  // memoize on `name` alone and so never see fill.
+  const loaded = useSyncExternalStore(
+    subscribeIconsLoaded,
+    () => iconsLoaded,
+    () => iconsLoaded,
+  );
 
   useEffect(() => {
-    if (name && !cached) {
-      let cancelled = false;
-
-      loadAllIcons().then(() => {
-        if (!cancelled) {
-          force((n) => n + 1);
-        }
+    if (name && !loaded) {
+      loadAllIcons().catch((err) => {
+        console.warn('Error loading icons:', err);
       });
-
-      return () => {
-        cancelled = true;
-      };
     }
-  }, [name, cached]);
+  }, [name, loaded]);
 
-  return cached;
+  return name && loaded ? iconCache.get(name) : undefined;
 }
 
 /**
@@ -630,13 +685,11 @@ export function tagsToPoiIconName(
     return undefined;
   }
 
-  const strings: Record<string, string> = {};
-
-  for (const [key, value] of Object.entries(tags)) {
-    if (typeof value === 'string') {
-      strings[key] = value;
-    }
-  }
+  const strings: Record<string, string> = Object.fromEntries(
+    Object.entries(tags).filter(
+      (entry): entry is [string, string] => typeof entry[1] === 'string',
+    ),
+  );
 
   return resolveGenericName(osmTagToIconMapping, strings)[0];
 }

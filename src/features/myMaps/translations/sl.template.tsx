@@ -13,7 +13,7 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     'Zavržem neshranjene spremembe in ponovno naložim shranjeni zemljevid?',
   unsaved: 'Neshranjene spremembe',
   unsavedTooltip:
-    'Zemljevid ima neshranjene spremembe, ki se ne odražajo v povezavi. Shranite zemljevid, da jih ohranite.',
+    'Zemljevid ima neshranjene spremembe, ki se ne odražajo v naslovu strani (URL). Shranite zemljevid, da jih ohranite.',
   disconnect: 'Odklopi',
   disconnectAndClear: 'Odklopi in počisti',
   deleteConfirm: (name) => (
@@ -22,6 +22,12 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     </>
   ),
   deleteTitle: 'Brisanje zemljevida',
+  newMapTitle: 'Nov zemljevid',
+  modifyMapTitle: (name) => (
+    <>
+      Uredi zemljevid <i>{name}</i>
+    </>
+  ),
   mapCreated: ({ name }) => (
     <>
       Zemljevid <i>{name}</i> je bil shranjen med vaše zemljevide.

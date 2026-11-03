@@ -4,15 +4,16 @@ const PI = radians(180.0);
 
 const TAU = radians(360.0);
 
-// zoom 0 tile - meter per pixel
-const METER_PER_PIXEL_Z0: f32 = (TAU * 6378137.0 * cos(radians(49.0))) / 256.0;
+const EQUATOR_M: f32 = TAU * 6378137.0;
 
 const NUM_STOPS = 16u;
 
 struct Shading {
     component_count: u32,
     zoom: u32,
-    _pad: vec2<f32>,
+    tile_y: u32,
+    // Texture pixels beyond each tile edge.
+    border: u32,
     background_color: vec4<f32>,
     components: array<ShadingComponent, 8>,
 };
@@ -32,7 +33,13 @@ struct ShadingComponent {
     brightness: f32,
     exaggeration: f32,
     color_count: u32,
-    _pad: f32,
+    interval: f32,
+    line_width: f32,
+    // In pixels, as resolved for this tile.
+    radius: u32,
+    // 0 sky-view factor, 1 positive openness, 2 negative openness.
+    sky_mode: u32,
+    _pad2: f32,
     colors: array<ColorStop, NUM_STOPS>
 };
 
@@ -66,7 +73,8 @@ fn normalize_angle(angle: f32) -> f32 {
     return select(ang, TAU + ang, ang < 0.0);
 }
 
-fn get_normal(pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
+// Height change per pixel, by Horn's method.
+fn get_gradient(pos: vec2<i32>) -> vec2<f32> {
     let nn = get_elev(pos + vec2(-1, -1));
     let nz = get_elev(pos + vec2(-1, 0));
     let np = get_elev(pos + vec2(-1, 1));
@@ -80,16 +88,154 @@ fn get_normal(pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
 
     let dzdy = -nn - 2.0 * zn - pn + np + 2.0 * zp + pp;
 
-    let meter_per_pixel = METER_PER_PIXEL_Z0 / f32(1 << shading.zoom) * 8 / exaggeration;
+    return vec2(dzdx, dzdy) / 8.0;
+}
 
-    let normal = normalize(vec3(-dzdx / meter_per_pixel, -dzdy / meter_per_pixel, 1.0));
+fn get_normal(gradient: vec2<f32>, pos: vec2<i32>, exaggeration: f32) -> vec3<f32> {
+    let g = gradient / (ground_px(pos.y) / exaggeration);
+
+    let normal = normalize(vec3(-g.x, -g.y, 1.0));
 
     return select(normal, vec3(0.0, 0.0, 0.0), sign(normal.z) == 0.0);
 }
 
+// Ground size of a pixel shrinks with cos(latitude); the row's latitude comes
+// from the tile's Web Mercator y. The texture is the tile plus its border.
+fn ground_px(y: i32) -> f32 {
+    let tiles = f32(1u << shading.zoom);
+
+    let rows = f32(textureDimensions(elev, 0).y - 2u * shading.border);
+
+    let merc_y = PI * (1.0 - 2.0 * (f32(shading.tile_y) + (f32(y - i32(shading.border)) + 0.5) / rows) / tiles);
+
+    let lat = atan(sinh(merc_y));
+
+    return EQUATOR_M * cos(lat) / rows / tiles;
+}
+
+// How far the mean height within `radius` pixels lies above the centre, per
+// pixel of ground: positive in hollows, negative on ridges. Pixels without data
+// are left out; NaN when the centre has none. Every pixel up to 8 away, sparser
+// beyond, as terrain-tiles samples.
+fn get_curvature(pos: vec2<i32>, exaggeration: f32, radius: u32) -> f32 {
+    let r = i32(min(radius, shading.border));
+
+    let step = max((r + 7) / 8, 1);
+
+    let reach = r / step;
+
+    var sum = 0.0;
+
+    var n = 0.0;
+
+    for (var i = -reach; i <= reach; i++) {
+        for (var j = -reach; j <= reach; j++) {
+            let h = get_elev(pos + vec2(j, i) * step);
+
+            let ok = h < 0.0 || h >= 0.0;
+
+            sum += select(0.0, h, ok);
+
+            n += select(0.0, 1.0, ok);
+        }
+    }
+
+    let centre = get_elev(pos);
+
+    return ((sum - centre) / (n - 1.0) - centre) / ground_px(pos.y) * exaggeration;
+}
+
+const S = 0.38268343;
+
+const C = 0.9238795;
+
+const H = 0.70710677;
+
+// Unit steps every 22.5° clockwise from north, the literals terrain-tiles uses:
+// sin() here is too loose to round the same offsets.
+const SKY_DIRECTIONS = array<vec2<f32>, 16>(
+    vec2(0.0, -1.0), vec2(S, -C), vec2(H, -H), vec2(C, -S),
+    vec2(1.0, 0.0), vec2(C, S), vec2(H, H), vec2(S, C),
+    vec2(0.0, 1.0), vec2(-S, C), vec2(-H, H), vec2(-C, S),
+    vec2(-1.0, 0.0), vec2(-C, -S), vec2(-H, -H), vec2(-S, -C),
+);
+
+// Distances walked out along each direction, pixels: denser near.
+const SKY_STEPS = array<i32, 12>(1, 2, 3, 4, 6, 8, 11, 16, 23, 32, 45, 64);
+
+// The sky view from the horizon within `radius`, walked as terrain-tiles walks
+// it: sky-view factor 0–1, or openness in degrees. Pixels without data are left
+// out; NaN when the centre has none.
+fn get_sky_view(pos: vec2<i32>, exaggeration: f32, radius: u32, mode: u32) -> f32 {
+    let r = i32(min(radius, shading.border));
+
+    let run = ground_px(pos.y) / exaggeration;
+
+    let h0 = get_elev(pos);
+
+    // Locals, as some compilers can't index a const array by a variable.
+    var directions = SKY_DIRECTIONS;
+
+    var steps = SKY_STEPS;
+
+    var sum = 0.0;
+
+    var n = 0.0;
+
+    for (var k = 0; k < 16; k++) {
+        let dir = directions[k];
+
+        var hi = -1e30;
+
+        var lo = 1e30;
+
+        var any = false;
+
+        for (var s = 0; s < 13; s++) {
+            // The steps below `r`, then `r` itself.
+            let d = select(r, steps[min(s, 11)], s < 12 && steps[min(s, 11)] < r);
+
+            // floor(+0.5), as round() takes halves to even.
+            let o = floor(dir * f32(d) + 0.5);
+
+            let t = (get_elev(pos + vec2<i32>(o)) - h0) / (length(o) * run);
+
+            if t < 0.0 || t >= 0.0 {
+                hi = max(hi, t);
+
+                lo = min(lo, t);
+
+                any = true;
+            }
+
+            if d == r {
+                break;
+            }
+        }
+
+        if any {
+            n += 1.0;
+
+            if mode == 0u {
+                let t = max(hi, 0.0);
+
+                sum += t / sqrt(1.0 + t * t);
+            } else if mode == 1u {
+                sum += 90.0 - degrees(atan(hi));
+            } else {
+                sum += 90.0 + degrees(atan(lo));
+            }
+        }
+    }
+
+    return select(sum / n, 1.0 - sum / n, mode == 0u);
+}
+
 @fragment
 fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
-    let pos2 = vec2<i32>(i32(pos.x + 2), i32(pos.y + 2));
+    let border = f32(shading.border);
+
+    let pos2 = vec2<i32>(i32(pos.x + border), i32(pos.y + border));
 
     var elev = get_elev(pos2); // TODO make lazy-memo
 
@@ -103,17 +249,33 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     var sum_alpha = 0.0;
     var alpha_product = 1.0;
 
-    var normal = vec3<f32>(0.0);
+    // Read once, on the first layer that needs it.
+    var gradient = vec2<f32>(0.0);
+
+    var has_gradient = false;
+
+    var normal = vec3(0.0, 0.0, 1.0);
+
+    // Exaggeration the normal was computed with; reused while it stays the same.
+    var normal_exaggeration = -1.0;
 
     for (var i = 0u; i < shading.component_count; i = i + 1u) {
         let component = shading.components[i];
 
         var intensity = 0.0;
 
-        if is_nan {
-            normal = vec3(0.0, 0.0, 1.0);
-        } else if component.method != 4u && all(normal == vec3<f32>(0.0)) {
-            normal = get_normal(pos2, component.exaggeration);
+        let needs_normal = component.method < 4u || component.method == 5u;
+
+        if (needs_normal || component.method == 7u) && !has_gradient {
+            gradient = get_gradient(pos2);
+
+            has_gradient = true;
+        }
+
+        if !is_nan && needs_normal && component.exaggeration != normal_exaggeration {
+            normal = get_normal(gradient, pos2, component.exaggeration);
+
+            normal_exaggeration = component.exaggeration;
 
             if !(normal.x > -10.0 || normal.x < 10.0) {
                 normal = vec3(0.0, 0.0, 1.0);
@@ -181,9 +343,56 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 
                 color = interpolate_color(component.colors, component.color_count, angle_0_2pi);
             }
+        // curvature
+        } else if component.method == 6u {
+            intensity = 1.0;
+
+            let curvature = get_curvature(pos2, component.exaggeration, component.radius);
+
+            if curvature < 0.0 || curvature >= 0.0 {
+                color = interpolate_color(component.colors, component.color_count, curvature);
+            } else {
+                color = vec4(0.0);
+            }
+        // contours
+        } else if component.method == 7u {
+            // Pixels to the nearest contour: its height away over the gradient.
+            let off = abs(fract(elev / component.interval + 0.5) - 0.5) * component.interval;
+
+            let px = off / length(gradient);
+
+            // Antialiased over one pixel; NaN (no data, or flat on the line) draws nothing.
+            intensity = select(0.0, clamp(component.line_width * 0.5 + 0.5 - px, 0.0, 1.0), !is_nan && px >= 0.0);
+
+            color = component.colors[0].color;
+        // sky view
+        } else if component.method == 8u {
+            intensity = 1.0;
+
+            let v = get_sky_view(pos2, component.exaggeration, component.radius, component.sky_mode);
+
+            if v < 0.0 || v >= 0.0 {
+                color = interpolate_color(component.colors, component.color_count, v);
+            } else {
+                color = vec4(0.0);
+            }
         }
 
-        let modulated = component.contrast * (intensity - 0.5) + 0.5 + component.brightness;
+        // Hillshade and slope with a gradient look their number up on the stops,
+        // slope-igor's in degrees, and take the colour as colour relief does.
+        if component.method < 4u && component.color_count > 1u {
+            color = interpolate_color(component.colors, component.color_count, select(intensity, intensity * 90.0, component.method == 2u));
+
+            intensity = 1.0;
+        }
+
+        // Contours take contrast and brightness on the line only, faded by its
+        // antialiasing; off it they must stay clear, not tint or erase the tile.
+        let modulated = select(
+            component.contrast * (intensity - 0.5) + 0.5 + component.brightness,
+            intensity * max(component.contrast * 0.5 + 0.5 + component.brightness, 0.0),
+            component.method == 7u
+        );
 
         let alpha = color.a * modulated;
 

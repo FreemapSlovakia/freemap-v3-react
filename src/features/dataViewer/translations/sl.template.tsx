@@ -8,28 +8,26 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   info: () => <DataViewerDetails />,
   upload: 'Naloži',
   unnamedTrack: ({ n }) => `Sled ${n}`,
-  convertLossWarning:
-    'Pretvorba v risbo nadomesti sled in zavrže njene zabeležene podatke (nadmorska višina, srčni utrip, hitrost, čas).',
   simplifyAll: 'Poenostavi vse',
   moreInfo: 'Več informacij',
+  breakApart: 'Razdeli na dele',
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:
     'Za shranjevanje sledi med vaše zemljevide se najprej prijavite.',
-  style: {
-    title: 'Privzeti slog',
-  },
+  vertex: { channels: {} },
   split: {
     action: 'Razdeli',
     pick: 'Kliknite sled na mestu razdelitve',
     here: 'Razdeli tukaj',
-    segments: 'Razdeli na odseke',
   },
   join: {
     action: 'Združi',
     asLine: 'Združi v eno črto',
     asSegments: 'Združi z ohranitvijo odsekov',
     pick: 'Kliknite sled, s katero želite združiti',
+    pickEnd: 'Izberite točko za združitev črt',
   },
+  osmUpload: { visibilities: {}, visibilityHints: {} },
   match: {
     menuItem: 'Pripni na poti',
     title: 'Pripni na poti',
@@ -74,17 +72,50 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     append: 'Pripni',
     replace: 'Nadomesti',
   },
+  trace: {
+    streams: 'Izris vodotokov',
+    forests: 'Izris gozdov',
+    streamsHelp:
+      'Služi za izpeljavo črt vodotokov iz modela reliefa visoke ločljivosti v izbranem poligonu. Primerno za kartiranje v OpenStreetMap.',
+    forestsHelp:
+      'Služi za izris površin, ki jih v izbranem poligonu pokrivajo izbrani razredi točk LiDAR. Primerno predvsem za kartiranje pokrovnosti tal v OpenStreetMap.',
+    pixelSize: 'Velikost slikovne točke',
+    pixelSizeHint: 'Prazno za lastno ločljivost modela reliefa.',
+    threshold: 'Najmanjša površina povodja',
+    minLength: 'Najmanjša dolžina vodotoka',
+    simplify: 'Toleranca poenostavitve',
+    classes: 'Razredi točk',
+    classNames: {
+      lowVegetation: 'Nizka vegetacija',
+      mediumVegetation: 'Srednja vegetacija',
+      highVegetation: 'Visoka vegetacija',
+      building: 'Stavbe',
+      water: 'Voda',
+    },
+    output: 'Rezultat',
+    outputJosm: 'Odpri v JOSM',
+    outputOsm: 'Prenesi kot OSM XML',
+    outputGeojson: 'Prenesi kot GeoJSON',
+    tooBig: ({ max }) => `Poligon je prevelik; omejitev je ${max}.`,
+    run: 'Izriši',
+    legacy: ({ phrase, item }) => (
+      <>
+        Namesto <i>velikonočnega jajca</i> <code>{phrase}</code> uporabite
+        postavko <i>{item}</i> v meniju ⋮ izbranega poligona.
+      </>
+    ),
+  },
   elevationFill: {
     title: 'Podatki o nadmorski višini',
-    introNone: 'Ta sled nima podatkov o nadmorski višini.',
-    introPartial: 'Tej sledi za nekatere točke manjka nadmorska višina.',
+    introNone: 'Podatkov o nadmorski višini še ni.',
+    introPartial: 'Nekaterim točkam manjka nadmorska višina.',
     introFull:
-      'Ta sled že ima nadmorsko višino, vendar je model terena pogosto natančnejši.',
-    premiumHiRes: (premiumLink) => (
+      'Nadmorska višina je že podana, vendar je model terena pogosto natančnejši.',
+    premiumHiRes: (premiumLink, countries) => (
       <>
-        S {premiumLink('premium dostopom')} se nadmorska višina v podprtih
-        državah pridobi iz nacionalnega modela visoke ločljivosti — zaenkrat
-        Slovaška (DMR 5.0: ÚGKK SR), sledijo še druge.
+        S {premiumLink('premium dostopom')} se nadmorska višina v{' '}
+        {countries('številnih evropskih državah')} pridobi iz nacionalnih
+        modelov terena visoke ločljivosti.
       </>
     ),
     question: 'Kaj želite storiti?',
@@ -99,11 +130,12 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     keepDesc: 'uporabi nadmorsko višino, shranjeno v sledi',
     add: 'Dodaj nadmorsko višino',
     update: 'Posodobi nadmorsko višino',
-    updateConfirm: 'Nadmorsko višino sledi nadomestim z modelom terena?',
     updatedToast: ({ mode }) =>
       mode === 'missing'
         ? 'Manjkajoča nadmorska višina je bila zapolnjena.'
-        : 'Nadmorska višina je bila prepisana.',
+        : mode === 'clear'
+          ? 'Nadmorska višina je bila odstranjena.'
+          : 'Nadmorska višina je bila prepisana.',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju podatkov o sledi', err),
@@ -116,7 +148,7 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     `Nekaterih datotek ni bilo mogoče naložiti: ${names}.`,
   unsaved: 'Ni shranjeno',
   unsavedTooltip:
-    'Ta sled ni v nobenem shranjenem zemljevidu in ni del povezave – ostane samo v tem brskalniku, zato je z deljenjem povezave ne boste delili. Shranite jo med svoje zemljevide, da jo ohranite.',
+    'Teh podatkov ni mogoče vstaviti v naslov strani (URL) in niso v nobenem shranjenem zemljevidu – ostanejo samo v tem brskalniku. Shranite jih med svoje zemljevide, da jih ohranite.',
 };
 
 export default sl;

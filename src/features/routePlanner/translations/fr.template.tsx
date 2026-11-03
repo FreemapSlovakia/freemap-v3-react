@@ -5,7 +5,15 @@ import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   selectHomeLocation: 'Sélectionner sur la carte',
-  default: 'Par défaut',
+  transportScope: {
+    title: 'Appliquer à',
+    route: 'Tout l’itinéraire',
+    lastSection: 'Dernière partie',
+    next: 'Nouveaux tronçons',
+    leg: 'Ce tronçon',
+    section: 'Toute la partie',
+    sameTransport: 'Même mode de transport',
+  },
   leg: 'Tronçon de l’itinéraire',
   manualTooltip: 'Relier le segment suivant par une ligne droite',
   ghParams: {

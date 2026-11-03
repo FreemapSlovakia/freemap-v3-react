@@ -7,8 +7,7 @@ import '../maplibreLanguage.js';
 // maplibre-gl ships its worker as a separate file that auto-detects itself from
 // `import.meta.url` — which points at the bundle, not the worker, once rspack
 // has inlined the library, so the URL has to be handed over explicitly. rspack
-// emits the worker and the module it imports as assets; see
-// doc/build-and-deploy.md.
+// emits the worker as an asset; see doc/build-and-deploy.md.
 setWorkerUrl(
   new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href,
 );
@@ -18,10 +17,18 @@ class MaplibreWithLang extends L.MaplibreGL {
 
   _loaded = false;
 
+  _zIndex?: number;
+
+  _opacity?: number;
+
   constructor(options: MaplibreLayerProps) {
     super(options);
 
     this._language = options.language;
+
+    this._zIndex = options.zIndex;
+
+    this._opacity = options.opacity;
   }
 
   setLanguage(lang: string) {
@@ -34,8 +41,33 @@ class MaplibreWithLang extends L.MaplibreGL {
     ).setLanguage(lang);
   }
 
+  setZIndex(zIndex: number | undefined) {
+    this._zIndex = zIndex;
+
+    const container = this.getContainer();
+
+    if (container) {
+      container.style.zIndex = zIndex === undefined ? '' : String(zIndex);
+    }
+  }
+
+  /** On the canvas's container, as the GL map has no opacity of its own. */
+  setOpacity(opacity: number | undefined) {
+    this._opacity = opacity;
+
+    const container = this.getContainer();
+
+    if (container) {
+      container.style.opacity = opacity === undefined ? '' : String(opacity);
+    }
+  }
+
   onAdd(map: L.Map) {
     L.MaplibreGL.prototype.onAdd.call(this, map);
+
+    this.setZIndex(this._zIndex);
+
+    this.setOpacity(this._opacity);
 
     if (this._language) {
       this.setLanguage(this._language);
@@ -77,6 +109,8 @@ class MaplibreWithLang extends L.MaplibreGL {
 type MaplibreLayerProps = LayerProps &
   L.LeafletMaplibreGLOptions & {
     language?: string | null;
+    zIndex?: number;
+    opacity?: number;
   };
 
 export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
@@ -94,6 +128,14 @@ export default createTileLayerComponent<MaplibreWithLang, MaplibreLayerProps>(
   (instance, props, prevProps) => {
     if (props.language !== prevProps.language) {
       instance.setLanguage(props.language ?? 'native');
+    }
+
+    if (props.zIndex !== prevProps.zIndex) {
+      instance.setZIndex(props.zIndex);
+    }
+
+    if (props.opacity !== prevProps.opacity) {
+      instance.setOpacity(props.opacity);
     }
   },
 );

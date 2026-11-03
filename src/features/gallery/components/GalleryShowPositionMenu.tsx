@@ -1,6 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaChevronLeft } from 'react-icons/fa';
@@ -16,9 +17,11 @@ export default function GalleryShowPositionMenu(): ReactElement | null {
     dispatch(galleryCancelShowOnTheMap());
   };
 
+  const closeKbd = useEscapeKbd(galleryCancelShowOnTheMap());
+
   return (
     <Toolbar className="mt-2">
-      <LongPressTooltip breakpoint="sm" label={m?.general.back} kbd="Esc">
+      <LongPressTooltip breakpoint="sm" label={m?.general.back} kbd={closeKbd}>
         {({ label, labelClassName, props }) => (
           <Button onClick={close} {...props}>
             <FaChevronLeft />
