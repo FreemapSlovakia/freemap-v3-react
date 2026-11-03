@@ -18,22 +18,13 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { layerLabel } from '@shared/layerName.js';
 import { type ReactElement, useRef, useState } from 'react';
-import { Modal, Nav } from 'react-bootstrap';
-import { FaBookOpen, FaLayerGroup, FaPlus } from 'react-icons/fa';
+import { Modal } from 'react-bootstrap';
+import { FaLayerGroup, FaPlus } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { yourMapsCountSelector } from '../model/selectors.js';
-import {
-  initialLibraryFilters,
-  type LibraryFilters,
-  LibraryTab,
-  useLibraryEntries,
-} from './LibraryTab.js';
-import {
-  initialYourMapsFilters,
-  type YourMapsFilters,
-  YourMapsTab,
-} from './YourMapsList.js';
+import { initialManagerFilters, type ManagerFilters } from '../filters.js';
+import { useLibraryEntries } from './LibraryList.js';
+import { MapManager } from './MapManager.js';
 
 type Props = { show: boolean };
 
@@ -51,33 +42,29 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
     (state) => state.mapLibrary.preview !== null,
   );
 
-  // The tab is the modal's id, so each has its own menu item, chord and link.
   const activeModal = useAppSelector((state) => state.main.activeModal);
 
-  const tab =
-    activeModal?.type === 'available-maps' ? 'available' : 'installed';
+  const managerModal =
+    activeModal?.type === 'map-manager' ? activeModal : undefined;
 
-  // A custom map's form takes the list's place; the tabs' filters live here so
-  // they outlast it.
-  const customMapRequest =
-    activeModal?.type === 'installed-maps' ? activeModal.customMap : undefined;
+  // A custom map's form takes the list's place; the filters live here so they
+  // outlast it.
+  const customMapRequest = managerModal?.customMap;
 
-  const highlight =
-    activeModal?.type === 'installed-maps' ? activeModal.highlight : undefined;
+  const highlight = managerModal?.highlight;
 
   const canSaveSettings = useCanSaveSettings();
 
-  const [yourFilters, setYourFilters] = useState<YourMapsFilters>(
-    initialYourMapsFilters,
-  );
+  // A query handed over by the map menu starts the search; `AsyncModal` mounts
+  // the modal afresh for each opening.
+  const [filters, setFilters] = useState<ManagerFilters>(() => ({
+    ...initialManagerFilters,
+    query: managerModal?.query ?? '',
+  }));
 
-  const [libraryFilters, setLibraryFilters] = useState<LibraryFilters>(
-    initialLibraryFilters,
-  );
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const { catalog, entries } = useLibraryEntries();
-
-  const yourMapsCount = useAppSelector(yourMapsCountSelector);
+  const { catalog, entries, failed } = useLibraryEntries();
 
   // Nothing to reset while no map has a setup and every map has only its
   // install state.
@@ -165,55 +152,19 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
         </>
       ) : (
         <>
-          {/* Outside the body, so it stays put while the list scrolls. */}
-          <Nav
-            variant="pills"
-            fill
-            className="px-3 py-2 border-bottom"
-            activeKey={tab}
-            onSelect={(key) =>
-              dispatch(
-                setActiveModal({
-                  type:
-                    key === 'available' ? 'available-maps' : 'installed-maps',
-                }),
-              )
-            }
-          >
-            <Nav.Item>
-              <Nav.Link eventKey="installed">
-                <FaLayerGroup /> <Text k="mapLayers.installedMaps" /> (
-                {yourMapsCount})
-              </Nav.Link>
-            </Nav.Item>
-
-            <Nav.Item>
-              <Nav.Link eventKey="available">
-                <FaBookOpen /> <Text k="mapLayers.availableMaps" />
-                {catalog && ` (${entries.length})`}
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
-
           <Modal.Body>
-            {tab === 'installed' ? (
-              <YourMapsTab
-                filters={yourFilters}
-                onChange={setYourFilters}
-                canSave={canSaveSettings}
-                highlight={highlight}
-                searchRef={searchRef}
-              />
-            ) : (
-              <LibraryTab
-                catalog={catalog}
-                entries={entries}
-                filters={libraryFilters}
-                onChange={setLibraryFilters}
-                canSave={canSaveSettings}
-                searchRef={searchRef}
-              />
-            )}
+            <MapManager
+              catalog={catalog}
+              catalogFailed={failed}
+              entries={entries}
+              filters={filters}
+              onChange={setFilters}
+              filtersOpen={filtersOpen}
+              onFiltersOpenChange={setFiltersOpen}
+              canSave={canSaveSettings}
+              highlight={highlight}
+              searchRef={searchRef}
+            />
           </Modal.Body>
 
           <FmModalFooter>
@@ -222,15 +173,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
               priority={1}
               disabled={!canSaveSettings}
               onClick={() =>
-                dispatch(
-                  setActiveModal({
-                    type: 'installed-maps',
-                    customMap: {
-                      returnTo:
-                        tab === 'available' ? 'available-maps' : undefined,
-                    },
-                  }),
-                )
+                dispatch(setActiveModal({ type: 'map-manager', customMap: {} }))
               }
               icon={<FaPlus />}
               label={m?.mapLayers.newCustomMap}

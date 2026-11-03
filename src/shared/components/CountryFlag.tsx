@@ -1,6 +1,6 @@
 import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { useRegionNames } from '@shared/hooks/useRegionNames.js';
+import { regionName, useRegionNames } from '@shared/hooks/useRegionNames.js';
 import type { ReactElement } from 'react';
 
 type Props = {
@@ -16,15 +16,7 @@ type Props = {
  * flag is borrowed from, not the language.
  */
 export function CountryFlag({ country, className }: Props): ReactElement {
-  const regionNames = useRegionNames();
-
-  let name = country;
-
-  try {
-    name = regionNames.of(country.toUpperCase()) ?? country;
-  } catch {
-    // Whatever the layer or the gallery called a country wasn't a region code.
-  }
+  const name = regionName(useRegionNames(), country);
 
   return (
     <GlyphMarker hint={name} color={null}>

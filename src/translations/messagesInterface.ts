@@ -303,10 +303,11 @@ export type Messages = {
       routing: string;
     };
     attr: Record<string, ReactNode>;
-    /** The menu item opening Installed maps and Available maps. */
     mapManager: string;
     installedMaps: string;
     availableMaps: string;
+    /** Ends the map menu's filtered list: its query, in the map manager. */
+    allMatchesInManager: string;
     newCustomMap: string;
     activate: string;
     /** The panel listing what is on the map, and its toolbar button. */

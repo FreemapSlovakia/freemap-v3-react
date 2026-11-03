@@ -30,7 +30,6 @@ import type { ReactElement, ReactNode } from 'react';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
-  FaBookOpen,
   FaChartArea,
   FaCode,
   FaDatabase,
@@ -181,15 +180,9 @@ const modalCommands: ModalCommand[] = [
   },
   // These write the settings, which a signed-in account keeps on the server.
   {
-    id: 'installed-maps',
+    id: 'map-manager',
     icon: <FaLayerGroup />,
-    label: (m) => m.mapLayers.installedMaps,
-    offline: (ctx) => !ctx.canSaveSettings,
-  },
-  {
-    id: 'available-maps',
-    icon: <FaBookOpen />,
-    label: (m) => m.mapLayers.availableMaps,
+    label: (m) => m.mapLayers.mapManager,
     offline: (ctx) => !ctx.canSaveSettings,
   },
   {

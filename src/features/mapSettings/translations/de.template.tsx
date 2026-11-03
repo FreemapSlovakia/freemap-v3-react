@@ -5,12 +5,11 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Installieren — diese Karte in den Kartenmenüs anbieten',
-  noInstalledMaps:
-    'Keine Karten installiert. Fügen Sie welche aus den verfügbaren Karten hinzu.',
   searchLibrary: ({ count }) => `${count} Karten durchsuchen`,
   catalogCredit: 'Die Kartenliste der Bibliothek stützt sich auf den',
   filters: {
-    filterYourMaps: 'Installierte Karten filtern',
+    toggle: 'Filter',
+    clear: 'Filter zurücksetzen',
     kind: 'Art',
     builtIn: 'Eingebaut',
     fromLibrary: 'Aus der Bibliothek',

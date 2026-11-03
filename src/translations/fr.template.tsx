@@ -357,10 +357,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'symboles, légende de la carte',
         'modal-manual': "aide, guide, mode d'emploi, documentation, help",
         'modal-about': 'contact, e-mail, avis',
-        'modal-installed-maps':
-          'gestionnaire de cartes, bibliothèque de cartes, désinstaller, configuration des couches, couches, gérer les cartes, barre d’outils, menu, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',
-        'modal-available-maps':
-          'bibliothèque de cartes, catalogue, installer, ajouter des cartes, plus de cartes',
+        'modal-map-manager':
+          'cartes installées, cartes disponibles, bibliothèque de cartes, catalogue, installer, désinstaller, ajouter des cartes, plus de cartes, configuration des couches, couches, gérer les cartes, barre d’outils, menu, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',
         'modal-offline-maps': 'cartes téléchargées, stockage',
         'modal-browse-cache': 'cache, tuiles en cache, stockage',
         'modal-map-preferences': 'paramètres, options, opacité des calques',
@@ -514,6 +512,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Gestionnaire de cartes',
     installedMaps: 'Cartes installées',
     availableMaps: 'Cartes disponibles',
+    allMatchesInManager: 'Tous les résultats dans le gestionnaire de cartes',
     newCustomMap: 'Nouvelle carte personnalisée',
     activate: 'Activer',
     base: 'Couches de base',

@@ -1286,10 +1286,7 @@ export function Main(): ReactElement {
       />
 
       <AsyncModal
-        show={
-          activeModal?.type === 'installed-maps' ||
-          activeModal?.type === 'available-maps'
-        }
+        show={activeModal?.type === 'map-manager'}
         factory={mapLibraryModalFactory}
       />
 

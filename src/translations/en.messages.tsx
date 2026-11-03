@@ -410,10 +410,8 @@ const messages: Messages = {
         'manual-about':
           'openstreetmap, osm, association, community, contribute, mapping, license, licence, attribution, copyright, commercial use',
         'modal-about': 'contact, e-mail, feedback',
-        'modal-installed-maps':
-          'map manager, map library, uninstall, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',
-        'modal-available-maps':
-          'map library, catalog, catalogue, install, add maps, more maps',
+        'modal-map-manager':
+          'installed maps, available maps, map library, catalog, catalogue, install, uninstall, add maps, more maps, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',
         'modal-offline-maps': 'downloaded maps, storage',
         'modal-browse-cache': 'cached tiles, storage',
         'modal-map-preferences': 'settings, options, overlay opacity',
@@ -537,6 +535,7 @@ const messages: Messages = {
     mapManager: 'Map manager',
     installedMaps: 'Installed maps',
     availableMaps: 'Available maps',
+    allMatchesInManager: 'All matches in the map manager',
     newCustomMap: 'New custom map',
     activate: 'Activate',
     layersPanel: 'Map layers',

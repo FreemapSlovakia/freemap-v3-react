@@ -372,10 +372,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'jelmagyarázat, jelek, szimbólumok',
         'modal-manual': 'súgó, segítség, útmutató, dokumentáció, help',
         'modal-about': 'kapcsolat, e-mail, visszajelzés',
-        'modal-installed-maps':
-          'térképkezelő, térképtár, eltávolítás, rétegek beállítása, rétegek, térképek kezelése, eszköztár, menü, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
-        'modal-available-maps':
-          'térképtár, katalógus, telepítés, térképek hozzáadása, további térképek',
+        'modal-map-manager':
+          'telepített térképek, elérhető térképek, térképtár, katalógus, telepítés, eltávolítás, térképek hozzáadása, további térképek, rétegek beállítása, rétegek, térképek kezelése, eszköztár, menü, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
         'modal-offline-maps': 'letöltött térképek, tárhely',
         'modal-browse-cache': 'gyorsítótár, csempék, tárhely',
         'modal-map-preferences': 'beállítások, opciók, fedvény átlátszósága',
@@ -551,6 +549,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Térképkezelő',
     installedMaps: 'Telepített térképek',
     availableMaps: 'Elérhető térképek',
+    allMatchesInManager: 'Minden találat a térképkezelőben',
     technologies: {
       tile: 'Képcsempék (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',

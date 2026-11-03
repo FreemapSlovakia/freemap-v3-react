@@ -2,13 +2,14 @@ import type { JSX } from 'react';
 
 export type MapSettingsMessages = {
   install: string;
-  noInstalledMaps: string;
   searchLibrary: (props: { count: number }) => string;
   /** Followed by the name of the catalog source. */
   catalogCredit: string;
-  /** The map library's tabs and filter chips. */
+  /** The map manager's filter chips. */
   filters: {
-    filterYourMaps: string;
+    /** The button showing and hiding the filter panel. */
+    toggle: string;
+    clear: string;
     kind: string;
     builtIn: string;
     fromLibrary: string;

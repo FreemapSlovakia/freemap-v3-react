@@ -2,7 +2,6 @@ import { setActiveModal } from '@app/store/actions.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { cachedMapsSetView } from '@features/cachedMaps/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { Text } from '@features/l10n/Text.js';
 import {
   type LayerSettings,
   mapLayerSettingsChange,
@@ -31,6 +30,7 @@ import {
 import { ShortcutRecorder } from '@shared/components/ShortcutRecorder.js';
 import { useExportPrices } from '@shared/exportPrices.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { layerLabel, layerName } from '@shared/layerName.js';
 import {
   flaggedCountries,
@@ -44,7 +44,7 @@ import { isExportable } from '@shared/mapLibrary/exportedLayer.js';
 import { effectiveShortcut } from '@shared/mapLibrary/installed.js';
 import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import type { Shortcut } from '@shared/types/common.js';
-import type { ReactElement, ReactNode, RefObject } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Form, Table } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
@@ -52,8 +52,6 @@ import {
   FaCube,
   FaDownload,
   FaEye,
-  FaEyeSlash,
-  FaGlobeEurope,
   FaKeyboard,
   FaPencilAlt,
   FaRegListAlt,
@@ -63,14 +61,15 @@ import {
 import { MdOpacity } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
-  type CategoryGroup,
   categoryGroup,
   coversView,
-  nameMatches,
+  type ManagerFilters,
+  type MapKind,
+  type MapShown,
   passes,
-  type TechnologyGroup,
   technologyGroup,
 } from '../filters.js';
+import { prepareSearchTarget, searchLibrary } from '../librarySearch.js';
 import { mapLibraryPreviewStart } from '../model/actions.js';
 import {
   installedLibraryIndexSelector,
@@ -81,21 +80,17 @@ import {
   resolvedCustomLayersSelector,
   userShortcutsSelector,
 } from '../model/selectors.js';
+import { searchExtras } from '../searchTargets.js';
 import {
   type DetailPart,
-  FilterChips,
-  FilterCountry,
-  FilterPanel,
-  FilterToggle,
   MapDetail,
   passesCountry,
   useMapDetail,
-  useSharedFilterOptions,
 } from './FilterChips.js';
 import { MapNameLine } from './MapNameLine.js';
 
 /** A map the user has: installed from the library, or their own; or a preset. */
-type YourMap = {
+export type YourMap = {
   type: string;
   /** As switched; a preset's by whether it holds a base map. */
   layer: 'base' | 'overlay';
@@ -134,38 +129,15 @@ const COLUMN_WIDTHS = {
   actions: '4rem',
 };
 
-export type YourMapKind =
-  | 'builtIn'
-  | 'fromLibrary'
-  | 'custom'
-  | 'offline'
-  | 'presets';
-
-export type YourMapShown = 'toolbar' | 'menu' | 'shortcut' | 'hidden';
-
-export type YourMapsFilters = {
-  query: string;
-  layers: ReadonlySet<'base' | 'overlay'>;
-  kinds: ReadonlySet<YourMapKind>;
-  shown: ReadonlySet<YourMapShown>;
-  technologies: ReadonlySet<TechnologyGroup>;
-  categories: ReadonlySet<CategoryGroup>;
-  /** A country code, or empty for all. */
-  country: string;
-  /** With a country picked, keep the maps without their own country list. */
-  multiCountry: boolean;
-  coversView: boolean;
-};
-
-const KIND_OPTIONS = [
+export const KIND_OPTIONS = [
   'builtIn',
   'fromLibrary',
   'custom',
   'offline',
   'presets',
-] as const satisfies readonly YourMapKind[];
+] as const satisfies readonly MapKind[];
 
-const KIND_ICONS: Record<YourMapKind, ReactElement> = {
+export const KIND_ICONS: Record<MapKind, ReactElement> = {
   builtIn: <FaCube />,
   fromLibrary: <FaBookOpen />,
   custom: <FaUser />,
@@ -173,7 +145,7 @@ const KIND_ICONS: Record<YourMapKind, ReactElement> = {
   presets: CUSTOM_MAP_ICONS.preset,
 };
 
-const kindOf = (map: YourMap): YourMapKind =>
+const kindOf = (map: YourMap): MapKind =>
   map.kind === 'library'
     ? isCatalogId(map.type)
       ? 'fromLibrary'
@@ -184,165 +156,17 @@ const kindOf = (map: YourMap): YourMapKind =>
         ? 'presets'
         : 'custom';
 
-export const initialYourMapsFilters: YourMapsFilters = {
-  query: '',
-  layers: new Set(),
-  kinds: new Set(),
-  shown: new Set(),
-  technologies: new Set(),
-  categories: new Set(),
-  country: '',
-  multiCountry: true,
-  coversView: false,
-};
-
-type TabProps = {
-  filters: YourMapsFilters;
-  onChange: (filters: YourMapsFilters) => void;
-  canSave: boolean;
-  highlight?: string;
-  searchRef: RefObject<HTMLInputElement | null>;
-};
-
-/** Your maps: their search, their filters and the list. */
-export function YourMapsTab({
-  filters,
-  onChange,
-  canSave,
-  highlight,
-  searchRef,
-}: TabProps): ReactElement {
+/**
+ * The user's maps that pass the filters (and `highlight` always), in stack
+ * order; `queryMatches`: whether the query matches any of them, chips aside.
+ */
+export function useYourMaps(
+  filters: ManagerFilters,
+  highlight: string | undefined,
+): { rows: YourMap[]; queryMatches: boolean } {
   const m = useMessages();
 
-  const msm = useMapSettingsMessages();
-
-  const { categoryOptions, technologyOptions, layerOptions } =
-    useSharedFilterOptions();
-
-  // The user's own maps name no country, so the installed library maps'.
-  const installedIndex = useAppSelector(installedLibraryIndexSelector);
-
-  return (
-    <>
-      <Form.Control
-        type="search"
-        ref={searchRef}
-        placeholder={msm?.filters.filterYourMaps}
-        value={filters.query}
-        onChange={(e) => onChange({ ...filters, query: e.currentTarget.value })}
-        className="mb-2"
-      />
-
-      <FilterPanel>
-        <FilterChips
-          name="your-category"
-          label={msm?.filters.category}
-          options={categoryOptions}
-          selected={filters.categories}
-          onChange={(categories) => onChange({ ...filters, categories })}
-        />
-
-        <FilterChips
-          name="your-technology"
-          label={msm?.filters.technology}
-          options={technologyOptions}
-          selected={filters.technologies}
-          onChange={(technologies) => onChange({ ...filters, technologies })}
-        />
-
-        <FilterCountry
-          label={msm?.filters.country}
-          anyLabel={msm?.filters.anyCountry}
-          value={filters.country}
-          countryLists={installedIndex.map((def) => def.countries)}
-          onChange={(country) => onChange({ ...filters, country })}
-          name="your-country"
-          multiCountry={filters.multiCountry}
-          multiCountryLabel={msm?.filters.includeMultiCountry}
-          onMultiCountryChange={(multiCountry) =>
-            onChange({ ...filters, multiCountry })
-          }
-        />
-
-        <FilterChips
-          name="your-layer"
-          label={m?.mapLayers.layer.layer}
-          options={layerOptions}
-          selected={filters.layers}
-          onChange={(layers) => onChange({ ...filters, layers })}
-        />
-
-        <FilterChips
-          name="kind"
-          label={msm?.filters.kind}
-          options={KIND_OPTIONS.map((value) => ({
-            value,
-            label: msm?.filters[value],
-            icon: KIND_ICONS[value],
-          }))}
-          selected={filters.kinds}
-          onChange={(kinds) => onChange({ ...filters, kinds })}
-        />
-
-        <FilterChips
-          name="shown"
-          label={msm?.filters.shownIn}
-          options={[
-            {
-              value: 'toolbar',
-              label: msm?.filters.toolbar,
-              icon: <ToolbarIcon />,
-            },
-            {
-              value: 'menu',
-              label: msm?.filters.menu,
-              icon: <FaRegListAlt />,
-            },
-            {
-              value: 'hidden',
-              label: msm?.filters.hidden,
-              icon: <FaEyeSlash />,
-            },
-            {
-              value: 'shortcut',
-              label: msm?.filters.shortcut,
-              icon: <FaKeyboard />,
-            },
-          ]}
-          selected={filters.shown}
-          onChange={(shown) => onChange({ ...filters, shown })}
-        />
-
-        <FilterToggle
-          name="your-covers-view"
-          icon={<FaGlobeEurope />}
-          label={msm?.filters.coversView}
-          checked={filters.coversView}
-          onChange={(coversView) => onChange({ ...filters, coversView })}
-        />
-      </FilterPanel>
-
-      <YourMapsList canSave={canSave} filters={filters} highlight={highlight} />
-    </>
-  );
-}
-
-type Props = {
-  canSave: boolean;
-  filters: YourMapsFilters;
-  /** A map to scroll to and flash, as just saved or asked for. */
-  highlight?: string;
-};
-
-/** The maps the user has, by kind, each with its settings in columns. */
-export function YourMapsList({
-  canSave,
-  filters,
-  highlight,
-}: Props): ReactElement {
-  const m = useMessages();
-
-  const msm = useMapSettingsMessages();
+  const regionNames = useRegionNames();
 
   const installedIndex = useAppSelector(installedLibraryIndexSelector);
 
@@ -503,7 +327,7 @@ export function YourMapsList({
   ];
 
   // Where a map shows up, as the menu and the keyboard have it.
-  const shownOf = (map: YourMap): YourMapShown[] => {
+  const shownOf = (map: YourMap): MapShown[] => {
     const settings = layersSettings[map.type];
 
     const toolbar = settings?.showInToolbar ?? map.defaultInToolbar;
@@ -523,52 +347,86 @@ export function YourMapsList({
     ];
   };
 
-  // The highlighted map shows whatever the filters, or the save looks lost.
-  const visible = maps.filter(
-    (map) =>
-      map.type === highlight ||
-      ((!filters.query.trim() || nameMatches(map.name, filters.query)) &&
-        passes(filters.layers, map.layer) &&
-        passes(filters.kinds, kindOf(map)) &&
-        passes(filters.shown, shownOf(map)) &&
-        passes(filters.technologies, technologyGroup(map.technology)) &&
-        passes(filters.categories, categoryGroup(map.category)) &&
-        passesCountry(map.coverage?.countries, filters) &&
-        (!filters.coversView ||
-          coversView(
-            { type: map.type, ...map.coverage },
-            { bounds: viewBounds, countries: viewCountries },
-          ))),
+  const filtered = passes(filters.status, 'installed')
+    ? maps.filter(
+        (map) =>
+          passes(filters.layers, map.layer) &&
+          passes(filters.kinds, kindOf(map)) &&
+          passes(filters.shown, shownOf(map)) &&
+          passes(filters.technologies, technologyGroup(map.technology)) &&
+          passes(filters.categories, categoryGroup(map.category)) &&
+          passesCountry(map.coverage?.countries, filters) &&
+          (!filters.coversView ||
+            coversView(
+              { type: map.type, ...map.coverage },
+              { bounds: viewBounds, countries: viewCountries },
+            )),
+      )
+    : [];
+
+  // Outside the query's condition, so the compiler keeps it per map list rather
+  // than redoing it per keystroke.
+  const targets = maps.map((map) =>
+    prepareSearchTarget(
+      map.name,
+      searchExtras(m, regionNames, {
+        type: map.type,
+        countries: map.coverage?.countries,
+        category: map.category,
+      }),
+    ),
   );
 
-  if (maps.length === 0) {
-    return (
-      <p className="text-muted text-center">
-        <Text m={msm} k="noInstalledMaps" />
-      </p>
-    );
-  }
+  // Found as the available maps are, though kept in stack order. All maps are
+  // searched, so a match hidden only by the chips is known as such.
+  const matchedAll = filters.query.trim()
+    ? new Set(searchLibrary(maps, targets, filters.query, maps.length).matches)
+    : new Set(maps);
 
-  if (visible.length === 0) {
-    return (
-      <p className="text-muted text-center">
-        <Text k="mapLayers.noMapsFound" />
-      </p>
-    );
-  }
+  const filteredSet = new Set(filtered);
 
-  // Base maps, then overlays as they stack, top first; presets first in each.
+  const visible = maps.filter(
+    (map) =>
+      map.type === highlight || (filteredSet.has(map) && matchedAll.has(map)),
+  );
+
   const stackPlace = (map: YourMap) =>
     map.layer === 'base'
       ? 0
       : -(overlayZIndex[map.preset ? presetItem(map.type) : map.type] ?? 0);
 
-  const rows = visible.toSorted(
-    (a, b) =>
-      (a.layer === 'base' ? 0 : 1) - (b.layer === 'base' ? 0 : 1) ||
-      (a.preset ? 0 : 1) - (b.preset ? 0 : 1) ||
-      stackPlace(a) - stackPlace(b),
-  );
+  return {
+    rows: visible.toSorted(
+      (a, b) =>
+        (a.layer === 'base' ? 0 : 1) - (b.layer === 'base' ? 0 : 1) ||
+        (a.preset ? 0 : 1) - (b.preset ? 0 : 1) ||
+        stackPlace(a) - stackPlace(b),
+    ),
+    queryMatches: matchedAll.size > 0,
+  };
+}
+
+type TableProps = {
+  rows: readonly YourMap[];
+  canSave: boolean;
+  /** A map to scroll to and flash, as just saved or asked for. */
+  highlight?: string;
+  /** Over the name column. */
+  heading?: ReactNode;
+};
+
+/** The maps the user has, each with its settings in columns. */
+export function YourMapsTable({
+  rows,
+  canSave,
+  highlight,
+  heading,
+}: TableProps): ReactElement {
+  const m = useMessages();
+
+  const msm = useMapSettingsMessages();
+
+  const layersSettings = useAppSelector((state) => state.map.layersSettings);
 
   return (
     <Table striped borderless size="sm" className="align-middle">
@@ -578,7 +436,10 @@ export function YourMapsList({
 
       <thead>
         <tr>
-          <th colSpan={2} />
+          {/* No max width lets it truncate instead of widening the table. */}
+          <th colSpan={2} className="text-truncate" style={{ maxWidth: 0 }}>
+            {heading}
+          </th>
 
           {/* `ms-n1`: the cell's padding already puts the glyph over the
               checkbox below. */}
@@ -820,7 +681,7 @@ function YourMapRow({
                 } else {
                   dispatch(
                     setActiveModal({
-                      type: 'installed-maps',
+                      type: 'map-manager',
                       customMap: { edit: type },
                     }),
                   );

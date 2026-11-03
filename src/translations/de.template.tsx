@@ -371,10 +371,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'zeichenerklärung, symbole, kartenlegende',
         'modal-manual': 'hilfe, anleitung, bedienungsanleitung, dokumentation',
         'modal-about': 'kontakt, e-mail, feedback',
-        'modal-installed-maps':
-          'kartenverwaltung, kartenbibliothek, deinstallieren, ebenenkonfiguration, ebenen, karten verwalten, symbolleiste, menü, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',
-        'modal-available-maps':
-          'kartenbibliothek, katalog, installieren, karten hinzufügen, weitere karten',
+        'modal-map-manager':
+          'installierte karten, verfügbare karten, kartenbibliothek, katalog, installieren, deinstallieren, karten hinzufügen, weitere karten, ebenenkonfiguration, ebenen, karten verwalten, symbolleiste, menü, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',
         'modal-offline-maps': 'heruntergeladene karten, speicher',
         'modal-browse-cache': 'zwischenspeicher, cache, kacheln, speicher',
         'modal-map-preferences':
@@ -550,6 +548,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Kartenverwaltung',
     installedMaps: 'Installierte Karten',
     availableMaps: 'Verfügbare Karten',
+    allMatchesInManager: 'Alle Treffer in der Kartenverwaltung',
     technologies: {
       tile: 'Bildkacheln (TMS, XYZ)',
       maplibre: 'Vektor (MapLibre)',

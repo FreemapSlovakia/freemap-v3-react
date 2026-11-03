@@ -117,17 +117,16 @@ export function MapManageButton(): ReactElement {
       </LongPressTooltip>
 
       <FmDropdownMenu>
-        {/* Installed maps, Available maps and New custom map are its tabs and footer. */}
         <OnlineOnlyItem
           offline={!canSaveSettings}
-          {...modalMenuItemProps('installed-maps')}
+          {...modalMenuItemProps('map-manager')}
         >
           <FaLayerGroup />
           <MenuLabel>
             <Text k="mapLayers.mapManager" />
           </MenuLabel>
           <MenuGutter>
-            <Chord modal="installed-maps" />
+            <Chord modal="map-manager" />
           </MenuGutter>
         </OnlineOnlyItem>
 

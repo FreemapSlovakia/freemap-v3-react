@@ -362,10 +362,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'simboli, legenda karte',
         'modal-manual': 'pomoč, navodila, dokumentacija, vodič, help',
         'modal-about': 'kontakt, e-pošta, povratne informacije',
-        'modal-installed-maps':
-          'upravljalnik kart, knjižnica kart, odstrani, zemljevid, nastavitev slojev, sloji, upravljanje kart, orodna vrstica, meni, prosojnost, bližnjica, karte po meri, lastna karta, wms, tms, dodaj vir karte',
-        'modal-available-maps':
-          'knjižnica kart, katalog, namesti, dodaj karte, več kart, zemljevid',
+        'modal-map-manager':
+          'nameščene karte, razpoložljive karte, knjižnica kart, katalog, namesti, odstrani, zemljevid, dodaj karte, več kart, nastavitev slojev, sloji, upravljanje kart, orodna vrstica, meni, prosojnost, bližnjica, karte po meri, lastna karta, wms, tms, dodaj vir karte',
         'modal-offline-maps': 'prenesene karte, shramba',
         'modal-browse-cache': 'predpomnilnik, ploščice, shramba',
         'modal-map-preferences':
@@ -491,6 +489,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Upravljalnik kart',
     installedMaps: 'Nameščene karte',
     availableMaps: 'Razpoložljive karte',
+    allMatchesInManager: 'Vsi zadetki v upravljalniku kart',
     newCustomMap: 'Nov zemljevid po meri',
     activate: 'Aktiviraj',
     base: 'Osnovni sloji',

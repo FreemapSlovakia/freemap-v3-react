@@ -10,7 +10,6 @@ import { DOCUMENTS_IN_MANUAL } from '@/manual/moved.js';
 const URL_MODAL_IDS = [
   'about',
   'account',
-  'available-maps',
   'browse-cache',
   'credits-purchase',
   'drawing-properties',
@@ -21,11 +20,11 @@ const URL_MODAL_IDS = [
   'gallery-leaderboard',
   'gallery-upload',
   'gps-recorder-settings',
-  'installed-maps',
   'legend',
   'login',
   'manual',
   'map-features-export',
+  'map-manager',
   'map-preferences',
   'map-to-document-export',
   'my-maps',
@@ -56,11 +55,13 @@ const MODAL_RENAMES: Record<string, string> = {
   'export-pdf': 'map-to-document-export',
   'download-map': 'offline-map-export',
   supportUs: 'support-us',
-  mapSettings: 'installed-maps',
-  'map-settings': 'installed-maps',
-  'map-layers-config': 'installed-maps',
-  'custom-maps': 'installed-maps',
-  'map-library': 'installed-maps',
+  mapSettings: 'map-manager',
+  'map-settings': 'map-manager',
+  'map-layers-config': 'map-manager',
+  'custom-maps': 'map-manager',
+  'map-library': 'map-manager',
+  'installed-maps': 'map-manager',
+  'available-maps': 'map-manager',
   'remove-ads': 'premium',
   'upload-track': 'file-import',
   'buy-credits': 'credits-purchase',
@@ -76,10 +77,9 @@ const MODAL_RENAMES: Record<string, string> = {
  * way in; premium reaches its modal by opening the portal in a tab of its own.
  */
 const EMBED_FORBIDDEN_MODAL_IDS = new Set<string>([
-  'available-maps',
   'browse-cache',
   'elevation-settings',
-  'installed-maps',
+  'map-manager',
   'map-preferences',
   'offline-maps',
   'premium',
@@ -106,8 +106,8 @@ export type CustomMapRequest = {
   addPresetFrom?: string;
   /** A named map of this drawing of a map, in its place; see `mapNamedMapCreate`. */
   addNamedFrom?: { type: string; preset?: string };
-  /** Where Cancel goes: that tab, or `null` to close; Installed maps if unset. */
-  returnTo?: 'installed-maps' | 'available-maps' | null;
+  /** Cancel closes the modal rather than going back to the list. */
+  closeOnCancel?: boolean;
 };
 
 /**
@@ -119,21 +119,22 @@ export type ActiveModal =
   | {
       type: Exclude<
         ModalId,
-        'tracking-watched' | 'my-maps' | 'installed-maps' | 'manual'
+        'tracking-watched' | 'my-maps' | 'map-manager' | 'manual'
       >;
     }
   /** Without `chapter`, the first one. */
   | { type: 'manual'; chapter?: string }
   | { type: 'my-maps'; add?: boolean }
   /**
-   * The map library on its Installed maps tab (`available-maps` is the other).
-   * With `customMap` it shows the form for one; see `CustomMapRequest`.
-   * `highlight` picks out that map in the list.
+   * The map manager. With `customMap` it shows the form for one; see
+   * `CustomMapRequest`. `highlight` picks out that map in the list; `query`
+   * fills in its search.
    */
   | {
-      type: 'installed-maps';
+      type: 'map-manager';
       customMap?: CustomMapRequest;
       highlight?: string;
+      query?: string;
     }
   | { type: 'tracking-watched'; token?: string }
   /** The properties of every feature of a kind at once. */
@@ -251,7 +252,7 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 export function modalOf(modalId: ModalId): ActiveModal {
   switch (modalId) {
     case 'my-maps':
-    case 'installed-maps':
+    case 'map-manager':
     case 'tracking-watched':
     case 'manual':
       return { type: modalId };

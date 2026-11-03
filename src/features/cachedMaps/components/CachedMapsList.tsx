@@ -289,7 +289,7 @@ export function CachedMapsList(): ReactElement {
                             onClick={() =>
                               dispatch(
                                 setActiveModal({
-                                  type: 'installed-maps',
+                                  type: 'map-manager',
                                   highlight: cm.type,
                                 }),
                               )
@@ -343,9 +343,9 @@ export function CachedMapsList(): ReactElement {
         <Button
           variant="link"
           disabled={!canSaveSettings}
-          {...modalLink({ type: 'installed-maps' })}
+          {...modalLink({ type: 'map-manager' })}
         >
-          <FaLayerGroup /> <Text k="mapLayers.installedMaps" />
+          <FaLayerGroup /> <Text k="mapLayers.mapManager" />
         </Button>
 
         <FmFooterButton

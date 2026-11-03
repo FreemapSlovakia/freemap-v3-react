@@ -372,10 +372,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'simboli, legenda della mappa',
         'modal-manual': 'aiuto, guida, istruzioni, documentazione, help',
         'modal-about': 'contatti, e-mail, feedback',
-        'modal-installed-maps':
-          'gestione mappe, libreria di mappe, disinstalla, configurazione dei livelli, livelli, gestisci mappe, barra degli strumenti, menu, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
-        'modal-available-maps':
-          'libreria di mappe, catalogo, installa, aggiungi mappe, altre mappe',
+        'modal-map-manager':
+          'mappe installate, mappe disponibili, libreria di mappe, catalogo, installa, disinstalla, aggiungi mappe, altre mappe, configurazione dei livelli, livelli, gestisci mappe, barra degli strumenti, menu, opacità, scorciatoia, mappe personalizzate, mappa personalizzata, wms, tms, aggiungi sorgente',
         'modal-offline-maps': 'mappe scaricate, archiviazione',
         'modal-browse-cache': 'cache, tasselli in cache, archiviazione',
         'modal-map-preferences':
@@ -551,6 +549,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Gestione mappe',
     installedMaps: 'Mappe installate',
     availableMaps: 'Mappe disponibili',
+    allMatchesInManager: 'Tutti i risultati in Gestione mappe',
     technologies: {
       tile: 'Riquadri immagine (TMS, XYZ)',
       maplibre: 'Vettore (MapLibre)',

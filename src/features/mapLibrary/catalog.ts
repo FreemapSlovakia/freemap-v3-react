@@ -163,6 +163,9 @@ const entriesOf = (maps: readonly CatalogMap[]): CatalogEntry[] => [
   ...maps.map((map): CatalogEntry => ({ ...map, map })),
 ];
 
+/** The built-in maps alone, which need no download. */
+export const builtInEntries: readonly CatalogEntry[] = entriesOf([]);
+
 /**
  * Loaded on first use, as at thousands of maps it is no part of the start. A
  * failure is the library's error to show, and asked again on the next call.

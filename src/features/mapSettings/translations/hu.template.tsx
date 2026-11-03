@@ -5,12 +5,11 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Telepítés — a térkép megjelenik a térképmenükben',
-  noInstalledMaps:
-    'Nincs telepített térkép. Adjon hozzá néhányat az elérhető térképek közül.',
   searchLibrary: ({ count }) => `Keresés ${count} térkép között`,
   catalogCredit: 'A térképtár listájának forrása:',
   filters: {
-    filterYourMaps: 'Telepített térképek szűrése',
+    toggle: 'Szűrők',
+    clear: 'Szűrők törlése',
     kind: 'Fajta',
     builtIn: 'Beépített',
     fromLibrary: 'A térképtárból',

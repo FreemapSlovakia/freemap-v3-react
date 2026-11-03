@@ -1,5 +1,5 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useRegionNames } from '@shared/hooks/useRegionNames.js';
+import { regionName, useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 import { useMemo } from 'react';
 
@@ -21,13 +21,7 @@ export function useCountryList(
     }
 
     const labels = codes
-      .map((code) => {
-        try {
-          return names?.[code] ?? regionNames.of(code.toUpperCase()) ?? code;
-        } catch {
-          return code;
-        }
-      })
+      .map((code) => names?.[code] ?? regionName(regionNames, code))
       .sort(makeLabelComparator(language));
 
     return new Intl.ListFormat(language, { type: 'conjunction' }).format(

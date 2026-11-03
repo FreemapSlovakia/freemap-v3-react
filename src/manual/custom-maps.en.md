@@ -10,7 +10,7 @@ Custom maps are saved with your account when you are logged in, otherwise in thi
 
 ## Creating a custom map
 
-In the map toolbar, press :FaCog: and choose :FaLayerGroup: **Map manager**. At the bottom of the **Installed maps** or **Available maps** tab, press :FaPlus: **New custom map**.
+In the map toolbar, press :FaCog: and choose :FaLayerGroup: **Map manager**. At its bottom, press :FaPlus: **New custom map**.
 
 ![The New custom map form](./images/custom-maps-form.en.webp)
 
@@ -26,7 +26,7 @@ In the map toolbar, press :FaCog: and choose :FaLayerGroup: **Map manager**. At 
 - **Layer** – **Base** replaces the base map, **Overlay** is drawn over it.
 - **Show in toolbar** and **Show in menu** – where the map's button appears. **Keyboard shortcut** assigns a key combination that switches the map on (only on devices with a keyboard).
 
-Press :FaCheck: **Save**. The map manager lists the new map under **Installed maps**, and while the map is not on, the message about saving has an **Activate** button that switches it on.
+Press :FaCheck: **Save**. The map manager lists the new map among the installed maps, and while the map is not on, the message about saving has an **Activate** button that switches it on.
 
 ## A WMS service
 
@@ -40,11 +40,11 @@ The layers ticked in the form are the map's defaults. Which layers are drawn can
 
 - In the map toolbar, in the menu of maps (:FaEllipsisV: in the toolbar), under its keyboard shortcut and in the search box – just like the built-in maps.
 - In the :FaLayerGroup: **Map layers** panel, while the map is on. Clicking its name opens its settings: opacity, the **Base** / **Overlay** switch, the layers of a WMS map, :FaPencilAlt: **Modify**, which opens its form, and **Reset to default**.
-- In :FaLayerGroup: **Map manager** under **Installed maps**, where the **Kind** filter :FaUser: **Custom** lists only your custom maps.
+- In :FaLayerGroup: **Map manager** among the **Installed maps**, where the **Kind** filter :FaUser: **Custom** lists only your custom maps.
 
 ## Modifying and deleting
 
-In **Installed maps**, open the :FaEllipsisV: menu in the map's row:
+In the map manager, open the :FaEllipsisV: menu in the map's row:
 
 - :FaPencilAlt: **Modify** opens the map's form. Saving puts its layer and WMS layers back to what the form says.
 - :FaTrash: **Delete** removes the map after a confirmation. Maps saved from a WMS map with **Save as map** in the Map layers panel are deleted with it; the confirmation names them.

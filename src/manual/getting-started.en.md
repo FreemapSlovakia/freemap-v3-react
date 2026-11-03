@@ -33,7 +33,7 @@ The map toolbar at the bottom lists the maps you use most. Press one to switch t
 - :FaLayerGroup: opens the **Map layers** panel with the maps that are on, where you can change their opacity or switch them off.
 - :FaPlus: and :FaMinus: zoom in and out.
 - :FaRegDotCircle: **Locate me** – see below.
-- :FaCog: opens a menu with the :FaLayerGroup: [map manager](#show=installed-maps), where you add maps from the library, remove the ones you don't use and choose which appear in the toolbar, as well as offline maps and preferences.
+- :FaCog: opens a menu with the :FaLayerGroup: [map manager](#show=map-manager), where you add maps from the library, remove the ones you don't use and choose which appear in the toolbar, as well as offline maps and preferences.
 
 If a map can't be shown in the current view, its button gets a yellow icon: :FaSearchPlus.text-warning: when you need to zoom in, :FaGlobeEurope.text-warning: when you are outside the map's area, :FaSearchLocation.text-warning: when both. Pressing it moves the map to where the map has content.
 

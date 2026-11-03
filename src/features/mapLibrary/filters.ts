@@ -2,7 +2,6 @@ import {
   coverageBoxes,
   coverageCountries,
 } from '@shared/mapLibrary/coverage.js';
-import { removeAccents } from '@shared/stringUtils.js';
 
 type Bbox = [number, number, number, number];
 
@@ -49,6 +48,51 @@ export const categoryGroup = (category: string | undefined): CategoryGroup =>
       ? (category as CategoryGroup)
       : 'other';
 
+export type MapStatus = 'installed' | 'available';
+
+export type MapKind =
+  | 'builtIn'
+  | 'fromLibrary'
+  | 'custom'
+  | 'offline'
+  | 'presets';
+
+export type MapShown = 'toolbar' | 'menu' | 'shortcut' | 'hidden';
+
+/** The map manager's search and chips, over installed and available maps alike. */
+export type ManagerFilters = {
+  query: string;
+  status: ReadonlySet<MapStatus>;
+  layers: ReadonlySet<'base' | 'overlay'>;
+  kinds: ReadonlySet<MapKind>;
+  /** Only installed maps are shown anywhere, so any chip on drops the rest. */
+  shown: ReadonlySet<MapShown>;
+  technologies: ReadonlySet<TechnologyGroup>;
+  categories: ReadonlySet<CategoryGroup>;
+  /** A country code, or empty for all. */
+  country: string;
+  /** With a country picked, keep the maps without their own country list. */
+  multiCountry: boolean;
+  coversView: boolean;
+};
+
+export const initialManagerFilters: ManagerFilters = {
+  query: '',
+  status: new Set(),
+  layers: new Set(),
+  kinds: new Set(),
+  shown: new Set(),
+  technologies: new Set(),
+  categories: new Set(),
+  country: '',
+  multiCountry: true,
+  coversView: false,
+};
+
+/** Whether the filters let available maps be listed; see `shown`. */
+export const availableWanted = (filters: ManagerFilters): boolean =>
+  passes(filters.status, 'available') && filters.shown.size === 0;
+
 /** A group of chips lets everything through until one of them is on. */
 export const passes = <T>(
   selected: ReadonlySet<T>,
@@ -58,12 +102,6 @@ export const passes = <T>(
   (Array.isArray(value)
     ? value.some((v) => selected.has(v))
     : value !== undefined && selected.has(value as T));
-
-/** Whether a name holds the query, accents and case aside. */
-export const nameMatches = (name: string, query: string): boolean =>
-  removeAccents(name.toLowerCase()).includes(
-    removeAccents(query.trim().toLowerCase()),
-  );
 
 /**
  * Whether a map draws where the view is: one of its countries is in view, and

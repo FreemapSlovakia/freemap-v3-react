@@ -79,14 +79,13 @@ menu filter, country flags and coverage hints. Instead:
 
 ### The library modal
 
-`src/features/mapLibrary/components/MapLibraryModal.tsx`, one modal under two
-ids that are its tabs: `installed-maps` (**Installed maps**, chord <kbd>m</kbd>
-<kbd>i</kbd>, where each map the user has is configured) and `available-maps`
-(**Available maps**, <kbd>m</kbd> <kbd>a</kbd>, the catalog); the Manage maps
-menu has one **Map manager** item opening Installed maps, the search box a row
-for each tab, and switching tabs changes
-`show=`. `map-library`, `map-layers-config` and the older ids are renamed to
-`installed-maps`. Built for a catalog of thousands:
+`src/features/mapLibrary/components/MapLibraryModal.tsx`, the **Map manager**
+(`map-manager`, chord <kbd>m</kbd> <kbd>m</kbd>): one list, the installed maps
+(where each map the user has is configured) above the available ones (the
+catalog), under one search and one set of filters (`MapManager.tsx`).
+`installed-maps`, `available-maps`, `map-library`, `map-layers-config` and
+the older ids are renamed to
+`map-manager`. Built for a catalog of thousands:
 
 - **Catalog** — `src/features/mapLibrary/catalog.ts`: `loadLibraryCatalog()`
   loads it from the API (`GET /map-catalog`) on first opening, and
@@ -96,7 +95,7 @@ for each tab, and switching tabs changes
   can't draw offline anyway. With the API out of reach (`isUnreachable`: a
   network error, no first byte in 15 s or no whole answer in 120 s, a gateway
   error from nginx, or a page not labelled JSON) installed maps are asked
-  again quietly once the connection is back; Available maps shows its load
+  again quietly once the connection is back; the manager toasts its load
   error, and asks again when opened again. A `CatalogEntry` carries what
   search and the row need, and either a built-in map's `index` row or a
   catalog map (`map`). The catalog
@@ -110,38 +109,43 @@ for each tab, and switching tabs changes
   CC BY-SA 3.0.
 - **Search** — `librarySearch.ts`: the search box's fuzzy match over the name,
   then (ranked lower) each keyword, country code and name and category on its
-  own; targets are normalized once per catalog and language. With no query,
+  own; targets are normalized once per catalog and language. Installed maps
+  are matched the same way but keep their stack order. With no query,
   the filtered catalog with the maps that `coversView` first, in each part
   base maps before overlays, then by name (`Intl.Collator`). An
   `IntersectionObserver` at the list's end adds 50 rows at a time. Paging
   restarts only on a new query or filter, not when an install or the view
   changes the list.
-- **Tabs and filters** — the modal has two tabs, `YourMapsTab` and
-  `LibraryTab`, each with its box and `FilterChips`; the modal keeps both
-  filter objects, so they outlast the custom map form; `filters.ts` holds the rules
-  (`passes`: a group of chips lets all through until one is on, then any
-  match). Installed maps filters by category, kind, `coversView` (an offline map by its
-  downloaded bounds), where a map is shown (toolbar, menu,
-  shortcut, or hidden: neither toolbar nor menu) and technology group (tile,
-  maplibre, wms, parametricShading, color, data — the layers the app draws);
-  Available maps, which holds only maps
-  not installed, by layer, category,
-  technology group and `coversView`: one of a map's countries must be in
+- **Filters** — one `ManagerFilters` object (`filters.ts`), kept by the modal
+  so it outlasts the custom map form; a `query` in the `map-manager` modal
+  (from the map menu's filter) starts a fresh one. The chips sit in a panel
+  behind a **Filters** button, closed at first (its state kept by the modal
+  too); closed, the chips that are on show under the search box, each a click
+  to switch off, so a hidden filter never looks like a missing map. `passes`: a group of chips
+  lets all through until one is on, then any match. Status (installed,
+  available; none on lists both), category, technology group (tile, maplibre,
+  wms, parametricShading, color, data — the layers the app draws), country,
+  layer, kind (built-in and from the library apply to available maps too),
+  where a map is shown (toolbar, menu, shortcut, or hidden: neither toolbar
+  nor menu — any of them leaves only installed maps) and `coversView` (an
+  offline map by its downloaded bounds; one of a map's countries must be in
   `map.countries`, and for a catalog map, whose countries don't tell its
   coverage, its box must also meet `map.bounds` — a country's box alone can
   span the globe (France's overseas territories) or reach into a neighbour.
   The covered-countries service answers only within Europe (issue #1073), so
   where it names no country (elsewhere, at sea) a catalog map's box alone
-  decides. Each tab shows its count.
+  decides). Each list is headed by its name and count, and shown only with
+  rows; the installed rows render at once, the available ones once the
+  catalog has loaded.
   Category is the ELI one; built-in maps carry theirs in their index row, a
   custom map the one its form sets (`category` on `CustomLayerDef`), an
   offline map its source map's, and presets count as Other.
   Installed maps is one table: base maps, then overlays in stack order, presets
   first in each, each row marked by `LayerKindMark`; a Layer chip filters by
   kind.
-- **Installed maps** — `YourMapsList`: the installed library maps (from
-  `installedLibraryIndexSelector`, so no catalog is needed; the tab's count is
-  `yourMapsCountSelector`) and the custom maps, offline maps and presets, with
+- **Installed maps** — `YourMapsList.tsx` (`useYourMaps`, `YourMapsTable`):
+  the installed library maps (from `installedLibraryIndexSelector`, so no
+  catalog is needed) and the custom maps, offline maps and presets, with
   columns for every map's settings (toolbar, menu, opacity, shortcut), so they
   read as one overview.
   A row's actions sit in a ⋮ menu (`ResponsiveActions`, all `showFrom="never"`):
@@ -248,22 +252,33 @@ for each tab, and switching tabs changes
   draws, `map.backgroundColor` (a local pref, `#dddddd` by default) shows.
 - **The custom map form** (`CustomMapEditor`) replaces the list in the
   modal while its state carries a request: `setActiveModal({ type:
-  'installed-maps', customMap: { edit?, addPreset?, addPresetFrom?, returnTo? }
-  })` — a custom map or preset to edit, a new preset of everything on the map
-  or a copy of a preset — a link's, or a duplicate (from the Map layers panel, either put in place
-  of what it was made of), or a new map. A preset's form holds only its name,
-  icon and how it is reached. A custom map is image tiles, WMS or MapLibre.
-  Cancel goes where `returnTo` says (a tab, or
-  `null` to close, as from the menu's New custom map or the panel);
-  Save passes `highlight`, which scrolls Installed maps to that row (it passes
+  'map-manager', customMap: { edit?, addPreset?, addPresetFrom?,
+  closeOnCancel? } })` — a custom map or preset to edit, a new preset of
+  everything on the map or a copy of a preset — a link's, or a duplicate (from
+  the Map layers panel, either put in place of what it was made of), or a new
+  map. A preset's form holds only its name, icon and how it is reached. A
+  custom map is image tiles, WMS or MapLibre. Cancel goes back to the list,
+  or with `closeOnCancel` (from the panel) closes the modal;
+  Save passes `highlight`, which scrolls the list to that row (it passes
   the filters whatever they are) and
   flashes it (`fm-flash`), as Offline maps' Show in Installed maps does.
   The forms set how a map is reached (toolbar, menu, shortcut:
   `LayerVisibilityFields`). Offline maps keeps a
   `highlight` of its own for the map just saved. The form has no `show=`; `show=custom-maps` opens the library.
-- Available maps is one table too, rows marked by `LayerKindMark`: a search in
-  rank order, browsing by `coversView`, then base maps before overlays, then
-  name.
+- Available maps (`LibraryList.tsx`) is one table too, rows marked by
+  `LayerKindMark`: a search in rank order, browsing by `coversView`, then base
+  maps before overlays, then name.
+- **The map menu's filter** (`MapSwitchButton`) lists, below the offered maps,
+  up to five more matching it (`useAvailableMatches`: those the menu doesn't
+  list, the same search, `coversView` first), the catalog loading and being
+  prepared (`usePreparedCatalog`, shared with the manager) on the first
+  keystroke, the built-in maps searched meanwhile; a failed load is asked
+  again on the next search. A click puts one on the map without installing
+  it; its + badge installs it (`data-install-type`, whose click keeps the menu
+  open). Either way it stays there — ticked, or without its + — until its body
+  loads and the menu lists it. Past five, a row opens the manager with the
+  query (`map-manager`'s `query`). Not in an embedded map, nor while settings
+  can't be saved.
 - **Every change applies at once.** `mapLayerSettingsChange` (installing
   included), `mapLayerSetupChange`/`Reset`, `mapLayersSettingsReset` (keeps
   `installed`; asks first), and `mapCustomLayerSave`/`Delete` and

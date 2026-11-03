@@ -4,11 +4,11 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const en: MapSettingsMessages = {
   install: 'Install — offer this map in the map menus',
-  noInstalledMaps: 'No maps are installed. Add some from Available maps.',
   searchLibrary: ({ count }) => `Search ${count} maps`,
   catalogCredit: 'The library’s map list draws on the',
   filters: {
-    filterYourMaps: 'Filter installed maps',
+    toggle: 'Filters',
+    clear: 'Clear filters',
     kind: 'Kind',
     builtIn: 'Built-in',
     fromLibrary: 'From the library',

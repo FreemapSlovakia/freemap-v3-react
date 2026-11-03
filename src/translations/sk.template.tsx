@@ -449,10 +449,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'manual-about':
           'openstreetmap, osm, združenie, komunita, mapovanie, prispievanie, licencia, atribúcia, uvedenie zdroja, copyright, komerčné použitie',
         'modal-about': 'kontakt, e-mail, spätná väzba',
-        'modal-installed-maps':
-          'správca máp, knižnica máp, odinštalovať, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
-        'modal-available-maps':
-          'knižnica máp, katalóg, inštalovať, pridať mapy, ďalšie mapy',
+        'modal-map-manager':
+          'nainštalované mapy, dostupné mapy, knižnica máp, katalóg, inštalovať, odinštalovať, pridať mapy, ďalšie mapy, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
         'modal-offline-maps': 'stiahnuté mapy, úložisko',
         'modal-browse-cache': 'vyrovnávacia pamäť, dlaždice, úložisko',
         'modal-map-preferences':
@@ -579,6 +577,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Správca máp',
     installedMaps: 'Nainštalované mapy',
     availableMaps: 'Dostupné mapy',
+    allMatchesInManager: 'Všetky výsledky v správcovi máp',
     newCustomMap: 'Nová vlastná mapa',
     activate: 'Aktivovať',
     layersPanel: 'Vrstvy mapy',

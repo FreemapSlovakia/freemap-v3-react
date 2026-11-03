@@ -22,7 +22,7 @@ The map toolbar at the bottom of the screen has a button for each map you have c
 
 - the base maps on top and the overlays below them,
 - **Show all maps** lists every installed map, not only those chosen for the menu,
-- **Filter maps** – type part of a name to find a map quickly.
+- **Filter maps** – type part of a name to find a map quickly. Under **Available maps** it also lists up to five matching maps you have not installed, those covering the current view first: click one to put it on the map, or :FaPlus: to install it. When more match, :FaLayerGroup: **All matches in the map manager** opens the map manager with the same search.
 
 On a phone, or wherever the map buttons don't fit, the toolbar has a single :FaRegMap: button instead of them. Its menu lists the maps chosen for the toolbar; **Show more maps** and then **Show all maps** add the rest.
 
@@ -61,27 +61,27 @@ A preset holds only maps: photos, Wikipedia, the weather radar, the viewshed and
 
 ![The map manager](./images/maps-installed.en.webp)
 
-:FaCog: in the map toolbar opens a menu, where :FaLayerGroup: **Map manager** (<kbd>m</kbd> <kbd>m</kbd>) shows all your maps. It has two tabs.
+:FaCog: in the map toolbar opens a menu, where :FaLayerGroup: **Map manager** (<kbd>m</kbd> <kbd>m</kbd>) lists the maps you have and those you can add, the installed ones first. Search by name, country or keyword in the box at the top. :FaFilter: **Filters** beside it opens chips to narrow the list: :FaLayerGroup: **Installed maps** and :FaBookOpen: **Available maps**, **Category**, **Technology**, **Country**, **Layer**, **Kind**, **Shown** and **Covers this view**. While no chip of a group is on, the group lets every map through. With the chips hidden, the ones that are on stay under the search box: click one to switch it off, or **Clear filters** to switch off all of them.
 
 ### Installed maps
 
-The :FaLayerGroup: **Installed maps** tab lists the maps you have – built-in ones, those added from the library, your [custom maps](#show=manual/custom-maps), [offline maps](#show=manual/offline) and presets. Find a map with **Filter installed maps** or the filter chips above the list. Each row has columns for:
+The maps you have – built-in ones, those added from the library, your [custom maps](#show=manual/custom-maps), [offline maps](#show=manual/offline) and presets. Each row has columns for:
 
 - **Show in toolbar** and :FaRegListAlt: **Show in menu** – where the map appears,
 - :TbLayersSelected: whether it is a base map or an overlay, with the **Base / Overlay** switch where the map can be both,
 - :MdOpacity: **Opacity** – the same as in the **Map layers** panel (not on a phone),
 - :FaKeyboard: **Keyboard shortcut** – click it and press the key you want; <kbd>Backspace</kbd> removes the shortcut.
 
-The row's :FaEllipsisV: menu has :FaEye: **Preview on the map** (**Show on map** for a preset), :FaDownload: **Download for offline use** for maps that can be downloaded, :FaPencilAlt: **Modify** for custom maps, presets and offline maps, and :FaTrash: **Uninstall** or **Delete**. An uninstalled map disappears from the toolbar, the menus and the search, and can be added again from **Available maps**.
+The row's :FaEllipsisV: menu has :FaEye: **Preview on the map** (**Show on map** for a preset), :FaDownload: **Download for offline use** for maps that can be downloaded, :FaPencilAlt: **Modify** for custom maps, presets and offline maps, and :FaTrash: **Uninstall** or **Delete**. An uninstalled map disappears from the toolbar, the menus and the search, and moves down among the **Available maps**, where it can be installed again.
 
 Every change takes effect at once. :FaUndo: **Reset to default** in the footer puts the toolbar, menu and shortcut settings and the opacity and layers of every map back to their defaults; installed maps stay installed. When you are logged in, the settings are kept with your account, otherwise in this browser.
 
 ### Available maps
 
-The :FaBookOpen: **Available maps** tab is the library: hundreds of maps you can add – orthophotos, historic maps and imagery, elevation maps and national maps from many countries. Search by name or country in the box at the top, or narrow the list with the chips **Category**, **Technology**, **Country**, **Layer** and **Covers this view**.
+The library: hundreds of maps you can add – orthophotos, historic maps and imagery, elevation maps and national maps from many countries. Without a search, the maps covering the current view come first.
 
 - :FaEye: shows the map on the map first. Move around to see it, then choose :FaPlus: **Install**, :FaCheck: **Keep on map** (use it now without installing), :FaArrowLeft: **Back to library** or :FaTimes: to put the earlier maps back.
-- :FaPlus: installs the map, which then moves to **Installed maps**.
+- :FaPlus: installs the map, which then moves up among the **Installed maps**.
 
 If you know of a map that is missing, write to [freemap@freemap.sk](mailto:freemap@freemap.sk). Your own WMS or tile server is added with :FaPlus: **New custom map**, see [Custom maps](#show=manual/custom-maps).
 

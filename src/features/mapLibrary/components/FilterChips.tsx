@@ -8,7 +8,7 @@ import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useRegionNames } from '@shared/hooks/useRegionNames.js';
+import { regionName, useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { flaggedCountries } from '@shared/mapDefinitions.js';
 import clsx from 'clsx';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
@@ -33,14 +33,14 @@ import classes from './FilterChips.module.css';
 type Props<T extends string> = {
   /** Tells the group's ids apart from another group's. */
   name: string;
-  label: ReactNode;
+  label?: ReactNode;
   options: readonly { value: T; label: ReactNode; icon?: ReactNode }[];
   selected: ReadonlySet<T>;
   onChange: (selected: ReadonlySet<T>) => void;
 };
 
 /**
- * Sets a tab's filters apart from the list below them. A grid of label and
+ * Sets the filters apart from the list below them. A grid of label and
  * chips, or on a narrow panel each label above its chips.
  */
 export function FilterPanel({
@@ -151,7 +151,7 @@ export function FilterToggle({
   );
 }
 
-/** The chips both tabs filter by. */
+/** The category, technology and layer chips. */
 export function useSharedFilterOptions() {
   const m = useMessages();
 
@@ -283,7 +283,7 @@ export function FilterCountry({
   anyLabel: string | undefined;
   countryLists: readonly (readonly string[] | undefined)[];
   onChange: (value: string) => void;
-  /** Tells the checkbox's id apart from the other tab's. */
+  /** Makes the checkbox's id. */
   name: string;
   /** Whether maps without their own country list stay in while a country is picked. */
   multiCountry: boolean;
@@ -294,13 +294,7 @@ export function FilterCountry({
 
   const regionNames = useRegionNames();
 
-  const nameOf = (code: string) => {
-    try {
-      return regionNames.of(code.toUpperCase()) ?? code;
-    } catch {
-      return code;
-    }
-  };
+  const nameOf = (code: string) => regionName(regionNames, code);
 
   const countries = [...new Set(countryLists.flatMap((list) => list ?? []))]
     .map((code) => ({ code, name: nameOf(code) }))

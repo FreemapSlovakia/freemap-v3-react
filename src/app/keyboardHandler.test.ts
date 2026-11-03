@@ -440,7 +440,7 @@ describe('handleEvent — Escape', () => {
       handleEvent(
         esc(),
         makeState({
-          main: { activeModal: { type: 'installed-maps' } },
+          main: { activeModal: { type: 'map-manager' } },
           mapLibrary: { preview: { type: 'Z0001', restore: ['X'] } },
         }),
       ),

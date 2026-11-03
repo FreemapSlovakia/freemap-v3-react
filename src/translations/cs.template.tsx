@@ -370,10 +370,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'značky, symboly, vysvětlivky',
         'modal-manual': 'nápověda, návod, dokumentace, manuál, help',
         'modal-about': 'kontakt, e-mail, zpětná vazba',
-        'modal-installed-maps':
-          'správce map, knihovna map, odinstalovat, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
-        'modal-available-maps':
-          'knihovna map, katalog, instalovat, přidat mapy, další mapy',
+        'modal-map-manager':
+          'nainstalované mapy, dostupné mapy, knihovna map, katalog, instalovat, odinstalovat, přidat mapy, další mapy, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
         'modal-offline-maps': 'stažené mapy, úložiště',
         'modal-browse-cache': 'mezipaměť, dlaždice, úložiště',
         'modal-map-preferences': 'nastavení, volby, průhlednost překrytí',
@@ -501,6 +499,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Správce map',
     installedMaps: 'Nainstalované mapy',
     availableMaps: 'Dostupné mapy',
+    allMatchesInManager: 'Všechny výsledky ve správci map',
     newCustomMap: 'Nová vlastní mapa',
     activate: 'Aktivovat',
     layersPanel: 'Vrstvy mapy',

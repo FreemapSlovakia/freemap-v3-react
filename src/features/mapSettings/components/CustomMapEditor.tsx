@@ -265,18 +265,14 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     request.addPreset || request.addPresetFrom || request.addNamedFrom,
   );
 
-  // A save shows its map in Installed maps (the panel's new preset goes back to
-  // the map); Cancel goes back where the form was opened from.
+  // A save shows its map in the list (the panel's new preset goes back to the
+  // map); Cancel goes back where the form was opened from.
   const done = (saved?: string) => {
-    const back = saved === undefined ? request.returnTo : undefined;
-
     dispatch(
       setActiveModal(
-        fromMap || back === null
+        fromMap || (saved === undefined && request.closeOnCancel)
           ? null
-          : back === 'available-maps'
-            ? { type: 'available-maps' }
-            : { type: 'installed-maps', highlight: saved },
+          : { type: 'map-manager', highlight: saved },
       ),
     );
   };

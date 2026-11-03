@@ -16,12 +16,11 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
       err,
     ),
   install: 'Installer — proposer cette carte dans les menus des cartes',
-  noInstalledMaps:
-    'Aucune carte installée. Ajoutez-en depuis les cartes disponibles.',
   searchLibrary: ({ count }) => `Rechercher parmi ${count} cartes`,
   catalogCredit: 'La liste des cartes de la bibliothèque s’appuie sur',
   filters: {
-    filterYourMaps: 'Filtrer les cartes installées',
+    toggle: 'Filtres',
+    clear: 'Effacer les filtres',
     kind: 'Type',
     builtIn: 'Intégrées',
     fromLibrary: 'De la bibliothèque',

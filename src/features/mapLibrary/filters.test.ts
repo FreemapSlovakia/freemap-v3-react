@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   categoryGroup,
   coversView,
-  nameMatches,
   passes,
   technologyGroup,
 } from './filters.js';
@@ -34,10 +33,6 @@ describe('library filters', () => {
     expect(passes(new Set(['tile']), 'wms')).toBe(false);
 
     expect(passes(new Set(['menu']), ['toolbar', 'menu'])).toBe(true);
-  });
-
-  it('matches a name without accents or case', () => {
-    expect(nameMatches('Ortofotomapa Česko', 'cesko')).toBe(true);
   });
 
   it('tells a catalog map by its box and countries, a built-in one by its countries', () => {

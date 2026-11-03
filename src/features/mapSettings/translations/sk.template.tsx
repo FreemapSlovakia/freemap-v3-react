@@ -5,12 +5,11 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Nainštalovať — ponúkať túto mapu v menu máp',
-  noInstalledMaps:
-    'Nie sú nainštalované žiadne mapy. Pridajte si ich z dostupných máp.',
   searchLibrary: ({ count }) => `Hľadať v ${count} mapách`,
   catalogCredit: 'Zoznam máp knižnice čerpá z',
   filters: {
-    filterYourMaps: 'Filtrovať nainštalované mapy',
+    toggle: 'Filtre',
+    clear: 'Zrušiť filtre',
     kind: 'Druh',
     builtIn: 'Vstavané',
     fromLibrary: 'Z knižnice',

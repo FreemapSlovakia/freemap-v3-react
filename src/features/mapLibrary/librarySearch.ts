@@ -71,3 +71,11 @@ export function searchLibrary<T>(
     total: scored.length,
   };
 }
+
+/** Every item matching `query`, best first. */
+export const searchAll = <T>(
+  items: readonly T[],
+  targetOf: (item: T) => SearchTarget,
+  query: string,
+): T[] =>
+  searchLibrary(items, items.map(targetOf), query, items.length).matches;

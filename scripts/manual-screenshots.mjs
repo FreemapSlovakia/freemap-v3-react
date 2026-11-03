@@ -208,9 +208,17 @@ const shots = [
   },
   {
     name: 'maps-installed',
-    hash: `${MAP}&show=installed-maps`,
-    // The filter chips fill ~450 px; taller shows table rows below them.
-    viewport: { width: 1280, height: 1400 },
+    hash: `${MAP}&show=map-manager`,
+    // The filter panel starts closed, so the installed table fills the shot.
+    viewport: { width: 1280, height: 1000 },
+    steps: async (page, lang) => {
+      // The catalog loaded, rather than "Loading…" under the table.
+      await page
+        .locator('.modal-content h6', {
+          hasText: { en: 'Available maps', sk: 'Dostupné mapy' }[lang],
+        })
+        .waitFor();
+    },
     crop: '.modal-content',
   },
   {
@@ -421,7 +429,7 @@ const shots = [
   },
   {
     name: 'custom-maps-form',
-    hash: `${MAP}&show=installed-maps`,
+    hash: `${MAP}&show=map-manager`,
     // The whole form fits without scrolling inside the modal.
     viewport: { width: 1280, height: 1000 },
     steps: async (page, lang) => {

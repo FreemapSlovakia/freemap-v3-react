@@ -357,10 +357,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-legend': 'symbole, legenda mapy',
         'modal-manual': 'pomoc, instrukcja, poradnik, dokumentacja, help',
         'modal-about': 'kontakt, e-mail, opinie',
-        'modal-installed-maps':
-          'menedżer map, biblioteka map, odinstaluj, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
-        'modal-available-maps':
-          'biblioteka map, katalog, zainstaluj, dodaj mapy, więcej map',
+        'modal-map-manager':
+          'zainstalowane mapy, dostępne mapy, biblioteka map, katalog, zainstaluj, odinstaluj, dodaj mapy, więcej map, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
         'modal-offline-maps': 'pobrane mapy, pamięć',
         'modal-browse-cache': 'pamięć podręczna, kafelki, cache',
         'modal-map-preferences': 'ustawienia, opcje, przezroczystość nakładek',
@@ -530,6 +528,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     mapManager: 'Menedżer map',
     installedMaps: 'Zainstalowane mapy',
     availableMaps: 'Dostępne mapy',
+    allMatchesInManager: 'Wszystkie wyniki w menedżerze map',
     technologies: {
       tile: 'Płytki obrazów (TMS, XYZ)',
       maplibre: 'Wektor (MapLibre)',

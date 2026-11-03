@@ -11,11 +11,25 @@ import {
 import { type MapPreset, presetItem } from '@features/map/model/mapPreset.js';
 import { resolvedCustomLayersSelector } from '@features/map/model/selectors.js';
 import {
+  installEntry,
+  makeKnown,
+} from '@features/mapLibrary/catalogActions.js';
+import {
+  prepareSearchTarget,
+  type SearchTarget,
+  searchAll,
+} from '@features/mapLibrary/librarySearch.js';
+import {
   integratedLayerDefsSelector,
+  mapByIdSelector,
+  mapEntryOf,
   overlayZIndexSelector,
   presetKindsSelector,
   userShortcutsSelector,
 } from '@features/mapLibrary/model/selectors.js';
+import { searchExtras } from '@features/mapLibrary/searchTargets.js';
+import { useAvailableMatches } from '@features/mapLibrary/useAvailableMatches.js';
+import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium, premiumMapZoom } from '@features/premium/premium.js';
@@ -37,20 +51,25 @@ import { Radio } from '@shared/components/Radio.js';
 import { formatShortcut } from '@shared/components/ShortcutRecorder.js';
 import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useMenuHandler } from '@shared/hooks/useMenuHandler.js';
+import { useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { layerLabel, layerName } from '@shared/layerName.js';
 import {
   flaggedCountries,
   getCountriesBbox,
   getLayerBbox,
 } from '@shared/mapDefinitions.js';
+import { catalogIcon } from '@shared/mapLibrary/catalogMap.js';
 import {
   coverageCountries,
   outsideBoxes,
 } from '@shared/mapLibrary/coverage.js';
 import { effectiveShortcut } from '@shared/mapLibrary/installed.js';
-import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Shortcut } from '@shared/types/common.js';
+import { afterPrefix } from '@shared/types/typeUtils.js';
 import clsx from 'clsx';
 import {
   type ChangeEvent,
@@ -61,6 +80,7 @@ import {
   type SyntheticEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -71,12 +91,15 @@ import {
   FaGem,
   FaGlobeEurope,
   FaHistory,
+  FaLayerGroup,
+  FaPlus,
   FaRegMap,
   FaSearchLocation,
   FaSearchPlus,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive';
+import type { Messages } from '@/translations/messagesInterface.js';
 import { setActiveModal } from '../store/actions.js';
 
 /**
@@ -105,6 +128,31 @@ function Badge({
     >
       {children}
     </GlyphMarker>
+  );
+}
+
+/** The most maps not installed that the filter lists. */
+const availableLimit = 5;
+
+/** A map's name in the menu; a built-in map has one once the messages are in. */
+function mapMenuName(
+  def: { type: string; name?: string; custom: boolean },
+  m: Messages | undefined,
+) {
+  return def.custom ? layerLabel(def, m) : (layerName(def, m) ?? '…');
+}
+
+/**
+ * The + on an available map; its own component, so the map-settings messages
+ * load only once one is shown.
+ */
+function InstallBadge({ type }: { type: string }) {
+  const msm = useMapSettingsMessages();
+
+  return (
+    <Badge label={msm?.install} data={{ 'data-install-type': type }}>
+      <FaPlus />
+    </Badge>
   );
 }
 
@@ -171,18 +219,38 @@ export function MapSwitchButton(): ReactElement {
     setFilter(e.currentTarget.value);
   }, []);
 
-  const normalizedFilter = removeAccents(filter.trim().toLowerCase());
+  const trimmedFilter = filter.trim();
+
+  const regionNames = useRegionNames();
+
+  const canSaveSettings = useCanSaveSettings();
+
+  // An embedded map manages nobody's maps; offline, the manager is shut too.
+  const available = useAvailableMatches(
+    window.fmEmbedded || !canSaveSettings ? '' : filter,
+    availableLimit,
+  );
 
   // A click on an interactive badge inside a layer button / menu item acts on
   // the badge (open the photo filter, zoom to the layer's coverage) instead of
-  // toggling the layer; returns true when such a badge was hit.
+  // toggling the layer; returns whether such a badge was hit, `'keep'` when the
+  // menu stays open.
   const handlePossibleBadgeClick = useCallback(
-    (e: SyntheticEvent<unknown, unknown>) => {
+    (e: SyntheticEvent<unknown, unknown>): boolean | 'keep' => {
       let x: unknown = e.target;
 
       while (x instanceof Element) {
         if (x === e.currentTarget) {
           break;
+        }
+
+        if (
+          (x instanceof HTMLElement || x instanceof SVGElement) &&
+          x.dataset['installType']
+        ) {
+          extraHandler.current?.(`install-${x.dataset['installType']}`);
+
+          return 'keep';
         }
 
         if (
@@ -246,15 +314,19 @@ export function MapSwitchButton(): ReactElement {
 
       return false;
     },
-    [dispatch],
+    [dispatch, extraHandler],
   );
 
   const handleSelect = useCallback(
     (selection: string | null, e: SyntheticEvent<unknown>) => {
-      if (selection === null || handlePossibleBadgeClick(e)) {
+      const hit = selection === null || handlePossibleBadgeClick(e);
+
+      if (hit) {
         e.preventDefault();
 
-        closeMenu();
+        if (hit !== 'keep') {
+          closeMenu();
+        }
 
         return;
       }
@@ -334,6 +406,8 @@ export function MapSwitchButton(): ReactElement {
   const takenShortcuts = useAppSelector(userShortcutsSelector);
 
   const integratedLayerDefs = useAppSelector(integratedLayerDefsSelector);
+
+  const mapById = useAppSelector(mapByIdSelector);
 
   const overlayZIndex = useAppSelector(overlayZIndexSelector);
 
@@ -425,8 +499,41 @@ export function MapSwitchButton(): ReactElement {
     );
   });
 
+  const availableMatch = (type: string | undefined) =>
+    type === undefined
+      ? undefined
+      : available.matches.find(({ entry }) => entry.type === type);
+
   extraHandler.current = (eventKey: string) => {
-    if (eventKey === 'show-all') {
+    const toSwitch = availableMatch(afterPrefix(eventKey, 'available-'));
+
+    const toInstall = availableMatch(afterPrefix(eventKey, 'install-'));
+
+    if (toSwitch) {
+      const { entry, on } = toSwitch;
+
+      makeKnown(dispatch, entry);
+
+      const base = entry.layer === 'base';
+
+      if (base) {
+        closeMenu();
+      }
+
+      // One switched on here stays here until its body loads; a click then
+      // switches an overlay off again.
+      dispatch(mapToggleLayer({ type: entry.type, enable: base || !on }));
+    } else if (toInstall) {
+      installEntry(dispatch, toInstall.entry);
+
+      trackMatomo(['trackEvent', 'Map', 'menuInstall', toInstall.entry.type]);
+    } else if (eventKey === 'manager-search') {
+      closeMenu();
+
+      dispatch(setActiveModal({ type: 'map-manager', query: filter }));
+
+      trackMatomo(['trackEvent', 'Map', 'menuAllMatches']);
+    } else if (eventKey === 'show-all') {
       setExpand('all');
     } else if (eventKey === 'show-more') {
       setExpand('more');
@@ -585,24 +692,86 @@ export function MapSwitchButton(): ReactElement {
 
   const isOnMap = (type: string) => activeLayers.includes(type);
 
+  const nameOf = (def: { type: string; name?: string; custom: boolean }) =>
+    mapMenuName(def, m);
+
+  // Found as the available maps below are. Built only while filtering, from
+  // every map the menu knows, so neither a pan nor a layer switch redoes it.
+  const filtering = trimmedFilter !== '';
+
+  const searchTargets = useMemo((): [string, SearchTarget][] => {
+    if (!filtering) {
+      return [];
+    }
+
+    const target = (
+      def: { type: string; name?: string; custom: boolean },
+      extras: { countries?: string[]; category?: string },
+    ): [string, SearchTarget] => [
+      def.type,
+      prepareSearchTarget(
+        mapMenuName(def, m),
+        searchExtras(m, regionNames, { type: def.type, ...extras }),
+      ),
+    ];
+
+    return [
+      ...integratedLayerDefs.map((def) =>
+        target({ ...def, custom: false }, def),
+      ),
+      ...customLayerDefs.map((def) => target({ ...def, custom: true }, def)),
+      // An offline map is found by the category of the map it came from.
+      ...cachedMaps
+        .filter(isCachedMapComplete)
+        .map((cm) =>
+          target(
+            { ...cm, custom: true },
+            { category: mapEntryOf(mapById[cm.sourceType])?.category },
+          ),
+        ),
+      ...presets.map((preset): [string, SearchTarget] => [
+        `preset-${preset.id}`,
+        prepareSearchTarget(preset.name, []),
+      ]),
+    ];
+  }, [
+    filtering,
+    integratedLayerDefs,
+    customLayerDefs,
+    cachedMaps,
+    presets,
+    mapById,
+    m,
+    regionNames,
+  ]);
+
+  // Apart from the targets, so a keystroke only searches.
+  const filterMatches = useMemo(
+    () =>
+      filtering
+        ? new Set(
+            searchAll(searchTargets, ([, target]) => target, filter).map(
+              ([key]) => key,
+            ),
+          )
+        : undefined,
+    [filtering, searchTargets, filter],
+  );
+
   /** Whether a layer or preset is listed at the menu's filter and expand level. */
   const isListed = (
-    name: string,
+    key: string,
     on: boolean,
     {
       showInMenu,
       showInToolbar,
     }: { showInMenu: boolean; showInToolbar: boolean },
   ) =>
-    normalizedFilter
-      ? removeAccents(name.toLowerCase()).includes(normalizedFilter)
+    filterMatches
+      ? filterMatches.has(key)
       : expand === 'all' ||
         on ||
         (expand === false && !isWide ? showInToolbar : showInMenu);
-
-  // A built-in map has a name once the messages are in.
-  const nameOf = (def: { type: string; name?: string; custom: boolean }) =>
-    def.custom ? layerLabel(def, m) : (layerName(def, m) ?? '…');
 
   const menuName = (name: string) => <TruncatedText>{name}</TruncatedText>;
 
@@ -630,10 +799,8 @@ export function MapSwitchButton(): ReactElement {
           layersSettings[type]?.showInToolbar ??
           (!def.custom && Boolean(def.defaultInToolbar));
 
-        const name = nameOf(def);
-
         if (
-          !isListed(name, isOnMap(type), {
+          !isListed(type, isOnMap(type), {
             showInMenu,
             showInToolbar,
           })
@@ -682,7 +849,7 @@ export function MapSwitchButton(): ReactElement {
   ) {
     const active = activeLayers.includes(presetItem(id));
 
-    return isListed(name, active, {
+    return isListed(`preset-${id}`, active, {
       showInMenu: layersSettings[id]?.showInMenu ?? true,
       showInToolbar: Boolean(layersSettings[id]?.showInToolbar),
     }) ? (
@@ -954,21 +1121,80 @@ export function MapSwitchButton(): ReactElement {
           <FmDropdownMenu>
             {baseItems}
 
-            {(!normalizedFilter || baseHasItems) && overlayHasItems && (
+            {(!trimmedFilter || baseHasItems) && overlayHasItems && (
               <Dropdown.Divider />
             )}
 
             {overlayItems}
 
-            {normalizedFilter && !baseHasItems && !overlayHasItems && (
-              <Dropdown.ItemText className="text-muted text-center">
-                <Text k="mapLayers.noMapsFound" />
-              </Dropdown.ItemText>
+            {available.matches.length > 0 && (
+              <>
+                {(baseHasItems || overlayHasItems) && <Dropdown.Divider />}
+
+                <Dropdown.Header>
+                  <Text k="mapLayers.availableMaps" />
+                </Dropdown.Header>
+
+                {available.matches.map(({ entry, name, on, installed }) => (
+                  <Dropdown.Item
+                    key={entry.type}
+                    as="button"
+                    eventKey={`available-${entry.type}`}
+                    active={on}
+                  >
+                    {entry.layer === 'base' ? (
+                      <Radio value={on} />
+                    ) : (
+                      <Checkbox value={on} />
+                    )}
+
+                    {entry.index
+                      ? entry.index.icon
+                      : catalogIcon(entry.map ?? entry)}
+
+                    {menuName(name)}
+
+                    {flaggedCountries(entry)?.map((country) => (
+                      <CountryFlag key={country} country={country} />
+                    ))}
+
+                    {(entry.index?.superseededBy || !installed) && (
+                      <MenuGutter>
+                        {entry.index?.superseededBy && (
+                          <Badge label={m?.mapLayers.legacy}>
+                            <FaHistory />
+                          </Badge>
+                        )}
+
+                        {!installed && <InstallBadge type={entry.type} />}
+                      </MenuGutter>
+                    )}
+                  </Dropdown.Item>
+                ))}
+
+                {available.total > available.matches.length && (
+                  <Dropdown.Item as="button" eventKey="manager-search">
+                    <FaLayerGroup />
+                    <MenuLabel>
+                      <Text k="mapLayers.allMatchesInManager" />
+                    </MenuLabel>
+                  </Dropdown.Item>
+                )}
+              </>
             )}
+
+            {trimmedFilter &&
+              !baseHasItems &&
+              !overlayHasItems &&
+              available.matches.length === 0 && (
+                <Dropdown.ItemText className="text-muted text-center">
+                  <Text k="mapLayers.noMapsFound" />
+                </Dropdown.ItemText>
+              )}
 
             <Dropdown.Divider />
 
-            {!normalizedFilter &&
+            {!trimmedFilter &&
               (expand === false || expand === 'more') &&
               (!isWide && expand === false ? (
                 <Dropdown.Item

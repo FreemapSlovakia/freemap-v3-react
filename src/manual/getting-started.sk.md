@@ -33,7 +33,7 @@ Na lište máp dole sú mapy, ktoré používate najčastejšie. Stlačením tla
 - :FaLayerGroup: otvára panel **Vrstvy mapy** so zapnutými mapami, kde im môžete zmeniť viditeľnosť alebo ich vypnúť.
 - :FaPlus: a :FaMinus: mapu približujú a odďaľujú.
 - :FaRegDotCircle: **Kde som?** – pozrite nižšie.
-- :FaCog: otvára menu. V tomto menu je :FaLayerGroup: [správca máp](#show=installed-maps), kde pridáte mapy z knižnice, odoberiete nepoužívané a vyberiete, ktoré sa zobrazia na lište; ďalej offline mapy a predvoľby.
+- :FaCog: otvára menu. V tomto menu je :FaLayerGroup: [správca máp](#show=map-manager), kde pridáte mapy z knižnice, odoberiete nepoužívané a vyberiete, ktoré sa zobrazia na lište; ďalej offline mapy a predvoľby.
 
 Ak mapu nemožno zobraziť v aktuálnom výreze, na tlačidle mapy sa objaví žltá ikona: :FaSearchPlus.text-warning:, keď treba mapu priblížiť, :FaGlobeEurope.text-warning:, keď ste mimo územia mapy, a :FaSearchLocation.text-warning:, keď platí oboje. Stlačením ikony sa mapa presunie tam, kde má obsah.
 

@@ -22,7 +22,7 @@ Na lište máp dole na obrazovke je tlačidlo pre každú mapu, ktorú ste si na
 
 - najprv podkladové mapy, potom prekrytia,
 - **Ukázať všetky mapy** zobrazí všetky nainštalované mapy, nielen tie vybrané do menu,
-- **Filtrovať mapy** – napíšte časť názvu a mapu rýchlo nájdete.
+- **Filtrovať mapy** – napíšte časť názvu a mapu rýchlo nájdete. Pod nadpisom **Dostupné mapy** sa zobrazí aj najviac päť zodpovedajúcich máp, ktoré nemáte nainštalované, najprv tie, ktoré pokrývajú aktuálny výrez: kliknutím mapu zapnete, cez :FaPlus: ju nainštalujete. Ak ich zodpovedá viac, :FaLayerGroup: **Všetky výsledky v správcovi máp** otvorí správcu máp s tým istým hľadaním.
 
 Na telefóne, alebo všade, kde sa tlačidlá máp nezmestia, je na lište namiesto tlačidiel máp jediné tlačidlo :FaRegMap:. V ponuke tohto tlačidla sú mapy vybrané na lištu; **Ukázať viac máp** a potom **Ukázať všetky mapy** pridajú ostatné.
 
@@ -61,27 +61,27 @@ Predvoľba obsahuje iba mapy: fotografie, Wikipedia, meteoradar, viditeľnosť a
 
 ![Správca máp](./images/maps-installed.sk.webp)
 
-:FaCog: na lište máp otvára menu, v ktorom :FaLayerGroup: **Správca máp** (<kbd>m</kbd> <kbd>m</kbd>) zobrazí všetky vaše mapy. Správca má dve záložky.
+:FaCog: na lište máp otvára menu, v ktorom :FaLayerGroup: **Správca máp** (<kbd>m</kbd> <kbd>m</kbd>) zobrazí mapy, ktoré máte, aj tie, ktoré si môžete pridať – najprv nainštalované. Hľadajte podľa názvu, krajiny alebo kľúčového slova v poli hore. :FaFilter: **Filtre** vedľa neho otvorí filtre, ktorými zoznam zúžite: :FaLayerGroup: **Nainštalované mapy** a :FaBookOpen: **Dostupné mapy**, **Kategória**, **Technológia**, **Krajina**, **Vrstva**, **Druh**, **Zobrazené** a **Pokrýva tento výrez**. Kým v skupine filtrov nie je zapnutý žiadny, skupina prepustí všetky mapy. Keď sú filtre skryté, zapnuté filtre zostanú pod poľom hľadania: kliknutím filter vypnete, cez **Zrušiť filtre** vypnete všetky.
 
 ### Nainštalované mapy
 
-Záložka :FaLayerGroup: **Nainštalované mapy** obsahuje mapy, ktoré máte – vstavané, pridané z knižnice, [vlastné mapy](#show=manual/custom-maps), [offline mapy](#show=manual/offline) a predvoľby. Mapu nájdete cez **Filtrovať nainštalované mapy** alebo filtre nad zoznamom. Každý riadok má stĺpce:
+Mapy, ktoré máte – vstavané, pridané z knižnice, [vlastné mapy](#show=manual/custom-maps), [offline mapy](#show=manual/offline) a predvoľby. Každý riadok má stĺpce:
 
 - **Zobraziť v lište** a :FaRegListAlt: **Zobraziť v menu** – kde sa mapa ponúka,
 - :TbLayersSelected: či je mapa podkladová alebo prekrytie, s prepínačom **Základná / Prekryvná** pri mape, ktorá môže byť oboje,
 - :MdOpacity: **Viditeľnosť** – tá istá ako v paneli **Vrstvy mapy** (nie na telefóne),
 - :FaKeyboard: **Klávesová skratka** – kliknite a stlačte požadovaný kláves; <kbd>Backspace</kbd> skratku zruší.
 
-Ponuka :FaEllipsisV: v riadku obsahuje :FaEye: **Ukážka na mape** (**Zobraziť na mape** pri predvoľbe), :FaDownload: **Stiahnuť na použitie offline** pri mapách, ktoré sa dajú stiahnuť, :FaPencilAlt: **Upraviť** pri vlastných mapách, predvoľbách a offline mapách a :FaTrash: **Odinštalovať** alebo **Zmazať**. Odinštalovaná mapa zmizne z lišty, z ponúk aj z vyhľadávania a znova ju pridáte v záložke **Dostupné mapy**.
+Ponuka :FaEllipsisV: v riadku obsahuje :FaEye: **Ukážka na mape** (**Zobraziť na mape** pri predvoľbe), :FaDownload: **Stiahnuť na použitie offline** pri mapách, ktoré sa dajú stiahnuť, :FaPencilAlt: **Upraviť** pri vlastných mapách, predvoľbách a offline mapách a :FaTrash: **Odinštalovať** alebo **Zmazať**. Odinštalovaná mapa zmizne z lišty, z ponúk aj z vyhľadávania a presunie sa nižšie medzi **Dostupné mapy**, kde ju môžete znova nainštalovať.
 
 Každá zmena platí hneď. :FaUndo: **Obnoviť predvolené** v pätičke vráti nastavenie lišty, menu a skratiek aj viditeľnosť a vrstvy všetkých máp na predvolené; nainštalované mapy zostanú nainštalované. Po prihlásení sa nastavenia ukladajú k vášmu účtu, inak v tomto prehliadači.
 
 ### Dostupné mapy
 
-Záložka :FaBookOpen: **Dostupné mapy** je knižnica: stovky máp, ktoré si môžete pridať – ortofotá, historické mapy a snímky, výškopisné mapy a národné mapy mnohých krajín. Hľadajte podľa názvu alebo krajiny v poli hore, prípadne zúžte zoznam filtrami **Kategória**, **Technológia**, **Krajina**, **Vrstva** a **Pokrýva tento výrez**.
+Knižnica: stovky máp, ktoré si môžete pridať – ortofotá, historické mapy a snímky, výškopisné mapy a národné mapy mnohých krajín. Bez hľadania sú najprv mapy, ktoré pokrývajú aktuálny výrez.
 
 - :FaEye: zobrazí mapu najprv na mape. Pohybom po mape si ju prezrite a potom zvoľte :FaPlus: **Nainštalovať**, :FaCheck: **Ponechať na mape** (použiť hneď, bez inštalácie), :FaArrowLeft: **Späť do knižnice** alebo :FaTimes:, ktoré vrátia predchádzajúce mapy.
-- :FaPlus: mapu nainštaluje a mapa sa presunie do záložky **Nainštalované mapy**.
+- :FaPlus: mapu nainštaluje a mapa sa presunie vyššie medzi **Nainštalované mapy**.
 
 Ak poznáte mapu, ktorá chýba, napíšte na [freemap@freemap.sk](mailto:freemap@freemap.sk). Vlastný server WMS alebo dlaždíc pridáte cez :FaPlus: **Nová vlastná mapa**, pozrite [Vlastné mapy](#show=manual/custom-maps).
 

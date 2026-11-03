@@ -846,8 +846,8 @@ function Stack({
                 onClick={() =>
                   dispatch(
                     setActiveModal({
-                      type: 'installed-maps',
-                      customMap: { addPreset: true, returnTo: null },
+                      type: 'map-manager',
+                      customMap: { addPreset: true, closeOnCancel: true },
                     }),
                   )
                 }
@@ -911,8 +911,8 @@ function PresetLayers({
             onClick={() =>
               dispatch(
                 setActiveModal({
-                  type: 'installed-maps',
-                  customMap: { addPresetFrom: id, returnTo: null },
+                  type: 'map-manager',
+                  customMap: { addPresetFrom: id, closeOnCancel: true },
                 }),
               )
             }
@@ -1095,8 +1095,8 @@ function LayerSettings({
               onClick={() =>
                 dispatch(
                   setActiveModal({
-                    type: 'installed-maps',
-                    customMap: { addNamedFrom: target, returnTo: null },
+                    type: 'map-manager',
+                    customMap: { addNamedFrom: target, closeOnCancel: true },
                   }),
                 )
               }
@@ -1114,8 +1114,8 @@ function LayerSettings({
             onClick={() =>
               dispatch(
                 setActiveModal({
-                  type: 'installed-maps',
-                  customMap: { edit: target.type, returnTo: null },
+                  type: 'map-manager',
+                  customMap: { edit: target.type, closeOnCancel: true },
                 }),
               )
             }

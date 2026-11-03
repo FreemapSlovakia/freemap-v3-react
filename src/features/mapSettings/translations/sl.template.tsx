@@ -5,12 +5,11 @@ import type { MapSettingsMessages } from './MapSettingsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   install: 'Namesti — ponujaj to karto v menijih kart',
-  noInstalledMaps:
-    'Nobena karta ni nameščena. Dodajte jih iz razpoložljivih kart.',
   searchLibrary: ({ count }) => `Išči med ${count} kartami`,
   catalogCredit: 'Seznam kart knjižnice temelji na',
   filters: {
-    filterYourMaps: 'Filtriraj nameščene karte',
+    toggle: 'Filtri',
+    clear: 'Počisti filtre',
     kind: 'Vrsta',
     builtIn: 'Vgrajene',
     fromLibrary: 'Iz knjižnice',
