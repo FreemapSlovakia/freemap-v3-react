@@ -1,5 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -21,8 +21,8 @@ import { useUnlockedColorizingMode } from '@shared/colorizers/premiumColorize.js
 import { useColorizerMessages } from '@shared/colorizers/translations/useColorizerMessages.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
+  Action,
   ActionDivider,
-  ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -52,6 +52,8 @@ export function TrackingMenu(): ReactElement {
   const cm = useColorizerMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const online = useOnline();
 
@@ -126,9 +128,7 @@ export function TrackingMenu(): ReactElement {
   const manual = [
     <ActionDivider key="manual-divider" />,
 
-    <ActionItems key="manual">
-      <ManualMenuItem chapter="tracking" />
-    </ActionItems>,
+    <Action key="manual" {...manualAction('tracking')} />,
   ];
 
   return (

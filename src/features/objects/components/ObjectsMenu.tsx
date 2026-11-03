@@ -1,12 +1,11 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
   Action,
   ActionDivider,
-  ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -33,6 +32,8 @@ export default function ObjectsMenu(): ReactElement {
 
   const dispatch = useDispatch();
 
+  const manualAction = useManualAction();
+
   const sc = useScrollClasses('horizontal');
 
   const hasObjects = useAppSelector(
@@ -54,9 +55,7 @@ export default function ObjectsMenu(): ReactElement {
 
     <ActionDivider key="manual-divider" />,
 
-    <ActionItems key="manual">
-      <ManualMenuItem chapter="objects" />
-    </ActionItems>,
+    <Action key="manual" {...manualAction('objects')} />,
   ];
 
   return (

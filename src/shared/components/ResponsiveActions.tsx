@@ -74,6 +74,12 @@ export type ActionProps = {
    * never called.
    */
   menuOnly?: boolean;
+  /**
+   * In the menu while the menu holds anything else; alone there, an inline
+   * button instead of a ⋮ opening on one item. `showFrom` is ignored. Not for
+   * a `fit` row: trading the button for the toggle changes the row's width.
+   */
+  menuWhenShared?: boolean;
 } & Pick<
   ButtonProps,
   // `variant="danger"` also turns the packed dropdown item red.
@@ -283,7 +289,7 @@ export function ResponsiveActions({
         kind: 'action',
         props,
         index,
-        inline: isInline(props.showFrom),
+        inline: !props.menuWhenShared && isInline(props.showFrom),
       });
     }
   });
@@ -294,7 +300,9 @@ export function ResponsiveActions({
   const folding = entries
     .filter(
       (e): e is Extract<Entry, { kind: 'action' }> =>
-        e.kind === 'action' && foldOrder(e.props.showFrom) > 0,
+        e.kind === 'action' &&
+        !e.props.menuWhenShared &&
+        foldOrder(e.props.showFrom) > 0,
     )
     .sort((a, b) => foldOrder(b.props.showFrom) - foldOrder(a.props.showFrom));
 
@@ -302,7 +310,11 @@ export function ResponsiveActions({
     const packedByFit = new Set(folding.slice(0, folded).map((e) => e.index));
 
     for (const entry of entries) {
-      if (entry.kind === 'action' && entry.props.showFrom !== 'never') {
+      if (
+        entry.kind === 'action' &&
+        entry.props.showFrom !== 'never' &&
+        !entry.props.menuWhenShared
+      ) {
         entry.inline = !packedByFit.has(entry.index);
       }
     }
@@ -329,6 +341,22 @@ export function ResponsiveActions({
     !entries.some((e) => e.kind === 'items' || e.kind === 'submenu')
   ) {
     packedActions[0].inline = true;
+  }
+
+  // `menuWhenShared` actions with nothing else packed beside them come out.
+  if (
+    !entries.some(
+      (e) =>
+        (e.kind === 'action' && !e.props.menuWhenShared && !e.inline) ||
+        e.kind === 'items' ||
+        e.kind === 'submenu',
+    )
+  ) {
+    for (const entry of entries) {
+      if (entry.kind === 'action' && entry.props.menuWhenShared) {
+        entry.inline = true;
+      }
+    }
   }
 
   const lastPackedPos = entries.reduce(
@@ -371,6 +399,7 @@ export function ResponsiveActions({
       disabled,
       menu,
       menuOnly,
+      menuWhenShared: _menuWhenShared,
       ...rest
     }: ActionProps,
     key: number,

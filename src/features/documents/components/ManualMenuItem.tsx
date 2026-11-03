@@ -2,28 +2,23 @@ import { Text } from '@features/l10n/Text.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaBook } from 'react-icons/fa';
-import { useOpenManual } from '../hooks/useOpenManual.js';
+import { useManualAction } from '../hooks/useManualAction.js';
 
-/** A toolbar's ⋮ item opening the manual at the chapter about it. */
+/**
+ * A hand-built ⋮ item opening the manual at the chapter about its toolbar; a
+ * `ResponsiveActions` takes `useManualAction` instead.
+ */
 export function ManualMenuItem({
   chapter,
 }: {
   /** A `src/manual/<chapter>.<lang>.md` key; an unknown one opens the first. */
   chapter: string;
 }): ReactElement {
-  const openManual = useOpenManual('toolbar');
+  const { icon, href, onClick } = useManualAction()(chapter);
 
   return (
-    <Dropdown.Item
-      href={`#show=manual/${chapter}`}
-      onClick={(e) => {
-        e.preventDefault();
-
-        openManual(chapter);
-      }}
-    >
-      <FaBook />
+    <Dropdown.Item href={href} onClick={onClick}>
+      {icon}
       <MenuLabel>
         <Text k="mainMenu.manual" />
       </MenuLabel>

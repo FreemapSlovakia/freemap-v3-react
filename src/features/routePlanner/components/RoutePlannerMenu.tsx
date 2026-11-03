@@ -3,7 +3,7 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
 } from '@app/store/actions.js';
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -523,6 +523,8 @@ export default function RoutePlannerMenu(): ReactElement {
   const rpm = useRoutePlannerMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const milestones = useAppSelector((state) => state.routePlanner.milestones);
 
@@ -1195,9 +1197,7 @@ export default function RoutePlannerMenu(): ReactElement {
 
         <ActionDivider />
 
-        <ActionItems>
-          <ManualMenuItem chapter="route-planner" />
-        </ActionItems>
+        <Action {...manualAction('route-planner')} />
       </ResponsiveActions>
 
       {hasRoute && <DeleteButton action={routePlannerDelete()} />}

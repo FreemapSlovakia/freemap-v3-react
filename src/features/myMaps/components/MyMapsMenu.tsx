@@ -1,5 +1,5 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -9,7 +9,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import {
-  ActionItems,
+  Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
@@ -58,6 +58,8 @@ export function MyMapsMenu(): ReactElement {
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const confirm = useConfirm();
 
@@ -255,9 +257,7 @@ export function MyMapsMenu(): ReactElement {
 
           {!hidden && (
             <ResponsiveActions toggleLabel={m?.general.actions}>
-              <ActionItems>
-                <ManualMenuItem chapter="my-maps" />
-              </ActionItems>
+              <Action {...manualAction('my-maps')} />
             </ResponsiveActions>
           )}
 

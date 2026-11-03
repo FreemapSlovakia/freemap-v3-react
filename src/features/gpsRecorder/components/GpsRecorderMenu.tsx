@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { isToolOpen } from '@app/store/selectors.js';
 import { useDataMergeMode } from '@features/dataViewer/hooks/useDataMergeMode.js';
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
   elevationChartOpen,
@@ -10,7 +10,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import {
-  ActionItems,
+  Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -43,6 +43,8 @@ import { GpsRecorderReadout } from './GpsRecorderReadout.js';
 
 export default function GpsRecorderMenu(): ReactElement {
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const m = useMessages();
 
@@ -265,9 +267,7 @@ export default function GpsRecorderMenu(): ReactElement {
       </LongPressTooltip>
 
       <ResponsiveActions toggleLabel={m?.general.actions}>
-        <ActionItems>
-          <ManualMenuItem chapter="gps-recorder" />
-        </ActionItems>
+        <Action {...manualAction('gps-recorder')} />
       </ResponsiveActions>
     </ToolMenu>
   );

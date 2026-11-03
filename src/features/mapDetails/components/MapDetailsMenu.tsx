@@ -1,4 +1,4 @@
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -11,7 +11,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import {
-  ActionItems,
+  Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
@@ -50,6 +50,8 @@ export function MapDetailsMenu(): ReactElement | null {
   const mdm = useMapDetailsMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const sources: {
     key: MapDetailsSource;
@@ -133,9 +135,7 @@ export function MapDetailsMenu(): ReactElement | null {
       </Dropdown>
 
       <ResponsiveActions toggleLabel={m?.general.actions}>
-        <ActionItems>
-          <ManualMenuItem chapter="map-details" />
-        </ActionItems>
+        <Action {...manualAction('map-details')} />
       </ResponsiveActions>
     </ToolMenu>
   );

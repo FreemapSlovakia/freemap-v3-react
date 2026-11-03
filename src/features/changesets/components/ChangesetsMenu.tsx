@@ -1,11 +1,10 @@
 import { convertToDrawing } from '@app/store/actions.js';
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import {
   Action,
   ActionDivider,
-  ActionItems,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
@@ -63,6 +62,8 @@ export default function ChangesetsMenu(): ReactElement {
   );
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const backKbd = useEscapeKbd(changesetsInspect(null));
 
@@ -164,9 +165,7 @@ export default function ChangesetsMenu(): ReactElement {
 
         <ActionDivider />
 
-        <ActionItems>
-          <ManualMenuItem chapter="changesets" />
-        </ActionItems>
+        <Action {...manualAction('changesets')} />
       </ResponsiveActions>
     </ToolMenu>
   );

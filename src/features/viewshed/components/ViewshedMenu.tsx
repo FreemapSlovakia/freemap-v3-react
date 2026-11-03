@@ -1,5 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { ManualMenuItem } from '@features/documents/components/ManualMenuItem.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
@@ -12,7 +12,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import { PlacePickerButton } from '@shared/components/PlacePickerButton.js';
 import {
-  ActionItems,
+  Action,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
 import { SliderDropdown } from '@shared/components/SliderDropdown.js';
@@ -73,6 +73,8 @@ export default function ViewshedMenu(): ReactElement {
   const gm = useMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const { viewpoint, rendering, progress } = useAppSelector(
     (state) => state.viewshed,
@@ -313,9 +315,7 @@ export default function ViewshedMenu(): ReactElement {
               )}
 
               <ResponsiveActions toggleLabel={gm?.general.actions}>
-                <ActionItems>
-                  <ManualMenuItem chapter="viewshed" />
-                </ActionItems>
+                <Action {...manualAction('viewshed')} />
               </ResponsiveActions>
             </>
           )}
