@@ -698,6 +698,10 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['follow', main.selection?.id]);
   }
 
+  if (main.selection?.type === 'event') {
+    queryParts.push(['event', main.selection.id]);
+  }
+
   const noteId = selectedOsmNoteId(state);
 
   if (noteId !== null) {

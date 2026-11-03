@@ -31,8 +31,15 @@ import {
 import type { ChartRange } from '@features/elevationChart/model/reducer.js';
 import type { ElevationChartTarget } from '@features/elevationChart/model/target.js';
 import { targetsEqual } from '@features/elevationChart/model/target.js';
-import { eventsSetFilter } from '@features/events/model/actions.js';
+import {
+  EVENTS_LAYER,
+  eventsSetFilter,
+} from '@features/events/model/actions.js';
 import { filterFromQuery, sameFilter } from '@features/events/model/filter.js';
+import {
+  eventsLayerOnSelector,
+  selectedEventId,
+} from '@features/events/model/selectors.js';
 import {
   GALLERY_SOURCES,
   type GallerySource,
@@ -50,7 +57,11 @@ import {
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
-import { mapRefocus, mapSetCustomLayers } from '@features/map/model/actions.js';
+import {
+  mapRefocus,
+  mapSetCustomLayers,
+  mapToggleLayer,
+} from '@features/map/model/actions.js';
 import {
   type LayerSetup,
   withLoadedConfig,
@@ -974,6 +985,23 @@ export function handleLocationChange(store: MyStore): void {
       dispatch(selectFeature({ type: 'osm-note', id: noteId }));
     }
   } else if (selectedNoteId !== null) {
+    dispatch(selectFeature(null));
+  }
+
+  // After `layers=`, which would otherwise turn the events layer off again.
+  const eventId = query['event'];
+
+  const selectedEvent = selectedEventId(getState());
+
+  if (typeof eventId === 'string' && /^[\w-]{1,16}$/.test(eventId)) {
+    if (selectedEvent !== eventId) {
+      if (!eventsLayerOnSelector(getState())) {
+        dispatch(mapToggleLayer({ type: EVENTS_LAYER, enable: true }));
+      }
+
+      dispatch(selectFeature({ type: 'event', id: eventId }));
+    }
+  } else if (selectedEvent !== null) {
     dispatch(selectFeature(null));
   }
 

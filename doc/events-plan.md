@@ -88,14 +88,17 @@ from the selection toolbar (**Edit**).
       node types, so it can't carry markup, and rendered by a small renderer
       of our own without Tiptap. The listing drops the description; it is
       fetched when an event is selected.
-- [x] 4. Near a place: the filter's **Near** — a place (the coordinate field
-      with **My location** and **Set the location**) and a radius (10 / 25 / 50
-      / 100 km suggested, or typed, up to 1000). The API takes
-      `near=lat,lon&radius=km`, narrowing by a bounding box on the start point's
-      index before the exact distance; the panel's list shows and sorts by the
-      distance.
+- [x] 4. Near a place: the filter's **Near** — a place (the coordinate field,
+      or **Set the location** with **My location** and **Home position** behind
+      its caret) within a radius of 10–1000 km, typed or set on a slider of
+      round values in the picking toolbar while the circle is drawn. The API
+      takes `near=lat,lon&radius=km`, narrowing by a bounding box on the start
+      point's index before the exact distance; the panel's list shows and sorts
+      by the distance.
+- [x] 5a. `#event=<id>` deep link: the selection is in the URL, and a link
+      selects the event with the layer on; the details stay in the toast.
 - [ ] 5. Details panel replacing the toast, once participants and discussion
-      need the room; `#event=<id>` deep link.
+      need the room.
 - [ ] 6. Upcoming-by-default, marker clustering.
 - [ ] 7. Participants.
 - [ ] 8. Follows and the _Who_ filter.
