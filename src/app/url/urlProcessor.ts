@@ -275,6 +275,11 @@ function updateUrl(state: RootState, forced: boolean): void {
     // Likewise a run of setup changes: continued, it would replace that entry.
     lastChangedSetups = '';
 
+    // And the content last written, which Back can leave this behind: the same
+    // content written again (a modal reopened) would compare as view-only and
+    // replace the entry navigated to.
+    lastWrittenRest = null;
+
     // Drop an owed rewrite rather than running it: on a popstate restore the
     // entry it would replace is the one just navigated to. `previousView` has
     // already advanced past it, so forget the viewport too — otherwise a
