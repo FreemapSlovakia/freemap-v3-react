@@ -660,6 +660,11 @@ export default function EventFormModal({ show }: Props): ReactElement {
               value={draft.description}
               onChange={(e) => set({ description: e.currentTarget.value })}
             />
+
+            <Form.Text>
+              Say how to reach you — a phone number, an email or a chat group:
+              events have no discussion yet.
+            </Form.Text>
           </Form.Group>
 
           <Form.Group controlId="eventCover" className="mb-3">

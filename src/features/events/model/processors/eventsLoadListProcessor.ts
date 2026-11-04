@@ -12,7 +12,8 @@ import {
   eventsSetList,
 } from '../actions.js';
 import { filterToRequest } from '../filter.js';
-import { eventsLayerOnSelector } from '../selectors.js';
+import { eventsLayerOnSelector, selectedEventId } from '../selectors.js';
+import { showSelectedEvent } from './eventSelectionProcessors.js';
 
 const triggers = [
   init,
@@ -56,7 +57,22 @@ export const eventsLoadListProcessor: Processor = {
         cancelActions: triggers,
       });
 
-      dispatch(eventsSetList(z.array(EventSchema).parse(await res.json())));
+      const list = z.array(EventSchema).parse(await res.json());
+
+      dispatch(eventsSetList(list));
+
+      // Its copy may be out of date too — the user's own participation after
+      // logging in, say.
+      const selectedId = selectedEventId(getState());
+
+      const selected = list.find((e) => e.id === selectedId);
+
+      if (
+        selected &&
+        JSON.stringify(selected) !== JSON.stringify(getState().events.selected)
+      ) {
+        showSelectedEvent(dispatch, selected);
+      }
     } catch (err) {
       await toastError(err, loadEventsMessages, 'fetchListError');
     }

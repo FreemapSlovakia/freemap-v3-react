@@ -85,6 +85,10 @@ export const EventSchema = z.object({
   createdAt: IsoDateSchema,
   updatedAt: IsoDateSchema,
   canWrite: z.boolean(),
+  interestedCount: z.number(),
+  goingCount: z.number(),
+  /** The user's own; null when logged out or undecided. */
+  myParticipation: z.enum(['interested', 'going']).nullable(),
 });
 
 export type EventItem = z.infer<typeof EventSchema>;
@@ -126,6 +130,14 @@ export const eventsSave = createAction<{
 export const eventsSaveDone = createAction<{ ok: boolean }>('EVENTS_SAVE_DONE');
 
 export const eventsDelete = createAction<string>('EVENTS_DELETE');
+
+export type Participation = EventItem['myParticipation'];
+
+/** Says the user is interested in or going to an event, or with `null` neither. */
+export const eventsSetParticipation = createAction<{
+  id: string;
+  status: Participation;
+}>('EVENTS_SET_PARTICIPATION');
 
 /** The selected event, as its details show it; `null` while none is. */
 export const eventsSetSelected = createAction<EventItem | null>(

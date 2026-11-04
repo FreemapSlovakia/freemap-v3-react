@@ -9,4 +9,6 @@ export type EventsMessages = {
   coverError: (props: { err: unknown }) => string;
   newMapError: (props: { err: unknown }) => string;
   deleteError: (props: { err: unknown }) => string;
+  participationError: (props: { err: unknown }) => string;
+  loginToParticipate: string;
 };

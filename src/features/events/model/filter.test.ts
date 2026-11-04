@@ -48,7 +48,11 @@ describe('events filter', () => {
 
     expect(filterToQuery(invalid)).toEqual([]);
 
-    expect(filterToRequest(invalid)).toEqual({});
+    const now = new Date('2026-11-03T12:00:00Z');
+
+    expect(filterToRequest(invalid, now)).toEqual({
+      from: now.toISOString(),
+    });
   });
 
   it('reads no place from a link without a valid radius or point', () => {
@@ -77,6 +81,23 @@ describe('events filter', () => {
     expect(stopOf(260)).toBe(250);
 
     expect(stopOf(1000)).toBe(1000);
+  });
+
+  it('asks for what has not ended yet unless the dates say otherwise', () => {
+    const now = new Date('2026-11-03T12:00:00Z');
+
+    const fromOf = (f: EventsFilter) => filterToRequest(f, now)['from'];
+
+    expect(fromOf({})).toBe(now.toISOString());
+
+    // Up to today still means from now on; an end in the past means the past.
+    expect(fromOf({ to: new Date('2026-11-03') })).toBe(now.toISOString());
+
+    expect(fromOf({ to: new Date('2026-10-01') })).toBeUndefined();
+
+    expect(fromOf({ from: new Date('2026-01-01') })).toBe(
+      new Date('2026-01-01').toISOString(),
+    );
   });
 
   it('drops unknown difficulties from a link', () => {

@@ -365,6 +365,11 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                 onChange={(e) => setTo(e.currentTarget.value)}
               />
             </InputGroup>
+
+            <Form.Text>
+              Without a start date, only events that haven’t ended yet; set one
+              for past events.
+            </Form.Text>
           </Form.Group>
 
           <Form.Group controlId="eventsNear" className="mb-3">

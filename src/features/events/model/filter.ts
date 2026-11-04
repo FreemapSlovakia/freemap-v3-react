@@ -210,8 +210,14 @@ export function filterFromQuery(
 export const sameFilter = (a: EventsFilter, b: EventsFilter): boolean =>
   JSON.stringify(filterToQuery(a)) === JSON.stringify(filterToQuery(b));
 
-/** The filter as `GET /events` parameters. */
-export function filterToRequest(f: EventsFilter): Record<string, string> {
+/**
+ * The filter as `GET /events` parameters. Without a start date only what has
+ * not ended yet — unless the end date asks for the past.
+ */
+export function filterToRequest(
+  f: EventsFilter,
+  now = new Date(),
+): Record<string, string> {
   const params: Record<string, string> = {};
 
   if (f.near) {
@@ -224,14 +230,18 @@ export function filterToRequest(f: EventsFilter): Record<string, string> {
 
   const to = validDate(f.to);
 
+  // The picker yields UTC midnight, and the bound reads as inclusive of the
+  // day it names — so it goes out as that day's last instant.
+  const toEnd = to && new Date(to.getTime() + 86_400_000 - 1);
+
   if (from) {
     params['from'] = from.toISOString();
+  } else if (!toEnd || toEnd >= now) {
+    params['from'] = now.toISOString();
   }
 
-  if (to) {
-    // The picker yields UTC midnight, and the bound reads as inclusive of the
-    // day it names — so it goes out as that day's last instant.
-    params['to'] = new Date(to.getTime() + 86_400_000 - 1).toISOString();
+  if (toEnd) {
+    params['to'] = toEnd.toISOString();
   }
 
   if (f.transport?.length) {

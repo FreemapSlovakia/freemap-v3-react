@@ -63,49 +63,98 @@ stats; visibility. Reached from the events toolbar (**New event**), from a map's
 menu in My maps (**New event**, the map linked and its stats filled), and
 from the selection toolbar (**Edit**).
 
-### 4. Participants, follows, discussion
+### 4. Participants, discussion, notifications
 
-- Going / maybe, shown in the details and counted on the marker's card.
-- One-way follows, no approval; **Follow** on the organizer; the _People I
-  follow_ filter; a _Followers only_ visibility later.
-- A discussion thread per event.
-- Notifications last.
+- **Interested** / **Going**, one of them per user, toggled from the event;
+  both counted in its details, with the names of who is going.
+- Until there is a thread, the description carries a way to reach the
+  organizer; the form asks for it.
+- A discussion thread per event, for logged-in users, in a details modal.
+- Email to whoever is involved — the organizer and those interested or going —
+  about what concerns them; opted out of in the account like the photo emails.
+  The organizer may show their email on the event.
+- Later: one-way follows, no approval; **Follow** on the organizer; the _People
+  I follow_ filter; a _Followers only_ visibility.
 
 ## Steps
 
-- [ ] 1. Standalone event model: API table and routes, the event form with
-      stats from the linked map and **Set the location**, New event from the toolbar and My
-      maps, Edit / Delete, **Open in new tab** and **Load here**.
-- [x] 2. Cover image: one per event, uploaded on its own
+### Done
+
+- [x] Standalone event model: API table and routes, the event form with stats
+      from the linked map (or a new map from what is on screen) and **Set the
+      location**, New event from the toolbar and My maps, Edit / Delete, **Open
+      in new tab** with **Load here** behind its caret.
+- [x] Cover image: one per event, uploaded on its own
       (`PUT`/`DELETE /events/{id}/cover`, after the event's own save); the API
       writes a 1600 px and a 480 px WebP under `EVENT_COVERS_DIRECTORY`, named
       by a fresh short UUID so `/events/covers/{name}` is cached immutably, and
       the event keeps the name. Not a gallery photo — those are public,
       CC-licensed and placed — and never inline base64.
-- [ ] 3. _Deferred — plain text serves until it doesn't._ Rich description:
-      Tiptap in the form, loaded only there; text marks,
-      lists, links and headings, no images. Stored as Tiptap JSON of those
-      node types, so it can't carry markup, and rendered by a small renderer
-      of our own without Tiptap. The listing drops the description; it is
-      fetched when an event is selected.
-- [x] 4. Near a place: the filter's **Near** — a place (the coordinate field,
-      or **Set the location** with **My location** and **Home position** behind
+- [x] Near a place: the filter's **Near** — a place (the coordinate field, or
+      **Set the location** with **My location** and **Home position** behind
       its caret) within a radius of 10–1000 km, typed or set on a slider of
       round values in the picking toolbar while the circle is drawn. The API
       takes `near=lat,lon&radius=km`, narrowing by a bounding box on the start
       point's index before the exact distance; the panel's list shows and sorts
       by the distance.
-- [x] 5a. `#event=<id>` deep link: the selection is in the URL, and a link
-      selects the event with the layer on; the details stay in the toast.
-- [ ] 5. Details panel replacing the toast, once participants and discussion
-      need the room.
-- [ ] 6. Upcoming-by-default, marker clustering.
-- [ ] 7. Participants.
-- [ ] 8. Follows and the _Who_ filter.
-- [ ] 9. Discussion.
-- [ ] 10. Notifications.
-- [ ] Later, if the new tab proves clumsy (phones): a read-only view drawing a
-      linked map without loading it into the editors.
+- [x] `#event=<id>` deep link: the selection is in the URL, and a link selects
+      the event with the layer on.
+- [x] Upcoming by default: without a start date the list asks only for events
+      not yet ended, unless the end date lies in the past; a past event still
+      opens by its link.
+
+### Release 1
+
+- [x] 1. **Interested / Going.** API: an `eventParticipant` table (event, user,
+      status), `PUT`/`DELETE /events/{id}/participation`, the counts and the
+      caller's own status on every event. Web: the two toggles with their
+      counts in the event's toolbar; pressing the active one withdraws it, and
+      a logged-out user is offered to log in. Who is going goes into the
+      details modal of Release 2.
+- [x] 2. **Contact hint**: until there is a discussion, the form's
+      description asks for a way to reach the organizer (phone, email, a chat
+      group).
+- [ ] 3. **Texts in English and Slovak**: the events texts into the
+      translation files; the other languages fall back to English.
+- [ ] 4. **Review** of the whole branch against `main`, both repos.
+- [ ] 5. **Release**: `EVENT_COVERS_DIRECTORY` in the production config; the
+      "Load here, then reload" check; an announcement-log entry; merge to
+      `main`, API first.
+
+### Release 2
+
+- [ ] **Details modal** replacing the toast, once the thread needs the room — a
+      modal, as the app has no side panels; one may take its place if they
+      come. Cover, dates, organizer, stats, attributes, description, the
+      participation toggles and who is going, the thread.
+- [ ] **Discussion.** API: an `eventComment` table, list and post (and the
+      author or a moderator deleting), as the photo comments. Web: the thread
+      in the modal, newest last, posting for logged-in users.
+- [ ] **Email notifications**: the organizer on a new comment or someone
+      going; the interested and going on a change of time or place, on the
+      event being deleted, and on new comments. One opt-out in the account, as
+      for photo comments; every email links to the event (`#event=`).
+- [ ] **Organizer's email on the event**, where the organizer agrees to it in
+      the form — a contact beside the thread.
+- [ ] Texts in the other languages (cs first).
+
+### Later
+
+- [ ] Marker colour by status — ended / happening / upcoming, upcoming graded
+      by how soon — then **Colour by** modes as the photos have (length,
+      duration, ascent, difficulty, dogs, children), with a legend, an
+      `eventsSettings` slice and `events-cb=`. Transport not as a colour (an
+      event names several) but as the marker's icon.
+- [ ] Marker clustering.
+- [ ] **Copy link** on the event.
+- [ ] Follows and the _Who_ filter.
+- [ ] _Deferred — plain text serves until it doesn't._ Rich description:
+      Tiptap in the form, loaded only there; text marks, lists, links and
+      headings, no images. Stored as Tiptap JSON of those node types, so it
+      can't carry markup, and rendered by a small renderer of our own without
+      Tiptap.
+- [ ] If the new tab proves clumsy (phones): a read-only view drawing a linked
+      map without loading it into the editors.
 
 New texts stay English-only and may be hardcoded in components while the
 feature is iterated on; they move into the translation files once it settles.

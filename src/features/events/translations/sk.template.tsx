@@ -25,6 +25,10 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri rušení akcie', err),
+  participationError: ({ err }) =>
+    addError(getMessages()!, 'Chyba pri ukladaní vašej účasti', err),
+  loginToParticipate:
+    'Ak chcete dať vedieť, že máte záujem alebo prídete, prihláste sa.',
 };
 
 export default sk;

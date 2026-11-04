@@ -23,6 +23,9 @@ const en: EventsMessages = {
     ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Error deleting event', err),
+  participationError: ({ err }) =>
+    addError(getMessages()!, 'Error saving your participation', err),
+  loginToParticipate: 'Log in to say you are interested or going.',
 };
 
 export default en;
