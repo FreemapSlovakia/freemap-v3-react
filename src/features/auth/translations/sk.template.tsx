@@ -19,6 +19,15 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     homeLocation: 'Domovská poloha',
     homeLocationUnset: 'Nenastavená',
     setHomeLocation: 'Nastaviť v mape',
+    roles: 'Moje role',
+  },
+  roleNames: {
+    userManager: 'Správa používateľov',
+    galleryModerator: 'Moderovanie fotografií',
+    mapModerator: 'Moderovanie máp',
+    eventManager: 'Správa akcií',
+    trackingManager: 'Správa sledovania',
+    layerPreview: 'Ukážka pripravovaných mapových vrstiev',
   },
   appTokens: {
     title: 'Aplikačné tokeny',

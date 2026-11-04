@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { AppTokenScope } from '../model/types.js';
+import type { AppTokenScope, Role } from '../model/types.js';
 
 export type AuthMessages = {
   connectLabel: string;
@@ -30,7 +30,9 @@ export type AuthMessages = {
     homeLocation: string;
     homeLocationUnset: string;
     setHomeLocation: string;
+    roles: string;
   };
+  roleNames: Record<Role, string>;
   appTokens: {
     title: string;
     about: string;

@@ -17,6 +17,7 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     choosePicture: 'Izberi sliko',
     pictureTooLarge: 'Slika je prevelika. Največja velikost je 5 MB.',
   },
+  roleNames: {},
   appTokens: { scopeNames: {} },
   connectLabel: 'Poveži',
   connectSuccess: ({ provider }) =>

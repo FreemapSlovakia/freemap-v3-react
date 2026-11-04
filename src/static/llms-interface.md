@@ -85,6 +85,10 @@ Lets another application or a script use the Freemap API as the user, without a 
 - Aerial imagery zoom 20 (the Slovak and Czech orthophoto at `https://ortofoto.tiles.freemap.sk`): the same, with the aerial permission. It is also open to iD on openstreetmap.org.
 - Locus Map and OruxMaps: the _Maps for GPS devices_ page installs the online maps into Locus from one link and downloads them for OruxMaps as `onlinemapsources.xml`; both carry the same maps. Logged in, either creates a token noted "Map apps" with the three tile permissions, which every later install reuses and resets to those permissions, so a premium account gets its premium zooms there. Renaming that token makes the next install create a new one. The page also lists every map's tile URL template for other apps.
 
+#### My roles
+
+Shown only to an account holding special roles (user management, photo moderation, map moderation, event management, tracking management, preview of upcoming map layers); lists them, read-only.
+
 ### User profile
 
 Clicking a user's name — a photo's author or commenter, an event's organizer, a leaderboard row — opens their profile: picture, "About me" (Markdown), member-since date, and counts of their photos, the photo comments they wrote and the public events they organize. **Photos on the map** filters the photo layer to that user's photos; on one's own profile **Edit profile** opens the account. URL path: `/#show=user/<id>`.

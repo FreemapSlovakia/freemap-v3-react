@@ -23,6 +23,7 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     addError(getMessages()!, 'Erreur de vérification de la connexion', err),
   logOutError: ({ err }) =>
     addError(getMessages()!, 'Erreur de déconnexion', err),
+  roleNames: {},
   appTokens: { scopeNames: {} },
   connectLabel: 'Connecter',
   connectSuccess: ({ provider }) =>

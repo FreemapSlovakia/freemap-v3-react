@@ -18,6 +18,15 @@ const en: AuthMessages = {
     homeLocation: 'Home position',
     homeLocationUnset: 'Not set',
     setHomeLocation: 'Set on the map',
+    roles: 'My roles',
+  },
+  roleNames: {
+    userManager: 'User management',
+    galleryModerator: 'Photo moderation',
+    mapModerator: 'Map moderation',
+    eventManager: 'Event management',
+    trackingManager: 'Tracking management',
+    layerPreview: 'Preview of upcoming map layers',
   },
   appTokens: {
     title: 'App tokens',

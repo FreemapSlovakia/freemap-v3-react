@@ -19,6 +19,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -33,6 +34,7 @@ import {
   FaSignOutAlt,
   FaUser,
   FaUserCircle,
+  FaUserShield,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { AppTokensSection } from './AppTokensSection.js';
@@ -200,6 +202,28 @@ export default function AccountModal({ show }: Props): ReactElement | null {
               <AppTokensSection />
             </Accordion.Body>
           </Accordion.Item>
+
+          {user.roles.length > 0 && (
+            <Accordion.Item eventKey="roles">
+              <Accordion.Header>
+                <span>
+                  <FaUserShield /> <Text m={am} k="account.roles" />
+                </span>
+              </Accordion.Header>
+
+              <Accordion.Body>
+                <ul className="mb-0">
+                  {user.roles.map((role) => (
+                    <li key={role}>
+                      <HintTooltip hint={role}>
+                        {am?.roleNames[role] ?? role}
+                      </HintTooltip>
+                    </li>
+                  ))}
+                </ul>
+              </Accordion.Body>
+            </Accordion.Item>
+          )}
         </Accordion>
       </Modal.Body>
 

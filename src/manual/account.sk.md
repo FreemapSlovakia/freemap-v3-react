@@ -35,6 +35,8 @@ Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :F
 - :FaUserCircle: **Poskytovatelia prihlásenia**
 - :FaKey: **Aplikačné tokeny**
 
+Účet s osobitnými oprávneniami, napríklad na moderovanie fotografií, má aj časť :FaUserShield: **Moje role**, ktorá ich vypisuje.
+
 ## Osobné údaje
 
 - **Profilový obrázok** – :FaUpload: **Vybrať obrázok** vyberie obrázok s veľkosťou najviac 5 MB, :FaTimes: **Odstrániť** obrázok zruší.

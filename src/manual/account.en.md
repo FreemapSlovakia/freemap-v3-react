@@ -35,6 +35,8 @@ Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</k
 - :FaUserCircle: **Login providers**
 - :FaKey: **App tokens**
 
+An account given special permissions, such as photo moderation, also shows :FaUserShield: **My roles**, which lists them.
+
 ## Personal information
 
 - **Profile picture** – :FaUpload: **Choose picture** picks an image of at most 5 MB, :FaTimes: **Remove** clears it.
