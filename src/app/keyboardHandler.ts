@@ -44,6 +44,7 @@ import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js'
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
+import { isDropdownOpen } from '@shared/dropdownOpen.js';
 import {
   effectiveShortcut,
   isLayerInstalled,
@@ -280,9 +281,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
   if (!withModifiers && event.code === 'Escape') {
     // An open dropdown closes itself on Escape.
-    return document.querySelector('*[aria-expanded=true]') === null
-      ? escapeAction(state)
-      : undefined;
+    return isDropdownOpen() ? undefined : escapeAction(state);
   }
 
   // Also over a modal and in a field, where it types nothing.
@@ -587,8 +586,8 @@ export function handleMapKey(event: KeyboardEvent, state: RootState) {
 
   // An open dropdown moves its own selection with the arrow keys, and this
   // handler runs in the capture phase, so it would claim them before the menu
-  // ever sees them. Same signal the Escape handling above uses.
-  if (document.querySelector('*[aria-expanded=true]') !== null) {
+  // ever sees them.
+  if (isDropdownOpen()) {
     return undefined;
   }
 

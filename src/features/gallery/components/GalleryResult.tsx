@@ -1,76 +1,20 @@
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { DragEndEvent, LeafletMouseEvent } from 'leaflet';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { FaCamera } from 'react-icons/fa';
-import { useMapEvent } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
-import { gallerySetPickingPosition } from '../model/actions.js';
 import './gallery.css';
 
-export function GalleryResult(): ReactElement {
-  const dispatch = useDispatch();
-
+/** Where the photo in the viewer was taken, while it is shown on the map. */
+export function GalleryResult(): ReactElement | null {
   const image = useAppSelector((state) => state.gallery.image);
-
-  const isPickingPosition = useAppSelector(
-    (state) => state.gallery.pickingPositionForId !== null,
-  );
-
-  const pickingPosition = useAppSelector(
-    (state) => state.gallery.pickingPosition,
-  );
 
   const showPosition = useAppSelector((state) => state.gallery.showPosition);
 
-  const handlePositionPick = useCallback(
-    (lat: number, lon: number) => {
-      dispatch(gallerySetPickingPosition({ lat, lon }));
-    },
-    [dispatch],
-  );
-
-  // TODO move to GalleryMenu to be consistent with other tools
-  const handleMapClick = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
-      if (isPickingPosition) {
-        handlePositionPick(latlng.lat, latlng.lng);
-      }
-    },
-    [isPickingPosition, handlePositionPick],
-  );
-
-  useMapEvent('click', handleMapClick);
-
-  const handlePositionMarkerDragEnd = useCallback(
-    (e: DragEndEvent) => {
-      const coords = e.target.getLatLng();
-
-      handlePositionPick(coords.lat, coords.lng);
-    },
-    [handlePositionPick],
-  );
-
-  return (
-    <>
-      {pickingPosition && (
-        <RichMarker
-          draggable
-          pane="fm-active-overlay"
-          position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
-          faIcon={<FaCamera />}
-          eventHandlers={{
-            dragend: handlePositionMarkerDragEnd,
-          }}
-        />
-      )}
-      {showPosition && image && (
-        <RichMarker
-          position={{ lat: image.lat, lng: image.lon }}
-          faIcon={<FaCamera />}
-          interactive={false}
-        />
-      )}
-    </>
-  );
+  return showPosition && image ? (
+    <RichMarker
+      position={{ lat: image.lat, lng: image.lon }}
+      faIcon={<FaCamera />}
+      interactive={false}
+    />
+  ) : null;
 }

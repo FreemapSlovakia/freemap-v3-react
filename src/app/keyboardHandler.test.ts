@@ -232,21 +232,36 @@ describe('handleMapKey — when the keys are not the map’s', () => {
   // The handler is attached in the capture phase, so without this an open
   // dropdown never receives the arrow keys it navigates itself with.
   it('leaves the keys to an open dropdown', () => {
-    const toggle = document.createElement('button');
+    const menu = document.createElement('div');
 
-    toggle.setAttribute('aria-expanded', 'true');
+    menu.className = 'dropdown-menu show';
 
-    document.body.append(toggle);
+    document.body.append(menu);
 
     try {
       expect(handleMapKey(press('ArrowDown'), makeState())).toBeUndefined();
       expect(handleMapKey(press('+'), makeState())).toBeUndefined();
     } finally {
-      toggle.remove();
+      menu.remove();
     }
 
     // ...and takes them back once the menu is closed.
     expect(handleMapKey(press('ArrowDown'), makeState())).toBeDefined();
+  });
+
+  // A modal hidden for a pick on the map keeps its open accordion section.
+  it('ignores an open accordion section', () => {
+    const header = document.createElement('button');
+
+    header.setAttribute('aria-expanded', 'true');
+
+    document.body.append(header);
+
+    try {
+      expect(handleMapKey(press('ArrowDown'), makeState())).toBeDefined();
+    } finally {
+      header.remove();
+    }
   });
 
   it('passes other keys through', () => {
@@ -275,6 +290,35 @@ describe('handleEvent — Escape', () => {
         }),
       ),
     ).toEqual(toposcopeSetPickingCenter(false));
+  });
+
+  it('leaves it to an open dropdown, but not to an open accordion', () => {
+    const picking = makeState({ toposcope: { pickingCenter: true } });
+
+    // A modal hidden for a pick on the map keeps its open accordion section.
+    const header = document.createElement('button');
+
+    header.setAttribute('aria-expanded', 'true');
+
+    const menu = document.createElement('div');
+
+    menu.className = 'dropdown-menu show';
+
+    document.body.append(header);
+
+    try {
+      expect(handleEvent(esc(), picking)).toEqual(
+        toposcopeSetPickingCenter(false),
+      );
+
+      document.body.append(menu);
+
+      expect(handleEvent(esc(), picking)).toBeUndefined();
+    } finally {
+      header.remove();
+
+      menu.remove();
+    }
   });
 
   it('leaves the panorama picking before anything else', () => {

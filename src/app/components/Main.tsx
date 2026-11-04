@@ -8,6 +8,7 @@ import { EventsLayer } from '@features/events/components/EventsLayer.js';
 import { eventsLayerOnSelector } from '@features/events/model/selectors.js';
 import { GalleryModals } from '@features/gallery/components/GalleryModals.js';
 import { GalleryPicker } from '@features/gallery/components/GalleryPicker.js';
+import { GalleryPositionPicking } from '@features/gallery/components/GalleryPositionPicking.js';
 import { GalleryResult } from '@features/gallery/components/GalleryResult.js';
 import { isUploadablePicture } from '@features/gallery/galleryUtils.js';
 import { usePictureDropHandler } from '@features/gallery/hooks/usePictureDropHandler.js';
@@ -47,6 +48,7 @@ import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import { isDropdownOpen } from '@shared/dropdownOpen.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
@@ -931,7 +933,7 @@ export function Main(): ReactElement {
       el = el.parentElement;
     }
 
-    if (document.querySelector('*[aria-expanded=true]') !== null) {
+    if (isDropdownOpen()) {
       e.stopPropagation();
 
       document.body.click();
@@ -1326,7 +1328,7 @@ export function Main(): ReactElement {
 
             {selectingMapArea && <MapAreaSelectionResult />}
 
-            {/* TODO should not be extra just because for position picking */}
+            {pickingPosition && <GalleryPositionPicking />}
 
             <GalleryResult />
           </TheMap>

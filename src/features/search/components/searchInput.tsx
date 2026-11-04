@@ -11,10 +11,7 @@ export const suggestDelayMs = 300;
 /**
  * A caret-less dropdown toggle for menus that are driven by an input inside
  * them. The toggle's `onClick` is dropped — the input's focus and the caret
- * button open and close the menu — but the rest of the props, `aria-expanded`
- * above all, must reach the DOM: `Main.tsx` swallows a click on the map while
- * `[aria-expanded=true]` is present anywhere, so a menu that hides it lets the
- * click that dismisses it act on the map as well.
+ * button open and close the menu; the rest of the props reach the DOM.
  */
 export const HideArrow = forwardRef<
   HTMLSpanElement,

@@ -1,33 +1,39 @@
+import type { UnknownAction } from '@reduxjs/toolkit';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
+import { useDispatch } from 'react-redux';
 
 type Props = {
   position: LatLon | null;
-  onPick: (position: LatLon) => void;
+  /** Stages a place; dispatched on a map click and at the end of a drag. */
+  pickAction: (position: LatLon) => UnknownAction;
   faIcon: ReactElement;
   color?: string;
 };
 
 /**
  * A picking mode's pending answer: a map click puts the marker there, dragging
- * moves it, and the mode's `PickingMenu` confirms it.
+ * moves it, and the mode's `PickingMenu` confirms it. Mount it only while the
+ * mode picks — it takes the map's clicks.
  */
 export function PickMarker({
   position,
-  onPick,
+  pickAction,
   faIcon,
   color,
 }: Props): ReactElement | null {
+  const dispatch = useDispatch();
+
   useMapEvent(
     'click',
     useCallback(
       ({ latlng }: LeafletMouseEvent) => {
-        onPick({ lat: latlng.lat, lon: latlng.lng });
+        dispatch(pickAction({ lat: latlng.lat, lon: latlng.lng }));
       },
-      [onPick],
+      [dispatch, pickAction],
     ),
   );
 
@@ -35,9 +41,9 @@ export function PickMarker({
     (e: DragEndEvent) => {
       const { lat, lng } = e.target.getLatLng();
 
-      onPick({ lat, lon: lng });
+      dispatch(pickAction({ lat, lon: lng }));
     },
-    [onPick],
+    [dispatch, pickAction],
   );
 
   return (

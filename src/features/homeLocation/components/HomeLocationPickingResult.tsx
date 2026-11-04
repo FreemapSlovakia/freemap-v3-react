@@ -1,38 +1,18 @@
 import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
-import { RichMarker } from '@shared/components/RichMarker.js';
+import { PickMarker } from '@shared/components/PickMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { LeafletMouseEvent } from 'leaflet';
-import { type ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
 import { FaHome } from 'react-icons/fa';
-import { useMapEvent } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
 
-export function HomeLocationPickingResult(): ReactElement | null {
-  const dispatch = useDispatch();
-
-  useMapEvent(
-    'click',
-    useCallback(
-      ({ latlng }: LeafletMouseEvent) => {
-        dispatch(
-          setSelectingHomeLocation({ lat: latlng.lat, lon: latlng.lng }),
-        );
-      },
-      [dispatch],
-    ),
+export function HomeLocationPickingResult(): ReactElement {
+  const position = useAppSelector(
+    (state) => state.homeLocation.selectingHomeLocation || null,
   );
 
-  const selectingHomeLocation = useAppSelector(
-    (state) => state.homeLocation.selectingHomeLocation,
-  );
-
-  return !selectingHomeLocation ? null : (
-    <RichMarker
-      position={{
-        lat: selectingHomeLocation.lat,
-        lng: selectingHomeLocation.lon,
-      }}
-      interactive={false}
+  return (
+    <PickMarker
+      position={position}
+      pickAction={setSelectingHomeLocation}
       faIcon={<FaHome />}
     />
   );

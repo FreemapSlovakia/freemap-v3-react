@@ -103,7 +103,7 @@ function preventDefault(e: { preventDefault: () => void }) {
 /**
  * Focus that is not the box's to take: somewhere text goes, or a modal's own —
  * which is bounced straight back (`enforceFocus`), leaving the list showing
- * behind the backdrop and its `aria-expanded` swallowing the next map click.
+ * behind the backdrop and swallowing the next map click.
  */
 function holdsFocus(el: Element | null): boolean {
   return (

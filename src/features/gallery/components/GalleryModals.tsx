@@ -1,11 +1,7 @@
 import { showGalleryViewerSelector } from '@app/store/selectors.js';
-import { useMap } from '@features/map/hooks/useMap.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { LeafletMouseEvent } from 'leaflet';
 import { type ReactElement, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { gallerySetPickingPosition } from '../model/actions.js';
 import './gallery.css';
 
 const galleryViewerModalFactory = () =>
@@ -21,13 +17,9 @@ const galleryUploadModalFactory = () =>
   );
 
 export function GalleryModals(): ReactElement {
-  const dispatch = useDispatch();
-
   const pickingPositionForId = useAppSelector(
     (state) => state.gallery.pickingPositionForId,
   );
-
-  const isPickingPosition = pickingPositionForId !== null;
 
   const showGalleryViewer = useAppSelector(showGalleryViewerSelector);
 
@@ -36,28 +28,6 @@ export function GalleryModals(): ReactElement {
       state.main.activeModal?.type === 'gallery-upload' &&
       state.gallery.pickingPositionForId === null,
   );
-
-  const map = useMap();
-
-  useEffect(() => {
-    if (!map) {
-      return;
-    }
-
-    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
-      if (isPickingPosition) {
-        dispatch(
-          gallerySetPickingPosition({ lat: latlng.lat, lon: latlng.lng }),
-        );
-      }
-    };
-
-    map.on('click', handleMapClick);
-
-    return () => {
-      map.off('click', handleMapClick);
-    };
-  }, [dispatch, isPickingPosition, map]);
 
   const pickedItemId = useRef<number | null>(null);
 
