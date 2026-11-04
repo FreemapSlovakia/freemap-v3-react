@@ -16,7 +16,7 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     choosePicture: 'Kép kiválasztása',
     pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
     description: 'Rólam',
-    publicFields: 'Megjelenítés a profilomon',
+    publicFields: 'Megjelenítés a nyilvános profilomon',
   },
   roleNames: {},
   appTokens: { scopeNames: {} },
