@@ -171,7 +171,7 @@ export function GalleryEditForm({
             value={model.dirtyPosition}
           />
 
-          <Button onClick={onPositionPick}>
+          <Button variant="secondary" onClick={onPositionPick}>
             <FaMapMarkerAlt /> <Text m={gm} k="editForm.setLocation" />
           </Button>
         </InputGroup>

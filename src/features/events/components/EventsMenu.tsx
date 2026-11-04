@@ -37,11 +37,9 @@ export default function EventsMenu(): ReactElement {
 
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
 
-  // Collapsed until opened: the layer is on for first visits, and the
-  // toolbar shouldn't take the room then.
   const [hidden, setHidden] = usePersistentBoolean(
     'fm.eventsMenu.collapsed',
-    true,
+    false,
   );
 
   return (

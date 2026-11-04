@@ -30,7 +30,8 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
   ));
 
   const stats = [
-    event.distance !== null && `${(event.distance / 1000).toFixed(1)} km`,
+    event.distance !== null &&
+      `${new Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(event.distance / 1000)} km`,
     event.duration !== null && formatDuration(event.duration, language),
     event.ascent !== null && `↗ ${event.ascent} m`,
     event.descent !== null && `↘ ${event.descent} m`,

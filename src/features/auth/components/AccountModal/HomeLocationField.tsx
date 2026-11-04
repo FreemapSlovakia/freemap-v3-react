@@ -40,6 +40,7 @@ export function HomeLocationField(): ReactElement {
         </span>
 
         <Button
+          variant="secondary"
           size="sm"
           className="ms-auto"
           disabled={!online}

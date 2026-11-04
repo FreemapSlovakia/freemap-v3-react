@@ -1,3 +1,4 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type EventItem,
@@ -89,6 +90,17 @@ export const eventsReducer = createReducer(initialState, (builder) => {
       state.pickPosition = null;
 
       state.pickingStart = false;
+    })
+    // Picking belongs to the dialog that asked for it, which stays open
+    // throughout; once another one opens (Back, a link) nobody takes the point.
+    .addCase(setActiveModal, (state) => {
+      state.pickingStart = false;
+
+      state.pickPosition = null;
+
+      state.pickedStart = null;
+
+      state.pickRadius = null;
     })
     .addCase(eventsStartPicked, (state, { payload }) => {
       state.pickedStart = payload;

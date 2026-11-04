@@ -11,6 +11,7 @@ import {
 } from '@features/myMaps/model/selectors.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -126,10 +127,11 @@ function Choice<T extends string>({
   onChange: (value: T) => void;
 }): ReactElement {
   return (
-    <Form.Group>
+    // Alone on its line, which the stacking measure needs.
+    <Form.Group className="mb-3">
       <Form.Label className="d-block">{label}</Form.Label>
 
-      <ToggleButtonGroup
+      <FitToggleButtonGroup
         type="radio"
         name={name}
         value={value}
@@ -145,7 +147,7 @@ function Choice<T extends string>({
             {text}
           </ToggleButton>
         ))}
-      </ToggleButtonGroup>
+      </FitToggleButtonGroup>
     </Form.Group>
   );
 }
@@ -493,6 +495,9 @@ export default function EventFormModal({ show }: Props): ReactElement {
     fillingFor.current = null;
 
     if (openKey === null) {
+      // A failed fetch is tried again on the next opening.
+      setFetched(undefined);
+
       return;
     }
 
@@ -821,6 +826,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
               />
 
               <Button
+                variant="secondary"
                 onClick={() => {
                   // A point already set starts there, to be moved.
                   dispatch(eventsSetPickPosition(startPoint));
@@ -856,79 +862,77 @@ export default function EventFormModal({ show }: Props): ReactElement {
             </ToggleButtonGroup>
           </Form.Group>
 
-          <div className="d-flex flex-wrap gap-3 mb-3">
-            <Choice
-              name="event-difficulty"
-              label={
+          <Choice
+            name="event-difficulty"
+            label={
+              <>
+                {DIFFICULTY_ICON} {em?.form.difficulty}
+              </>
+            }
+            value={draft.difficulty}
+            options={[
+              ['', em?.notSaid],
+              ...DIFFICULTIES.map((d): [Difficulty, ReactNode] => [
+                d,
                 <>
-                  {DIFFICULTY_ICON} {em?.form.difficulty}
-                </>
-              }
-              value={draft.difficulty}
-              options={[
-                ['', em?.notSaid],
-                ...DIFFICULTIES.map((d): [Difficulty, ReactNode] => [
-                  d,
-                  <>
-                    {DIFFICULTY_ICONS[d]} {em?.difficulty[d]}
-                  </>,
-                ]),
-              ]}
-              onChange={(difficulty) => set({ difficulty })}
-            />
+                  {DIFFICULTY_ICONS[d]} {em?.difficulty[d]}
+                </>,
+              ]),
+            ]}
+            onChange={(difficulty) => set({ difficulty })}
+          />
 
-            <Choice
-              name="event-dogs"
-              label={
+          <Choice
+            name="event-dogs"
+            label={
+              <>
+                <FaDog /> {em?.form.dogs}
+              </>
+            }
+            value={draft.dogs}
+            options={[
+              ['', em?.notSaid],
+              [
+                'yes',
                 <>
-                  <FaDog /> {em?.form.dogs}
-                </>
-              }
-              value={draft.dogs}
-              options={[
-                ['', em?.notSaid],
-                [
-                  'yes',
-                  <>
-                    <FaCheck /> {em?.form.dogsWelcome}
-                  </>,
-                ],
-                [
-                  'no',
-                  <>
-                    <FaBan /> {em?.form.dogsNotAllowed}
-                  </>,
-                ],
-              ]}
-              onChange={(dogs) => set({ dogs })}
-            />
+                  <FaCheck /> {em?.form.dogsWelcome}
+                </>,
+              ],
+              [
+                'no',
+                <>
+                  <FaBan /> {em?.form.dogsNotAllowed}
+                </>,
+              ],
+            ]}
+            onChange={(dogs) => set({ dogs })}
+          />
 
-            <Choice
-              name="event-children"
-              label={
+          <Choice
+            name="event-children"
+            label={
+              <>
+                <FaChild /> {em?.form.children}
+              </>
+            }
+            value={draft.children}
+            options={[
+              ['', em?.notSaid],
+              [
+                'yes',
                 <>
-                  <FaChild /> {em?.form.children}
-                </>
-              }
-              value={draft.children}
-              options={[
-                ['', em?.notSaid],
-                [
-                  'yes',
-                  <>
-                    <FaCheck /> {em?.form.childrenSuitable}
-                  </>,
-                ],
-                [
-                  'no',
-                  <>
-                    <FaBan /> {em?.form.childrenNotSuitable}
-                  </>,
-                ],
-              ]}
-              onChange={(children) => set({ children })}
-            />
-          </div>
+                  <FaCheck /> {em?.form.childrenSuitable}
+                </>,
+              ],
+              [
+                'no',
+                <>
+                  <FaBan /> {em?.form.childrenNotSuitable}
+                </>,
+              ],
+            ]}
+            onChange={(children) => set({ children })}
+          />
 
           <div className="d-flex flex-wrap gap-3 mb-3">
             <Form.Group controlId="eventDistance">

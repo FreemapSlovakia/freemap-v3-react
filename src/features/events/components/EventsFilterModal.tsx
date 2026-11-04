@@ -10,6 +10,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { getCurrentPosition, latLonToString } from '@shared/geoutils.js';
@@ -237,6 +238,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
   const [children, setChildren] = useState<boolean>();
 
+  const [unsaid, setUnsaid] = useState(false);
+
   const [distance, setDistance] = useState(toRangeDraft(undefined));
 
   const [duration, setDuration] = useState(toRangeDraft(undefined));
@@ -261,6 +264,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
       setDogs(filter.dogs);
 
       setChildren(filter.children);
+
+      setUnsaid(Boolean(filter.unsaid));
 
       setDistance(toRangeDraft(filter.distance));
 
@@ -326,6 +331,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
         difficulty: difficulty.length ? difficulty : undefined,
         dogs,
         children,
+        unsaid: unsaid || undefined,
         distance: fromRangeDraft(distance),
         duration: fromRangeDraft(duration),
         ascent: fromRangeDraft(ascent),
@@ -390,7 +396,10 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                 onChange={(e) => setPlace(e.currentTarget.value)}
               />
 
-              <InputGroup.Text>{em?.filter.within}</InputGroup.Text>
+              {/* Words only from `sm`: the row is too wide for a phone. */}
+              <InputGroup.Text className="d-none d-sm-flex">
+                {em?.filter.within}
+              </InputGroup.Text>
 
               <Form.Control
                 type="number"
@@ -406,21 +415,28 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
               <InputGroup.Text>km</InputGroup.Text>
 
-              <Button
-                onClick={() => {
-                  dispatch(eventsSetPickPosition(point));
+              <LongPressTooltip label={em?.form.setLocation} breakpoint="sm">
+                {({ props, label, labelClassName }) => (
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      dispatch(eventsSetPickPosition(point));
 
-                  dispatch(
-                    eventsSetPickRadius(
-                      radiusValid ? radiusKm : DEFAULT_RADIUS,
-                    ),
-                  );
+                      dispatch(
+                        eventsSetPickRadius(
+                          radiusValid ? radiusKm : DEFAULT_RADIUS,
+                        ),
+                      );
 
-                  dispatch(eventsSetPickingStart(true));
-                }}
-              >
-                <FaMapMarkerAlt /> {em?.form.setLocation}
-              </Button>
+                      dispatch(eventsSetPickingStart(true));
+                    }}
+                    {...props}
+                  >
+                    <FaMapMarkerAlt />{' '}
+                    <span className={labelClassName}>{label}</span>
+                  </Button>
+                )}
+              </LongPressTooltip>
 
               {/* In an input group a Dropdown renders no wrapper of its own. */}
               <Dropdown
@@ -433,7 +449,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                   }
                 }}
               >
-                <Dropdown.Toggle split variant="primary" />
+                <Dropdown.Toggle split variant="secondary" />
 
                 <FmDropdownMenu>
                   <Dropdown.Item as="button" type="button" eventKey="current">
@@ -592,6 +608,16 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               onChange={setAscent}
             />
           </div>
+
+          <Form.Check
+            id="eventsUnsaid"
+            className="mt-3"
+            checked={unsaid}
+            onChange={(e) => setUnsaid(e.currentTarget.checked)}
+            label={em?.filter.unsaid}
+          />
+
+          <Form.Text>{em?.filter.unsaidHint}</Form.Text>
         </Modal.Body>
 
         <FmModalFooter>

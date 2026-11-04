@@ -66,6 +66,8 @@ export type EventsMessages = {
     childrenSuitable: string;
     from: string;
     to: string;
+    unsaid: string;
+    unsaidHint: string;
   };
   /** What the details show. */
   card: {

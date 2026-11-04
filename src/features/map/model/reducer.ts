@@ -124,8 +124,7 @@ const LAT = 48.70714112;
 const LON = 19.49950112;
 
 export const mapInitialState: MapState = {
-  // Events on for a first visit, so the feature is found.
-  layers: ['X', EVENTS_LAYER],
+  layers: ['X'],
   lat: LAT,
   lon: LON,
   zoom: 8,

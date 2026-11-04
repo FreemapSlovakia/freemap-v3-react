@@ -1,7 +1,11 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { mapsLoad, mapsLoaded } from '@features/myMaps/model/actions.js';
+import {
+  mapsLoad,
+  mapsLoaded,
+  mapsLoadFailed,
+} from '@features/myMaps/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import type { Dispatch } from 'redux';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
@@ -103,8 +107,10 @@ export const eventsOpenProcessor: Processor<typeof eventsOpen> = {
  * Selects the opened event again once its map is in: replacing the map's
  * contents clears the selection, and with it the event's details.
  */
-export const eventsOpenedProcessor: Processor<typeof mapsLoaded> = {
-  actionCreator: mapsLoaded,
+export const eventsOpenedProcessor: Processor<
+  typeof mapsLoaded | typeof mapsLoadFailed
+> = {
+  actionCreator: [mapsLoaded, mapsLoadFailed],
   handle({ getState, dispatch, action }) {
     const { opening } = getState().events;
 
@@ -112,9 +118,11 @@ export const eventsOpenedProcessor: Processor<typeof mapsLoaded> = {
       return;
     }
 
+    // A failed load is done with too, or the event would be selected whenever
+    // that map is loaded later.
     dispatch(eventsOpenDone());
 
-    if (action.payload.meta.id === opening.mapId) {
+    if (mapsLoaded.match(action) && action.payload.meta.id === opening.mapId) {
       dispatch(selectFeature({ type: 'event', id: opening.id }));
     }
   },

@@ -20,6 +20,8 @@ export interface EventsFilter {
   dogs?: boolean;
   /** Only events that said they suit children, or that they don't; unset, any. */
   children?: boolean;
+  /** Lets events that leave transport, difficulty or a range's stat unsaid through. */
+  unsaid?: boolean;
 }
 
 const isEmptyRange = (r: Range | undefined) =>
@@ -159,6 +161,10 @@ export function filterToQuery(f: EventsFilter): [string, string][] {
     parts.push(['events-children', f.children ? '1' : '0']);
   }
 
+  if (f.unsaid) {
+    parts.push(['events-unsaid', '1']);
+  }
+
   for (const [key, range] of [
     ['events-length', f.distance],
     ['events-duration', f.duration],
@@ -199,6 +205,7 @@ export function filterFromQuery(
     difficulty: difficulty.length ? difficulty : undefined,
     dogs: parseYesNo(query['events-dogs']),
     children: parseYesNo(query['events-children']),
+    unsaid: query['events-unsaid'] === '1' || undefined,
   };
 
   return Object.fromEntries(
@@ -278,6 +285,10 @@ export function filterToRequest(
 
   if (f.children !== undefined) {
     params['children'] = f.children ? '1' : '0';
+  }
+
+  if (f.unsaid) {
+    params['unsaid'] = '1';
   }
 
   return params;

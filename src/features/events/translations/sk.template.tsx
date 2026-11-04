@@ -92,6 +92,9 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     childrenSuitable: 'Vhodné pre deti',
     from: 'od',
     to: 'do',
+    unsaid: 'Vrátane akcií, ktoré to neuvádzajú',
+    unsaidHint:
+      'Doprava, náročnosť, dĺžka, trvanie a stúpanie: akcia, ktorá ich neuvádza, sa tiež zobrazí. Psy a deti sa filtrujú presne.',
   },
   card: {
     unlisted: 'Nezverejnená',

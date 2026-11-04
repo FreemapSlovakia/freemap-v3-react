@@ -88,6 +88,9 @@ const en: EventsMessages = {
     childrenSuitable: 'Suitable for children',
     from: 'from',
     to: 'to',
+    unsaid: 'Include events that don’t say',
+    unsaidHint:
+      'Transport, difficulty, length, duration and ascent: an event that leaves them out still matches. Dogs and children stay strict.',
   },
   card: {
     unlisted: 'Unlisted',
