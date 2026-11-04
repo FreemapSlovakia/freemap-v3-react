@@ -5,6 +5,7 @@ import {
   knownValues,
   RoleSchema,
 } from '@features/auth/model/types.js';
+import { namedRoles } from '@features/auth/translations/namedRoles.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import {
   galleryRequestImage,
@@ -26,13 +27,7 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
 import { Alert, Badge, Image, Modal, Spinner, Table } from 'react-bootstrap';
-import {
-  FaCamera,
-  FaGem,
-  FaUser,
-  FaUserEdit,
-  FaUserShield,
-} from 'react-icons/fa';
+import { FaCamera, FaGem, FaUser, FaUserEdit } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { useUserProfileMessages } from '../translations/useUserProfileMessages.js';
@@ -87,6 +82,8 @@ export default function UserProfileModal({ show }: Props): ReactElement {
   const userId = modal?.id ?? null;
 
   const myId = useAppSelector((state) => state.auth.user?.id);
+
+  const language = useAppSelector((state) => state.l10n.language);
 
   const [fetched, setFetched] = useState<
     | { userId: number; type: 'error'; error: unknown }
@@ -231,11 +228,13 @@ export default function UserProfileModal({ show }: Props): ReactElement {
             {/* Not a table row: a long list would squeeze every label. */}
             {state.profile.roles.length > 0 && (
               <div className="d-flex flex-wrap gap-1 mb-3">
-                {state.profile.roles.map((role) => (
-                  <Badge key={role} bg="secondary">
-                    <FaUserShield /> {am?.roleNames[role] ?? role}
-                  </Badge>
-                ))}
+                {namedRoles(state.profile.roles, am, language).map(
+                  ({ role, name }) => (
+                    <Badge key={role} bg="secondary">
+                      {name}
+                    </Badge>
+                  ),
+                )}
               </div>
             )}
 

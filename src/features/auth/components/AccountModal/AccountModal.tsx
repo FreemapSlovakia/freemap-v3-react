@@ -6,6 +6,7 @@ import {
   authStartLogout,
 } from '@features/auth/model/actions.js';
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
+import { namedRoles } from '@features/auth/translations/namedRoles.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
@@ -213,13 +214,13 @@ export default function AccountModal({ show }: Props): ReactElement | null {
 
               <Accordion.Body>
                 <ul className="mb-0">
-                  {user.roles.map((role) => (
-                    <li key={role}>
-                      <HintTooltip hint={role}>
-                        {am?.roleNames[role] ?? role}
-                      </HintTooltip>
-                    </li>
-                  ))}
+                  {namedRoles(user.roles, am, language).map(
+                    ({ role, name }) => (
+                      <li key={role}>
+                        <HintTooltip hint={role}>{name}</HintTooltip>
+                      </li>
+                    ),
+                  )}
                 </ul>
               </Accordion.Body>
             </Accordion.Item>
