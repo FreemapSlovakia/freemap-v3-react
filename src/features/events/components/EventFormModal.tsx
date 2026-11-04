@@ -843,9 +843,11 @@ export default function EventFormModal({ show }: Props): ReactElement {
               />
             )}
 
-            <Form.Text>
-              {em?.form.markdownHint} {em?.form.contactHint}
-            </Form.Text>
+            {!previewing && (
+              <Form.Text>
+                {em?.form.markdownHint} {em?.form.contactHint}
+              </Form.Text>
+            )}
           </Form.Group>
 
           <Form.Group controlId="eventCover" className="mb-3">
