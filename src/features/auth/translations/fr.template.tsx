@@ -9,6 +9,7 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     email: 'E-mail',
     description: 'À propos de moi',
     publicFields: 'Afficher sur mon profil public',
+    publicProfile: 'Mon profil public',
     delete: 'Supprimer le compte',
     deleteWarning:
       'Voulez-vous vraiment supprimer votre compte ? Cela supprimera toutes vos photos, vos commentaires et évaluations de photos, vos cartes et vos appareils suivis.',

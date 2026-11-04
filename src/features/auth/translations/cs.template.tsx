@@ -21,6 +21,7 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     description: 'O mně',
     roles: 'Moje role',
     publicFields: 'Zobrazit na mém veřejném profilu',
+    publicProfile: 'Můj veřejný profil',
   },
   roleNames: {
     userManager: 'Správce uživatelů',

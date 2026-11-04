@@ -21,6 +21,7 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     description: 'Über mich',
     roles: 'Meine Rollen',
     publicFields: 'Auf meinem öffentlichen Profil zeigen',
+    publicProfile: 'Mein öffentliches Profil',
   },
   roleNames: {
     userManager: 'Benutzerverwalter',

@@ -33,6 +33,8 @@ export type AuthMessages = {
     roles: string;
     /** Labels the checkboxes of what the public profile shows. */
     publicFields: string;
+    /** Opens one's own profile as others see it. */
+    publicProfile: string;
   };
   roleNames: Record<Role, string>;
   appTokens: {

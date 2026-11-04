@@ -17,6 +17,7 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
     pictureTooLarge: 'Zdjęcie jest za duże. Maksymalny rozmiar to 5 MB.',
     description: 'O mnie',
     publicFields: 'Widoczne w profilu publicznym',
+    publicProfile: 'Profil publiczny',
   },
   roleNames: {},
   appTokens: { scopeNames: {} },

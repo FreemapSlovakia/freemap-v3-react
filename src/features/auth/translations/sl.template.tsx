@@ -9,6 +9,7 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     email: 'E-pošta',
     description: 'O meni',
     publicFields: 'Prikaži na mojem javnem profilu',
+    publicProfile: 'Moj javni profil',
     delete: 'Izbriši račun',
     deleteWarning:
       'Ali res želite izbrisati svoj račun? Skupaj z njim bodo odstranjene vse vaše fotografije, komentarji in ocene fotografij, vaši zemljevidi in sledene naprave.',

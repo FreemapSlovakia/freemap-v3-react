@@ -9,6 +9,7 @@ import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js'
 import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { MarkdownField } from '@shared/components/MarkdownField.js';
+import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -33,6 +34,10 @@ export function PersonalInfoSection(): ReactElement | null {
   const am = useAuthMessages();
 
   const user = useAppSelector((state) => state.auth.user);
+
+  const activeModal = useAppSelector((state) => state.main.activeModal);
+
+  const modalLink = useModalLink();
 
   const pictureCacheBust = usePictureCacheBust();
 
@@ -285,9 +290,22 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>
-          <Text m={am} k="account.publicFields" />
-        </Form.Label>
+        <div className="d-flex align-items-baseline gap-2">
+          <Form.Label className="me-auto">
+            <Text m={am} k="account.publicFields" />
+          </Form.Label>
+
+          {/* Close there comes back here. */}
+          <a
+            {...modalLink({
+              type: 'user',
+              id: user.id,
+              returnTo: activeModal ?? undefined,
+            })}
+          >
+            <Text m={am} k="account.publicProfile" />
+          </a>
+        </div>
 
         <div>
           {offeredFields.map((field) => (

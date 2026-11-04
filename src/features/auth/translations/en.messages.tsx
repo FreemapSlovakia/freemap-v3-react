@@ -20,6 +20,7 @@ const en: AuthMessages = {
     setHomeLocation: 'Set on the map',
     roles: 'My roles',
     publicFields: 'Show on my public profile',
+    publicProfile: 'My public profile',
   },
   roleNames: {
     userManager: 'User manager',
