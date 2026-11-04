@@ -112,6 +112,8 @@ export type EventsMessages = {
     /** The when scale's unit. */
     days: string;
     mine: Record<MineCategory, string>;
+    /** An event naming more than one transport. */
+    several: string;
     yes: string;
     no: string;
   };

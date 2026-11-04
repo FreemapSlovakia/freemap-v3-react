@@ -1,3 +1,4 @@
+import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
 import color from 'color';
 import z from 'zod';
 import type { Difficulty, EventItem } from './actions.js';
@@ -5,6 +6,7 @@ import type { Difficulty, EventItem } from './actions.js';
 export const EventsColorizeBySchema = z.enum([
   'when',
   'mine',
+  'transport',
   'distance',
   'duration',
   'ascent',
@@ -42,6 +44,26 @@ export const MINE_COLORS = {
 } as const;
 
 export type MineCategory = keyof typeof MINE_COLORS;
+
+/** By family: walking greens, cycling blues, motor reds. */
+export const TRANSPORT_COLORS: Partial<Record<TransportTypeMsgKey, string>> = {
+  hiking: '#198754',
+  easyhike: '#20c997',
+  foot: '#5c8a1e',
+  stroller: '#a3c94a',
+  bike: '#0d6efd',
+  ebike: '#6ea8fe',
+  gravelbike: '#0dcaf0',
+  mtb: '#084298',
+  racingbike: '#3d5afe',
+  car: '#dc3545',
+  car4wd: '#8b1e2b',
+  carnotoll: '#fd7e14',
+  motorcycle: '#d63384',
+};
+
+/** An event naming more than one transport. */
+export const SEVERAL_TRANSPORTS_COLOR = EVENT_COLOR;
 
 export const YES_NO_COLORS = {
   yes: YES_COLOR,
@@ -162,6 +184,12 @@ export function eventColor(
 
     case 'mine':
       return MINE_COLORS[mineCategory(event, userId)];
+
+    case 'transport':
+      return event.transports.length > 1
+        ? SEVERAL_TRANSPORTS_COLOR
+        : (TRANSPORT_COLORS[event.transports[0] as TransportTypeMsgKey] ??
+            MUTED_COLOR);
 
     case 'distance':
     case 'duration':

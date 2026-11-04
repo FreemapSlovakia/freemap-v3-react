@@ -1,3 +1,5 @@
+import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
+import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { formatScaleNumber } from '@shared/colorizers/colorize.js';
 import {
   LegendGradientBar,
@@ -6,10 +8,14 @@ import {
   LegendTick,
 } from '@shared/components/Legend.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { FaCalendarDay, FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { DIFFICULTIES, eventsToggleLegend } from '../model/actions.js';
+import {
+  DIFFICULTIES,
+  type EventItem,
+  eventsToggleLegend,
+} from '../model/actions.js';
 import {
   DIFFICULTY_COLORS,
   EVENT_SCALES,
@@ -18,10 +24,13 @@ import {
   HAPPENING_COLOR,
   MINE_COLORS,
   MUTED_COLOR,
+  SEVERAL_TRANSPORTS_COLOR,
+  TRANSPORT_COLORS,
   tOf,
   valueAt,
   YES_NO_COLORS,
 } from '../model/colorize.js';
+import { TRANSPORT_KINDS } from '../model/transports.js';
 import type { EventsMessages } from '../translations/EventsMessages.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 
@@ -32,16 +41,42 @@ const ICON = (
   </>
 );
 
-type Swatch = { color: string; label: string };
+type Swatch = { color: string; label: ReactNode };
 
-/** The categories of a mode with no scale, or those beside its scale. */
+/**
+ * The categories of a mode with no scale, or those beside its scale; for
+ * transport, only the kinds `events` name.
+ */
 function swatchesOf(
   by: EventsColorizeBy,
   em: EventsMessages | undefined,
+  rpm: RoutePlannerMessages | undefined,
+  events: EventItem[],
 ): Swatch[] {
   const c = em?.colorize;
 
   switch (by) {
+    case 'transport': {
+      const named = new Set(events.flatMap((e) => e.transports));
+
+      return [
+        ...TRANSPORT_KINDS.filter(({ kind }) => named.has(kind)).map(
+          ({ kind, icon }) => ({
+            color: TRANSPORT_COLORS[kind] ?? MUTED_COLOR,
+            label: (
+              <>
+                {icon} {rpm?.transportType[kind]}
+              </>
+            ),
+          }),
+        ),
+        ...(events.some((e) => e.transports.length > 1)
+          ? [{ color: SEVERAL_TRANSPORTS_COLOR, label: c?.several ?? '' }]
+          : []),
+        { color: MUTED_COLOR, label: em?.notSaid ?? '' },
+      ];
+    }
+
     case 'when':
       return [
         { color: MUTED_COLOR, label: c?.ended ?? '' },
@@ -101,6 +136,10 @@ export function EventsLegend(): ReactElement | null {
 
   const em = useEventsMessages();
 
+  const rpm = useRoutePlannerMessages();
+
+  const events = useAppSelector((state) => state.events.list);
+
   if (!by) {
     return null;
   }
@@ -118,7 +157,7 @@ export function EventsLegend(): ReactElement | null {
       onClose={() => dispatch(eventsToggleLegend(false))}
       className="flex-wrap align-items-center gap-2"
     >
-      {swatchesOf(by, em).map(({ color, label }, i) => (
+      {swatchesOf(by, em, rpm, events).map(({ color, label }, i) => (
         // Not by label: all are empty until the messages load.
         <LegendSwatch key={i} color={color} label={label} />
       ))}

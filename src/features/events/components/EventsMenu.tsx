@@ -27,6 +27,7 @@ import {
   FaRegCheckSquare,
   FaRegClock,
   FaRegSquare,
+  FaRoute,
   FaRulerHorizontal,
   FaTimes,
   FaUser,
@@ -49,6 +50,7 @@ import { EventsLegend } from './EventsLegend.js';
 const COLORIZE_ICONS: Record<EventsColorizeBy, ReactElement> = {
   when: <FaRegClock />,
   mine: <FaUser />,
+  transport: <FaRoute />,
   distance: <FaRulerHorizontal />,
   duration: <FaHourglassHalf />,
   ascent: <FaMountain />,

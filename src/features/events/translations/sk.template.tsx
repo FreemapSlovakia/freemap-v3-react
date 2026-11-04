@@ -137,6 +137,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     modes: {
       when: 'Termín',
       mine: 'Moje a ostatné',
+      transport: 'Doprava',
       distance: 'Dĺžka',
       duration: 'Trvanie',
       ascent: 'Stúpanie',
@@ -146,6 +147,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     },
     ended: 'Skončené',
     happening: 'Prebieha',
+    several: 'Viacero',
     days: 'dni',
     mine: {
       mine: 'Moje',

@@ -133,6 +133,7 @@ const en: EventsMessages = {
     modes: {
       when: 'When',
       mine: 'Mine and others',
+      transport: 'Transport',
       distance: 'Length',
       duration: 'Duration',
       ascent: 'Ascent',
@@ -142,6 +143,7 @@ const en: EventsMessages = {
     },
     ended: 'Ended',
     happening: 'Happening',
+    several: 'Several',
     days: 'days',
     mine: {
       mine: 'Mine',

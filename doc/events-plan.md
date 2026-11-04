@@ -153,9 +153,10 @@ from the selection toolbar (**Edit**).
       A new source's first runs land in a review list, not on the map. No
       social networks — their terms forbid it.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
-      upcoming graded by how soon), mine and others, length, duration, ascent,
-      difficulty, dogs, children; a legend, the `eventsSettings` slice and
-      `events-cb=`. Transport is the marker's icon when an event names one.
+      upcoming graded by how soon), mine and others, transport, length,
+      duration, ascent, difficulty, dogs, children; a legend, the
+      `eventsSettings` slice and `events-cb=`. Transport is also the marker's
+      icon when an event names one.
 - [ ] Marker clustering.
 - [ ] **Copy link** on the event.
 - [ ] Follows and the _Who_ filter.
