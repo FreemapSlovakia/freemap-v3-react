@@ -91,6 +91,47 @@ function block(token: MarkedToken, link: LinkRenderer): ReactNode {
   }
 }
 
+/**
+ * A Slovak or Czech phone number, national (`0908 479 116`) or international
+ * (`+421 908 479 116`, `00421…`), spaced or not; nine digits after the prefix.
+ */
+// The character before is matched, not looked behind at: older Safari can't
+// parse a lookbehind, which would fail the whole module.
+const PHONE_RE =
+  /(^|[^\d+])((?:(?:\+|00)(42[01])[\s/]?|0)(\d{3})[\s/]?(\d{3})[\s/]?(\d{3}))(?!\d)/g;
+
+/** Plain text with its phone numbers as `tel:` links. */
+function phones(text: string, link: LinkRenderer): ReactNode {
+  const parts: ReactNode[] = [];
+
+  let last = 0;
+
+  for (const m of text.matchAll(PHONE_RE)) {
+    const start = m.index + m[1]!.length;
+
+    parts.push(text.slice(last, start));
+
+    parts.push(
+      <Fragment key={start}>
+        {link({
+          href: `tel:+${m[3] ?? '421'}${m[4]}${m[5]}${m[6]}`,
+          children: m[2],
+        })}
+      </Fragment>,
+    );
+
+    last = start + m[2]!.length;
+  }
+
+  if (last === 0) {
+    return text;
+  }
+
+  parts.push(text.slice(last));
+
+  return parts;
+}
+
 function inline(tokens: Token[] | undefined, link: LinkRenderer): ReactNode {
   return tokens?.map((t, i) => {
     const token = t as MarkedToken;
@@ -99,7 +140,9 @@ function inline(tokens: Token[] | undefined, link: LinkRenderer): ReactNode {
       case 'text':
         return (
           <Fragment key={i}>
-            {token.tokens ? inline(token.tokens, link) : token.text}
+            {token.tokens
+              ? inline(token.tokens, link)
+              : phones(token.text, link)}
           </Fragment>
         );
 

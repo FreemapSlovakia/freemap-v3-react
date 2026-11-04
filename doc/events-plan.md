@@ -140,6 +140,18 @@ from the selection toolbar (**Edit**).
 
 ### Later
 
+- [ ] **AI harvester** of club calendars, on fm5 on a schedule. Per source (a
+      URL and its organizer account): fetch only what robots.txt allows,
+      politely, re-reading a page only when its hash changes; an LLM (Haiku)
+      extracts events into a fixed schema and formats the description as
+      Markdown in the hand-formatted house style (bold labels, lists, links on
+      their words, phone numbers as "+421 908 479 116", **Zdroj:** last),
+      dropping members-only events; Photon
+      geocodes the meeting place, marked approximate, and an event without a
+      usable place is skipped; a source key (URL + date) upserts through the
+      API with an `events:write` token, and events gone from the source go.
+      A new source's first runs land in a review list, not on the map. No
+      social networks — their terms forbid it.
 - [ ] Marker colour by status — ended / happening / upcoming, upcoming graded
       by how soon — then **Colour by** modes as the photos have (length,
       duration, ascent, difficulty, dogs, children), with a legend, an

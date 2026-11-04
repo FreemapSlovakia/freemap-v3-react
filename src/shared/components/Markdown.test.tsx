@@ -45,6 +45,20 @@ describe('Markdown', () => {
     );
   });
 
+  it('links phone numbers, national or international', () => {
+    const out = html(
+      'Mária 0908 479 116, Ján +421 905 412 877, Eva 0903181280, rok 2026',
+    );
+
+    expect(out).toContain('<a href="tel:+421908479116"');
+
+    expect(out).toContain('<a href="tel:+421905412877"');
+
+    expect(out).toContain('<a href="tel:+421903181280"');
+
+    expect(out).not.toContain('tel:+4212026');
+  });
+
   it('never emits markup or unsafe links', () => {
     const out = html(
       '<script>alert(1)</script> [x](javascript:alert(1)) ![i](https://e.com/i.png)',
