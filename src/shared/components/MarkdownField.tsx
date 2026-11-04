@@ -77,7 +77,7 @@ export function MarkdownField({
 
       {!previewing && (
         <Form.Text>
-          {m?.general.markdown.hint} {hint}
+          {m?.general.markdown.hint()} {hint}
         </Form.Text>
       )}
     </>

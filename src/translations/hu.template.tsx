@@ -60,7 +60,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     markdown: {
       write: 'Írás',
       preview: 'Előnézet',
-      hint: 'Markdown használható: **félkövér**, *dőlt*, [hivatkozás](https://…), - lista.',
+      hint: () => (
+        <>
+          A szöveg{' '}
+          <a
+            href="https://commonmark.org/help/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Markdown
+          </a>{' '}
+          segítségével formázható.
+        </>
+      ),
     },
     loading: 'Töltés…',
     ok: 'OK',

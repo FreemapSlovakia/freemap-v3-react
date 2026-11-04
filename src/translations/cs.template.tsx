@@ -62,7 +62,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     markdown: {
       write: 'Psát',
       preview: 'Náhled',
-      hint: 'Funguje Markdown: **tučně**, *kurzíva*, [odkaz](https://…), - seznam.',
+      hint: () => (
+        <>
+          Text můžete formátovat pomocí{' '}
+          <a
+            href="https://commonmark.org/help/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Markdownu
+          </a>
+          .
+        </>
+      ),
     },
     loading: 'Načítám…',
     ok: 'OK',

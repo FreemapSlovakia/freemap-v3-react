@@ -61,7 +61,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     markdown: {
       write: 'Schreiben',
       preview: 'Vorschau',
-      hint: 'Markdown funktioniert: **fett**, *kursiv*, [Link](https://…), - Liste.',
+      hint: () => (
+        <>
+          Der Text kann mit{' '}
+          <a
+            href="https://commonmark.org/help/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Markdown
+          </a>{' '}
+          formatiert werden.
+        </>
+      ),
     },
     loading: 'Lade…',
     ok: 'OK',

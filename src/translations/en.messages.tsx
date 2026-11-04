@@ -59,7 +59,19 @@ const messages: Messages = {
     markdown: {
       write: 'Write',
       preview: 'Preview',
-      hint: 'Markdown works: **bold**, *italics*, [link](https://…), - list.',
+      hint: () => (
+        <>
+          Text can be formatted with{' '}
+          <a
+            href="https://commonmark.org/help/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Markdown
+          </a>
+          .
+        </>
+      ),
     },
     loading: 'Loading…',
     ok: 'OK',

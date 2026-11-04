@@ -48,7 +48,7 @@ export type Messages = {
     markdown: {
       write: string;
       preview: string;
-      hint: string;
+      hint: () => JSX.Element;
     };
     loading: string;
     ok: string;

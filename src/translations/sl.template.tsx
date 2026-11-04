@@ -61,7 +61,19 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     markdown: {
       write: 'Pisanje',
       preview: 'Predogled',
-      hint: 'Markdown deluje: **krepko**, *ležeče*, [povezava](https://…), - seznam.',
+      hint: () => (
+        <>
+          Besedilo lahko oblikujete z{' '}
+          <a
+            href="https://commonmark.org/help/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Markdownom
+          </a>
+          .
+        </>
+      ),
     },
     loading: 'Nalaganje…',
     ok: 'V redu',
