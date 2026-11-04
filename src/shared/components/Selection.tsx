@@ -6,7 +6,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
-import { type ReactElement, type ReactNode, useEffect } from 'react';
+import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -42,6 +42,29 @@ export function Selection({
 
   const escapeKbd = useEscapeKbd(selectFeature(null));
 
+  const [labelEl, setLabelEl] = useState<HTMLSpanElement | null>(null);
+
+  // Measured, so only a label actually cut off gets the full one in a tooltip.
+  const [truncated, setTruncated] = useState(false);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: a longer label at the capped width resizes nothing, so the observer alone would miss it
+  useEffect(() => {
+    if (!labelEl) {
+      return;
+    }
+
+    const measure = () =>
+      setTruncated(labelEl.scrollWidth > labelEl.clientWidth);
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+
+    observer.observe(labelEl);
+
+    return () => observer.disconnect();
+  }, [labelEl, label]);
+
   return (
     <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
       <div />
@@ -50,14 +73,29 @@ export function Selection({
         <ButtonToolbar>
           {control}
 
-          <LongPressTooltip breakpoint="sm" label={label}>
+          {/* A cut-off label is named in full by the tooltip too. */}
+          <LongPressTooltip
+            breakpoint="sm"
+            label={label}
+            name={truncated ? label : undefined}
+          >
             {({ label, labelClassName, props }) => (
               <span
                 className="align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2"
                 {...props}
               >
                 {icon}
-                <span className={labelClassName}>{label}</span>
+                <span
+                  ref={setLabelEl}
+                  className={
+                    labelClassName === 'd-none'
+                      ? 'd-none'
+                      : 'd-inline-block text-truncate'
+                  }
+                  style={{ maxWidth: '20rem' }}
+                >
+                  {label}
+                </span>
               </span>
             )}
           </LongPressTooltip>
