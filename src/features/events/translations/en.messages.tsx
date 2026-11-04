@@ -45,10 +45,6 @@ const en: EventsMessages = {
     unavailable: 'This event can’t be loaded — it may have been deleted.',
     title: 'Title',
     description: 'Description',
-    write: 'Write',
-    preview: 'Preview',
-    markdownHint:
-      'Markdown works: **bold**, *italics*, [link](https://…), - list.',
     contactHint:
       'Say how to reach you — a phone number, an email or a chat group: events have no discussion yet.',
     cover: 'Cover image',

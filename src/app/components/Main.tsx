@@ -520,6 +520,12 @@ const galleryLeaderboardModalFactory = () =>
     '@features/gallery/components/GalleryLeaderboardModal.js'
   );
 
+const userProfileModalFactory = () =>
+  import(
+    /* webpackChunkName: "user-profile-modal" */
+    '@features/userProfile/components/UserProfileModal.js'
+  );
+
 const predefinedDrawingPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "predefined-drawing-properties-modal" */
@@ -1461,6 +1467,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'gallery-leaderboard'}
         factory={galleryLeaderboardModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'user'}
+        factory={userProfileModalFactory}
       />
 
       <AsyncModal

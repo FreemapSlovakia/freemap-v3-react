@@ -59,6 +59,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Podrobnost se liší podle země. Kde existuje národní laserový model, je blízké okolí ostré; jinde odpovídá globální 30m model.',
     },
     copyCode: 'Zkopírovat kód',
+    markdown: {
+      write: 'Psát',
+      preview: 'Náhled',
+      hint: 'Funguje Markdown: **tučně**, *kurzíva*, [odkaz](https://…), - seznam.',
+    },
     loading: 'Načítám…',
     ok: 'OK',
     preventShowingAgain: 'Už více nezobrazovat',

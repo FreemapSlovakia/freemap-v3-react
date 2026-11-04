@@ -56,6 +56,11 @@ const messages: Messages = {
         'Detail varies by country. Where a national laser-scanned model exists the near field is sharp; elsewhere a global 30 m model answers.',
     },
     copyCode: 'Copy code',
+    markdown: {
+      write: 'Write',
+      preview: 'Preview',
+      hint: 'Markdown works: **bold**, *italics*, [link](https://…), - list.',
+    },
     loading: 'Loading…',
     ok: 'OK',
     preventShowingAgain: "Don't show next time",

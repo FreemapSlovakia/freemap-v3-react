@@ -57,6 +57,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Il dettaglio varia da paese a paese. Dove esiste un modello nazionale da scansione laser il primo piano è nitido; altrove risponde un modello globale da 30 m.',
     },
     copyCode: 'Copia codice',
+    markdown: {
+      write: 'Scrittura',
+      preview: 'Anteprima',
+      hint: 'Markdown funziona: **grassetto**, *corsivo*, [link](https://…), - elenco.',
+    },
     loading: 'Caricamento…',
     ok: 'OK',
     preventShowingAgain: 'Non mostrare più',

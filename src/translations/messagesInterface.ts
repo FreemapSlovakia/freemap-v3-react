@@ -44,6 +44,12 @@ export type Messages = {
       coverage: string;
     };
     copyCode: string;
+    /** The Write/Preview switch of a Markdown text field. */
+    markdown: {
+      write: string;
+      preview: string;
+      hint: string;
+    };
     loading: string;
     ok: string;
     preventShowingAgain: string;

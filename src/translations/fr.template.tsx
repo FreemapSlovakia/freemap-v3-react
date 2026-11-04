@@ -76,6 +76,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     yes: 'Oui',
     no: 'Non',
     copyCode: 'Copier le code',
+    markdown: {
+      write: 'Écrire',
+      preview: 'Aperçu',
+      hint: 'Markdown fonctionne : **gras**, *italique*, [lien](https://…), - liste.',
+    },
     loading: 'Chargement…',
     ok: 'OK',
     preventShowingAgain: 'Ne plus afficher',

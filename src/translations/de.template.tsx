@@ -58,6 +58,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Die Genauigkeit hängt vom Land ab. Wo ein nationales Laserscan-Modell vorliegt, ist der Nahbereich scharf; sonst antwortet ein globales 30-m-Modell.',
     },
     copyCode: 'Code kopieren',
+    markdown: {
+      write: 'Schreiben',
+      preview: 'Vorschau',
+      hint: 'Markdown funktioniert: **fett**, *kursiv*, [Link](https://…), - Liste.',
+    },
     loading: 'Lade…',
     ok: 'OK',
     preventShowingAgain: 'Nicht erneut anzeigen',

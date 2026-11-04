@@ -53,7 +53,7 @@ The Account modal has four collapsible sections (below); from the buttons at the
 
 - Profile picture (choose / remove)
 - Name (required) and email address
-- "About me" description
+- "About me" description, in Markdown, with a Write/Preview switch; shown on the user profile
 - **Home position** — set on the map or removed, saved at once (outside the section's Save); offered by the route planner's Start/Finish menus and the events filter's **Near**. Without an account it is kept in the browser only; one set before logging in goes to an account that has none
 
 #### Login providers
@@ -84,6 +84,10 @@ Lets another application or a script use the Freemap API as the user, without a 
 - Terrain shading zooms 16+ (parametric shading at `https://terrain.tiles.freemap.sk`, and the detailed Slovak shading at `https://sk-hires-shading.tiles.freemap.sk`): the same, with the terrain-shading permission for the token. The detailed shading is also open to iD on openstreetmap.org.
 - Aerial imagery zoom 20 (the Slovak and Czech orthophoto at `https://ortofoto.tiles.freemap.sk`): the same, with the aerial permission. It is also open to iD on openstreetmap.org.
 - Locus Map and OruxMaps: the _Maps for GPS devices_ page installs the online maps into Locus from one link and downloads them for OruxMaps as `onlinemapsources.xml`; both carry the same maps. Logged in, either creates a token noted "Map apps" with the three tile permissions, which every later install reuses and resets to those permissions, so a premium account gets its premium zooms there. Renaming that token makes the next install create a new one. The page also lists every map's tile URL template for other apps.
+
+### User profile
+
+Clicking a user's name — a photo's author or commenter, an event's organizer, a leaderboard row — opens their profile: picture, "About me" (Markdown), member-since date, and counts of their photos, the photo comments they wrote and the public events they organize. **Photos on the map** filters the photo layer to that user's photos; on one's own profile **Edit profile** opens the account. URL path: `/#show=user/<id>`.
 
 ### Fullscreen
 

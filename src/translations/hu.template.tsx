@@ -57,6 +57,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'A részletesség országonként eltér. Ahol van országos lézerszkennelt modell, ott a közeli terep éles; máshol egy globális, 30 m-es modell felel.',
     },
     copyCode: 'Kód másolása',
+    markdown: {
+      write: 'Írás',
+      preview: 'Előnézet',
+      hint: 'Markdown használható: **félkövér**, *dőlt*, [hivatkozás](https://…), - lista.',
+    },
     loading: 'Töltés…',
     ok: 'OK',
     preventShowingAgain: 'Következő alkalommal ne jelenjék meg',

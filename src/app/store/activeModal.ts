@@ -148,6 +148,8 @@ export type ActiveModal =
   | { type: 'data-viewer-trace'; kind: TraceKind; legacy?: boolean }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
+  /** `returnTo` is what Close goes back to; it is not in the URL. */
+  | { type: 'user'; id: number; returnTo?: ActiveModal }
   | { type: 'wiki'; key: string };
 
 /**
@@ -177,6 +179,8 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
           : 'event-form';
     case 'gallery-viewer':
       return `gallery-viewer/${modal.id}`;
+    case 'user':
+      return `user/${modal.id}`;
     case 'wiki':
       return `wiki/${modal.key}`;
     default:
@@ -235,6 +239,13 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
       const id = Number(arg);
 
       return arg && Number.isFinite(id) ? { type: 'gallery-viewer', id } : null;
+    }
+    case 'user': {
+      const id = Number(arg);
+
+      return arg && Number.isInteger(id) && id > 0
+        ? { type: 'user', id }
+        : null;
     }
     case 'wmc': {
       // Legacy Wikimedia Commons deep links now open in the merged gallery

@@ -1,8 +1,19 @@
+import { setActiveModal } from '@app/store/actions.js';
+import { type ActiveModal, encodeActiveModal } from '@app/store/activeModal.js';
+import type { RootState } from '@app/store/store.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
+import { inAppLink } from '@shared/inAppLink.js';
 import type { ReactElement } from 'react';
-import { Image, OverlayTrigger, Popover } from 'react-bootstrap';
+import {
+  AlertLink,
+  Anchor,
+  Image,
+  OverlayTrigger,
+  Popover,
+} from 'react-bootstrap';
 import { FaGem } from 'react-icons/fa';
+import { useDispatch, useStore } from 'react-redux';
 
 type Props = {
   user: {
@@ -11,10 +22,32 @@ type Props = {
     hasPicture: boolean;
     premium: boolean;
   };
+  /** Inside an alert (a toast too): the name takes the alert's link style. */
+  inAlert?: boolean;
 };
 
-export function UserChip({ user }: Props): ReactElement {
+export function UserChip({ user, inAlert }: Props): ReactElement {
   const prm = usePremiumMessages();
+
+  const dispatch = useDispatch();
+
+  const store = useStore<RootState>();
+
+  // What is open is read on click: a subscription would re-render every chip.
+  const href = `#show=${encodeActiveModal({ type: 'user', id: user.id })}`;
+
+  const link = inAppLink(href, () => {
+    const { main, gallery } = store.getState();
+
+    // The photo viewer is not `main.activeModal`, so it is named apart.
+    const returnTo: ActiveModal | undefined =
+      main.activeModal ??
+      (gallery.activeImageId
+        ? { type: 'gallery-viewer', id: gallery.activeImageId }
+        : undefined);
+
+    dispatch(setActiveModal({ type: 'user', id: user.id, returnTo }));
+  });
 
   const src = `${process.env['API_URL']}/auth/users/${user.id}/picture`;
 
@@ -42,7 +75,13 @@ export function UserChip({ user }: Props): ReactElement {
           <Image className="me-1 w-6" src={src} roundedCircle />
         </OverlayTrigger>
       )}
-      <b>{user.name}</b>
+      {inAlert ? (
+        <AlertLink {...link}>{user.name}</AlertLink>
+      ) : (
+        <Anchor className="fw-bold text-decoration-none" {...link}>
+          {user.name}
+        </Anchor>
+      )}
       {user.premium && (
         // The sentence already puts a space after the chip, so the gem reaches
         // over it rather than adding a second. `position-relative` is load

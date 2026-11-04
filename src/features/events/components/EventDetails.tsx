@@ -113,7 +113,7 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
       </div>
 
       <div className="d-flex align-items-center">
-        <UserChip user={event.user} />
+        <UserChip user={event.user} inAlert />
       </div>
 
       {(icons.length > 0 || stats.length > 0) && (

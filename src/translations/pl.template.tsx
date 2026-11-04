@@ -59,6 +59,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Szczegółowość zależy od kraju. Tam, gdzie istnieje krajowy model z lotniczego skaningu laserowego, bliskie otoczenie jest ostre; gdzie indziej odpowiada globalny model 30 m.',
     },
     copyCode: 'Skopiuj kod',
+    markdown: {
+      write: 'Pisanie',
+      preview: 'Podgląd',
+      hint: 'Działa Markdown: **pogrubienie**, *kursywa*, [link](https://…), - lista.',
+    },
     loading: 'Ładowanie…',
     ok: 'OK',
     preventShowingAgain: 'Nie pokazuj ponownie',

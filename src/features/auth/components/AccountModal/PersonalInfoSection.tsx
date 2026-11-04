@@ -4,6 +4,7 @@ import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.j
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
 import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { MarkdownField } from '@shared/components/MarkdownField.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -233,17 +234,12 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="description">
-        <Form.Label>
-          <Text m={am} k="account.description" />
-        </Form.Label>
-
-        <Form.Control
-          as="textarea"
+        <MarkdownField
+          id="account-description"
+          label={<Text m={am} k="account.description" />}
           rows={3}
           value={description}
-          onChange={(e) => {
-            setDescription(e.target.value);
-          }}
+          onChange={setDescription}
         />
       </Form.Group>
 

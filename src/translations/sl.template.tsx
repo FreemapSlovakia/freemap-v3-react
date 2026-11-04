@@ -58,6 +58,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'Podrobnost se razlikuje po državah. Kjer obstaja državni lasersko skenirani model, je bližnja okolica ostra; drugod odgovarja globalni 30-metrski model.',
     },
     copyCode: 'Kopiraj kodo',
+    markdown: {
+      write: 'Pisanje',
+      preview: 'Predogled',
+      hint: 'Markdown deluje: **krepko**, *ležeče*, [povezava](https://…), - seznam.',
+    },
     loading: 'Nalaganje…',
     ok: 'V redu',
     preventShowingAgain: 'Ne prikaži več',

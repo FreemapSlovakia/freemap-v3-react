@@ -48,10 +48,6 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     unavailable: 'Akciu sa nepodarilo načítať — možno bola zrušená.',
     title: 'Názov',
     description: 'Popis',
-    write: 'Písať',
-    preview: 'Náhľad',
-    markdownHint:
-      'Funguje Markdown: **tučné**, *kurzíva*, [odkaz](https://…), - zoznam.',
     contactHint:
       'Uveďte, ako vás zastihnúť — telefón, e-mail alebo skupinu v chate: akcie zatiaľ nemajú diskusiu.',
     cover: 'Titulný obrázok',

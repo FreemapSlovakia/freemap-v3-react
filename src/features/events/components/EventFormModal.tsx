@@ -19,7 +19,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
-import { Markdown } from '@shared/components/Markdown.js';
+import { MarkdownField } from '@shared/components/MarkdownField.js';
 import { useConfirmChoice } from '@shared/components/ModalProvider.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { latLonToString } from '@shared/geoutils.js';
@@ -347,9 +347,6 @@ export default function EventFormModal({ show }: Props): ReactElement {
   /** A newly chosen cover image; `null` once removed, unset keeps the event's. */
   const [cover, setCover] = useState<File | null>();
 
-  /** The description as it will show, instead of its Markdown. */
-  const [previewing, setPreviewing] = useState(false);
-
   const coverPreview = useMemo(
     () => (cover ? URL.createObjectURL(cover) : undefined),
     [cover],
@@ -593,8 +590,6 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
     setOrganizer(undefined);
 
-    setPreviewing(false);
-
     setFillNote(null);
 
     if (!target?.id && target?.mapId) {
@@ -796,59 +791,13 @@ export default function EventFormModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="eventDescription" className="mb-3">
-            <div className="d-flex align-items-end">
-              <Form.Label className="me-auto">
-                {em?.form.description}
-              </Form.Label>
-
-              <ToggleButtonGroup
-                type="radio"
-                name="event-description-mode"
-                size="sm"
-                className="mb-2"
-                value={previewing ? 'preview' : 'write'}
-                onChange={(mode: string) => setPreviewing(mode === 'preview')}
-              >
-                <ToggleButton
-                  id="event-description-write"
-                  value="write"
-                  variant="outline-primary"
-                >
-                  {em?.form.write}
-                </ToggleButton>
-
-                <ToggleButton
-                  id="event-description-preview"
-                  value="preview"
-                  variant="outline-primary"
-                >
-                  {em?.form.preview}
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </div>
-
-            {previewing ? (
-              // Framed as the field is, but not looking editable.
-              <div
-                className="border rounded px-3 py-2"
-                style={{ overflowWrap: 'anywhere' }}
-              >
-                <Markdown text={draft.description} />
-              </div>
-            ) : (
-              <Form.Control
-                as="textarea"
-                rows={5}
-                value={draft.description}
-                onChange={(e) => set({ description: e.currentTarget.value })}
-              />
-            )}
-
-            {!previewing && (
-              <Form.Text>
-                {em?.form.markdownHint} {em?.form.contactHint}
-              </Form.Text>
-            )}
+            <MarkdownField
+              id="event-description"
+              label={em?.form.description}
+              value={draft.description}
+              onChange={(description) => set({ description })}
+              hint={em?.form.contactHint}
+            />
           </Form.Group>
 
           <Form.Group controlId="eventCover" className="mb-3">
