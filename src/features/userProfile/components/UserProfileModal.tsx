@@ -285,7 +285,9 @@ export default function UserProfileModal({ show }: Props): ReactElement {
             variant="secondary"
             icon={<FaUserEdit />}
             label={upm?.edit}
-            onClick={() => dispatch(setActiveModal({ type: 'account' }))}
+            onClick={() =>
+              dispatch(setActiveModal({ type: 'account', section: 'personal' }))
+            }
           />
         )}
 

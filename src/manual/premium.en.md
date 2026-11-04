@@ -23,13 +23,13 @@ Premium functions are marked :FaGem.text-warning: in the app. Pressing the mark 
 
 Premium access costs **€15 a year**. You can buy it as a subscription that renews every year until you cancel it and keeps the price it was started at, or as a single year.
 
-You can cancel the subscription at any time; cancellation takes effect at the end of the paid period. It is managed in :FaUser: [Account](#show=account) → **Purchases** → **Manage payments**, where you also change the payment method and download invoices. Refunds are covered by the [Refund Policy](#show=document/refundPolicy).
+You can cancel the subscription at any time; cancellation takes effect at the end of the paid period. It is managed in :FaUser: [Account](#show=account/payments) → **Purchases** → **Manage payments**, where you also change the payment method and download invoices. Refunds are covered by the [Refund Policy](#show=document/refundPolicy).
 
 ## Credits
 
 Credits are a prepaid balance for functions paid by use – currently the [offline maps export](#show=manual/offline). How many credits an export takes depends on the map and the number of tiles.
 
-You buy credits in any amount from **500 credits for €5**, with :FaCoins: **Buy credits** in :FaUser: [Account](#show=account) → **Purchases**. Credits don't expire and have no cash value; unused credits can be refunded within 14 days of purchase.
+You buy credits in any amount from **500 credits for €5**, with :FaCoins: **Buy credits** in :FaUser: [Account](#show=account/payments) → **Purchases**. Credits don't expire and have no cash value; unused credits can be refunded within 14 days of purchase.
 
 ## How to buy
 

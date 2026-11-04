@@ -23,7 +23,7 @@ Wherever the map is asked for a place — the home position, a photo's location,
 
 - Access: Main menu > Account
 - Keyboard shortcut: <kbd>e</kbd> <kbd>a</kbd>
-- URL path: `/#show=account`
+- URL path: `/#show=account`; `/#show=account/<section>` opens one of its sections: `payments` (Purchases), `personal` (Personal information), `providers` (Login providers), `app-tokens` or `roles`
 
 Available only to logged-in users. Logged-out users instead see a **Log in** item in the same place, which opens the login provider chooser (see Login providers below).
 

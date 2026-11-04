@@ -8,7 +8,7 @@ Freemap nekončí v prehliadači. Trasu si môžete poslať do Garminu, mapy Fre
 
 ## Poslanie trasy do zariadenia Garmin
 
-Ak máte účet [Garmin Connect](https://connect.garmin.com), môžete sa týmto účtom [prihlásiť na Freemap](#show=login) alebo ho pripojiť k svojmu existujúcemu účtu v časti **Poskytovatelia prihlásenia** v okne :FaUser: [Účet](#show=account).
+Ak máte účet [Garmin Connect](https://connect.garmin.com), môžete sa týmto účtom [prihlásiť na Freemap](#show=login) alebo ho pripojiť k svojmu existujúcemu účtu v časti **Poskytovatelia prihlásenia** v okne :FaUser: [Účet](#show=account/providers).
 
 Naplánovanú trasu, nakreslenú čiaru, záznam zo sledovania alebo trasu vybranú z mapy potom pošlete do Garmin Connect ako kurz a odtiaľ do zariadenia. Napríklad turistickú trasu takto:
 

@@ -88,6 +88,7 @@ export async function handleLoginResponse(
   if (followUp) {
     dispatch(followUp);
   } else if (connect) {
-    dispatch(setActiveModal({ type: 'account' }));
+    // Back where the connect started, showing the provider added.
+    dispatch(setActiveModal({ type: 'account', section: 'providers' }));
   }
 }

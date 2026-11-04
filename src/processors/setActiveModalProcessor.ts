@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { isSectionModal } from '@app/store/activeModal.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { authSetUser } from '@features/auth/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -30,8 +31,11 @@ export const setActiveModalTransformer: Processor<typeof setActiveModal> = {
       });
     }
 
-    // track every modal that actually opens (payload null closes a modal)
-    if (type) {
+    // Every modal that opens, but not a section opened in one already open.
+    if (
+      type &&
+      !(isSectionModal(type) && getState().main.activeModal?.type === type)
+    ) {
       trackMatomo(['trackEvent', 'Modal', 'open', type]);
     }
 

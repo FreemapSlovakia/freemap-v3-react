@@ -99,6 +99,31 @@ export const ModalIdSchema = z.enum([
 
 export type ModalId = z.infer<typeof ModalIdSchema>;
 
+/** The account modal's parts, as `show=account/<section>` names them. */
+export const AccountSectionSchema = z.enum([
+  'payments',
+  'personal',
+  'providers',
+  'app-tokens',
+  'roles',
+]);
+
+export type AccountSection = z.infer<typeof AccountSectionSchema>;
+
+// Modals whose `show=` argument only says which of their sections is open.
+const SECTION_MODALS = new Set<string>(['account']);
+
+export function isSectionModal(type: string): boolean {
+  return SECTION_MODALS.has(type);
+}
+
+/** A packed `show=` value without the section of a modal that has them. */
+export function showWithoutSection(show: string): string {
+  const type = show.split('/')[0];
+
+  return isSectionModal(type) ? type : show;
+}
+
 /** Which form the library shows: a custom map's or a preset's; a new one's without `edit`. */
 export type CustomMapRequest = {
   /** The custom map or preset to edit. */
@@ -122,9 +147,16 @@ export type ActiveModal =
   | {
       type: Exclude<
         ModalId,
-        'tracking-watched' | 'my-maps' | 'map-manager' | 'manual' | 'event-form'
+        | 'tracking-watched'
+        | 'my-maps'
+        | 'map-manager'
+        | 'manual'
+        | 'event-form'
+        | 'account'
       >;
     }
+  /** `section` is the part opened; without it, all are closed. */
+  | { type: 'account'; section?: AccountSection }
   /** Without `chapter`, the first one. */
   | { type: 'manual'; chapter?: string }
   | { type: 'my-maps'; add?: boolean }
@@ -171,6 +203,8 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
       return `document/${modal.key}`;
     case 'manual':
       return modal.chapter ? `manual/${modal.chapter}` : 'manual';
+    case 'account':
+      return modal.section ? `account/${modal.section}` : 'account';
     case 'event-form':
       return modal.id
         ? `event-form/${modal.id}`
@@ -229,6 +263,14 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
     }
     case 'manual':
       return arg ? { type: 'manual', chapter: arg } : { type: 'manual' };
+    case 'account': {
+      // An unknown section still opens the modal.
+      const section = AccountSectionSchema.safeParse(arg);
+
+      return section.success
+        ? { type: 'account', section: section.data }
+        : { type: 'account' };
+    }
     case 'event-form':
       return !arg
         ? { type: 'event-form' }
@@ -284,6 +326,7 @@ export function modalOf(modalId: ModalId): ActiveModal {
     case 'event-form':
     case 'tracking-watched':
     case 'manual':
+    case 'account':
       return { type: modalId };
     default:
       return { type: modalId };

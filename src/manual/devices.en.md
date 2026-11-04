@@ -8,7 +8,7 @@ Freemap doesn't end in the browser. You can send a route to your Garmin, use Fre
 
 ## Sending a route to a Garmin device
 
-If you have a [Garmin Connect](https://connect.garmin.com) account, you can [log in to Freemap](#show=login) with it, or connect it to your existing account in :FaUser: [Account](#show=account), section **Login providers**.
+If you have a [Garmin Connect](https://connect.garmin.com) account, you can [log in to Freemap](#show=login) with it, or connect it to your existing account in :FaUser: [Account](#show=account/providers), section **Login providers**.
 
 A planned route, a drawn line, a live-tracking track or a route picked from the map can then be sent to Garmin Connect as a course, and from there to your device. For example, to send a hiking route:
 

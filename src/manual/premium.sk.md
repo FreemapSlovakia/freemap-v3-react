@@ -23,13 +23,13 @@ Prémiové funkcie sú v aplikácii označené :FaGem.text-warning:. Stlačením
 
 Prémiový prístup stojí **15 € ročne**. Dá sa kúpiť ako predplatné, ktoré sa každý rok obnoví, kým ho nezrušíte, a ponecháva si cenu, za ktorú bolo uzavreté, alebo jednorazovo na jeden rok.
 
-Predplatné môžete kedykoľvek zrušiť; zrušenie platí od konca zaplateného obdobia. Predplatné spravujete v okne :FaUser: [Účet](#show=account) → **Nákupy** → **Spravovať platby**, kde zmeníte aj spôsob platby a stiahnete faktúry. Podmienky vrátenia peňazí sú v [Zásadách vrátenia peňazí](#show=document/refundPolicy).
+Predplatné môžete kedykoľvek zrušiť; zrušenie platí od konca zaplateného obdobia. Predplatné spravujete v okne :FaUser: [Účet](#show=account/payments) → **Nákupy** → **Spravovať platby**, kde zmeníte aj spôsob platby a stiahnete faktúry. Podmienky vrátenia peňazí sú v [Zásadách vrátenia peňazí](#show=document/refundPolicy).
 
 ## Kredity
 
 Kredity sú predplatený zostatok na funkcie, ktoré sa platia podľa spotreby – zatiaľ len na [export offline máp](#show=manual/offline). Koľko kreditov export spotrebuje, závisí od mapy a počtu dlaždíc.
 
-Kredity si kúpite v ľubovoľnom množstve, najmenej **500 kreditov za 5 €**, cez :FaCoins: **Kúpiť kredity** v okne :FaUser: [Účet](#show=account) → **Nákupy**. Kredity nestrácajú platnosť a nemajú peňažnú hodnotu; nepoužité kredity je možné vrátiť do 14 dní od nákupu.
+Kredity si kúpite v ľubovoľnom množstve, najmenej **500 kreditov za 5 €**, cez :FaCoins: **Kúpiť kredity** v okne :FaUser: [Účet](#show=account/payments) → **Nákupy**. Kredity nestrácajú platnosť a nemajú peňažnú hodnotu; nepoužité kredity je možné vrátiť do 14 dní od nákupu.
 
 ## Ako si ich kúpiť
 

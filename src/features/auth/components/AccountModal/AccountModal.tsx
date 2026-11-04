@@ -1,6 +1,10 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import {
+  type AccountSection,
+  AccountSectionSchema,
+} from '@app/store/activeModal.js';
+import {
   authDeleteAccount,
   authInit,
   authStartLogout,
@@ -25,7 +29,7 @@ import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import { type ReactElement, useCallback, useEffect } from 'react';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Accordion, Modal } from 'react-bootstrap';
 import {
   FaAddressCard,
@@ -55,6 +59,19 @@ export default function AccountModal({ show }: Props): ReactElement | null {
   }, [dispatch]);
 
   const user = useAppSelector((state) => state.auth.user);
+
+  const urlSection = useAppSelector((state) =>
+    state.main.activeModal?.type === 'account'
+      ? state.main.activeModal.section
+      : undefined,
+  );
+
+  // Closing clears the URL's at once; the section stays open while it fades.
+  const [section, setSection] = useState(urlSection);
+
+  if (show && section !== urlSection) {
+    setSection(urlSection);
+  }
 
   const m = useMessages();
 
@@ -153,8 +170,23 @@ export default function AccountModal({ show }: Props): ReactElement | null {
       <Modal.Body className="bg-body-tertiary">
         <OfflineAlert />
 
-        <Accordion>
-          <Accordion.Item eventKey="payments">
+        {/* The open section is the URL's (`account/<section>`), so Back,
+            a reload and a shared link all keep it. */}
+        <Accordion
+          activeKey={section ?? null}
+          onSelect={(key) => {
+            const next = AccountSectionSchema.safeParse(key);
+
+            dispatch(
+              setActiveModal(
+                next.success
+                  ? { type: 'account', section: next.data }
+                  : { type: 'account' },
+              ),
+            );
+          }}
+        >
+          <Accordion.Item eventKey={'payments' satisfies AccountSection}>
             <Accordion.Header>
               <span>
                 <FaShoppingBasket /> <Text m={pm} k="purchases" />
@@ -166,7 +198,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
             </Accordion.Body>
           </Accordion.Item>
 
-          <Accordion.Item eventKey="personal">
+          <Accordion.Item eventKey={'personal' satisfies AccountSection}>
             <Accordion.Header>
               <span>
                 <FaAddressCard /> <Text m={am} k="account.personalInfo" />
@@ -180,7 +212,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
             </Accordion.Body>
           </Accordion.Item>
 
-          <Accordion.Item eventKey="accounts">
+          <Accordion.Item eventKey={'providers' satisfies AccountSection}>
             <Accordion.Header>
               <span>
                 <FaUserCircle /> <Text m={am} k="account.authProviders" />
@@ -192,7 +224,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
             </Accordion.Body>
           </Accordion.Item>
 
-          <Accordion.Item eventKey="appTokens">
+          <Accordion.Item eventKey={'app-tokens' satisfies AccountSection}>
             <Accordion.Header>
               <span>
                 <FaKey /> <Text m={am} k="appTokens.title" />
@@ -205,7 +237,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
           </Accordion.Item>
 
           {user.roles.length > 0 && (
-            <Accordion.Item eventKey="roles">
+            <Accordion.Item eventKey={'roles' satisfies AccountSection}>
               <Accordion.Header>
                 <span>
                   <FaUserShield /> <Text m={am} k="account.roles" />

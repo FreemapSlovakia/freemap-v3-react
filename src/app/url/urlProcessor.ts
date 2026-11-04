@@ -35,7 +35,7 @@ import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
-import { encodeActiveModal } from '../store/activeModal.js';
+import { encodeActiveModal, showWithoutSection } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
 import {
   openToolsSelector,
@@ -156,6 +156,18 @@ let lastViewWriteTs = 0;
 let lastWriteTs = 0;
 
 let lastWrittenRest: string | null = null;
+
+/** A serialized query with any section modal's section left out. */
+function sectionless(query: string): string {
+  return query
+    .split('&')
+    .map((part) =>
+      part.startsWith('show=')
+        ? `show=${showWithoutSection(part.slice(5))}`
+        : part,
+    )
+    .join('&');
+}
 
 // For the setup runs below: the URL but its setups, its setups, and which of
 // them the last write changed.
@@ -784,9 +796,21 @@ function updateUrl(state: RootState, forced: boolean): void {
     setupWrite.other === lastWrittenOther &&
     now - lastWriteTs < SETUP_COALESCE_GAP_MS;
 
+  // Another section of the same modal, and nothing else: it is not a step
+  // anyone goes back to. Against the address bar, not the last write, so it
+  // holds after a deep link or Back too, where nothing was written.
+  const currentSearch = window.location.hash.slice(1);
+
+  const sectionOnly =
+    (!mapId || sq === prevHistoryState?.sq) &&
+    tr === prevHistoryState?.tr &&
+    urlSearch !== currentSearch &&
+    sectionless(urlSearch) === sectionless(currentSearch);
+
   const method =
     replacing ||
     setupRun ||
+    sectionOnly ||
     (viewOnly &&
       (!viewChanged ||
         (lastWriteWasViewOnly && now - lastViewWriteTs < VIEW_COALESCE_GAP_MS)))
