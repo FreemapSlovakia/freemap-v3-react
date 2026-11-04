@@ -1,5 +1,12 @@
 import { setActiveModal } from '@app/store/actions.js';
 import {
+  AUTH_PROVIDER_LABELS,
+  AuthProviderSchema,
+  knownValues,
+  RoleSchema,
+} from '@features/auth/model/types.js';
+import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
+import {
   galleryRequestImage,
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
@@ -11,13 +18,13 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
-import { Markdown } from '@shared/components/Markdown.js';
+import { linkTarget, Markdown } from '@shared/components/Markdown.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
 import { Alert, Image, Modal, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaGem, FaUser, FaUserEdit } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -33,6 +40,21 @@ const ProfileSchema = z.object({
   createdAt: z.coerce.date(),
   hasPicture: z.boolean(),
   premium: z.boolean(),
+  // A role newer than this build is dropped.
+  roles: knownValues(RoleSchema),
+  // Defaulted: an API older than this build sends neither.
+  email: z.string().nullable().default(null),
+  // A provider newer than this build is dropped.
+  links: z
+    .array(z.object({ provider: z.string(), url: z.url(), name: z.string() }))
+    .default([])
+    .transform((links) =>
+      links.flatMap(({ provider, ...rest }) => {
+        const r = AuthProviderSchema.safeParse(provider);
+
+        return r.success ? [{ provider: r.data, ...rest }] : [];
+      }),
+    ),
   gallery: z.object({
     pictureCount: z.uint32(),
     commentCount: z.uint32(),
@@ -41,7 +63,6 @@ const ProfileSchema = z.object({
 });
 
 type Profile = z.infer<typeof ProfileSchema>;
-
 export default function UserProfileModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
@@ -50,6 +71,8 @@ export default function UserProfileModal({ show }: Props): ReactElement {
   const upm = useUserProfileMessages();
 
   const prm = usePremiumMessages();
+
+  const am = useAuthMessages();
 
   const activeModal = useAppSelector((state) => state.main.activeModal);
 
@@ -122,6 +145,40 @@ export default function UserProfileModal({ show }: Props): ReactElement {
 
   const profile = state.type === 'success' ? state.profile : undefined;
 
+  const rows = (p: Profile) => {
+    const rows: [ReactNode, ReactNode][] = [
+      [upm?.memberSince, df.format(p.createdAt)],
+    ];
+
+    if (p.roles.length) {
+      rows.push([
+        upm?.roles,
+        p.roles.map((role) => am?.roleNames[role] ?? role).join(', '),
+      ]);
+    }
+
+    if (p.email) {
+      rows.push([upm?.email, <a href={`mailto:${p.email}`}>{p.email}</a>]);
+    }
+
+    for (const link of p.links) {
+      rows.push([
+        AUTH_PROVIDER_LABELS[link.provider],
+        <a href={link.url} {...linkTarget(link.url)}>
+          {link.name}
+        </a>,
+      ]);
+    }
+
+    rows.push(
+      [upm?.photos, nf.format(p.gallery.pictureCount)],
+      [upm?.comments, nf.format(p.gallery.commentCount)],
+      [upm?.events, nf.format(p.eventCount)],
+    );
+
+    return rows;
+  };
+
   return (
     <Modal show={show} onHide={close} scrollable>
       <Modal.Header closeButton>
@@ -151,49 +208,45 @@ export default function UserProfileModal({ show }: Props): ReactElement {
           </Alert>
         ) : (
           <>
-            <div className="d-flex gap-3 align-items-start mb-3">
-              {state.profile.hasPicture && (
-                <Image
-                  src={`${process.env['API_URL']}/auth/users/${state.profile.id}/picture`}
-                  rounded
-                  style={{ width: 128, height: 128, objectFit: 'cover' }}
-                />
-              )}
-
-              <div className="flex-grow-1" style={{ overflowWrap: 'anywhere' }}>
-                {state.profile.description && (
-                  <Markdown text={state.profile.description} />
+            {(state.profile.hasPicture || state.profile.description) && (
+              <div className="d-flex gap-3 align-items-start mb-3">
+                {state.profile.hasPicture && (
+                  <Image
+                    src={`${process.env['API_URL']}/auth/users/${state.profile.id}/picture`}
+                    rounded
+                    style={{ width: 128, height: 128, objectFit: 'cover' }}
+                  />
                 )}
 
-                <div className="text-body-secondary small mt-2">
-                  {upm?.memberSince(df.format(state.profile.createdAt))}
-                </div>
+                {state.profile.description && (
+                  <div
+                    className="flex-grow-1"
+                    style={{ overflowWrap: 'anywhere' }}
+                  >
+                    <Markdown text={state.profile.description} />
+                  </div>
+                )}
               </div>
-            </div>
+            )}
 
             <Table size="sm" className="mb-0">
               <tbody>
-                <tr>
-                  <th>{upm?.photos}</th>
-                  <td className="text-end">
-                    {nf.format(state.profile.gallery.pictureCount)}
-                  </td>
-                </tr>
+                {rows(state.profile).map(([label, value], i, all) => {
+                  // Bootstrap borders the cells, not the row.
+                  const last = i === all.length - 1 ? 'border-bottom-0' : '';
 
-                <tr>
-                  <th>{upm?.comments}</th>
-                  <td className="text-end">
-                    {nf.format(state.profile.gallery.commentCount)}
-                  </td>
-                </tr>
-
-                <tr>
-                  {/* Bootstrap borders the cells, not the row. */}
-                  <th className="border-bottom-0">{upm?.events}</th>
-                  <td className="text-end border-bottom-0">
-                    {nf.format(state.profile.eventCount)}
-                  </td>
-                </tr>
+                  return (
+                    <tr key={i}>
+                      <th className={last}>{label}</th>
+                      <td
+                        className={`text-end ${last}`}
+                        style={{ overflowWrap: 'anywhere' }}
+                      >
+                        {value}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </Table>
           </>

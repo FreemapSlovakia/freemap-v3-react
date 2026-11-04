@@ -1,5 +1,7 @@
 export type UserProfileMessages = {
-  memberSince: (date: string) => string;
+  memberSince: string;
+  roles: string;
+  email: string;
   photos: string;
   /** Comments the user wrote on photos. */
   comments: string;

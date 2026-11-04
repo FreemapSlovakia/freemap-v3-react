@@ -1,4 +1,4 @@
-import type { Purchase } from '@features/auth/model/types.js';
+import type { PublicField, Purchase } from '@features/auth/model/types.js';
 import {
   applyCookieConsent,
   setAnalyticCookiesAllowed,
@@ -96,6 +96,7 @@ export const saveSettings = createAction<{
     description?: string | null;
     sendGalleryEmails?: boolean;
     picture?: string | null;
+    publicFields?: PublicField[];
   };
   keepOpen?: boolean;
 }>('SAVE_SETTINGS');

@@ -54,6 +54,23 @@ export const RoleSchema = z.enum([
 
 export type Role = z.infer<typeof RoleSchema>;
 
+/** What a user lets their public profile show; a provider shows its profile link. */
+export const PublicFieldSchema = z.enum(['email', 'osm', 'github', 'strava']);
+
+export type PublicField = z.infer<typeof PublicFieldSchema>;
+
+/** An array of the enum's values, dropping one newer than this build. */
+export function knownValues<T extends string>(
+  schema: z.ZodEnum<{ [K in T]: K }>,
+) {
+  return z
+    .array(z.string())
+    .default([])
+    .transform((values) =>
+      values.filter((v): v is T => schema.safeParse(v).success),
+    );
+}
+
 // `via` selects the payment provider for the purchase action (Polar by default
 // for allowlisted users, or Rovas/chrons when the user picks it). `recurring`
 // is only meaningful for the Polar premium flow. Both are absent on stored
@@ -174,13 +191,9 @@ export const UserSchema = z.object({
   email: z.string().nullable(),
   description: z.string().nullable(),
   id: z.number(),
-  // A role newer than this build is dropped, not a failed login.
-  roles: z
-    .array(z.string())
-    .default([])
-    .transform((roles) =>
-      roles.filter((r): r is Role => RoleSchema.safeParse(r).success),
-    ),
+  // A value newer than this build is dropped, not a failed login.
+  roles: knownValues(RoleSchema),
+  publicFields: knownValues(PublicFieldSchema),
   language: z.string().nullish(),
   coordinates: LatLonSchema.nullable(),
   name: z.string(),

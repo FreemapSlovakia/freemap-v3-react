@@ -2,7 +2,9 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { UserProfileMessages } from './UserProfileMessages.js';
 
 const de: DeepPartialWithRequiredObjects<UserProfileMessages> = {
-  memberSince: (date) => `Mitglied seit ${date}`,
+  memberSince: 'Mitglied seit',
+  roles: 'Rollen',
+  email: 'E-Mail',
   photos: 'Hochgeladene Fotos',
   comments: 'Kommentare des Benutzers zu Fotos',
   events: 'Organisierte öffentliche Veranstaltungen',

@@ -20,6 +20,7 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     setHomeLocation: 'Auf der Karte festlegen',
     description: 'Über mich',
     roles: 'Meine Rollen',
+    publicFields: 'Auf meinem Profil zeigen',
   },
   roleNames: {
     userManager: 'Benutzerverwalter',

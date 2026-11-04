@@ -2,7 +2,9 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { UserProfileMessages } from './UserProfileMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<UserProfileMessages> = {
-  memberSince: (date) => `Tag ${date} óta`,
+  memberSince: 'Regisztráció dátuma',
+  roles: 'Szerepkörök',
+  email: 'E-mail',
   photos: 'Feltöltött fényképek',
   comments: 'A felhasználó hozzászólásai fényképekhez',
   events: 'Szervezett nyilvános események',

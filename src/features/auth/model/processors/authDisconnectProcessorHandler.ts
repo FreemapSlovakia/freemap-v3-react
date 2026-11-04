@@ -33,6 +33,7 @@ const handle: ProcessorHandler<typeof authDisconnect> = async ({
 
     const current = UserSchema.pick({
       authProviders: true,
+      publicFields: true,
       osmGpxAuthorized: true,
     }).parse(
       await (
@@ -61,6 +62,8 @@ const handle: ProcessorHandler<typeof authDisconnect> = async ({
       user && {
         ...user,
         authProviders: user.authProviders.filter((p) => p !== provider),
+        // The API unpublishes the provider's profile along with it.
+        publicFields: user.publicFields.filter((f) => f !== provider),
         // The API forgets the OSM token along with the OSM identity.
         osmGpxAuthorized: provider !== 'osm' && user.osmGpxAuthorized,
       },

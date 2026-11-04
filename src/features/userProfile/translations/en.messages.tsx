@@ -1,7 +1,9 @@
 import type { UserProfileMessages } from './UserProfileMessages.js';
 
 const en: UserProfileMessages = {
-  memberSince: (date) => `Member since ${date}`,
+  memberSince: 'Member since',
+  roles: 'Roles',
+  email: 'Email',
   photos: 'Uploaded photos',
   comments: "The user's comments on photos",
   events: 'Organized public events',

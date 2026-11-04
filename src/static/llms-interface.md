@@ -54,6 +54,7 @@ The Account modal has four collapsible sections (below); from the buttons at the
 - Profile picture (choose / remove)
 - Name (required) and email address
 - "About me" description, in Markdown, with a Write/Preview switch; shown on the user profile
+- **Show on my profile** — checkboxes for the email address and, for each connected OpenStreetMap, GitHub or Strava login, a link to that profile; nothing is shown unless ticked
 - **Home position** — set on the map or removed, saved at once (outside the section's Save); offered by the route planner's Start/Finish menus and the events filter's **Near**. Without an account it is kept in the browser only; one set before logging in goes to an account that has none
 
 #### Login providers
@@ -91,7 +92,7 @@ Shown only to an account holding special roles (user manager, photo moderator, m
 
 ### User profile
 
-Clicking a user's name — a photo's author or commenter, an event's organizer, a leaderboard row — opens their profile: picture, "About me" (Markdown), member-since date, and counts of their photos, the photo comments they wrote and the public events they organize. **Photos on the map** filters the photo layer to that user's photos; on one's own profile **Edit profile** opens the account. URL path: `/#show=user/<id>`.
+Clicking a user's name — a photo's author or commenter, an event's organizer, a leaderboard row — opens their profile: picture, "About me" (Markdown), member-since date, roles, whatever of their email address and OpenStreetMap, GitHub and Strava profiles they chose to show, and counts of their photos, the photo comments they wrote and the public events they organize. **Photos on the map** filters the photo layer to that user's photos; on one's own profile **Edit profile** opens the account. URL path: `/#show=user/<id>`.
 
 ### Fullscreen
 

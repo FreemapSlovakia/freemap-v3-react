@@ -20,6 +20,7 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     homeLocationUnset: 'Nenastavená',
     setHomeLocation: 'Nastaviť v mape',
     roles: 'Moje role',
+    publicFields: 'Zobraziť na mojom profile',
   },
   roleNames: {
     userManager: 'Správca používateľov',

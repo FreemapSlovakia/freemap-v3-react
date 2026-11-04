@@ -1,4 +1,8 @@
 import { saveSettings } from '@app/store/actions.js';
+import {
+  AUTH_PROVIDER_LABELS,
+  PublicFieldSchema,
+} from '@features/auth/model/types.js';
 import { usePictureCacheBust } from '@features/auth/pictureCacheBust.js';
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
@@ -35,6 +39,21 @@ export function PersonalInfoSection(): ReactElement | null {
   const [name, setName] = useState(user?.name ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [description, setDescription] = useState(user?.description ?? '');
+  const [publicFields, setPublicFields] = useState(user?.publicFields ?? []);
+
+  // A disconnect or a reconnect changes what is stored; the draft follows, so
+  // a tick it unpublished never comes back with the next save.
+  const [draftOf, setDraftOf] = useState(user?.publicFields ?? []);
+
+  // By content: a re-parsed user is a new array holding the same flags.
+  if (
+    user &&
+    new Set(user.publicFields).symmetricDifference(new Set(draftOf)).size > 0
+  ) {
+    setDraftOf(user.publicFields);
+
+    setPublicFields(user.publicFields);
+  }
 
   // undefined = unchanged, null = will clear, string = new base64 to upload
   const [picture, setPicture] = useState<string | null | undefined>(undefined);
@@ -54,11 +73,31 @@ export function PersonalInfoSection(): ReactElement | null {
     return null;
   }
 
+  // Offered only with something to show: an email address, a connected login.
+  const offeredFields = PublicFieldSchema.options.filter((field) =>
+    field === 'email'
+      ? Boolean(email.trim())
+      : user.authProviders.includes(field),
+  );
+
+  // A tick whose field went (a disconnect, a cleared email) is dropped, not
+  // hidden: it must not come back checked when the field does.
+  const effectiveFields = publicFields.filter((f) => offeredFields.includes(f));
+
+  if (effectiveFields.length !== publicFields.length) {
+    setPublicFields(effectiveFields);
+  }
+
+  const publicFieldsChanged =
+    new Set(effectiveFields).symmetricDifference(new Set(user.publicFields))
+      .size > 0;
+
   const userMadeChanges =
     name !== user.name ||
     email !== (user.email ?? '') ||
     description !== (user.description ?? '') ||
-    picture !== undefined;
+    picture !== undefined ||
+    publicFieldsChanged;
 
   const invalidEmail =
     Boolean(email.trim()) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -144,6 +183,8 @@ export function PersonalInfoSection(): ReactElement | null {
               name: name.trim(),
               email: email.trim() || null,
               description: description.trim() || null,
+              // Only a change: another tab's must not be overwritten unseen.
+              ...(publicFieldsChanged ? { publicFields: effectiveFields } : {}),
               ...(picture !== undefined ? { picture } : {}),
             },
             keepOpen: true,
@@ -241,6 +282,38 @@ export function PersonalInfoSection(): ReactElement | null {
           value={description}
           onChange={setDescription}
         />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>
+          <Text m={am} k="account.publicFields" />
+        </Form.Label>
+
+        <div>
+          {offeredFields.map((field) => (
+            <Form.Check
+              key={field}
+              inline
+              type="checkbox"
+              id={`account-public-${field}`}
+              label={
+                field === 'email'
+                  ? am?.account.email
+                  : AUTH_PROVIDER_LABELS[field]
+              }
+              checked={publicFields.includes(field)}
+              onChange={(e) => {
+                const { checked } = e.currentTarget;
+
+                setPublicFields((fields) =>
+                  checked
+                    ? [...fields, field]
+                    : fields.filter((f) => f !== field),
+                );
+              }}
+            />
+          ))}
+        </div>
       </Form.Group>
 
       <Button

@@ -31,6 +31,8 @@ export type AuthMessages = {
     homeLocationUnset: string;
     setHomeLocation: string;
     roles: string;
+    /** Labels the checkboxes of what the public profile shows. */
+    publicFields: string;
   };
   roleNames: Record<Role, string>;
   appTokens: {

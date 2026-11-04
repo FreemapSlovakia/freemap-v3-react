@@ -19,6 +19,7 @@ const en: AuthMessages = {
     homeLocationUnset: 'Not set',
     setHomeLocation: 'Set on the map',
     roles: 'My roles',
+    publicFields: 'Show on my profile',
   },
   roleNames: {
     userManager: 'User manager',
