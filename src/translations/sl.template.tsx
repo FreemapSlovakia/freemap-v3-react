@@ -190,6 +190,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Odstrani %value% s seznama',
     accept: 'Sprejmi',
     externalService: 'Storitev tretje osebe z omejitvami uporabe',
+    noDrawingTool: 'Izbira',
   },
 
   generic: {
@@ -429,6 +430,59 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xc':
           'plastnica, izohipse, višina, nadmorska višina, relief, contours, prekrivanje',
         'layer-WHC': 'kemija vode, hidrologija',
+        'manual-getting-started': 'osnove, uvod, prvi koraki, pomoč',
+        'manual-shortcuts': 'tipkovnica, tipke, bližnjice',
+        'manual-search':
+          'pomoč, navodila, iskanje, najti, koordinate, naslov, kraj, obdrži na zemljevidu',
+        'manual-osm-notes':
+          'pomoč, navodila, opomba, prijava, napaka, openstreetmap, josm, id',
+        'manual-route-planner':
+          'pomoč, navodila, navigacija, pot, načrtovanje poti, vmesne točke',
+        'manual-maps':
+          'pomoč, navodila, sloji, osnovni zemljevid, prekrivanje, upravljanje zemljevidov, knjižnica, namesti, prednastavitev, legenda, prosojnost',
+        'manual-custom-maps':
+          'pomoč, navodila, lasten zemljevid, wms, tms, naslov ploščic, dodaj zemljevid',
+        'manual-shading':
+          'pomoč, navodila, senčenje, relief, teren, višine, lidar, dmr, dem',
+        'manual-weather-radar':
+          'pomoč, navodila, dež, padavine, vreme, napoved, nevihta, radar',
+        'manual-panorama':
+          'pomoč, navodila, 360, razgled, vrhovi, obzorje, teren',
+        'manual-viewshed':
+          'pomoč, navodila, vidnost, razgled, kaj se vidi, pogled od tod',
+        'manual-toposcope':
+          'pomoč, navodila, razgledna plošča, vrhovi, hribi, toposkop, tisk',
+        'manual-map-export':
+          'pomoč, navodila, tisk, pdf, png, svg, jpeg, webp, slika, plakat, izvoz zemljevida',
+        'manual-objects':
+          'pomoč, navodila, poi, zanimive točke, kraji, kategorije, objekti, osm',
+        'manual-map-details':
+          'pomoč, navodila, kaj je tukaj, podrobnosti, elementi, osm element, zgodovina, wms',
+        'manual-changesets':
+          'pomoč, navodila, spremembe osm, nabori sprememb, kartografi, prispevki',
+        'manual-my-maps':
+          'pomoč, navodila, shranjeni zemljevidi, shrani zemljevid, deli zemljevid, račun, neshranjeno',
+        'manual-account':
+          'pomoč, navodila, prijava, odjava, profil, žeton, api ključ, izbris računa',
+        'manual-gps-recorder':
+          'pomoč, navodila, snemanje sledi, zapisovanje, logger, android, v ozadju',
+        'manual-ai':
+          'pomoč, navodila, ai, umetna inteligenca, chatgpt, claude, gemini, asistent, agent, webmcp, llms.txt',
+        'manual-drawing':
+          'pomoč, navodila, merjenje, razdalja, površina, črta, poligon, točka',
+        'manual-tracks':
+          'pomoč, navodila, gpx, kml, sled, uvoz, višinski profil, izvoz',
+        'manual-photos': 'pomoč, navodila, fotografije, galerija, naloži slike',
+        'manual-tracking':
+          'pomoč, navodila, sledenje, deljenje položaja, nastavitev naprave, locus, osmand',
+        'manual-offline':
+          'pomoč, navodila, prenos zemljevidov, brez povezave, predpomnilnik, offline',
+        'manual-devices':
+          'pomoč, navodila, garmin, locus, oruxmaps, geocaching, vdelava v splet, odpri v aplikaciji',
+        'manual-premium':
+          'pomoč, naročnina, cena, plačilo, krediti, nakup, oglasi, preklic, vračilo denarja, premium',
+        'manual-about':
+          'openstreetmap, osm, društvo, skupnost, kartiranje, prispevanje, licenca, navedba vira, copyright, komercialna uporaba',
       },
     },
   },
@@ -486,6 +540,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xa: 'Outdoor zemljevid brez podlage',
       xc: 'Plastnice',
       WHC: 'Hidrokemična',
+      A: 'Dogodki',
     },
     customBase: 'Zemljevid po meri',
     type: {

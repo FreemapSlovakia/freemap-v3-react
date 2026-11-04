@@ -190,6 +190,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Usuń %value% z listy',
     accept: 'Zaakceptować',
     externalService: 'Usługa zewnętrzna z ograniczeniami użytkowania',
+    noDrawingTool: 'Zaznaczanie',
   },
   generic: {
     color: 'Kolor',
@@ -425,6 +426,61 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xc':
           'poziomica, warstwice, wysokość, rzeźba terenu, contours, nakładka',
         'layer-WHC': 'chemia wody, hydrologia',
+        'manual-getting-started':
+          'podstawy, wprowadzenie, pierwsze kroki, pomoc, jak zacząć',
+        'manual-shortcuts': 'klawiatura, klawisze, skróty, skróty klawiszowe',
+        'manual-search':
+          'pomoc, poradnik, szukaj, znajdź, wyszukiwanie, współrzędne, adres, miejsce, zostaw na mapie',
+        'manual-osm-notes':
+          'pomoc, poradnik, uwaga, zgłoszenie, błąd, openstreetmap, josm, id',
+        'manual-route-planner':
+          'pomoc, poradnik, nawigacja, trasa, planowanie trasy, punkty pośrednie, przystanki',
+        'manual-maps':
+          'pomoc, poradnik, warstwy, mapa podkładowa, nakładka, menedżer map, biblioteka, instaluj, ustawienie wstępne, legenda, przezroczystość',
+        'manual-custom-maps':
+          'pomoc, poradnik, własna mapa, wms, tms, adres kafelków, dodaj mapę',
+        'manual-shading':
+          'pomoc, poradnik, cieniowanie, rzeźba terenu, relief, teren, lidar, nmt, dem',
+        'manual-weather-radar':
+          'pomoc, poradnik, deszcz, opady, pogoda, prognoza, burza, animacja',
+        'manual-panorama':
+          'pomoc, poradnik, 360, widok, szczyty, horyzont, teren',
+        'manual-viewshed':
+          'pomoc, poradnik, widoczność, linia wzroku, co widać, widok z',
+        'manual-toposcope':
+          'pomoc, poradnik, tablica panoramiczna, szczyty, góry, toposkop, druk',
+        'manual-map-export':
+          'pomoc, poradnik, drukuj, druk, pdf, png, svg, jpeg, webp, obraz, plakat, eksport mapy',
+        'manual-objects':
+          'pomoc, poradnik, poi, punkty zainteresowania, miejsca, kategorie, obiekty, osm',
+        'manual-map-details':
+          'pomoc, poradnik, co tu jest, szczegóły, elementy, element osm, historia, wms',
+        'manual-changesets':
+          'pomoc, poradnik, edycje osm, zestawy zmian, changesety, maperzy, wkład, ostatnie zmiany',
+        'manual-my-maps':
+          'pomoc, poradnik, zapisane mapy, zapisz mapę, udostępnij mapę, konto, niezapisane',
+        'manual-account':
+          'pomoc, poradnik, logowanie, wylogowanie, profil, token, klucz api, usuń konto',
+        'manual-gps-recorder':
+          'pomoc, poradnik, zapis śladu, nagrywanie, rejestrowanie, logger, android, w tle',
+        'manual-ai':
+          'pomoc, poradnik, ai, si, sztuczna inteligencja, llm, chatgpt, claude, gemini, asystent, agent, webmcp, llms.txt',
+        'manual-drawing':
+          'pomoc, poradnik, pomiar, mierzenie, odległość, powierzchnia, linia, wielokąt, punkt',
+        'manual-tracks':
+          'pomoc, poradnik, gpx, kml, ślad, trasa, import, profil wysokości, kolorowanie, eksport',
+        'manual-photos':
+          'pomoc, poradnik, zdjęcia, galeria, prześlij zdjęcia, obrazy',
+        'manual-tracking':
+          'pomoc, poradnik, śledzenie, udostępnianie lokalizacji, konfiguracja urządzenia, locus, osmand',
+        'manual-offline':
+          'pomoc, poradnik, pobierz mapy, bez połączenia, pamięć podręczna, cache, offline',
+        'manual-devices':
+          'pomoc, poradnik, garmin, locus, oruxmaps, geocaching, osadzanie, otwórz w aplikacji',
+        'manual-premium':
+          'pomoc, subskrypcja, cena, płatność, kredyty, kup, reklamy, anuluj, zwrot pieniędzy, premium',
+        'manual-about':
+          'openstreetmap, osm, stowarzyszenie, społeczność, mapowanie, współtworzenie, licencja, atrybucja, uznanie autorstwa, copyright, użytek komercyjny',
       },
     },
   },
@@ -474,6 +530,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xa: 'Outdoorowa mapa bez podkładu',
       xc: 'Poziomice',
       WHC: 'Hydrochemiczna',
+      A: 'Wydarzenia',
     },
     type: {
       map: 'mapa',

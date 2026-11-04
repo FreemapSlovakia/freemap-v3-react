@@ -133,6 +133,7 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   logoutUnsentTitle: 'Elküldetlen térképmódosítások',
   logoutUnsentWarning: ({ count }) =>
     `${count} térképnek vannak módosításai, amelyek még nem jutottak el a kiszolgálóra. A kijelentkezés elveti őket. Mégis kijelentkezik?`,
+  newEvent: 'Új esemény',
 };
 
 export default hu;

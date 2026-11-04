@@ -5,7 +5,34 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  vertex: { channels: {} },
+  vertex: {
+    channels: {
+      heart: 'Tętno',
+      cads: 'Kadencja',
+      atemps: 'Temperatura powietrza',
+      wtemps: 'Temperatura wody',
+      depths: 'Głębokość',
+      speeds: 'Prędkość',
+      courses: 'Kierunek ruchu',
+      bearings: 'Azymut',
+      powers: 'Moc',
+      accuracies: 'Dokładność',
+      battery: 'Bateria',
+      gsmSignal: 'Sygnał GSM',
+    },
+    menuItem: 'Dane punktu',
+    latitude: 'Szerokość geograficzna',
+    longitude: 'Długość geograficzna',
+    elevation: 'Wysokość n.p.m.',
+    time: 'Czas',
+    filled: ({ filled, total }) => `${filled} z ${total} punktów`,
+    emptyHint:
+      'Puste pole pozostawia punkt bez tej wartości. To, jakie wartości ma linia, ustawia się w jej Właściwościach.',
+    notANumber: 'Wpisz liczbę.',
+    outOfRange: 'Poza zakresem.',
+    timeOrder:
+      'Czas musi mieścić się między czasami poprzedniego i następnego punktu.',
+  },
   split: {
     action: 'Podziel',
     pick: 'Kliknij ślad w miejscu podziału',
@@ -18,7 +45,50 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     pick: 'Kliknij ślad, który chcesz dołączyć',
     pickEnd: 'Wybierz punkt do połączenia linii',
   },
-  osmUpload: { visibilities: {}, visibilityHints: {} },
+  osmUpload: {
+    visibilities: {
+      identifiable: 'Identyfikowalny',
+      public: 'Publiczny',
+      trackable: 'Śledzalny',
+      private: 'Prywatny',
+    },
+    visibilityHints: {
+      identifiable:
+        'Widoczny na liście śladów z nazwą użytkownika, jako uporządkowane punkty ze znacznikami czasu.',
+      public:
+        'Widoczny na liście śladów z nazwą użytkownika, jako anonimowe nieuporządkowane punkty.',
+      trackable:
+        'Udostępniany tylko jako anonimowe uporządkowane punkty ze znacznikami czasu.',
+      private: 'Udostępniany tylko jako anonimowe nieuporządkowane punkty.',
+    },
+    menuItem: 'Prześlij ślad GPS do OpenStreetMap',
+    title: 'Prześlij ślad GPS do OpenStreetMap',
+    help: 'Przesyła wczytane trasy na konto OpenStreetMap jako ślad GPS, na podstawie którego maperzy mogą wrysowywać drogi. Przesyłane są tylko trasy z zarejestrowanymi czasami — innych OpenStreetMap nie przechowuje. Należy przesyłać tylko trasy zarejestrowane samodzielnie.',
+    description: 'Opis',
+    tags: 'Tagi',
+    tagsHint: 'Oddzielone przecinkami.',
+    tagsInvalid:
+      'OpenStreetMap nie przyjmuje w tagu znaków . ; / ? % ani #, ani tagu dłuższego niż 255 znaków.',
+    visibility: 'Widoczność',
+    upload: 'Prześlij',
+    loginPrompt:
+      'Do przesłania potrzebne jest zalogowanie przez OpenStreetMap i zezwolenie Freemapowi na przesyłanie śladów GPS. Kontynuować?',
+    connectPrompt:
+      'Do przesłania potrzebne jest połączenie konta OpenStreetMap z kontem Freemap i zezwolenie Freemapowi na przesyłanie do niego śladów GPS. Jeśli istnieje już inne konto Freemap, do którego loguje się tym kontem OpenStreetMap, oba konta zostaną scalone w jedno. Kontynuować?',
+    authorizePrompt:
+      'Do przesłania potrzebne jest zezwolenie Freemapowi na przesyłanie śladów GPS na konto OpenStreetMap. Kontynuować?',
+    reauthorize:
+      'Zezwolenie Freemapa na przesyłanie śladów GPS na konto OpenStreetMap zostało właśnie cofnięte. Aby je udzielić, należy ponownie kliknąć Prześlij.',
+    success: ({ url }) => (
+      <>
+        Trasa została przesłana. OpenStreetMap przetworzy ją w ciągu kilku
+        minut.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Pokaż ślad w OpenStreetMap
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'Dopasuj do dróg',
     title: 'Dopasuj do dróg',
@@ -121,6 +191,9 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
       'źródeł mogą wystąpić skoki)',
     keep: 'Nie zmieniaj',
     keepDesc: 'użyj wysokości zapisanej w śladzie',
+    clear: 'Usuń wysokość',
+    clearDesc:
+      'usuń zapisaną wysokość; profile odczytują ją wtedy z modelu terenu',
     add: 'Dodaj wysokość',
     update: 'Zaktualizuj wysokość',
     updatedToast: ({ mode }) =>
@@ -154,6 +227,16 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     'Tych danych nie da się umieścić w adresie strony (URL) i nie ma ich w żadnej zapisanej mapie – zostają tylko w tej przeglądarce. Zapisz je w swoich mapach, aby je zachować.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Wystąpił błąd podczas dopasowywania śladu', err),
+  snapshotGone:
+    'Dane z tego kroku nie są już przechowywane w tej przeglądarce.',
+  snapshotFailed:
+    'Ta przeglądarka nie mogła przechować danych, więc po ponownym wczytaniu strony zostaną utracone. Aby je zachować, zapisz je w swoich mapach.',
+  osmUploadError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Wystąpił błąd podczas przesyłania do OpenStreetMap',
+      err,
+    ),
 };
 
 export default pl;

@@ -62,7 +62,7 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
       'maps:write': 'Vytvárať, meniť a mazať moje mapy',
       'events:read': 'Prezerať akcie, aj moje nezverejnené',
       'events:write':
-        'Vytvárať, meniť a rušiť moje akcie a dávať vedieť o záujme a účasti',
+        'Vytvárať, meniť a mazať moje akcie a dávať vedieť o záujme a účasti',
       'tracking:read': 'Prezerať moje sledované zariadenia',
       'tracking:write': 'Spravovať moje sledované zariadenia a ich zdieľanie',
       'tiles:outdoor':

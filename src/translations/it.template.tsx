@@ -199,6 +199,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Rimuovi %value% dalla lista',
     accept: 'Accetta',
     externalService: 'Servizio di terzi, con limitazioni d’uso',
+    noDrawingTool: 'Selezione',
   },
 
   generic: {
@@ -444,6 +445,59 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xc':
           'isoipse, curva di livello, altitudine, quota, rilievo, contours, sovrapposizione',
         'layer-WHC': 'chimica delle acque, idrologia',
+        'manual-getting-started': 'basi, introduzione, primi passi, aiuto',
+        'manual-shortcuts': 'tastiera, tasti, scorciatoie, combinazioni',
+        'manual-search':
+          'aiuto, guida, cerca, trova, geocodifica, coordinate, indirizzo, luogo, tieni sulla mappa',
+        'manual-osm-notes':
+          'aiuto, guida, nota, segnalazione, errore, openstreetmap, josm, id',
+        'manual-route-planner':
+          'aiuto, guida, navigazione, itinerario, tappe, pianifica percorso',
+        'manual-maps':
+          'aiuto, guida, livelli, mappa di base, sovrapposizione, gestione mappe, libreria, installa, preimpostazione, legenda, opacità',
+        'manual-custom-maps':
+          'aiuto, guida, mappa personalizzata, wms, tms, url dei tasselli, aggiungi sorgente',
+        'manual-shading':
+          'aiuto, guida, ombreggiatura, rilievo, terreno, sky view, apertura, lidar, dem, dtm',
+        'manual-weather-radar':
+          'aiuto, guida, pioggia, precipitazioni, meteo, previsioni, temporale, animazione',
+        'manual-panorama':
+          'aiuto, guida, 360, vista, cime, vette, orizzonte, terreno',
+        'manual-viewshed':
+          'aiuto, guida, visibilità, linea di vista, cosa si vede, vista da',
+        'manual-toposcope':
+          'aiuto, guida, rosa dei venti, cime, vette, tavola di orientamento, toposcopio, stampa',
+        'manual-map-export':
+          'aiuto, guida, stampa, pdf, png, svg, jpeg, webp, immagine, poster, esporta mappa',
+        'manual-objects':
+          'aiuto, guida, poi, punti di interesse, luoghi, categorie, servizi, osm',
+        'manual-map-details':
+          "aiuto, guida, identifica, cosa c'è qui, dettagli, elementi, elemento osm, cronologia, wms",
+        'manual-changesets':
+          'aiuto, guida, modifiche osm, changeset, mappatori, contributi, modifiche recenti',
+        'manual-my-maps':
+          'aiuto, guida, mappe salvate, salva mappa, condividi mappa, account, non salvate',
+        'manual-account':
+          'aiuto, guida, accesso, accedi, esci, disconnetti, profilo, token, chiave api, elimina account',
+        'manual-gps-recorder':
+          'aiuto, guida, registra traccia, registrazione, logger, android, in background',
+        'manual-ai':
+          'aiuto, guida, ai, ia, intelligenza artificiale, llm, chatgpt, claude, gemini, assistente, agente, webmcp, llms.txt',
+        'manual-drawing':
+          'aiuto, guida, misura, distanza, area, superficie, linea, poligono, punto',
+        'manual-tracks':
+          'aiuto, guida, gpx, kml, traccia, importa, profilo altimetrico, colora, esporta',
+        'manual-photos': 'aiuto, guida, foto, galleria, carica, immagini',
+        'manual-tracking':
+          'aiuto, guida, tracciamento, tracking, condividi posizione, configurazione dispositivo, locus, osmand',
+        'manual-offline':
+          'aiuto, guida, scarica mappe, senza connessione, cache, offline',
+        'manual-devices':
+          'aiuto, guida, garmin, locus, oruxmaps, geocaching, incorpora, apri nell’app',
+        'manual-premium':
+          'aiuto, abbonamento, prezzo, pagamento, crediti, acquista, pubblicità, annulla, rimborso, premium',
+        'manual-about':
+          'openstreetmap, osm, associazione, comunità, contribuisci, mappatura, licenza, attribuzione, copyright, uso commerciale',
       },
     },
   },
@@ -506,6 +560,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xa: 'Mappa Outdoor senza sfondo',
       xc: 'Curve di livello',
       WHC: 'Idrochimica',
+      A: 'Eventi',
     },
     customBase: 'Mappa personalizzata',
     type: {

@@ -131,6 +131,7 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   logoutUnsentTitle: 'Niewysłane zmiany map',
   logoutUnsentWarning: ({ count }) =>
     `Liczba map ze zmianami, które nie dotarły jeszcze na serwer: ${count}. Wylogowanie je odrzuci. Wylogować mimo to?`,
+  newEvent: 'Nowe wydarzenie',
 };
 
 export default pl;

@@ -150,6 +150,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     saved: 'Gespeichert.',
     visual: 'Anzeige',
     drawingTool: 'Zeichenwerkzeug',
+    noDrawingTool: 'Auswahl',
     copyOk: 'In Zwischenablage kopiert.',
     noCookies: () => (
       <>
@@ -441,6 +442,61 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'hybrid, satellit, luftbild, orthofoto, beschriftung, overlay',
         'layer-xc': 'höhenlinie, isohypsen, höhe, relief, contours, overlay',
         'layer-WHC': 'wasserchemie, hydrologie',
+        'manual-getting-started':
+          'grundlagen, einführung, erste schritte, hilfe, anleitung',
+        'manual-shortcuts':
+          'tastatur, tasten, tastenkürzel, tastenkombination, shortcuts',
+        'manual-search':
+          'hilfe, anleitung, suchen, finden, koordinaten, adresse, ort, auf der karte behalten',
+        'manual-osm-notes':
+          'hilfe, anleitung, hinweis, meldung, fehler, openstreetmap, josm, id',
+        'manual-route-planner':
+          'hilfe, anleitung, navigation, route, routenplanung, wegpunkte, zwischenziele',
+        'manual-maps':
+          'hilfe, anleitung, ebenen, layer, grundkarte, overlay, kartenverwaltung, bibliothek, installieren, voreinstellung, legende, deckkraft, transparenz',
+        'manual-custom-maps':
+          'hilfe, anleitung, eigene karte, wms, tms, kachel-url, karte hinzufügen',
+        'manual-shading':
+          'hilfe, anleitung, schummerung, relief, gelände, höhenmodell, lidar, dgm',
+        'manual-weather-radar':
+          'hilfe, anleitung, regen, niederschlag, wetter, vorhersage, gewitter, unwetter, animation',
+        'manual-panorama':
+          'hilfe, anleitung, 360, aussicht, gipfel, horizont, rundblick, geländeansicht',
+        'manual-viewshed':
+          'hilfe, anleitung, sichtbarkeit, sichtlinie, sichtfeld, aussicht, was ist von hier sichtbar',
+        'manual-toposcope':
+          'hilfe, anleitung, panoramatafel, orientierungstafel, gipfel, berge, toposkop, drucken',
+        'manual-map-export':
+          'hilfe, anleitung, drucken, pdf, png, svg, jpeg, webp, bild, poster, karte exportieren',
+        'manual-objects':
+          'hilfe, anleitung, poi, interessante orte, orte, kategorien, objekte, einrichtungen, osm',
+        'manual-map-details':
+          'hilfe, anleitung, was ist hier, details, elemente, osm-element, verlauf, wms',
+        'manual-changesets':
+          'hilfe, anleitung, osm-änderungen, änderungssätze, changesets, mapper, beiträge, letzte änderungen',
+        'manual-my-maps':
+          'hilfe, anleitung, gespeicherte karten, karte speichern, karte teilen, konto, nicht gespeichert',
+        'manual-account':
+          'hilfe, anleitung, anmelden, abmelden, login, profil, token, api-schlüssel, konto löschen',
+        'manual-gps-recorder':
+          'hilfe, anleitung, track aufzeichnen, aufzeichnung, logger, android, hintergrund',
+        'manual-ai':
+          'hilfe, anleitung, ki, künstliche intelligenz, ai, llm, chatgpt, claude, gemini, assistent, agent, webmcp, llms.txt',
+        'manual-drawing':
+          'hilfe, anleitung, messen, entfernung, distanz, fläche, linie, polygon, punkt',
+        'manual-tracks':
+          'hilfe, anleitung, gpx, kml, track, import, höhenprofil, einfärben, export',
+        'manual-photos': 'hilfe, anleitung, fotos, bilder, galerie, hochladen',
+        'manual-tracking':
+          'hilfe, anleitung, live-tracking, standort teilen, position teilen, geräteeinrichtung, locus, osmand',
+        'manual-offline':
+          'hilfe, anleitung, karten herunterladen, ohne verbindung, offline, cache, zwischenspeicher',
+        'manual-devices':
+          'hilfe, anleitung, garmin, locus, oruxmaps, geocaching, einbetten, in app öffnen',
+        'manual-premium':
+          'hilfe, abo, abonnement, preis, zahlung, guthaben, credits, kaufen, werbung, kündigen, erstattung, premium',
+        'manual-about':
+          'openstreetmap, osm, verein, gemeinschaft, community, mitmachen, kartierung, lizenz, namensnennung, quellenangabe, copyright, kommerzielle nutzung',
       },
     },
   },
@@ -480,6 +536,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       WGE: 'Geologisch',
       WKA: 'Kataster',
       wka: 'Kataster',
+      A: 'Veranstaltungen',
       xs: 'Wanderschwierigkeit',
       xq: 'Straßenzustand',
       xm: 'MTB-Schwierigkeit',

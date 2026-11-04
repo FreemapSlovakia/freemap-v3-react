@@ -136,6 +136,7 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   logoutUnsentTitle: 'Neposlane spremembe zemljevidov',
   logoutUnsentWarning: ({ count }) =>
     `Število zemljevidov s spremembami, ki še niso prišle na strežnik: ${count}. Z odjavo bodo zavržene. Se vseeno odjavite?`,
+  newEvent: 'Nov dogodek',
 };
 
 export default sl;

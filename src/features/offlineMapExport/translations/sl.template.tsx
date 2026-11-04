@@ -30,6 +30,8 @@ const sl: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   formatSqlitedb: 'SQLiteDB',
   formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
   formatSqlitedbTooltip: 'OsmAnd, Locus Map',
+  outsideCoverage: (countries) =>
+    `Ta zemljevid se izvozi le za države: ${countries}. Preostanek območja bo prazen.`,
 };
 
 export default sl;

@@ -5,7 +5,34 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  vertex: { channels: {} },
+  vertex: {
+    menuItem: 'Punktdaten',
+    latitude: 'Breitengrad',
+    longitude: 'Längengrad',
+    elevation: 'Höhe',
+    time: 'Zeit',
+    filled: ({ filled, total }) => `${filled} von ${total} Punkten`,
+    emptyHint:
+      'Ein leeres Feld lässt den Punkt ohne diesen Wert. Welche Werte die Linie hat, wird in ihren Eigenschaften festgelegt.',
+    notANumber: 'Geben Sie eine Zahl ein.',
+    outOfRange: 'Außerhalb des Bereichs.',
+    timeOrder:
+      'Die Zeit muss zwischen den Zeiten des vorherigen und des nächsten Punkts liegen.',
+    channels: {
+      heart: 'Herzfrequenz',
+      cads: 'Trittfrequenz',
+      atemps: 'Lufttemperatur',
+      wtemps: 'Wassertemperatur',
+      depths: 'Tiefe',
+      speeds: 'Geschwindigkeit',
+      courses: 'Bewegungsrichtung',
+      bearings: 'Azimut',
+      powers: 'Leistung',
+      accuracies: 'Genauigkeit',
+      battery: 'Akku',
+      gsmSignal: 'GSM-Signal',
+    },
+  },
   split: {
     action: 'Teilen',
     pick: 'Klicken Sie auf die Spur an der Trennstelle',
@@ -18,7 +45,49 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     pick: 'Klicken Sie auf die Spur, die angehängt werden soll',
     pickEnd: 'Punkt zum Verbinden der Linien wählen',
   },
-  osmUpload: { visibilities: {}, visibilityHints: {} },
+  osmUpload: {
+    visibilities: {
+      identifiable: 'Identifizierbar',
+      public: 'Öffentlich',
+      trackable: 'Nachverfolgbar',
+      private: 'Privat',
+    },
+    visibilityHints: {
+      identifiable:
+        'In der Trackliste mit Ihrem Namen angezeigt, als geordnete Punkte mit Zeitstempeln.',
+      public:
+        'In der Trackliste mit Ihrem Namen angezeigt, als anonyme, ungeordnete Punkte.',
+      trackable: 'Nur als anonyme, geordnete Punkte mit Zeitstempeln geteilt.',
+      private: 'Nur als anonyme, ungeordnete Punkte geteilt.',
+    },
+    menuItem: 'GPS-Track zu OpenStreetMap hochladen',
+    title: 'GPS-Track zu OpenStreetMap hochladen',
+    help: 'Lädt die geladenen Tracks als GPS-Track in Ihr OpenStreetMap-Konto hoch, anhand dessen Mapper Wege einzeichnen können. Hochgeladen werden nur Tracks mit aufgezeichneten Zeiten, da OpenStreetMap andere nicht speichert. Laden Sie nur selbst aufgezeichnete Tracks hoch.',
+    description: 'Beschreibung',
+    tags: 'Tags',
+    tagsHint: 'Durch Kommas getrennt.',
+    tagsInvalid:
+      'OpenStreetMap akzeptiert in einem Tag weder . ; / ? % noch # und keinen Tag mit mehr als 255 Zeichen.',
+    visibility: 'Sichtbarkeit',
+    upload: 'Hochladen',
+    loginPrompt:
+      'Zum Hochladen müssen Sie sich mit OpenStreetMap anmelden und Freemap erlauben, GPS-Tracks hochzuladen. Fortfahren?',
+    connectPrompt:
+      'Zum Hochladen müssen Sie Ihr OpenStreetMap-Konto mit Ihrem Freemap-Konto verbinden und Freemap erlauben, GPS-Tracks dorthin hochzuladen. Falls Sie bereits ein anderes Freemap-Konto haben, bei dem Sie sich mit diesem OpenStreetMap-Konto anmelden, werden die beiden Konten zu einem zusammengeführt. Fortfahren?',
+    authorizePrompt:
+      'Zum Hochladen müssen Sie Freemap erlauben, GPS-Tracks in Ihr OpenStreetMap-Konto hochzuladen. Fortfahren?',
+    reauthorize:
+      'Die Berechtigung von Freemap, GPS-Tracks in Ihr OpenStreetMap-Konto hochzuladen, wurde soeben widerrufen. Klicken Sie erneut auf Hochladen, um sie zu erteilen.',
+    success: ({ url }) => (
+      <>
+        Der Track wurde hochgeladen. OpenStreetMap verarbeitet ihn innerhalb
+        weniger Minuten.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Track auf OpenStreetMap anzeigen
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'An Wege anpassen',
     title: 'An Wege anpassen',
@@ -131,6 +200,9 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         : mode === 'clear'
           ? 'Die Höhe wurde entfernt.'
           : 'Die Höhe wurde überschrieben.',
+    clear: 'Höhe entfernen',
+    clearDesc:
+      'die gespeicherte Höhe entfernen; Profile lesen sie dann aus dem Geländemodell',
   },
   upload: 'Hochladen',
   unnamedTrack: ({ n }) => `Track ${n}`,
@@ -152,6 +224,12 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unsaved: 'Nicht gespeichert',
   unsavedTooltip:
     'Diese Daten passen nicht in die Seitenadresse (URL) und sind in keiner gespeicherten Karte – sie bleiben nur in diesem Browser. Speichern Sie sie in Ihren Karten, um sie zu behalten.',
+  snapshotGone:
+    'Die in diesem Schritt angezeigten Daten werden in diesem Browser nicht mehr aufbewahrt.',
+  snapshotFailed:
+    'Dieser Browser konnte die Daten nicht aufbewahren, beim Neuladen der Seite gehen sie daher verloren. Speichern Sie sie in Ihren Karten, um sie zu behalten.',
+  osmUploadError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Hochladen zu OpenStreetMap', err),
 };
 
 export default de;

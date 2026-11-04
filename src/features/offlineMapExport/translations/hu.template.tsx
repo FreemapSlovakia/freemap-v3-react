@@ -29,6 +29,8 @@ const hu: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   formatSqlitedb: 'SQLiteDB',
   formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
   formatSqlitedbTooltip: 'OsmAnd, Locus Map',
+  outsideCoverage: (countries) =>
+    `Ez a térkép csak a következő országokra exportálódik: ${countries}. A terület többi része üres marad.`,
 };
 
 export default hu;

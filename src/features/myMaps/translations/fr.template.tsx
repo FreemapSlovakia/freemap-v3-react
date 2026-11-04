@@ -148,6 +148,7 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   logoutUnsentTitle: 'Modifications de cartes non envoyées',
   logoutUnsentWarning: ({ count }) =>
     `${count} carte(s) comportent des modifications qui ne sont pas encore parvenues au serveur. La déconnexion les abandonne. Se déconnecter quand même ?`,
+  newEvent: 'Nouvel événement',
 };
 
 export default fr;

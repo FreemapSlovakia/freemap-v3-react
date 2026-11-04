@@ -5,7 +5,33 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  vertex: { channels: {} },
+  vertex: {
+    channels: {
+      heart: 'Pulzus',
+      cads: 'Kadencia',
+      atemps: 'Léghőmérséklet',
+      wtemps: 'Vízhőmérséklet',
+      depths: 'Mélység',
+      speeds: 'Sebesség',
+      courses: 'Haladási irány',
+      bearings: 'Azimut',
+      powers: 'Teljesítmény',
+      accuracies: 'Pontosság',
+      battery: 'Akkumulátor',
+      gsmSignal: 'GSM-jel',
+    },
+    menuItem: 'Pont adatai',
+    latitude: 'Földrajzi szélesség',
+    longitude: 'Földrajzi hosszúság',
+    elevation: 'Tengerszint feletti magasság',
+    time: 'Idő',
+    filled: ({ filled, total }) => `${filled} / ${total} pont`,
+    emptyHint:
+      'Üres mező esetén a pontnak nem lesz ilyen értéke. Hogy a vonal milyen értékeket tartalmaz, azt a Tulajdonságai között lehet beállítani.',
+    notANumber: 'Adjon meg egy számot.',
+    outOfRange: 'Tartományon kívül.',
+    timeOrder: 'Az időnek az előző és a következő pont ideje közé kell esnie.',
+  },
   split: {
     action: 'Felosztás',
     pick: 'Kattintson a nyomvonalra a felosztás helyén',
@@ -18,7 +44,50 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     pick: 'Kattintson a hozzáfűzendő nyomvonalra',
     pickEnd: 'Válasszon pontot a vonalak összekapcsolásához',
   },
-  osmUpload: { visibilities: {}, visibilityHints: {} },
+  osmUpload: {
+    visibilities: {
+      identifiable: 'Azonosítható',
+      public: 'Nyilvános',
+      trackable: 'Követhető',
+      private: 'Privát',
+    },
+    visibilityHints: {
+      identifiable:
+        'Az Ön nevével jelenik meg a nyomvonalak listájában, sorba rendezett, időbélyeges pontokként.',
+      public:
+        'Az Ön nevével jelenik meg a nyomvonalak listájában, névtelen, rendezetlen pontokként.',
+      trackable:
+        'Csak névtelen, sorba rendezett, időbélyeges pontokként kerül megosztásra.',
+      private: 'Csak névtelen, rendezetlen pontokként kerül megosztásra.',
+    },
+    menuItem: 'GPS-nyomvonal feltöltése az OpenStreetMapre',
+    title: 'GPS-nyomvonal feltöltése az OpenStreetMapre',
+    help: 'A betöltött nyomvonalakat GPS-nyomvonalként feltölti az Ön OpenStreetMap-fiókjába, amely alapján a térképezők megrajzolhatják az utakat. Csak a rögzített időket tartalmazó nyomvonalak kerülnek feltöltésre, mert az OpenStreetMap mást nem tárol. Csak saját maga által rögzített nyomvonalakat töltsön fel.',
+    description: 'Leírás',
+    tags: 'Címkék',
+    tagsHint: 'Vesszővel elválasztva.',
+    tagsInvalid:
+      'Az OpenStreetMap nem fogad el címkében . ; / ? % vagy # karaktert, sem 255 karakternél hosszabb címkét.',
+    visibility: 'Láthatóság',
+    upload: 'Feltöltés',
+    loginPrompt:
+      'A feltöltéshez be kell jelentkeznie az OpenStreetMappel, és engedélyeznie kell, hogy a Freemap GPS-nyomvonalakat töltsön fel. Folytatja?',
+    connectPrompt:
+      'A feltöltéshez OpenStreetMap-fiókot kell kapcsolnia a Freemap-fiókjához, és engedélyeznie kell, hogy a Freemap GPS-nyomvonalakat töltsön fel bele. Ha már van egy másik Freemap-fiókja, amelybe ezzel az OpenStreetMap-fiókkal jelentkezik be, a két fiók egyesül. Folytatja?',
+    authorizePrompt:
+      'A feltöltéshez engedélyeznie kell, hogy a Freemap GPS-nyomvonalakat töltsön fel az Ön OpenStreetMap-fiókjába. Folytatja?',
+    reauthorize:
+      'A Freemap engedélye GPS-nyomvonalak feltöltésére az Ön OpenStreetMap-fiókjába éppen most vissza lett vonva. Kattintson ismét a Feltöltés gombra, és engedélyezze újra.',
+    success: ({ url }) => (
+      <>
+        A nyomvonal feltöltése megtörtént. Az OpenStreetMap néhány percen belül
+        feldolgozza.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Nyomvonal megtekintése az OpenStreetMapen
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'Utakhoz illesztés',
     title: 'Utakhoz illesztés',
@@ -136,6 +205,9 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         : mode === 'clear'
           ? 'A magasság törölve lett.'
           : 'A magasság felül lett írva.',
+    clear: 'Magasság törlése',
+    clearDesc:
+      'a tárolt magasság eltávolítása; a profilok ezután a domborzatmodellből olvassák',
   },
   fetchingError: ({ err }) =>
     addError(
@@ -153,6 +225,16 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     'Ezek az adatok nem férnek el az oldal címében (URL), és egyetlen mentett térképen sem szerepelnek – csak ebben a böngészőben maradnak meg. Mentse őket a térképei közé, hogy megmaradjanak.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a nyomvonal illesztésekor', err),
+  snapshotGone:
+    'Az ebben a lépésben látható adatokat ez a böngésző már nem őrzi.',
+  snapshotFailed:
+    'Ez a böngésző nem tudta megőrizni az adatokat, így az oldal újratöltésekor elvesznek. Megőrzésükhöz mentse őket a térképei közé.',
+  osmUploadError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Hiba történt az OpenStreetMapre való feltöltéskor',
+      err,
+    ),
 };
 
 export default hu;

@@ -31,7 +31,61 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     trackingManager: 'Tracking-Verwalter',
     layerPreview: 'Tester kommender Kartenebenen',
   },
-  appTokens: { scopeNames: {} },
+  appTokens: {
+    scopeNames: {
+      'gallery:read': 'Fotos ansehen, mit Premium-Zugang auch Premium-Fotos',
+      'gallery:write': 'Fotos hochladen, bearbeiten, bewerten und kommentieren',
+      'maps:read': 'Meine Karten ansehen',
+      'maps:write': 'Meine Karten erstellen, ändern und löschen',
+      'events:read': 'Veranstaltungen ansehen, auch meine nicht gelisteten',
+      'events:write':
+        'Meine Veranstaltungen erstellen, ändern und löschen sowie Interesse und Teilnahme angeben',
+      'tracking:read': 'Meine überwachten Geräte ansehen',
+      'tracking:write': 'Meine überwachten Geräte und deren Freigabe verwalten',
+      'tiles:outdoor':
+        'Premium-Zoomstufen (19+) der Outdoor-Karte in Apps wie Locus, mit Premium-Zugang',
+      'tiles:shading':
+        'Premium-Zoomstufen (16+) der Geländeschattierungen in Apps wie Locus, mit Premium-Zugang',
+      'tiles:aerial':
+        'Premium-Zoomstufe (20) der slowakischen und tschechischen Luftbilder in Apps wie Locus, mit Premium-Zugang',
+    },
+    title: 'App-Tokens',
+    about: 'Was sind App-Tokens?',
+    intro:
+      'Ein App-Token erlaubt einer anderen Anwendung oder einem Skript, Freemap in Ihrem Namen zu nutzen, etwa um Premium-Fotos anzuzeigen. Es kann nur das tun, was seine Berechtigungen erlauben, und nichts mit dem Konto selbst.',
+    usage: (
+      <>
+        Senden Sie das Token im HTTP-Header <code>Authorization</code> jeder
+        Anfrage an die Freemap-API:
+      </>
+    ),
+    tiles: (
+      <>
+        Eine App wie Locus lädt die Outdoor-Karte mit dem Token in der
+        Kachel-URL (JOSM braucht keines):
+      </>
+    ),
+    keepSecret:
+      'Halten Sie das Token geheim wie ein Passwort. Falls jemand anderes es erhalten haben könnte, löschen Sie es und erstellen Sie ein neues.',
+    none: 'Sie haben keine App-Tokens.',
+    create: 'Neues Token',
+    note: 'Notiz',
+    scopes: 'Berechtigungen',
+    expiration: 'Gültig bis',
+    never: 'Unbegrenzt',
+    days: ({ count }) => `In ${count} Tagen`,
+    customDate: 'Bis zu einem Datum',
+    pastDate: 'Das Ablaufdatum muss in der Zukunft liegen.',
+    lastUsed: 'Zuletzt verwendet',
+    neverUsed: 'Noch nicht verwendet',
+    created:
+      'Speichern Sie das Token jetzt. Später ist es hier nicht mehr lesbar.',
+    revoke: 'Löschen',
+    revokeConfirm: ({ name }) =>
+      `Token „${name}“ löschen? Anwendungen, die es verwenden, funktionieren dann nicht mehr.`,
+    noNote: 'Ohne Namen',
+    edit: 'Token bearbeiten',
+  },
   connectLabel: 'Verbinden',
   connectSuccess: ({ provider }) =>
     `Ihr ${provider}-Konto wurde mit Ihrem Freemap-Konto verbunden. Sie können sich jetzt auch damit anmelden.`,
@@ -47,6 +101,10 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
   logOutSuccess: 'Sie wurden erfolgreich abgemeldet.',
   logOutError: ({ err }) =>
     addError(getMessages()!, 'Fehler bei der Abmeldung', err),
+  differentAccount: ({ provider }) =>
+    `Sie haben ein anderes ${provider}-Konto autorisiert als das, das mit Ihrem Freemap-Konto verbunden ist. Melden Sie sich bei ${provider} ab, melden Sie sich mit dem verbundenen Konto an und versuchen Sie es erneut.`,
+  lastProvider:
+    'Dies ist die letzte Möglichkeit, sich bei Ihrem Konto anzumelden, daher kann sie nicht getrennt werden. Laden Sie die Seite neu, um den aktuellen Stand zu sehen.',
 };
 
 export default de;

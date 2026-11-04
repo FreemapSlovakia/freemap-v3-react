@@ -192,6 +192,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: '%value% eltávolítása a listáról',
     accept: 'Elfogadás',
     externalService: 'Külső szolgáltatás, használati korlátozásokkal',
+    noDrawingTool: 'Kijelölés',
   },
 
   generic: {
@@ -441,6 +442,60 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xc':
           'szintvonal, izovonal, magasság, domborzat, contours, fedvény',
         'layer-WHC': 'vízkémia, hidrológia',
+        'manual-getting-started': 'alapok, bevezetés, első lépések, súgó',
+        'manual-shortcuts': 'billentyűzet, billentyűk, gyorsbillentyűk',
+        'manual-search':
+          'súgó, útmutató, keresés, keres, koordináták, cím, hely, megtartás a térképen',
+        'manual-osm-notes':
+          'súgó, útmutató, jegyzet, bejelentés, hiba, openstreetmap, josm, id',
+        'manual-route-planner':
+          'súgó, útmutató, navigáció, útvonal, útvonaltervezés, köztes pontok',
+        'manual-maps':
+          'súgó, útmutató, rétegek, alaptérkép, fedvény, térképkezelő, könyvtár, telepítés, előbeállítás, jelmagyarázat, átlátszóság',
+        'manual-custom-maps':
+          'súgó, útmutató, saját térkép, wms, tms, csempe url, térkép hozzáadása',
+        'manual-shading':
+          'súgó, útmutató, árnyékolás, domborzatárnyékolás, relief, terep, lidar, dem',
+        'manual-weather-radar':
+          'súgó, útmutató, eső, csapadék, időjárás, előrejelzés, vihar, animáció',
+        'manual-panorama':
+          'súgó, útmutató, 360, kilátás, csúcsok, horizont, látóhatár, terep',
+        'manual-viewshed':
+          'súgó, útmutató, láthatóság, rálátás, kilátás, mi látszik innen',
+        'manual-toposcope':
+          'súgó, útmutató, panorámatábla, csúcsok, hegyek, toposzkóp, nyomtatás',
+        'manual-map-export':
+          'súgó, útmutató, nyomtatás, pdf, png, svg, jpeg, webp, kép, poszter, térkép exportálása',
+        'manual-objects':
+          'súgó, útmutató, poi, érdekes pontok, helyek, kategóriák, objektumok, osm',
+        'manual-map-details':
+          'súgó, útmutató, mi van itt, részletek, elemek, osm elem, előzmények, wms',
+        'manual-changesets':
+          'súgó, útmutató, osm szerkesztések, módosításcsomagok, térképezők, hozzájárulások',
+        'manual-my-maps':
+          'súgó, útmutató, mentett térképek, térkép mentése, térkép megosztása, fiók, nem mentett',
+        'manual-account':
+          'súgó, útmutató, bejelentkezés, kijelentkezés, profil, token, api kulcs, fiók törlése',
+        'manual-gps-recorder':
+          'súgó, útmutató, nyomvonal rögzítése, rögzítés, logger, android, háttérben',
+        'manual-ai':
+          'súgó, útmutató, ai, mi, mesterséges intelligencia, chatgpt, claude, gemini, asszisztens, ágens, webmcp, llms.txt',
+        'manual-drawing':
+          'súgó, útmutató, mérés, távolság, terület, vonal, sokszög, poligon, pont',
+        'manual-tracks':
+          'súgó, útmutató, gpx, kml, nyomvonal, import, magassági profil, színezés, export',
+        'manual-photos':
+          'súgó, útmutató, fotók, képek, galéria, fényképek feltöltése',
+        'manual-tracking':
+          'súgó, útmutató, követés, élő követés, helymegosztás, eszköz beállítása, locus, osmand',
+        'manual-offline':
+          'súgó, útmutató, térképek letöltése, kapcsolat nélkül, gyorsítótár, offline',
+        'manual-devices':
+          'súgó, útmutató, garmin, locus, oruxmaps, geocaching, beágyazás, embed, megnyitás alkalmazásban',
+        'manual-premium':
+          'súgó, előfizetés, ár, fizetés, kreditek, vásárlás, hirdetések, lemondás, visszatérítés, prémium',
+        'manual-about':
+          'openstreetmap, osm, egyesület, közösség, térképezés, hozzájárulás, licenc, forrásmegjelölés, copyright, szerzői jog, kereskedelmi felhasználás',
       },
     },
   },
@@ -498,6 +553,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xa: 'Outdoor-térkép háttér nélkül',
       xc: 'Szintvonalak',
       WHC: 'Hidrokémiai',
+      A: 'Események',
     },
 
     type: {

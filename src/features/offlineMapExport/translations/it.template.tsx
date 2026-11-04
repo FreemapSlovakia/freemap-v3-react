@@ -29,6 +29,8 @@ const it: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   formatSqlitedb: 'SQLiteDB',
   formatMbtilesTooltip: 'Locus Map, Guru Maps, OruxMaps',
   formatSqlitedbTooltip: 'OsmAnd, Locus Map',
+  outsideCoverage: (countries) =>
+    `Questa mappa viene esportata solo per: ${countries}. Il resto dell'area resterà vuoto.`,
 };
 
 export default it;

@@ -18,9 +18,76 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     description: 'Su di me',
     publicFields: 'Mostra nel mio profilo pubblico',
     publicProfile: 'Il mio profilo pubblico',
+    homeLocation: 'Posizione di casa',
+    homeLocationUnset: 'Non impostata',
+    setHomeLocation: 'Imposta sulla mappa',
+    roles: 'I miei ruoli',
   },
-  roleNames: {},
-  appTokens: { scopeNames: {} },
+  roleNames: {
+    userManager: 'Gestore utenti',
+    galleryModerator: 'Moderatore foto',
+    mapModerator: 'Moderatore mappe',
+    eventManager: 'Gestore eventi',
+    trackingManager: 'Gestore tracciamento',
+    layerPreview: 'Tester dei livelli di mappa in arrivo',
+  },
+  appTokens: {
+    scopeNames: {
+      'gallery:read':
+        'Visualizzare le foto, anche quelle premium se ha l’accesso premium',
+      'gallery:write': 'Caricare, modificare, valutare e commentare le foto',
+      'maps:read': 'Visualizzare le mie mappe',
+      'maps:write': 'Creare, modificare ed eliminare le mie mappe',
+      'events:read': 'Visualizzare gli eventi, anche i miei non pubblicati',
+      'events:write':
+        'Creare, modificare ed eliminare i miei eventi e indicare interesse o partecipazione',
+      'tracking:read': 'Visualizzare i miei dispositivi tracciati',
+      'tracking:write':
+        'Gestire i miei dispositivi tracciati e la loro condivisione',
+      'tiles:outdoor':
+        'Zoom premium (19+) della mappa outdoor in app come Locus, se ha l’accesso premium',
+      'tiles:shading':
+        'Zoom premium (16+) delle ombreggiature del terreno in app come Locus, se ha l’accesso premium',
+      'tiles:aerial':
+        'Zoom premium (20) delle ortofoto slovacche e ceche in app come Locus, se ha l’accesso premium',
+    },
+    title: 'Token delle app',
+    about: 'Che cosa sono i token delle app?',
+    intro:
+      'Un token dell’app consente a un’altra applicazione o a uno script di usare Freemap a suo nome, ad esempio per mostrare le foto premium. Può fare solo ciò che i suoi permessi consentono, e nulla con l’account stesso.',
+    usage: (
+      <>
+        Invii il token nell’intestazione HTTP <code>Authorization</code> di ogni
+        richiesta all’API di Freemap:
+      </>
+    ),
+    tiles: (
+      <>
+        Un’app come Locus carica la mappa outdoor con il token nell’URL dei
+        tasselli (JOSM non ne ha bisogno):
+      </>
+    ),
+    keepSecret:
+      'Mantenga il token segreto, come una password. Se qualcun altro potrebbe averlo ottenuto, lo elimini e ne crei uno nuovo.',
+    none: 'Non ha alcun token delle app.',
+    create: 'Nuovo token',
+    note: 'Nota',
+    scopes: 'Permessi',
+    expiration: 'Scadenza',
+    never: 'Mai',
+    days: ({ count }) => `Tra ${count} giorni`,
+    customDate: 'In una data',
+    pastDate: 'La data di scadenza deve essere nel futuro.',
+    lastUsed: 'Ultimo utilizzo',
+    neverUsed: 'Non ancora usato',
+    created:
+      'Salvi il token adesso. In seguito non sarà più possibile leggerlo qui.',
+    revoke: 'Elimina',
+    revokeConfirm: ({ name }) =>
+      `Eliminare il token «${name}»? Le applicazioni che lo usano smetteranno di funzionare.`,
+    noNote: 'Senza titolo',
+    edit: 'Modifica token',
+  },
   connectLabel: 'Connetti',
   connectSuccess: ({ provider }) =>
     `Il suo account ${provider} è stato collegato al suo account Freemap. Ora può accedere anche con esso.`,
@@ -34,6 +101,10 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     addError(getMessages()!, 'Error verifying authentication:', err),
   logOutSuccess: 'Disconnessione avvenuta correttamente.',
   logOutError: ({ err }) => addError(getMessages()!, 'Error logging out:', err),
+  differentAccount: ({ provider }) =>
+    `Ha autorizzato un account ${provider} diverso da quello collegato al suo account Freemap. Esca da ${provider}, acceda con l’account collegato e riprovi.`,
+  lastProvider:
+    'Questo è l’ultimo modo per accedere al suo account, quindi non può essere scollegato. Ricarichi la pagina per vedere lo stato attuale.',
 };
 
 export default it;

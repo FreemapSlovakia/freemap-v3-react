@@ -14,7 +14,34 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   saveAsMap: 'Enregistrer dans mes cartes',
   loginToSaveMap:
     'Connectez-vous d’abord pour enregistrer la trace dans vos cartes.',
-  vertex: { channels: {} },
+  vertex: {
+    channels: {
+      heart: 'Fréquence cardiaque',
+      cads: 'Cadence',
+      atemps: 'Température de l’air',
+      wtemps: 'Température de l’eau',
+      depths: 'Profondeur',
+      speeds: 'Vitesse',
+      courses: 'Direction du déplacement',
+      bearings: 'Azimut',
+      powers: 'Puissance',
+      accuracies: 'Précision',
+      battery: 'Batterie',
+      gsmSignal: 'Signal GSM',
+    },
+    menuItem: 'Données du point',
+    latitude: 'Latitude',
+    longitude: 'Longitude',
+    elevation: 'Altitude',
+    time: 'Heure',
+    filled: ({ filled, total }) => `${filled} points sur ${total}`,
+    emptyHint:
+      'Un champ vide laisse le point sans cette valeur. Les valeurs que porte la ligne se définissent dans ses Propriétés.',
+    notANumber: 'Saisissez un nombre.',
+    outOfRange: 'Hors limites.',
+    timeOrder:
+      'L’heure doit se situer entre celles du point précédent et du point suivant.',
+  },
   split: {
     action: 'Diviser',
     pick: 'Cliquez sur la trace à l’endroit de la coupure',
@@ -27,7 +54,50 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     pick: 'Cliquez sur la trace à fusionner',
     pickEnd: 'Sélectionnez un point pour joindre les lignes',
   },
-  osmUpload: { visibilities: {}, visibilityHints: {} },
+  osmUpload: {
+    visibilities: {
+      identifiable: 'Identifiable',
+      public: 'Publique',
+      trackable: 'Traçable',
+      private: 'Privée',
+    },
+    visibilityHints: {
+      identifiable:
+        'Affichée dans la liste des traces avec votre nom, sous forme de points ordonnés et horodatés.',
+      public:
+        'Affichée dans la liste des traces avec votre nom, sous forme de points anonymes non ordonnés.',
+      trackable:
+        'Partagée uniquement sous forme de points anonymes ordonnés et horodatés.',
+      private:
+        'Partagée uniquement sous forme de points anonymes non ordonnés.',
+    },
+    menuItem: 'Envoyer la trace GPS vers OpenStreetMap',
+    title: 'Envoyer la trace GPS vers OpenStreetMap',
+    help: 'Envoie les traces chargées sur votre compte OpenStreetMap en tant que trace GPS, à partir de laquelle les contributeurs peuvent cartographier des chemins. Seules les traces avec des heures enregistrées sont envoyées, car OpenStreetMap ne conserve rien d’autre. N’envoyez que des traces que vous avez enregistrées vous-même.',
+    description: 'Description',
+    tags: 'Étiquettes',
+    tagsHint: 'Séparées par des virgules.',
+    tagsInvalid:
+      'OpenStreetMap n’accepte pas . ; / ? % ni # dans une étiquette, ni une étiquette de plus de 255 caractères.',
+    visibility: 'Visibilité',
+    upload: 'Envoyer',
+    loginPrompt:
+      'Pour l’envoi, il faut se connecter avec OpenStreetMap et autoriser Freemap à envoyer des traces GPS. Continuer ?',
+    connectPrompt:
+      'Pour l’envoi, votre compte OpenStreetMap doit être associé à votre compte Freemap et autoriser Freemap à y envoyer des traces GPS. Si vous avez déjà un autre compte Freemap auquel vous vous connectez avec ce compte OpenStreetMap, les deux comptes seront fusionnés en un seul. Continuer ?',
+    authorizePrompt:
+      'Pour l’envoi, vous devez autoriser Freemap à envoyer des traces GPS sur votre compte OpenStreetMap. Continuer ?',
+    reauthorize:
+      'L’autorisation donnée à Freemap d’envoyer des traces GPS sur votre compte OpenStreetMap vient d’être retirée. Cliquez à nouveau sur Envoyer pour l’accorder.',
+    success: ({ url }) => (
+      <>
+        La trace a été envoyée. OpenStreetMap la traitera dans quelques minutes.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Afficher la trace sur OpenStreetMap
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'Caler sur les chemins',
     title: 'Caler sur les chemins',
@@ -138,6 +208,9 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         : mode === 'clear'
           ? 'L’altitude a été supprimée.'
           : 'L’altitude a été remplacée.',
+    clear: 'Effacer l’altitude',
+    clearDesc:
+      'supprimer l’altitude enregistrée ; les profils la lisent alors dans le modèle de terrain',
   },
   fetchingError: ({ err }) =>
     addError(
@@ -156,6 +229,12 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     "Ces données ne peuvent pas figurer dans l'adresse de la page (URL) et ne sont dans aucune carte enregistrée : elles restent uniquement dans ce navigateur. Enregistrez-les dans vos cartes pour les conserver.",
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Erreur lors du calage de la trace', err),
+  snapshotGone:
+    'Les données affichées à cette étape ne sont plus conservées dans ce navigateur.',
+  snapshotFailed:
+    'Ce navigateur n’a pas pu conserver les données : elles seront perdues au rechargement de la page. Enregistrez-les dans vos cartes pour les conserver.',
+  osmUploadError: ({ err }) =>
+    addError(getMessages()!, 'Erreur lors de l’envoi vers OpenStreetMap', err),
 };
 
 export default fr;

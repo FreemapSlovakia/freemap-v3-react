@@ -14,7 +14,33 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   saveAsMap: 'Shrani med moje zemljevide',
   loginToSaveMap:
     'Za shranjevanje sledi med vaše zemljevide se najprej prijavite.',
-  vertex: { channels: {} },
+  vertex: {
+    channels: {
+      heart: 'Srčni utrip',
+      cads: 'Kadenca',
+      atemps: 'Temperatura zraka',
+      wtemps: 'Temperatura vode',
+      depths: 'Globina',
+      speeds: 'Hitrost',
+      courses: 'Smer gibanja',
+      bearings: 'Azimut',
+      powers: 'Moč',
+      accuracies: 'Natančnost',
+      battery: 'Baterija',
+      gsmSignal: 'Signal GSM',
+    },
+    menuItem: 'Podatki točke',
+    latitude: 'Zemljepisna širina',
+    longitude: 'Zemljepisna dolžina',
+    elevation: 'Nadmorska višina',
+    time: 'Čas',
+    filled: ({ filled, total }) => `${filled} od ${total} točk`,
+    emptyHint:
+      'Prazno polje pusti točko brez te vrednosti. Katere vrednosti ima črta, se nastavi v njenih lastnostih.',
+    notANumber: 'Vnesite število.',
+    outOfRange: 'Zunaj obsega.',
+    timeOrder: 'Čas mora biti med časoma prejšnje in naslednje točke.',
+  },
   split: {
     action: 'Razdeli',
     pick: 'Kliknite sled na mestu razdelitve',
@@ -27,7 +53,48 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     pick: 'Kliknite sled, s katero želite združiti',
     pickEnd: 'Izberite točko za združitev črt',
   },
-  osmUpload: { visibilities: {}, visibilityHints: {} },
+  osmUpload: {
+    visibilities: {
+      identifiable: 'Prepoznavna',
+      public: 'Javna',
+      trackable: 'Sledljiva',
+      private: 'Zasebna',
+    },
+    visibilityHints: {
+      identifiable:
+        'Prikazana na seznamu sledi z vašim imenom, kot urejene točke s časovnimi oznakami.',
+      public:
+        'Prikazana na seznamu sledi z vašim imenom, kot anonimne neurejene točke.',
+      trackable: 'Deljena le kot anonimne urejene točke s časovnimi oznakami.',
+      private: 'Deljena le kot anonimne neurejene točke.',
+    },
+    menuItem: 'Naloži GPS sled v OpenStreetMap',
+    title: 'Naloži GPS sled v OpenStreetMap',
+    help: 'Naloži prikazane sledi v vaš račun OpenStreetMap kot GPS sled, po kateri lahko kartografi vrišejo poti. Naložijo se le sledi z zabeleženimi časi, saj OpenStreetMap drugih ne hrani. Nalagajte le sledi, ki ste jih sami posneli.',
+    description: 'Opis',
+    tags: 'Oznake',
+    tagsHint: 'Ločene z vejicami.',
+    tagsInvalid:
+      'OpenStreetMap v oznaki ne sprejme znakov . ; / ? % ali # niti oznake, daljše od 255 znakov.',
+    visibility: 'Vidnost',
+    upload: 'Naloži',
+    loginPrompt:
+      'Za nalaganje se morate prijaviti prek OpenStreetMap in Freemapu dovoliti nalaganje GPS sledi. Želite nadaljevati?',
+    connectPrompt:
+      'Za nalaganje morate z računom Freemap povezati račun OpenStreetMap in Freemapu dovoliti, da vanj nalaga GPS sledi. Če že imate drug račun Freemap, v katerega se prijavljate s tem računom OpenStreetMap, se oba računa združita v enega. Želite nadaljevati?',
+    authorizePrompt:
+      'Za nalaganje morate Freemapu dovoliti nalaganje GPS sledi v vaš račun OpenStreetMap. Želite nadaljevati?',
+    reauthorize:
+      'Dovoljenje Freemapu za nalaganje GPS sledi v vaš račun OpenStreetMap je bilo pravkar preklicano. Znova kliknite Naloži in ga dovolite.',
+    success: ({ url }) => (
+      <>
+        Sled je naložena. OpenStreetMap jo obdela v nekaj minutah.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Prikaži sled v OpenStreetMap
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'Pripni na poti',
     title: 'Pripni na poti',
@@ -136,6 +203,9 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         : mode === 'clear'
           ? 'Nadmorska višina je bila odstranjena.'
           : 'Nadmorska višina je bila prepisana.',
+    clear: 'Izbriši nadmorsko višino',
+    clearDesc:
+      'odstrani shranjeno nadmorsko višino; profili jo nato berejo iz modela terena',
   },
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju podatkov o sledi', err),
@@ -149,6 +219,11 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   unsaved: 'Ni shranjeno',
   unsavedTooltip:
     'Teh podatkov ni mogoče vstaviti v naslov strani (URL) in niso v nobenem shranjenem zemljevidu – ostanejo samo v tem brskalniku. Shranite jih med svoje zemljevide, da jih ohranite.',
+  snapshotGone: 'Podatkov iz tega koraka ta brskalnik ne hrani več.',
+  snapshotFailed:
+    'Ta brskalnik podatkov ni mogel ohraniti, zato se ob ponovnem nalaganju strani izgubijo. Če jih želite obdržati, jih shranite med svoje zemljevide.',
+  osmUploadError: ({ err }) =>
+    addError(getMessages()!, 'Napaka pri nalaganju v OpenStreetMap', err),
 };
 
 export default sl;

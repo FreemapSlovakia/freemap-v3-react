@@ -194,6 +194,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     deleteButtonText: 'Retirer %value% de la liste',
     accept: 'Accepter',
     externalService: 'Service tiers, soumis à des restrictions d’utilisation',
+    noDrawingTool: 'Sélection',
   },
   generic: {
     color: 'Couleur',
@@ -425,6 +426,61 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xc':
           'courbe de niveau, isohypses, altitude, relief, contours, calque',
         'layer-WHC': "chimie de l'eau, hydrologie",
+        'manual-getting-started':
+          'aide, manuel, bases, introduction, premiers pas, débuter',
+        'manual-shortcuts': 'clavier, touches, raccourcis clavier, raccourcis',
+        'manual-search':
+          'aide, manuel, rechercher, trouver, géocodage, coordonnées, adresse, lieu, garder sur la carte',
+        'manual-osm-notes':
+          'aide, manuel, note, signalement, signaler, erreur, bogue, openstreetmap, josm, id',
+        'manual-route-planner':
+          'aide, manuel, navigation, itinéraire, trajet, étapes, planifier un itinéraire',
+        'manual-maps':
+          'aide, manuel, calques, couches, fond de carte, superposition, gestionnaire de cartes, bibliothèque, installer, préréglage, légende, opacité',
+        'manual-custom-maps':
+          'aide, manuel, carte personnalisée, wms, tms, url des tuiles, ajouter une source',
+        'manual-shading':
+          'aide, manuel, ombrage, estompage, relief, terrain, ouverture du ciel, lidar, mnt',
+        'manual-weather-radar':
+          'aide, manuel, pluie, précipitations, météo, prévisions, orage, animation',
+        'manual-panorama':
+          'aide, manuel, 360, vue, sommets, horizon, rendu du terrain',
+        'manual-viewshed':
+          'aide, manuel, visibilité, bassin de visibilité, ligne de vue, champ de vision, vue depuis',
+        'manual-toposcope':
+          'aide, manuel, table d’orientation, sommets, montagnes, orientation, imprimer',
+        'manual-map-export':
+          'aide, manuel, imprimer, impression, pdf, png, svg, jpeg, webp, image, affiche, exporter la carte',
+        'manual-objects':
+          'aide, manuel, poi, points d’intérêt, lieux, catégories, objets, équipements, osm',
+        'manual-map-details':
+          'aide, manuel, identifier, qu’y a-t-il ici, détails, éléments, élément osm, historique, wms',
+        'manual-changesets':
+          'aide, manuel, modifications osm, groupes de modifications, contributeurs, cartographes, contributions, modifications récentes',
+        'manual-my-maps':
+          'aide, manuel, cartes enregistrées, enregistrer la carte, partager la carte, compte, non enregistré',
+        'manual-account':
+          'aide, manuel, connexion, se connecter, déconnexion, profil, jeton, clé api, supprimer le compte',
+        'manual-gps-recorder':
+          'aide, manuel, enregistrer une trace, enregistrement, enregistreur, android, arrière-plan',
+        'manual-ai':
+          'aide, manuel, ia, intelligence artificielle, llm, chatgpt, claude, gemini, assistant, agent, webmcp, llms.txt',
+        'manual-drawing':
+          'aide, manuel, mesurer, mesure, distance, surface, ligne, polygone, point',
+        'manual-tracks':
+          'aide, manuel, gpx, kml, trace, importer, profil altimétrique, coloration, exporter',
+        'manual-photos':
+          'aide, manuel, galerie, photos, images, envoyer, téléverser',
+        'manual-tracking':
+          'aide, manuel, suivi en direct, partager la position, configuration de l’appareil, locus, osmand',
+        'manual-offline':
+          'aide, manuel, télécharger des cartes, hors ligne, sans connexion, cache',
+        'manual-devices':
+          'aide, manuel, garmin, locus, oruxmaps, geocaching, intégrer, intégration, ouvrir dans une application',
+        'manual-premium':
+          'aide, abonnement, prix, paiement, crédits, acheter, publicités, annuler, remboursement, premium',
+        'manual-about':
+          'openstreetmap, osm, association, communauté, contribuer, cartographie, licence, attribution, crédits, copyright, droits d’auteur, usage commercial',
       },
     },
     inProgress: 'Recherche…',
@@ -479,6 +535,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xa: 'Carte Outdoor sans fond',
       xc: 'Courbes de niveau',
       WHC: 'Hydrochimique',
+      A: 'Événements',
     },
     type: {
       map: 'carte',

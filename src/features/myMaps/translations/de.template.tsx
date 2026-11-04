@@ -137,6 +137,7 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   logoutUnsentTitle: 'Nicht gesendete Kartenänderungen',
   logoutUnsentWarning: ({ count }) =>
     `${count} Karte(n) haben Änderungen, die den Server noch nicht erreicht haben. Beim Abmelden gehen sie verloren. Trotzdem abmelden?`,
+  newEvent: 'Neue Veranstaltung',
 };
 
 export default de;

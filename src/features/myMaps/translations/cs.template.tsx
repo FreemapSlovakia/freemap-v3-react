@@ -130,6 +130,7 @@ const cs: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   logoutUnsentTitle: 'Neodeslané změny map',
   logoutUnsentWarning: ({ count }) =>
     `Počet map se změnami, které se ještě nedostaly na server: ${count}. Odhlášením se zahodí. Přesto se odhlásit?`,
+  newEvent: 'Nová akce',
 };
 
 export default cs;

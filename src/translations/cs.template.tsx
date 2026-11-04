@@ -436,6 +436,60 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'layer-xc':
           'vrstevnice, izohypsy, výška, nadmořská výška, reliéf, contours, překryv',
         'layer-WHC': 'chemie vody, hydrologie',
+        'manual-getting-started': 'základy, úvod, první kroky, nápověda',
+        'manual-shortcuts': 'klávesnice, klávesy, zkratky',
+        'manual-search':
+          'nápověda, návod, hledat, najít, souřadnice, adresa, místo, ponechat na mapě',
+        'manual-osm-notes':
+          'nápověda, návod, poznámka, hlášení, chyba, openstreetmap, josm, id',
+        'manual-route-planner':
+          'nápověda, návod, navigace, trasa, plánování trasy, zastávky',
+        'manual-maps':
+          'nápověda, návod, vrstvy, podkladová mapa, překryv, správce map, knihovna, instalovat, předvolba, legenda, průhlednost',
+        'manual-custom-maps':
+          'nápověda, návod, vlastní mapa, wms, tms, adresa dlaždic, přidat mapu',
+        'manual-shading':
+          'nápověda, návod, stínování, reliéf, terén, výškopis, lidar, dmr, dem',
+        'manual-weather-radar':
+          'nápověda, návod, déšť, srážky, počasí, předpověď, bouřka, meteoradar',
+        'manual-panorama':
+          'nápověda, návod, 360, výhled, vrcholy, obzor, horizont, terén',
+        'manual-viewshed':
+          'nápověda, návod, viditelnost, rozhled, výhled, co je odtud vidět',
+        'manual-toposcope':
+          'nápověda, návod, orientační růžice, vrcholy, kopce, toposkop, tisk',
+        'manual-map-export':
+          'nápověda, návod, tisk, pdf, png, svg, jpeg, webp, obrázek, plakát, export mapy',
+        'manual-objects':
+          'nápověda, návod, poi, body zájmu, místa, kategorie, objekty, osm',
+        'manual-map-details':
+          'nápověda, návod, co je tady, detaily, prvky, osm prvek, historie, wms',
+        'manual-changesets':
+          'nápověda, návod, změny osm, sady změn, mapeři, přispěvatelé',
+        'manual-my-maps':
+          'nápověda, návod, uložené mapy, uložit mapu, sdílet mapu, účet, neuložené',
+        'manual-account':
+          'nápověda, návod, přihlášení, odhlášení, profil, token, api klíč, zrušit účet',
+        'manual-gps-recorder':
+          'nápověda, návod, záznam trasy, nahrávání, logger, android, na pozadí',
+        'manual-ai':
+          'nápověda, návod, ai, umělá inteligence, llm, chatgpt, claude, gemini, asistent, agent, webmcp, llms.txt',
+        'manual-drawing':
+          'nápověda, návod, měření, vzdálenost, plocha, čára, polygon, bod',
+        'manual-tracks':
+          'nápověda, návod, gpx, kml, trasa, import, výškový profil, obarvení, export',
+        'manual-photos':
+          'nápověda, návod, fotky, galerie, nahrát fotografie, obrázky',
+        'manual-tracking':
+          'nápověda, návod, sledování, sdílení polohy, nastavení zařízení, locus, osmand',
+        'manual-offline':
+          'nápověda, návod, stáhnout mapy, bez připojení, mezipaměť, cache, offline',
+        'manual-devices':
+          'nápověda, návod, garmin, locus, oruxmaps, geocaching, vložení do webu, otevřít v aplikaci',
+        'manual-premium':
+          'nápověda, předplatné, cena, platba, kredity, koupit, reklama, zrušit, vrácení peněz, premium',
+        'manual-about':
+          'openstreetmap, osm, spolek, komunita, mapování, přispívání, licence, atribuce, uvedení zdroje, copyright, komerční použití',
       },
     },
   },
@@ -496,6 +550,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       xa: 'Outdoorová mapa bez podkladu',
       xc: 'Vrstevnice',
       WHC: 'Hydrochemická',
+      A: 'Akce',
     },
     customBase: 'Vlastní mapa',
     type: {

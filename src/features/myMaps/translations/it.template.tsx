@@ -137,6 +137,7 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   logoutUnsentTitle: 'Modifiche alle mappe non inviate',
   logoutUnsentWarning: ({ count }) =>
     `${count} mappa/e hanno modifiche che non sono ancora arrivate al server. Uscendo verranno scartate. Uscire comunque?`,
+  newEvent: 'Nuovo evento',
 };
 
 export default it;

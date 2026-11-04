@@ -5,7 +5,34 @@ import { DataViewerDetails } from '../components/DataViewerDetails.js';
 import type { DataViewerMessages } from './DataViewerMessages.js';
 
 const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
-  vertex: { channels: {} },
+  vertex: {
+    channels: {
+      heart: 'Frequenza cardiaca',
+      cads: 'Cadenza',
+      atemps: 'Temperatura dell’aria',
+      wtemps: 'Temperatura dell’acqua',
+      depths: 'Profondità',
+      speeds: 'Velocità',
+      courses: 'Direzione di marcia',
+      bearings: 'Azimut',
+      powers: 'Potenza',
+      accuracies: 'Precisione',
+      battery: 'Batteria',
+      gsmSignal: 'Segnale GSM',
+    },
+    menuItem: 'Dati del punto',
+    latitude: 'Latitudine',
+    longitude: 'Longitudine',
+    elevation: 'Quota',
+    time: 'Ora',
+    filled: ({ filled, total }) => `${filled} punti su ${total}`,
+    emptyHint:
+      'Un campo vuoto lascia il punto senza quel valore. Quali valori ha la linea si imposta nelle sue Proprietà.',
+    notANumber: 'Inserisca un numero.',
+    outOfRange: 'Fuori intervallo.',
+    timeOrder:
+      'L’ora deve essere compresa tra quelle del punto precedente e del successivo.',
+  },
   split: {
     action: 'Dividi',
     pick: 'Clicchi la traccia nel punto di divisione',
@@ -18,7 +45,50 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     pick: 'Clicchi la traccia da unire',
     pickEnd: 'Selezioni un punto per unire le linee',
   },
-  osmUpload: { visibilities: {}, visibilityHints: {} },
+  osmUpload: {
+    visibilities: {
+      identifiable: 'Identificabile',
+      public: 'Pubblica',
+      trackable: 'Tracciabile',
+      private: 'Privata',
+    },
+    visibilityHints: {
+      identifiable:
+        'Mostrata nell’elenco delle tracce con il suo nome, come punti ordinati con marche temporali.',
+      public:
+        'Mostrata nell’elenco delle tracce con il suo nome, come punti anonimi non ordinati.',
+      trackable:
+        'Condivisa solo come punti anonimi ordinati con marche temporali.',
+      private: 'Condivisa solo come punti anonimi non ordinati.',
+    },
+    menuItem: 'Carica traccia GPS su OpenStreetMap',
+    title: 'Carica traccia GPS su OpenStreetMap',
+    help: 'Carica nel suo account OpenStreetMap le tracce aperte come traccia GPS, da cui i mappatori possono ricalcare i percorsi. Vengono caricate solo le tracce con orari registrati, perché OpenStreetMap non conserva altro. Carichi solo tracce registrate da lei.',
+    description: 'Descrizione',
+    tags: 'Etichette',
+    tagsHint: 'Separate da virgole.',
+    tagsInvalid:
+      'OpenStreetMap non accetta . ; / ? % o # in un’etichetta, né etichette più lunghe di 255 caratteri.',
+    visibility: 'Visibilità',
+    upload: 'Carica',
+    loginPrompt:
+      'Per caricare occorre accedere con OpenStreetMap e consentire a Freemap di caricare tracce GPS. Continuare?',
+    connectPrompt:
+      'Per caricare occorre collegare il suo account OpenStreetMap al suo account Freemap e consentirgli di ricevere tracce GPS da Freemap. Se ha già un altro account Freemap a cui accede con quell’account OpenStreetMap, i due account verranno uniti in uno solo. Continuare?',
+    authorizePrompt:
+      'Per caricare occorre consentire a Freemap di caricare tracce GPS nel suo account OpenStreetMap. Continuare?',
+    reauthorize:
+      'L’autorizzazione di Freemap a caricare tracce GPS nel suo account OpenStreetMap è appena stata revocata. Clicchi di nuovo Carica per concederla.',
+    success: ({ url }) => (
+      <>
+        La traccia è stata caricata. OpenStreetMap la elabora entro pochi
+        minuti.{' '}
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          Mostra la traccia su OpenStreetMap
+        </a>
+      </>
+    ),
+  },
   match: {
     menuItem: 'Aggancia ai percorsi',
     title: 'Aggancia ai percorsi',
@@ -137,6 +207,9 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
         : mode === 'clear'
           ? 'La quota è stata rimossa.'
           : 'La quota è stata sovrascritta.',
+    clear: 'Cancella quota',
+    clearDesc:
+      'rimuove la quota memorizzata; i profili la leggono poi dal modello del terreno',
   },
   fetchingError: ({ err }) =>
     addError(
@@ -153,6 +226,16 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     "Questi dati non possono stare nell'indirizzo della pagina (URL) e non sono in nessuna mappa salvata: restano solo in questo browser. Li salvi nelle sue mappe per conservarli.",
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Errore durante l’aggancio della traccia', err),
+  snapshotGone:
+    'I dati mostrati in questo passaggio non sono più conservati in questo browser.',
+  snapshotFailed:
+    'Questo browser non è riuscito a conservare i dati, quindi ricaricando la pagina andranno persi. Per conservarli, li salvi nelle sue mappe.',
+  osmUploadError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Errore durante il caricamento su OpenStreetMap',
+      err,
+    ),
 };
 
 export default it;

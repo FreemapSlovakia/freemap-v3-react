@@ -24,7 +24,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
       err,
     ),
   deleteError: ({ err }) =>
-    addError(getMessages()!, 'Chyba pri rušení akcie', err),
+    addError(getMessages()!, 'Chyba pri mazaní akcie', err),
   participationError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri ukladaní vašej účasti', err),
   loginToParticipate:
@@ -45,7 +45,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     organizerHint:
       'Akciu zadáte za jej organizátora: existujúci účet, alebo nové meno, z ktorého vznikne organizátor bez prihlásenia.',
     onlyOrganizer: 'Akciu môže meniť iba jej organizátor.',
-    unavailable: 'Akciu sa nepodarilo načítať — možno bola zrušená.',
+    unavailable: 'Akciu sa nepodarilo načítať — možno bola zmazaná.',
     title: 'Názov',
     description: 'Popis',
     contactHint:
@@ -114,9 +114,9 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     going: 'Prídem',
     openInNewTab: 'Otvoriť na novej karte',
     loadHere: 'Načítať sem',
-    deleteTitle: 'Zrušiť akciu',
+    deleteTitle: 'Zmazať akciu',
     deleteMessage: ({ title }) =>
-      `Zrušiť akciu „${title}“? Prepojená mapa zostane.`,
+      `Zmazať akciu „${title}“? Prepojená mapa zostane.`,
   },
   picking: {
     startPoint: 'Vyberte miesto začiatku',
