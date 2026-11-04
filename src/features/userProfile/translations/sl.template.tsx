@@ -3,7 +3,6 @@ import type { UserProfileMessages } from './UserProfileMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<UserProfileMessages> = {
   memberSince: 'Član od',
-  roles: 'Vloge',
   email: 'E-pošta',
   photos: 'Naložene fotografije',
   comments: 'Uporabnikovi komentarji k fotografijam',

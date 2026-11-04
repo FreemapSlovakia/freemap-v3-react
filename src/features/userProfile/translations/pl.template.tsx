@@ -3,7 +3,6 @@ import type { UserProfileMessages } from './UserProfileMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<UserProfileMessages> = {
   memberSince: 'Członek od',
-  roles: 'Role',
   email: 'E-mail',
   photos: 'Przesłane zdjęcia',
   comments: 'Komentarze użytkownika do zdjęć',

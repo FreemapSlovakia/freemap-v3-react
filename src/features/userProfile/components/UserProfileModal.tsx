@@ -25,8 +25,14 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
-import { Alert, Image, Modal, Spinner, Table } from 'react-bootstrap';
-import { FaCamera, FaGem, FaUser, FaUserEdit } from 'react-icons/fa';
+import { Alert, Badge, Image, Modal, Spinner, Table } from 'react-bootstrap';
+import {
+  FaCamera,
+  FaGem,
+  FaUser,
+  FaUserEdit,
+  FaUserShield,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { useUserProfileMessages } from '../translations/useUserProfileMessages.js';
@@ -150,13 +156,6 @@ export default function UserProfileModal({ show }: Props): ReactElement {
       [upm?.memberSince, df.format(p.createdAt)],
     ];
 
-    if (p.roles.length) {
-      rows.push([
-        upm?.roles,
-        p.roles.map((role) => am?.roleNames[role] ?? role).join(', '),
-      ]);
-    }
-
     if (p.email) {
       rows.push([upm?.email, <a href={`mailto:${p.email}`}>{p.email}</a>]);
     }
@@ -226,6 +225,17 @@ export default function UserProfileModal({ show }: Props): ReactElement {
                     <Markdown text={state.profile.description} />
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Not a table row: a long list would squeeze every label. */}
+            {state.profile.roles.length > 0 && (
+              <div className="d-flex flex-wrap gap-1 mb-3">
+                {state.profile.roles.map((role) => (
+                  <Badge key={role} bg="secondary">
+                    <FaUserShield /> {am?.roleNames[role] ?? role}
+                  </Badge>
+                ))}
               </div>
             )}
 
