@@ -265,6 +265,7 @@ export type Messages = {
     fetchingError: (props: Err) => string;
     buttonTitle: string;
     placeholder: string;
+    findPlace: string;
     result: string;
     showMore: string;
     keepOnMap: string;

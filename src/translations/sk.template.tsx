@@ -343,6 +343,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     buttonTitle: 'Hľadať',
     placeholder: 'Hľadať miesta a funkcie',
+    findPlace: 'Nájsť miesto alebo adresu',
     result: 'Nález',
     showMore: 'Zobraziť viac',
     keepOnMap: 'Ponechať na mape',

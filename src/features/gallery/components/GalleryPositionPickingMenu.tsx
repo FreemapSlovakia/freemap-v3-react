@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import {
   galleryConfirmPickedPosition,
   gallerySetItemForPositionPicking,
+  gallerySetPickingPosition,
 } from '../model/actions.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
@@ -17,6 +18,7 @@ export default function GalleryPositionPickingMenu(): ReactElement {
       prompt={gm?.locationPicking.title}
       onConfirm={() => dispatch(galleryConfirmPickedPosition())}
       onCancel={() => dispatch(gallerySetItemForPositionPicking(null))}
+      onPlace={(position) => dispatch(gallerySetPickingPosition(position))}
       cancelKbd="Esc"
     />
   );

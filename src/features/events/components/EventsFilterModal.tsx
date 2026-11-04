@@ -2,6 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
+import { PlaceName } from '@features/search/components/PlaceName.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { ANY, fromAnyValue, withAnyValue } from '@shared/anyToggle.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -469,6 +470,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                 </FmDropdownMenu>
               </Dropdown>
             </InputGroup>
+
+            <PlaceName position={point} className="mt-1" />
 
             <datalist id="eventsRadii">
               {RADIUS_STOPS.map((r) => (

@@ -10,7 +10,7 @@ Panoráma je 360° pohľad na terén z bodu na mape s názvami viditeľných vrc
 
 V hlavnom menu zvoľte :PiMountains: **Panoráma**. Otvorí sa plávajúci panel, v spodnej časti panela je rad ovládacích prvkov. Potom zvoľte, odkiaľ sa chcete pozerať:
 
-- :FaStreetView: **Vybrať v mape** – kliknite na miesto v mape.
+- :FaStreetView: **Vybrať v mape** – kliknite na miesto v mape alebo ho nájdite podľa adresy na lište; značku môžete posunúť ťahaním a výber potvrďte tlačidlom :FaCheck: **OK**.
 - :FaRegDotCircle: **Pohľad z mojej polohy** v ponuke vedľa tohto tlačidla – panoráma z vašej polohy GPS.
 
 Ešte rýchlejšie to ide priamo z mapy: kliknite na miesto pravým tlačidlom myši, alebo na telefóne podržte prst na mieste, a zvoľte :PiMountains: **Panoráma odtiaľto**.
@@ -46,7 +46,7 @@ Nad najvýraznejšími viditeľnými vrchmi sú napísané názvy týchto vrchov
 - Kliknutím na obrázok značku v mape ponecháte, spolu s prerušovanou čiarou výhľadu zo stanoviska. Kliknutím na názov vrchu označíte tento vrch; názov sa zafarbí načerveno.
 - Vybrané miesto – názov, nadmorská výška, vzdialenosť a azimut – sa zobrazí v rámčeku vpravo hore na obrázku; nadmorská výška stanoviska je vľavo hore. V ponuke :FaEllipsisV: pod každým rámčekom nájdete akcie pre dané miesto, rovnaké ako v kontextovej ponuke mapy.
 
-Opačným smerom, z mapy do obrázka, slúži tlačidlo :FaCrosshairs: **Pozrieť sa na miesto v mape** a kliknutie do mapy, alebo položka :FaCrosshairs: **Pozrieť sa na to v panoráme** v kontextovej ponuke miesta. Obrázok sa otočí k miestu a označí ho; miesto skryté za hrebeňom sa označí na hrebeni, ktorý ho zakrýva.
+Opačným smerom, z mapy do obrázka, slúži tlačidlo :FaCrosshairs: **Pozrieť sa na miesto v mape**, kliknutie do mapy a potvrdenie tlačidlom :FaCheck: **OK**, alebo položka :FaCrosshairs: **Pozrieť sa na to v panoráme** v kontextovej ponuke miesta. Obrázok sa otočí k miestu a označí ho; miesto skryté za hrebeňom sa označí na hrebeni, ktorý ho zakrýva.
 
 ## Čo obrázok ukazuje
 

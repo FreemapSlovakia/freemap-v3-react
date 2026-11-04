@@ -11,6 +11,7 @@ import {
   mapHasContentSelector,
 } from '@features/myMaps/model/selectors.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
+import { PlaceName } from '@features/search/components/PlaceName.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
@@ -1023,6 +1024,8 @@ export default function EventFormModal({ show }: Props): ReactElement {
                 <FaMapMarkerAlt /> {em?.form.setLocation}
               </Button>
             </InputGroup>
+
+            <PlaceName position={startPoint} className="mt-1" />
           </Form.Group>
 
           <Form.Group className="mb-3">

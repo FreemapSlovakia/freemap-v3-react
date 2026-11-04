@@ -10,7 +10,7 @@ The panorama is a 360° view of the terrain from a point on the map, with the na
 
 Choose :PiMountains: **Panorama** in the main menu. A floating panel opens; along its bottom is a row of controls. Then choose where to look from:
 
-- :FaStreetView: **Pick on the map** – click the place on the map.
+- :FaStreetView: **Pick on the map** – click the place on the map, or find it by its address in the toolbar; drag the marker to adjust it and confirm with :FaCheck: **OK**.
 - :FaRegDotCircle: **View from my position**, in the menu next to that button – the panorama from your GPS position.
 
 Quicker still from the map itself: right-click a place, or press and hold it on a phone, and choose :PiMountains: **Panorama from here**.
@@ -46,7 +46,7 @@ The names of the most prominent peaks in view are written above them. Zooming in
 - Clicking the picture leaves the mark on the map, with a dashed line of sight from the viewpoint. Click a peak name to mark that peak; the name turns red.
 - The picked place – its name, elevation, distance and azimuth – shows in a box at the top right of the picture; the viewpoint's elevation is at the top left. The :FaEllipsisV: menu under either box holds what you can do with that place, as in the map's context menu.
 
-To look the other way round, from the map into the picture, use :FaCrosshairs: **Look at a place on the map** and click the map, or right-click a place and choose :FaCrosshairs: **Look at this in the panorama**. The picture turns to the place and marks it; a place hidden behind a ridge is marked on the ridge that hides it.
+To look the other way round, from the map into the picture, use :FaCrosshairs: **Look at a place on the map**, click the map and confirm with :FaCheck: **OK**, or right-click a place and choose :FaCrosshairs: **Look at this in the panorama**. The picture turns to the place and marks it; a place hidden behind a ridge is marked on the ridge that hides it.
 
 ## What the picture shows
 

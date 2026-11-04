@@ -1,6 +1,8 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { PlaceName } from '@features/search/components/PlaceName.js';
 import { DateTime } from '@shared/components/DateTime.js';
+import { safeParseCoordinates } from '@shared/coordinatesParser.js';
 import '@shared/styles/react-tags.scss';
 import {
   type ChangeEvent,
@@ -42,6 +44,8 @@ interface Props {
   errors: GalleryItemError[] | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: PictureModel) => void;
+  /** Off in the upload list, where every photo at once would flood the geocoder. */
+  showPlaceName?: boolean;
 }
 
 export function GalleryEditForm({
@@ -51,6 +55,7 @@ export function GalleryEditForm({
   errors,
   onPositionPick,
   onModelChange,
+  showPlaceName,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -175,6 +180,13 @@ export function GalleryEditForm({
             <FaMapMarkerAlt /> <Text m={gm} k="editForm.setLocation" />
           </Button>
         </InputGroup>
+
+        {showPlaceName && (
+          <PlaceName
+            position={safeParseCoordinates(model.dirtyPosition)}
+            className="mt-1"
+          />
+        )}
       </Form.Group>
 
       <Form.Group

@@ -32,13 +32,12 @@ import {
   type OsmApiFeature,
   osmApiFeatureId,
 } from '@shared/osmApi.js';
-import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { FeatureId } from '@shared/types/featureId.js';
 import {
   PhotonResponseSchema,
-  photonLang,
   photonOsmElementType,
+  photonReverseUrl,
 } from '@shared/types/photonResult.js';
 import { requestWms, wmsBaseUrl, wmsProxyOf } from '@shared/wms.js';
 import { point } from '@turf/helpers';
@@ -149,18 +148,8 @@ export async function handle(
       ? undefined
       : httpRequest({
           getState,
-          url:
-            process.env['PHOTON_URL'] +
-            '/reverse?' +
-            objectToURLSearchParams({
-              lat,
-              lon,
-              // Never left out: without it Photon reads `Accept-Language`,
-              // which the vhost blanks so one URL means one thing to the cache.
-              lang: photonLang(getState().l10n.language),
-              // The nearest one place; what else is here comes from OSM data.
-              limit: 1,
-            }),
+          // The nearest one place; what else is here comes from OSM data.
+          url: photonReverseUrl({ lat, lon }, getState().l10n.language),
           expectedStatus: 200,
         }).then((res) => res.json()),
 

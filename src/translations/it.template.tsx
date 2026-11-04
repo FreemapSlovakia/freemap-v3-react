@@ -323,6 +323,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) => addError(messages, 'Searching error:', err),
     buttonTitle: 'Cerca',
     placeholder: 'Cerca luoghi e funzioni',
+    findPlace: 'Cerca un luogo o un indirizzo',
     result: 'Risultato',
     keepOnMap: 'Mantieni sulla mappa',
     sources: {

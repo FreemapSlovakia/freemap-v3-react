@@ -19,13 +19,13 @@ The viewshed is an overlay. Switch it on in any of these ways:
 - by typing "viewshed" into the search box,
 - from the map: right-click a place, or press and hold it on a phone, and choose :FaBinoculars: **Viewshed from here**. The viewshed is then computed for that place straight away.
 
-When the viewshed has no viewpoint yet, the map shows **Click the map where you want to look from**. Click the place to look from; <kbd>Esc</kbd> cancels.
+When the viewshed has no viewpoint yet, the map shows **Click the map where you want to look from**. Click the place to look from, or find it by its address in the toolbar, and confirm with :FaCheck: **OK**; <kbd>Esc</kbd> cancels.
 
 ## The viewpoint
 
 The viewpoint is marked by a pin with an eye, and the circle around it shows how far the viewshed reaches.
 
-- :FaEye: **Pick on the map** in the toolbar lets you click another viewpoint, which is computed straight away. Under the arrow next to it, :FaRegDotCircle: **Viewshed from my position** uses your GPS position.
+- :FaEye: **Pick on the map** in the toolbar lets you pick another viewpoint the same way; it is computed once you confirm it. Under the arrow next to it, :FaRegDotCircle: **Viewshed from my position** uses your GPS position.
 - Drag the pin to move the viewpoint. Dragging does not compute anything: the circle turns dashed, the previous viewpoint stays on the map faded, and :FaSync: **Update** appears in the toolbar.
 - The :FaEllipsisV: menu next to it holds the same actions for the viewpoint as the map's context menu.
 

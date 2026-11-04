@@ -12,7 +12,7 @@ V hlavnom menu zvoľte :PiCompassRoseBold: **Orientačná ružica** alebo stlač
 
 ## Stred
 
-Stred je miesto, kde ružica stojí. Stlačte **Umiestniť stred**, prvé tlačidlo pod ružicou, a kliknite do mapy. V ponuke pod šípkou vedľa tlačidla položka :FaRegDotCircle: **Vystrediť na moju polohu** umiestni stred na vašu polohu z GPS. Keď je stred umiestnený, tlačidlo sa volá **Presunúť stred**.
+Stred je miesto, kde ružica stojí. Stlačte **Umiestniť stred**, prvé tlačidlo pod ružicou, kliknite do mapy alebo nájdite miesto podľa adresy na lište a potvrďte tlačidlom :FaCheck: **OK**. V ponuke pod šípkou vedľa tlačidla položka :FaRegDotCircle: **Vystrediť na moju polohu** umiestni stred na vašu polohu z GPS. Keď je stred umiestnený, tlačidlo sa volá **Presunúť stred**.
 
 Ak sú na mape už nakreslené body, môžete tiež kliknúť na miesto pravým tlačidlom myši, alebo na telefóne podržať prst na mieste, a zvoliť :PiCompassRoseBold: **Orientačná ružica odtiaľto**.
 

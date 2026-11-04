@@ -28,6 +28,7 @@ export default function HomeLocationPickingMenu(): ReactElement {
       confirmLabel={m?.general.save}
       confirmDisabled={!selectingHomeLocation}
       onCancel={() => dispatch(setSelectingHomeLocation(false))}
+      onPlace={(position) => dispatch(setSelectingHomeLocation(position))}
       cancelKbd="Esc"
     />
   );

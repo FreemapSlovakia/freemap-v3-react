@@ -314,6 +314,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) => addError(messages, 'Napaka pri iskanju', err),
     buttonTitle: 'Išči',
     placeholder: 'Iskanje krajev in funkcij',
+    findPlace: 'Iskanje kraja ali naslova',
     result: 'Zadetek',
     keepOnMap: 'Ohrani na zemljevidu',
     sources: {

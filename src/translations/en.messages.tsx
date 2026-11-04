@@ -307,6 +307,7 @@ const messages: Messages = {
     fetchingError: ({ err }) => addError(messages, 'Searching error', err),
     buttonTitle: 'Search',
     placeholder: 'Search places and functions',
+    findPlace: 'Find a place or address',
     result: 'Lookup',
     showMore: 'Show more',
     keepOnMap: 'Keep on the map',

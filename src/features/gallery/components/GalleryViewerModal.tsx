@@ -1169,6 +1169,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       errors={saveErrors}
                       onPositionPick={handlePositionPick}
                       onModelChange={handleEditModelChange}
+                      showPlaceName
                     />
                   </fieldset>
                 </Form>

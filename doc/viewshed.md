@@ -128,9 +128,9 @@ stored choice is kept either way, so premium grants it back silently.
 
 A render is seconds of a server that runs one at a time, so:
 
-- **Nothing renders on map movement.** Only `viewshedPick` — the click that says
-  where to stand, the GPS fix, or a link's `viewshed=` — and the toolbar's
-  Update button.
+- **Nothing renders on map movement.** Only `viewshedPick` — OK on a picked
+  viewpoint (a click or an address only stages `mapPick.position`), the GPS fix, or
+  a link's `viewshed=` — and the toolbar's Update button.
 - **Dragging the eye stages a place** (`viewshedMoveViewpoint`); so does every
   setting. Whether what's on the map still answers for the controls is
   **derived**: `viewshedRenderKey(viewpoint, settings)` is stored on the render

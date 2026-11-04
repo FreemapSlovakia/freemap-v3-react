@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import {
   eventsConfirmPick,
   eventsSetPickingStart,
+  eventsSetPickPosition,
   eventsSetPickRadius,
 } from '../model/actions.js';
 import { nearestRadiusStop, RADIUS_STOPS } from '../model/filter.js';
@@ -28,6 +29,7 @@ export default function EventStartPickingMenu(): ReactElement {
       confirmDisabled={!placed}
       onCancel={() => dispatch(eventsSetPickingStart(false))}
       cancelKbd="Esc"
+      onPlace={(position) => dispatch(eventsSetPickPosition(position))}
     >
       {radius !== null && (
         <div className="d-flex align-items-center gap-2 px-1">

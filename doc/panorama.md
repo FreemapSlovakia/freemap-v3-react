@@ -137,9 +137,9 @@ came back for the rest of it. The snap is the *drop*'s business, not the drag's:
 letting go there still puts the mark on the nearest thing that can be seen.
 
 **Aiming is a mode asking a different question**, and the one that leaves the
-first mark. The crosshair button raises `picking: 'target'`, and the click
-answers `panoramaLookAt`. Nothing renders, so it needs a picture rather than a
-viewpoint.
+first mark. The crosshair button raises `picking: 'target'`; a click (or an
+address) stages `mapPick.position`, and OK answers `panoramaLookAt`. Nothing
+renders, so it needs a picture rather than a viewpoint.
 
 All of that is `panoramaLookAtProcessor`'s — the reducer only gives the map
 back. Both the turning and the mark come out of **one** reading (`readTowards`),
@@ -775,8 +775,8 @@ it fuses in the GPS course and is gated on the locate mode being on, and someone
 standing still reading a skyline wants neither.
 
 iOS grants the sensor only from a user gesture — a promise chained off a click
-still counts, a later effect does not — so **the map click that picks the
-viewpoint is where it is asked**, not the ▶ button. A phone starts out
+still counts, a later effect does not — so **the OK that confirms the picked
+viewpoint is where it is asked** (`PanoramaPickingMenu`), not the ▶ button. A phone starts out
 following, so waiting for ▶ would mean waiting for a press nobody has any
 reason to make: the compass would never engage at all, and the view would spin
 forever. The ▶/■ press asks too, on either edge, for the case where following

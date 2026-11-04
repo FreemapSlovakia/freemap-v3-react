@@ -1,9 +1,9 @@
-import { RichMarker } from '@shared/components/RichMarker.js';
+import { PickMarker } from '@shared/components/PickMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { DragEndEvent, LeafletMouseEvent } from 'leaflet';
+import type { LatLon } from '@shared/types/common.js';
 import { type ReactElement, useCallback } from 'react';
 import { FaFlag, FaMapMarkerAlt } from 'react-icons/fa';
-import { Circle, useMapEvent } from 'react-leaflet';
+import { Circle } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { eventsSetPickPosition } from '../model/actions.js';
 
@@ -20,46 +20,28 @@ export default function EventStartPicking(): ReactElement | null {
 
   const radius = useAppSelector((state) => state.events.pickRadius);
 
-  useMapEvent(
-    'click',
-    useCallback(
-      ({ latlng }: LeafletMouseEvent) => {
-        dispatch(eventsSetPickPosition({ lat: latlng.lat, lon: latlng.lng }));
-      },
-      [dispatch],
-    ),
-  );
-
-  const handleDragEnd = useCallback(
-    (e: DragEndEvent) => {
-      const { lat, lng } = e.target.getLatLng();
-
-      dispatch(eventsSetPickPosition({ lat, lon: lng }));
-    },
+  const handlePick = useCallback(
+    (at: LatLon) => dispatch(eventsSetPickPosition(at)),
     [dispatch],
   );
 
   return (
-    position && (
-      <>
-        {radius !== null && (
-          <Circle
-            center={{ lat: position.lat, lng: position.lon }}
-            radius={radius * 1000}
-            interactive={false}
-            pathOptions={{ color: COLOR, weight: 2, fillOpacity: 0.1 }}
-          />
-        )}
-
-        <RichMarker
-          draggable
-          pane="fm-active-overlay"
-          position={{ lat: position.lat, lng: position.lon }}
-          color={COLOR}
-          faIcon={radius === null ? <FaFlag /> : <FaMapMarkerAlt />}
-          eventHandlers={{ dragend: handleDragEnd }}
+    <>
+      {position && radius !== null && (
+        <Circle
+          center={{ lat: position.lat, lng: position.lon }}
+          radius={radius * 1000}
+          interactive={false}
+          pathOptions={{ color: COLOR, weight: 2, fillOpacity: 0.1 }}
         />
-      </>
-    )
+      )}
+
+      <PickMarker
+        position={position}
+        onPick={handlePick}
+        color={COLOR}
+        faIcon={radius === null ? <FaFlag /> : <FaMapMarkerAlt />}
+      />
+    </>
   );
 }

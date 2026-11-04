@@ -24,6 +24,7 @@ import { mapReducer } from '@features/map/model/reducer.js';
 import { mapAreaReducer } from '@features/mapArea/model/reducer.js';
 import { mapDetailsReducer } from '@features/mapDetails/model/reducer.js';
 import { mapLibraryReducer } from '@features/mapLibrary/model/reducer.js';
+import { mapPickReducer } from '@features/mapPick/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import { objectsReducer } from '@features/objects/model/reducer.js';
 import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
@@ -75,6 +76,7 @@ export const reducers = {
   mapArea: mapAreaReducer,
   map: mapReducer,
   mapLibrary: mapLibraryReducer,
+  mapPick: mapPickReducer,
   objects: objectsReducer,
   objectsSettings: objectsSettingsReducer,
   panorama: panoramaReducer,

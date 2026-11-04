@@ -1,25 +1,8 @@
-import type { LeafletMouseEvent } from 'leaflet';
-import { useCallback } from 'react';
-import { useMapEvent } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
-import { viewshedPick } from '../model/actions.js';
+import { MapPickMarker } from '@features/mapPick/components/MapPickMarker.js';
+import type { ReactElement } from 'react';
+import { FaEye } from 'react-icons/fa';
 
-/**
- * Takes the click that says where to stand, and with it starts the render.
- * `viewshedPick` ends the picking mode itself, so nothing here has to.
- */
-export default function ViewshedViewpointPicking(): null {
-  const dispatch = useDispatch();
-
-  useMapEvent(
-    'click',
-    useCallback(
-      ({ latlng }: LeafletMouseEvent) => {
-        dispatch(viewshedPick({ lat: latlng.lat, lon: latlng.lng }));
-      },
-      [dispatch],
-    ),
-  );
-
-  return null;
+/** Stages where to stand; `ViewshedViewpointPickingMenu` confirms it. */
+export default function ViewshedViewpointPicking(): ReactElement {
+  return <MapPickMarker faIcon={<FaEye />} />;
 }

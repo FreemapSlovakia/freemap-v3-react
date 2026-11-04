@@ -12,7 +12,7 @@ Choose :PiCompassRoseBold: **Toposcope** in the main menu, or press <kbd>g</kbd>
 
 ## The centre
 
-The centre is where the toposcope stands. Press **Place the centre**, the first button under the dial, and click the map. Under the arrow next to the button, :FaRegDotCircle: **Centre on my position** places the centre at your GPS position instead. Once the centre is placed, the same button is called **Move the centre**.
+The centre is where the toposcope stands. Press **Place the centre**, the first button under the dial, click the map or find the place by its address in the toolbar, and confirm with :FaCheck: **OK**. Under the arrow next to the button, :FaRegDotCircle: **Centre on my position** places the centre at your GPS position instead. Once the centre is placed, the same button is called **Move the centre**.
 
 If points are already drawn on the map, you can also right-click a place, or press and hold it on a phone, and choose :PiCompassRoseBold: **Toposcope from here**.
 

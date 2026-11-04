@@ -19,13 +19,13 @@ Viditeľnosť je prekryvná vrstva. Zapnete ju ktorýmkoľvek z týchto spôsobo
 - zadaním slova „viditeľnosť“ alebo „výhľad“ do vyhľadávacieho poľa,
 - priamo z mapy: kliknite na miesto pravým tlačidlom myši, alebo na telefóne podržte prst na mieste, a zvoľte :FaBinoculars: **Viditeľnosť odtiaľto**. Viditeľnosť sa z tohto miesta hneď vypočíta.
 
-Kým vrstva nemá stanovisko, na mape sa zobrazí výzva **Kliknite do mapy tam, odkiaľ sa chcete pozerať**. Kliknite na miesto, odkiaľ sa chcete pozerať; kláves <kbd>Esc</kbd> výber zruší.
+Kým vrstva nemá stanovisko, na mape sa zobrazí výzva **Kliknite do mapy tam, odkiaľ sa chcete pozerať**. Kliknite na miesto, odkiaľ sa chcete pozerať, alebo ho nájdite podľa adresy na lište, a potvrďte tlačidlom :FaCheck: **OK**; kláves <kbd>Esc</kbd> výber zruší.
 
 ## Stanovisko
 
 Stanovisko označuje špendlík s okom a kruh okolo stanoviska ukazuje dosah viditeľnosti.
 
-- :FaEye: **Vybrať v mape** na lište slúži na výber iného stanoviska kliknutím do mapy; viditeľnosť sa vypočíta hneď. Pod šípkou vedľa tlačidla je :FaRegDotCircle: **Viditeľnosť z mojej polohy**, ktorá použije vašu polohu z GPS.
+- :FaEye: **Vybrať v mape** na lište slúži na výber iného stanoviska rovnakým spôsobom; viditeľnosť sa vypočíta po potvrdení. Pod šípkou vedľa tlačidla je :FaRegDotCircle: **Viditeľnosť z mojej polohy**, ktorá použije vašu polohu z GPS.
 - Ťahaním špendlíka stanovisko presuniete. Presunutím sa nič nepočíta: kruh sa zmení na prerušovaný, predchádzajúce stanovisko zostane na mape vyblednuté a na lište sa zobrazí :FaSync: **Aktualizovať**.
 - V ponuke :FaEllipsisV: vedľa tlačidla sú pre stanovisko tie isté akcie ako v kontextovej ponuke mapy.
 

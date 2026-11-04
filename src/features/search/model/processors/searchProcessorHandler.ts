@@ -11,15 +11,12 @@ import { tileToGeoJSON } from '@mapbox/tilebelt';
 import { osmTypeAndId } from '@osm/osmNameResolver.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { parseOsmElementId } from '@shared/osmElementIds.js';
-import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import type { LatLon } from '@shared/types/common.js';
-import {
-  stringifyFeatureId,
-  syntheticFeatureId,
-} from '@shared/types/featureId.js';
+import { syntheticFeatureId } from '@shared/types/featureId.js';
 import {
   PhotonResponseSchema,
-  photonLang,
+  photonForwardUrl,
+  uniquePhotonFeatures,
 } from '@shared/types/photonResult.js';
 import { bboxPolygon } from '@turf/bbox-polygon';
 import { feature, point } from '@turf/helpers';
@@ -193,52 +190,17 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
   try {
     const res = await httpRequest({
       getState,
-      url:
-        process.env['PHOTON_URL'] +
-        '/api?' +
-        objectToURLSearchParams({
-          q: query,
-          // Never left out: without it Photon reads `Accept-Language`, which the
-          // vhost blanks precisely so one URL means one thing to the cache.
-          lang: photonLang(getState().l10n.language),
-          limit,
-          // Coarsened to ~100 m: the URL is the geocoder's cache key, and at
-          // full precision no two people ever share one — the same word from
-          // centres a metre apart misses, which is the traffic the 24 h cache
-          // is there to absorb. Ranking cannot tell the difference.
-          lat: biasMap && round(biasMap.getCenter().lat),
-          lon: biasMap && round(biasMap.getCenter().lng),
-          // How wide around that point to prefer. Photon assumes 12 — a region
-          // — however close the map actually is, so someone looking at one
-          // street gets the same spread as someone looking at a country.
-          // Rounded because a fractional zoom step can leave it between levels.
-          zoom: biasMap && Math.round(biasMap.getZoom()),
-        }),
+      url: photonForwardUrl(query, getState().l10n.language, limit, biasMap),
       expectedStatus: 200,
       cancelActions: [clearMapFeatures, searchSetQuery],
     });
 
-    // Photon serves one OSM element more than once — Nominatim holds a row per
-    // classifying tag, so a relation tagged `boundary=cadastral` *and*
-    // `place=cadastral_community` (every Slovak cadastral community) is indexed
-    // twice. Both copies answer to the same id: the same React key in the list,
-    // and the same element for anything that looks a result up by it. The first
-    // is kept, Photon's own ranking deciding which that is.
-    const byId = new Map<string, SearchResult>();
-
     const { features } = PhotonResponseSchema.parse(await res.json());
 
-    for (const feature of features) {
-      const result = photonToSearchResult(feature, 'nominatim-forward');
-
-      const key = stringifyFeatureId(result.id);
-
-      if (!byId.has(key)) {
-        byId.set(key, result);
-      }
-    }
-
-    results = [...byId.values()];
+    // Repeats share one id: one React key in the list, one element to look up.
+    results = uniquePhotonFeatures(features).map((feature) =>
+      photonToSearchResult(feature, 'nominatim-forward'),
+    );
 
     // Read off what the geocoder sent, not off what survived the dedupe: a
     // full page holding a duplicate arrives shorter than it was asked for and
@@ -273,8 +235,3 @@ export const handle: ProcessorHandler<typeof searchSetQuery> = async ({
     );
   }
 };
-
-/** Three decimals — a shade over 100 m of latitude. */
-function round(deg: number): number {
-  return Math.round(deg * 1000) / 1000;
-}

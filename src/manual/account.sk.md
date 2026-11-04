@@ -43,7 +43,7 @@ Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :F
 
 Zmeny uložíte tlačidlom :FaCheck: **Uložiť**.
 
-Pod nimi je :FaHome: **Domovská poloha**, ktorá sa uloží hneď, ako ju nastavíte: :FaMapMarkerAlt: **Nastaviť v mape** umožní kliknúť na ňu v mape, :FaTimes: **Odstrániť** ju zruší. Ponúka ju plánovač trás aj filter akcií.
+Pod nimi je :FaHome: **Domovská poloha**, ktorá sa uloží hneď, ako ju nastavíte: :FaMapMarkerAlt: **Nastaviť v mape** umožní kliknúť na ňu v mape alebo ju nájsť podľa adresy, :FaTimes: **Odstrániť** ju zruší. Ponúka ju plánovač trás aj filter akcií.
 
 ## Poskytovatelia prihlásenia
 

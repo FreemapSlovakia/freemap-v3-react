@@ -43,7 +43,7 @@ Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</k
 
 Press :FaCheck: **Save** to store the changes.
 
-Below them, :FaHome: **Home position** is saved as soon as you set it: :FaMapMarkerAlt: **Set on the map** lets you click it on the map, :FaTimes: **Remove** clears it. The route planner and the events filter offer it as a place.
+Below them, :FaHome: **Home position** is saved as soon as you set it: :FaMapMarkerAlt: **Set on the map** lets you click it on the map or find it by its address, :FaTimes: **Remove** clears it. The route planner and the events filter offer it as a place.
 
 ## Login providers
 

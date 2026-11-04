@@ -322,6 +322,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     fetchingError: ({ err }) => addError(messages, 'Keresési hiba', err),
     buttonTitle: 'Keresés',
     placeholder: 'Helyek és funkciók keresése',
+    findPlace: 'Hely vagy cím keresése',
     result: 'Találat',
     keepOnMap: 'Megtartás a térképen',
     sources: {

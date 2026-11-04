@@ -1,4 +1,6 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { PlaceSearch } from '@features/search/components/PlaceSearch.js';
+import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement, ReactNode } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
@@ -18,6 +20,8 @@ type Props = {
   cancelKbd?: string;
   /** The mode's own controls, between the prompt and the buttons. */
   children?: ReactNode;
+  /** Adds an address search; the found place only stages the pick to confirm. */
+  onPlace?: (position: LatLon) => void;
 };
 
 /**
@@ -32,6 +36,7 @@ export function PickingMenu({
   confirmDisabled,
   cancelKbd,
   children,
+  onPlace,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -39,6 +44,8 @@ export function PickingMenu({
     <div>
       <Toolbar className="mt-2">
         <div className="px-1">{prompt}</div>
+
+        {onPlace && <PlaceSearch onPlace={onPlace} />}
 
         {children}
 

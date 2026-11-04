@@ -3,6 +3,7 @@ import {
   setSelectingHomeLocation,
 } from '@features/homeLocation/model/actions.js';
 import { Text } from '@features/l10n/Text.js';
+import { PlaceName } from '@features/search/components/PlaceName.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -37,6 +38,8 @@ export function HomeLocationField(): ReactElement {
           ) : (
             <Text m={am} k="account.homeLocationUnset" />
           )}
+
+          <PlaceName position={home} />
         </span>
 
         <Button

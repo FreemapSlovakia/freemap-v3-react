@@ -309,6 +309,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       addError(messages, 'Błąd podczas wyszukiwania', err),
     buttonTitle: 'Szukaj',
     placeholder: 'Szukaj miejsc i funkcji',
+    findPlace: 'Szukaj miejsca lub adresu',
     result: 'Wynik',
     keepOnMap: 'Zachowaj na mapie',
     sources: {

@@ -29,6 +29,15 @@ const patterns =
 
 const P_XML = /lat=["']([+|-]?\d+[.,]\d+)["']\s+lon=["']([+|-]?\d+[.,]\d+)["']/;
 
+/** {@link parseCoordinates}, with `null` for what it can't read. */
+export function safeParseCoordinates(coord: string): LatLon | null {
+  try {
+    return parseCoordinates(coord);
+  } catch {
+    return null;
+  }
+}
+
 export function parseCoordinates(coord: string): LatLon {
   const mXml = P_XML.exec(coord);
 

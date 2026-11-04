@@ -417,6 +417,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     routeTo: 'Itinéraire jusqu’ici',
     buttonTitle: 'Rechercher',
     placeholder: 'Rechercher lieux et fonctions',
+    findPlace: 'Rechercher un lieu ou une adresse',
     result: 'Résultat',
   },
   mapLayers: {

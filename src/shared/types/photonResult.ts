@@ -1,4 +1,5 @@
-import type { BBox } from 'geojson';
+import { objectToURLSearchParams } from '@shared/stringUtils.js';
+import type { Map as LeafletMap } from 'leaflet';
 import z from 'zod';
 import { GeoJSONPointSchema } from 'zod-geojson';
 
@@ -127,9 +128,88 @@ export const PhotonResponseSchema = z.object({
   features: z.array(PhotonFeatureSchema),
 });
 
+/**
+ * Photon's forward-geocoding URL, ranked from where `bias` shows. `lang` is
+ * never left out: without it Photon reads `Accept-Language`, which the vhost
+ * blanks so one URL means one thing to the cache.
+ */
+export function photonForwardUrl(
+  query: string,
+  language: string,
+  limit: number,
+  bias?: LeafletMap,
+): string {
+  const center = bias?.getCenter();
+
+  return (
+    process.env['PHOTON_URL'] +
+    '/api?' +
+    objectToURLSearchParams({
+      q: query,
+      lang: photonLang(language),
+      limit,
+      // Coarsened to ~100 m: the URL is the geocoder's cache key, and at full
+      // precision no two people ever share one. Ranking cannot tell.
+      lat: center && round3(center.lat),
+      lon: center && round3(center.lng),
+      // How wide around that point to prefer; Photon assumes 12 — a region —
+      // however close the map actually is.
+      zoom: bias && Math.round(bias.getZoom()),
+    })
+  );
+}
+
+/** Photon's reverse-geocoding URL for the one nearest place. */
+export function photonReverseUrl(
+  { lat, lon }: { lat: number; lon: number },
+  language: string,
+): string {
+  return (
+    process.env['PHOTON_URL'] +
+    '/reverse?' +
+    objectToURLSearchParams({
+      lat,
+      lon,
+      lang: photonLang(language),
+      limit: 1,
+    })
+  );
+}
+
+function round3(deg: number): number {
+  return Math.round(deg * 1000) / 1000;
+}
+
+/**
+ * Drops repeats of one OSM element, keeping Photon's first. It indexes an
+ * element once per classifying tag, so every Slovak cadastral community
+ * (`boundary=cadastral` + `place=cadastral_community`) arrives twice.
+ */
+export function uniquePhotonFeatures(
+  features: PhotonFeature[],
+): PhotonFeature[] {
+  const seen = new Set<string>();
+
+  return features.filter(({ properties: { osm_type, osm_id } }) => {
+    if (osm_type === undefined || osm_id === undefined) {
+      return true;
+    }
+
+    const key = osm_type + osm_id;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+
+    return true;
+  });
+}
+
 export function photonExtentToBBox(
   extent: [number, number, number, number],
-): BBox {
+): [number, number, number, number] {
   return [extent[0], extent[3], extent[2], extent[1]];
 }
 

@@ -319,6 +319,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     buttonTitle: 'Hledat',
     placeholder: 'Hledat místa a funkce',
+    findPlace: 'Najít místo nebo adresu',
     result: 'Nález',
     keepOnMap: 'Ponechat v mapě',
     offlineHint:
