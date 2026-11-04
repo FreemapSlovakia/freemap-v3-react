@@ -112,20 +112,6 @@ const isEuSite = document.documentElement.dataset['site'] === 'eu';
 
 const fmLogo = isEuSite ? fmLogoEu : fmLogoSk;
 
-// Read by the toasts, which on a phone must stop short of the toolbars.
-function measureHeader(el: HTMLDivElement) {
-  const observer = new ResizeObserver(() =>
-    document.documentElement.style.setProperty(
-      '--fm-header-height',
-      `${el.offsetHeight}px`,
-    ),
-  );
-
-  observer.observe(el);
-
-  return () => observer.disconnect();
-}
-
 const objectsMenuFactory = () =>
   import(
     /* webpackChunkName: "objects-menu" */
@@ -1079,7 +1065,7 @@ export function Main(): ReactElement {
 
           <Toasts />
 
-          <div className={classes.header} ref={measureHeader}>
+          <div className={classes.header}>
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
             <div className={classes.menus}>
