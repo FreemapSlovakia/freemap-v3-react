@@ -114,7 +114,7 @@ from the selection toolbar (**Edit**).
 - [x] 2. **Contact hint**: until there is a discussion, the form's
       description asks for a way to reach the organizer (phone, email, a chat
       group).
-- [ ] 3. **Texts in English and Slovak**: the events texts into the
+- [x] 3. **Texts in English and Slovak**: the events texts into the
       translation files; the other languages fall back to English.
 - [ ] 4. **Review** of the whole branch against `main`, both repos.
 - [ ] 5. **Release**: `EVENT_COVERS_DIRECTORY` in the production config; the
@@ -156,5 +156,5 @@ from the selection toolbar (**Edit**).
 - [ ] If the new tab proves clumsy (phones): a read-only view drawing a linked
       map without loading it into the editors.
 
-New texts stay English-only and may be hardcoded in components while the
-feature is iterated on; they move into the translation files once it settles.
+New texts go into `src/features/events/translations/`, in English and Slovak;
+the other languages fall back to English until Release 2.

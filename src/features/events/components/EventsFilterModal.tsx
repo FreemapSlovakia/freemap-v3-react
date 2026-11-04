@@ -48,7 +48,6 @@ import { MdTrendingUp } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import {
   DIFFICULTIES,
-  DIFFICULTY_LABELS,
   eventsSetFilter,
   eventsSetPickingStart,
   eventsSetPickPosition,
@@ -63,6 +62,7 @@ import {
   type Range,
 } from '../model/filter.js';
 import { TRANSPORT_KINDS } from '../model/transports.js';
+import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICON, DIFFICULTY_ICONS } from './difficultyIcons.js';
 
 type Props = { show: boolean };
@@ -123,6 +123,12 @@ function RangeInput({
   value: RangeDraft;
   onChange: (value: RangeDraft) => void;
 }): ReactElement {
+  const em = useEventsMessages();
+
+  const from = em?.filter.from;
+
+  const to = em?.filter.to;
+
   return (
     <Form.Group controlId={id}>
       <Form.Label>{label}</Form.Label>
@@ -132,7 +138,7 @@ function RangeInput({
           type="number"
           min={0}
           step="any"
-          placeholder="from"
+          placeholder={from}
           style={NARROW}
           value={value.min}
           onChange={(e) => onChange({ ...value, min: e.currentTarget.value })}
@@ -144,7 +150,7 @@ function RangeInput({
           type="number"
           min={0}
           step="any"
-          placeholder="to"
+          placeholder={to}
           style={NARROW}
           value={value.max}
           onChange={(e) => onChange({ ...value, max: e.currentTarget.value })}
@@ -198,6 +204,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const rpm = useRoutePlannerMessages();
+
+  const em = useEventsMessages();
 
   const filter = useAppSelector((state) => state.events.filter);
 
@@ -274,7 +282,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
     }
   }, [show, picked, pickedRadius, dispatch, language]);
 
-  useDocumentTitle(show ? 'Events filter' : undefined);
+  useDocumentTitle(show ? em?.filter.title : undefined);
 
   const close = () => dispatch(setActiveModal(null));
 
@@ -339,14 +347,14 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaFilter /> Events filter
+          <FaFilter /> {em?.filter.title}
         </Modal.Title>
       </Modal.Header>
 
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Body>
           <Form.Group controlId="eventsDate" className="mb-3">
-            <Form.Label>Date</Form.Label>
+            <Form.Label>{em?.filter.date}</Form.Label>
 
             <InputGroup>
               <Form.Control
@@ -366,26 +374,23 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               />
             </InputGroup>
 
-            <Form.Text>
-              Without a start date, only events that haven’t ended yet; set one
-              for past events.
-            </Form.Text>
+            <Form.Text>{em?.filter.dateHint}</Form.Text>
           </Form.Group>
 
           <Form.Group controlId="eventsNear" className="mb-3">
             <Form.Label>
-              <FaSearchLocation /> Near
+              <FaSearchLocation /> {em?.filter.near}
             </Form.Label>
 
             <InputGroup>
               <Form.Control
-                placeholder="Anywhere"
+                placeholder={em?.filter.anywhere}
                 value={place}
                 isInvalid={place.trim() !== '' && point === null}
                 onChange={(e) => setPlace(e.currentTarget.value)}
               />
 
-              <InputGroup.Text>within</InputGroup.Text>
+              <InputGroup.Text>{em?.filter.within}</InputGroup.Text>
 
               <Form.Control
                 type="number"
@@ -414,7 +419,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                   dispatch(eventsSetPickingStart(true));
                 }}
               >
-                <FaMapMarkerAlt /> Set the location
+                <FaMapMarkerAlt /> {em?.form.setLocation}
               </Button>
 
               {/* In an input group a Dropdown renders no wrapper of its own. */}
@@ -433,7 +438,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                 <FmDropdownMenu>
                   <Dropdown.Item as="button" type="button" eventKey="current">
                     <FaRegDotCircle />
-                    <MenuLabel>My location</MenuLabel>
+                    <MenuLabel>{em?.filter.myLocation}</MenuLabel>
                   </Dropdown.Item>
 
                   <Dropdown.Item
@@ -443,7 +448,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                     disabled={!home}
                   >
                     <FaHome />
-                    <MenuLabel>Home position</MenuLabel>
+                    <MenuLabel>{em?.filter.homePosition}</MenuLabel>
                   </Dropdown.Item>
                 </FmDropdownMenu>
               </Dropdown>
@@ -457,7 +462,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="d-block">Transport</Form.Label>
+            <Form.Label className="d-block">{em?.form.transport}</Form.Label>
 
             <ToggleButtonGroup
               type="checkbox"
@@ -473,7 +478,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                 variant="outline-primary"
                 className="rounded flex-grow-0"
               >
-                Any
+                {em?.any}
               </ToggleButton>
 
               {TRANSPORT_KINDS.map(({ kind, icon }) => (
@@ -492,7 +497,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
           <Form.Group className="mb-3">
             <Form.Label className="d-block">
-              {DIFFICULTY_ICON} Difficulty
+              {DIFFICULTY_ICON} {em?.form.difficulty}
             </Form.Label>
 
             <ToggleButtonGroup
@@ -509,7 +514,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                 variant="outline-primary"
                 className="rounded flex-grow-0"
               >
-                Any
+                {em?.any}
               </ToggleButton>
 
               {DIFFICULTIES.map((d) => (
@@ -520,7 +525,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                   variant="outline-primary"
                   className="rounded flex-grow-0"
                 >
-                  {DIFFICULTY_ICONS[d]} {DIFFICULTY_LABELS[d]}
+                  {DIFFICULTY_ICONS[d]} {em?.difficulty[d]}
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
@@ -533,7 +538,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               onChange={setDogs}
               label={
                 <>
-                  <FaDog /> Dogs welcome
+                  <FaDog /> {em?.filter.dogsWelcome}
                 </>
               }
             />
@@ -544,7 +549,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               onChange={setChildren}
               label={
                 <>
-                  <FaChild /> Suitable for children
+                  <FaChild /> {em?.filter.childrenSuitable}
                 </>
               }
             />
@@ -555,7 +560,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               id="eventsDistance"
               label={
                 <>
-                  <FaRulerHorizontal /> Length
+                  <FaRulerHorizontal /> {em?.form.length}
                 </>
               }
               unit="km"
@@ -567,7 +572,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               id="eventsDuration"
               label={
                 <>
-                  <FaRegClock /> Duration
+                  <FaRegClock /> {em?.form.duration}
                 </>
               }
               unit="h"
@@ -579,7 +584,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               id="eventsAscent"
               label={
                 <>
-                  <MdTrendingUp /> Ascent
+                  <MdTrendingUp /> {em?.form.ascent}
                 </>
               }
               unit="m"

@@ -64,4 +64,5 @@ export type MyMapsMessages = {
   outboxCopyName: (name: string) => string;
   logoutUnsentTitle: string;
   logoutUnsentWarning: (props: { count: number }) => string;
+  newEvent: string;
 };

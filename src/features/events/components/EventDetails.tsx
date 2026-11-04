@@ -5,17 +5,16 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import type { ReactElement } from 'react';
 import { Badge } from 'react-bootstrap';
 import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
-import {
-  coverUrl,
-  DIFFICULTY_LABELS,
-  type EventItem,
-} from '../model/actions.js';
+import { coverUrl, type EventItem } from '../model/actions.js';
 import { iconOfKind } from '../model/transports.js';
+import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
 
 /** An event's details, as its toast shows them. */
 export function EventDetails({ event }: { event: EventItem }): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
+
+  const em = useEventsMessages();
 
   const dateFormat = useDateTimeFormat({
     weekday: 'short',
@@ -40,16 +39,19 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
   // Icon and words: an icon alone can't say "no".
   const attributes = [
     event.difficulty && {
+      id: 'difficulty',
       icon: DIFFICULTY_ICONS[event.difficulty],
-      text: DIFFICULTY_LABELS[event.difficulty],
+      text: em?.difficulty[event.difficulty] ?? event.difficulty,
     },
     event.dogs !== null && {
+      id: 'dogs',
       icon: <FaDog />,
-      text: event.dogs ? 'Dogs welcome' : 'No dogs',
+      text: (event.dogs ? em?.card.dogsWelcome : em?.card.noDogs) ?? '',
     },
     event.children !== null && {
+      id: 'children',
       icon: <FaChild />,
-      text: event.children ? 'Suitable for children' : 'Not for children',
+      text: (event.children ? em?.card.children : em?.card.noChildren) ?? '',
     },
   ].filter((a) => a !== false && a !== null);
 
@@ -78,7 +80,7 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
       <div className="fw-bold">
         {event.title}{' '}
         {event.visibility === 'unlisted' && (
-          <Badge bg="secondary">Unlisted</Badge>
+          <Badge bg="secondary">{em?.card.unlisted}</Badge>
         )}
       </div>
 
@@ -101,8 +103,8 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
 
       {attributes.length > 0 && (
         <div className="d-flex flex-wrap align-items-center column-gap-1">
-          {attributes.map(({ icon, text }, i) => (
-            <span key={text} className="d-inline-flex align-items-center gap-1">
+          {attributes.map(({ id, icon, text }, i) => (
+            <span key={id} className="d-inline-flex align-items-center gap-1">
               {i > 0 && '· '}
               {icon}
               {text}

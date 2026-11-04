@@ -11,6 +11,13 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
   saveError: ({ err }) => addError(getMessages()!, 'Error saving event', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Error removing event', err),
+  difficulty: {},
+  form: {},
+  filter: {},
+  card: {},
+  selection: {},
+  picking: {},
+  menu: {},
 };
 
 export default fr;

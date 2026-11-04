@@ -62,7 +62,6 @@ import { useDispatch, useStore } from 'react-redux';
 import {
   coverUrl,
   DIFFICULTIES,
-  DIFFICULTY_LABELS,
   type Difficulty,
   type EventItem,
   type EventPoint,
@@ -76,6 +75,7 @@ import {
 } from '../model/actions.js';
 import { TRANSPORT_KINDS } from '../model/transports.js';
 import { tripStartOf, tripStatsOf } from '../model/tripStats.js';
+import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICON, DIFFICULTY_ICONS } from './difficultyIcons.js';
 
 type Props = { show: boolean };
@@ -241,6 +241,8 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
   const rpm = useRoutePlannerMessages();
 
+  const em = useEventsMessages();
+
   const target = useAppSelector((state) =>
     state.main.activeModal?.type === 'event-form'
       ? state.main.activeModal
@@ -399,11 +401,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
           return next;
         });
 
-        setFillNote(
-          stats
-            ? null
-            : 'The map has no route or lines to take trip stats from.',
-        );
+        setFillNote(stats ? null : (em?.form.noTripStats ?? null));
       } catch (err) {
         // A map already moved away from has nothing left to say.
         if (fillingFor.current === mapId) {
@@ -417,7 +415,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
         }
       }
     },
-    [dispatch, store, language],
+    [dispatch, store, language, em],
   );
 
   // Once per opening, so `editing` refreshing can't wipe what is typed.
@@ -624,26 +622,23 @@ export default function EventFormModal({ show }: Props): ReactElement {
     >
       <Modal.Header closeButton>
         <Modal.Title>
-          <FaCalendarDay /> {target?.id ? 'Edit event' : 'New event'}
+          <FaCalendarDay />{' '}
+          {target?.id ? em?.form.editEvent : em?.form.newEvent}
         </Modal.Title>
       </Modal.Header>
 
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Body>
           {editing && !editing.canWrite && (
-            <Alert variant="warning">
-              Only the event’s organizer can change it.
-            </Alert>
+            <Alert variant="warning">{em?.form.onlyOrganizer}</Alert>
           )}
 
           {unavailable && (
-            <Alert variant="danger">
-              This event can’t be loaded — it may have been deleted.
-            </Alert>
+            <Alert variant="danger">{em?.form.unavailable}</Alert>
           )}
 
           <Form.Group controlId="eventTitle" className="mb-3">
-            <Form.Label className="required">Title</Form.Label>
+            <Form.Label className="required">{em?.form.title}</Form.Label>
 
             <Form.Control
               value={draft.title}
@@ -652,7 +647,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <Form.Group controlId="eventDescription" className="mb-3">
-            <Form.Label>Description</Form.Label>
+            <Form.Label>{em?.form.description}</Form.Label>
 
             <Form.Control
               as="textarea"
@@ -661,15 +656,12 @@ export default function EventFormModal({ show }: Props): ReactElement {
               onChange={(e) => set({ description: e.currentTarget.value })}
             />
 
-            <Form.Text>
-              Say how to reach you — a phone number, an email or a chat group:
-              events have no discussion yet.
-            </Form.Text>
+            <Form.Text>{em?.form.contactHint}</Form.Text>
           </Form.Group>
 
           <Form.Group controlId="eventCover" className="mb-3">
             <Form.Label>
-              <FaRegImage /> Cover image
+              <FaRegImage /> {em?.form.cover}
             </Form.Label>
 
             <InputGroup hasValidation>
@@ -699,12 +691,12 @@ export default function EventFormModal({ show }: Props): ReactElement {
                     }
                   }}
                 >
-                  <FaTimes /> Remove
+                  <FaTimes /> {m?.general.remove}
                 </Button>
               )}
 
               <Form.Control.Feedback type="invalid">
-                The image is larger than 20 MB.
+                {em?.form.coverTooLarge}
               </Form.Control.Feedback>
             </InputGroup>
 
@@ -720,7 +712,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
           <div className="d-flex flex-wrap gap-3 mb-3">
             <Form.Group controlId="eventStartAt" className="flex-grow-1">
-              <Form.Label className="required">Start</Form.Label>
+              <Form.Label className="required">{em?.form.start}</Form.Label>
 
               <Form.Control
                 type="datetime-local"
@@ -730,7 +722,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
             </Form.Group>
 
             <Form.Group controlId="eventEndAt" className="flex-grow-1">
-              <Form.Label>End</Form.Label>
+              <Form.Label>{em?.form.end}</Form.Label>
 
               <Form.Control
                 type="datetime-local"
@@ -743,7 +735,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
           <Form.Group controlId="eventMap" className="mb-3">
             <Form.Label>
-              <FaRegMap /> Linked map
+              <FaRegMap /> {em?.form.linkedMap}
             </Form.Label>
 
             <Form.Select
@@ -755,10 +747,14 @@ export default function EventFormModal({ show }: Props): ReactElement {
                 // The open map's own changes go to that map, if asked to.
                 if (mapId === NEW_MAP && unsavedOpenMap) {
                   const choice = await confirmChoice({
-                    title: 'Unsaved changes',
-                    message: `The open map “${unsavedOpenMap.name}” has unsaved changes. Save them and link it, or save the content as a new map?`,
-                    confirmLabel: `Save “${unsavedOpenMap.name}”`,
-                    extraLabel: 'New map',
+                    title: em?.form.unsavedTitle,
+                    message: em?.form.unsavedMessage({
+                      name: unsavedOpenMap.name,
+                    }),
+                    confirmLabel: em?.form.saveOpenMap({
+                      name: unsavedOpenMap.name,
+                    }),
+                    extraLabel: em?.form.newMap,
                   });
 
                   if (choice === 'cancel') {
@@ -783,12 +779,10 @@ export default function EventFormModal({ show }: Props): ReactElement {
                 }
               }}
             >
-              <option value="">None</option>
+              <option value="">{em?.form.noMap}</option>
 
               {canCreateMap && (
-                <option value={NEW_MAP}>
-                  New map from the current content
-                </option>
+                <option value={NEW_MAP}>{em?.form.newMapFromContent}</option>
               )}
 
               {/* Kept while not among the listed ones, e.g. still loading. */}
@@ -816,7 +810,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
           <Form.Group controlId="eventStartPoint" className="mb-3">
             <Form.Label className="required">
-              <FaFlag /> Start point
+              <FaFlag /> {em?.form.startPoint}
             </Form.Label>
 
             <InputGroup>
@@ -834,13 +828,13 @@ export default function EventFormModal({ show }: Props): ReactElement {
                   dispatch(eventsSetPickingStart(true));
                 }}
               >
-                <FaMapMarkerAlt /> Set the location
+                <FaMapMarkerAlt /> {em?.form.setLocation}
               </Button>
             </InputGroup>
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label className="d-block">Transport</Form.Label>
+            <Form.Label className="d-block">{em?.form.transport}</Form.Label>
 
             <ToggleButtonGroup
               type="checkbox"
@@ -865,14 +859,18 @@ export default function EventFormModal({ show }: Props): ReactElement {
           <div className="d-flex flex-wrap gap-3 mb-3">
             <Choice
               name="event-difficulty"
-              label={<>{DIFFICULTY_ICON} Difficulty</>}
+              label={
+                <>
+                  {DIFFICULTY_ICON} {em?.form.difficulty}
+                </>
+              }
               value={draft.difficulty}
               options={[
-                ['', 'Not said'],
+                ['', em?.notSaid],
                 ...DIFFICULTIES.map((d): [Difficulty, ReactNode] => [
                   d,
                   <>
-                    {DIFFICULTY_ICONS[d]} {DIFFICULTY_LABELS[d]}
+                    {DIFFICULTY_ICONS[d]} {em?.difficulty[d]}
                   </>,
                 ]),
               ]}
@@ -883,22 +881,22 @@ export default function EventFormModal({ show }: Props): ReactElement {
               name="event-dogs"
               label={
                 <>
-                  <FaDog /> Dogs
+                  <FaDog /> {em?.form.dogs}
                 </>
               }
               value={draft.dogs}
               options={[
-                ['', 'Not said'],
+                ['', em?.notSaid],
                 [
                   'yes',
                   <>
-                    <FaCheck /> Welcome
+                    <FaCheck /> {em?.form.dogsWelcome}
                   </>,
                 ],
                 [
                   'no',
                   <>
-                    <FaBan /> Not allowed
+                    <FaBan /> {em?.form.dogsNotAllowed}
                   </>,
                 ],
               ]}
@@ -909,22 +907,22 @@ export default function EventFormModal({ show }: Props): ReactElement {
               name="event-children"
               label={
                 <>
-                  <FaChild /> Children
+                  <FaChild /> {em?.form.children}
                 </>
               }
               value={draft.children}
               options={[
-                ['', 'Not said'],
+                ['', em?.notSaid],
                 [
                   'yes',
                   <>
-                    <FaCheck /> Suitable
+                    <FaCheck /> {em?.form.childrenSuitable}
                   </>,
                 ],
                 [
                   'no',
                   <>
-                    <FaBan /> Not suitable
+                    <FaBan /> {em?.form.childrenNotSuitable}
                   </>,
                 ],
               ]}
@@ -935,7 +933,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
           <div className="d-flex flex-wrap gap-3 mb-3">
             <Form.Group controlId="eventDistance">
               <Form.Label>
-                <FaRulerHorizontal /> Length
+                <FaRulerHorizontal /> {em?.form.length}
               </Form.Label>
 
               <InputGroup>
@@ -955,7 +953,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
             <Form.Group controlId="eventHours">
               <Form.Label>
-                <FaRegClock /> Duration
+                <FaRegClock /> {em?.form.duration}
               </Form.Label>
 
               <InputGroup>
@@ -986,7 +984,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
             <Form.Group controlId="eventAscent">
               <Form.Label>
-                <MdTrendingUp /> Ascent
+                <MdTrendingUp /> {em?.form.ascent}
               </Form.Label>
 
               <InputGroup>
@@ -1005,7 +1003,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
             <Form.Group controlId="eventDescent">
               <Form.Label>
-                <MdTrendingDown /> Descent
+                <MdTrendingDown /> {em?.form.descent}
               </Form.Label>
 
               <InputGroup>
@@ -1025,7 +1023,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
           <Form.Group>
             <Form.Label className="d-block">
-              <FaEye /> Visibility
+              <FaEye /> {em?.form.visibility}
             </Form.Label>
 
             <ToggleButtonGroup
@@ -1039,7 +1037,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
                 value="public"
                 variant="outline-primary"
               >
-                <FaGlobeEurope /> Public
+                <FaGlobeEurope /> {em?.form.public}
               </ToggleButton>
 
               <ToggleButton
@@ -1047,7 +1045,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
                 value="unlisted"
                 variant="outline-primary"
               >
-                <FaLink /> Unlisted (only by its link)
+                <FaLink /> {em?.form.unlisted}
               </ToggleButton>
             </ToggleButtonGroup>
           </Form.Group>

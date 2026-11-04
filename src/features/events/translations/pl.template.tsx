@@ -12,6 +12,13 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, 'Błąd podczas zapisywania wydarzenia', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas wycofywania wydarzenia', err),
+  difficulty: {},
+  form: {},
+  filter: {},
+  card: {},
+  selection: {},
+  picking: {},
+  menu: {},
 };
 
 export default pl;

@@ -19,12 +19,15 @@ import {
 import { useDispatch } from 'react-redux';
 import { EVENTS_LAYER } from '../model/actions.js';
 import { isFilterEmpty } from '../model/filter.js';
+import { useEventsMessages } from '../translations/useEventsMessages.js';
 
 /** The events layer's toolbar. */
 export default function EventsMenu(): ReactElement {
   const sc = useScrollClasses('horizontal');
 
   const m = useMessages();
+
+  const em = useEventsMessages();
 
   const dispatch = useDispatch();
 
@@ -63,7 +66,7 @@ export default function EventsMenu(): ReactElement {
           </LongPressTooltip>
 
           {!hidden && (
-            <LongPressTooltip label="Filter" breakpoint="lg">
+            <LongPressTooltip label={em?.menu.filter} breakpoint="lg">
               {({ props, label, labelClassName }) => (
                 <Button
                   variant="secondary"
@@ -80,7 +83,7 @@ export default function EventsMenu(): ReactElement {
           )}
 
           {!hidden && loggedIn && (
-            <LongPressTooltip label="New event" breakpoint="lg">
+            <LongPressTooltip label={em?.menu.newEvent} breakpoint="lg">
               {({ props, label, labelClassName }) => (
                 <Button
                   variant="secondary"

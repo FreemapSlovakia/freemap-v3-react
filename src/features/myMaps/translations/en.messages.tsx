@@ -126,6 +126,7 @@ const en: MyMapsMessages = {
   logoutUnsentTitle: 'Unsent map changes',
   logoutUnsentWarning: ({ count }) =>
     `${count} map(s) have changes that have not reached the server yet. Logging out discards them. Log out anyway?`,
+  newEvent: 'New event',
 };
 
 export default en;

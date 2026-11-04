@@ -9,6 +9,7 @@ import {
   eventsSetPickRadius,
 } from '../model/actions.js';
 import { nearestRadiusStop, RADIUS_STOPS } from '../model/filter.js';
+import { useEventsMessages } from '../translations/useEventsMessages.js';
 
 /** Picks the event's start point, or with a radius the place to filter by. */
 export default function EventStartPickingMenu(): ReactElement {
@@ -18,9 +19,11 @@ export default function EventStartPickingMenu(): ReactElement {
 
   const radius = useAppSelector((state) => state.events.pickRadius);
 
+  const em = useEventsMessages();
+
   return (
     <PickingMenu
-      prompt={radius === null ? 'Select start point' : 'Select place'}
+      prompt={radius === null ? em?.picking.startPoint : em?.picking.place}
       onConfirm={() => dispatch(eventsConfirmPick())}
       confirmDisabled={!placed}
       onCancel={() => dispatch(eventsSetPickingStart(false))}

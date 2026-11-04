@@ -403,7 +403,7 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                       {isOwn && (
                         <Action
                           icon={<FaCalendarDay />}
-                          label="New event"
+                          label={mm?.newEvent}
                           requiresOnline
                           onClick={() =>
                             dispatch(

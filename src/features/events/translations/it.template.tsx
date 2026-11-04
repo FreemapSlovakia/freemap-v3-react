@@ -12,6 +12,13 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, "Errore durante il salvataggio dell'evento", err),
   deleteError: ({ err }) =>
     addError(getMessages()!, "Errore durante l'annullamento dell'evento", err),
+  difficulty: {},
+  form: {},
+  filter: {},
+  card: {},
+  selection: {},
+  picking: {},
+  menu: {},
 };
 
 export default it;

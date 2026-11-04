@@ -32,6 +32,7 @@ import {
   eventsSetParticipation,
 } from '../model/actions.js';
 import { loadEventsMessages } from '../translations/loadEventsMessages.js';
+import { useEventsMessages } from '../translations/useEventsMessages.js';
 
 /** The linked map in a tab of its own: the full app, leaving this one's map be. */
 function mapUrl(mapId: string): string {
@@ -48,6 +49,8 @@ export default function EventSelection(): ReactElement | null {
   const activeMapId = useAppSelector((state) => state.myMaps.activeMap?.id);
 
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
+
+  const em = useEventsMessages();
 
   const askLoadMerge = useAskLoadMerge();
 
@@ -94,7 +97,7 @@ export default function EventSelection(): ReactElement | null {
   return (
     <Selection icon={<FaCalendarDay />} label={event.title}>
       {loaded && (
-        <LongPressTooltip label="Back to events" breakpoint="md">
+        <LongPressTooltip label={em?.selection.backToEvents} breakpoint="md">
           {({ props, label, labelClassName }) => (
             <Button
               variant="secondary"
@@ -119,7 +122,7 @@ export default function EventSelection(): ReactElement | null {
               <FaStar /> {event.interestedCount}
             </>
           }
-          label="Interested"
+          label={em?.selection.interested}
           variant="outline-primary"
           active={event.myParticipation === 'interested'}
           showLabelFrom="md"
@@ -133,7 +136,7 @@ export default function EventSelection(): ReactElement | null {
               <FaCheck /> {event.goingCount}
             </>
           }
-          label="Going"
+          label={em?.selection.going}
           variant="outline-primary"
           active={event.myParticipation === 'going'}
           showLabelFrom="md"
@@ -146,7 +149,7 @@ export default function EventSelection(): ReactElement | null {
         {mapId !== null && !loaded && (
           <Action
             icon={<FaExternalLinkAlt />}
-            label="Open in new tab"
+            label={em?.selection.openInNewTab}
             variant="primary"
             href={mapUrl(mapId)}
             target="_blank"
@@ -166,7 +169,7 @@ export default function EventSelection(): ReactElement | null {
                 }}
               >
                 <FaCloudDownloadAlt />
-                <MenuLabel>Load here</MenuLabel>
+                <MenuLabel>{em?.selection.loadHere}</MenuLabel>
               </Dropdown.Item>
             }
           />
@@ -196,8 +199,8 @@ export default function EventSelection(): ReactElement | null {
             onClick={async () => {
               if (
                 await confirm({
-                  title: 'Delete event',
-                  message: `Delete event "${event.title}"? Its linked map stays.`,
+                  title: em?.selection.deleteTitle,
+                  message: em?.selection.deleteMessage({ title: event.title }),
                   confirmLabel: m?.general.delete,
                   confirmStyle: 'danger',
                 })

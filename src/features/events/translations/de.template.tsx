@@ -12,6 +12,13 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, 'Fehler beim Speichern der Veranstaltung', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Aufheben der Veranstaltung', err),
+  difficulty: {},
+  form: {},
+  filter: {},
+  card: {},
+  selection: {},
+  picking: {},
+  menu: {},
 };
 
 export default de;

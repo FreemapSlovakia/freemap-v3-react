@@ -12,6 +12,13 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, 'Hiba az esemény mentésekor', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Hiba az esemény visszavonásakor', err),
+  difficulty: {},
+  form: {},
+  filter: {},
+  card: {},
+  selection: {},
+  picking: {},
+  menu: {},
 };
 
 export default hu;

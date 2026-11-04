@@ -42,13 +42,6 @@ export const DifficultySchema = z.enum(DIFFICULTIES);
 
 export type Difficulty = z.infer<typeof DifficultySchema>;
 
-export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  easy: 'Easy',
-  moderate: 'Moderate',
-  demanding: 'Demanding',
-  expert: 'Expert',
-};
-
 /** Who and what the trip suits; null where the organizer didn't say. */
 export const AttributesShape = {
   difficulty: DifficultySchema.nullable(),

@@ -24,6 +24,13 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     ),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Chyba při rušení akce', err),
+  difficulty: {},
+  form: {},
+  filter: {},
+  card: {},
+  selection: {},
+  picking: {},
+  menu: {},
 };
 
 export default cs;
