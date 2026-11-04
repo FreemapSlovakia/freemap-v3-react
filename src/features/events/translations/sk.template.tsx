@@ -40,6 +40,10 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
   form: {
     newEvent: 'Nová akcia',
     editEvent: 'Úprava akcie',
+    organizer: 'Organizátor',
+    organizerPlaceholder: 'Vy — alebo zadajte meno používateľa',
+    organizerHint:
+      'Akciu zadáte za jej organizátora: existujúci účet, alebo nové meno, z ktorého vznikne organizátor bez prihlásenia.',
     onlyOrganizer: 'Akciu môže meniť iba jej organizátor.',
     unavailable: 'Akciu sa nepodarilo načítať — možno bola zrušená.',
     title: 'Názov',

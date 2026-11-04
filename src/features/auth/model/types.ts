@@ -47,6 +47,7 @@ export const RoleSchema = z.enum([
   'userManager',
   'galleryModerator',
   'mapModerator',
+  'eventManager',
   'trackingManager',
   'layerPreview',
 ]);
@@ -113,6 +114,8 @@ export const AppTokenScopeSchema = z.enum([
   'gallery:write',
   'maps:read',
   'maps:write',
+  'events:read',
+  'events:write',
   'tracking:read',
   'tracking:write',
   'tiles:outdoor',
@@ -171,7 +174,13 @@ export const UserSchema = z.object({
   email: z.string().nullable(),
   description: z.string().nullable(),
   id: z.number(),
-  roles: z.array(RoleSchema).default([]),
+  // A role newer than this build is dropped, not a failed login.
+  roles: z
+    .array(z.string())
+    .default([])
+    .transform((roles) =>
+      roles.filter((r): r is Role => RoleSchema.safeParse(r).success),
+    ),
   language: z.string().nullish(),
   coordinates: LatLonSchema.nullable(),
   name: z.string(),

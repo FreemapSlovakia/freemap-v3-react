@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapsSave } from '@features/myMaps/model/actions.js';
 import { loadMapDocument } from '@features/myMaps/model/loadMapDocument.js';
@@ -57,7 +58,11 @@ import {
   FaRulerHorizontal,
   FaSave,
   FaTimes,
+  FaUserTie,
 } from 'react-icons/fa';
+import { ReactTags, type Tag } from 'react-tag-autocomplete';
+import z from 'zod';
+import '@shared/styles/react-tags.scss';
 import { MdTrendingDown, MdTrendingUp } from 'react-icons/md';
 import { useDispatch, useStore } from 'react-redux';
 import {
@@ -229,6 +234,12 @@ function parsePosition(s: string): EventPoint | null {
 /** The Linked map choice that saves what is on the map as a new map. */
 const NEW_MAP = '@new';
 
+const OrganizerSchema = z.object({ id: z.number(), name: z.string() });
+
+const OrganizersSchema = z.array(OrganizerSchema);
+
+type Organizer = z.infer<typeof OrganizerSchema>;
+
 const isCount = (s: string) =>
   s.trim() === '' || (Number.isFinite(Number(s)) && Number(s) >= 0);
 
@@ -278,6 +289,38 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
   const myUserId = useAppSelector((state) => state.auth.user?.id);
 
+  const isEventManager = useAppSelector((state) =>
+    hasRole(state.auth.user, 'eventManager'),
+  );
+
+  /** Picked by an eventManager; unset, the event keeps its owner, or is the user's. */
+  const [organizer, setOrganizer] = useState<Organizer>();
+
+  /** Everyone an eventManager can enter an event for, placeholders included. */
+  const [users, setUsers] = useState<Organizer[]>();
+
+  useEffect(() => {
+    if (!show || !isEventManager || users) {
+      return;
+    }
+
+    httpRequest({
+      getState: store.getState,
+      url: '/users',
+      expectedStatus: 200,
+    })
+      .then(async (res) => setUsers(OrganizersSchema.parse(await res.json())))
+      .catch((err) => {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.loadError',
+            messageParams: { err },
+          }),
+        );
+      });
+  }, [show, isEventManager, users, store, dispatch]);
+
   const ownMaps = useAppSelector((state) => state.myMaps.maps);
 
   const activeMap = useAppSelector((state) => state.myMaps.activeMap);
@@ -323,6 +366,42 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
   const set = (patch: Partial<Draft>) =>
     setDraft((draft) => ({ ...draft, ...patch }));
+
+  const pickOrganizer = async (tag: Tag) => {
+    // A name nobody has yet: a placeholder organizer, created at once.
+    if (typeof tag.value === 'string') {
+      try {
+        const res = await httpRequest({
+          getState: store.getState,
+          method: 'POST',
+          url: '/events/organizers',
+          expectedStatus: 200,
+          data: { name: tag.label },
+        });
+
+        const created = OrganizerSchema.parse(await res.json());
+
+        setUsers((users) => [...(users ?? []), created]);
+
+        setOrganizer(created);
+      } catch (err) {
+        dispatch(
+          toastsAdd({
+            style: 'danger',
+            messageKey: 'general.savingError',
+            messageParams: { err },
+          }),
+        );
+
+        return;
+      }
+    } else {
+      setOrganizer({ id: Number(tag.value), name: tag.label });
+    }
+
+    // Only the organizer's own maps can be linked, and these are the user's.
+    set({ mapId: '' });
+  };
 
   // What the last map filled in: a field still holding it is the map's, not
   // the user's, so another map replaces it — or empties it, saying nothing
@@ -507,6 +586,8 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
     setCover(undefined);
 
+    setOrganizer(undefined);
+
     setFillNote(null);
 
     if (!target?.id && target?.mapId) {
@@ -555,7 +636,12 @@ export default function EventFormModal({ show }: Props): ReactElement {
   // someone else's event can't relink it — these aren't the owner's maps.
   const myMaps = ownMaps.filter((map) => map.userId === myUserId);
 
-  const othersEvent = editing !== undefined && editing.userId !== myUserId;
+  // The owner it is saved with; the user unless an eventManager picked another.
+  const owner =
+    organizer ??
+    (editing ? { id: editing.userId, name: editing.user.name } : undefined);
+
+  const othersEvent = owner !== undefined && owner.id !== myUserId;
 
   const ownOpenMap = activeMap?.userId === myUserId ? activeMap : undefined;
 
@@ -608,6 +694,10 @@ export default function EventFormModal({ show }: Props): ReactElement {
               : Math.round((hours ?? 0) * 3600 + (minutes ?? 0) * 60),
           ascent: num(draft.ascent),
           descent: num(draft.descent),
+          userId:
+            organizer && organizer.id !== (editing?.userId ?? myUserId)
+              ? organizer.id
+              : undefined,
         },
         cover: cover === null && !editing?.cover ? undefined : cover,
         newMap: mapId === NEW_MAP ? draft.title.trim() : undefined,
@@ -640,6 +730,53 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
           {unavailable && (
             <Alert variant="danger">{em?.form.unavailable}</Alert>
+          )}
+
+          {isEventManager && (
+            <Form.Group controlId="eventOrganizer" className="mb-3">
+              <Form.Label>
+                <FaUserTie /> {em?.form.organizer}
+              </Form.Label>
+
+              {/* One organizer: a picked one is shown, not added to. */}
+              {othersEvent && owner ? (
+                <InputGroup>
+                  <Form.Control readOnly value={owner.name} />
+
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      if (myUserId !== undefined) {
+                        setOrganizer({ id: myUserId, name: '' });
+
+                        // The map linked was the other owner's.
+                        set({ mapId: '' });
+                      }
+                    }}
+                  >
+                    <FaTimes /> {m?.general.remove}
+                  </Button>
+                </InputGroup>
+              ) : (
+                <ReactTags
+                  placeholderText={em?.form.organizerPlaceholder}
+                  newOptionText={m?.general.newOptionText}
+                  deleteButtonText={m?.general.deleteButtonText}
+                  selected={[]}
+                  // Everyone, the user too, or typing a listed name would
+                  // offer it as a new organizer.
+                  suggestions={(users ?? []).map((user) => ({
+                    value: user.id,
+                    label: user.name,
+                  }))}
+                  onAdd={(tag) => void pickOrganizer(tag)}
+                  onDelete={() => {}}
+                  allowNew
+                />
+              )}
+
+              <Form.Text>{em?.form.organizerHint}</Form.Text>
+            </Form.Group>
           )}
 
           <Form.Group controlId="eventTitle" className="mb-3">

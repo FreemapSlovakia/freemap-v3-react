@@ -49,6 +49,9 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
       'gallery:write': 'Nahrávať, upravovať, hodnotiť a komentovať fotografie',
       'maps:read': 'Prezerať moje mapy',
       'maps:write': 'Vytvárať, meniť a mazať moje mapy',
+      'events:read': 'Prezerať akcie, aj moje nezverejnené',
+      'events:write':
+        'Vytvárať, meniť a rušiť moje akcie a dávať vedieť o záujme a účasti',
       'tracking:read': 'Prezerať moje sledované zariadenia',
       'tracking:write': 'Spravovať moje sledované zariadenia a ich zdieľanie',
       'tiles:outdoor':

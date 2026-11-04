@@ -37,6 +37,10 @@ const en: EventsMessages = {
   form: {
     newEvent: 'New event',
     editEvent: 'Edit event',
+    organizer: 'Organizer',
+    organizerPlaceholder: 'You — or type a user’s name',
+    organizerHint:
+      'Enter the event for its organizer: an existing account, or a new name, which becomes an organizer without a login.',
     onlyOrganizer: 'Only the event’s organizer can change it.',
     unavailable: 'This event can’t be loaded — it may have been deleted.',
     title: 'Title',

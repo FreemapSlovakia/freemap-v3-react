@@ -92,6 +92,8 @@ export const coverUrl = (name: string, size: 'large' | 'thumb') =>
 /** What the event form sends; dates as ISO strings. */
 export type EventBody = TripStats &
   Attributes & {
+    /** Another owner than the user, which only an eventManager may set. */
+    userId?: number;
     mapId: string | null;
     title: string;
     description: string | null;

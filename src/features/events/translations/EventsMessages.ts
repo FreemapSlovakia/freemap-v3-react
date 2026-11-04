@@ -18,6 +18,9 @@ export type EventsMessages = {
   form: {
     newEvent: string;
     editEvent: string;
+    organizer: string;
+    organizerPlaceholder: string;
+    organizerHint: string;
     onlyOrganizer: string;
     unavailable: string;
     title: string;
