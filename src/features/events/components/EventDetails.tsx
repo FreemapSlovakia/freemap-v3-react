@@ -1,8 +1,10 @@
+import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { Markdown } from '@shared/components/Markdown.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
 import type { ReactElement, ReactNode } from 'react';
 import { AlertLink, Badge } from 'react-bootstrap';
 import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
@@ -29,6 +31,8 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
 
   const em = useEventsMessages();
 
+  const rpm = useRoutePlannerMessages();
+
   const dateFormat = useDateTimeFormat({
     weekday: 'short',
     year: 'numeric',
@@ -38,10 +42,6 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
     minute: '2-digit',
   });
 
-  const icons = event.transports.map((kind) => (
-    <span key={kind}>{iconOfKind(kind)}</span>
-  ));
-
   const stats = [
     event.distance !== null &&
       `${new Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(event.distance / 1000)} km`,
@@ -49,6 +49,14 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
     event.ascent !== null && `↗ ${event.ascent} m`,
     event.descent !== null && `↘ ${event.descent} m`,
   ].filter(Boolean);
+
+  // Named where no stats follow, or an icon alone wouldn't say what it is.
+  const icons = event.transports.map((kind) => (
+    <span key={kind} className="d-inline-flex align-items-center gap-1">
+      {iconOfKind(kind)}
+      {stats.length === 0 && rpm?.transportType[kind as TransportTypeMsgKey]}
+    </span>
+  ));
 
   // Icon and words: an icon alone can't say "no".
   const attributes = [
