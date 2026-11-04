@@ -29,7 +29,7 @@ The look of **Parametric terrain shading** is set in the :FaLayerGroup: **Map la
 
 The quickest way to a good picture is :FaSwatchbook: **Presets**, the button beside **Remove**. Choosing a preset replaces the whole shading at once:
 
-- **Cartographic** – e.g. **Classic**, **Freemap outdoor**, **Swiss style**, **Steepness**, **Hypsometric tints + shading** (colours by elevation), **LiDAR micro-relief** or **Contour lines + shading**,
+- **Cartographic** – e.g. **Classic**, **Freemap outdoor**, **Swiss style**, **Steepness**, **Hypsometric tints + shading** (colours by elevation) or **Contour lines + shading**,
 - **Artistic** – e.g. **Night**, **Sepia**, **Watercolour** or **Golden hour**.
 
 For a few presets you first enter values, such as the elevations of the bottom and top colour. With **Add to existing** ticked, the preset's layers are added to the current shading instead. **With background** decides whether the preset gets a background; without one, the map beneath shows through.

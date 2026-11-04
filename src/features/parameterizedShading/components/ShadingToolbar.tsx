@@ -1,3 +1,4 @@
+import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -50,6 +51,10 @@ export function ShadingToolbar({
   const sm = useShadingMessages();
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const layerPreview = useAppSelector((state) =>
+    hasRole(state.auth.user, 'layerPreview'),
+  );
 
   const [append, setAppend] = useState(false);
 
@@ -163,7 +168,9 @@ export function ShadingToolbar({
             <Text m={sm} k="mapPresetsHeader" />
           </Dropdown.Header>
 
-          {MAP_PRESETS.map(presetItem)}
+          {MAP_PRESETS.filter(
+            (preset) => preset !== 'lidar' || layerPreview,
+          ).map(presetItem)}
 
           <Dropdown.Divider />
 

@@ -29,7 +29,7 @@ Vzhľad mapy **Parametrické tieňovanie terénu** sa nastavuje v paneli :FaLaye
 
 Najrýchlejšia cesta k peknému výsledku sú :FaSwatchbook: **Predvoľby**, tlačidlo vedľa tlačidla **Odstrániť**. Zvolená predvoľba hneď nahradí celé tieňovanie:
 
-- **Kartografické** – napr. **Klasické**, **Freemap outdoor**, **Švajčiarsky štýl**, **Strmosť**, **Výškové farby + tieň** (farby podľa nadmorskej výšky), **LiDAR mikroreliéf** či **Vrstevnice + tieňovanie**,
+- **Kartografické** – napr. **Klasické**, **Freemap outdoor**, **Švajčiarsky štýl**, **Strmosť**, **Výškové farby + tieň** (farby podľa nadmorskej výšky) či **Vrstevnice + tieňovanie**,
 - **Umelecké** – napr. **Nočné**, **Sépia**, **Akvarel** či **Zlatá hodinka**.
 
 Pri niektorých predvoľbách najprv zadáte hodnoty, napríklad výšku najnižšej a najvyššej farby. Keď je zaškrtnuté **Pridať k existujúcemu**, vrstvy predvoľby sa pridajú k súčasnému tieňovaniu. Voľba **S pozadím** určuje, či predvoľba dostane pozadie; bez pozadia presvitá mapa pod tieňovaním.
