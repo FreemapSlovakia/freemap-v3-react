@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Difficulty, EventItem } from '../model/actions.js';
+import type { EventsColorizeBy, MineCategory } from '../model/colorize.js';
 
 export type EventsMessages = {
   noEvents: string;
@@ -100,5 +101,18 @@ export type EventsMessages = {
   menu: {
     filter: string;
     newEvent: string;
+  };
+  colorize: {
+    by: string;
+    none: string;
+    legend: string;
+    modes: Record<EventsColorizeBy, string>;
+    ended: string;
+    happening: string;
+    /** The when scale's unit. */
+    days: string;
+    mine: Record<MineCategory, string>;
+    yes: string;
+    no: string;
   };
 };

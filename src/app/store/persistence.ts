@@ -16,6 +16,8 @@ import {
   elevationSettingsInitialState,
   GRADE_WINDOW_WHOLE_LINE,
 } from '@features/elevationChart/model/settingsReducer.js';
+import { EventsColorizeBySchema } from '@features/events/model/colorize.js';
+import { eventsSettingsInitialState } from '@features/events/model/settingsReducer.js';
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
@@ -448,6 +450,13 @@ export const PersistedWeatherRadarSettingsSchema = z
   .object({ showNowcast: z.boolean() })
   .partial();
 
+export const PersistedEventsSettingsSchema = z
+  .object({
+    colorizeBy: EventsColorizeBySchema.nullable(),
+    showLegend: z.boolean(),
+  })
+  .partial();
+
 /**
  * Single source of truth for persisted state. One entry per slice drives both
  * the save side (`selectPersistedState`, used by `statePersistingMiddleware`)
@@ -790,6 +799,12 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedWeatherRadarSettingsSchema,
     initial: weatherRadarSettingsInitialState,
     persist: (r) => ({ showNowcast: r.showNowcast }),
+  }),
+  defineEntry({
+    key: 'eventsSettings',
+    schema: PersistedEventsSettingsSchema,
+    initial: eventsSettingsInitialState,
+    persist: (e) => e,
   }),
   defineEntry({
     key: 'viewshedSettings',

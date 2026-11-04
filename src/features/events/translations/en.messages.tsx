@@ -126,6 +126,32 @@ const en: EventsMessages = {
     filter: 'Filter',
     newEvent: 'New event',
   },
+  colorize: {
+    by: 'Colorize by',
+    none: 'None',
+    legend: 'Legend',
+    modes: {
+      when: 'When',
+      mine: 'Mine and others',
+      distance: 'Length',
+      duration: 'Duration',
+      ascent: 'Ascent',
+      difficulty: 'Difficulty',
+      dogs: 'Dogs',
+      children: 'Children',
+    },
+    ended: 'Ended',
+    happening: 'Happening',
+    days: 'days',
+    mine: {
+      mine: 'Mine',
+      going: 'Going',
+      interested: 'Interested',
+      others: 'Others',
+    },
+    yes: 'Yes',
+    no: 'No',
+  },
 };
 
 export default en;

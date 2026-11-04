@@ -152,11 +152,10 @@ from the selection toolbar (**Edit**).
       API with an `events:write` token, and events gone from the source go.
       A new source's first runs land in a review list, not on the map. No
       social networks — their terms forbid it.
-- [ ] Marker colour by status — ended / happening / upcoming, upcoming graded
-      by how soon — then **Colour by** modes as the photos have (length,
-      duration, ascent, difficulty, dogs, children), with a legend, an
-      `eventsSettings` slice and `events-cb=`. Transport not as a colour (an
-      event names several) but as the marker's icon.
+- [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
+      upcoming graded by how soon), mine and others, length, duration, ascent,
+      difficulty, dogs, children; a legend, the `eventsSettings` slice and
+      `events-cb=`. Transport is the marker's icon when an event names one.
 - [ ] Marker clustering.
 - [ ] **Copy link** on the event.
 - [ ] Follows and the _Who_ filter.

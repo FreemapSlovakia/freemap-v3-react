@@ -130,6 +130,32 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     filter: 'Filter',
     newEvent: 'Nová akcia',
   },
+  colorize: {
+    by: 'Vyfarbiť podľa',
+    none: 'Žiadne',
+    legend: 'Legenda',
+    modes: {
+      when: 'Termín',
+      mine: 'Moje a ostatné',
+      distance: 'Dĺžka',
+      duration: 'Trvanie',
+      ascent: 'Stúpanie',
+      difficulty: 'Náročnosť',
+      dogs: 'Psy',
+      children: 'Deti',
+    },
+    ended: 'Skončené',
+    happening: 'Prebieha',
+    days: 'dni',
+    mine: {
+      mine: 'Moje',
+      going: 'Prídem',
+      interested: 'Mám záujem',
+      others: 'Ostatné',
+    },
+    yes: 'Áno',
+    no: 'Nie',
+  },
 };
 
 export default sk;

@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
+import type { EventsColorizeBy } from './colorize.js';
 import type { EventsFilter } from './filter.js';
 
 /** Map overlay-layer code for the events markers layer. */
@@ -170,4 +171,13 @@ export const eventsConfirmPick = createAction('EVENTS_CONFIRM_PICK');
 /** The start point picked on the map, for the form to take; `null` once taken. */
 export const eventsStartPicked = createAction<EventPoint | null>(
   'EVENTS_START_PICKED',
+);
+
+export const eventsColorizeBy = createAction<EventsColorizeBy | null>(
+  'EVENTS_COLORIZE_BY',
+);
+
+/** Shows or hides the colorize legend; toggles without a payload. */
+export const eventsToggleLegend = createAction<boolean | undefined>(
+  'EVENTS_TOGGLE_LEGEND',
 );

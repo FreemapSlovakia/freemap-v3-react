@@ -19,6 +19,7 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
   selection: {},
   picking: {},
   menu: {},
+  colorize: { modes: {}, mine: {} },
 };
 
 export default hu;

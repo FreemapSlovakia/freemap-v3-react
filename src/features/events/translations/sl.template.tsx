@@ -18,6 +18,7 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
   selection: {},
   picking: {},
   menu: {},
+  colorize: { modes: {}, mine: {} },
 };
 
 export default sl;

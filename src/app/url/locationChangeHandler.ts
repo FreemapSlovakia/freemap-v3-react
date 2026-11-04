@@ -33,8 +33,10 @@ import type { ElevationChartTarget } from '@features/elevationChart/model/target
 import { targetsEqual } from '@features/elevationChart/model/target.js';
 import {
   EVENTS_LAYER,
+  eventsColorizeBy,
   eventsSetFilter,
 } from '@features/events/model/actions.js';
+import { EventsColorizeBySchema } from '@features/events/model/colorize.js';
 import { filterFromQuery, sameFilter } from '@features/events/model/filter.js';
 import {
   eventsLayerOnSelector,
@@ -1508,6 +1510,14 @@ function handleEvents(
   // Only when it differs: every hash change would otherwise refetch.
   if (!sameFilter(getState().events.filter, next)) {
     dispatch(eventsSetFilter(next));
+  }
+
+  const cb = query['events-cb'];
+
+  const by = EventsColorizeBySchema.safeParse(cb);
+
+  if (by.success || cb === 'none') {
+    dispatch(eventsColorizeBy(by.success ? by.data : null));
   }
 }
 
