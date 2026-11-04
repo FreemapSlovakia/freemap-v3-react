@@ -5,6 +5,11 @@
   max-height: calc(100dvh - 52px);
   z-index: 1070;
 
+  /* Each toast as wide as its own content, not the widest one's. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
   overflow: auto;
   font-size: 0.875rem;
   background-clip: padding-box;
