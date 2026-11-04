@@ -1,9 +1,10 @@
 import { osmElementOpen } from '@features/osm/model/osmElementOpen.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { inAppLink } from '@shared/inAppLink.js';
+import { linkify } from '@shared/linkify.js';
 import { parseOsmElementId } from '@shared/osmElementIds.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import type { ReactElement, ReactNode } from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import type { OsmNote } from '../model/actions.js';
@@ -13,73 +14,43 @@ interface Props {
   note: OsmNote;
 }
 
-// Trailing punctuation belongs to the sentence, not the URL.
-const URL_RE = /https?:\/\/[^\s<>"]+[^\s<>".,;:!?)'\]]/g;
-
 const OSM_HOST_RE = /^(www\.)?(openstreetmap\.org|osm\.org)$/;
 
 function useLinkify(showOnMap: string | undefined) {
   const dispatch = useDispatch();
 
-  return (text: string): ReactNode[] => {
-    const parts: ReactNode[] = [];
-
-    let last = 0;
-
-    for (const match of text.matchAll(URL_RE)) {
-      let url = match[0];
-
-      // A `)` closing a `(` of the URL's own is part of it: `…/Foo_(bar)`.
-      if (
-        text[match.index + url.length] === ')' &&
-        url.split('(').length > url.split(')').length
-      ) {
-        url += ')';
-      }
-
-      parts.push(text.slice(last, match.index));
-
-      last = match.index + url.length;
-
+  return (text: string): ReactNode[] =>
+    linkify(text, (url, key) => {
       const id = OSM_HOST_RE.test(URL.parse(url)?.hostname ?? '')
         ? parseOsmElementId(url)
         : null;
 
-      parts.push(
-        <AlertLink
-          key={match.index}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {url}
-        </AlertLink>,
+      return (
+        <Fragment key={key}>
+          <AlertLink href={url} target="_blank" rel="noopener noreferrer">
+            {url}
+          </AlertLink>
+
+          {id && (
+            <>
+              {' ('}
+              <AlertLink
+                {...inAppLink(`#osm-${id.elementType}=${id.id}`, () => {
+                  for (const action of osmElementOpen(id)) {
+                    dispatch(action);
+                  }
+
+                  trackMatomo(['trackEvent', 'OsmNotes', 'openElement']);
+                })}
+              >
+                {showOnMap}
+              </AlertLink>
+              {')'}
+            </>
+          )}
+        </Fragment>
       );
-
-      if (id) {
-        parts.push(
-          ' (',
-          <AlertLink
-            key={`${match.index}-map`}
-            {...inAppLink(`#osm-${id.elementType}=${id.id}`, () => {
-              for (const action of osmElementOpen(id)) {
-                dispatch(action);
-              }
-
-              trackMatomo(['trackEvent', 'OsmNotes', 'openElement']);
-            })}
-          >
-            {showOnMap}
-          </AlertLink>,
-          ')',
-        );
-      }
-    }
-
-    parts.push(text.slice(last));
-
-    return parts;
-  };
+    });
 }
 
 export function OsmNoteThread({ note }: Props): ReactElement {

@@ -2,8 +2,9 @@ import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { linkify } from '@shared/linkify.js';
 import type { ReactElement } from 'react';
-import { Badge } from 'react-bootstrap';
+import { AlertLink, Badge } from 'react-bootstrap';
 import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
 import { coverUrl, type EventItem } from '../model/actions.js';
 import { iconOfKind } from '../model/transports.js';
@@ -121,8 +122,20 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
       )}
 
       {event.description && (
-        <div className="mt-1" style={{ whiteSpace: 'pre-wrap' }}>
-          {event.description}
+        <div
+          className="mt-1"
+          style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}
+        >
+          {linkify(event.description, (url, key) => (
+            <AlertLink
+              key={key}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {url}
+            </AlertLink>
+          ))}
         </div>
       )}
     </div>
