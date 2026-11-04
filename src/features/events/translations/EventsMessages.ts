@@ -85,6 +85,7 @@ export type EventsMessages = {
   };
   selection: {
     backToEvents: string;
+    details: string;
     interested: string;
     going: string;
     openInNewTab: string;

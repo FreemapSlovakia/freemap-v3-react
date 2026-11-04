@@ -13,7 +13,7 @@ import {
 } from '../actions.js';
 import { filterToRequest } from '../filter.js';
 import { eventsLayerOnSelector, selectedEventId } from '../selectors.js';
-import { showSelectedEvent } from './eventSelectionProcessors.js';
+import { refreshSelectedEvent } from './eventSelectionProcessors.js';
 
 const triggers = [
   init,
@@ -71,7 +71,7 @@ export const eventsLoadListProcessor: Processor = {
         selected &&
         JSON.stringify(selected) !== JSON.stringify(getState().events.selected)
       ) {
-        showSelectedEvent(dispatch, selected);
+        refreshSelectedEvent(dispatch, getState, selected);
       }
     } catch (err) {
       await toastError(err, loadEventsMessages, 'fetchListError');

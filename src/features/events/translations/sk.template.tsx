@@ -113,6 +113,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
   },
   selection: {
     backToEvents: 'Späť na akcie',
+    details: 'Podrobnosti',
     interested: 'Mám záujem',
     going: 'Prídem',
     openInNewTab: 'Otvoriť na novej karte',

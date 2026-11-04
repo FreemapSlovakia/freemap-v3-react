@@ -2,7 +2,7 @@ import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAskLoadMerge } from '@features/myMaps/hooks/useAskLoadMerge.js';
 import { mapsDisconnect } from '@features/myMaps/model/actions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
+import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
@@ -22,6 +22,7 @@ import {
   FaCloudDownloadAlt,
   FaEdit,
   FaExternalLinkAlt,
+  FaInfoCircle,
   FaStar,
   FaTrash,
 } from 'react-icons/fa';
@@ -31,6 +32,10 @@ import {
   eventsOpen,
   eventsSetParticipation,
 } from '../model/actions.js';
+import {
+  EVENT_TOAST_ID,
+  eventDetailsToast,
+} from '../model/processors/eventSelectionProcessors.js';
 import { loadEventsMessages } from '../translations/loadEventsMessages.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 
@@ -49,6 +54,10 @@ export default function EventSelection(): ReactElement | null {
   const activeMapId = useAppSelector((state) => state.myMaps.activeMap?.id);
 
   const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
+
+  const detailsShown = useAppSelector((state) =>
+    Boolean(state.toasts.toasts[EVENT_TOAST_ID]),
+  );
 
   const em = useEventsMessages();
 
@@ -116,6 +125,21 @@ export default function EventSelection(): ReactElement | null {
       )}
 
       <ResponsiveActions gap={1} align="start" toggleLabel={m?.general.actions}>
+        <Action
+          icon={<FaInfoCircle />}
+          label={em?.selection.details}
+          variant="outline-primary"
+          active={detailsShown}
+          showLabelFrom="xl"
+          onClick={() =>
+            dispatch(
+              detailsShown
+                ? toastsRemove(EVENT_TOAST_ID)
+                : eventDetailsToast(event),
+            )
+          }
+        />
+
         <Action
           icon={
             <>

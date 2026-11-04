@@ -109,6 +109,7 @@ const en: EventsMessages = {
   },
   selection: {
     backToEvents: 'Back to events',
+    details: 'Details',
     interested: 'Interested',
     going: 'Going',
     openInNewTab: 'Open in new tab',

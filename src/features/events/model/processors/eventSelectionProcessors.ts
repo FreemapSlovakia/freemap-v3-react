@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import type { RootState } from '@app/store/store.js';
 import {
   mapsLoad,
   mapsLoaded,
@@ -67,21 +68,40 @@ export const eventSelectionProcessor: Processor = {
   },
 };
 
-/** Puts the event in the store and its details in a toast that goes with the selection. */
+export const EVENT_TOAST_ID = 'event';
+
+/**
+ * The event's details, going with its selection. Closing it keeps the
+ * selection: on a phone it covers the map, and the toolbar must stay usable.
+ */
+export const eventDetailsToast = (event: EventItem) =>
+  toastsAdd({
+    id: EVENT_TOAST_ID,
+    style: 'info',
+    messageKey: 'details',
+    messageLoader: loadEventsMessages,
+    messageParams: { event },
+    statePredicate: (state) => selectedEventId(state) !== event.id,
+  });
+
+/** Puts the event in the store and its details in a toast. */
 export function showSelectedEvent(dispatch: Dispatch, event: EventItem): void {
   dispatch(eventsSetSelected(event));
 
-  dispatch(
-    toastsAdd({
-      id: 'event',
-      style: 'info',
-      messageKey: 'details',
-      messageLoader: loadEventsMessages,
-      messageParams: { event },
-      statePredicate: (state) => selectedEventId(state) !== event.id,
-      onClose: selectFeature(null),
-    }),
-  );
+  dispatch(eventDetailsToast(event));
+}
+
+/** A newer copy of the selected event; a closed toast stays closed. */
+export function refreshSelectedEvent(
+  dispatch: Dispatch,
+  getState: () => RootState,
+  event: EventItem,
+): void {
+  dispatch(eventsSetSelected(event));
+
+  if (getState().toasts.toasts[EVENT_TOAST_ID]) {
+    dispatch(eventDetailsToast(event));
+  }
 }
 
 /** Turning the layer off lets go of its event. */

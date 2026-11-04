@@ -1,5 +1,5 @@
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
-import { Markdown } from '@shared/components/Markdown.js';
+import { linkTarget, Markdown } from '@shared/components/Markdown.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -20,7 +20,7 @@ const alertLink = ({
   href: string;
   children: ReactNode;
 }) => (
-  <AlertLink href={href} target="_blank" rel="noopener noreferrer">
+  <AlertLink href={href} {...linkTarget(href)}>
     {children}
   </AlertLink>
 );

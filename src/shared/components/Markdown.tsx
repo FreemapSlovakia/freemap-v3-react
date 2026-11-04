@@ -10,8 +10,14 @@ type Props = {
   link?: LinkRenderer;
 };
 
+/** A new tab for a web page only: mailto/tel open an app, and get no mark. */
+export const linkTarget = (href: string) =>
+  /^https?:/i.test(href)
+    ? { target: '_blank', rel: 'noopener noreferrer' }
+    : {};
+
 const defaultLink: LinkRenderer = ({ href, children }) => (
-  <a href={href} target="_blank" rel="noopener noreferrer">
+  <a href={href} {...linkTarget(href)}>
     {children}
   </a>
 );
