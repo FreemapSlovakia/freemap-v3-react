@@ -25,6 +25,9 @@ export type EventsMessages = {
     unavailable: string;
     title: string;
     description: string;
+    write: string;
+    preview: string;
+    markdownHint: string;
     contactHint: string;
     cover: string;
     coverTooLarge: string;

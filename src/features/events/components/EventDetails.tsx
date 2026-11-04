@@ -1,15 +1,27 @@
+import { Markdown } from '@shared/components/Markdown.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { linkify } from '@shared/linkify.js';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { AlertLink, Badge } from 'react-bootstrap';
 import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
 import { coverUrl, type EventItem } from '../model/actions.js';
 import { iconOfKind } from '../model/transports.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
+
+const alertLink = ({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) => (
+  <AlertLink href={href} target="_blank" rel="noopener noreferrer">
+    {children}
+  </AlertLink>
+);
 
 /** An event's details, as its toast shows them. */
 export function EventDetails({ event }: { event: EventItem }): ReactElement {
@@ -122,20 +134,8 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
       )}
 
       {event.description && (
-        <div
-          className="mt-1"
-          style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}
-        >
-          {linkify(event.description, (url, key) => (
-            <AlertLink
-              key={key}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {url}
-            </AlertLink>
-          ))}
+        <div className="mt-1" style={{ overflowWrap: 'anywhere' }}>
+          <Markdown text={event.description} link={alertLink} />
         </div>
       )}
     </div>

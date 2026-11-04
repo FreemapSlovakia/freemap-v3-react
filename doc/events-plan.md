@@ -148,11 +148,12 @@ from the selection toolbar (**Edit**).
 - [ ] Marker clustering.
 - [ ] **Copy link** on the event.
 - [ ] Follows and the _Who_ filter.
-- [ ] _Deferred — plain text serves until it doesn't._ Rich description:
-      Tiptap in the form, loaded only there; text marks, lists, links and
-      headings, no images. Stored as Tiptap JSON of those node types, so it
-      can't carry markup, and rendered by a small renderer of our own without
-      Tiptap.
+- [x] Formatted description: Markdown, written with **Write / Preview** tabs
+      and rendered by `shared/components/Markdown` from `marked`'s tokens into
+      React elements — never HTML, so raw markup shows as text, images as
+      links, and only http(s) links are links. Plain text reads as itself.
+- [ ] Only if Markdown proves too hard for organizers: a WYSIWYG editor
+      (Tiptap) reading and writing the same Markdown.
 - [ ] If the new tab proves clumsy (phones): a read-only view drawing a linked
       map without loading it into the editors.
 
