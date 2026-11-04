@@ -78,7 +78,7 @@ const en: EventsMessages = {
     title: 'Events filter',
     date: 'Date',
     dateHint:
-      'Without a start date, only events that haven’t ended yet; set one for past events.',
+      'Without a start date, only events that haven’t ended yet are shown.',
     near: 'Near',
     anywhere: 'Anywhere',
     within: 'within',
@@ -90,7 +90,7 @@ const en: EventsMessages = {
     to: 'to',
     unsaid: 'Include events that don’t say',
     unsaidHint:
-      'Transport, difficulty, length, duration and ascent: an event that leaves them out still matches. Dogs and children stay strict.',
+      'Transport, difficulty, length, duration and ascent: events that leave them out are shown too.',
   },
   card: {
     unlisted: 'Unlisted',

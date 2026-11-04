@@ -82,7 +82,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Filter akcií',
     date: 'Dátum',
     dateHint:
-      'Bez dátumu začiatku sa zobrazia iba akcie, ktoré ešte neskončili; pre minulé akcie ho nastavte.',
+      'Bez dátumu začiatku sa zobrazia iba akcie, ktoré ešte neskončili.',
     near: 'V okolí',
     anywhere: 'Kdekoľvek',
     within: 'do',
@@ -92,9 +92,9 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     childrenSuitable: 'Vhodné pre deti',
     from: 'od',
     to: 'do',
-    unsaid: 'Vrátane akcií, ktoré to neuvádzajú',
+    unsaid: 'Vrátane akcií, ktoré to nemajú uvedené',
     unsaidHint:
-      'Doprava, náročnosť, dĺžka, trvanie a stúpanie: akcia, ktorá ich neuvádza, sa tiež zobrazí. Psy a deti sa filtrujú presne.',
+      'Doprava, náročnosť, dĺžka, trvanie a stúpanie: akcie, ktoré ich neuvádzajú, budú tiež zobrazené.',
   },
   card: {
     unlisted: 'Nezverejnená',
