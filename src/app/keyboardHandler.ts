@@ -462,7 +462,13 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     return setActiveModal({ type: 'manual', chapter: 'shortcuts' });
   }
 
-  if (!window.fmEmbedded && !keyTimer && chordPrefixCodes.has(event.code)) {
+  // Chords are plain keys: Shift+E is a layer's, and two of them aren't E E.
+  if (
+    !window.fmEmbedded &&
+    !keyTimer &&
+    !event.shiftKey &&
+    chordPrefixCodes.has(event.code)
+  ) {
     initCode = event.code;
 
     keyTimer = window.setTimeout(() => {
@@ -474,7 +480,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     return 'I';
   }
 
-  if (keyTimer && initCode) {
+  if (keyTimer && initCode && !event.shiftKey) {
     if (initCode === 'KeyG') {
       const toolDefinition = toolDefinitions.find(
         (td) => td.kbd === event.code,

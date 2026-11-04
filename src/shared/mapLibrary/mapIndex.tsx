@@ -281,6 +281,7 @@ export const mapIndex: MapIndexEntry[] = [
     defaultInMenu: true,
     defaultInToolbar: true,
     icon: <FaCalendarAlt />,
+    shortcut: { code: 'KeyE', shift: true },
     bundled: eventsBody,
   }),
   entry({
