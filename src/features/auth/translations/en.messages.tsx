@@ -21,12 +21,12 @@ const en: AuthMessages = {
     roles: 'My roles',
   },
   roleNames: {
-    userManager: 'User management',
-    galleryModerator: 'Photo moderation',
-    mapModerator: 'Map moderation',
-    eventManager: 'Event management',
-    trackingManager: 'Tracking management',
-    layerPreview: 'Preview of upcoming map layers',
+    userManager: 'User manager',
+    galleryModerator: 'Photo moderator',
+    mapModerator: 'Map moderator',
+    eventManager: 'Event manager',
+    trackingManager: 'Tracking manager',
+    layerPreview: 'Upcoming map layer tester',
   },
   appTokens: {
     title: 'App tokens',

@@ -22,12 +22,12 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     roles: 'Moje role',
   },
   roleNames: {
-    userManager: 'Správa používateľov',
-    galleryModerator: 'Moderovanie fotografií',
-    mapModerator: 'Moderovanie máp',
-    eventManager: 'Správa akcií',
-    trackingManager: 'Správa sledovania',
-    layerPreview: 'Ukážka pripravovaných mapových vrstiev',
+    userManager: 'Správca používateľov',
+    galleryModerator: 'Moderátor fotografií',
+    mapModerator: 'Moderátor máp',
+    eventManager: 'Správca akcií',
+    trackingManager: 'Správca sledovania',
+    layerPreview: 'Tester pripravovaných mapových vrstiev',
   },
   appTokens: {
     title: 'Aplikačné tokeny',

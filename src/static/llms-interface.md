@@ -87,7 +87,7 @@ Lets another application or a script use the Freemap API as the user, without a 
 
 #### My roles
 
-Shown only to an account holding special roles (user management, photo moderation, map moderation, event management, tracking management, preview of upcoming map layers); lists them, read-only.
+Shown only to an account holding special roles (user manager, photo moderator, map moderator, event manager, tracking manager, upcoming map layer tester); lists them, read-only.
 
 ### User profile
 
