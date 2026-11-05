@@ -14,43 +14,6 @@ import {
 import { Offcanvas } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 
-// How many panels that don't yield want to be in; a yielding one waits for none.
-let leading = 0;
-
-const leadingListeners = new Set<() => void>();
-
-function setLeading(next: number) {
-  leading = next;
-
-  for (const listener of leadingListeners) {
-    listener();
-  }
-}
-
-/** Whether a yielding panel is kept out by one that doesn't. */
-function useOutranked(yields: boolean, wanted: boolean): boolean {
-  useEffect(() => {
-    if (yields || !wanted) {
-      return;
-    }
-
-    setLeading(leading + 1);
-
-    return () => setLeading(leading - 1);
-  }, [yields, wanted]);
-
-  const others = useSyncExternalStore(
-    (onChange) => {
-      leadingListeners.add(onChange);
-
-      return () => leadingListeners.delete(onChange);
-    },
-    () => leading,
-  );
-
-  return yields && others > 0;
-}
-
 // Below Bootstrap's `md` the panel docks at the bottom.
 const narrowQuery = window.matchMedia('(max-width: 767.98px)');
 
@@ -115,11 +78,6 @@ type Props<T> = {
   title: (item: T) => ReactNode;
   /** The manual chapter its header's book button opens, as a modal's does. */
   manual?: string;
-  /**
-   * Gives way to any panel that doesn't — an inspection's to a selection's,
-   * which can run beside it — and comes back when that one goes.
-   */
-  yields?: boolean;
   /** A place on the map to keep clear of the panel, panned to when hidden. */
   keepVisible?: (item: T) => LatLon | undefined;
   onClose: () => void;
@@ -137,7 +95,6 @@ export function DockPanel<T>({
   icon,
   title,
   manual,
-  yields = false,
   keepVisible,
   onClose,
   children,
@@ -149,11 +106,7 @@ export function DockPanel<T>({
 
   const picking = useAppSelector(pickingModeSelector);
 
-  const outranked = useOutranked(yields, show && !picking);
-
-  // Not while giving way: it slides out with what it showed, not what its
-  // item turned into on the way.
-  if (item !== null && item !== kept && !outranked) {
+  if (item !== null && item !== kept) {
     setKept(item);
   } else if (!show && picking && kept !== null) {
     // Closed while a picking mode had it out of sight: no slide-out to wait for.
@@ -199,7 +152,7 @@ export function DockPanel<T>({
       // Remounted on a new side, so it slides in from there.
       key={side}
       // A picking mode takes the map, the panel's side included.
-      show={show && !picking && !outranked}
+      show={show && !picking}
       onEntering={(node: HTMLElement) => {
         nodeRef.current = node;
 

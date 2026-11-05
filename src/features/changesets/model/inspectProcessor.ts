@@ -1,5 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
-import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
+import {
+  clearMapFeatures,
+  hasPanel,
+  selectFeature,
+} from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { fitLoadedMap, mapToFit } from '@features/map/fitMapToBbox.js';
@@ -14,6 +18,7 @@ import {
   parseAdiff,
   parseChangeset,
 } from './changesetDiff.js';
+import { changesetsEndInspection } from './inspection.js';
 import { DiffTooBigError, fetchOsmApiDiff } from './osmApiDiff.js';
 import { selectedDiffElementSelector } from './selectors.js';
 
@@ -187,6 +192,27 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
       }
 
       await toastError(err, loadChangesetsMessages, 'inspectError');
+    }
+  },
+};
+
+/**
+ * A selection with a panel of its own ends the inspection, and a history it
+ * came from: returning to that would take the new selection away. A tool's own
+ * (a drawn line, a route point) runs beside it.
+ */
+export const changesetsInspectionSelectionProcessor: Processor = {
+  stateChangePredicate: (state) => state.main.selection,
+  handle: ({ getState, dispatch }) => {
+    const state = getState();
+
+    if (
+      state.changesetInspector.inspected &&
+      hasPanel(state.main.selection?.type)
+    ) {
+      for (const action of changesetsEndInspection()) {
+        dispatch(action);
+      }
     }
   },
 };

@@ -494,10 +494,10 @@ inspection have one; others are meant to follow (see `TODO.md`).
 - **It holds everything the selection offers.** Title, actions and details are in
   the panel, with no selection toolbar beside it. Escape stays the app's: it
   deselects, and the panel slides out with the content it had.
-- **One at a time**, hidden during a picking mode. Selection panels exclude each
-  other, the selection being one; a changeset inspection runs beside a selection,
-  so its panel `yields`: it is out while any other panel wants in, and slides back
-  when that one goes.
+- **One at a time**, hidden during a picking mode. Each panel is a selection's,
+  and there is one selection: a changeset inspection counts as one, so starting
+  it deselects one with a panel (`hasPanel`), and selecting one ends it. A tool's
+  own (a drawn line, a route point) has no panel and runs beside it.
 
 ## Toolbar outlines
 

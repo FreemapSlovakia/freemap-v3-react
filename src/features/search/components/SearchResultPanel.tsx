@@ -56,8 +56,8 @@ export default function SearchResultPanel(): ReactElement {
 
   const result = useAppSelector(activeSearchResultSelector);
 
-  // By the selection, before its element is in: an inspection's panel must
-  // give way already, or it shows in between.
+  // By the selection, before its element is in: the panel stays, greying what
+  // it showed, rather than sliding out and in again.
   const shown = useAppSelector(
     (state) =>
       state.main.detailsShown && state.main.selection?.type === 'search',

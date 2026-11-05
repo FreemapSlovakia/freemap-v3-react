@@ -4,6 +4,7 @@ import {
   openTool,
   selectFeature,
 } from '@app/store/actions.js';
+import { changesetsInspect } from '@features/changesets/model/actions.js';
 import {
   dataViewerDetachHole,
   dataViewerDrawStop,
@@ -303,6 +304,40 @@ describe('detailsShown', () => {
         }),
       ).detailsShown,
     ).toBe(false);
+  });
+});
+
+describe('changesetsInspect', () => {
+  it('lets go of a selection with a panel, a history’s element included', () => {
+    const event = selectFeature({ type: 'event', id: 'e1' });
+
+    expect(run(event, changesetsInspect(7)).selection).toBeNull();
+
+    expect(
+      run(event, changesetsInspect(7, { fromHistory: true })).selection,
+    ).toBeNull();
+  });
+
+  it("keeps a tool's own, such as a line being drawn", () => {
+    const feature = selectFeature({ type: 'feature', id: 0 });
+
+    expect(run(feature, changesetsInspect(7)).selection).toEqual({
+      type: 'feature',
+      id: 0,
+    });
+  });
+
+  it('ending one drops its element and nothing else', () => {
+    const element = selectFeature({ type: 'changeset-element', id: 'n1' });
+
+    expect(run(element, changesetsInspect(null)).selection).toBeNull();
+
+    const feature = selectFeature({ type: 'feature', id: 0 });
+
+    expect(run(feature, changesetsInspect(null)).selection).toEqual({
+      type: 'feature',
+      id: 0,
+    });
   });
 });
 

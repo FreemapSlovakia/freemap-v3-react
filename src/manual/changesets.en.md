@@ -38,7 +38,7 @@ Click an element on the map, or in the list, to see what happened to it: a table
 
 **Open on osm.org** shows the changeset on the OpenStreetMap website.
 
-While you inspect, the panel replaces the Map changes toolbar; its × ends the inspection and brings the toolbar back. <kbd>Esc</kbd> takes you back one level at a time: from the element to the changeset, then out of the inspection.
+While you inspect, the panel replaces the Map changes toolbar; its × ends the inspection and brings the toolbar back, and so does selecting something with a panel of its own, such as a search result or an object. <kbd>Esc</kbd> takes you back one level at a time: from the element to the changeset, then out of the inspection.
 
 The inspected changeset is part of the page address, so you can share it as a link.
 

@@ -21,16 +21,16 @@ export function changesetsEndInspection() {
 }
 
 /**
- * Opens the element as it is now, as its `osm-*` link does. Its panel covers
- * the inspection's, which comes back when it goes.
+ * Opens the element as it is now, as its `osm-*` link does; selected, it ends
+ * the inspection (see `changesetsInspectionSelectionProcessor`).
  */
 export function changesetElementOpen(element: DiffElement) {
   return osmElementOpen(osmIdOf(element));
 }
 
 /**
- * Whether the history's element's details panel is there to hold the drill;
- * it goes without the history ending, its object reloaded out of the list.
+ * Whether the history's element's details panel is there to list it; it goes
+ * without the history ending, its object reloaded out of the list.
  */
 export const historyHosted = (state: RootState) =>
   state.changesetInspector.history !== null && wantedKey(state) !== undefined;

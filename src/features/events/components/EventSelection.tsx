@@ -193,7 +193,7 @@ function EventActions({ event }: { event: EventItem }): ReactElement {
       )}
 
       {event.canWrite && (
-        <ButtonGroup>
+        <>
           <Button
             variant="secondary"
             disabled={!online}
@@ -229,7 +229,7 @@ function EventActions({ event }: { event: EventItem }): ReactElement {
               </Button>
             )}
           </LongPressTooltip>
-        </ButtonGroup>
+        </>
       )}
     </ButtonToolbar>
   );

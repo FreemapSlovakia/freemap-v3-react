@@ -1333,7 +1333,12 @@ function handleOsmElements(
 
   const [first] = wanted;
 
-  if (first && getState().main.selection === null) {
+  // An inspection is the selection, which this would end.
+  if (
+    first &&
+    getState().main.selection === null &&
+    !getState().changesetInspector.inspected
+  ) {
     dispatch(selectFeature({ type: 'search', id: first }));
   }
 }

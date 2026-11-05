@@ -137,7 +137,8 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
       : undefined;
   });
 
-  // Its history drills down in place of the details.
+  // Its history drills down in place of the details. Only the history: a
+  // changeset of it is the inspection's own panel, which this one leaves to.
   if (
     parsedId.success &&
     history &&
@@ -146,6 +147,7 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
     return (
       <AsyncComponent
         factory={changesetInspectorFactory}
+        view={{ history, inspected: null, element: undefined, pending: false }}
         root={
           <>
             {imgs.map((img) => (

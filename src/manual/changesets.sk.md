@@ -38,7 +38,7 @@ Kliknutím na prvok na mape alebo v zozname uvidíte, čo sa s prvkom stalo: tab
 
 **Otvoriť na osm.org** zobrazí sadu zmien na webe OpenStreetMap.
 
-Počas preskúmania nahradí panel lištu nástroja Zmeny v mape; jeho × preskúmanie ukončí a lišta sa vráti. Klávesom <kbd>Esc</kbd> sa vrátite vždy o úroveň späť: z prvku na sadu zmien a potom von z preskúmania.
+Počas preskúmania nahradí panel lištu nástroja Zmeny v mape; jeho × preskúmanie ukončí a lišta sa vráti, rovnako ako výber niečoho s vlastným panelom, napríklad nálezu alebo objektu. Klávesom <kbd>Esc</kbd> sa vrátite vždy o úroveň späť: z prvku na sadu zmien a potom von z preskúmania.
 
 Preskúmaná sada zmien je súčasťou adresy stránky, takže ju môžete zdieľať ako odkaz.
 

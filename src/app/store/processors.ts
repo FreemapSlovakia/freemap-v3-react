@@ -24,7 +24,10 @@ import {
   changesetsHistorySelectionProcessor,
   changesetsReturnToHistoryProcessor,
 } from '@features/changesets/model/historyProcessor.js';
-import { changesetsInspectProcessor } from '@features/changesets/model/inspectProcessor.js';
+import {
+  changesetsInspectionSelectionProcessor,
+  changesetsInspectProcessor,
+} from '@features/changesets/model/inspectProcessor.js';
 import {
   changesetsProcessor,
   changesetsTrackProcessor,
@@ -250,6 +253,7 @@ export const processors = [
   changesetsProcessor,
   changesetsTrackProcessor,
   changesetsInspectProcessor,
+  changesetsInspectionSelectionProcessor,
   changesetsHistoryProcessor,
   changesetsHistorySelectionProcessor,
   changesetsReturnToHistoryProcessor,

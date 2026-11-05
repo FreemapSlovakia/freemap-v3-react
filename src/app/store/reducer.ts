@@ -39,6 +39,7 @@ import {
   clearMapFeatures,
   closeTool,
   convertToDrawing,
+  hasPanel,
   hideInfoBar,
   infoBarShown,
   openTool,
@@ -185,9 +186,13 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
     })
-    // An element belongs to the changeset inspected; another one has others.
-    .addCase(changesetsInspect, (state) => {
-      if (state.selection?.type === 'changeset-element') {
+    // Starting one lets go of a selection with a panel, a history's element
+    // included (its breadcrumb keeps it), and of the previous one's element.
+    .addCase(changesetsInspect, (state, { payload }) => {
+      if (
+        state.selection?.type === 'changeset-element' ||
+        (payload !== null && hasPanel(state.selection?.type))
+      ) {
         state.selection = null;
       }
     })
