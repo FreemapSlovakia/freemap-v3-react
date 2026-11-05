@@ -121,7 +121,7 @@ export function ChangesetInspector({ root, view }: Props): ReactElement {
       ) : (
         <ChangesetLabel id={inspected.id} />
       ),
-      href: `#changeset=${inspected.id}`,
+      href: `#select=changeset/${inspected.id}`,
       leave: () => dispatch(changesetsInspect(null)),
     });
   }

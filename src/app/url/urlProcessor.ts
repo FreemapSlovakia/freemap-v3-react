@@ -17,7 +17,6 @@ import {
   presetByIdSelector,
 } from '@features/mapLibrary/model/selectors.js';
 import { urlMapIdSelector } from '@features/myMaps/model/selectors.js';
-import { selectedOsmNoteId } from '@features/osmNotes/model/selectors.js';
 import { isFullTurn } from '@features/panorama/model/settingsReducer.js';
 import {
   serializePanoramaSky,
@@ -48,6 +47,7 @@ import {
   type QueryPart,
   serializeQuery,
 } from './mapContentParts.js';
+import { encodeSelect, type SelectParam } from './selectParam.js';
 import { stashUrl } from './sessionStash.js';
 import { serializeZoom } from './urlMapUtils.js';
 import { isReplacingEntry, isUrlUpdatingEnabled } from './urlUpdating.js';
@@ -671,10 +671,6 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['changesets-author', changesets.authorName]);
   }
 
-  if (changesetInspector.inspected) {
-    queryParts.push(['changeset', changesetInspector.inspected.id]);
-  }
-
   // Which events are listed, not what the map holds — so it stays in the
   // address bar (and thus in a shared link) even under a saved map, and no map
   // document carries it.
@@ -710,14 +706,21 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['follow', main.selection?.id]);
   }
 
-  if (main.selection?.type === 'event') {
-    queryParts.push(['event', main.selection.id]);
-  }
+  const select: SelectParam | null = changesetInspector.inspected
+    ? {
+        type: 'changeset',
+        id: changesetInspector.inspected.id,
+        element:
+          main.selection?.type === 'changeset-element'
+            ? main.selection.id
+            : undefined,
+      }
+    : main.selection?.type === 'event' || main.selection?.type === 'osm-note'
+      ? main.selection
+      : null;
 
-  const noteId = selectedOsmNoteId(state);
-
-  if (noteId !== null) {
-    queryParts.push(['osm-note', String(noteId)]);
+  if (select) {
+    queryParts.push(['select', encodeSelect(select)]);
   }
 
   const sq = mapId ? serializeQuery(historyParts) : undefined;

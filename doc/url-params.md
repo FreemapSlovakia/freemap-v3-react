@@ -81,13 +81,13 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | Param | Controls | R/W | Format |
 |---|---|---|---|
 | `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
-| `osm-note` | The selected OSM note, its thread in a toast; fetched when the layer hasn't loaded it. Absent, a selected note is let go | r/w | integer id |
+| `select` | The selection with a panel of its own (`src/app/url/selectParam.ts`): `event/<id>` (turns the events layer on), `osm-note/<id>` (fetched when the layer hasn't loaded it), `changeset/<id>` (inspected, without opening the tool) and `changeset/<id>/<node\|way\|relation>/<id>` (with that element selected; one its diff lacks is dropped). Absent, such a selection is let go | r/w | `kind/id` |
+| `event`, `osm-note`, `changeset` | The forms before `select`, still read when it is absent; a note or an event wins over `changeset` | r | id |
 | `changesets-days` | Changesets time window | r/w | integer days |
 | `changesets-author` | Changesets author filter | r/w | username |
-| `changeset` | Changeset whose changes are on the map; opens the changesets tool | r/w | integer id |
 | `gallery-user-id`, `gallery-tag`, `gallery-rating-from`/`-to`, `gallery-taken-at-from`/`-to`, `gallery-created-at-from`/`-to`, `gallery-pano`, `gallery-premium` | Gallery filters | r/w | see source |
 | `track` | Live-tracking device + props | r/w | `token[/prop:value…]` |
-| `follow` | Followed live device | r/w | token or id |
+| `follow` | Followed live device; a tool's selection, apart from `select` and beside an inspection | r/w | token or id |
 
 A search / map-details result the user merely picked is *previewed*: it is on the map only for as long as it is the selected feature, and it is not written to the URL. The selection toolbar's **Keep on the map** toggle keeps it, and only then does it get an `osm-*` param. Elements read from these params come back kept, and the first of them is selected.
 

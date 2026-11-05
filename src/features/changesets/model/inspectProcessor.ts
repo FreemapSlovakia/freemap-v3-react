@@ -41,19 +41,6 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
 
     const parser = new DOMParser();
 
-    // Selected ahead of the diff, as from a history, an element it lacks would
-    // be an invisible level for Esc to clear.
-    const dropUnshownElement = () => {
-      const state = getState();
-
-      if (
-        state.main.selection?.type === 'changeset-element' &&
-        !selectedDiffElementSelector(state)
-      ) {
-        dispatch(selectFeature(null));
-      }
-    };
-
     // Beside the metadata. OSMCha computes the diff some minutes after the
     // changeset closes, and misses some; the OSM API stands in for those, and
     // for OSMCha down or failing.
@@ -135,14 +122,10 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
           ),
         );
 
-        dropUnshownElement();
-
         return;
       }
 
       dispatch(changesetsSetInspected({ changeset, ...result }));
-
-      dropUnshownElement();
 
       const { diff } = result;
 
@@ -192,6 +175,27 @@ export const changesetsInspectProcessor: Processor<typeof changesetsInspect> = {
       }
 
       await toastError(err, loadChangesetsMessages, 'inspectError');
+    }
+  },
+};
+
+/**
+ * A selected element the settled diff lacks goes — too big, failed or not in
+ * it — or it would be an invisible level for Esc to clear. Selected while the
+ * diff loads (from a history, a link), it waits for it.
+ */
+export const changesetsUnshownElementProcessor: Processor = {
+  stateChangePredicate: (state) =>
+    `${state.main.selection?.type === 'changeset-element' ? state.main.selection.id : ''}|${state.changesetInspector.inspected?.source ?? ''}`,
+  handle: ({ getState, dispatch }) => {
+    const state = getState();
+
+    if (
+      state.main.selection?.type === 'changeset-element' &&
+      state.changesetInspector.inspected?.source &&
+      !selectedDiffElementSelector(state)
+    ) {
+      dispatch(selectFeature(null));
     }
   },
 };

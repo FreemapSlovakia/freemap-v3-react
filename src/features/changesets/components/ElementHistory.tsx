@@ -77,8 +77,10 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
                       target: '_blank',
                       rel: 'noopener noreferrer',
                     }
-                  : inAppLink(`#changeset=${version.changeset}`, () =>
-                      inspect(version.changeset),
+                  : inAppLink(
+                      // As the click: the changeset, at this element.
+                      `#select=changeset/${version.changeset}/${id.elementType}/${id.id}`,
+                      () => inspect(version.changeset),
                     ))}
               >
                 {label}

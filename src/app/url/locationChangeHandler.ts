@@ -195,6 +195,7 @@ import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
+import { selectFromQuery } from './selectParam.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -562,12 +563,35 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(changesetsSetParams(changesetParams));
   }
 
-  const inspectedChangeset = Number(query['changeset']) || null;
+  // What has a panel of its own; see `selectParam.ts`.
+  const select = selectFromQuery(query);
+
+  const inspection = select?.type === 'changeset' ? select : null;
 
   if (
-    inspectedChangeset !== (getState().changesetInspector.inspected?.id ?? null)
+    (inspection?.id ?? null) !==
+    (getState().changesetInspector.inspected?.id ?? null)
   ) {
-    dispatch(changesetsInspect(inspectedChangeset));
+    dispatch(changesetsInspect(inspection?.id ?? null));
+  }
+
+  // The element the link names, before its diff is in or after; one the diff
+  // lacks is dropped by `changesetsUnshownElementProcessor`.
+  if (inspection) {
+    const { selection } = getState().main;
+
+    const current =
+      selection?.type === 'changeset-element' ? selection.id : undefined;
+
+    if (inspection.element !== current) {
+      dispatch(
+        selectFeature(
+          inspection.element
+            ? { type: 'changeset-element', id: inspection.element }
+            : null,
+        ),
+      );
+    }
   }
 
   const urlFeatures = parseFeatureParams(
@@ -978,11 +1002,11 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
-  const noteId = Number(query['osm-note']);
+  const noteId = select?.type === 'osm-note' ? select.id : null;
 
   const selectedNoteId = selectedOsmNoteId(getState());
 
-  if (Number.isInteger(noteId) && noteId > 0) {
+  if (noteId !== null) {
     if (selectedNoteId !== noteId) {
       dispatch(selectFeature({ type: 'osm-note', id: noteId }));
     }
@@ -991,11 +1015,11 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   // After `layers=`, which would otherwise turn the events layer off again.
-  const eventId = query['event'];
+  const eventId = select?.type === 'event' ? select.id : null;
 
   const selectedEvent = selectedEventId(getState());
 
-  if (typeof eventId === 'string' && /^[\w-]{1,16}$/.test(eventId)) {
+  if (eventId !== null) {
     if (selectedEvent !== eventId) {
       if (!eventsLayerOnSelector(getState())) {
         dispatch(mapToggleLayer({ type: EVENTS_LAYER, enable: true }));
