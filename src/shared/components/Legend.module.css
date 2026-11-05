@@ -6,13 +6,7 @@
   pointer-events: none;
 }
 
-/* The legend takes what its content needs: the bar's width, or a row of swatches. */
-.fit-width {
-  width: fit-content;
-}
-
-/* Deep enough for the labels drawn over the bar, and about a button tall. A
-   `width` rather than a `flex-basis`, as only it counts towards `fit-content`. */
+/* Deep enough for the labels drawn over the bar, and about a button tall. */
 .bar {
   height: 34px;
   width: 200px;

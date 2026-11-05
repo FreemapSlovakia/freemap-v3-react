@@ -5,6 +5,7 @@ import {
   LegendGradientBar,
   LegendShell,
   LegendSwatch,
+  LegendSwatches,
   LegendTick,
 } from '@shared/components/Legend.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -162,12 +163,15 @@ export function EventsLegend(): ReactElement | null {
       label={em?.colorize.modes[by]}
       unit={by === 'when' ? em?.colorize.days : UNITS[by]}
       onClose={() => dispatch(eventsToggleLegend(false))}
-      className="flex-wrap align-items-center gap-2"
     >
-      {swatches.map(({ color, label }, i) => (
-        // Not by label: all are empty until the messages load.
-        <LegendSwatch key={i} color={color} label={label} />
-      ))}
+      {swatches.length > 0 && (
+        <LegendSwatches>
+          {swatches.map(({ color, label }, i) => (
+            // Not by label: all are empty until the messages load.
+            <LegendSwatch key={i} color={color} label={label} />
+          ))}
+        </LegendSwatches>
+      )}
 
       {scale && (
         <LegendGradientBar

@@ -6,6 +6,7 @@ import {
   LegendGradientBar,
   LegendShell,
   LegendSwatch,
+  LegendSwatches,
   LegendTick,
 } from '@shared/components/Legend.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -182,15 +183,17 @@ export function PictureLegend() {
 
   if (swatches) {
     return (
-      <LegendShell
-        icon={ICON}
-        label={gm?.legend}
-        onClose={onClose}
-        className="flex-wrap align-items-center gap-2"
-      >
-        {swatches.map(({ color, label, title }) => (
-          <LegendSwatch key={color} color={color} label={label} title={title} />
-        ))}
+      <LegendShell icon={ICON} label={gm?.legend} onClose={onClose}>
+        <LegendSwatches>
+          {swatches.map(({ color, label, title }) => (
+            <LegendSwatch
+              key={color}
+              color={color}
+              label={label}
+              title={title}
+            />
+          ))}
+        </LegendSwatches>
       </LegendShell>
     );
   }

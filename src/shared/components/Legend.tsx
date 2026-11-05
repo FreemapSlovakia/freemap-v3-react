@@ -4,6 +4,7 @@ import {
   type TooltipTargetProps,
 } from '@shared/components/LongPressTooltip.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
+import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { clamp } from '@shared/mathUtils.js';
 import clsx from 'clsx';
 import {
@@ -30,8 +31,6 @@ type ShellProps = {
    */
   control?: ReactNode;
   onClose: () => void;
-  /** Extra toolbar classes, for a legend laying its body out in the toolbar. */
-  className?: string;
   children: ReactNode;
 };
 
@@ -42,14 +41,17 @@ export function LegendShell({
   unit,
   control,
   onClose,
-  className,
   children,
 }: ShellProps) {
   const m = useMessages();
 
+  const sc = useScrollClasses('horizontal');
+
   return (
-    <div className={clsx('mw-100', classes.fitWidth)}>
-      <Toolbar className={clsx('mt-2 d-flex', className)}>
+    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
+      <div />
+
+      <Toolbar className="mt-2">
         {control}
 
         <LongPressTooltip label={label} breakpoint="sm">
@@ -80,6 +82,11 @@ export function LegendShell({
       </Toolbar>
     </div>
   );
+}
+
+/** A row of swatches, spaced wider than the toolbar's own gap. */
+export function LegendSwatches({ children }: { children: ReactNode }) {
+  return <div className="d-flex align-items-center gap-3">{children}</div>;
 }
 
 type SwatchProps = {
