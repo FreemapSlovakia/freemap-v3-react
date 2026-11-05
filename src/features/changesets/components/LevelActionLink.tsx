@@ -3,13 +3,10 @@ import { Button, ButtonToolbar } from 'react-bootstrap';
 
 type Props = { href: string; children: ReactNode };
 
-/**
- * An outward link styled as the toast's own action row, for one only this
- * breadcrumb level has — the toast's actions stay the same across levels.
- */
+/** An outward link as an action row, for one only this breadcrumb level has. */
 export function LevelActionLink({ href, children }: Props): ReactElement {
   return (
-    <ButtonToolbar className="mt-2 gap-2">
+    <ButtonToolbar className="mt-3 gap-2">
       <Button size="sm" href={href} target="_blank" rel="noopener noreferrer">
         {children}
       </Button>

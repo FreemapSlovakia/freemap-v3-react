@@ -18,7 +18,7 @@ import {
   isIndirect,
   isTagged,
 } from '../model/changesetDiff.js';
-import { changesetElementSelect } from '../model/inspectorToast.js';
+import { changesetElementSelect } from '../model/inspection.js';
 import { selectedDiffElementSelector } from '../model/selectors.js';
 
 const OLD_COLOR = '#707070';

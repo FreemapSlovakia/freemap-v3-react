@@ -1,11 +1,9 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
-  inspector: () => <ChangesetInspector />,
   history: {
     title: 'Historia',
     error: ({ err }) =>

@@ -9,9 +9,13 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import clsx from 'clsx';
 import { Fragment, type ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import { type Changeset, changesetsSetParams } from '../model/actions.js';
+import {
+  type Changeset,
+  changesetsInspect,
+  changesetsSetParams,
+} from '../model/actions.js';
 import { DIFF_ACTIONS, DIFF_COLORS } from '../model/changesetDiff.js';
-import { changesetElementSelect } from '../model/inspectorToast.js';
+import { changesetElementSelect } from '../model/inspection.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import classes from './ChangesetDetails.module.css';
 import { LevelActionLink } from './LevelActionLink.js';
@@ -64,6 +68,10 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
               of the filter alone can't reproduce. */}
           <LinkButton
             onClick={() => {
+              // Out of the changeset, to the list the inspection hides; a
+              // history it was reached from stays, as its × leaves it.
+              dispatch(changesetsInspect(null));
+
               // Set first, so opening the tool, whose the list is and which an
               // inspection doesn't need, makes the one query for the author.
               dispatch(changesetsSetParams({ authorName: changeset.userName }));

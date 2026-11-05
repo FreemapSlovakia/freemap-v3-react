@@ -1,11 +1,11 @@
 import { selectFeature } from '@app/store/actions.js';
 import { Text } from '@features/l10n/Text.js';
+import { HorizontalScroller } from '@shared/components/HorizontalScroller.js';
 import { LinkButton } from '@shared/components/LinkButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { inAppLink } from '@shared/inAppLink.js';
-import clsx from 'clsx';
 import type { ReactElement, ReactNode } from 'react';
-import { AlertLink, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import { FaHistory } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsInspect, changesetsShowHistory } from '../model/actions.js';
@@ -13,7 +13,6 @@ import { selectedDiffElementSelector } from '../model/selectors.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import { ChangesetDetails } from './ChangesetDetails.js';
 import { ChangesetElementDetails } from './ChangesetElementDetails.js';
-import classes from './ChangesetInspector.module.css';
 import { ChangesetLabel } from './ChangesetLabel.js';
 import { ElementHistory } from './ElementHistory.js';
 import { useElementName } from './useElementName.js';
@@ -112,29 +111,34 @@ export function ChangesetInspector({ root }: Props): ReactElement {
 
   return (
     <>
-      <ol className={clsx('breadcrumb mb-2', classes.crumbs)}>
-        {crumbs.map((crumb, i) =>
-          i === crumbs.length - 1 ? (
-            <li key={crumb.key} className="breadcrumb-item active fw-bold">
-              <span>{crumb.label}</span>
-            </li>
-          ) : (
-            <li key={crumb.key} className="breadcrumb-item">
-              {crumb.href ? (
-                <AlertLink
-                  {...inAppLink(crumb.href, () => crumbs[i + 1].leave?.())}
-                >
-                  {crumb.label}
-                </AlertLink>
-              ) : (
-                <LinkButton onClick={() => crumbs[i + 1].leave?.()}>
-                  {crumb.label}
-                </LinkButton>
-              )}
-            </li>
-          ),
-        )}
-      </ol>
+      {/* One line, scrolled to the current level: wrapped, it reads as two. */}
+      <HorizontalScroller toEnd className="mb-2">
+        {/* Only as wide as its crumbs, so its end padding follows the last. */}
+        <ol className="breadcrumb d-inline-flex flex-nowrap text-nowrap align-top m-0 px-3 py-1">
+          {crumbs.map((crumb, i) =>
+            i === crumbs.length - 1 ? (
+              <li
+                key={crumb.key}
+                className="breadcrumb-item active fw-bold flex-shrink-0"
+              >
+                <span>{crumb.label}</span>
+              </li>
+            ) : (
+              <li key={crumb.key} className="breadcrumb-item flex-shrink-0">
+                {crumb.href ? (
+                  <a {...inAppLink(crumb.href, () => crumbs[i + 1].leave?.())}>
+                    {crumb.label}
+                  </a>
+                ) : (
+                  <LinkButton onClick={() => crumbs[i + 1].leave?.()}>
+                    {crumb.label}
+                  </LinkButton>
+                )}
+              </li>
+            ),
+          )}
+        </ol>
+      </HorizontalScroller>
 
       {element ? (
         <ChangesetElementDetails element={element} />

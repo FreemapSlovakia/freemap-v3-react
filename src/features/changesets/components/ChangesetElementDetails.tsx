@@ -3,7 +3,7 @@ import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { inAppLink } from '@shared/inAppLink.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { CSSProperties, ReactElement } from 'react';
-import { AlertLink, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import {
   DIFF_COLORS,
@@ -11,7 +11,7 @@ import {
   hasMoved,
   isIndirect,
 } from '../model/changesetDiff.js';
-import { changesetElementOpen } from '../model/inspectorToast.js';
+import { changesetElementOpen } from '../model/inspection.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import { ElementTypeIcon } from './ElementTypeIcon.js';
 import { LevelActionLink } from './LevelActionLink.js';
@@ -77,7 +77,7 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
           // No more, so nothing to open.
           element.id
         ) : (
-          <AlertLink
+          <a
             {...inAppLink(`#osm-${element.type}=${element.id}`, () => {
               for (const action of changesetElementOpen(element)) {
                 dispatch(action);
@@ -87,7 +87,7 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
             })}
           >
             {element.id}
-          </AlertLink>
+          </a>
         )}{' '}
         ·{' '}
         <span style={{ color: DIFF_COLORS[element.action] }}>

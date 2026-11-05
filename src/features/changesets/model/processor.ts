@@ -41,8 +41,7 @@ export const changesetsTrackProcessor: Processor = {
   },
 };
 
-// Its own toast id, apart from the inspector's `changeset.inspector`; this
-// refetches whenever any tool opens.
+// Its own toast id; this refetches whenever any tool opens.
 export const changesetsProcessor: Processor = {
   id: 'changesets.list',
   actionCreator: [changesetsSetParams, changesetsRefresh, openTool],

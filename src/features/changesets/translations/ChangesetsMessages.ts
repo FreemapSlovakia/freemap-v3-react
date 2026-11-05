@@ -1,8 +1,6 @@
-import type { JSX } from 'react';
 import type { DiffAction } from '../model/changesetDiff.js';
 
 export type ChangesetsMessages = {
-  inspector: () => JSX.Element;
   history: {
     title: string;
     error: (props: { err: unknown }) => string;

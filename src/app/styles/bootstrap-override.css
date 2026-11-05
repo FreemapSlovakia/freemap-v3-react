@@ -80,6 +80,12 @@
   margin-left: 0;
 }
 
+/* Inline, not floated: a float is left out of the row's intrinsic width, so a
+   scrolled one-line breadcrumb ends a separator short of its end padding. */
+.breadcrumb-item + .breadcrumb-item::before {
+  float: none;
+}
+
 .accordion > .card > .card-header {
   cursor: pointer;
 }

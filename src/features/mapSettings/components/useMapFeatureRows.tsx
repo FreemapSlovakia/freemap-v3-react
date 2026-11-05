@@ -1,7 +1,7 @@
 import { closeTool, type Tool } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { ChangesetLabel } from '@features/changesets/components/ChangesetLabel.js';
-import { changesetsEndInspection } from '@features/changesets/model/inspectorToast.js';
+import { changesetsEndInspection } from '@features/changesets/model/inspection.js';
 import { loneInspectionSelector } from '@features/changesets/model/selectors.js';
 import { DataViewerToggleButton } from '@features/dataViewer/components/DataViewerToggleButton.js';
 import { dataViewerDelete } from '@features/dataViewer/model/actions.js';

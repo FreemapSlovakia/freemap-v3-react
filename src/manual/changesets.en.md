@@ -30,15 +30,15 @@ Each changeset is a marker with the mapper's name and the changeset's descriptio
 
 ## Inspecting a changeset
 
-Click a marker, or a changeset in the **Map layers** panel. The map zooms to the changeset and a box shows its **Author:**, **Description:**, **Time:** and other tags, such as the editor used. Clicking the author's name shows only that mapper's changesets.
+Click a marker, or a changeset in the **Map layers** panel. The map zooms to the changeset and its panel opens on the right, or over the lower half of a phone's screen, with its **Author:**, **Description:**, **Time:** and other tags, such as the editor used. Clicking the author's name shows only that mapper's changesets.
 
-The changed elements are drawn on the map: green for **created**, orange for **modified** and red, dashed, for **deleted**; where something moved, its previous shape is dashed grey. The box gives the counts of each and lists the changed relations, which are not drawn. The **Map layers** panel lists the changed elements; picking one zooms to it. If the changes are hard to see, lower :MdBrightness6: **Map brightness** in the :FaCog: menu.
+The changed elements are drawn on the map: green for **created**, orange for **modified** and red, dashed, for **deleted**; where something moved, its previous shape is dashed grey. The panel gives the counts of each and lists the changed relations, which are not drawn. The **Map layers** panel lists the changed elements; picking one zooms to it. If the changes are hard to see, lower :MdBrightness6: **Map brightness** in the :FaCog: menu.
 
-Click an element on the map, or in the list, to see what happened to it: a table of its tags **Before** and **After**, with the changes highlighted, whether its geometry changed, and a link **History on osm.org**. The path at the top of the box leads back to the changeset.
+Click an element on the map, or in the list, to see what happened to it: a table of its tags **Before** and **After**, with the changes highlighted, whether its geometry changed, and a link **History on osm.org**. The path at the top of the panel leads back to the changeset.
 
 **Open on osm.org** shows the changeset on the OpenStreetMap website.
 
-:FaArrowLeft: **Back** in the toolbar or the × of the box ends the inspection. <kbd>Esc</kbd> takes you back one level at a time: from the element to the changeset, then out of the inspection.
+While you inspect, the panel replaces the Map changes toolbar; its × ends the inspection and brings the toolbar back. <kbd>Esc</kbd> takes you back one level at a time: from the element to the changeset, then out of the inspection.
 
 The inspected changeset is part of the page address, so you can share it as a link.
 

@@ -25,7 +25,7 @@ import {
   OsmFeatureIdSchema,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import type { ReactElement } from 'react';
+import { Fragment, type ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaHistory } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -164,12 +164,21 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
           is atomic, so it would drop whole to the next line the moment it no
           longer fitted beside the icon. */}
       <p className="lead d-flex flex-wrap gap-2 align-items-baseline">
-        {imgs.map((img) => (
-          <IconGlyph key={img} poi={img} />
-        ))}
-
-        {/* Named first, kind of thing second — as the search list reads. */}
-        {displayName && <span className="fw-semibold">{displayName}</span>}
+        {/* Named first, kind of thing second — as the search list reads. The
+            icon leads the name's text, so a long name wraps after it rather
+            than leaving it alone on a line. */}
+        {displayName ? (
+          <span className="fw-semibold">
+            {imgs.map((img) => (
+              <Fragment key={img}>
+                <IconGlyph poi={img} />{' '}
+              </Fragment>
+            ))}
+            {displayName}
+          </span>
+        ) : (
+          imgs.map((img) => <IconGlyph key={img} poi={img} />)
+        )}
 
         <GenericNameToggles
           // Whether its other categories are expanded is per object.

@@ -207,10 +207,10 @@ const osmNoteSelectionFactory = () =>
     '@features/osmNotes/components/OsmNoteSelection.js'
   );
 
-const changesetElementSelectionFactory = () =>
+const changesetInspectorPanelFactory = () =>
   import(
-    /* webpackChunkName: "changeset-element-selection" */
-    '@features/changesets/components/ChangesetElementSelection.js'
+    /* webpackChunkName: "changeset-inspector-panel" */
+    '@features/changesets/components/ChangesetInspectorPanel.js'
   );
 
 const galleryPositionPickingMenuFactory = () =>
@@ -602,7 +602,8 @@ const routePlannerStyleModalFactory = () =>
 
 /**
  * The toolbar of the selected feature, whatever kind it is; a search result,
- * an object, an OSM note and an event have a panel instead.
+ * an object, an OSM note, an event and an inspected changeset's element have a
+ * panel instead.
  */
 function selectionMenu(type: Selection['type']): ReactNode {
   switch (type) {
@@ -611,9 +612,6 @@ function selectionMenu(type: Selection['type']): ReactNode {
 
     case 'vertex':
       return <AsyncComponent factory={dataViewerVertexSelectionFactory} />;
-
-    case 'changeset-element':
-      return <AsyncComponent factory={changesetElementSelectionFactory} />;
 
     case 'tracking':
       return <TrackingSelection />;
@@ -682,20 +680,28 @@ export function Main(): ReactElement {
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  // A selection's panel is mounted from its first pick on: a result being
-  // looked at, an object whose type is switched off or a note whose layer goes
-  // takes its selection along, and the panel must outlive it to slide out.
-  const [picked, setPicked] = useState<ReadonlySet<Selection['type']>>(
-    () => new Set(),
+  const inspecting = useAppSelector(
+    (state) => state.changesetInspector.inspected !== null,
   );
 
-  if (
-    (selectionType === 'search' ||
-      selectionType === 'objects' ||
-      selectionType === 'osm-note') &&
-    !picked.has(selectionType)
-  ) {
-    setPicked(picked.union(new Set([selectionType])));
+  // A panel is mounted from its first use on: a result being looked at, an
+  // object whose type is switched off or a note whose layer goes takes its
+  // selection along, and the panel must outlive it to slide out.
+  const [picked, setPicked] = useState<
+    ReadonlySet<Selection['type'] | 'inspection'>
+  >(() => new Set());
+
+  const using = new Set([
+    ...(selectionType === 'search' ||
+    selectionType === 'objects' ||
+    selectionType === 'osm-note'
+      ? [selectionType]
+      : []),
+    ...(inspecting ? (['inspection'] as const) : []),
+  ]);
+
+  if (!using.isSubsetOf(picked)) {
+    setPicked(picked.union(using));
   }
 
   const dataViewerElevationPrompt = useAppSelector(
@@ -1033,7 +1039,8 @@ export function Main(): ReactElement {
 
         return {
           id: tool,
-          open: node !== null,
+          // An inspection's panel is its way back, and the list's is behind it.
+          open: node !== null && !(tool === 'changesets' && inspecting),
           hidden: inMode,
           node,
         };
@@ -1101,6 +1108,10 @@ export function Main(): ReactElement {
 
           {picked.has('osm-note') && (
             <AsyncComponent factory={osmNoteSelectionFactory} />
+          )}
+
+          {picked.has('inspection') && (
+            <AsyncComponent factory={changesetInspectorPanelFactory} />
           )}
 
           <div className={classes.header}>

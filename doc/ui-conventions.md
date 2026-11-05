@@ -481,8 +481,8 @@ blur, which there is pure cost (see `FloatingWindow`'s fullscreen rule).
 `DockPanel` (`src/shared/components/DockPanel.tsx`) is where a selected thing's
 details go when they outgrow a toast: a react-bootstrap `Offcanvas` without a
 backdrop or focus trap, docked on the right, or over the lower half of the screen
-below `md`. Events, objects (POIs), search results and OSM notes have one; the
-other selections are meant to follow (see `TODO.md`).
+below `md`. Events, objects (POIs), search results, OSM notes and a changeset
+inspection have one; others are meant to follow (see `TODO.md`).
 
 - **The map runs under it; the controls make room.** While it is in, `body` has
   `fm-docked-end` or `fm-docked-bottom` and `--fm-dock-size`, which inset the
@@ -494,7 +494,10 @@ other selections are meant to follow (see `TODO.md`).
 - **It holds everything the selection offers.** Title, actions and details are in
   the panel, with no selection toolbar beside it. Escape stays the app's: it
   deselects, and the panel slides out with the content it had.
-- **One at a time**, hidden during a picking mode.
+- **One at a time**, hidden during a picking mode. Selection panels exclude each
+  other, the selection being one; a changeset inspection runs beside a selection,
+  so its panel `yields`: it is out while any other panel wants in, and slides back
+  when that one goes.
 
 ## Toolbar outlines
 

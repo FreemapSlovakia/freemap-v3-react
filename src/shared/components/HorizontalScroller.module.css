@@ -1,0 +1,14 @@
+.scroller {
+  /* The toolbar styles fix the fades to the viewport; here they anchor to the
+     wrapper. Class doubled: a one-class tie goes by chunk order. */
+  &.scroller::before,
+  &.scroller > div:first-child::before {
+    position: absolute;
+    top: 0;
+    height: 100%;
+  }
+
+  &.scroller::before {
+    left: 0;
+  }
+}

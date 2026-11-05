@@ -6,10 +6,10 @@ import { inAppLink } from '@shared/inAppLink.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
-import { AlertLink, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { changesetsInspect, type HistoryVersion } from '../model/actions.js';
-import { changesetElementSelect } from '../model/inspectorToast.js';
+import { changesetElementSelect } from '../model/inspection.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 
 const PAGE_ROWS = 100;
@@ -39,7 +39,7 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
     dispatch(changesetsInspect(changeset, { fromHistory: true }));
 
     // Its element selected, as a click on the map does, so the inspector's
-    // toast takes the drill over from its details.
+    // panel takes the drill over from its details'.
     dispatch(changesetElementSelect({ type: id.elementType, id: id.id }));
 
     trackMatomo(['trackEvent', 'Changesets', 'inspect', 'history']);
@@ -70,7 +70,7 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
               <br />
 
               {/* An embed inspects nothing, so goes to osm.org. */}
-              <AlertLink
+              <a
                 {...(window.fmEmbedded
                   ? {
                       href: getOsmChangesetUrl(version.changeset),
@@ -82,7 +82,7 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
                     ))}
               >
                 {label}
-              </AlertLink>
+              </a>
             </li>
           );
         })}

@@ -3,7 +3,7 @@ import {
   changesetsInspect,
   changesetsShowHistory,
 } from '@features/changesets/model/actions.js';
-import { historyHosted } from '@features/changesets/model/inspectorToast.js';
+import { historyHosted } from '@features/changesets/model/inspection.js';
 import {
   dataViewerCutHole,
   dataViewerDrawStop,

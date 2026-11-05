@@ -50,11 +50,8 @@
   height: auto !important;
 }
 
-/* A scrolled row of controls along the bottom of a panel; the scrollbar is
-   given as little of it as the platform will take. */
+/* A scrolled row of controls along the bottom of a panel. */
 .controls-scroller {
-  scrollbar-width: thin;
-
   /* The fade at the scrolled end is `position: fixed; right: 0` in the shared
      toolbar styles — the viewport's right edge, which is where the top toolbars
      end but a floating panel does not. `absolute` re-anchors it to the wrapper

@@ -10,23 +10,12 @@ import {
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useState } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
-import {
-  FaArrowLeft,
-  FaDownload,
-  FaEraser,
-  FaHistory,
-  FaPencilAlt,
-} from 'react-icons/fa';
+import { FaDownload, FaEraser, FaHistory, FaPencilAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  changesetsInspect,
-  changesetsRefresh,
-  changesetsSetParams,
-} from '../model/actions.js';
+import { changesetsRefresh, changesetsSetParams } from '../model/actions.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 
 export default function ChangesetsMenu(): ReactElement {
@@ -57,34 +46,11 @@ export default function ChangesetsMenu(): ReactElement {
     (state) => state.changesets.changesets.length > 0,
   );
 
-  const inspected = useAppSelector(
-    (state) => state.changesetInspector.inspected,
-  );
-
   const dispatch = useDispatch();
 
   const manualAction = useManualAction();
 
-  const backKbd = useEscapeKbd(changesetsInspect(null));
-
-  if (inspected) {
-    return (
-      <ToolMenu tool="changesets">
-        <LongPressTooltip label={m?.general.back} kbd={backKbd}>
-          {({ label, props }) => (
-            <Button
-              variant="secondary"
-              onClick={() => dispatch(changesetsInspect(null))}
-              {...props}
-            >
-              <FaArrowLeft /> {label}
-            </Button>
-          )}
-        </LongPressTooltip>
-      </ToolMenu>
-    );
-  }
-
+  // Hidden while inspecting (see `Main`): the inspection's panel leads back.
   return (
     <ToolMenu tool="changesets">
       <SelectDropdown

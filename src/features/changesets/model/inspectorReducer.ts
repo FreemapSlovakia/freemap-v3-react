@@ -32,7 +32,7 @@ export interface ChangesetInspectorState {
   } | null;
   /**
    * The element whose versions lead into inspections: listed in its details
-   * panel, drilled into in the inspector's toast, with its element selected.
+   * panel, drilled into in the inspector's, with its element selected.
    */
   history:
     | (HistoryOf & {

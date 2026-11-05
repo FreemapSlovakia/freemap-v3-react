@@ -24,7 +24,6 @@ import {
   changesetsHistorySelectionProcessor,
   changesetsReturnToHistoryProcessor,
 } from '@features/changesets/model/historyProcessor.js';
-import { changesetInspectorProcessor } from '@features/changesets/model/inspectorToast.js';
 import { changesetsInspectProcessor } from '@features/changesets/model/inspectProcessor.js';
 import {
   changesetsProcessor,
@@ -251,7 +250,6 @@ export const processors = [
   changesetsProcessor,
   changesetsTrackProcessor,
   changesetsInspectProcessor,
-  changesetInspectorProcessor,
   changesetsHistoryProcessor,
   changesetsHistorySelectionProcessor,
   changesetsReturnToHistoryProcessor,

@@ -30,15 +30,15 @@ Každá sada zmien je na mape značka s menom mapéra a popisom sady. Ukázaním
 
 ## Preskúmanie sady zmien
 
-Kliknite na značku alebo na sadu zmien v paneli **Vrstvy mapy**. Mapa sa priblíži na sadu zmien a v okne sa zobrazí **Autor:**, **Popis:**, **Čas:** a ďalšie tagy sady, napríklad použitý editor. Kliknutím na meno autora sa zobrazia len sady zmien tohto autora.
+Kliknite na značku alebo na sadu zmien v paneli **Vrstvy mapy**. Mapa sa priblíži na sadu zmien a otvorí sa jej panel – vpravo, na telefóne cez dolnú polovicu obrazovky – s údajmi **Autor:**, **Popis:**, **Čas:** a ďalšie tagy sady, napríklad použitý editor. Kliknutím na meno autora sa zobrazia len sady zmien tohto autora.
 
-Zmenené prvky sa vykreslia na mape: zelenou **vytvorené**, oranžovou **upravené** a červenou prerušovanou čiarou **zmazané**; pri presunutom prvku je pôvodný tvar prvku sivý a prerušovaný. Okno uvádza počty prvkov v každej skupine a vypisuje zmenené relácie, ktoré sa na mape nekreslia. Panel **Vrstvy mapy** vypisuje zmenené prvky; výberom prvku sa mapa na tento prvok priblíži. Ak sú zmeny zle vidieť, znížte :MdBrightness6: **Jas mapy** v ponuke :FaCog:.
+Zmenené prvky sa vykreslia na mape: zelenou **vytvorené**, oranžovou **upravené** a červenou prerušovanou čiarou **zmazané**; pri presunutom prvku je pôvodný tvar prvku sivý a prerušovaný. Panel uvádza počty prvkov v každej skupine a vypisuje zmenené relácie, ktoré sa na mape nekreslia. Panel **Vrstvy mapy** vypisuje zmenené prvky; výberom prvku sa mapa na tento prvok priblíži. Ak sú zmeny zle vidieť, znížte :MdBrightness6: **Jas mapy** v ponuke :FaCog:.
 
-Kliknutím na prvok na mape alebo v zozname uvidíte, čo sa s prvkom stalo: tabuľku tagov **Predtým** a **Potom** so zvýraznenými zmenami, či sa zmenila geometria, a odkaz **História na osm.org**. Cesta navrchu okna vedie späť na sadu zmien.
+Kliknutím na prvok na mape alebo v zozname uvidíte, čo sa s prvkom stalo: tabuľku tagov **Predtým** a **Potom** so zvýraznenými zmenami, či sa zmenila geometria, a odkaz **História na osm.org**. Cesta navrchu panela vedie späť na sadu zmien.
 
 **Otvoriť na osm.org** zobrazí sadu zmien na webe OpenStreetMap.
 
-:FaArrowLeft: **Späť** na lište alebo × v okne preskúmanie ukončí. Klávesom <kbd>Esc</kbd> sa vrátite vždy o úroveň späť: z prvku na sadu zmien a potom von z preskúmania.
+Počas preskúmania nahradí panel lištu nástroja Zmeny v mape; jeho × preskúmanie ukončí a lišta sa vráti. Klávesom <kbd>Esc</kbd> sa vrátite vždy o úroveň späť: z prvku na sadu zmien a potom von z preskúmania.
 
 Preskúmaná sada zmien je súčasťou adresy stránky, takže ju môžete zdieľať ako odkaz.
 

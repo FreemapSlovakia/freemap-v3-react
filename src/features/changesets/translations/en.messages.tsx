@@ -1,10 +1,8 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ChangesetInspector } from '../components/ChangesetInspector.js';
 import type { ChangesetsMessages } from './ChangesetsMessages.js';
 
 const en: ChangesetsMessages = {
-  inspector: () => <ChangesetInspector />,
   history: {
     title: 'History',
     error: ({ err }) =>

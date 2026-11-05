@@ -48,11 +48,9 @@ Still emitting at info level (non-blocking, optional cleanup):
 ## Cleanups
 
 - [ ] **Move selection details from toasts to `DockPanel`.** Events, objects
-      (POIs), search results and OSM notes are done (see
-      [`doc/ui-conventions.md`](./doc/ui-conventions.md), _The docked panel_).
-      Next: the changeset inspector (its drill-down toast, the
-      `changeset-element` toolbar; its × ends the inspection), then the
-      Wikipedia preview, now a `show=` modal.
+      (POIs), search results, OSM notes and the changeset inspector are done
+      (see [`doc/ui-conventions.md`](./doc/ui-conventions.md), _The docked
+      panel_). Next: the Wikipedia preview, now a `show=` modal.
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see
