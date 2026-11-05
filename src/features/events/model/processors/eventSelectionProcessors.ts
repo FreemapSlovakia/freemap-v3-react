@@ -1,15 +1,11 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import type { RootState } from '@app/store/store.js';
 import {
   mapsLoad,
   mapsLoaded,
   mapsLoadFailed,
 } from '@features/myMaps/model/actions.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
-import type { Dispatch } from 'redux';
-import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import {
   type EventItem,
   EventSchema,
@@ -22,7 +18,7 @@ import {
   selectedEventId,
 } from '../selectors.js';
 
-/** Puts the selected event in the store and its details in a toast, which goes with the selection. */
+/** Puts the selected event in the store, for its panel. */
 export const eventSelectionProcessor: Processor = {
   stateChangePredicate: selectedEventId,
   errorKey: 'general.loadError',
@@ -64,45 +60,9 @@ export const eventSelectionProcessor: Processor = {
       }
     }
 
-    showSelectedEvent(dispatch, event);
+    dispatch(eventsSetSelected(event));
   },
 };
-
-export const EVENT_TOAST_ID = 'event';
-
-/**
- * The event's details, going with its selection. Closing it keeps the
- * selection: on a phone it covers the map, and the toolbar must stay usable.
- */
-export const eventDetailsToast = (event: EventItem) =>
-  toastsAdd({
-    id: EVENT_TOAST_ID,
-    style: 'info',
-    messageKey: 'details',
-    messageLoader: loadEventsMessages,
-    messageParams: { event },
-    statePredicate: (state) => selectedEventId(state) !== event.id,
-  });
-
-/** Puts the event in the store and its details in a toast. */
-export function showSelectedEvent(dispatch: Dispatch, event: EventItem): void {
-  dispatch(eventsSetSelected(event));
-
-  dispatch(eventDetailsToast(event));
-}
-
-/** A newer copy of the selected event; a closed toast stays closed. */
-export function refreshSelectedEvent(
-  dispatch: Dispatch,
-  getState: () => RootState,
-  event: EventItem,
-): void {
-  dispatch(eventsSetSelected(event));
-
-  if (getState().toasts.toasts[EVENT_TOAST_ID]) {
-    dispatch(eventDetailsToast(event));
-  }
-}
 
 /** Turning the layer off lets go of its event. */
 export const eventsLayerOffProcessor: Processor = {

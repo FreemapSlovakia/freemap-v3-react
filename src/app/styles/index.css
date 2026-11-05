@@ -372,18 +372,6 @@ button#freemap-logo {
   cursor: pointer;
 }
 
-/* The ad hangs over the map rather than deepening the toolbar row, which would
-   push what wraps below it (the Map layers panel) down. */
-.fm-ad-overhang {
-  height: 0;
-  overflow: visible;
-}
-
-/* Or the column would shrink them to its zero height. */
-.fm-ad-overhang > * {
-  flex-shrink: 0;
-}
-
 /* A map switch button shown only because its layer is on: it goes when the
    layer does. */
 .fm-only-while-on {
@@ -532,4 +520,14 @@ a[target]:not(
 /* Positioned, so the z-index `MaplibreLayer` sets applies. */
 .leaflet-gl-layer.maplibregl-map {
   position: relative;
+}
+
+/* A panel over the map: an Offcanvas without a backdrop. */
+.fm-dock {
+  --bs-offcanvas-width: 26rem;
+  --bs-offcanvas-height: 50dvh;
+  --bs-offcanvas-box-shadow: var(--fm-shadow-2);
+  /* Over the header and the bottom controls (1010), under a panel the header
+     puts in full screen (1012, see `Main.module.css`). */
+  --bs-offcanvas-zindex: 1011;
 }

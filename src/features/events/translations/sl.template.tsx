@@ -1,12 +1,10 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { EventDetails } from '../components/EventDetails.js';
 import type { EventsMessages } from './EventsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
   noEvents: 'Ni najdenih dogodkov',
-  details: ({ event }) => <EventDetails event={event} />,
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri nalaganju dogodkov', err),
   saveError: ({ err }) =>
@@ -109,7 +107,6 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
   },
   selection: {
     backToEvents: 'Nazaj na dogodke',
-    details: 'Podrobnosti',
     interested: 'Zanima me',
     going: 'Pridem',
     openInNewTab: 'Odpri v novem zavihku',

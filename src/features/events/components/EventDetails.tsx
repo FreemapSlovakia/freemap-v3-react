@@ -1,31 +1,19 @@
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
-import { linkTarget, Markdown } from '@shared/components/Markdown.js';
+import { Markdown } from '@shared/components/Markdown.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
-import type { ReactElement, ReactNode } from 'react';
-import { AlertLink, Badge } from 'react-bootstrap';
+import type { ReactElement } from 'react';
+import { Badge } from 'react-bootstrap';
 import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
 import { coverUrl, type EventItem } from '../model/actions.js';
 import { iconOfKind } from '../model/transports.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
 
-const alertLink = ({
-  href,
-  children,
-}: {
-  href: string;
-  children: ReactNode;
-}) => (
-  <AlertLink href={href} {...linkTarget(href)}>
-    {children}
-  </AlertLink>
-);
-
-/** An event's details, as its toast shows them. */
+/** An event's details, as its panel shows them under the title. */
 export function EventDetails({ event }: { event: EventItem }): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -85,7 +73,6 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
           target="_blank"
           rel="noopener noreferrer"
           className="mb-1"
-          data-toast-cover
         >
           <img
             src={coverUrl(event.cover, 'thumb')}
@@ -99,12 +86,11 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
         </a>
       )}
 
-      <div className="fw-bold">
-        {event.title}{' '}
-        {event.visibility === 'unlisted' && (
+      {event.visibility === 'unlisted' && (
+        <div>
           <Badge bg="secondary">{em?.card.unlisted}</Badge>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="d-flex align-items-center gap-1">
         <FaRegCalendarAlt className="flex-shrink-0" />
@@ -113,7 +99,7 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
       </div>
 
       <div className="d-flex align-items-center">
-        <UserChip user={event.user} inAlert />
+        <UserChip user={event.user} />
       </div>
 
       {(icons.length > 0 || stats.length > 0) && (
@@ -143,7 +129,7 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
 
       {event.description && (
         <div className="mt-1" style={{ overflowWrap: 'anywhere' }}>
-          <Markdown text={event.description} link={alertLink} />
+          <Markdown text={event.description} />
         </div>
       )}
     </div>

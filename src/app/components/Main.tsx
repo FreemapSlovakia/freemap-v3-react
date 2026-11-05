@@ -615,9 +615,6 @@ function selectionMenu(type: Selection['type']): ReactNode {
     case 'osm-note':
       return <AsyncComponent factory={osmNoteSelectionFactory} />;
 
-    case 'event':
-      return <AsyncComponent factory={eventSelectionFactory} />;
-
     case 'tracking':
       return <TrackingSelection />;
 
@@ -812,6 +809,9 @@ export function Main(): ReactElement {
   const pickingEventStart = useAppSelector(
     (state) => state.events.pickingStart,
   );
+
+  // Mounted with the layer, not the selection, so the panel can slide out.
+  const eventsLayerOn = useAppSelector(eventsLayerOnSelector);
 
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -1073,6 +1073,8 @@ export function Main(): ReactElement {
 
           <Toasts />
 
+          {eventsLayerOn && <AsyncComponent factory={eventSelectionFactory} />}
+
           <div className={classes.header}>
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
@@ -1211,10 +1213,6 @@ export function Main(): ReactElement {
                 <AsyncComponent factory={mapLibraryPreviewMenuFactory} />
               )}
 
-              {showAds && !askingCookieConsent && !showElevationChart && (
-                <AsyncComponent factory={adFactory} />
-              )}
-
               {/* Hidden, not unmounted, as the floating panels below. */}
               {showMapLayersPanel && (
                 <div
@@ -1223,6 +1221,12 @@ export function Main(): ReactElement {
                 >
                   <AsyncComponent factory={mapLayersPanelFactory} />
                 </div>
+              )}
+
+              {/* Below the panel: a rotating ad changes its height, which
+                  would move the panel up and down. */}
+              {showAds && !askingCookieConsent && !showElevationChart && (
+                <AsyncComponent factory={adFactory} />
               )}
             </div>
 

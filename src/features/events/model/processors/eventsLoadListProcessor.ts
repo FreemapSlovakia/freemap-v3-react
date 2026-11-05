@@ -10,10 +10,10 @@ import {
   eventsLoadList,
   eventsSetFilter,
   eventsSetList,
+  eventsSetSelected,
 } from '../actions.js';
 import { filterToRequest } from '../filter.js';
 import { eventsLayerOnSelector, selectedEventId } from '../selectors.js';
-import { refreshSelectedEvent } from './eventSelectionProcessors.js';
 
 const triggers = [
   init,
@@ -71,7 +71,7 @@ export const eventsLoadListProcessor: Processor = {
         selected &&
         JSON.stringify(selected) !== JSON.stringify(getState().events.selected)
       ) {
-        refreshSelectedEvent(dispatch, getState, selected);
+        dispatch(eventsSetSelected(selected));
       }
     } catch (err) {
       await toastError(err, loadEventsMessages, 'fetchListError');

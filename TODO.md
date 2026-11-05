@@ -47,6 +47,11 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Move selection details from toasts to `DockPanel`.** The events panel
+      is the first (see [`doc/ui-conventions.md`](./doc/ui-conventions.md), _The
+      docked panel_). Next: object details (OSM tags), then the other details
+      toasts (photo, OSM note, changeset element), each panel taking its
+      selection toolbar's actions.
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see

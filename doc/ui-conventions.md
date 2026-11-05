@@ -476,6 +476,26 @@ then position against the panel instead of the viewport. So the box needs `posit
 else on it may use `::before`. A surface that covers the whole screen drops the
 blur, which there is pure cost (see `FloatingWindow`'s fullscreen rule).
 
+## The docked panel
+
+`DockPanel` (`src/shared/components/DockPanel.tsx`) is where a selected thing's
+details go when they outgrow a toast: a react-bootstrap `Offcanvas` without a
+backdrop or focus trap, docked on the right, or over the lower half of the screen
+below `md`. The events panel is the first; object details are meant to follow (see
+`TODO.md`).
+
+- **The map runs under it; the controls make room.** While it is in, `body` has
+  `fm-docked-end` or `fm-docked-bottom` and `--fm-dock-size`, which inset the
+  header, the bottom controls and the toasts — never the map, which would
+  re-render and move under the user. The ad has a row of its own, so it doesn't
+  jump about as the narrowed header wraps.
+- **The thing stays in view.** `keepVisible` names the point it is about; once the
+  panel is in, `panToUncovered` moves the map if the panel would hide it.
+- **It holds everything the selection offers.** Title, actions and details are in
+  the panel, with no selection toolbar beside it. Escape stays the app's: it
+  deselects, and the panel slides out with the content it had.
+- **One at a time**, hidden during a picking mode.
+
 ## Toolbar outlines
 
 Several toolbars share the top of the screen at once, so an outline on one says

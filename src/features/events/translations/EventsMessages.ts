@@ -1,10 +1,8 @@
-import type { ReactNode } from 'react';
-import type { Difficulty, EventItem } from '../model/actions.js';
+import type { Difficulty } from '../model/actions.js';
 import type { EventsColorizeBy, MineCategory } from '../model/colorize.js';
 
 export type EventsMessages = {
   noEvents: string;
-  details: (props: { event: EventItem }) => ReactNode;
   fetchListError: (props: { err: unknown }) => string;
   saveError: (props: { err: unknown }) => string;
   coverError: (props: { err: unknown }) => string;
@@ -83,7 +81,6 @@ export type EventsMessages = {
   };
   selection: {
     backToEvents: string;
-    details: string;
     interested: string;
     going: string;
     openInNewTab: string;

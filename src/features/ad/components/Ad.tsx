@@ -2,7 +2,6 @@ import { Text } from '@features/l10n/Text.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { useLeftMarginAdjuster } from '@shared/hooks/useLeftMarginAdjuster.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import clsx from 'clsx';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import tShirt from '@/images/fm-t-shirt.jpg';
@@ -78,122 +77,81 @@ export default function Ad(): ReactElement | null {
 
   const ref = useLeftMarginAdjuster();
 
-  const [root, setRoot] = useState<HTMLDivElement | null>(null);
-
-  const [besideLogo, setBesideLogo] = useState(false);
-
-  // Hanging over the map only beside the logo's toolbar: on a line of its own
-  // it would cover what wraps below it (the Map layers panel).
-  useEffect(() => {
-    const row = root?.parentElement;
-
-    if (!root || !row) {
-      return;
-    }
-
-    const check = () => {
-      const first = row.firstElementChild;
-
-      setBesideLogo(
-        first instanceof HTMLElement &&
-          first !== root &&
-          root.offsetTop < first.offsetTop + first.offsetHeight,
-      );
-    };
-
-    check();
-
-    const resizes = new ResizeObserver(check);
-
-    resizes.observe(row);
-
-    const mutations = new MutationObserver(check);
-
-    mutations.observe(row, { childList: true });
-
-    return () => {
-      resizes.disconnect();
-
-      mutations.disconnect();
-    };
-  }, [root]);
-
   if (closed) {
     return null;
   }
 
   return (
-    <div
-      ref={setRoot}
-      className={clsx(
-        'mt-2 d-flex flex-column',
-        besideLogo && 'fm-ad-overhang',
-      )}
-    >
-      <div
-        className="border rounded-top rounded-start fm-toolbar"
-        ref={ref}
-        onClickCapture={(e) => {
-          if (ad && (e.target as HTMLElement).closest('a')) {
-            trackMatomo([
-              'trackEvent',
-              'Ad',
-              'click',
-              ad,
-              adViews.get(ad) ?? 0,
-            ]);
-          }
-        }}
-      >
-        {ad === 'self' ? (
-          adm && <SelfAd {...adm.self} />
-        ) : ad === 'rovas' ? (
-          adm?.rovas()
-        ) : ad === 'zdilaAuthorship' ? (
-          adm?.zdilaAuthorship()
-        ) : ad === 'zdilaMapNative' ? (
-          adm?.zdilaMapNative()
-        ) : ad === 'tShirt' ? (
-          <a
-            href="https://nabezky.sk/freemap_t-shirt"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              className="border rounded w-100"
-              src={tShirt}
-              style={{ maxWidth: '360px' }}
-              alt="Freemap T-Shirt"
-            />
-          </a>
-        ) : null}
-      </div>
+    <>
+      {/* A row of its own, so it doesn't move about as the toolbars wrap. */}
+      <div style={{ flexBasis: '100%' }} />
 
-      <div className="align-self-end d-flex me-2">
-        {height < 600 && (
+      <div className="mt-2 d-flex flex-column">
+        <div
+          className="border rounded-top rounded-start fm-toolbar"
+          ref={ref}
+          onClickCapture={(e) => {
+            if (ad && (e.target as HTMLElement).closest('a')) {
+              trackMatomo([
+                'trackEvent',
+                'Ad',
+                'click',
+                ad,
+                adViews.get(ad) ?? 0,
+              ]);
+            }
+          }}
+        >
+          {ad === 'self' ? (
+            adm && <SelfAd {...adm.self} />
+          ) : ad === 'rovas' ? (
+            adm?.rovas()
+          ) : ad === 'zdilaAuthorship' ? (
+            adm?.zdilaAuthorship()
+          ) : ad === 'zdilaMapNative' ? (
+            adm?.zdilaMapNative()
+          ) : ad === 'tShirt' ? (
+            <a
+              href="https://nabezky.sk/freemap_t-shirt"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                className="border rounded w-100"
+                src={tShirt}
+                style={{ maxWidth: '360px' }}
+                alt="Freemap T-Shirt"
+              />
+            </a>
+          ) : null}
+        </div>
+
+        <div className="align-self-end d-flex me-2">
+          {height < 600 && (
+            <Button
+              className="py-0 rounded-bottom me-1"
+              style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+              variant="warning"
+              size="sm"
+              onClick={() => setClosed(true)}
+              disabled={closeTime > 0}
+            >
+              <Text k="general.close" />{' '}
+              {closeTime > 0 ? ` (${closeTime})` : null}
+            </Button>
+          )}
+
           <Button
-            className="py-0 rounded-bottom me-1"
+            className="py-0 rounded-bottom"
             style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
             variant="warning"
             size="sm"
-            onClick={() => setClosed(true)}
-            disabled={closeTime > 0}
+            onClick={becomePremium}
           >
-            <Text k="general.close" />{' '}
-            {closeTime > 0 ? ` (${closeTime})` : null}
+            <Text k="general.remove" />
           </Button>
-        )}
-
-        <Button
-          className="py-0 rounded-bottom"
-          style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-          variant="warning"
-          size="sm"
-          onClick={becomePremium}
-        >
-          <Text k="general.remove" />
-        </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

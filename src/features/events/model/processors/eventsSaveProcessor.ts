@@ -25,9 +25,9 @@ import {
   eventsSave,
   eventsSaveDone,
   eventsSetList,
+  eventsSetSelected,
 } from '../actions.js';
 import { eventsLayerOnSelector, selectedEventId } from '../selectors.js';
-import { refreshSelectedEvent } from './eventSelectionProcessors.js';
 
 async function saveCover(
   getState: () => RootState,
@@ -157,7 +157,7 @@ export const eventsSaveProcessor: Processor<typeof eventsSave> = {
       // An edited event refreshes its details; a new one is selected, on the
       // layer that shows it — which a form opened from My maps may find off.
       if (selectedEventId(getState()) === event.id) {
-        refreshSelectedEvent(dispatch, getState, event);
+        dispatch(eventsSetSelected(event));
       } else {
         if (!eventsLayerOnSelector(getState())) {
           dispatch(mapToggleLayer({ type: EVENTS_LAYER, enable: true }));

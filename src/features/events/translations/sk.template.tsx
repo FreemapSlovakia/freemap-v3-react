@@ -1,12 +1,10 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { EventDetails } from '../components/EventDetails.js';
 import type { EventsMessages } from './EventsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
   noEvents: 'Nenašli sa žiadne akcie',
-  details: ({ event }) => <EventDetails event={event} />,
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri načítavaní akcií', err),
   saveError: ({ err }) =>
@@ -109,7 +107,6 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
   },
   selection: {
     backToEvents: 'Späť na akcie',
-    details: 'Podrobnosti',
     interested: 'Mám záujem',
     going: 'Prídem',
     openInNewTab: 'Otvoriť na novej karte',

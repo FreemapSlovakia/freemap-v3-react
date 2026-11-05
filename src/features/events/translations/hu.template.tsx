@@ -1,11 +1,9 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { EventDetails } from '../components/EventDetails.js';
 import type { EventsMessages } from './EventsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
-  details: ({ event }) => <EventDetails event={event} />,
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Hiba az események betöltésekor', err),
   saveError: ({ err }) =>
@@ -90,7 +88,6 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
   },
   selection: {
     backToEvents: 'Vissza az eseményekhez',
-    details: 'Részletek',
     interested: 'Érdekel',
     going: 'Részt veszek',
     openInNewTab: 'Megnyitás új lapon',

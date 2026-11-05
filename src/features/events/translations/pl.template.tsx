@@ -1,11 +1,9 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { EventDetails } from '../components/EventDetails.js';
 import type { EventsMessages } from './EventsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
-  details: ({ event }) => <EventDetails event={event} />,
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas ładowania wydarzeń', err),
   saveError: ({ err }) =>
@@ -90,7 +88,6 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
   },
   selection: {
     backToEvents: 'Wróć do wydarzeń',
-    details: 'Szczegóły',
     interested: 'Interesuje mnie',
     going: 'Wezmę udział',
     openInNewTab: 'Otwórz w nowej karcie',

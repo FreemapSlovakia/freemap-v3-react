@@ -5,13 +5,7 @@ import { usePremiumMessages } from '@features/premium/translations/usePremiumMes
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { inAppLink } from '@shared/inAppLink.js';
 import type { ReactElement } from 'react';
-import {
-  AlertLink,
-  Anchor,
-  Image,
-  OverlayTrigger,
-  Popover,
-} from 'react-bootstrap';
+import { Anchor, Image, OverlayTrigger, Popover } from 'react-bootstrap';
 import { FaGem } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 
@@ -22,11 +16,9 @@ type Props = {
     hasPicture: boolean;
     premium: boolean;
   };
-  /** Inside an alert (a toast too): the name takes the alert's link style. */
-  inAlert?: boolean;
 };
 
-export function UserChip({ user, inAlert }: Props): ReactElement {
+export function UserChip({ user }: Props): ReactElement {
   const prm = usePremiumMessages();
 
   const dispatch = useDispatch();
@@ -75,13 +67,9 @@ export function UserChip({ user, inAlert }: Props): ReactElement {
           <Image className="me-1 w-6" src={src} roundedCircle />
         </OverlayTrigger>
       )}
-      {inAlert ? (
-        <AlertLink {...link}>{user.name}</AlertLink>
-      ) : (
-        <Anchor className="fw-bold text-decoration-none" {...link}>
-          {user.name}
-        </Anchor>
-      )}
+      <Anchor className="fw-bold text-decoration-none" {...link}>
+        {user.name}
+      </Anchor>
       {user.premium && (
         // The sentence already puts a space after the chip, so the gem reaches
         // over it rather than adding a second. `position-relative` is load

@@ -13,4 +13,18 @@
   overflow: auto;
   font-size: 0.875rem;
   background-clip: padding-box;
+
+  /* Clear of a docked panel; see `.fm-dock`. */
+  transition:
+    right 0.3s ease-in-out,
+    bottom 0.3s ease-in-out;
+
+  :global(body.fm-docked-end) & {
+    right: var(--fm-dock-size, 0px);
+  }
+
+  :global(body.fm-docked-bottom) & {
+    bottom: calc(52px + var(--fm-dock-size, 0px));
+    max-height: calc(100dvh - 52px - var(--fm-dock-size, 0px));
+  }
 }

@@ -121,3 +121,19 @@
   bottom: 28px;
   z-index: 999;
 }
+
+/* Room for a docked panel, which the map runs under; timed as the Offcanvas. */
+.header,
+.type-zoom-control {
+  transition:
+    right 0.3s ease-in-out,
+    bottom 0.3s ease-in-out;
+
+  :global(body.fm-docked-end) & {
+    right: var(--fm-dock-size, 0);
+  }
+}
+
+:global(body.fm-docked-bottom) .type-zoom-control {
+  bottom: var(--fm-dock-size, 0);
+}

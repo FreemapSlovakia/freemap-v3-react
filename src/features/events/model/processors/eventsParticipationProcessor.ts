@@ -6,9 +6,9 @@ import {
   EventSchema,
   eventsSetList,
   eventsSetParticipation,
+  eventsSetSelected,
 } from '../actions.js';
 import { selectedEventId } from '../selectors.js';
-import { refreshSelectedEvent } from './eventSelectionProcessors.js';
 
 export const eventsParticipationProcessor: Processor<
   typeof eventsSetParticipation
@@ -37,7 +37,7 @@ export const eventsParticipationProcessor: Processor<
       dispatch(eventsSetList(list.map((e) => (e.id === event.id ? event : e))));
 
       if (selectedEventId(getState()) === event.id) {
-        refreshSelectedEvent(dispatch, getState, event);
+        dispatch(eventsSetSelected(event));
       }
     } catch (err) {
       await toastError(err, loadEventsMessages, 'participationError');

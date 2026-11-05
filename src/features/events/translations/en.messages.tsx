@@ -1,11 +1,9 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { EventDetails } from '../components/EventDetails.js';
 import type { EventsMessages } from './EventsMessages.js';
 
 const en: EventsMessages = {
   noEvents: 'No events found',
-  details: ({ event }) => <EventDetails event={event} />,
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Error loading events', err),
   saveError: ({ err }) => addError(getMessages()!, 'Error saving event', err),
@@ -105,7 +103,6 @@ const en: EventsMessages = {
   },
   selection: {
     backToEvents: 'Back to events',
-    details: 'Details',
     interested: 'Interested',
     going: 'Going',
     openInNewTab: 'Open in new tab',

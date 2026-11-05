@@ -41,9 +41,13 @@ event) and a visibility (public, or unlisted: reachable by link, not listed).
 
 ### 2. Select an event
 
-Halo on the marker, details in a toast (title, dates, description, trip stats,
-linked map), and the selection toolbar:
+Halo on the marker, and the event's panel (`DockPanel`, see
+[UI conventions](./ui-conventions.md)): docked on the right, or at the bottom of
+a phone; the title, the actions, then the details (cover, dates, organizer, trip
+stats, attributes, linked map, description). Clicking another marker swaps its
+content in place. Its actions:
 
+- **Interested** and **Going** with their counts.
 - **Open in new tab** — the linked map as a full app of its own: profile,
   colorizing, export, editing as a copy. The user's own map stays untouched in
   the first tab.
@@ -69,7 +73,7 @@ from the selection toolbar (**Edit**).
   both counted in its details, with the names of who is going.
 - Until there is a thread, the description carries a way to reach the
   organizer; the form asks for it.
-- A discussion thread per event, for logged-in users, in a details modal.
+- A discussion thread per event, for logged-in users, in the event's panel.
 - Email to whoever is involved — the organizer and those interested or going —
   about what concerns them; opted out of in the account like the photo emails.
   The organizer may show their email on the event.
@@ -108,9 +112,9 @@ from the selection toolbar (**Edit**).
 - [x] 1. **Interested / Going.** API: an `eventParticipant` table (event, user,
       status), `PUT`/`DELETE /events/{id}/participation`, the counts and the
       caller's own status on every event. Web: the two toggles with their
-      counts in the event's toolbar; pressing the active one withdraws it, and
+      counts in the event's panel; pressing the active one withdraws it, and
       a logged-out user is offered to log in. Who is going goes into the
-      details modal of Release 2.
+      panel in Release 2.
 - [x] 2. **Contact hint**: until there is a discussion, the form's
       description asks for a way to reach the organizer (phone, email, a chat
       group).
@@ -123,13 +127,12 @@ from the selection toolbar (**Edit**).
 
 ### Release 2
 
-- [ ] **Details modal** replacing the toast, once the thread needs the room — a
-      modal, as the app has no side panels; one may take its place if they
-      come. Cover, dates, organizer, stats, attributes, description, the
-      participation toggles and who is going, the thread.
+- [x] **The event's panel** in place of the toast and the selection toolbar:
+      the actions and the details, docked over the map.
+- [ ] **Who is going**, listed in the panel.
 - [ ] **Discussion.** API: an `eventComment` table, list and post (and the
       author or a moderator deleting), as the photo comments. Web: the thread
-      in the modal, newest last, posting for logged-in users.
+      in the panel, newest last, posting for logged-in users.
 - [ ] **Email notifications**: the organizer on a new comment or someone
       going; the interested and going on a change of time or place, on the
       event being deleted, and on new comments. One opt-out in the account, as
