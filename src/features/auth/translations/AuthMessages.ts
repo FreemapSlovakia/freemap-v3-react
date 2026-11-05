@@ -31,10 +31,13 @@ export type AuthMessages = {
     homeLocationUnset: string;
     setHomeLocation: string;
     roles: string;
-    /** Labels the checkboxes of what the public profile shows. */
-    publicFields: string;
-    /** Opens one's own profile as others see it. */
-    publicProfile: string;
+    /**
+     * Labels the checkboxes of what the public profile shows; `profile` links
+     * its words to one's own profile as others see it.
+     */
+    publicFields: (props: {
+      profile: (text: ReactNode) => ReactNode;
+    }) => ReactNode;
     /** The stored address has not been proven by a code. */
     emailUnconfirmed: string;
     /** Shown while the field holds another address than the stored one. */

@@ -8,8 +8,9 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     name: 'Ime',
     email: 'E-pošta',
     description: 'O meni',
-    publicFields: 'Prikaži na mojem javnem profilu',
-    publicProfile: 'Moj javni profil',
+    publicFields: ({ profile }) => (
+      <>Prikaži na {profile('mojem javnem profilu')}</>
+    ),
     delete: 'Izbriši račun',
     deleteWarning:
       'Ali res želite izbrisati svoj račun? Skupaj z njim bodo odstranjene vse vaše fotografije, komentarji in ocene fotografij, vaši zemljevidi in sledene naprave.',
@@ -30,7 +31,7 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     mergeConflict:
       'Drug račun s tem potrjenim naslovom je povezan z drugim računom istega ponudnika prijave, zato ju ni mogoče združiti.',
     emailMissing:
-      'Brez e-poštnega naslova ne morete prejemati povezav za prenos zemljevidov brez povezave niti obvestil o komentarjih k fotografijam, prav tako se ne morete prijaviti z e-pošto.',
+      'Brez e-poštnega naslova vam Freemap ne more pošiljati e-pošte.',
     emailOnlyLogin:
       'E-pošta je edini način prijave v vaš račun, zato je ni mogoče odstraniti.',
     emailUnconfirmedBar: 'Vaš e-poštni naslov še ni potrjen.',

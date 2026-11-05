@@ -20,8 +20,9 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     setHomeLocation: 'Auf der Karte festlegen',
     description: 'Über mich',
     roles: 'Meine Rollen',
-    publicFields: 'Auf meinem öffentlichen Profil zeigen',
-    publicProfile: 'Mein öffentliches Profil',
+    publicFields: ({ profile }) => (
+      <>Auf {profile('meinem öffentlichen Profil')} zeigen</>
+    ),
     emailUnconfirmed:
       'Diese Adresse ist noch nicht bestätigt. Bis Sie sie bestätigen, sendet Freemap keine E-Mails an sie, und Sie können sich nicht mit ihr anmelden.',
     emailChangeHint:
@@ -30,7 +31,7 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     mergeConflict:
       'Ein anderes Konto mit dieser bestätigten Adresse ist mit einem anderen Konto desselben Anmeldeanbieters verbunden, daher lassen sich die beiden nicht zusammenführen.',
     emailMissing:
-      'Ohne E-Mail-Adresse erhalten Sie keine Download-Links für Offline-Karten und keine Benachrichtigungen zu Fotokommentaren, und die Anmeldung per E-Mail ist nicht möglich.',
+      'Ohne E-Mail-Adresse kann Freemap Ihnen keine E-Mails senden.',
     emailOnlyLogin:
       'Die E-Mail-Adresse ist die einzige Anmeldemöglichkeit für Ihr Konto und kann daher nicht entfernt werden.',
     emailUnconfirmedBar: 'Ihre E-Mail-Adresse ist noch nicht bestätigt.',

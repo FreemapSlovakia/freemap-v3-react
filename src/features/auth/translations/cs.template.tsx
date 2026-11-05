@@ -20,8 +20,9 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     setHomeLocation: 'Nastavit v mapě',
     description: 'O mně',
     roles: 'Moje role',
-    publicFields: 'Zobrazit na mém veřejném profilu',
-    publicProfile: 'Můj veřejný profil',
+    publicFields: ({ profile }) => (
+      <>Zobrazit na {profile('mém veřejném profilu')}</>
+    ),
     emailUnconfirmed:
       'Tato adresa zatím není potvrzená. Dokud ji nepotvrdíte, Freemap na ni neposílá žádné e-maily a nelze se jí přihlásit.',
     emailChangeHint:
@@ -30,7 +31,7 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     mergeConflict:
       'Jiný účet s touto potvrzenou adresou je připojen k jinému účtu téhož poskytovatele přihlášení, proto je nelze spojit.',
     emailMissing:
-      'Bez e-mailové adresy vám nemohou přijít odkazy ke stažení offline map ani upozornění na komentáře k fotkám a nelze se přihlásit e-mailem.',
+      'Bez e-mailové adresy vám Freemap nemůže posílat žádné e-maily.',
     emailOnlyLogin:
       'E-mail je jediný způsob přihlášení do vašeho účtu, proto jej nelze odstranit.',
     emailUnconfirmedBar: 'Vaše e-mailová adresa zatím není potvrzená.',

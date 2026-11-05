@@ -8,8 +8,9 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     name: 'Nom',
     email: 'E-mail',
     description: 'À propos de moi',
-    publicFields: 'Afficher sur mon profil public',
-    publicProfile: 'Mon profil public',
+    publicFields: ({ profile }) => (
+      <>Afficher sur {profile('mon profil public')}</>
+    ),
     delete: 'Supprimer le compte',
     deleteWarning:
       'Voulez-vous vraiment supprimer votre compte ? Cela supprimera toutes vos photos, vos commentaires et évaluations de photos, vos cartes et vos appareils suivis.',
@@ -31,7 +32,7 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     mergeConflict:
       'Un autre compte avec cette adresse confirmée est lié à un autre compte du même fournisseur de connexion ; les deux ne peuvent donc pas être fusionnés.',
     emailMissing:
-      'Sans adresse e-mail, vous ne pouvez recevoir ni les liens de téléchargement des cartes hors ligne ni les notifications de commentaires sur les photos, et la connexion par e-mail n’est pas possible.',
+      'Sans adresse e-mail, Freemap ne peut vous envoyer aucun e-mail.',
     emailOnlyLogin:
       'L’e-mail est le seul moyen de vous connecter à votre compte ; il ne peut donc pas être supprimé.',
     emailUnconfirmedBar: 'Votre adresse e-mail n’est pas encore confirmée.',

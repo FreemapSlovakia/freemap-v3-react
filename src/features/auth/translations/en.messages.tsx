@@ -19,8 +19,7 @@ const en: AuthMessages = {
     homeLocationUnset: 'Not set',
     setHomeLocation: 'Set on the map',
     roles: 'My roles',
-    publicFields: 'Show on my public profile',
-    publicProfile: 'My public profile',
+    publicFields: ({ profile }) => <>Show on {profile('my public profile')}</>,
     emailUnconfirmed:
       'This address is not confirmed yet. Until it is, Freemap sends no emails to it and it cannot be used to log in.',
     emailChangeHint:
@@ -29,7 +28,7 @@ const en: AuthMessages = {
     mergeConflict:
       'Another account with this address confirmed is linked to a different account of the same login provider, so the two cannot be joined.',
     emailMissing:
-      'Without an email address you cannot receive offline map download links or photo comment notifications, nor log in by email.',
+      'Without an email address, Freemap cannot send you any email.',
     emailOnlyLogin:
       'Email is the only way to log in to your account, so it cannot be removed.',
     emailUnconfirmedBar: 'Your email address is not confirmed yet.',

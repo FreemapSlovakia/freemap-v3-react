@@ -16,8 +16,9 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     choosePicture: 'Kép kiválasztása',
     pictureTooLarge: 'A kép túl nagy. Maximális méret 5 MB.',
     description: 'Rólam',
-    publicFields: 'Megjelenítés a nyilvános profilomon',
-    publicProfile: 'Nyilvános profilom',
+    publicFields: ({ profile }) => (
+      <>Megjelenítés a {profile('nyilvános profilomon')}</>
+    ),
     homeLocation: 'Otthoni hely',
     homeLocationUnset: 'Nincs beállítva',
     setHomeLocation: 'Beállítás a térképen',
@@ -29,8 +30,7 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     emailConfirmed: 'Az e-mail-címe megerősítésre került.',
     mergeConflict:
       'Egy másik, ezzel a megerősített címmel rendelkező fiók ugyanannak a bejelentkezési szolgáltatónak egy másik fiókjához kapcsolódik, ezért a kettő nem vonható össze.',
-    emailMissing:
-      'E-mail-cím nélkül nem kaphat letöltési hivatkozást az offline térképekhez, sem értesítést a fotókhoz írt hozzászólásokról, és e-mailben sem jelentkezhet be.',
+    emailMissing: 'E-mail-cím nélkül a Freemap nem tud Önnek e-mailt küldeni.',
     emailOnlyLogin:
       'Az e-mail az egyetlen módja a fiókjába való bejelentkezésnek, ezért nem törölhető.',
     emailUnconfirmedBar: 'Az e-mail-címe még nincs megerősítve.',

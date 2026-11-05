@@ -16,8 +16,9 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     choosePicture: 'Scegli foto',
     pictureTooLarge: 'La foto è troppo grande. La dimensione massima è 5 MB.',
     description: 'Su di me',
-    publicFields: 'Mostra nel mio profilo pubblico',
-    publicProfile: 'Il mio profilo pubblico',
+    publicFields: ({ profile }) => (
+      <>Mostra nel {profile('mio profilo pubblico')}</>
+    ),
     homeLocation: 'Posizione di casa',
     homeLocationUnset: 'Non impostata',
     setHomeLocation: 'Imposta sulla mappa',
@@ -30,7 +31,7 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     mergeConflict:
       'Un altro account con questo indirizzo confermato è collegato a un altro account dello stesso provider di accesso, quindi non è possibile unirli.',
     emailMissing:
-      'Senza un indirizzo email non può ricevere i link per scaricare le mappe offline né le notifiche dei commenti alle foto, e non può accedere via email.',
+      'Senza un indirizzo email, Freemap non può inviarle alcuna email.',
     emailOnlyLogin:
       'L’email è l’unico modo per accedere al suo account, quindi non può essere rimossa.',
     emailUnconfirmedBar: 'Il suo indirizzo email non è ancora confermato.',

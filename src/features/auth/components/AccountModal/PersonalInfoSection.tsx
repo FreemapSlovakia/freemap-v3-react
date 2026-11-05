@@ -408,9 +408,16 @@ export function PersonalInfoSection(): ReactElement | null {
 
         {emailHint && (
           <Form.Text
-            className={emailHint === 'emailOnlyLogin' ? 'text-danger' : ''}
+            className={
+              emailHint === 'emailOnlyLogin'
+                ? 'text-danger'
+                : emailHint === 'emailMissing'
+                  ? 'text-warning-emphasis'
+                  : ''
+            }
           >
-            {emailHint === 'emailUnconfirmed' && (
+            {(emailHint === 'emailUnconfirmed' ||
+              emailHint === 'emailMissing') && (
               <>
                 <FaExclamationTriangle className="text-warning" />{' '}
               </>
@@ -458,22 +465,22 @@ export function PersonalInfoSection(): ReactElement | null {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <div className="d-flex align-items-baseline gap-2">
-          <Form.Label className="me-auto">
-            <Text m={am} k="account.publicFields" />
-          </Form.Label>
-
-          {/* Close there comes back here. */}
-          <a
-            {...modalLink({
-              type: 'user',
-              id: user.id,
-              returnTo: activeModal ?? undefined,
-            })}
-          >
-            <Text m={am} k="account.publicProfile" />
-          </a>
-        </div>
+        <Form.Label>
+          {am?.account.publicFields({
+            profile: (text) => (
+              // Close there comes back here.
+              <a
+                {...modalLink({
+                  type: 'user',
+                  id: user.id,
+                  returnTo: activeModal ?? undefined,
+                })}
+              >
+                {text}
+              </a>
+            ),
+          })}
+        </Form.Label>
 
         <div>
           {offeredFields.map((field) => (
