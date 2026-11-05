@@ -174,13 +174,18 @@ export default function UserProfileModal({ show }: Props): ReactElement {
     ];
 
     if (p.email) {
-      rows.push([upm?.email, <a href={`mailto:${p.email}`}>{p.email}</a>]);
+      rows.push([
+        upm?.email,
+        <a key="email" href={`mailto:${p.email}`}>
+          {p.email}
+        </a>,
+      ]);
     }
 
     for (const link of p.links) {
       rows.push([
         AUTH_PROVIDER_LABELS[link.provider],
-        <a href={link.url} {...linkTarget(link.url)}>
+        <a key={link.provider} href={link.url} {...linkTarget(link.url)}>
           {link.name}
         </a>,
       ]);
