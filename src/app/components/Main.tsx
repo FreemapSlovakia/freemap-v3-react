@@ -602,7 +602,7 @@ const routePlannerStyleModalFactory = () =>
 
 /**
  * The toolbar of the selected feature, whatever kind it is; a search result,
- * an object and an event have a panel instead.
+ * an object, an OSM note and an event have a panel instead.
  */
 function selectionMenu(type: Selection['type']): ReactNode {
   switch (type) {
@@ -614,9 +614,6 @@ function selectionMenu(type: Selection['type']): ReactNode {
 
     case 'changeset-element':
       return <AsyncComponent factory={changesetElementSelectionFactory} />;
-
-    case 'osm-note':
-      return <AsyncComponent factory={osmNoteSelectionFactory} />;
 
     case 'tracking':
       return <TrackingSelection />;
@@ -685,19 +682,20 @@ export function Main(): ReactElement {
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
 
-  // Mounted from the first pick on: a result being looked at, or an object
-  // whose type is switched off, goes with its selection, and the panel must
-  // outlive it to slide out.
-  const [searchPicked, setSearchPicked] = useState(false);
+  // A selection's panel is mounted from its first pick on: a result being
+  // looked at, an object whose type is switched off or a note whose layer goes
+  // takes its selection along, and the panel must outlive it to slide out.
+  const [picked, setPicked] = useState<ReadonlySet<Selection['type']>>(
+    () => new Set(),
+  );
 
-  const [objectPicked, setObjectPicked] = useState(false);
-
-  if (selectionType === 'search' && !searchPicked) {
-    setSearchPicked(true);
-  }
-
-  if (selectionType === 'objects' && !objectPicked) {
-    setObjectPicked(true);
+  if (
+    (selectionType === 'search' ||
+      selectionType === 'objects' ||
+      selectionType === 'osm-note') &&
+    !picked.has(selectionType)
+  ) {
+    setPicked(picked.union(new Set([selectionType])));
   }
 
   const dataViewerElevationPrompt = useAppSelector(
@@ -1093,10 +1091,16 @@ export function Main(): ReactElement {
 
           {eventsLayerOn && <AsyncComponent factory={eventSelectionFactory} />}
 
-          {objectPicked && <AsyncComponent factory={objectSelectionFactory} />}
+          {picked.has('objects') && (
+            <AsyncComponent factory={objectSelectionFactory} />
+          )}
 
-          {searchPicked && (
+          {picked.has('search') && (
             <AsyncComponent factory={searchResultPanelFactory} />
+          )}
+
+          {picked.has('osm-note') && (
+            <AsyncComponent factory={osmNoteSelectionFactory} />
           )}
 
           <div className={classes.header}>

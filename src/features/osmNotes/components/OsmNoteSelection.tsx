@@ -1,39 +1,81 @@
-import { useManualAction } from '@features/documents/hooks/useManualAction.js';
+import { selectFeature } from '@app/store/actions.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   getIdNoteUrl,
   getOsmNoteUrl,
 } from '@features/openInExternalApp/externalUrlUtils.js';
-import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
-import { Action } from '@shared/components/ResponsiveActions.js';
-import { Selection } from '@shared/components/Selection.js';
+import { DockPanel } from '@shared/components/DockPanel.js';
+import { FmModalFooter } from '@shared/components/FmModalFooter.js';
+import { ActionsToggle, OpenInMenu } from '@shared/components/PanelMenus.js';
+import { ResponsiveActions } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { usePlaceActions } from '@shared/hooks/usePlaceActions.js';
 import type { ReactElement } from 'react';
+import { ButtonToolbar } from 'react-bootstrap';
 import { FaStickyNote } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import type { OsmNote } from '../model/actions.js';
+import { selectedOsmNoteId } from '../model/selectors.js';
 import { useOsmNotesMessages } from '../translations/useOsmNotesMessages.js';
+import { OsmNoteThread } from './OsmNoteThread.js';
 
-export default function OsmNoteSelection(): ReactElement | null {
-  const note = useAppSelector((state) => state.osmNotes.selected);
+/** The selected OSM note's panel: what can be done with its place, and its thread. */
+export default function OsmNoteSelection(): ReactElement {
+  const dispatch = useDispatch();
 
   const m = useOsmNotesMessages();
 
-  const manualAction = useManualAction();
+  const note = useAppSelector((state) => state.osmNotes.selected);
 
-  if (!note) {
-    return null;
-  }
+  // By the id, which stays while the next note loads.
+  const shown = useAppSelector((state) => selectedOsmNoteId(state) !== null);
 
   return (
-    <Selection icon={<FaStickyNote />} label={m?.selection}>
-      <PlaceActionsButton
-        lat={note.lat}
-        lon={note.lon}
-        osmObject={{
-          url: getOsmNoteUrl(note.id),
-          idUrl: getIdNoteUrl(note.id),
-        }}
-        selection
-        after={<Action {...manualAction('osm-notes')} />}
-      />
-    </Selection>
+    <DockPanel
+      item={note}
+      show={shown}
+      icon={<FaStickyNote />}
+      title={() => m?.selection}
+      manual="osm-notes"
+      keepVisible={({ lat, lon }) => ({ lat, lon })}
+      onClose={() => dispatch(selectFeature(null))}
+    >
+      {(note) => (
+        <>
+          {!window.fmEmbedded && <NoteActions note={note} />}
+
+          <OsmNoteThread note={note} />
+        </>
+      )}
+    </DockPanel>
+  );
+}
+
+/** Labelled while there is room; the ⋮'s generic one goes first. */
+function NoteActions({ note }: { note: OsmNote }): ReactElement {
+  const m = useMessages();
+
+  const selected = useAppSelector(
+    (state) => selectedOsmNoteId(state) === note.id,
+  );
+
+  const { placeActions, openInItems, onSelect } = usePlaceActions({
+    at: { lat: note.lat, lon: note.lon },
+    osmObject: { url: getOsmNoteUrl(note.id), idUrl: getIdNoteUrl(note.id) },
+    selection: selected,
+  });
+
+  return (
+    <FmModalFooter as={ButtonToolbar} className="gap-2 mb-3">
+      <ResponsiveActions
+        toggle={<ActionsToggle priority={0} />}
+        toggleLabel={m?.general.actions}
+        onSelect={onSelect}
+      >
+        {placeActions}
+      </ResponsiveActions>
+
+      <OpenInMenu items={openInItems} onSelect={onSelect} priority={1} />
+    </FmModalFooter>
   );
 }

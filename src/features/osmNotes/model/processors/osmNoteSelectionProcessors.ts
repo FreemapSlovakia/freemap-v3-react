@@ -3,9 +3,7 @@ import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { userLayersSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { OSM_NOTES_LAYER } from '../../api.js';
-import { loadOsmNotesMessages } from '../../translations/loadOsmNotesMessages.js';
 import { type OsmNote, osmNotesSetSelected } from '../actions.js';
 import { OsmNoteFeatureSchema, toOsmNote } from '../noteSchema.js';
 import { selectedOsmNoteId } from '../selectors.js';
@@ -13,15 +11,15 @@ import { selectedOsmNoteId } from '../selectors.js';
 const layerOn = (state: RootState) =>
   userLayersSelector(state).includes(OSM_NOTES_LAYER);
 
-/** Puts the selected note in the store and its thread in a toast, which goes with the selection. */
+/** Puts the selected note in the store, for its panel. */
 export const osmNoteSelectionProcessor: Processor = {
   stateChangePredicate: selectedOsmNoteId,
   errorKey: 'general.loadError',
   async handle({ getState, dispatch }) {
     const id = selectedOsmNoteId(getState());
 
-    // At once, or the toolbar and the halo would show the previous note while
-    // this one loads.
+    // At once, or the halo would mark the previous note while this one loads;
+    // the panel greys the previous one's content meanwhile.
     if (getState().osmNotes.selected) {
       dispatch(osmNotesSetSelected(null));
     }
@@ -56,18 +54,6 @@ export const osmNoteSelectionProcessor: Processor = {
     }
 
     dispatch(osmNotesSetSelected(note));
-
-    dispatch(
-      toastsAdd({
-        id: 'osmNote',
-        style: 'info',
-        messageKey: 'note',
-        messageLoader: loadOsmNotesMessages,
-        messageParams: { note },
-        statePredicate: (state) => selectedOsmNoteId(state) !== id,
-        onClose: selectFeature(null),
-      }),
-    );
   },
 };
 

@@ -40,9 +40,10 @@ type Props = {
 
 /**
  * What can be done with a place on the map: everything the map's own context
- * menu offers, flat, and the other maps behind a submenu. Spread into a
- * toolbar's `ResponsiveActions`, whose `onSelect` this also answers — the
- * external-app items act through their `eventKey`.
+ * menu offers, flat, and the other maps behind a submenu. `actions` spreads
+ * into a toolbar's `ResponsiveActions`; a docked panel takes `placeActions` and
+ * `openInItems` for a menu each (`OpenInMenu`). `onSelect` answers the
+ * external-app items' `eventKey`s, so it goes on every menu holding them.
  */
 export function usePlaceActions({
   at,
@@ -52,6 +53,8 @@ export function usePlaceActions({
   selection,
 }: Props): {
   actions: ReactNode[];
+  placeActions: ReactNode[];
+  openInItems: ReactNode;
   onSelect: SelectCallback;
 } {
   const oeam = useOpenInExternalAppMessages();
@@ -80,36 +83,48 @@ export function usePlaceActions({
 
   useSelectionOpener(selection && at ? open : null);
 
-  const actions: ReactNode[] = [];
-
   // An embed opens neither tools nor other maps, so both groups would answer
   // with nothing and leave the menu holding dividers.
-  if (at && !window.fmEmbedded) {
-    actions.push(
-      <ActionItems key="location">
-        <LocationActionItems {...at} omit={omit} onAct={onAct} />
-      </ActionItems>,
+  const offered = at && !window.fmEmbedded;
 
-      <ActionDivider key="open-in-divider" />,
+  const placeActions: ReactNode[] = offered
+    ? [
+        <ActionItems key="location">
+          <LocationActionItems {...at} omit={omit} onAct={onAct} />
+        </ActionItems>,
+      ]
+    : [];
 
-      <ActionSubmenu
-        key="open-in"
-        label={oeam?.openIn}
-        icon={<FaExternalLinkAlt />}
-      >
-        <OpenInExternalTargetItems
-          {...at}
-          zoom={zoom}
-          includePoint
-          osmObject={osmObject}
-          showKbdShortcut={selection}
-        />
-      </ActionSubmenu>,
-    );
-  }
+  const openInItems = offered ? (
+    <OpenInExternalTargetItems
+      {...at}
+      zoom={zoom}
+      includePoint
+      osmObject={osmObject}
+      showKbdShortcut={selection}
+    />
+  ) : null;
 
   return {
-    actions,
+    actions: offered
+      ? [
+          ...placeActions,
+
+          <ActionDivider key="open-in-divider" />,
+
+          <ActionSubmenu
+            key="open-in"
+            label={oeam?.openIn}
+            icon={<FaExternalLinkAlt />}
+          >
+            {openInItems}
+          </ActionSubmenu>,
+        ]
+      : [],
+
+    placeActions,
+
+    openInItems,
 
     onSelect: (eventKey) => {
       const where =

@@ -5,7 +5,6 @@ import { linkify } from '@shared/linkify.js';
 import { parseOsmElementId } from '@shared/osmElementIds.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
-import { AlertLink } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import type { OsmNote } from '../model/actions.js';
 import { useOsmNotesMessages } from '../translations/useOsmNotesMessages.js';
@@ -27,14 +26,14 @@ function useLinkify(showOnMap: string | undefined) {
 
       return (
         <Fragment key={key}>
-          <AlertLink href={url} target="_blank" rel="noopener noreferrer">
+          <a href={url} target="_blank" rel="noopener noreferrer">
             {url}
-          </AlertLink>
+          </a>
 
           {id && (
             <>
               {' ('}
-              <AlertLink
+              <a
                 {...inAppLink(`#osm-${id.elementType}=${id.id}`, () => {
                   for (const action of osmElementOpen(id)) {
                     dispatch(action);
@@ -44,7 +43,7 @@ function useLinkify(showOnMap: string | undefined) {
                 })}
               >
                 {showOnMap}
-              </AlertLink>
+              </a>
               {')'}
             </>
           )}
@@ -64,10 +63,10 @@ export function OsmNoteThread({ note }: Props): ReactElement {
   });
 
   return (
-    <div style={{ maxHeight: '40vh', overflowY: 'auto' }}>
+    <div>
       {note.comments.map((comment, i) => (
         <div key={i} className={i ? 'mt-2' : undefined}>
-          <div className="small">
+          <div className="small mb-2">
             {m?.actions[comment.action]} · <b>{comment.user ?? m?.anonymous}</b>{' '}
             · {dateFormat.format(new Date(comment.date))}
           </div>

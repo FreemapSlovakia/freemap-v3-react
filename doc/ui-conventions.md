@@ -481,8 +481,8 @@ blur, which there is pure cost (see `FloatingWindow`'s fullscreen rule).
 `DockPanel` (`src/shared/components/DockPanel.tsx`) is where a selected thing's
 details go when they outgrow a toast: a react-bootstrap `Offcanvas` without a
 backdrop or focus trap, docked on the right, or over the lower half of the screen
-below `md`. Events, objects (POIs) and search results have one; the other selections
-are meant to follow (see `TODO.md`).
+below `md`. Events, objects (POIs), search results and OSM notes have one; the
+other selections are meant to follow (see `TODO.md`).
 
 - **The map runs under it; the controls make room.** While it is in, `body` has
   `fm-docked-end` or `fm-docked-bottom` and `--fm-dock-size`, which inset the

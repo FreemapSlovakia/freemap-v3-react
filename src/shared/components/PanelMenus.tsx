@@ -45,8 +45,8 @@ export function ActionsToggle({
 }
 
 /**
- * `useObjectActions`' "Open in…" items, as a menu of their own; labelled in an
- * `FmModalFooter` row while it has the room.
+ * A docked panel's "Open in…" items (`useObjectActions`', `usePlaceActions'`)
+ * as a menu of their own; labelled in an `FmModalFooter` row while it has room.
  */
 export function OpenInMenu({
   items,

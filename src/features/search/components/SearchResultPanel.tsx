@@ -5,10 +5,6 @@ import {
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
-import {
-  ActionsToggle,
-  OpenInMenu,
-} from '@features/objects/components/OpenInMenu.js';
 import { useObjectActions } from '@features/objects/components/useObjectActions.js';
 import {
   type ObjectDetailsData,
@@ -20,6 +16,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { ActionsToggle, OpenInMenu } from '@shared/components/PanelMenus.js';
 import {
   Action,
   ResponsiveActions,

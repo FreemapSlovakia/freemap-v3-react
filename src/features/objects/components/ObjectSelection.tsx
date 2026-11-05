@@ -4,6 +4,7 @@ import type { SearchResult } from '@features/search/model/actions.js';
 import { resultCoords } from '@features/search/model/resultUtils.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
 import { FmModalFooter } from '@shared/components/FmModalFooter.js';
+import { ActionsToggle, OpenInMenu } from '@shared/components/PanelMenus.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { featureIdsEqual } from '@shared/types/featureId.js';
 import { type ReactElement, useMemo } from 'react';
@@ -19,7 +20,6 @@ import { objectToSearchResult } from '../model/objectToSearchResult.js';
 import { objectDetailsSelector } from '../model/selectors.js';
 import { ObjectDetails } from './ObjectDetails.js';
 import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
-import { ActionsToggle, OpenInMenu } from './OpenInMenu.js';
 import { useObjectActions } from './useObjectActions.js';
 
 type Item = {
