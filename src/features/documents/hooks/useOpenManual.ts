@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
  * the first.
  */
 export function useOpenManual(
-  from: 'toolbar' | 'modal' | 'window',
+  from: 'toolbar' | 'modal' | 'window' | 'panel',
 ): (chapter: string) => void {
   const dispatch = useDispatch();
 

@@ -1,7 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
@@ -10,7 +9,6 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Markierungsstil der Objekte',
   },
   source: 'Quelle',
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Höhe',
   terrain: {
     prominence: 'Schartenhöhe',
@@ -41,7 +39,6 @@ const de: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   tooManyForLookup: ({ count, limit }) =>
     `Zu viele Objekte, um sie als Funde anzuzeigen (${count}, höchstens ${limit}). Zoomen Sie hinein oder schränken Sie den Filter ein.`,
   showAsLookup: 'Als Fund anzeigen',
-  showDetails: 'Details',
   moreGeneralTypes: 'Allgemeinere Typen',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (Verlauf)',

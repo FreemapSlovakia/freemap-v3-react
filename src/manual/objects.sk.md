@@ -28,7 +28,7 @@ V ponuke :FaEllipsisV: na lište nájdete:
 
 ## Podrobnosti o objekte
 
-Kliknutím na objekt ho vyberiete a otvoria sa podrobnosti o objekte:
+Kliknutím na objekt ho vyberiete a otvorí sa panel objektu – vpravo, na telefóne cez dolnú polovicu obrazovky – s podrobnosťami:
 
 - názov a druhy miesta. Každý druh je tlačidlo, ktoré zobrazí alebo skryje objekty daného typu; :FaChevronRight: pridá **Všeobecnejšie typy**.
 - **Nadmorská výška** podľa modelu terénu,
@@ -36,7 +36,7 @@ Kliknutím na objekt ho vyberiete a otvoria sa podrobnosti o objekte:
 - :FaHistory: **História** – verzie objektu od najnovšej, každá s dátumom, autorom a komentárom. Kliknutím na komentár uvidíte, čo sa pri danej zmene na objekte upravilo.
 - **Zdroj** – odkaz na objekt na OpenStreetMap.org.
 
-Tlačidlo × podrobnosti zavrie a objekt zostane vybraný; kliknutím na objekt na mape sa podrobnosti znova otvoria.
+Kliknutím na iný objekt sa v tom istom paneli zobrazia jeho podrobnosti. Tlačidlo × (alebo <kbd>Esc</kbd>) zruší výber objektu a panel zavrie.
 
 ![Podrobnosti o vrchole](./images/objects-details.sk.webp)
 
@@ -53,12 +53,12 @@ Pri sedle alebo horskom priechode sú v podrobnostiach **Výška sedla**, **Hĺb
 
 ## Vybraný objekt
 
-Vybraný objekt má vlastnú lištu :FaMapMarkerAlt: **Objekt (POI)**. V ponuke :FaEllipsisV: na lište nájdete:
+V hornej časti panela objektu sú dve ponuky. V ponuke :FaEllipsisV: nájdete:
 
-- :FaEyeSlash: **Skryť typ „…“** – vypne typ, pod ktorým sa objekt zobrazuje,
 - :FaPencilAlt: **Kopírovať do kreslenia** – pridá kópiu objektu do kreslenia a objekt zostane na mape. Pri budove, ploche alebo trase si namiesto jediného bodu môžete zvoliť možnosť **Vlastná geometria**.
 - :FaSearch: **Zobraziť ako Nález** – ponechá objekt na mape, aj keď typ objektu vypnete,
-- rovnaké akcie pre toto miesto ako v kontextovej ponuke mapy, napríklad navigovanie odtiaľto alebo sem,
-- :FaExternalLinkAlt: **Otvoriť v…** – **OpenStreetMap.org**, **OpenStreetMap.org (história)**, editory **JOSM** a **iD** a ďalšie mapy a aplikácie.
+- rovnaké akcie pre toto miesto ako v kontextovej ponuke mapy, napríklad navigovanie odtiaľto alebo sem.
+
+Ponuka :FaExternalLinkAlt: **Otvoriť v…** vedľa nej obsahuje **OpenStreetMap.org**, **OpenStreetMap.org (história)**, editory **JOSM** a **iD** a ďalšie mapy a aplikácie.
 
 Ako zistiť, čo sa nachádza na ľubovoľnom mieste mapy, nielen objekty zvolených typov, opisuje kapitola [Detaily v mape](#show=manual/map-details).

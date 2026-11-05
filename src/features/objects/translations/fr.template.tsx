@@ -1,11 +1,9 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Altitude',
   terrain: {
     prominence: 'Proéminence',
@@ -45,7 +43,6 @@ const fr: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Style de marqueur des objets',
   },
   source: 'Source',
-  showDetails: 'Détails',
   moreGeneralTypes: 'Types plus généraux',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historique)',

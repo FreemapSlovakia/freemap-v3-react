@@ -1,11 +1,9 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const en: ObjectsMessages = {
   source: 'Source',
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Elevation',
   terrain: {
     prominence: 'Prominence',
@@ -23,7 +21,6 @@ const en: ObjectsMessages = {
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Error fetching the route', err),
-  showDetails: 'Details',
   moreGeneralTypes: 'More general types',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (history)',

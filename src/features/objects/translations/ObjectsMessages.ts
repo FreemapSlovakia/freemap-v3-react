@@ -1,17 +1,5 @@
-import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
-import type { SearchResult } from '@features/search/model/actions.js';
-import type { JSX } from 'react';
-import type { TerrainFacts } from '../model/terrainFacts.js';
-
 export type ObjectsMessages = {
   source: string;
-  detail: (props: {
-    result: SearchResult;
-    elevation: ElevationReading;
-    terrain: TerrainFacts | null;
-    /** The elevation is the terrain's summit or saddle point's, not the node's. */
-    atTerrainPoint: boolean;
-  }) => JSX.Element;
   elevation: string;
   terrain: {
     prominence: string;
@@ -34,7 +22,6 @@ export type ObjectsMessages = {
     fromMarker: (props: { distance: string }) => string;
   };
   routeFetchError: (props: { err: unknown }) => string;
-  showDetails: string;
   moreGeneralTypes: string;
   openInOsm: string;
   osmHistory: string;

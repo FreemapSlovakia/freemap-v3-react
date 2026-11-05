@@ -103,7 +103,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     clear: 'Vyčistit',
     convertToDrawing: 'Zkonvertovat na kreslení',
     toggleObjectType: 'Kliknutím zobrazíte nebo skryjete objekty tohoto typu',
-    hideObjectType: ({ name }) => <>Skrýt typ „{name}“</>,
     copyToDrawing: 'Kopírovat do kresby',
     copyTo: ({ tool }) => <>Kopírovat do nástroje {tool}</>,
     convertAllToDrawing: 'Zkonvertovat vše na kreslení',
@@ -220,6 +219,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   selections: {
     objects: 'Objekt (POI)',
+    event: 'Akce',
     drawPoints: 'Bod',
     drawLines: 'Čára',
     drawPolygons: 'Polygón',

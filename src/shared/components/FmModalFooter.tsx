@@ -126,6 +126,29 @@ function CollapsibleLabel({ priority, className, children }: LabelProps) {
   );
 }
 
+/**
+ * A label of something other than an {@link FmFooterButton} — a dropdown's
+ * toggle, say — that the footer drops the same way.
+ */
+export function FmCollapsibleLabel({
+  priority,
+  children,
+}: {
+  priority: number;
+  children: ReactNode;
+}): ReactElement {
+  const threshold = useContext(FooterCollapse);
+
+  return (
+    <CollapsibleLabel
+      priority={priority}
+      className={priority <= threshold ? 'd-none' : ''}
+    >
+      {children}
+    </CollapsibleLabel>
+  );
+}
+
 type FooterButtonProps = {
   icon: ReactNode;
   label: ReactNode;

@@ -6,7 +6,6 @@ import {
   resultCoords,
   resultExtentM,
 } from '@features/search/model/resultUtils.js';
-import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import {
   creditedAttributions,
   fetchElevations,
@@ -16,11 +15,10 @@ import { isAbortError } from '@shared/isAbortError.js';
 import { loadTerrainLicenses } from '@shared/tileLicenses.js';
 import type { LatLon } from '@shared/types/common.js';
 import { OsmFeatureIdSchema } from '@shared/types/featureId.js';
-import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import {
   objectsRouteClear,
+  objectsSetDetails,
   objectsTerrainMark,
-  setDetailsShown,
   type TerrainMarkKind,
 } from './actions.js';
 import {
@@ -38,8 +36,6 @@ import {
   terrainCredits,
   terrainFactsKind,
 } from './terrainFacts.js';
-
-const TOAST_ID = 'mapDetails.tags';
 
 /**
  * A node's terrain facts (`null` where the service holds none; values may still
@@ -115,7 +111,7 @@ async function readFacts(
 
   try {
     facts = await fetchTerrainFacts(kind, id, getState, {
-      // By the selection, which the upgrade leaves alone, unlike the toast key.
+      // By the selection, which the upgrade leaves alone, unlike the details key.
       stateChangePredicate: selectionKey,
     });
   } catch (err) {
@@ -168,7 +164,7 @@ function factsNode(
  */
 const MAX_ELEVATION_EXTENT_M = 200;
 
-/** Bumped by every run, so an older one's late reads can't re-show the toast. */
+/** Bumped by every run, so an older one's late reads can't re-show the details. */
 let runSeq = 0;
 
 /**
@@ -198,15 +194,11 @@ export const objectsTerrainOverlayProcessor: Processor = {
 };
 
 /**
- * Keeps the details toast a view of the selection, instead of something each
- * place that selects a feature has to push. It therefore follows the selection
- * the way a selection toolbar does, and the toast's × dismisses it for as long
- * as that feature stays selected (through `onClose`).
+ * Keeps the details of the selected object or search result in the store, for
+ * its panel, instead of something each place that selects a feature has to push.
  */
 export const objectDetailsProcessor: Processor = {
-  // Edge-triggered: only a changed subject opens the toast. Re-opening it
-  // merely because it is gone would make its × a no-op, and re-adding an
-  // unchanged one would throw it back to the top of the toast column.
+  // Edge-triggered: only a changed subject reads anew.
   stateChangePredicate: wantedKey,
   handle: async ({ getState, dispatch }) => {
     const state = getState();
@@ -216,8 +208,8 @@ export const objectDetailsProcessor: Processor = {
     const run = ++runSeq;
 
     if (!target) {
-      if (state.toasts.toasts[TOAST_ID]) {
-        dispatch(toastsRemove(TOAST_ID));
+      if (state.objects.details) {
+        dispatch(objectsSetDetails(null));
       }
 
       return;
@@ -229,18 +221,11 @@ export const objectDetailsProcessor: Processor = {
 
     const show = () =>
       dispatch(
-        toastsAdd({
-          id: TOAST_ID,
-          messageKey: 'detail',
-          messageLoader: loadObjectsMessages,
-          messageParams: {
-            result: target.result,
-            elevation,
-            terrain,
-            atTerrainPoint: serviceWon,
-          },
-          onClose: setDetailsShown(false),
-          style: 'info',
+        objectsSetDetails({
+          key: target.key,
+          elevation,
+          terrain,
+          atTerrainPoint: serviceWon,
         }),
       );
 
@@ -270,7 +255,7 @@ export const objectDetailsProcessor: Processor = {
     let serviceWon = Boolean(cachedReading);
 
     // The details show at once; the elevation and the terrain facts read
-    // separately and land in the same toast, so a slow API doesn't hold the
+    // separately and land in the same details, so a slow API doesn't hold the
     // tags back.
     elevation = cachedReading ?? {
       elevation: undefined,
@@ -287,14 +272,10 @@ export const objectDetailsProcessor: Processor = {
       return;
     }
 
-    // Not where the subject moved on, a newer run took over or the toast was
-    // dismissed since: checked right before re-adding, as anything may have run.
+    // Not where the subject moved on, was dismissed or a newer run took over:
+    // checked right before re-adding, as anything may have run.
     const update = () => {
-      if (
-        run === runSeq &&
-        wantedKey(getState()) === target.key &&
-        getState().toasts.toasts[TOAST_ID]
-      ) {
+      if (run === runSeq && wantedKey(getState()) === target.key) {
         show();
       }
     };
@@ -358,7 +339,7 @@ export const objectDetailsProcessor: Processor = {
         );
       } catch (err) {
         // An abort means something newer is already on its way (or the
-        // features were cleared) — leave the toast to whatever caused it.
+        // features were cleared) — leave the details to whatever caused it.
         if (isAbortError(err)) {
           return undefined;
         }

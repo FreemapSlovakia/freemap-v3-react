@@ -100,7 +100,6 @@ const messages: Messages = {
     clear: 'Clear',
     convertToDrawing: 'Convert to drawing',
     toggleObjectType: 'Click to show or hide objects of this type',
-    hideObjectType: ({ name }) => <>Hide type “{name}”</>,
     copyToDrawing: 'Copy to drawing',
     copyTo: ({ tool }) => <>Copy to {tool}</>,
     convertAllToDrawing: 'Convert all to drawing',
@@ -214,6 +213,7 @@ const messages: Messages = {
 
   selections: {
     objects: 'Object (POI)',
+    event: 'Event',
     drawPoints: 'Point',
     drawLines: 'Line',
     drawPolygons: 'Polygon',

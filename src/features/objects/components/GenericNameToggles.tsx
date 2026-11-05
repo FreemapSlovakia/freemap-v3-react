@@ -51,8 +51,6 @@ export function GenericNameToggles({ parts, tags }: Props): ReactNode {
         key={key}
         filterKey={category.key}
         className="fs-6 fw-normal"
-        // The popup is tinted, so the legend's grey would vanish on it.
-        inactiveClassName="bg-body"
         onToggle={onToggle}
       >
         {text}

@@ -13,7 +13,7 @@ import { iconOfKind } from '../model/transports.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
 
-/** An event's details, as its panel shows them under the title. */
+/** An event's details, as its panel shows them under its actions. */
 export function EventDetails({ event }: { event: EventItem }): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -67,6 +67,17 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
 
   return (
     <div className="d-flex flex-column gap-1">
+      {/* The panel's header names the kind, as for an object. */}
+      <p className="lead d-flex flex-wrap gap-2 align-items-baseline mb-2">
+        <span className="fw-semibold">{event.title}</span>
+
+        {event.visibility === 'unlisted' && (
+          <Badge bg="secondary" className="fs-6 fw-normal">
+            {em?.card.unlisted}
+          </Badge>
+        )}
+      </p>
+
       {event.cover && (
         <a
           href={coverUrl(event.cover, 'large')}
@@ -84,12 +95,6 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
             style={{ maxHeight: '180px', objectFit: 'cover' }}
           />
         </a>
-      )}
-
-      {event.visibility === 'unlisted' && (
-        <div>
-          <Badge bg="secondary">{em?.card.unlisted}</Badge>
-        </div>
       )}
 
       <div className="d-flex align-items-center gap-1">

@@ -193,13 +193,13 @@ export const searchSelectResult = createAction<{
   /** Defaults to `preview`. */
   tier?: SearchResultTier;
   /**
-   * Whether the result becomes the selected feature — the one the selection
-   * toolbar and the details panel are about. Defaults to true; an element
+   * Whether the result becomes the selected feature — the one the details
+   * panel is about. Defaults to true; an element
    * arriving from a fetch says no, the selection having been settled when it
    * was asked for.
    */
   select?: boolean;
-  /** Whether its details toast opens; defaults to true. */
+  /** Whether its panel opens; defaults to true. A click on it opens it later. */
   details?: boolean;
 } | null>('SEARCH_SELECT_RESULT');
 

@@ -1,4 +1,5 @@
 import { pickingModeSelector } from '@app/store/selectors.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { LatLon } from '@shared/types/common.js';
@@ -6,6 +7,7 @@ import {
   type ReactElement,
   type ReactNode,
   useEffect,
+  useRef,
   useState,
   useSyncExternalStore,
 } from 'react';
@@ -27,31 +29,40 @@ function useNarrow(): boolean {
 }
 
 // One panel docks at a time.
-let dockObserver: ResizeObserver | undefined;
+let docked: { node: HTMLElement; observer: ResizeObserver } | undefined;
 
 /**
  * Has the app's controls make room for the panel: its size goes to
  * `--fm-dock-size` and `body` names its side. The map stays under it.
  */
 function dock(node: HTMLElement, side: 'end' | 'bottom') {
-  undock();
+  release();
 
-  dockObserver = new ResizeObserver(() => {
+  const observer = new ResizeObserver(() => {
     document.body.style.setProperty(
       '--fm-dock-size',
       `${side === 'end' ? node.offsetWidth : node.offsetHeight}px`,
     );
   });
 
-  dockObserver.observe(node);
+  observer.observe(node);
+
+  docked = { node, observer };
 
   document.body.classList.add(`fm-docked-${side}`);
 }
 
-function undock() {
-  dockObserver?.disconnect();
+/** Only the panel docked: one leaving mustn't undock another coming in. */
+function undock(node: HTMLElement | null) {
+  if (docked && docked.node === node) {
+    release();
+  }
+}
 
-  dockObserver = undefined;
+function release() {
+  docked?.observer.disconnect();
+
+  docked = undefined;
 
   document.body.classList.remove('fm-docked-end', 'fm-docked-bottom');
 
@@ -65,6 +76,8 @@ type Props<T> = {
   show?: boolean;
   icon: ReactNode;
   title: (item: T) => ReactNode;
+  /** The manual chapter its header's book button opens, as a modal's does. */
+  manual?: string;
   /** A place on the map to keep clear of the panel, panned to when hidden. */
   keepVisible?: (item: T) => LatLon | undefined;
   onClose: () => void;
@@ -81,6 +94,7 @@ export function DockPanel<T>({
   show = item !== null,
   icon,
   title,
+  manual,
   keepVisible,
   onClose,
   children,
@@ -125,7 +139,9 @@ export function DockPanel<T>({
     }
   }, [entered, lat, lon, dispatch]);
 
-  useEffect(() => undock, []);
+  const nodeRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => () => undock(nodeRef.current), []);
 
   if (kept === null) {
     return null;
@@ -137,11 +153,15 @@ export function DockPanel<T>({
       key={side}
       // A picking mode takes the map, the panel's side included.
       show={show && !picking}
-      onEntering={(node: HTMLElement) => dock(node, side)}
+      onEntering={(node: HTMLElement) => {
+        nodeRef.current = node;
+
+        dock(node, side);
+      }}
       onEntered={() => setEnteredSide(side)}
       // The controls come back as the panel leaves, not after.
-      onExit={() => {
-        undock();
+      onExit={(node: HTMLElement) => {
+        undock(node);
 
         setEnteredSide(null);
       }}
@@ -166,6 +186,11 @@ export function DockPanel<T>({
 
           <span>{title(kept)}</span>
         </Offcanvas.Title>
+
+        {/* An embed offers no manual. */}
+        {manual && !window.fmEmbedded && (
+          <ManualHeaderButton chapter={manual} from="panel" />
+        )}
       </Offcanvas.Header>
 
       <Offcanvas.Body

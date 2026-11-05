@@ -1,7 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
@@ -10,7 +9,6 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Objektum jelölőjének stílusa',
   },
   source: 'Forrás',
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Magasság',
   terrain: {
     prominence: 'Prominencia',
@@ -28,7 +26,6 @@ const hu: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Hiba az út lekérésekor', err),
-  showDetails: 'Részletek',
   moreGeneralTypes: 'Általánosabb típusok',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (előzmények)',

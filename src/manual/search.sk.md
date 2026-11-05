@@ -22,13 +22,15 @@ Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, č
 
 ## Vybraný výsledok
 
-Výberom výsledku sa mapa presunie naň a výsledok sa vyberie: vykreslí sa farbou výberu a otvorí sa preň lišta:
+Výberom výsledku sa mapa presunie naň a výsledok sa vyberie: vykreslí sa farbou výberu a otvorí sa jeho panel – vpravo, na telefóne cez dolnú polovicu obrazovky. Panel obsahuje názov, druh, značky OpenStreetMap a ďalšie údaje o mieste, ako ich opisuje kapitola [Objekty](#show=manual/objects), a nad nimi:
 
-- :FaInfoCircle: **Podrobnosti** – názov, druh, značky OpenStreetMap a ďalšie údaje o mieste, ako ich opisuje kapitola [Objekty](#show=manual/objects).
 - :FaThumbtack: **Ponechať na mape** – výsledok zostane na mape, aj keď vyberiete ďalší, takže ich môžete mať viac vedľa seba. Ponechaný výsledok odstránite tlačidlom :FaTrash: **Zmazať** alebo klávesom <kbd>Del</kbd>.
-- :FaEllipsisV: obsahuje :FaPencilAlt: **Skonvertovať na kreslenie**, ktoré z výsledku urobí kresbu na úpravu (pozri [Kreslenie](#show=manual/drawing)), akcie pre miesto ako v kontextovom menu mapy a :FaExternalLinkAlt: **Otvoriť v…** iných mapách a aplikáciách.
+- :FaEllipsisV: obsahuje :FaPencilAlt: **Skonvertovať na kreslenie**, ktoré z výsledku urobí kresbu na úpravu (pozri [Kreslenie](#show=manual/drawing)), a akcie pre miesto ako v kontextovom menu mapy.
+- :FaExternalLinkAlt: **Otvoriť v…** iných mapách a aplikáciách.
 
-Výsledok, ktorý ste neponechali, zmizne, keď lištu zatvoríte tlačidlom × alebo klávesom <kbd>Esc</kbd>, prípadne keď vyberiete niečo iné. Ponechané prvky OpenStreetMap sú súčasťou odkazu na mapu, takže ich uvidí aj ten, kto ho otvorí.
+Miesto nájdené podľa názvu panel neotvorí, aby mapa zostala na očiach; otvoríte ho kliknutím na miesto v mape.
+
+Výsledok, ktorý ste neponechali, zmizne, keď jeho panel zatvoríte tlačidlom × alebo klávesom <kbd>Esc</kbd>, prípadne keď vyberiete niečo iné. Ponechané prvky OpenStreetMap sú súčasťou odkazu na mapu, takže ich uvidí aj ten, kto ho otvorí.
 
 Ako sa výsledky vykresľujú, nastavíte v :FaPaintBrush: **Štýl nálezu** na konci zoznamu poľa, za ktorým nasleduje :FaBook: **Príručka** otvárajúca túto kapitolu; pri prázdnom poli ▾ vedľa neho otvorí len tieto dva riadky.
 

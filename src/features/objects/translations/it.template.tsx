@@ -1,7 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
@@ -10,7 +9,6 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Stile marcatore oggetto',
   },
   source: 'Fonte',
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Elevazione',
   terrain: {
     prominence: 'Prominenza',
@@ -28,7 +26,6 @@ const it: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Errore nel recupero del percorso', err),
-  showDetails: 'Dettagli',
   moreGeneralTypes: 'Tipi più generici',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (storia)',

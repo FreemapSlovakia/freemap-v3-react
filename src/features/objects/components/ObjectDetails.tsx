@@ -1,7 +1,6 @@
 import { AsyncComponent } from '@app/components/AsyncComponent.js';
 import { changesetsShowHistory } from '@features/changesets/model/actions.js';
 import {
-  type ElevationReading,
   ElevationValue,
   hasElevationLine,
 } from '@features/elevationChart/components/ElevationValue.js';
@@ -27,10 +26,11 @@ import {
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
-import { AlertLink, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { FaHistory } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { hasTerrainValues, type TerrainFacts } from '../model/terrainFacts.js';
+import type { ObjectDetailsData } from '../model/actions.js';
+import { hasTerrainValues } from '../model/terrainFacts.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { GenericNameToggles } from './GenericNameToggles.js';
 import { SourceName } from './SourceName.js';
@@ -46,17 +46,12 @@ const changesetInspectorFactory = () =>
 
 type Props = {
   result: SearchResult;
-  elevation: ElevationReading;
-  terrain: TerrainFacts | null;
-  atTerrainPoint: boolean;
+  details: ObjectDetailsData;
 };
 
-export function ObjectDetails({
-  result,
-  elevation,
-  terrain,
-  atTerrainPoint,
-}: Props): ReactElement {
+export function ObjectDetails({ result, details }: Props): ReactElement {
+  const { elevation, terrain, atTerrainPoint } = details;
+
   const { id, geojson } = result;
 
   const genericNameParts = useGenericNameParts(result);
@@ -233,13 +228,13 @@ export function ObjectDetails({
         <Text m={om} k="source" />:{' '}
         {/* An OSM element's source opens it there, as the ⋮ menu does. */}
         {parsedId.success ? (
-          <AlertLink
+          <a
             href={getOsmElementUrl(parsedId.data)}
             target="_blank"
             rel="noopener noreferrer"
           >
             <SourceName result={result} />
-          </AlertLink>
+          </a>
         ) : (
           <SourceName result={result} />
         )}

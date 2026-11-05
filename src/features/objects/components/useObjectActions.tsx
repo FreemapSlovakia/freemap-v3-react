@@ -23,7 +23,6 @@ import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import {
   ActionDivider,
   ActionItems,
-  ActionSubmenu,
 } from '@shared/components/ResponsiveActions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
@@ -36,13 +35,17 @@ import {
 import { afterPrefix } from '@shared/types/typeUtils.js';
 import { type ReactNode, useMemo } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FaExternalLinkAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
 type Props = {
   /** The selected feature, or `null` where nothing is selected. */
   result: SearchResult | null;
+  /**
+   * Whether the `j` chords open it; off for a panel still showing a feature no
+   * longer selected, as it slides out or while the next one loads.
+   */
+  bindKeys?: boolean;
 };
 
 /**
@@ -50,13 +53,13 @@ type Props = {
  * menu does with the place it stands at, and opening it elsewhere — its page on
  * osm.org, JOSM, the other maps.
  *
- * The actions come back as a list to spread into the toolbar's own
- * `ResponsiveActions`, so both toolbars that can carry them share one ⋮ menu
- * instead of growing a second. `onSelect` belongs on that same component — the
- * external-app items act through their `eventKey`.
+ * A panel spreads `placeActions` into its ⋮ menu and gives `openInItems` a
+ * menu of their own (`OpenInMenu`). `onSelect` goes on both — the external-app
+ * items act through their `eventKey`.
  */
-export function useObjectActions({ result }: Props): {
-  actions: ReactNode[];
+export function useObjectActions({ result, bindKeys = true }: Props): {
+  placeActions: ReactNode[];
+  openInItems: ReactNode;
   onSelect: SelectCallback;
 } {
   const om = useObjectsMessages();
@@ -170,16 +173,6 @@ export function useObjectActions({ result }: Props): {
     </>
   );
 
-  const openIn = (items: ReactNode) => (
-    <ActionSubmenu
-      key="open-in"
-      label={oeam?.openIn}
-      icon={<FaExternalLinkAlt />}
-    >
-      {items}
-    </ActionSubmenu>
-  );
-
   const open = (where: ExternalTarget) => {
     const element = parsedId?.success ? parsedId.data : undefined;
 
@@ -208,43 +201,43 @@ export function useObjectActions({ result }: Props): {
   };
 
   // Without a position nothing but JOSM could open, so the map's view keeps the chords.
-  useSelectionOpener(coords ? open : null);
+  useSelectionOpener(coords && bindKeys ? open : null);
 
-  const actions: ReactNode[] = [];
+  const placed = coords && !window.fmEmbedded;
 
-  if (coords && !window.fmEmbedded) {
-    actions.push(
-      <ActionDivider key="place-divider" />,
+  const placeActions: ReactNode[] = placed
+    ? [
+        <ActionDivider key="place-divider" />,
 
-      <ActionItems key="location">
-        <LocationActionItems {...coords} pointTitle={displayName} />
-      </ActionItems>,
+        <ActionItems key="location">
+          <LocationActionItems {...coords} pointTitle={displayName} />
+        </ActionItems>,
+      ]
+    : [];
 
-      <ActionDivider key="open-in-divider" />,
-
-      openIn(
-        <OpenInExternalTargetItems
-          lat={coords.lat}
-          lon={coords.lon}
-          zoom={zoom}
-          includePoint
-          // The editors here open the element itself; the list's own open
-          // whatever is at the position, which is not the same thing.
-          editors={false}
-          showKbdShortcut
-        >
-          {osmItems}
-        </OpenInExternalTargetItems>,
-      ),
-    );
-  } else if (osmItems) {
-    // No place to act at — a hit that came without geometry — so the element's
-    // own entries are all the section holds.
-    actions.push(<ActionDivider key="osm-divider" />, openIn(osmItems));
-  }
+  // Without a place to act at — a hit that came without geometry — the
+  // element's own entries are all the section holds.
+  const openInItems = placed ? (
+    <OpenInExternalTargetItems
+      lat={coords.lat}
+      lon={coords.lon}
+      zoom={zoom}
+      includePoint
+      // The editors here open the element itself; the list's own open
+      // whatever is at the position, which is not the same thing.
+      editors={false}
+      showKbdShortcut
+    >
+      {osmItems}
+    </OpenInExternalTargetItems>
+  ) : (
+    osmItems
+  );
 
   return {
-    actions,
+    placeActions,
+
+    openInItems,
 
     onSelect: (eventKey) => {
       const where =

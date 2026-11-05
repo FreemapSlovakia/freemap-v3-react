@@ -508,8 +508,10 @@ a[target]:not(
 /* In a menu row the mark sits after the label, outside its ellipsis, and ahead
    of the gutter, which `order` moves behind it. */
 .dropdown-item[target]:not([target="_self"]) {
+  /* A flex item there, so it needs a height, or the glyph draws in an empty box */
   &::after {
     margin-left: 0;
+    height: 1em;
   }
 
   & > .text-truncate ~ * {
@@ -526,7 +528,8 @@ a[target]:not(
 .fm-dock {
   --bs-offcanvas-width: 26rem;
   --bs-offcanvas-height: 50dvh;
-  --bs-offcanvas-box-shadow: var(--fm-shadow-2);
+  /* Docked beside the map, not over it: its border is the edge */
+  --bs-offcanvas-box-shadow: none;
   /* Over the header and the bottom controls (1010), under a panel the header
      puts in full screen (1012, see `Main.module.css`). */
   --bs-offcanvas-zindex: 1011;

@@ -1,7 +1,6 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
@@ -10,7 +9,6 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     title: 'Styl znacznika obiektu',
   },
   source: 'Źródło',
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Wysokość n.p.m.',
   terrain: {
     prominence: 'Wybitność',
@@ -38,7 +36,6 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
     ring: 'Pierścień',
     square: 'Kwadrat',
   },
-  showDetails: 'Szczegóły',
   moreGeneralTypes: 'Bardziej ogólne typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historia)',

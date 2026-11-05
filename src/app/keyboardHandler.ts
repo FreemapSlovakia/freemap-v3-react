@@ -235,7 +235,7 @@ const toolChapters: Record<Tool, string> = {
 
 /**
  * The manual chapter F1 opens: the open modal's `ManualHeaderButton` one, else
- * a selected note's or search result's, else the map-click tool's, else the
+ * a selected note's, search result's or object's, else the map-click tool's, else the
  * newest other tool's; undefined opens the first.
  */
 export function manualChapterFor(state: RootState): string | undefined {
@@ -259,6 +259,10 @@ export function manualChapterFor(state: RootState): string | undefined {
 
   if (state.main.selection?.type === 'search') {
     return 'search';
+  }
+
+  if (state.main.selection?.type === 'objects') {
+    return 'objects';
   }
 
   // The map-click tool first: a draw tool brings 'import-file' along with it.

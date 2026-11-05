@@ -3,10 +3,12 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { upgradeObjectFilter } from '@osm/taxon.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
+  type ObjectDetailsData,
   type ObjectsResult,
   objectsRouteClear,
   objectsRouteRequest,
   objectsRouteSet,
+  objectsSetDetails,
   objectsSetFilter,
   objectsSetResult,
   objectsTerrainMark,
@@ -17,10 +19,11 @@ import {
 export interface ObjectsState {
   objects: ObjectsResult[];
   active: string[];
-  /** The details toast's peak route; `coordinates` is null while it loads. */
+  /** The details' peak route; `coordinates` is null while it loads. */
   route: { osmId: number; coordinates: [number, number][] | null } | null;
-  /** What the details toast marks on the map. */
+  /** What the details mark on the map. */
   marks: Partial<Record<TerrainMarkKind, TerrainMark>>;
+  details: ObjectDetailsData | null;
 }
 
 export const objectInitialState: ObjectsState = {
@@ -28,11 +31,15 @@ export const objectInitialState: ObjectsState = {
   active: [],
   route: null,
   marks: {},
+  details: null,
 };
 
 export const objectsReducer = createReducer(objectInitialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => objectInitialState)
+    .addCase(objectsSetDetails, (state, { payload }) => {
+      state.details = payload;
+    })
     .addCase(objectsRouteRequest, (state, { payload }) => {
       state.route = { osmId: payload.osmId, coordinates: null };
     })

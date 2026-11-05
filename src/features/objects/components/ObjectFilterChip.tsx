@@ -10,8 +10,6 @@ import { useDispatch } from 'react-redux';
 type Props = ComponentPropsWithRef<'a'> & {
   /** The filter this chip stands for — an `ObjectCategory`'s `key`. */
   filterKey: string;
-  /** The resting background; the tinted details popup needs `bg-body`. */
-  inactiveClassName?: string;
   /** What the tooltip says above the hint — the legend shows the tags there. */
   tooltip?: ReactNode;
   onToggle?: () => void;
@@ -23,7 +21,6 @@ type Props = ComponentPropsWithRef<'a'> & {
  */
 export function ObjectFilterChip({
   filterKey,
-  inactiveClassName = 'bg-body-secondary',
   className,
   children,
   tooltip,
@@ -53,7 +50,7 @@ export function ObjectFilterChip({
           {...tipProps}
           className={clsx(
             'px-2 rounded',
-            index > -1 ? 'bg-primary text-light' : inactiveClassName,
+            index > -1 ? 'bg-primary text-light' : 'bg-body-secondary',
             className,
           )}
           href={`/#objects=${encodeURIComponent(next.join(';'))}`}

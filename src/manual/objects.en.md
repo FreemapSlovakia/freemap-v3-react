@@ -28,7 +28,7 @@ Its :FaEllipsisV: menu holds:
 
 ## Object details
 
-Click an object to select it. Its details then open:
+Click an object to select it. Its panel then opens on the right, or over the lower half of a phone's screen, with the details:
 
 - the name and the kinds of the place. Each kind is a button that shows or hides objects of that type; :FaChevronRight: adds the **More general types**.
 - the **Elevation** read from the terrain model,
@@ -36,7 +36,7 @@ Click an object to select it. Its details then open:
 - :FaHistory: **History** – the versions of the object, newest first, each with its date, author and comment. Clicking a comment shows what that change did to the object.
 - **Source** – a link to the object on OpenStreetMap.org.
 
-The × closes the details while the object stays selected; clicking the object on the map opens them again.
+Clicking another object shows its details in the same panel. The × (or <kbd>Esc</kbd>) deselects the object and closes the panel.
 
 ![Details of a peak](./images/objects-details.en.webp)
 
@@ -53,12 +53,12 @@ For a saddle or mountain pass they show the **Saddle elevation**, the **Saddle d
 
 ## Selected object
 
-A selected object has its own :FaMapMarkerAlt: **Object (POI)** toolbar. Its :FaEllipsisV: menu holds:
+At the top of the object's panel are two menus. :FaEllipsisV: holds:
 
-- :FaEyeSlash: **Hide type “…”** – switches off the type the object is shown under,
 - :FaPencilAlt: **Copy to drawing** – a copy of the object in the drawing, while the object stays on the map. For a building, area or route you can choose its **Own geometry** instead of a single point.
 - :FaSearch: **Show as Lookup** – keeps the object on the map even after its type is switched off,
-- the same actions for the place as the map's context menu, such as a route from or to it,
-- :FaExternalLinkAlt: **Open in…** – **OpenStreetMap.org**, **OpenStreetMap.org (history)**, the **JOSM** and **iD** editors, and other maps and apps.
+- the same actions for the place as the map's context menu, such as a route from or to it.
+
+:FaExternalLinkAlt: **Open in…** beside it holds **OpenStreetMap.org**, **OpenStreetMap.org (history)**, the **JOSM** and **iD** editors, and other maps and apps.
 
 To find out what is at any place on the map, not only objects of the chosen types, see [Map details](#show=manual/map-details).

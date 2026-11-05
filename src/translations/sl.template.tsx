@@ -102,7 +102,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     clear: 'Počisti',
     convertToDrawing: 'Pretvori v risbo',
     toggleObjectType: 'Kliknite za prikaz ali skritje objektov te vrste',
-    hideObjectType: ({ name }) => <>Skrij vrsto »{name}«</>,
     copyToDrawing: 'Kopiraj v risbo',
     copyTo: ({ tool }) => <>Kopiraj v {tool}</>,
     convertAllToDrawing: 'Pretvori vse v risbo',
@@ -219,6 +218,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   selections: {
     objects: 'Objekt (POI)',
+    event: 'Dogodek',
     drawPoints: 'Točka',
     drawLines: 'Črta',
     drawPolygons: 'Poligon',

@@ -1,12 +1,10 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Zdroj',
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmorská výška',
   terrain: {
     prominence: 'Prominencia',
@@ -24,7 +22,6 @@ const sk: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri získavaní cesty', err),
-  showDetails: 'Podrobnosti',
   moreGeneralTypes: 'Všeobecnejšie typy',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (história)',

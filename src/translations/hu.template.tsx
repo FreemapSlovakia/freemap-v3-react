@@ -102,7 +102,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     convertToDrawing: 'Átalakítás rajzzá',
     toggleObjectType:
       'Kattintson az ilyen típusú objektumok megjelenítéséhez vagy elrejtéséhez',
-    hideObjectType: ({ name }) => <>„{name}” típus elrejtése</>,
     copyToDrawing: 'Másolás a rajzba',
     copyTo: ({ tool }) => <>Másolás ide: {tool}</>,
     convertAllToDrawing: 'Összes átalakítása rajzzá',
@@ -221,6 +220,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   selections: {
     objects: 'Objektum (érdekes pont, POI)',
+    event: 'Esemény',
     drawPoints: 'Pont',
     drawLines: 'Vonal',
     drawPolygons: 'Sokszög',

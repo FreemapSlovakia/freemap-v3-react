@@ -22,13 +22,15 @@ Without an internet connection only coordinates, a bounding box, tile numbers an
 
 ## A picked result
 
-Picking a result moves the map to it and selects it: it is drawn in the selection colour and a toolbar opens for it:
+Picking a result moves the map to it and selects it: it is drawn in the selection colour and its panel opens on the right, or over the lower half of a phone's screen. The panel holds the name, kind, OpenStreetMap tags and other data of the place, as described in [Objects](#show=manual/objects), and above them:
 
-- :FaInfoCircle: **Details** – the name, kind, OpenStreetMap tags and other data of the place, as described in [Objects](#show=manual/objects).
 - :FaThumbtack: **Keep on the map** – the result stays on the map when you pick another one, so you can keep several side by side. A kept result is removed with :FaTrash: **Delete**, or with <kbd>Del</kbd>.
-- :FaEllipsisV: holds :FaPencilAlt: **Convert to drawing**, which turns the result into a drawing you can edit (see [Drawing](#show=manual/drawing)), the actions for the place, as in the map's context menu, and :FaExternalLinkAlt: **Open in…** other maps and apps.
+- :FaEllipsisV: holds :FaPencilAlt: **Convert to drawing**, which turns the result into a drawing you can edit (see [Drawing](#show=manual/drawing)), and the actions for the place, as in the map's context menu.
+- :FaExternalLinkAlt: **Open in…** other maps and apps.
 
-A result you have not kept goes away when you close its toolbar with × or <kbd>Esc</kbd>, or select something else. Kept OpenStreetMap elements are part of the link to the map, so whoever opens it sees them too.
+A place found by its name opens no panel, so the map stays in view; clicking the place on the map opens it.
+
+A result you have not kept goes away when you close its panel with × or press <kbd>Esc</kbd>, or select something else. Kept OpenStreetMap elements are part of the link to the map, so whoever opens it sees them too.
 
 How results are drawn is set in :FaPaintBrush: **Lookup style** at the end of the box's list, followed by :FaBook: **Manual**, which opens this chapter; with the box empty, ▾ beside it opens just these two rows.
 

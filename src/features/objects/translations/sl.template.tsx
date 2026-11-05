@@ -1,12 +1,10 @@
 import { getMessages } from '@features/l10n/messagesStore.js';
 import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.js';
 import { addError } from '@/translations/messagesInterface.js';
-import { ObjectDetails } from '../components/ObjectDetails.js';
 import type { ObjectsMessages } from './ObjectsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   source: 'Vir',
-  detail: (props) => <ObjectDetails {...props} />,
   elevation: 'Nadmorska višina',
   terrain: {
     prominence: 'Prominenca',
@@ -24,7 +22,6 @@ const sl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   },
   routeFetchError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri pridobivanju poti', err),
-  showDetails: 'Podrobnosti',
   moreGeneralTypes: 'Splošnejše vrste',
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (zgodovina)',

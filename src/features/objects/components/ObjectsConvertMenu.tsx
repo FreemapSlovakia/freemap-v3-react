@@ -22,15 +22,14 @@ type Props = {
   object?: ObjectsResult;
   /** Further `Action`s for the same menu — what the one object can do. */
   children?: ReactNode;
-  /** `Action`s above the menu's own, for what is done oftenest. */
-  leading?: ReactNode;
   onSelect?: SelectCallback;
+  /** The menu's toggle; a ⋮ by default. */
+  toggle?: ReactNode;
 };
 
 /**
  * What can be made of an object somewhere else — a drawing, loaded data, a
- * lookup. Shared by
- * the selection toolbar and the tool's own, so that acting on one object and
+ * lookup. Shared by the object's panel and the tool's toolbar, so that acting on one object and
  * acting on all of them are the same gesture, and the next thing they can
  * become is added once.
  *
@@ -42,8 +41,8 @@ type Props = {
 export function ObjectsConvertMenu({
   object,
   children,
-  leading,
   onSelect,
+  toggle,
 }: Props): ReactElement {
   const m = useMessages();
 
@@ -107,9 +106,11 @@ export function ObjectsConvertMenu({
   };
 
   return (
-    <ResponsiveActions onSelect={onSelect} toggleLabel={m?.general.actions}>
-      {leading}
-
+    <ResponsiveActions
+      onSelect={onSelect}
+      toggle={toggle}
+      toggleLabel={m?.general.actions}
+    >
       <Action
         icon={<FaPencilAlt />}
         label={drawingLabel}

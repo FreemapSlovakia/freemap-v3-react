@@ -47,6 +47,8 @@ function mapUrl(mapId: string): string {
 export default function EventSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
+  const m = useMessages();
+
   const event = useAppSelector((state) => state.events.selected);
 
   // By the id, which stays while the next event loads.
@@ -57,7 +59,7 @@ export default function EventSelection(): ReactElement | null {
       item={event}
       show={shown}
       icon={<FaCalendarDay />}
-      title={(event) => event.title}
+      title={() => m?.selections.event}
       keepVisible={(event) => event.startPoint}
       onClose={() => dispatch(selectFeature(null))}
     >

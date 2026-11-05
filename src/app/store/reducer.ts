@@ -67,10 +67,8 @@ export interface MainState {
   errorTicketId: string | undefined;
   embedFeatures: string[];
   selection: Selection | null;
-  /** Whether the selected feature's details toast is wanted; set anew by every selecting. */
+  /** Whether the selected feature's panel is wanted; set anew by every selecting. */
   detailsShown: boolean;
-  /** The selection came without its details, so its toolbar offers them. */
-  detailsOnRequest: boolean;
   hiddenInfoBars: Record<string, number>;
   shownInfoBars: Record<string, number>;
 }
@@ -83,7 +81,6 @@ export const mainInitialState: MainState = {
   embedFeatures: [],
   selection: null,
   detailsShown: true,
-  detailsOnRequest: false,
   hiddenInfoBars: {},
   shownInfoBars: {},
 };
@@ -199,8 +196,6 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       state.selection = payload.selection;
 
       state.detailsShown = true;
-
-      state.detailsOnRequest = false;
     })
     .addCase(setActiveModal, (state, action) => {
       state.activeModal = action.payload;
@@ -231,13 +226,9 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
           id: payload.result.id,
         };
 
-        // Re-picking the selected feature opens its details, never closes them,
-        // and keeps its toggle.
-        const shows = payload.details ?? true;
-
-        state.detailsOnRequest = (same && state.detailsOnRequest) || !shows;
-
-        state.detailsShown = (same && state.detailsShown) || shows;
+        // Re-picking the selected feature opens its panel, never closes it.
+        state.detailsShown =
+          (same && state.detailsShown) || (payload.details ?? true);
       }
     })
     // The other shown results stay, but nothing is acted upon until one of them
@@ -261,10 +252,7 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
 
       state.selection = action.payload;
 
-      // Re-selecting the selected feature is how its details come back after ×.
       state.detailsShown = true;
-
-      state.detailsOnRequest = false;
     })
     .addCase(selectionRenumbered, (state, action) => {
       state.selection = action.payload;

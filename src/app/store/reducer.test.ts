@@ -232,46 +232,36 @@ describe('detailsShown', () => {
   const quietPick = searchSelectResult({ result: aResult, details: false });
 
   it('a pick shows its details unless it says not to', () => {
-    expect(run(searchSelectResult({ result: aResult }))).toMatchObject({
-      detailsShown: true,
-      detailsOnRequest: false,
-    });
+    expect(run(searchSelectResult({ result: aResult })).detailsShown).toBe(
+      true,
+    );
 
-    expect(run(quietPick)).toMatchObject({
-      detailsShown: false,
-      detailsOnRequest: true,
-    });
+    expect(run(quietPick).detailsShown).toBe(false);
   });
 
-  it('a pick without details keeps its toggle while it stays selected', () => {
-    // Asking for them.
-    expect(run(quietPick, setDetailsShown(true))).toMatchObject({
-      detailsShown: true,
-      detailsOnRequest: true,
-    });
-
-    // Clicking it on the map, which shows them.
+  it('a pick without details opens them when clicked on the map', () => {
     expect(
-      run(quietPick, searchSelectResult({ result: aResult, tier: 'keep' })),
-    ).toMatchObject({ detailsShown: true, detailsOnRequest: true });
+      run(quietPick, searchSelectResult({ result: aResult, tier: 'keep' }))
+        .detailsShown,
+    ).toBe(true);
 
-    // Keeping it, which changes neither.
-    expect(run(quietPick, searchKeepResult(aResult.id))).toMatchObject({
-      detailsShown: false,
-      detailsOnRequest: true,
-    });
+    // Keeping it doesn't.
+    expect(run(quietPick, searchKeepResult(aResult.id)).detailsShown).toBe(
+      false,
+    );
 
     // Another result is a new selection.
     expect(
-      run(quietPick, searchSelectResult({ result: anotherResult })),
-    ).toMatchObject({ detailsShown: true, detailsOnRequest: false });
+      run(quietPick, searchSelectResult({ result: anotherResult }))
+        .detailsShown,
+    ).toBe(true);
   });
 
-  it('picking it again never closes details asked for', () => {
-    expect(run(quietPick, setDetailsShown(true), quietPick)).toMatchObject({
-      detailsShown: true,
-      detailsOnRequest: true,
-    });
+  it('picking it again never closes details opened', () => {
+    expect(
+      run(quietPick, searchSelectResult({ result: aResult }), quietPick)
+        .detailsShown,
+    ).toBe(true);
   });
 
   it('an element landing for the selection leaves it alone', () => {
@@ -281,7 +271,7 @@ describe('detailsShown', () => {
     ).toBe(false);
   });
 
-  it('selecting again brings back details dismissed with ×', () => {
+  it('selecting again brings back details dismissed', () => {
     const selection = {
       type: 'objects',
       id: { type: 'osm', elementType: 'node', id: 1 },
@@ -297,7 +287,7 @@ describe('detailsShown', () => {
         setDetailsShown(false),
         selectFeature(selection),
       ),
-    ).toMatchObject({ detailsShown: true, detailsOnRequest: false });
+    ).toMatchObject({ detailsShown: true });
   });
 
   it('a selection an embed ignores leaves it alone', () => {

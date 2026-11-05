@@ -1,12 +1,12 @@
 import type { RootState } from '@app/store/store.js';
 import type { SearchResult } from '@features/search/model/actions.js';
-import { toastsAdd, toastsRemove } from '@features/toasts/model/actions.js';
 import { fetchElevations } from '@shared/elevation.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import { lineString, point } from '@turf/helpers';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { type ObjectDetailsData, objectsSetDetails } from './actions.js';
 import { objectDetailsProcessor } from './objectDetailsProcessor.js';
-import { wantedTarget } from './selectors.js';
+import { wantedKey, wantedTarget } from './selectors.js';
 
 vi.mock('@shared/elevation.js', () => ({
   fetchElevations: vi.fn(),
@@ -22,8 +22,8 @@ beforeEach(() => {
   fetchElevationsMock.mockReset().mockResolvedValue([null]);
 });
 
-// `wantedTarget` names the toast's subject; the processor turns a change of
-// subject into an add or a remove. A minimal cast state is enough for both.
+// `wantedTarget` names the details' subject; the processor turns a change of
+// subject into new details or none. A minimal cast state is enough for both.
 
 const anObject = (
   id: number,
@@ -39,26 +39,32 @@ const state = ({
   objects = [],
   selectedResults = [],
   detailsShown = true,
-  toasted = false,
+  shown = false,
 }: {
   selection?: { type: string; id?: unknown };
   objects?: ReturnType<typeof anObject>[];
   selectedResults?: SearchResult[];
   detailsShown?: boolean;
-  toasted?: boolean;
-}): RootState =>
-  ({
+  shown?: boolean;
+}): RootState => {
+  const s = {
     main: { selection, detailsShown },
-    objects: { objects },
+    objects: { objects, details: null as { key?: string } | null },
     search: { selectedResults },
-    toasts: { toasts: toasted ? { 'mapDetails.tags': {} } : {} },
-  }) as unknown as RootState;
+  } as unknown as RootState;
+
+  if (shown) {
+    s.objects.details = { key: wantedKey(s) } as ObjectDetailsData;
+  }
+
+  return s;
+};
 
 describe('wantedTarget', () => {
   it('keys an object by its feature id, not by the instance in the store', () => {
     // Every pan and zoom re-runs the search and rebuilds the object list, so
     // an identity-based key would report a new subject for an object the user
-    // is still looking at — and bounce the toast to the top of the column.
+    // is still looking at — and read its details anew.
     const selection = { type: 'objects', id: anObject(1).id };
 
     const before = wantedTarget(state({ selection, objects: [anObject(1)] }));
@@ -170,48 +176,67 @@ describe('objectDetailsProcessor', () => {
 
   const selection = { type: 'objects', id: anObject(1).id };
 
-  it('opens the toast when a subject is selected', () => {
+  const searched = {
+    selection: { type: 'search', id: { type: 'other' } },
+    selectedResults: [
+      {
+        id: { type: 'other' },
+        geojson: { type: 'Feature', properties: {}, geometry: null },
+      } as unknown as SearchResult,
+    ],
+  };
+
+  it('gives a selected object its details', () => {
     const { dispatch } = run(
       state({}),
       state({ selection, objects: [anObject(1)] }),
     );
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch.mock.calls[0][0].type).toBe(toastsAdd.type);
+    expect(dispatch.mock.calls[0][0].type).toBe(objectsSetDetails.type);
   });
 
-  it('leaves the toast alone while the subject is unchanged', () => {
-    // Notably after the user's × closed it: re-opening a toast the user just
-    // dismissed would make its close button a no-op.
-    const before = state({ selection, objects: [anObject(1)], toasted: true });
+  it('gives a selected search result its details', () => {
+    const { dispatch } = run(state({}), state(searched));
+
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch.mock.calls[0][0].type).toBe(objectsSetDetails.type);
+  });
+
+  it('leaves the details alone while the subject is unchanged', () => {
+    const before = state({ selection, objects: [anObject(1)], shown: true });
 
     const after = state({ selection, objects: [anObject(1)] });
 
     expect(run(before, after).dispatch).not.toHaveBeenCalled();
   });
 
-  it('closes the toast when the subject is dismissed', () => {
+  it('drops the details when the subject is dismissed', () => {
     const { dispatch } = run(
-      state({ selection, objects: [anObject(1)], toasted: true }),
+      state({ selection, objects: [anObject(1)], shown: true }),
       state({
         selection,
         objects: [anObject(1)],
         detailsShown: false,
-        toasted: true,
+        shown: true,
       }),
     );
 
     expect(dispatch).toHaveBeenCalledTimes(1);
-    expect(dispatch.mock.calls[0][0]).toEqual(toastsRemove('mapDetails.tags'));
+    expect(dispatch.mock.calls[0][0]).toEqual(objectsSetDetails(null));
   });
 
-  it('closes the toast when the selection goes away', () => {
+  it('drops the details when the selection goes away', () => {
+    const next = state({});
+
+    next.objects.details = { key: 'objects:x' } as ObjectDetailsData;
+
     const { dispatch } = run(
-      state({ selection, objects: [anObject(1)], toasted: true }),
-      state({ toasted: true }),
+      state({ selection, objects: [anObject(1)], shown: true }),
+      next,
     );
 
-    expect(dispatch.mock.calls[0][0]).toEqual(toastsRemove('mapDetails.tags'));
+    expect(dispatch.mock.calls[0][0]).toEqual(objectsSetDetails(null));
   });
 
   it('shows the tags at once and the elevation when it arrives', async () => {
@@ -228,14 +253,14 @@ describe('objectDetailsProcessor', () => {
       },
     );
 
-    // `toasted` because the toast the handler just added is what the arriving
-    // elevation updates — the stub dispatch can't put it there itself.
+    // `shown` because the details the handler just set are what the arriving
+    // elevation updates — the stub dispatch can't put them there itself.
     const { dispatch, done } = run(
       state({}),
-      state({ selection, objects: [anObject(1)], toasted: true }),
+      state({ selection, objects: [anObject(1)], shown: true }),
     );
 
-    expect(dispatch.mock.calls[0][0].payload.messageParams.elevation).toEqual({
+    expect(dispatch.mock.calls[0][0].payload.elevation).toEqual({
       elevation: undefined,
       loading: true,
       sources: [],
@@ -246,7 +271,7 @@ describe('objectDetailsProcessor', () => {
 
     expect(fetchElevationsMock.mock.calls[0][0]).toEqual([[48, 17]]);
 
-    expect(dispatch.mock.calls[1][0].payload.messageParams.elevation).toEqual({
+    expect(dispatch.mock.calls[1][0].payload.elevation).toEqual({
       elevation: 512,
       loading: false,
       sources: ['sk'],
@@ -263,12 +288,12 @@ describe('objectDetailsProcessor', () => {
 
     const { dispatch, done } = run(
       state({}),
-      state({ selection, objects: [anObject(1)], toasted: true }),
+      state({ selection, objects: [anObject(1)], shown: true }),
     );
 
     await done;
 
-    expect(dispatch.mock.calls[1][0].payload.messageParams.elevation).toEqual({
+    expect(dispatch.mock.calls[1][0].payload.elevation).toEqual({
       elevation: undefined,
       loading: false,
       error: err,
@@ -278,13 +303,23 @@ describe('objectDetailsProcessor', () => {
   });
 
   it('drops an elevation that arrives for a subject already gone', async () => {
-    const nextState = state({ selection, objects: [anObject(1)] });
+    let current = state({ selection, objects: [anObject(1)] });
 
-    const { dispatch, done } = run(state({}), nextState);
+    const dispatch = vi.fn();
+
+    const done = objectDetailsProcessor.handle?.({
+      prevState: state({}),
+      getState: () => current,
+      dispatch,
+      action: { type: 'WHATEVER', payload: undefined },
+      toastError: async () => {},
+    });
+
+    // Dismissed while the read is in flight.
+    current = state({ selection, objects: [anObject(1)], detailsShown: false });
 
     await done;
 
-    // The toast is not in the state, so the user dismissed it meanwhile.
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
@@ -296,7 +331,7 @@ describe('objectDetailsProcessor', () => {
     // start another read.
     const { done } = run(
       state({}),
-      state({ selection, objects: [anObject(1)], toasted: true }),
+      state({ selection, objects: [anObject(1)], shown: true }),
     );
 
     await done;
@@ -317,16 +352,16 @@ describe('objectDetailsProcessor', () => {
     );
   });
 
-  it('leaves the toast to whoever aborted the read', async () => {
+  it('leaves the details to whoever aborted the read', async () => {
     // The abort says the subject moved on, and the run for the new one owns the
-    // toast from here; overwriting it would describe what is no longer shown.
+    // details from here; overwriting it would describe what is no longer shown.
     fetchElevationsMock.mockRejectedValue(
       new DOMException('canceled', 'AbortError'),
     );
 
     const { dispatch, done } = run(
       state({}),
-      state({ selection, objects: [anObject(1)], toasted: true }),
+      state({ selection, objects: [anObject(1)], shown: true }),
     );
 
     await done;
@@ -347,7 +382,7 @@ describe('objectDetailsProcessor', () => {
       state({
         selection: { type: 'search', id: { type: 'other' } },
         selectedResults: [selectedResult],
-        toasted: true,
+        shown: true,
       }),
     );
 
@@ -357,7 +392,7 @@ describe('objectDetailsProcessor', () => {
 
     expect(dispatch).toHaveBeenCalledTimes(1);
 
-    expect(dispatch.mock.calls[0][0].payload.messageParams.elevation).toEqual({
+    expect(dispatch.mock.calls[0][0].payload.elevation).toEqual({
       elevation: undefined,
       loading: false,
       sources: [],
@@ -381,7 +416,7 @@ describe('objectDetailsProcessor', () => {
       state({
         selection: { type: 'search', id: { type: 'other' } },
         selectedResults: [selectedResult],
-        toasted: true,
+        shown: true,
       }),
     );
 
@@ -411,7 +446,7 @@ describe('objectDetailsProcessor', () => {
       state({
         selection: { type: 'search', id: { type: 'other' } },
         selectedResults: [selectedResult],
-        toasted: true,
+        shown: true,
       }),
     );
 
@@ -421,7 +456,7 @@ describe('objectDetailsProcessor', () => {
 
     expect(dispatch).toHaveBeenCalledTimes(1);
 
-    expect(dispatch.mock.calls[0][0].payload.messageParams.elevation).toEqual({
+    expect(dispatch.mock.calls[0][0].payload.elevation).toEqual({
       elevation: undefined,
       loading: false,
       sources: [],

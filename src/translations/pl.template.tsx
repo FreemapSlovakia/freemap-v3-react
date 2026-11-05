@@ -103,7 +103,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     clear: 'Wyczyść',
     convertToDrawing: 'Przekształć na rysunek',
     toggleObjectType: 'Kliknij, aby pokazać lub ukryć obiekty tego typu',
-    hideObjectType: ({ name }) => <>Ukryj typ „{name}”</>,
     copyToDrawing: 'Kopiuj do rysunku',
     copyTo: ({ tool }) => <>Kopiuj do narzędzia {tool}</>,
     convertAllToDrawing: 'Przekształć wszystko na rysunek',
@@ -216,6 +215,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   selections: {
     objects: 'Obiekt (POI)',
+    event: 'Wydarzenie',
     drawPoints: 'Punkt',
     drawLines: 'Linia',
     drawPolygons: 'Wielokąt',

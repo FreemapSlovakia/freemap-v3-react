@@ -38,7 +38,6 @@ import { isPremium } from '@features/premium/premium.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
 import RoutePointSelection from '@features/routePlanner/components/RoutePointSelection.js';
 import { SearchMenu } from '@features/search/components/SearchMenu.js';
-import { SearchSelection } from '@features/search/components/SearchSelection.js';
 import { Toasts } from '@features/toasts/components/Toasts.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
 import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
@@ -62,6 +61,7 @@ import {
   type ReactElement,
   type ReactNode,
   useCallback,
+  useState,
 } from 'react';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
@@ -193,6 +193,12 @@ const objectSelectionFactory = () =>
   import(
     /* webpackChunkName: "object-selection" */
     '@features/objects/components/ObjectSelection.js'
+  );
+
+const searchResultPanelFactory = () =>
+  import(
+    /* webpackChunkName: "search-result-panel" */
+    '@features/search/components/SearchResultPanel.js'
   );
 
 const osmNoteSelectionFactory = () =>
@@ -594,20 +600,17 @@ const routePlannerStyleModalFactory = () =>
     '@features/routePlanner/components/RoutePlannerStyleModal.js'
   );
 
-/** The toolbar of the selected feature, whatever kind it is. */
+/**
+ * The toolbar of the selected feature, whatever kind it is; a search result,
+ * an object and an event have a panel instead.
+ */
 function selectionMenu(type: Selection['type']): ReactNode {
   switch (type) {
-    case 'search':
-      return <SearchSelection />;
-
     case 'feature':
       return <AsyncComponent factory={dataViewerSelectionFactory} />;
 
     case 'vertex':
       return <AsyncComponent factory={dataViewerVertexSelectionFactory} />;
-
-    case 'objects':
-      return <AsyncComponent factory={objectSelectionFactory} />;
 
     case 'changeset-element':
       return <AsyncComponent factory={changesetElementSelectionFactory} />;
@@ -681,6 +684,21 @@ export function Main(): ReactElement {
   useFollowInspectedChangeset();
 
   const selectionType = useAppSelector((state) => state.main.selection?.type);
+
+  // Mounted from the first pick on: a result being looked at, or an object
+  // whose type is switched off, goes with its selection, and the panel must
+  // outlive it to slide out.
+  const [searchPicked, setSearchPicked] = useState(false);
+
+  const [objectPicked, setObjectPicked] = useState(false);
+
+  if (selectionType === 'search' && !searchPicked) {
+    setSearchPicked(true);
+  }
+
+  if (selectionType === 'objects' && !objectPicked) {
+    setObjectPicked(true);
+  }
 
   const dataViewerElevationPrompt = useAppSelector(
     (state) => state.trackViewer.elevationPrompt !== null,
@@ -1074,6 +1092,12 @@ export function Main(): ReactElement {
           <Toasts />
 
           {eventsLayerOn && <AsyncComponent factory={eventSelectionFactory} />}
+
+          {objectPicked && <AsyncComponent factory={objectSelectionFactory} />}
+
+          {searchPicked && (
+            <AsyncComponent factory={searchResultPanelFactory} />
+          )}
 
           <div className={classes.header}>
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}

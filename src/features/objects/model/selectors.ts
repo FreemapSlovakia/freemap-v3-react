@@ -5,14 +5,14 @@ import {
   featureIdsEqual,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import type { ObjectsResult } from './actions.js';
+import type { ObjectDetailsData, ObjectsResult } from './actions.js';
 import { objectToSearchResult } from './objectToSearchResult.js';
 
 export type DetailsTarget = {
   /**
    * Identifies the subject across re-runs. A key rather than the result's
    * identity: every pan and zoom rebuilds the objects list, and a new identity
-   * would re-add the toast for an object the user is still looking at.
+   * would re-show the details of an object the user is still looking at.
    */
   key: string;
   result: SearchResult;
@@ -44,14 +44,14 @@ function subject(state: RootState): Subject | null {
 }
 
 function keyOf(s: Subject): string {
-  // The `incomplete` flag is part of a search key, so the toast follows one and
+  // The `incomplete` flag is part of a search key, so the details follow one and
   // the same result through its upgrade to the fully loaded element.
   return s.kind === 'search'
     ? `search:${stringifyFeatureId(s.result.id)}:${s.result.incomplete ? 'incomplete' : 'complete'}`
     : `objects:${stringifyFeatureId(s.object.id)}`;
 }
 
-/** What the details toast is about, or `null` if the selection has no details. */
+/** What the details are about, or `null` if the selection has no details. */
 export function detailsTarget(state: RootState): DetailsTarget | null {
   const s = subject(state);
 
@@ -63,7 +63,7 @@ export function detailsTarget(state: RootState): DetailsTarget | null {
     : null;
 }
 
-/** The subject the toast should be showing, `null` for none. */
+/** The subject the details should be showing, `null` for none. */
 export function wantedTarget(state: RootState): DetailsTarget | null {
   return state.main.detailsShown ? detailsTarget(state) : null;
 }
@@ -73,4 +73,13 @@ export function wantedKey(state: RootState): string | undefined {
   const s = state.main.detailsShown ? subject(state) : null;
 
   return s ? keyOf(s) : undefined;
+}
+
+/** The selected object's details, once read for it. */
+export function objectDetailsSelector(
+  state: RootState,
+): ObjectDetailsData | null {
+  const { details } = state.objects;
+
+  return details && details.key === wantedKey(state) ? details : null;
 }

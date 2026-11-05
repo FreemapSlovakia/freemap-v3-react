@@ -53,14 +53,17 @@
 
 /* ManualHeaderButton: matched to .btn-close beside it, which takes the
    auto margin otherwise and would leave the book in the middle */
-.modal-header .fm-modal-manual {
+.modal-header .fm-modal-manual,
+.offcanvas-header .fm-modal-manual {
   margin-left: auto;
   /* Flex so the glyph has no baseline gap under it, centred like the × */
   display: flex;
   border: 0;
   padding: 0.25em;
-  font-size: 1.25rem;
-  color: var(--bs-body-color);
+  /* The ×'s size and black (white in dark mode, where it is inverted) */
+  font-size: 1rem;
+  color: var(--bs-emphasis-color);
+  /* .btn-close's opacities, whose variables it declares on itself only */
   opacity: 0.5;
 
   &:hover {
@@ -68,8 +71,13 @@
   }
 
   & + .btn-close {
-    margin-left: 0.75rem;
+    margin-left: var(--fm-space-2);
   }
+}
+
+/* The header's own gap already spaces the two */
+.offcanvas-header .fm-modal-manual + .btn-close {
+  margin-left: 0;
 }
 
 .accordion > .card > .card-header {

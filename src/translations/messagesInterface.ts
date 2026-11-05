@@ -74,7 +74,6 @@ export type Messages = {
     clear: string;
     convertToDrawing: string;
     toggleObjectType: string;
-    hideObjectType: (props: { name: ReactNode }) => JSX.Element;
     copyToDrawing: string;
     copyTo: (props: { tool: ReactNode }) => JSX.Element;
     convertAllToDrawing: string;
@@ -182,6 +181,7 @@ export type Messages = {
   };
   selections: {
     objects: string;
+    event: string;
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;

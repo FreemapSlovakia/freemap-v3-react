@@ -1,8 +1,10 @@
+import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
 import { createAction } from '@reduxjs/toolkit';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
+import type { TerrainFacts } from './terrainFacts.js';
 
 export interface ObjectsResult {
   id: OsmFeatureId;
@@ -56,7 +58,7 @@ export const objectsRouteSet = createAction<{
 export const objectsRouteClear = createAction('OBJECTS_ROUTE_CLEAR');
 
 /**
- * What the details toast can mark: a peak's key col, or the summit or saddle
+ * What the details can mark: a peak's key col, or the summit or saddle
  * point the terrain shows near the node.
  */
 export type TerrainMarkKind = 'keyCol' | 'point';
@@ -70,5 +72,19 @@ export const objectsTerrainMark = createAction<{
   mark: TerrainMark | null;
 }>('OBJECTS_TERRAIN_MARK');
 
-/** Shows or hides the selected feature's details toast, until the next selecting. */
+/** The selected object's or search result's details beyond its tags, for its panel. */
+export type ObjectDetailsData = {
+  /** The `DetailsTarget` key they are about. */
+  key: string;
+  elevation: ElevationReading;
+  terrain: TerrainFacts | null;
+  /** The elevation is the terrain's summit or saddle point's, not the node's. */
+  atTerrainPoint: boolean;
+};
+
+export const objectsSetDetails = createAction<ObjectDetailsData | null>(
+  'OBJECTS_SET_DETAILS',
+);
+
+/** Opens or closes the selected search result's panel, until the next selecting. */
 export const setDetailsShown = createAction<boolean>('SET_DETAILS_SHOWN');
