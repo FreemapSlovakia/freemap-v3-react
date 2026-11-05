@@ -68,10 +68,13 @@ export function OsmTagsTable({ tags, osm }: Props): ReactElement {
   };
 
   return (
-    // The toast shrinks to fit; widened to its cap, the width measured
-    // doesn't depend on the layout chosen.
-    <div ref={tableRef} style={{ width: '100vw', maxWidth: '100%' }}>
-      <Table striped bordered size="sm" responsive>
+    // At its cap, so the width measured doesn't depend on the layout chosen.
+    <div
+      ref={tableRef}
+      className="mb-3"
+      style={{ width: '100vw', maxWidth: '100%' }}
+    >
+      <Table striped bordered size="sm" responsive className="mb-0">
         <tbody>
           {tags.map(([k, v]) =>
             stacked ? (
