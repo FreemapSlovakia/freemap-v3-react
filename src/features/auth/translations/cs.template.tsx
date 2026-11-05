@@ -22,6 +22,46 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     roles: 'Moje role',
     publicFields: 'Zobrazit na mém veřejném profilu',
     publicProfile: 'Můj veřejný profil',
+    emailUnconfirmed:
+      'Tato adresa zatím není potvrzená. Dokud ji nepotvrdíte, Freemap na ni neposílá žádné e-maily a nelze se jí přihlásit.',
+    emailChangeHint:
+      'Adresa se změní, jakmile zadáte kód, který na ni pošleme.',
+    emailConfirmed: 'Vaše e-mailová adresa byla potvrzena.',
+    mergeConflict:
+      'Jiný účet s touto potvrzenou adresou je připojen k jinému účtu téhož poskytovatele přihlášení, proto je nelze spojit.',
+    emailMissing:
+      'Bez e-mailové adresy vám nemohou přijít odkazy ke stažení offline map ani upozornění na komentáře k fotkám a nelze se přihlásit e-mailem.',
+    emailOnlyLogin:
+      'E-mail je jediný způsob přihlášení do vašeho účtu, proto jej nelze odstranit.',
+    emailUnconfirmedBar: 'Vaše e-mailová adresa zatím není potvrzená.',
+    emailUnconfirmedBarLink: 'Potvrďte ji ve svém účtu',
+    emailMissingBar:
+      'Váš účet nemá e-mailovou adresu, takže vám Freemap nemůže posílat žádné e-maily.',
+    emailMissingBarLink: 'Přidejte ji ve svém účtu',
+    dontRemind: 'Nepřipomínat',
+  },
+  emailCode: {
+    or: 'nebo kódem z e-mailu',
+    email: 'E-mailová adresa',
+    send: 'Poslat kód',
+    sent: ({ email }) => (
+      <>
+        Na adresu <b>{email}</b> jsme poslali 6místný kód. Pokud nedorazí,
+        podívejte se do složky se spamem.
+      </>
+    ),
+    code: 'Kód',
+    logIn: 'Přihlásit',
+    confirm: 'Potvrdit',
+    resend: 'Poslat znovu',
+    resendIn: ({ seconds }) => `Poslat znovu (${seconds} s)`,
+    otherAddress: 'Použít jinou adresu',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Nepodařilo se potvrdit kód', err),
+    wrongCode: 'Kód je nesprávný nebo vypršela jeho platnost.',
+    tooMany: 'Příliš mnoho pokusů. Zkuste to později.',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Nepodařilo se odeslat kód', err),
   },
   roleNames: {
     userManager: 'Správce uživatelů',

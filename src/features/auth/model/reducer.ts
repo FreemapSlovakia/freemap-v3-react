@@ -24,6 +24,8 @@ export const authReducer = createReducer(authInitialState, (builder) =>
       user: action.payload && {
         name: action.payload.name,
         email: action.payload.email,
+        emailVerified: action.payload.emailVerified,
+        emailReminderOff: action.payload.emailReminderOff,
         description: action.payload.description,
         sendGalleryEmails: action.payload.sendGalleryEmails,
         id: action.payload.id,

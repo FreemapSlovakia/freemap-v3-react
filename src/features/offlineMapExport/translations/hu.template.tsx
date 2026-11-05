@@ -11,6 +11,9 @@ const hu: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   scale: 'Lépték',
   email: 'E-mail-címe',
   emailInfo: 'Az e-mail-címét a letöltési hivatkozás elküldésére használjuk.',
+  noVerifiedEmail:
+    'A letöltési hivatkozást a megerősített e-mail-címére küldjük, de fiókjában még nincs ilyen.',
+  addVerifiedEmail: 'Adjon meg egyet a fiókjában',
   success:
     'A térkép előkészítése folyamatban van. A letöltési hivatkozást e-mailben kapja meg, miután elkészült.',
   summaryTiles: 'Csempe',

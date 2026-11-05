@@ -12,6 +12,9 @@ const sl: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   email: 'Vaš e-poštni naslov',
   emailInfo:
     'Vaš e-poštni naslov bomo uporabili za pošiljanje povezave za prenos.',
+  noVerifiedEmail:
+    'Povezavo za prenos pošljemo na vaš potrjeni e-poštni naslov, vaš račun pa ga še nima.',
+  addVerifiedEmail: 'Dodajte ga v svojem računu',
   success:
     'Zemljevid se pripravlja. Ko bo pripravljen, boste na svoj e-poštni naslov prejeli povezavo za prenos.',
   summaryTiles: 'Ploščic',

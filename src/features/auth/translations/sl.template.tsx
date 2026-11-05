@@ -22,6 +22,46 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     homeLocationUnset: 'Ni nastavljen',
     setHomeLocation: 'Nastavi na zemljevidu',
     roles: 'Moje vloge',
+    emailUnconfirmed:
+      'Ta naslov še ni potrjen. Dokler ga ne potrdite, Freemap nanj ne pošilja e-pošte in se z njim ni mogoče prijaviti.',
+    emailChangeHint:
+      'Naslov se spremeni, ko vnesete kodo, ki jo pošljemo nanj.',
+    emailConfirmed: 'Vaš e-poštni naslov je potrjen.',
+    mergeConflict:
+      'Drug račun s tem potrjenim naslovom je povezan z drugim računom istega ponudnika prijave, zato ju ni mogoče združiti.',
+    emailMissing:
+      'Brez e-poštnega naslova ne morete prejemati povezav za prenos zemljevidov brez povezave niti obvestil o komentarjih k fotografijam, prav tako se ne morete prijaviti z e-pošto.',
+    emailOnlyLogin:
+      'E-pošta je edini način prijave v vaš račun, zato je ni mogoče odstraniti.',
+    emailUnconfirmedBar: 'Vaš e-poštni naslov še ni potrjen.',
+    emailUnconfirmedBarLink: 'Potrdite ga v svojem računu',
+    emailMissingBar:
+      'Vaš račun nima e-poštnega naslova, zato vam Freemap ne more pošiljati e-pošte.',
+    emailMissingBarLink: 'Dodajte ga v svojem računu',
+    dontRemind: 'Ne opominjaj me več',
+  },
+  emailCode: {
+    or: 'ali s kodo po e-pošti',
+    email: 'E-poštni naslov',
+    send: 'Pošlji kodo',
+    sent: ({ email }) => (
+      <>
+        Na <b>{email}</b> smo poslali 6-mestno kodo. Če ne prispe, preverite
+        mapo z neželeno pošto.
+      </>
+    ),
+    code: 'Koda',
+    logIn: 'Prijava',
+    confirm: 'Potrdi',
+    resend: 'Pošlji znova',
+    resendIn: ({ seconds }) => `Pošlji znova (${seconds} s)`,
+    otherAddress: 'Uporabi drug naslov',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Napaka pri potrjevanju kode', err),
+    wrongCode: 'Koda je napačna ali je potekla.',
+    tooMany: 'Preveč poskusov. Poskusite znova pozneje.',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Napaka pri pošiljanju kode', err),
   },
   roleNames: {
     userManager: 'Upravitelj uporabnikov',

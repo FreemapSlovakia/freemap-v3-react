@@ -22,6 +22,46 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     homeLocationUnset: 'Non impostata',
     setHomeLocation: 'Imposta sulla mappa',
     roles: 'I miei ruoli',
+    emailUnconfirmed:
+      'Questo indirizzo non è ancora confermato. Finché non lo conferma, Freemap non vi invia alcuna email e non è possibile usarlo per accedere.',
+    emailChangeHint:
+      'L’indirizzo cambia quando inserisce il codice che le invieremo.',
+    emailConfirmed: 'Il suo indirizzo email è stato confermato.',
+    mergeConflict:
+      'Un altro account con questo indirizzo confermato è collegato a un altro account dello stesso provider di accesso, quindi non è possibile unirli.',
+    emailMissing:
+      'Senza un indirizzo email non può ricevere i link per scaricare le mappe offline né le notifiche dei commenti alle foto, e non può accedere via email.',
+    emailOnlyLogin:
+      'L’email è l’unico modo per accedere al suo account, quindi non può essere rimossa.',
+    emailUnconfirmedBar: 'Il suo indirizzo email non è ancora confermato.',
+    emailUnconfirmedBarLink: 'Lo confermi nel suo account',
+    emailMissingBar:
+      'Il suo account non ha un indirizzo email, quindi Freemap non può inviarle alcuna email.',
+    emailMissingBarLink: 'Lo aggiunga nel suo account',
+    dontRemind: 'Non ricordarmelo più',
+  },
+  emailCode: {
+    or: 'oppure con un codice via email',
+    email: 'Indirizzo email',
+    send: 'Invia codice',
+    sent: ({ email }) => (
+      <>
+        Abbiamo inviato un codice di 6 cifre a <b>{email}</b>. Se non arriva,
+        controlli la cartella dello spam.
+      </>
+    ),
+    code: 'Codice',
+    logIn: 'Accedi',
+    confirm: 'Conferma',
+    resend: 'Invia di nuovo',
+    resendIn: ({ seconds }) => `Invia di nuovo (${seconds} s)`,
+    otherAddress: 'Usa un altro indirizzo',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Errore durante la conferma del codice', err),
+    wrongCode: 'Il codice è errato o scaduto.',
+    tooMany: 'Troppi tentativi. Riprovi più tardi.',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Errore durante l’invio del codice', err),
   },
   roleNames: {
     userManager: 'Gestore utenti',

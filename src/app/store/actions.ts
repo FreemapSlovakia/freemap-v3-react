@@ -95,6 +95,7 @@ export const saveSettings = createAction<{
     email?: string | null;
     description?: string | null;
     sendGalleryEmails?: boolean;
+    emailReminderOff?: boolean;
     picture?: string | null;
     publicFields?: PublicField[];
   };

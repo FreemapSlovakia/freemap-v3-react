@@ -37,6 +37,13 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
                 getState().auth.user,
                 userRest,
                 picture === undefined ? null : { hasPicture: picture !== null },
+                // As the server does on removal.
+                userRest.email === null
+                  ? {
+                      emailVerified: false,
+                      emailReminderOff: userRest.emailReminderOff ?? true,
+                    }
+                  : null,
               ),
             ),
           );

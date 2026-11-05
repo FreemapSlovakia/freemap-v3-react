@@ -126,6 +126,10 @@ export function AuthProviders({ mode }: Props): ReactElement {
     (state) => state.auth.user?.authProviders,
   );
 
+  const emailVerified = useAppSelector(
+    (state) => state.auth.user?.emailVerified,
+  );
+
   const cookieConsentResult = useAppSelector(
     (state) => state.cookieConsent.cookieConsentResult,
   );
@@ -184,9 +188,11 @@ export function AuthProviders({ mode }: Props): ReactElement {
       return true;
     }
 
+    // A confirmed email is a way in too.
     return mode === 'connect'
       ? authProviders.includes(provider)
-      : authProviders.length < 2 || !authProviders.includes(provider);
+      : authProviders.length + (emailVerified ? 1 : 0) < 2 ||
+          !authProviders.includes(provider);
   }
 
   return (

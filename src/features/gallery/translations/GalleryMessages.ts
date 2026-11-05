@@ -68,6 +68,9 @@ export type GalleryMessages = {
     // Shown when commenting a Wikimedia photo: only own-gallery authors get
     // notified.
     wikimediaCommentNotNotified: string;
+    /** By the comment form: the user's account has no confirmed address. */
+    commentsNotMailed: string;
+    commentsNotMailedLink: string;
   };
   editForm: {
     name: string;

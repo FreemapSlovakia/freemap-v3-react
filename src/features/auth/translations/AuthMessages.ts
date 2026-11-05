@@ -35,6 +35,46 @@ export type AuthMessages = {
     publicFields: string;
     /** Opens one's own profile as others see it. */
     publicProfile: string;
+    /** The stored address has not been proven by a code. */
+    emailUnconfirmed: string;
+    /** Shown while the field holds another address than the stored one. */
+    emailChangeHint: string;
+    emailConfirmed: string;
+    /** Confirming would join an account with a clashing login provider. */
+    mergeConflict: string;
+    /** Under an empty email field: what goes missing without one. */
+    emailMissing: string;
+    /** Clearing refused: the email is the account's only login. */
+    emailOnlyLogin: string;
+    /** The page-top strip for an address not confirmed yet. */
+    emailUnconfirmedBar: string;
+    /** Its link to the account's personal information. */
+    emailUnconfirmedBarLink: string;
+    /** The page-top strip for an account with no address. */
+    emailMissingBar: string;
+    emailMissingBarLink: string;
+    /** Turns that strip off for good. */
+    dontRemind: string;
+  };
+  /** Logging in, or confirming an address, by a code sent there by email. */
+  emailCode: {
+    /** Separates the login providers from email login. */
+    or: string;
+    email: string;
+    send: string;
+    sent: (props: { email: string }) => ReactNode;
+    code: string;
+    logIn: string;
+    confirm: string;
+    resend: string;
+    /** Send again, while the server would still refuse it. */
+    resendIn: (props: { seconds: number }) => string;
+    otherAddress: string;
+    /** Confirming the code failed for another reason than the code. */
+    confirmError: (props: { err: unknown }) => string;
+    wrongCode: string;
+    tooMany: string;
+    error: (props: { err: unknown }) => string;
   };
   roleNames: Record<Role, string>;
   appTokens: {

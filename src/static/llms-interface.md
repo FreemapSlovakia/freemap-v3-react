@@ -52,7 +52,7 @@ The Account modal has four collapsible sections (below); from the buttons at the
 #### Personal information
 
 - Profile picture (choose / remove)
-- Name (required) and email address
+- Name (required) and email address. A new address is set only by entering the 6-digit code sent to it (**Send code**, then **Confirm**); an address not yet confirmed shows the same step. A confirmed address lets the account log in by email, and counts as a way in when disconnecting providers. Only a confirmed address can be shown on the public profile, receives photo-comment notifications and offline-map download links; while the address is unconfirmed, a yellow strip at the top of the page links to Account › Personal information (dismissed for a day). An account with no address gets a strip asking for one, with **Don’t remind me**; removing the address has the same effect. The photo comment form warns, on one's own photos and on photos one has commented on, that new comments won't be emailed without a confirmed address
 - "About me" description, in Markdown, with a Write/Preview switch; shown on the user profile
 - **Show on my public profile** — checkboxes for the email address and, for each connected OpenStreetMap, GitHub or Strava login, a link to that profile; nothing is shown unless ticked
 - **Home position** — set on the map or removed, saved at once (outside the section's Save); offered by the route planner's Start/Finish menus and the events filter's **Near**. Without an account it is kept in the browser only; one set before logging in goes to an account that has none
@@ -69,6 +69,8 @@ Supported login providers:
 - GitHub
 - Microsoft
 - Strava — login and connect work only on `www.freemap.sk`, because Strava's API app accepts only that callback domain; disconnecting works everywhere
+
+Below the providers, the login dialog also logs in **with an email code**: enter the address, **Send code**, then type the 6-digit code from the email (valid 10 minutes). It logs into the account with that address confirmed — Gmail dots and `+tag` suffixes count as the same address — or creates a new account. An address is confirmed on one account at most: confirming it in another account (Account › Personal information) merges the account that had it into that one.
 
 For each provider the modal shows either a **Connect** button (to link it) or a **Disconnect** button (if already linked), so multiple providers can be linked to a single Freemap account.
 

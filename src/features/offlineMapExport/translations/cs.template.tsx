@@ -11,6 +11,9 @@ const cs: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   scale: 'Měřítko',
   email: 'Vaše e-mailová adresa',
   emailInfo: 'Váš e-mail použijeme k zaslání odkazu ke stažení.',
+  noVerifiedEmail:
+    'Odkaz ke stažení posíláme na vaši potvrzenou e-mailovou adresu a váš účet zatím žádnou nemá.',
+  addVerifiedEmail: 'Přidejte ji ve svém účtu',
   success:
     'Mapa se připravuje. Po dokončení vám bude e-mailem doručen odkaz ke stažení.',
   summaryTiles: 'Dlaždic',

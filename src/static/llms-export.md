@@ -127,7 +127,7 @@ The maps offered are Freemap's own tile maps that have an export price (see the 
 A map with data only in some countries (the aerial map exports only its Slovak and Czech orthophoto) shows a warning when the selected area reaches beyond them.
 Users can select the desired zoom range and, for maps offering hi-DPI variants, the tile scale.
 The modal summarizes the tile count, the estimated file size (sampled from real tiles of the selected map, area, zoom range and scale) and the price in credits.
-Link to the map prepared for download will be emailed to the provided email address.
+Link to the map prepared for download is emailed to the account's confirmed email address; without one the export is disabled, and the modal links to Account › Personal information to add and confirm it.
 
 ### Embed map
 

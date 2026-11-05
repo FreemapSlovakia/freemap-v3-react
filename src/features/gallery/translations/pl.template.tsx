@@ -75,6 +75,9 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'To zdjęcie zostało udostępnione przez autora tylko użytkownikom z dostępem premium.',
     premiumPhoto: 'To zdjęcie to treść premium.',
     noComments: 'Brak komentarzy',
+    commentsNotMailed:
+      'Powiadomienia o nowych komentarzach nie będą tu wysyłane: konto nie ma potwierdzonego adresu email.',
+    commentsNotMailedLink: 'Ustaw go w ustawieniach konta',
     wikimediaCommentNotNotified:
       'To zdjęcie pochodzi z Wikimedia Commons. Jego autor nie zostanie powiadomiony o tym komentarzu – powiadamiamy tylko autorów zdjęć przesłanych do Freemap.',
   },

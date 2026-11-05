@@ -8,44 +8,47 @@ import type { Action, Dispatch } from 'redux';
 import z from 'zod';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authSetUser } from '../actions.js';
+import { parseUser } from '../parseUser.js';
 import {
   AUTH_PROVIDER_LABELS,
   type AuthProvider,
   LoginResponseSchema,
-  RawUserSchema,
-  type UserSettings,
-  UserSettingsCompatSchema,
 } from '../types.js';
 
 const RawLoginResponseSchema = z.object({
   ...LoginResponseSchema.omit({ user: true }).shape,
-  user: RawUserSchema,
+  user: z.unknown(),
 });
 
 export async function handleLoginResponse(
   res: Response,
   getState: () => RootState,
   dispatch: Dispatch,
-  provider: AuthProvider,
+  /** `null` for email login, which is never a connect. */
+  provider: AuthProvider | null,
   successAction?: Action,
 ) {
-  const { user, connect, clientData } = RawLoginResponseSchema.parse(
-    await res.json(),
-  );
+  const response = RawLoginResponseSchema.parse(await res.json());
+
+  const { connect, clientData } = response;
+
+  const user = parseUser(response.user);
 
   trackMatomo(['trackEvent', 'Auth', 'login', connect ? 'connect' : 'login']);
 
   // Re-authorizing a provider the account already has (e.g. for a wider scope)
   // connects nothing. Read before `authSetUser` below.
   const reauthorized =
-    connect && getState().auth.user?.authProviders.includes(provider);
+    connect &&
+    provider &&
+    getState().auth.user?.authProviders.includes(provider);
 
   if (!reauthorized) {
     dispatch(
       toastsAdd({
         id: 'lcd',
         messageKey: connect ? 'connectSuccess' : 'logInSuccess',
-        messageParams: { provider: AUTH_PROVIDER_LABELS[provider] },
+        messageParams: { provider: provider && AUTH_PROVIDER_LABELS[provider] },
         messageLoader: loadAuthMessages,
         style: 'info',
         timeout: 5000,
@@ -53,17 +56,7 @@ export async function handleLoginResponse(
     );
   }
 
-  let settings: UserSettings | undefined;
-
-  const settingsResult = UserSettingsCompatSchema.safeParse(user.settings);
-
-  if (settingsResult.success) {
-    settings = settingsResult.data;
-  } else {
-    console.error('Invalid user settings:', settingsResult.error);
-  }
-
-  dispatch(authSetUser({ ...user, settings }));
+  dispatch(authSetUser(user));
 
   const { purchaseOnLogin } = getState().auth;
 

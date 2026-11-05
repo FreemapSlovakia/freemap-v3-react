@@ -1,4 +1,10 @@
+import { httpRequest } from '@app/httpRequest.js';
 import { saveSettings } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
+import { EmailCodeEntry } from '@features/auth/components/EmailCodeEntry.js';
+import { isValidEmail } from '@features/auth/emailCode.js';
+import { authSetUser } from '@features/auth/model/actions.js';
+import { parseUser } from '@features/auth/model/parseUser.js';
 import {
   AUTH_PROVIDER_LABELS,
   PublicFieldSchema,
@@ -6,6 +12,7 @@ import {
 import { usePictureCacheBust } from '@features/auth/pictureCacheBust.js';
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
+import { useEmailCode } from '@features/auth/useEmailCode.js';
 import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { MarkdownField } from '@shared/components/MarkdownField.js';
@@ -13,6 +20,7 @@ import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   type ChangeEvent,
   type ReactElement,
@@ -20,9 +28,16 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Button, Form, Image } from 'react-bootstrap';
-import { FaCheck, FaTimes, FaUpload, FaUserCircle } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
+import { Alert, Button, Form, Image } from 'react-bootstrap';
+import {
+  FaCheck,
+  FaEnvelope,
+  FaExclamationTriangle,
+  FaTimes,
+  FaUpload,
+  FaUserCircle,
+} from 'react-icons/fa';
+import { useDispatch, useStore } from 'react-redux';
 
 const MAX_PICTURE_BYTES = 5 * 1024 * 1024;
 
@@ -46,6 +61,34 @@ export function PersonalInfoSection(): ReactElement | null {
   const [description, setDescription] = useState(user?.description ?? '');
   const [publicFields, setPublicFields] = useState(user?.publicFields ?? []);
 
+  const store = useStore<RootState>();
+
+  const emailCode = useEmailCode('change', async (address, code) => {
+    const res = await httpRequest({
+      getState: store.getState,
+      method: 'PUT',
+      url: '/auth/email',
+      cancelActions: [],
+      expectedStatus: 200,
+      data: { email: address, code },
+    });
+
+    // The server's account: it may have merged another one into it, and it
+    // unpublishes a changed address.
+    dispatch(authSetUser(parseUser(await res.json())));
+
+    trackMatomo(['trackEvent', 'Auth', 'confirmEmail']);
+
+    dispatch(
+      toastsAdd({
+        messageKey: 'account.emailConfirmed',
+        messageLoader: loadAuthMessages,
+        style: 'info',
+        timeout: 5000,
+      }),
+    );
+  });
+
   // A disconnect or a reconnect changes what is stored; the draft follows, so
   // a tick it unpublished never comes back with the next save.
   const [draftOf, setDraftOf] = useState(user?.publicFields ?? []);
@@ -58,6 +101,18 @@ export function PersonalInfoSection(): ReactElement | null {
     setDraftOf(user.publicFields);
 
     setPublicFields(user.publicFields);
+  }
+
+  // Likewise the address, changed by a confirmation or merge elsewhere.
+  const [emailDraftOf, setEmailDraftOf] = useState(user?.email ?? '');
+
+  if (user && (user.email ?? '') !== emailDraftOf) {
+    setEmailDraftOf(user.email ?? '');
+
+    // Not over an address being typed, or one a code just went to.
+    if (email === emailDraftOf) {
+      setEmail(user.email ?? '');
+    }
   }
 
   // undefined = unchanged, null = will clear, string = new base64 to upload
@@ -78,10 +133,26 @@ export function PersonalInfoSection(): ReactElement | null {
     return null;
   }
 
-  // Offered only with something to show: an email address, a connected login.
+  const newEmail = email.trim();
+
+  const storedEmail = user.email ?? '';
+
+  // Another address is set only by a code sent there, not by Save.
+  const changingEmail = newEmail !== '' && newEmail !== storedEmail;
+
+  const emailCleared = newEmail === '' && storedEmail !== '';
+
+  const codeTarget = changingEmail
+    ? newEmail
+    : storedEmail && !emailCleared && user.emailVerified === false
+      ? storedEmail
+      : undefined;
+
+  // Offered only with something to show: an email address (the profile shows
+  // it once confirmed), a connected login.
   const offeredFields = PublicFieldSchema.options.filter((field) =>
     field === 'email'
-      ? Boolean(email.trim())
+      ? storedEmail !== '' && !emailCleared
       : user.authProviders.includes(field),
   );
 
@@ -99,15 +170,35 @@ export function PersonalInfoSection(): ReactElement | null {
 
   const userMadeChanges =
     name !== user.name ||
-    email !== (user.email ?? '') ||
+    emailCleared ||
     description !== (user.description ?? '') ||
     picture !== undefined ||
     publicFieldsChanged;
 
-  const invalidEmail =
-    Boolean(email.trim()) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const invalidEmail = Boolean(newEmail) && !isValidEmail(newEmail);
+
+  // Removing it would leave no way in.
+  const emailOnlyLogin =
+    emailCleared &&
+    user.authProviders.length === 0 &&
+    // Unknown counts as verified: without a provider it likely is the way in.
+    user.emailVerified !== false;
+
+  const emailHint = emailOnlyLogin
+    ? 'emailOnlyLogin'
+    : newEmail === ''
+      ? 'emailMissing'
+      : codeTarget === undefined
+        ? undefined
+        : changingEmail
+          ? 'emailChangeHint'
+          : 'emailUnconfirmed';
+
+  const canSendCode = online && !emailCode.busy && !invalidEmail;
 
   const invalidName = !name.trim();
+
+  const canSave = online && userMadeChanges && !invalidName && !emailOnlyLogin;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -178,7 +269,7 @@ export function PersonalInfoSection(): ReactElement | null {
         e.preventDefault();
 
         // Enter in a field submits the form whatever the Save button says.
-        if (!online) {
+        if (!canSave) {
           return;
         }
 
@@ -186,7 +277,9 @@ export function PersonalInfoSection(): ReactElement | null {
           saveSettings({
             user: {
               name: name.trim(),
-              email: email.trim() || null,
+              // Only a removal: a new one goes through its code, and this tab's
+              // copy of the stored one may be stale.
+              ...(emailCleared ? { email: null } : {}),
               description: description.trim() || null,
               // Only a change: another tab's must not be overwritten unseen.
               ...(publicFieldsChanged ? { publicFields: effectiveFields } : {}),
@@ -274,9 +367,61 @@ export function PersonalInfoSection(): ReactElement | null {
           isInvalid={invalidEmail}
           onChange={(e) => {
             setEmail(e.target.value);
+
+            emailCode.setError(undefined);
+          }}
+          onKeyDown={(e) => {
+            // Not the form's submit, which is Save and keeps the stored one.
+            if (e.key === 'Enter' && changingEmail) {
+              e.preventDefault();
+
+              if (canSendCode && emailCode.sentTo !== newEmail) {
+                emailCode.send(newEmail);
+              }
+            }
           }}
           maxLength={255}
         />
+
+        {emailHint && (
+          <Form.Text
+            className={emailHint === 'emailOnlyLogin' ? 'text-danger' : ''}
+          >
+            {emailHint === 'emailUnconfirmed' && (
+              <>
+                <FaExclamationTriangle className="text-warning" />{' '}
+              </>
+            )}
+            <Text m={am} k={`account.${emailHint}`} />
+          </Form.Text>
+        )}
+
+        {emailCode.error && (
+          <Alert variant="danger" className="mt-2 mb-0">
+            {emailCode.error}
+          </Alert>
+        )}
+
+        {codeTarget !== undefined && (
+          <div className="mt-2">
+            {emailCode.sentTo === codeTarget ? (
+              <EmailCodeEntry
+                state={emailCode}
+                confirmIcon={<FaCheck />}
+                confirmLabel={<Text m={am} k="emailCode.confirm" />}
+              />
+            ) : (
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={!canSendCode}
+                onClick={() => emailCode.send(codeTarget)}
+              >
+                <FaEnvelope /> <Text m={am} k="emailCode.send" />
+              </Button>
+            )}
+          </div>
+        )}
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="description">
@@ -338,7 +483,7 @@ export function PersonalInfoSection(): ReactElement | null {
         className="ms-auto d-block"
         variant="primary"
         type="submit"
-        disabled={!online || !userMadeChanges || invalidName || invalidEmail}
+        disabled={!canSave}
       >
         <FaCheck /> <Text k="general.save" />
       </Button>

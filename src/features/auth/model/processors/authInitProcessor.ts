@@ -3,12 +3,8 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadAuthMessages } from '../../translations/loadAuthMessages.js';
 import { authInit, authSetUser } from '../actions.js';
-import {
-  RawUserSchema,
-  type User,
-  type UserSettings,
-  UserSettingsCompatSchema,
-} from '../types.js';
+import { parseUser } from '../parseUser.js';
+import type { User } from '../types.js';
 
 function track(id: number | undefined) {
   trackMatomo(id === undefined ? ['resetUserId'] : ['setUserId', String(id)]);
@@ -48,21 +44,7 @@ export const authInitProcessor: Processor = {
           let user: User | null;
 
           if (ok) {
-            const rawUser = RawUserSchema.parse(await res.json());
-
-            let settings: UserSettings | undefined;
-
-            const settingsResult = UserSettingsCompatSchema.safeParse(
-              rawUser.settings,
-            );
-
-            if (settingsResult.success) {
-              settings = settingsResult.data;
-            } else {
-              console.error('Invalid user settings:', settingsResult.error);
-            }
-
-            user = { ...rawUser, settings };
+            user = parseUser(await res.json());
           } else {
             user = null;
           }

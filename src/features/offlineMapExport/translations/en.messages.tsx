@@ -10,6 +10,9 @@ const en: OfflineMapExportMessages = {
   scale: 'Scale',
   email: 'Your email address',
   emailInfo: 'We will use your email to send you the download link.',
+  noVerifiedEmail:
+    'The download link is sent to your confirmed email address, and your account has none yet.',
+  addVerifiedEmail: 'Add one in your account',
   success:
     'The map is being prepared. Once ready, a download link will be sent to your email.',
   summaryTiles: 'Tiles',

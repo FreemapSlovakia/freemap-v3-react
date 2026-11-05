@@ -18,6 +18,8 @@ When you are logged in, your map settings and custom maps are kept with your acc
 
 Open :FaBars: **Main menu** → :FaSignInAlt: [Log in](#show=login) and choose a login provider: **Google**, **Facebook**, **Apple**, **Microsoft**, **OpenStreetMap**, **Garmin**, **Strava** or **GitHub**. Once you confirm the login with the provider, you are logged in to Freemap. Freemap has no password of its own.
 
+Without a provider, log in **with an email code**: enter your **Email address**, press :FaEnvelope: **Send code**, and type the 6-digit code from the email (valid for 10 minutes) and press :FaSignInAlt: **Log in**. This logs in to the account whose confirmed email is that address, or creates a new account. Confirming an address in another account later joins the two.
+
 ![The Log in dialog with the login providers](./images/account-login.en.webp)
 
 **Strava** is offered only on www.freemap.sk.
@@ -45,13 +47,17 @@ An account given special permissions, such as photo moderation, also shows :FaUs
 
 Press :FaCheck: **Save** to store the changes.
 
+A new email address is not stored by **Save**: press :FaEnvelope: **Send code**, enter the code from the email sent to the new address and press :FaCheck: **Confirm**. An address not yet confirmed offers the same step, and a yellow strip at the top of the page links here. Only a confirmed address can be used to log in by email, shown on your public profile, and receives photo-comment notifications and the download links of [offline map exports](#show=offline-map-export).
+
+Without any email address, the yellow strip asks for one; **Don’t remind me** in it, or removing your address here, stops that for good. The comment form of a photo you uploaded or commented on also says when new comments can't be emailed to you.
+
 Below them, :FaHome: **Home position** is saved as soon as you set it: :FaMapMarkerAlt: **Set on the map** lets you click it on the map or find it by its address, :FaTimes: **Remove** clears it. The route planner and the events filter offer it as a place.
 
 ## Login providers
 
 Several providers can lead to one Freemap account. Under **Connect**, press a provider you want to add; after you confirm its login, you can log in with it too. If that provider account already belongs to another Freemap account, the two accounts are joined into one.
 
-Under **Disconnect**, press a connected provider to remove it, after a confirmation. The last remaining provider cannot be disconnected.
+Under **Disconnect**, press a connected provider to remove it, after a confirmation. The last remaining provider cannot be disconnected, unless the account has a confirmed email to log in with.
 
 ## App tokens
 

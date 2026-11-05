@@ -22,6 +22,45 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     roles: 'Moje role',
     publicFields: 'Zobraziť na mojom verejnom profile',
     publicProfile: 'Môj verejný profil',
+    emailUnconfirmed:
+      'Táto adresa zatiaľ nie je potvrdená. Kým ju nepotvrdíte, Freemap na ňu neposiela žiadne e-maily a nedá sa ňou prihlásiť.',
+    emailChangeHint: 'Adresa sa zmení, keď zadáte kód, ktorý na ňu pošleme.',
+    emailConfirmed: 'Vaša e-mailová adresa bola potvrdená.',
+    mergeConflict:
+      'Iný účet s touto potvrdenou adresou je pripojený k inému účtu toho istého poskytovateľa prihlásenia, preto ich nemožno spojiť.',
+    emailMissing:
+      'Bez e-mailovej adresy vám nemôžu prísť odkazy na stiahnutie offline máp ani upozornenia na komentáre k fotkám a nedá sa prihlásiť e-mailom.',
+    emailOnlyLogin:
+      'E-mail je jediný spôsob prihlásenia do vášho účtu, preto ho nemožno odstrániť.',
+    emailUnconfirmedBar: 'Vaša e-mailová adresa zatiaľ nie je potvrdená.',
+    emailUnconfirmedBarLink: 'Potvrďte ju vo svojom účte',
+    emailMissingBar:
+      'Váš účet nemá e-mailovú adresu, takže vám Freemap nemôže posielať žiadne e-maily.',
+    emailMissingBarLink: 'Pridajte ju vo svojom účte',
+    dontRemind: 'Nepripomínať',
+  },
+  emailCode: {
+    or: 'alebo kódom z e-mailu',
+    email: 'E-mailová adresa',
+    send: 'Poslať kód',
+    sent: ({ email }) => (
+      <>
+        Na adresu <b>{email}</b> sme poslali 6-miestny kód. Ak nepríde, pozrite
+        sa do priečinka so spamom.
+      </>
+    ),
+    code: 'Kód',
+    logIn: 'Prihlásiť',
+    confirm: 'Potvrdiť',
+    resend: 'Poslať znova',
+    resendIn: ({ seconds }) => `Poslať znova (${seconds} s)`,
+    otherAddress: 'Použiť inú adresu',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Nepodarilo sa potvrdiť kód', err),
+    wrongCode: 'Kód je nesprávny alebo jeho platnosť vypršala.',
+    tooMany: 'Príliš veľa pokusov. Skúste to neskôr.',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Nepodarilo sa poslať kód', err),
   },
   roleNames: {
     userManager: 'Správca používateľov',

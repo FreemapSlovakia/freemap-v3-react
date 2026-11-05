@@ -23,6 +23,46 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     homeLocationUnset: 'Non définie',
     setHomeLocation: 'Définir sur la carte',
     roles: 'Mes rôles',
+    emailUnconfirmed:
+      'Cette adresse n’est pas encore confirmée. Tant qu’elle ne l’est pas, Freemap n’y envoie aucun e-mail et elle ne permet pas de se connecter.',
+    emailChangeHint:
+      'L’adresse sera modifiée dès que vous aurez saisi le code que nous y enverrons.',
+    emailConfirmed: 'Votre adresse e-mail a été confirmée.',
+    mergeConflict:
+      'Un autre compte avec cette adresse confirmée est lié à un autre compte du même fournisseur de connexion ; les deux ne peuvent donc pas être fusionnés.',
+    emailMissing:
+      'Sans adresse e-mail, vous ne pouvez recevoir ni les liens de téléchargement des cartes hors ligne ni les notifications de commentaires sur les photos, et la connexion par e-mail n’est pas possible.',
+    emailOnlyLogin:
+      'L’e-mail est le seul moyen de vous connecter à votre compte ; il ne peut donc pas être supprimé.',
+    emailUnconfirmedBar: 'Votre adresse e-mail n’est pas encore confirmée.',
+    emailUnconfirmedBarLink: 'La confirmer dans votre compte',
+    emailMissingBar:
+      'Votre compte n’a pas d’adresse e-mail : Freemap ne peut vous envoyer aucun e-mail.',
+    emailMissingBarLink: 'L’ajouter dans votre compte',
+    dontRemind: 'Ne plus me le rappeler',
+  },
+  emailCode: {
+    or: 'ou avec un code par e-mail',
+    email: 'Adresse e-mail',
+    send: 'Envoyer le code',
+    sent: ({ email }) => (
+      <>
+        Nous avons envoyé un code à 6 chiffres à <b>{email}</b>. S’il n’arrive
+        pas, vérifiez votre dossier de spam.
+      </>
+    ),
+    code: 'Code',
+    logIn: 'Se connecter',
+    confirm: 'Confirmer',
+    resend: 'Renvoyer',
+    resendIn: ({ seconds }) => `Renvoyer (${seconds} s)`,
+    otherAddress: 'Utiliser une autre adresse',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Erreur lors de la confirmation du code', err),
+    wrongCode: 'Le code est erroné ou a expiré.',
+    tooMany: 'Trop de tentatives. Réessayez plus tard.',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Erreur lors de l’envoi du code', err),
   },
   logInError: ({ err }) => addError(getMessages()!, 'Erreur de connexion', err),
   verifyError: ({ err }) =>

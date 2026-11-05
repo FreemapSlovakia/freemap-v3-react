@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { AccountEmailLink } from '@features/auth/components/AccountEmailLink.js';
 import { authInit } from '@features/auth/model/actions.js';
 import { CreditsAlert } from '@features/credits/components/CredistAlert.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
@@ -59,6 +60,7 @@ import {
   useState,
 } from 'react';
 import {
+  Alert,
   Dropdown,
   Form,
   InputGroup,
@@ -109,7 +111,8 @@ export default function OfflineMapExportModal({
 
   const [nameChanged, setNameChanged] = useState(false);
 
-  const [email, setEmail] = useState(user?.email ?? '');
+  // Where the API sends the link; it refuses an export without one.
+  const verifiedEmail = user?.emailVerified ? user.email : null;
 
   const [minZoom, setMinZoom] = useState('0');
 
@@ -298,13 +301,12 @@ export default function OfflineMapExportModal({
     event.preventDefault();
 
     // Enter in a field submits the form whatever the button says.
-    if (!online) {
+    if (!online || !verifiedEmail) {
       return;
     }
 
     dispatch(
       downloadMap({
-        email,
         name,
         map: mapDef?.exportType ?? mapType,
         format,
@@ -330,8 +332,6 @@ export default function OfflineMapExportModal({
 
     return price < 1_000_000_000 ? price : Infinity;
   })();
-
-  const invalidEmail = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const mapDefName = mapDef?.name;
 
@@ -641,23 +641,24 @@ export default function OfflineMapExportModal({
             </Form.Group>
           )}
 
-          <Form.Group controlId="email" className="mb-3">
-            <Form.Label className="required">
-              <Text m={ome} k="email" />
-            </Form.Label>
-
-            <Form.Control
-              type="email"
-              value={email}
-              required
-              isInvalid={invalidEmail}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-            />
-
-            <Form.Text className="text-muted">
-              <Text m={ome} k="emailInfo" />
-            </Form.Text>
-          </Form.Group>
+          {verifiedEmail ? (
+            <div className="mb-3">
+              <Text m={ome} k="email" />: <b>{verifiedEmail}</b>
+              <Form.Text as="div" className="text-muted">
+                <Text m={ome} k="emailInfo" />
+              </Form.Text>
+            </div>
+          ) : (
+            // Not before it's known: the modal refreshes the user on open.
+            user?.emailVerified !== undefined && (
+              <Alert variant="warning">
+                <Text m={ome} k="noVerifiedEmail" />{' '}
+                <AccountEmailLink>
+                  <Text m={ome} k="addVerifiedEmail" />
+                </AccountEmailLink>
+              </Alert>
+            )
+          )}
         </Modal.Body>
 
         <FmModalFooter className="flex-wrap">
@@ -694,7 +695,7 @@ export default function OfflineMapExportModal({
             type="submit"
             disabled={
               !online ||
-              invalidEmail ||
+              !verifiedEmail ||
               invalidMinZoom ||
               invalidMaxZoom ||
               price >= Math.floor(user?.credits ?? 0)

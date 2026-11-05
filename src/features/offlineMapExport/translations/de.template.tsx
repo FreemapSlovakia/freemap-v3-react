@@ -11,6 +11,9 @@ const de: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   scale: 'Maßstab',
   email: 'Ihre E-Mail-Adresse',
   emailInfo: 'Wir verwenden Ihre E-Mail, um Ihnen den Download-Link zu senden.',
+  noVerifiedEmail:
+    'Der Download-Link wird an Ihre bestätigte E-Mail-Adresse gesendet, und Ihr Konto hat noch keine.',
+  addVerifiedEmail: 'In Ihrem Konto hinzufügen',
   success:
     'Die Karte wird vorbereitet. Sobald sie fertig ist, erhalten Sie einen Download-Link per E-Mail.',
   summaryTiles: 'Kacheln',

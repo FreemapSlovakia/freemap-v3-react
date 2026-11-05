@@ -11,6 +11,9 @@ const pl: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   scale: 'Skala',
   email: 'Adres e-mail',
   emailInfo: 'Adres e-mail zostanie użyty do przesłania linku do pobrania.',
+  noVerifiedEmail:
+    'Link do pobrania jest wysyłany na potwierdzony adres e-mail, a konto jeszcze go nie ma.',
+  addVerifiedEmail: 'Dodaj go w ustawieniach konta',
   success:
     'Mapa jest przygotowywana. Po zakończeniu link do pobrania zostanie wysłany na podany e-mail.',
   summaryTiles: 'Płytki',

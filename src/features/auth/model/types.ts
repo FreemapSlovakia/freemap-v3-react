@@ -189,6 +189,12 @@ export const UserSchema = z.object({
   authToken: z.string(),
   credits: z.number(),
   email: z.string().nullable(),
+  // Whether `email` is proven, so it can be logged in with. Absent in a user
+  // persisted before the field, until `authInit` refreshes it.
+  emailVerified: z.boolean().optional(),
+  // Not to be asked for an address: declined, or removed it. Absent until the
+  // user is refreshed, as `emailVerified`.
+  emailReminderOff: z.boolean().optional(),
   description: z.string().nullable(),
   id: z.number(),
   // A value newer than this build is dropped, not a failed login.

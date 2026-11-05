@@ -20,6 +20,7 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import 'pannellum';
 import 'pannellum/build/pannellum.css';
+import { AccountEmailLink } from '@features/auth/components/AccountEmailLink.js';
 import { hasRole } from '@features/auth/model/types.js';
 import {
   type ChangeEvent,
@@ -46,6 +47,7 @@ import {
 import {
   FaCamera,
   FaEllipsisV,
+  FaExclamationTriangle,
   FaGem,
   FaImage,
   FaPencilAlt,
@@ -411,6 +413,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     lon,
     azimuth,
   } = image ?? {};
+
+  // New comments here are mailed to the author and earlier commenters, and
+  // only to a confirmed address; "known" so a stale user doesn't flash it.
+  const missesCommentMail =
+    !!user &&
+    user.sendGalleryEmails &&
+    (!user.email || user.emailVerified === false) &&
+    (image?.user?.id === user.id ||
+      !!comments?.some((c) => c.user.id === user.id));
 
   // Wikimedia photos carry no server-side title/description; they come from the
   // Commons API fetch instead.
@@ -1236,6 +1247,16 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                               m={gm}
                               k="viewer.wikimediaCommentNotNotified"
                             />
+                          </Alert>
+                        )}
+
+                        {missesCommentMail && (
+                          <Alert variant="warning" className="mt-2 mb-0">
+                            <FaExclamationTriangle />{' '}
+                            <Text m={gm} k="viewer.commentsNotMailed" />{' '}
+                            <AccountEmailLink>
+                              <Text m={gm} k="viewer.commentsNotMailedLink" />
+                            </AccountEmailLink>
                           </Alert>
                         )}
                       </Form.Group>

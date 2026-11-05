@@ -10,6 +10,10 @@ export type OfflineMapExportMessages = {
   scale: string;
   email: string;
   emailInfo: string;
+  /** The account has no confirmed address to send the link to. */
+  noVerifiedEmail: string;
+  /** Its link to the account's personal information. */
+  addVerifiedEmail: string;
   success: string;
   summaryTiles: string;
   summarySize: string;

@@ -16,6 +16,7 @@ import { FaExclamationTriangle, FaGem, FaSignInAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAuthMessages } from '../translations/useAuthMessages.js';
 import { AuthProviders } from './AuthProviders.js';
+import { EmailLogin } from './EmailLogin.js';
 
 type Props = { show: boolean };
 
@@ -75,6 +76,8 @@ export default function LoginModal({ show }: Props): ReactElement {
         </p>
 
         <AuthProviders mode="login" />
+
+        <EmailLogin />
       </Modal.Body>
 
       <FmModalFooter>

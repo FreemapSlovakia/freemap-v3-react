@@ -82,6 +82,9 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'To fotografijo je avtor dal na voljo samo uporabnikom s premium dostopom.',
     premiumPhoto: 'Ta fotografija je vsebina premium.',
     noComments: 'Ni komentarjev',
+    commentsNotMailed:
+      'O novih komentarjih tukaj ne boste prejeli e-pošte: vaš račun nima potrjenega e-poštnega naslova.',
+    commentsNotMailedLink: 'Nastavite ga v svojem računu',
     wikimediaCommentNotNotified:
       'Ta fotografija je z Wikimedia Commons. Njen avtor ne bo obveščen o vašem komentarju – obveščamo samo avtorje fotografij, naloženih na Freemap.',
   },

@@ -22,6 +22,45 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
     homeLocationUnset: 'Nie ustawiono',
     setHomeLocation: 'Ustaw na mapie',
     roles: 'Moje role',
+    emailUnconfirmed:
+      'Ten adres nie jest jeszcze potwierdzony. Do czasu potwierdzenia Freemap nie wysyła na niego żadnych wiadomości i nie można się nim zalogować.',
+    emailChangeHint:
+      'Adres zmieni się po wpisaniu kodu, który zostanie na niego wysłany.',
+    emailConfirmed: 'Adres email został potwierdzony.',
+    mergeConflict:
+      'Inne konto z tym potwierdzonym adresem jest połączone z innym kontem tego samego dostawcy logowania, więc nie można ich połączyć.',
+    emailMissing:
+      'Bez adresu email nie można otrzymywać linków do pobrania map offline ani powiadomień o komentarzach do zdjęć, nie można też logować się przez email.',
+    emailOnlyLogin:
+      'Email jest jedynym sposobem logowania do konta, więc nie można go usunąć.',
+    emailUnconfirmedBar: 'Adres email nie jest jeszcze potwierdzony.',
+    emailUnconfirmedBarLink: 'Potwierdź go w ustawieniach konta',
+    emailMissingBar:
+      'Konto nie ma adresu email, więc Freemap nie może wysyłać żadnych wiadomości email.',
+    emailMissingBarLink: 'Dodaj go w ustawieniach konta',
+    dontRemind: 'Nie przypominaj',
+  },
+  emailCode: {
+    or: 'lub kodem z emaila',
+    email: 'Adres email',
+    send: 'Wyślij kod',
+    sent: ({ email }) => (
+      <>
+        Na adres <b>{email}</b> wysłano 6-cyfrowy kod. Jeśli nie dotrze, warto
+        sprawdzić folder ze spamem.
+      </>
+    ),
+    code: 'Kod',
+    logIn: 'Zaloguj',
+    confirm: 'Potwierdź',
+    resend: 'Wyślij ponownie',
+    resendIn: ({ seconds }) => `Wyślij ponownie (${seconds} s)`,
+    otherAddress: 'Użyj innego adresu',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Błąd potwierdzania kodu', err),
+    wrongCode: 'Kod jest błędny lub wygasł.',
+    tooMany: 'Zbyt wiele prób. Prosimy spróbować ponownie później.',
+    error: ({ err }) => addError(getMessages()!, 'Błąd wysyłania kodu', err),
   },
   roleNames: {
     userManager: 'Administrator użytkowników',

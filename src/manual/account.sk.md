@@ -18,6 +18,8 @@ Po prihlásení sa nastavenia mapy a vlastné mapy uchovávajú vo vašom účte
 
 Otvorte :FaBars: **Hlavné menu** → :FaSignInAlt: [Prihlásenie](#show=login) a vyberte poskytovateľa prihlásenia: **Google**, **Facebook**, **Apple**, **Microsoft**, **OpenStreetMap**, **Garmin**, **Strava** alebo **GitHub**. Prihlásenie potom potvrdíte u poskytovateľa. Vlastné heslo Freemap nemá.
 
+Bez poskytovateľa sa prihlásite **kódom z e-mailu**: zadajte **E-mailovú adresu**, stlačte :FaEnvelope: **Poslať kód**, zadajte 6-miestny kód z e-mailu (platí 10 minút) a stlačte :FaSignInAlt: **Prihlásiť**. Prihlásite sa tak do účtu, ktorý má túto adresu potvrdenú, alebo sa vytvorí nový účet. Keď neskôr túto adresu potvrdíte v inom účte, oba účty sa spoja.
+
 ![Dialóg Prihlásenie s poskytovateľmi prihlásenia](./images/account-login.sk.webp)
 
 **Strava** je dostupná iba na www.freemap.sk.
@@ -45,13 +47,17 @@ Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :F
 
 Zmeny uložíte tlačidlom :FaCheck: **Uložiť**.
 
+Novú e-mailovú adresu **Uložiť** neuloží: stlačte :FaEnvelope: **Poslať kód**, zadajte kód z e-mailu poslaného na novú adresu a stlačte :FaCheck: **Potvrdiť**. Rovnaký krok ponúka aj zatiaľ nepotvrdená adresa a odkazuje sem aj žltý pásik v hornej časti stránky. Len potvrdenou adresou sa dá prihlasovať e-mailom, len ju možno zobraziť na verejnom profile a len na ňu chodia upozornenia na komentáre k fotkám a odkazy na stiahnutie z [exportu offline máp](#show=offline-map-export).
+
+Bez akejkoľvek e-mailovej adresy žltý pásik o ňu požiada; **Nepripomínať** v ňom alebo odstránenie adresy tu to natrvalo vypne. Formulár komentára k fotke, ktorú ste nahrali alebo komentovali, tiež upozorní, keď vám nové komentáre nemôžu prísť e-mailom.
+
 Pod nimi je :FaHome: **Domovská poloha**, ktorá sa uloží hneď, ako ju nastavíte: :FaMapMarkerAlt: **Nastaviť v mape** umožní kliknúť na ňu v mape alebo ju nájsť podľa adresy, :FaTimes: **Odstrániť** ju zruší. Ponúka ju plánovač trás aj filter akcií.
 
 ## Poskytovatelia prihlásenia
 
 K jednému účtu Freemap môže viesť viacero poskytovateľov. V časti **Pripojiť** stlačte poskytovateľa, ktorého chcete pridať; po potvrdení prihlásenia u poskytovateľa sa môžete prihlasovať aj cez tohto poskytovateľa. Ak už k účtu tohto poskytovateľa patrí iný účet Freemap, oba účty sa spoja do jedného.
 
-V časti **Odpojiť** stlačte pripojeného poskytovateľa a po potvrdení sa poskytovateľ odpojí. Posledného zostávajúceho poskytovateľa odpojiť nemožno.
+V časti **Odpojiť** stlačte pripojeného poskytovateľa a po potvrdení sa poskytovateľ odpojí. Posledného zostávajúceho poskytovateľa odpojiť nemožno, ak účet nemá potvrdený e-mail, ktorým sa dá prihlásiť.
 
 ## Aplikačné tokeny
 

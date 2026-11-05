@@ -3,7 +3,6 @@ import type { Feature, MultiPolygon, Polygon } from 'geojson';
 
 export const downloadMap = createAction<{
   name: string;
-  email: string;
   map: string;
   format: string;
   maxZoom: number;

@@ -22,6 +22,45 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     homeLocationUnset: 'Nincs beállítva',
     setHomeLocation: 'Beállítás a térképen',
     roles: 'Szerepköreim',
+    emailUnconfirmed:
+      'Ez a cím még nincs megerősítve. Amíg meg nem erősíti, a Freemap nem küld rá e-mailt, és nem lehet vele bejelentkezni.',
+    emailChangeHint:
+      'A cím akkor változik meg, amikor beírja a kódot, amelyet erre a címre küldünk.',
+    emailConfirmed: 'Az e-mail-címe megerősítésre került.',
+    mergeConflict:
+      'Egy másik, ezzel a megerősített címmel rendelkező fiók ugyanannak a bejelentkezési szolgáltatónak egy másik fiókjához kapcsolódik, ezért a kettő nem vonható össze.',
+    emailMissing:
+      'E-mail-cím nélkül nem kaphat letöltési hivatkozást az offline térképekhez, sem értesítést a fotókhoz írt hozzászólásokról, és e-mailben sem jelentkezhet be.',
+    emailOnlyLogin:
+      'Az e-mail az egyetlen módja a fiókjába való bejelentkezésnek, ezért nem törölhető.',
+    emailUnconfirmedBar: 'Az e-mail-címe még nincs megerősítve.',
+    emailUnconfirmedBarLink: 'Erősítse meg a fiókjában',
+    emailMissingBar:
+      'Fiókjában nincs e-mail-cím, így a Freemap nem tud Önnek e-mailt küldeni.',
+    emailMissingBarLink: 'Adja meg a fiókjában',
+    dontRemind: 'Ne emlékeztessen',
+  },
+  emailCode: {
+    or: 'vagy e-mailben kapott kóddal',
+    email: 'E-mail-cím',
+    send: 'Kód küldése',
+    sent: ({ email }) => (
+      <>
+        Egy 6 jegyű kódot küldtünk a(z) <b>{email}</b> címre. Ha nem érkezik
+        meg, nézze meg a levélszemét mappát.
+      </>
+    ),
+    code: 'Kód',
+    logIn: 'Bejelentkezés',
+    confirm: 'Megerősítés',
+    resend: 'Újraküldés',
+    resendIn: ({ seconds }) => `Újraküldés (${seconds} mp)`,
+    otherAddress: 'Másik cím használata',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Hiba a kód megerősítésekor', err),
+    wrongCode: 'A kód hibás vagy lejárt.',
+    tooMany: 'Túl sok próbálkozás. Próbálja újra később.',
+    error: ({ err }) => addError(getMessages()!, 'Hiba a kód küldésekor', err),
   },
   roleNames: {
     userManager: 'Felhasználókezelő',

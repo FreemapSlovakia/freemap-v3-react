@@ -12,6 +12,9 @@ const fr: DeepPartialWithRequiredObjects<OfflineMapExportMessages> = {
   email: 'Votre adresse e-mail',
   emailInfo:
     'Nous utiliserons votre e-mail pour vous envoyer le lien de téléchargement.',
+  noVerifiedEmail:
+    'Le lien de téléchargement est envoyé à votre adresse e-mail confirmée, et votre compte n’en a pas encore.',
+  addVerifiedEmail: 'En ajouter une dans votre compte',
   success:
     'La carte est en cours de préparation. Une fois prête, un lien de téléchargement sera envoyé à votre adresse e-mail.',
   summaryTiles: 'Tuiles',

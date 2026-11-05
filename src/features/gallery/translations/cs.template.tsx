@@ -83,6 +83,9 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
       'Tuto fotografii zpřístupnil její autor pouze uživatelům s prémiovým přístupem.',
     premiumPhoto: 'Tato fotografie je prémiový obsah.',
     noComments: 'Bez komentáře',
+    commentsNotMailed:
+      'O nových komentářích zde nedostanete e-mail: váš účet nemá potvrzenou e-mailovou adresu.',
+    commentsNotMailedLink: 'Nastavte ji ve svém účtu',
     wikimediaCommentNotNotified:
       'Tato fotografie pochází z Wikimedia Commons. Její autor nebude o vašem komentáři upozorněn – upozorňujeme jen autory fotografií nahraných na Freemap.',
   },

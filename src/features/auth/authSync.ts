@@ -2,10 +2,9 @@ import type { MyStore } from '@app/store/store.js';
 import { authSetUser } from './model/actions.js';
 import type { User } from './model/types.js';
 
-// Propagate login/logout across tabs. When this tab's user changes we broadcast
-// it; other tabs apply it via `authSetUser`. Keyed on id + authToken so only
-// real session changes cross tabs (not unrelated actions), and so applying a
-// received user doesn't echo back.
+// Broadcasts this tab's user to the others, keyed on the session and the email
+// fields: unrelated changes don't cross tabs, and a received user doesn't
+// echo back.
 export function attachAuthSync(store: MyStore): void {
   let bc: BroadcastChannel;
 
@@ -21,7 +20,9 @@ export function attachAuthSync(store: MyStore): void {
   }
 
   const keyOf = (user: User | null) =>
-    user ? `${user.id}:${user.authToken}` : '';
+    user
+      ? `${user.id}:${user.authToken}:${user.email}:${user.emailVerified}:${user.emailReminderOff}`
+      : '';
 
   let lastKey = keyOf(store.getState().auth.user);
 

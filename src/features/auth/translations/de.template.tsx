@@ -22,6 +22,46 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     roles: 'Meine Rollen',
     publicFields: 'Auf meinem öffentlichen Profil zeigen',
     publicProfile: 'Mein öffentliches Profil',
+    emailUnconfirmed:
+      'Diese Adresse ist noch nicht bestätigt. Bis Sie sie bestätigen, sendet Freemap keine E-Mails an sie, und Sie können sich nicht mit ihr anmelden.',
+    emailChangeHint:
+      'Die Adresse wird geändert, sobald Sie den Code eingeben, den wir an sie senden.',
+    emailConfirmed: 'Ihre E-Mail-Adresse wurde bestätigt.',
+    mergeConflict:
+      'Ein anderes Konto mit dieser bestätigten Adresse ist mit einem anderen Konto desselben Anmeldeanbieters verbunden, daher lassen sich die beiden nicht zusammenführen.',
+    emailMissing:
+      'Ohne E-Mail-Adresse erhalten Sie keine Download-Links für Offline-Karten und keine Benachrichtigungen zu Fotokommentaren, und die Anmeldung per E-Mail ist nicht möglich.',
+    emailOnlyLogin:
+      'Die E-Mail-Adresse ist die einzige Anmeldemöglichkeit für Ihr Konto und kann daher nicht entfernt werden.',
+    emailUnconfirmedBar: 'Ihre E-Mail-Adresse ist noch nicht bestätigt.',
+    emailUnconfirmedBarLink: 'In Ihrem Konto bestätigen',
+    emailMissingBar:
+      'Ihr Konto hat keine E-Mail-Adresse, daher kann Freemap Ihnen keine E-Mails senden.',
+    emailMissingBarLink: 'In Ihrem Konto hinzufügen',
+    dontRemind: 'Nicht mehr erinnern',
+  },
+  emailCode: {
+    or: 'oder mit einem Code per E-Mail',
+    email: 'E-Mail-Adresse',
+    send: 'Code senden',
+    sent: ({ email }) => (
+      <>
+        Wir haben einen 6-stelligen Code an <b>{email}</b> gesendet. Falls er
+        nicht ankommt, sehen Sie bitte im Spam-Ordner nach.
+      </>
+    ),
+    code: 'Code',
+    logIn: 'Anmelden',
+    confirm: 'Bestätigen',
+    resend: 'Erneut senden',
+    resendIn: ({ seconds }) => `Erneut senden (${seconds} s)`,
+    otherAddress: 'Andere Adresse verwenden',
+    confirmError: ({ err }) =>
+      addError(getMessages()!, 'Fehler beim Bestätigen des Codes', err),
+    wrongCode: 'Der Code ist falsch oder abgelaufen.',
+    tooMany: 'Zu viele Versuche. Versuchen Sie es später erneut.',
+    error: ({ err }) =>
+      addError(getMessages()!, 'Fehler beim Senden des Codes', err),
   },
   roleNames: {
     userManager: 'Benutzerverwalter',
