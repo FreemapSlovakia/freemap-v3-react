@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { replacingEntry } from '@app/url/urlUpdating.js';
 import {
   AUTH_PROVIDER_LABELS,
   AuthProviderSchema,
@@ -92,9 +93,28 @@ export default function UserProfileModal({ show }: Props): ReactElement {
 
   // Closed, the last one stays for the fade-out; another user's is still fetching.
   const state =
-    fetched && (userId === null || fetched.userId === userId)
+    fetched &&
+    (userId === null ||
+      fetched.userId === userId ||
+      (fetched.type === 'success' && fetched.profile.id === userId))
       ? fetched
       : { type: 'fetching' as const };
+
+  // The API redirects an account merged into another one to that one.
+  const mergedInto =
+    fetched?.type === 'success' &&
+    fetched.userId === userId &&
+    fetched.profile.id !== userId
+      ? fetched.profile.id
+      : undefined;
+
+  useEffect(() => {
+    if (modal && mergedInto !== undefined) {
+      replacingEntry(() =>
+        dispatch(setActiveModal({ ...modal, id: mergedInto })),
+      );
+    }
+  }, [modal, mergedInto, dispatch]);
 
   useEffect(() => {
     if (userId === null) {
