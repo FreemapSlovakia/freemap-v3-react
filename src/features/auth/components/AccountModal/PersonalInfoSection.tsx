@@ -115,6 +115,29 @@ export function PersonalInfoSection(): ReactElement | null {
     }
   }
 
+  // And what a merge sets, which a save of the old draft would undo.
+  const [nameDraftOf, setNameDraftOf] = useState(user?.name ?? '');
+
+  if (user && user.name !== nameDraftOf) {
+    setNameDraftOf(user.name);
+
+    if (name === nameDraftOf) {
+      setName(user.name);
+    }
+  }
+
+  const [descriptionDraftOf, setDescriptionDraftOf] = useState(
+    user?.description ?? '',
+  );
+
+  if (user && (user.description ?? '') !== descriptionDraftOf) {
+    setDescriptionDraftOf(user.description ?? '');
+
+    if (description === descriptionDraftOf) {
+      setDescription(user.description ?? '');
+    }
+  }
+
   // undefined = unchanged, null = will clear, string = new base64 to upload
   const [picture, setPicture] = useState<string | null | undefined>(undefined);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
