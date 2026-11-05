@@ -86,5 +86,10 @@ export const objectsSetDetails = createAction<ObjectDetailsData | null>(
   'OBJECTS_SET_DETAILS',
 );
 
+/** Selects the POI once the objects layer has it, as a link asks. */
+export const objectsAwaitSelection = createAction<OsmFeatureId | null>(
+  'OBJECTS_AWAIT_SELECTION',
+);
+
 /** Opens or closes the selected search result's panel, until the next selecting. */
 export const setDetailsShown = createAction<boolean>('SET_DETAILS_SHOWN');

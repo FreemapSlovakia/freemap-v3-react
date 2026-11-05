@@ -337,6 +337,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     main.activeModal,
     main.embedFeatures,
     main.selection,
+    main.detailsShown,
     map.layers,
     map.layerSetups,
     map.customLayers,
@@ -373,6 +374,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     main.mapTool,
     main.panelTools,
     objects.active,
+    objects.awaitedSelection,
     wiki.preview,
     wiki.loading,
     elevationChart.target,
@@ -717,7 +719,18 @@ function updateUrl(state: RootState, forced: boolean): void {
       }
     : main.selection?.type === 'event' || main.selection?.type === 'osm-note'
       ? main.selection
-      : null;
+      : main.selection?.type === 'objects'
+        ? { type: 'object', id: main.selection.id }
+        : // Only an OSM element, a geocoder's hit having nothing to fetch it by;
+          // and only with its panel open, not picked by name to be looked at.
+          main.selection?.type === 'search' &&
+            main.selection.id.type === 'osm' &&
+            main.detailsShown
+          ? { type: 'osm', id: main.selection.id }
+          : // Awaited, a link's POI is still what it names.
+            !main.selection && objects.awaitedSelection
+            ? { type: 'object', id: objects.awaitedSelection }
+            : null;
 
   if (select) {
     queryParts.push(['select', encodeSelect(select)]);

@@ -144,6 +144,7 @@ import {
   objectsTerrainOverlayProcessor,
 } from '@features/objects/model/objectDetailsProcessor.js';
 import {
+  objectsAwaitedSelectionProcessor,
   objectsChangePredicateProcessor,
   objectsFetchProcessor,
   objectsReleaseProcessor,
@@ -266,6 +267,7 @@ export const processors = [
   elevationChartProcessor,
   elevationChartPendingTargetProcessor,
   objectsFetchProcessor,
+  objectsAwaitedSelectionProcessor,
   objectsReleaseProcessor,
   objectsChangePredicateProcessor,
   objectDetailsProcessor,

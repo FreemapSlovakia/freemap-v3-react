@@ -8,7 +8,11 @@ import type { OsmFeatureId } from '@shared/types/featureId.js';
 export type SelectParam =
   | { type: 'event'; id: string }
   | { type: 'osm-note'; id: number }
-  | { type: 'changeset'; id: number; element?: string };
+  | { type: 'changeset'; id: number; element?: string }
+  /** An OSM element as a search result, kept or only looked at. */
+  | { type: 'osm'; id: OsmFeatureId }
+  /** A POI of the objects layer, selected once the layer has it. */
+  | { type: 'object'; id: OsmFeatureId };
 
 const ELEMENT_TYPES = new Set<string>([
   'node',
@@ -32,8 +36,29 @@ export function encodeSelect(select: SelectParam): string {
       return select.element
         ? `changeset/${select.id}/${select.element}`
         : `changeset/${select.id}`;
+
+    case 'osm':
+      return `osm-${select.id.elementType}/${select.id.id}`;
+
+    case 'object':
+      return `object/${select.id.elementType}/${select.id.id}`;
   }
 }
+
+const osmId = (
+  elementType: string | undefined,
+  id: string | undefined,
+): OsmFeatureId | undefined => {
+  const n = positive(id);
+
+  return elementType !== undefined && ELEMENT_TYPES.has(elementType) && n
+    ? {
+        type: 'osm',
+        elementType: elementType as OsmFeatureId['elementType'],
+        id: n,
+      }
+    : undefined;
+};
 
 /** `null` for anything malformed, which then selects nothing. */
 export function decodeSelect(raw: string): SelectParam | null {
@@ -67,15 +92,32 @@ export function decodeSelect(raw: string): SelectParam | null {
         return { type: 'changeset', id };
       }
 
-      const elementId = positive(c);
+      const element = osmId(b, c);
 
-      return ELEMENT_TYPES.has(b) && elementId
-        ? { type: 'changeset', id, element: `${b}/${elementId}` }
+      return element
+        ? {
+            type: 'changeset',
+            id,
+            element: `${element.elementType}/${element.id}`,
+          }
         : null;
     }
 
-    default:
-      return null;
+    case 'object': {
+      const id = c === undefined ? osmId(a, b) : undefined;
+
+      return id ? { type: 'object', id } : null;
+    }
+
+    default: {
+      // `osm-node/<id>`, as the `osm-node=` of a kept one reads.
+      const id =
+        type?.startsWith('osm-') && b === undefined
+          ? osmId(type.slice(4), a)
+          : undefined;
+
+      return id ? { type: 'osm', id } : null;
+    }
   }
 }
 

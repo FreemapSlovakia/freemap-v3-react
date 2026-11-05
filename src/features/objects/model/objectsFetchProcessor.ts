@@ -223,3 +223,20 @@ export const objectsFetchProcessor: Processor = {
     }
   },
 };
+
+/** Selects the POI a link named once the layer has it (`objectsAwaitSelection`). */
+export const objectsAwaitedSelectionProcessor: Processor = {
+  // By identity: the objects only while one is awaited, null otherwise.
+  stateChangePredicate: (state) =>
+    state.objects.awaitedSelection && state.objects.objects,
+  handle: ({ getState, dispatch }) => {
+    const { awaitedSelection, objects } = getState().objects;
+
+    if (
+      awaitedSelection &&
+      objects.some((object) => featureIdsEqual(object.id, awaitedSelection))
+    ) {
+      dispatch(selectFeature({ type: 'objects', id: awaitedSelection }));
+    }
+  },
+};

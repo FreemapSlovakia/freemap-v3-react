@@ -11,6 +11,7 @@ import {
   dataViewerMakeHole,
   dataViewerSetData,
 } from '@features/dataViewer/model/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import {
   objectsSetResult,
   setDetailsShown,
@@ -304,6 +305,32 @@ describe('detailsShown', () => {
         }),
       ).detailsShown,
     ).toBe(false);
+  });
+});
+
+describe('mapsLoaded', () => {
+  const opened = (results: SearchResult[], merge = false) =>
+    mapsLoaded({
+      merge,
+      meta: {} as Parameters<typeof mapsLoaded>[0]['meta'],
+      data: { search: { results } } as Parameters<typeof mapsLoaded>[0]['data'],
+    });
+
+  it('lets go of a selected result the map replacing them lacks', () => {
+    const picked = searchSelectResult({ result: aResult });
+
+    expect(run(picked, opened([anotherResult])).selection).toBeNull();
+
+    expect(run(picked, opened([aResult])).selection).toEqual({
+      type: 'search',
+      id: aResult.id,
+    });
+
+    // Merged, the result stays shown.
+    expect(run(picked, opened([anotherResult], true)).selection).toEqual({
+      type: 'search',
+      id: aResult.id,
+    });
   });
 });
 

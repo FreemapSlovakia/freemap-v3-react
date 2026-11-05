@@ -81,7 +81,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | Param | Controls | R/W | Format |
 |---|---|---|---|
 | `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
-| `select` | The selection with a panel of its own (`src/app/url/selectParam.ts`): `event/<id>` (turns the events layer on), `osm-note/<id>` (fetched when the layer hasn't loaded it), `changeset/<id>` (inspected, without opening the tool) and `changeset/<id>/<node\|way\|relation>/<id>` (with that element selected; one its diff lacks is dropped). Absent, such a selection is let go | r/w | `kind/id` |
+| `select` | The selection with a panel of its own (`src/app/url/selectParam.ts`): `event/<id>` (turns the events layer on), `osm-note/<id>` (fetched when the layer hasn't loaded it), `changeset/<id>` (inspected, without opening the tool) `changeset/<id>/<node\|way\|relation>/<id>` (with that element selected; one its diff lacks is dropped), `osm-<node\|way\|relation>/<id>` (an OSM element as a search result: kept when `osm-*` lists it, else only looked at, loaded as a stand-in) and `object/<node\|way\|relation>/<id>` (a POI, selected once the objects layer has it). Absent, such a selection is let go, except that a link opened from outside with `osm-*` alone (an old one) selects the first element it loads; a POI awaited keeps its `select=` until it is selected or something else is | r/w | `kind/id` |
 | `event`, `osm-note`, `changeset` | The forms before `select`, still read when it is absent; a note or an event wins over `changeset` | r | id |
 | `changesets-days` | Changesets time window | r/w | integer days |
 | `changesets-author` | Changesets author filter | r/w | username |

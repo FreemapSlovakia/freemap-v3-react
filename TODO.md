@@ -53,12 +53,6 @@ Still emitting at info level (non-blocking, optional cleanup):
       panel_). Next: the Wikipedia preview, now a `show=` modal: a `wiki`
       selection, `select=wiki/<lang>:<title>` (a row in `selectParam.ts`),
       `show=wiki/…` still read.
-- [ ] **A selected OSM element and POI in `select=`.** `select=osm-node/<id>`
-      (way, relation) names the selected element, kept or only looked at —
-      `osm-*=` stays the list of kept ones, and the restore's "select the
-      first" fallback goes. A POI needs its own `select=object/<type>/<id>`,
-      restored once the objects layer has it, or it would show twice; one
-      only looked at leaves the map with its selection.
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see

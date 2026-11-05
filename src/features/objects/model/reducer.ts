@@ -1,10 +1,14 @@
-import { clearMapFeatures } from '@app/store/actions.js';
+import { clearMapFeatures, selectFeature } from '@app/store/actions.js';
+import { changesetsInspect } from '@features/changesets/model/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
+import { searchSelectResult } from '@features/search/model/actions.js';
 import { upgradeObjectFilter } from '@osm/taxon.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { OsmFeatureId } from '@shared/types/featureId.js';
 import {
   type ObjectDetailsData,
   type ObjectsResult,
+  objectsAwaitSelection,
   objectsRouteClear,
   objectsRouteRequest,
   objectsRouteSet,
@@ -24,6 +28,8 @@ export interface ObjectsState {
   /** What the details mark on the map. */
   marks: Partial<Record<TerrainMarkKind, TerrainMark>>;
   details: ObjectDetailsData | null;
+  /** A POI a link selects, until the layer has it; any selecting lets go. */
+  awaitedSelection: OsmFeatureId | null;
 }
 
 export const objectInitialState: ObjectsState = {
@@ -32,11 +38,29 @@ export const objectInitialState: ObjectsState = {
   route: null,
   marks: {},
   details: null,
+  awaitedSelection: null,
 };
 
 export const objectsReducer = createReducer(objectInitialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => objectInitialState)
+    .addCase(objectsAwaitSelection, (state, { payload }) => {
+      state.awaitedSelection = payload;
+    })
+    // Anything selected meanwhile, a search result or an inspection too.
+    .addCase(selectFeature, (state) => {
+      state.awaitedSelection = null;
+    })
+    .addCase(searchSelectResult, (state, { payload }) => {
+      if (payload && (payload.select ?? true)) {
+        state.awaitedSelection = null;
+      }
+    })
+    .addCase(changesetsInspect, (state, { payload }) => {
+      if (payload !== null) {
+        state.awaitedSelection = null;
+      }
+    })
     .addCase(objectsSetDetails, (state, { payload }) => {
       state.details = payload;
     })

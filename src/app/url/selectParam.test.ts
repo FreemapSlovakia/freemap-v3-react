@@ -15,6 +15,24 @@ describe('select=', () => {
       'changeset/191453628/node/4637444503',
       { type: 'changeset', id: 191453628, element: 'node/4637444503' },
     ],
+    [
+      'osm-node/4637444503',
+      {
+        type: 'osm',
+        id: { type: 'osm', elementType: 'node', id: 4637444503 },
+      },
+    ],
+    [
+      'osm-relation/1690324',
+      {
+        type: 'osm',
+        id: { type: 'osm', elementType: 'relation', id: 1690324 },
+      },
+    ],
+    [
+      'object/way/123',
+      { type: 'object', id: { type: 'osm', elementType: 'way', id: 123 } },
+    ],
   ];
 
   it.each(kinds)('round-trips %s', (raw, select) => {
@@ -32,6 +50,11 @@ describe('select=', () => {
     'changeset/7/node',
     'changeset/7/node/1/extra',
     'wiki/sk:Bratislava',
+    'osm-area/1',
+    'osm-node',
+    'osm-node/1/2',
+    'object/node',
+    'object/node/1/2',
   ])('reads %s as nothing', (raw) => {
     expect(decodeSelect(raw)).toBeNull();
   });

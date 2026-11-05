@@ -87,6 +87,7 @@ import {
   mapsRestore,
 } from '@features/myMaps/model/actions.js';
 import {
+  objectsAwaitSelection,
   objectsSetFilter,
   objectsSetStyle,
 } from '@features/objects/model/actions.js';
@@ -125,10 +126,12 @@ import {
 } from '@features/routePlanner/model/actions.js';
 import {
   searchKeepResult,
+  searchSelectResult,
   searchSetQuery,
   searchSetResultStyle,
   searchUnselectResult,
 } from '@features/search/model/actions.js';
+import { loadingResult } from '@features/search/model/resultUtils.js';
 import { toposcopeSet } from '@features/toposcope/model/actions.js';
 import {
   parseToposcope,
@@ -195,7 +198,7 @@ import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
-import { selectFromQuery } from './selectParam.js';
+import { type SelectParam, selectFromQuery } from './selectParam.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -220,8 +223,16 @@ function parseQuery(search: string) {
   return q;
 }
 
+// The page's first, where a link from outside arrives; a later one is Back,
+// Forward or a hash edit within the app.
+let arriving = true;
+
 export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
+
+  const fromOutside = arriving;
+
+  arriving = false;
 
   setUrlUpdatingEnabled(false);
 
@@ -605,7 +616,13 @@ export function handleLocationChange(store: MyStore): void {
 
   const focus = !parsedQuery['map'];
 
-  handleOsmElements(getState, dispatch, query, focus);
+  const loadedOsmElements = handleOsmElements(
+    getState,
+    dispatch,
+    query,
+    focus,
+    select?.type === 'osm' ? select.id : undefined,
+  );
 
   handleGallery(getState, dispatch, query);
 
@@ -1031,6 +1048,17 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(selectFeature(null));
   }
 
+  // After `objects=`, whose POIs an object selection waits for.
+  handleSelectedElement(
+    getState,
+    dispatch,
+    query,
+    select,
+    loadedOsmElements,
+    focus,
+    fromOutside,
+  );
+
   handleElevationChart(getState, dispatch, query, restore !== null);
 
   // A `track-uid=` / `import-url=` link is nothing but its track.
@@ -1296,13 +1324,9 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
 
 /**
  * Brings the shown OSM elements in line with the `osm-node` / `osm-way` /
- * `osm-relation` params, each of which can appear any number of times.
- *
- * The URL is what a map holds after it is closed, so what it names is kept
- * rather than previewed, and the first of them is selected — a link to an
- * element is a link to looking at it. A previewed result is named by nothing
- * here, so a location change takes it off, which is what leaving the page it
- * was picked on means.
+ * `osm-relation` params, each of which can appear any number of times: what
+ * they name is kept. A previewed result goes, unless `select=` names it (see
+ * `handleSelectedElement`). Returns the elements it starts loading.
  *
  * A load that is already in flight has its element among the shown results
  * (as a placeholder), so it isn't started again by a second location change
@@ -1315,7 +1339,8 @@ function handleOsmElements(
   dispatch: Dispatch<RootAction>,
   query: Record<string, string | string[]>,
   focus: boolean,
-) {
+  selected: OsmFeatureId | undefined,
+): OsmFeatureId[] {
   const wanted = osmElementTypes.flatMap((elementType) => {
     const param = query[`osm-${elementType}`];
 
@@ -1330,7 +1355,10 @@ function handleOsmElements(
     .filter((id): id is OsmFeatureId => id.type === 'osm' && id.id > 0);
 
   for (const id of shown) {
-    if (!wanted.some((w) => featureIdsEqual(w, id))) {
+    if (
+      !wanted.some((w) => featureIdsEqual(w, id)) &&
+      !(selected && featureIdsEqual(selected, id))
+    ) {
       dispatch(searchUnselectResult(id));
     }
   }
@@ -1355,15 +1383,97 @@ function handleOsmElements(
     dispatch(searchKeepResult(previewId));
   }
 
-  const [first] = wanted;
+  return toLoad;
+}
 
-  // An inspection is the selection, which this would end.
+/**
+ * `select=`'s OSM element (a search result, kept or only looked at) or POI,
+ * and the first kept element of a link from outside without `select=`, which
+ * an old one selected without saying so. Absent, such a selection is let go.
+ */
+function handleSelectedElement(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  query: Record<string, string | string[]>,
+  select: SelectParam | null,
+  loaded: OsmFeatureId[],
+  focus: boolean,
+  fromOutside: boolean,
+) {
+  const state = getState();
+
+  const { selection } = state.main;
+
+  // A POI awaited for another link is no longer wanted.
   if (
+    state.objects.awaitedSelection &&
+    !(
+      select?.type === 'object' &&
+      featureIdsEqual(select.id, state.objects.awaitedSelection)
+    )
+  ) {
+    dispatch(objectsAwaitSelection(null));
+  }
+
+  if (select?.type === 'osm') {
+    if (
+      selection?.type === 'search' &&
+      featureIdsEqual(selection.id, select.id)
+    ) {
+      return;
+    }
+
+    const shown = state.search.selectedResults.some((result) =>
+      featureIdsEqual(result.id, select.id),
+    );
+
+    // Shown — kept, maybe still loading — it is only selected; else it is
+    // looked at, a stand-in its own load fills.
+    dispatch(
+      shown
+        ? selectFeature({ type: 'search', id: select.id })
+        : searchSelectResult({ result: loadingResult(select.id), focus }),
+    );
+
+    return;
+  }
+
+  if (select?.type === 'object') {
+    if (
+      !(
+        selection?.type === 'objects' &&
+        featureIdsEqual(selection.id, select.id)
+      )
+    ) {
+      dispatch(
+        state.objects.objects.some((o) => featureIdsEqual(o.id, select.id))
+          ? selectFeature({ type: 'objects', id: select.id })
+          : objectsAwaitSelection(select.id),
+      );
+    }
+
+    return;
+  }
+
+  const [first] = loaded;
+
+  if (
+    fromOutside &&
+    query['select'] === undefined &&
     first &&
-    getState().main.selection === null &&
-    !getState().changesetInspector.inspected
+    selection === null &&
+    !state.changesetInspector.inspected
   ) {
     dispatch(selectFeature({ type: 'search', id: first }));
+  } else if (
+    selection?.type === 'objects' ||
+    // A result picked by name, its panel not opened, is in no `select=` to
+    // lack, so it stays.
+    (selection?.type === 'search' &&
+      selection.id.type === 'osm' &&
+      state.main.detailsShown)
+  ) {
+    dispatch(selectFeature(null));
   }
 }
 

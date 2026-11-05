@@ -18,6 +18,7 @@ import {
   dataViewerSetData,
 } from '@features/dataViewer/model/actions.js';
 import { documentShow } from '@features/documents/model/actions.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import {
   objectsSetResult,
   setDetailsShown,
@@ -242,6 +243,22 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       if (
         state.selection?.type === 'search' &&
         featureIdsEqual(state.selection.id, action.payload)
+      ) {
+        state.selection = null;
+      }
+    })
+    // A map opened in place replaces the results; a selected one it lacks goes
+    // with them, as the search reducer drops it.
+    .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
+      const results = data.search?.results;
+
+      const { selection } = state;
+
+      if (
+        !merge &&
+        results &&
+        selection?.type === 'search' &&
+        !results.some((result) => featureIdsEqual(result.id, selection.id))
       ) {
         state.selection = null;
       }
