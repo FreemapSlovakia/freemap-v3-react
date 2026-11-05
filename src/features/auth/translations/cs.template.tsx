@@ -24,7 +24,7 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
       <>Zobrazit na {profile('mém veřejném profilu')}</>
     ),
     emailUnconfirmed:
-      'Tato adresa zatím není potvrzená. Dokud ji nepotvrdíte, Freemap na ni neposílá žádné e-maily a nelze se jí přihlásit.',
+      'Tato adresa zatím není potvrzená. Dokud ji nepotvrdíte, Freemap na ni nebude posílat žádné e-maily a nebude se jí dát přihlásit.',
     emailChangeHint:
       'Adresa se změní, jakmile zadáte kód, který na ni pošleme.',
     emailConfirmed: 'Vaše e-mailová adresa byla potvrzena.',

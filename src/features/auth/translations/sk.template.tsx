@@ -24,7 +24,7 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
       <>Zobraziť na {profile('mojom verejnom profile')}</>
     ),
     emailUnconfirmed:
-      'Táto adresa zatiaľ nie je potvrdená. Kým ju nepotvrdíte, Freemap na ňu neposiela žiadne e-maily a nedá sa ňou prihlásiť.',
+      'Táto adresa zatiaľ nie je potvrdená. Kým ju nepotvrdíte, Freemap na ňu nebude posielať žiadne e-maily a nebude sa ňou dať prihlásiť.',
     emailChangeHint: 'Adresa sa zmení, keď zadáte kód, ktorý na ňu pošleme.',
     emailConfirmed: 'Vaša e-mailová adresa bola potvrdená.',
     mergeConflict:
