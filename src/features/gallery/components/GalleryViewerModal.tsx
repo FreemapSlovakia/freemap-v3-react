@@ -47,7 +47,6 @@ import {
 import {
   FaCamera,
   FaEllipsisV,
-  FaExclamationTriangle,
   FaGem,
   FaImage,
   FaPencilAlt,
@@ -1252,7 +1251,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
                         {missesCommentMail && (
                           <Alert variant="warning" className="mt-2 mb-0">
-                            <FaExclamationTriangle />{' '}
                             <Text
                               m={gm}
                               k={

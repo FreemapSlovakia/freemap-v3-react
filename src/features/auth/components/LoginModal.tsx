@@ -12,7 +12,7 @@ import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Alert, Modal } from 'react-bootstrap';
-import { FaExclamationTriangle, FaGem, FaSignInAlt } from 'react-icons/fa';
+import { FaGem, FaSignInAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAuthMessages } from '../translations/useAuthMessages.js';
 import { AuthProviders } from './AuthProviders.js';
@@ -64,7 +64,6 @@ export default function LoginModal({ show }: Props): ReactElement {
 
         {cookieConsentResult === null && (
           <Alert variant="warning">
-            <FaExclamationTriangle />{' '}
             <Text>{(m) => m.general.noCookies()}</Text>
           </Alert>
         )}

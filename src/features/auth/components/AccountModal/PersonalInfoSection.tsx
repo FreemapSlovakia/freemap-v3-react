@@ -217,6 +217,9 @@ export function PersonalInfoSection(): ReactElement | null {
           ? 'emailChangeHint'
           : 'emailUnconfirmed';
 
+  const warningHint =
+    emailHint === 'emailUnconfirmed' || emailHint === 'emailMissing';
+
   const canSendCode = online && !emailCode.busy && !invalidEmail;
 
   const invalidName = !name.trim();
@@ -411,13 +414,12 @@ export function PersonalInfoSection(): ReactElement | null {
             className={
               emailHint === 'emailOnlyLogin'
                 ? 'text-danger'
-                : emailHint === 'emailMissing'
+                : warningHint
                   ? 'text-warning-emphasis'
                   : ''
             }
           >
-            {(emailHint === 'emailUnconfirmed' ||
-              emailHint === 'emailMissing') && (
+            {warningHint && (
               <>
                 <FaExclamationTriangle className="text-warning" />{' '}
               </>
