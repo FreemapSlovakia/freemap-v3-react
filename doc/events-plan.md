@@ -116,8 +116,8 @@ from the selection toolbar (**Edit**).
       group).
 - [x] 3. **Texts in English and Slovak**: the events texts into the
       translation files; the other languages fall back to English.
-- [ ] 4. **Review** of the whole branch against `main`, both repos.
-- [ ] 5. **Release**: `EVENT_COVERS_DIRECTORY` in the production config; the
+- [x] 4. **Review** of the whole branch against `main`, both repos.
+- [x] 5. **Release**: `EVENT_COVERS_DIRECTORY` in the production config; the
       "Load here, then reload" check; an announcement-log entry; merge to
       `main`, API first.
 
