@@ -1262,7 +1262,14 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                               }
                             />{' '}
                             <AccountEmailLink>
-                              <Text m={gm} k="viewer.commentsNotMailedLink" />
+                              <Text
+                                m={gm}
+                                k={
+                                  user?.email
+                                    ? 'viewer.commentsNotMailedConfirmLink'
+                                    : 'viewer.commentsNotMailedLink'
+                                }
+                              />
                             </AccountEmailLink>
                           </Alert>
                         )}

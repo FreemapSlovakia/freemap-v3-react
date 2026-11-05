@@ -72,6 +72,7 @@ export type GalleryMessages = {
     commentsNotMailed: string;
     commentsNotMailedNoEmail: string;
     commentsNotMailedLink: string;
+    commentsNotMailedConfirmLink: string;
   };
   editForm: {
     name: string;

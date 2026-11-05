@@ -88,6 +88,7 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     commentsNotMailedNoEmail:
       'O nových komentářích nebudete notifikováni e-mailem: váš účet nemá e-mailovou adresu.',
     commentsNotMailedLink: 'Nastavte si ji ve svém účtu',
+    commentsNotMailedConfirmLink: 'Potvrďte si ji ve svém účtu',
     wikimediaCommentNotNotified:
       'Tato fotografie pochází z Wikimedia Commons. Její autor nebude o vašem komentáři upozorněn – upozorňujeme jen autory fotografií nahraných na Freemap.',
   },

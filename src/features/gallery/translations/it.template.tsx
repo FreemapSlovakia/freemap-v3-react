@@ -91,6 +91,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     commentsNotMailedNoEmail:
       'Non riceverà email sui nuovi commenti qui: il suo account non ha un indirizzo email.',
     commentsNotMailedLink: 'Lo imposti nel suo account',
+    commentsNotMailedConfirmLink: 'Lo confermi nel suo account',
     wikimediaCommentNotNotified:
       'Questa foto proviene da Wikimedia Commons. Il suo autore non riceverà una notifica del suo commento: notifichiamo solo gli autori delle foto caricate su Freemap.',
   },

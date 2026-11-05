@@ -85,6 +85,7 @@ const en: GalleryMessages = {
     commentsNotMailedNoEmail:
       'You will not get an email about new comments here: your account has no email address.',
     commentsNotMailedLink: 'Set it in your account',
+    commentsNotMailedConfirmLink: 'Confirm it in your account',
     wikimediaCommentNotNotified:
       'This photo comes from Wikimedia Commons. Its author will not be notified of your comment — we only notify authors of photos uploaded to Freemap.',
   },
