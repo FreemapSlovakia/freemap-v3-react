@@ -44,6 +44,7 @@ Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :F
 - **Profilový obrázok** – :FaUpload: **Vybrať obrázok** vyberie obrázok s veľkosťou najviac 5 MB, :FaTimes: **Odstrániť** obrázok zruší.
 - **Meno** – povinné.
 - **E-Mail** a **O mne** – nepovinné.
+- **Zobraziť na mojom verejnom profile** – potvrdená e-mailová adresa a pripojené profily OpenStreetMap, GitHub či Strava, každé len vtedy, keď je zaškrtnuté. Slová *mojom verejnom profile* otvoria váš profil tak, ako ho vidia ostatní.
 
 Zmeny uložíte tlačidlom :FaCheck: **Uložiť**.
 
@@ -56,6 +57,8 @@ Pod nimi je :FaHome: **Domovská poloha**, ktorá sa uloží hneď, ako ju nasta
 ## Poskytovatelia prihlásenia
 
 K jednému účtu Freemap môže viesť viacero poskytovateľov. V časti **Pripojiť** stlačte poskytovateľa, ktorého chcete pridať; po potvrdení prihlásenia u poskytovateľa sa môžete prihlasovať aj cez tohto poskytovateľa. Ak už k účtu tohto poskytovateľa patrí iný účet Freemap, oba účty sa spoja do jedného.
+
+Spojením zostane starší z účtov, nech ste boli prihlásení do ktoréhokoľvek, a odkazy na profil druhého vedú naň. Jeho meno ostane, ak nie je len všeobecné *Používateľ Freemap*, oba texty **O mne** sa zachovajú a fotky, mapy, nákupy aj poskytovatelia oboch účtov prejdú doň. Zariadenia prihlásené do druhého účtu sa musia prihlásiť znova.
 
 V časti **Odpojiť** stlačte pripojeného poskytovateľa a po potvrdení sa poskytovateľ odpojí. Posledného zostávajúceho poskytovateľa odpojiť nemožno, ak účet nemá potvrdený e-mail, ktorým sa dá prihlásiť.
 

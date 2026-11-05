@@ -70,7 +70,7 @@ Supported login providers:
 - Microsoft
 - Strava — login and connect work only on `www.freemap.sk`, because Strava's API app accepts only that callback domain; disconnecting works everywhere
 
-Below the providers, the login dialog also logs in **with an email code**: enter the address, **Send code**, then type the 6-digit code from the email (valid 10 minutes). It logs into the account with that address confirmed — Gmail dots and `+tag` suffixes count as the same address — or creates a new account. An address is confirmed on one account at most: confirming it in another account (Account › Personal information) merges the account that had it into that one.
+Below the providers, the login dialog also logs in **with an email code**: enter the address, **Send code**, then type the 6-digit code from the email (valid 10 minutes). It logs into the account with that address confirmed — Gmail dots and `+tag` suffixes count as the same address — or creates a new account. An address is confirmed on one account at most: confirming it in another account (Account › Personal information) joins the two accounts. Any join, this one or connecting a provider another account has, keeps the older account and its id (links to the other one's profile redirect to it), prefers a real name over the generic "Freemap user", and keeps both "About me" texts.
 
 For each provider the modal shows either a **Connect** button (to link it) or a **Disconnect** button (if already linked), so multiple providers can be linked to a single Freemap account.
 
