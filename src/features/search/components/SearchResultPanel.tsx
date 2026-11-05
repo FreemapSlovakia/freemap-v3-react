@@ -56,9 +56,12 @@ export default function SearchResultPanel(): ReactElement {
 
   const result = useAppSelector(activeSearchResultSelector);
 
-  const detailsShown = useAppSelector((state) => state.main.detailsShown);
-
-  const shown = detailsShown && result !== null && !result.loading;
+  // By the selection, before its element is in: an inspection's panel must
+  // give way already, or it shows in between.
+  const shown = useAppSelector(
+    (state) =>
+      state.main.detailsShown && state.main.selection?.type === 'search',
+  );
 
   const details = useAppSelector(objectDetailsSelector);
 

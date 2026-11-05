@@ -28,7 +28,7 @@ const cs: DeepPartialWithRequiredObjects<ChangesetsMessages> = {
   },
   element: {
     onlyNodesMoved: 'Posunuly se jen její body.',
-    geometryChanged: 'Geometrie změněna.',
+    geometryChanged: 'Změněná geometrie.',
     tagsUnchanged: 'Tagy beze změny.',
     key: 'Klíč',
     before: 'Předtím',

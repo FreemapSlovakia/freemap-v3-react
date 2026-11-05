@@ -197,6 +197,17 @@ export type Selection =
   | RouteSegmentSelection
   | SearchSelection;
 
+/** The selections with a docked panel of their own, which take its place. */
+const PANEL_SELECTIONS: ReadonlySet<Selection['type']> = new Set([
+  'search',
+  'objects',
+  'osm-note',
+  'event',
+]);
+
+export const hasPanel = (type: Selection['type'] | undefined): boolean =>
+  type !== undefined && PANEL_SELECTIONS.has(type);
+
 export const selectFeature = createAction<Selection | null>('SELECT_FEATURE');
 
 /**

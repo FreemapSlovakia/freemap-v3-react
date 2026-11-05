@@ -149,7 +149,11 @@ export function DockPanel<T>({
 
   const picking = useAppSelector(pickingModeSelector);
 
-  if (item !== null && item !== kept) {
+  const outranked = useOutranked(yields, show && !picking);
+
+  // Not while giving way: it slides out with what it showed, not what its
+  // item turned into on the way.
+  if (item !== null && item !== kept && !outranked) {
     setKept(item);
   } else if (!show && picking && kept !== null) {
     // Closed while a picking mode had it out of sight: no slide-out to wait for.
@@ -185,8 +189,6 @@ export function DockPanel<T>({
   const nodeRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => () => undock(nodeRef.current), []);
-
-  const outranked = useOutranked(yields, show && !picking);
 
   if (kept === null) {
     return null;

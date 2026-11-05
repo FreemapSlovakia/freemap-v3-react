@@ -68,7 +68,12 @@ import { useDropzone } from 'react-dropzone';
 import { FaChartArea } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useMouseCursor } from '../hooks/useMouseCursor.js';
-import { type Selection, setActiveModal, type Tool } from '../store/actions.js';
+import {
+  hasPanel,
+  type Selection,
+  setActiveModal,
+  type Tool,
+} from '../store/actions.js';
 import {
   askingCookieConsentSelector,
   isToolOpen,
@@ -601,9 +606,8 @@ const routePlannerStyleModalFactory = () =>
   );
 
 /**
- * The toolbar of the selected feature, whatever kind it is; a search result,
- * an object, an OSM note, an event and an inspected changeset's element have a
- * panel instead.
+ * The toolbar of the selected feature, whatever kind it is; one that `hasPanel`,
+ * or an inspected changeset's element, has a panel instead.
  */
 function selectionMenu(type: Selection['type']): ReactNode {
   switch (type) {
@@ -692,11 +696,7 @@ export function Main(): ReactElement {
   >(() => new Set());
 
   const using = new Set([
-    ...(selectionType === 'search' ||
-    selectionType === 'objects' ||
-    selectionType === 'osm-note'
-      ? [selectionType]
-      : []),
+    ...(selectionType && hasPanel(selectionType) ? [selectionType] : []),
     ...(inspecting ? (['inspection'] as const) : []),
   ]);
 

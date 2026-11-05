@@ -4,11 +4,13 @@ import { HorizontalScroller } from '@shared/components/HorizontalScroller.js';
 import { LinkButton } from '@shared/components/LinkButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { inAppLink } from '@shared/inAppLink.js';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { FaHistory } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { changesetsInspect, changesetsShowHistory } from '../model/actions.js';
+import type { DiffElement } from '../model/changesetDiff.js';
+import type { ChangesetInspectorState } from '../model/inspectorReducer.js';
 import { selectedDiffElementSelector } from '../model/selectors.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 import { ChangesetDetails } from './ChangesetDetails.js';
@@ -28,20 +30,20 @@ type Crumb = {
   leave?: () => void;
 };
 
-type Props = {
-  /** The history's element as its details head it, in place of its name. */
-  root?: ReactNode;
+/** What the inspector shows, as the store has it now; see `useInspectorView`. */
+export type InspectorView = {
+  history: ChangesetInspectorState['history'];
+  inspected: ChangesetInspectorState['inspected'];
+  element: DiffElement | undefined;
+  /**
+   * Selected before its diff is in, as from a history: its level is shown
+   * already, so the changeset doesn't flash up in between.
+   */
+  pending: boolean;
 };
 
-/**
- * The deepest of an element's history, the inspected changeset and the
- * selected element of it, under a breadcrumb back up through the others.
- */
-export function ChangesetInspector({ root }: Props): ReactElement {
-  const cm = useChangesetsMessages();
-
-  const dispatch = useDispatch();
-
+/** The inspector's state, one identity while none of it changes. */
+export function useInspectorView(): InspectorView {
   const history = useAppSelector((state) => state.changesetInspector.history);
 
   const inspected = useAppSelector(
@@ -50,13 +52,37 @@ export function ChangesetInspector({ root }: Props): ReactElement {
 
   const element = useAppSelector(selectedDiffElementSelector);
 
-  // Selected before its diff is in, as from a history: its level is shown
-  // already, so the changeset doesn't flash up in between.
   const pending = useAppSelector(
     (state) =>
       state.main.selection?.type === 'changeset-element' &&
       state.changesetInspector.inspected?.source === null,
   );
+
+  return useMemo(
+    () => ({ history, inspected, element, pending }),
+    [history, inspected, element, pending],
+  );
+}
+
+type Props = {
+  /** The history's element as its details head it, in place of its name. */
+  root?: ReactNode;
+  /** What to show, if not the store's now: a panel sliding out keeps its own. */
+  view?: InspectorView;
+};
+
+/**
+ * The deepest of an element's history, the inspected changeset and the
+ * selected element of it, under a breadcrumb back up through the others.
+ */
+export function ChangesetInspector({ root, view }: Props): ReactElement {
+  const cm = useChangesetsMessages();
+
+  const dispatch = useDispatch();
+
+  const live = useInspectorView();
+
+  const { history, inspected, element, pending } = view ?? live;
 
   const { label } = useElementName();
 
