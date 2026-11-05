@@ -83,8 +83,10 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumPhoto: 'Táto fotografia je prémiový obsah.',
     noComments: 'Bez komentára',
     commentsNotMailed:
-      'O nových komentároch tu nedostanete e-mail: váš účet nemá potvrdenú e-mailovú adresu.',
-    commentsNotMailedLink: 'Nastavte ju vo svojom účte',
+      'O nových komentároch nebudete notifikovaní e-mailom: váš účet nemá potvrdenú e-mailovú adresu.',
+    commentsNotMailedNoEmail:
+      'O nových komentároch nebudete notifikovaní e-mailom: váš účet nemá e-mailovú adresu.',
+    commentsNotMailedLink: 'Nastavte si ju vo svojom účte',
     wikimediaCommentNotNotified:
       'Táto fotografia pochádza z Wikimedia Commons. Jej autor nebude o vašom komentári upovedomený – upozorňujeme len autorov fotografií nahratých na Freemap.',
   },

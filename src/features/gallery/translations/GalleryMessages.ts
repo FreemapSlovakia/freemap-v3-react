@@ -70,6 +70,7 @@ export type GalleryMessages = {
     wikimediaCommentNotNotified: string;
     /** By the comment form: the user's account has no confirmed address. */
     commentsNotMailed: string;
+    commentsNotMailedNoEmail: string;
     commentsNotMailedLink: string;
   };
   editForm: {

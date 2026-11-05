@@ -78,6 +78,8 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noComments: 'Keine Kommentare',
     commentsNotMailed:
       'Über neue Kommentare hier erhalten Sie keine E-Mail: Ihr Konto hat keine bestätigte E-Mail-Adresse.',
+    commentsNotMailedNoEmail:
+      'Über neue Kommentare hier erhalten Sie keine E-Mail: Ihr Konto hat keine E-Mail-Adresse.',
     commentsNotMailedLink: 'In Ihrem Konto festlegen',
     wikimediaCommentNotNotified:
       'Dieses Foto stammt von Wikimedia Commons. Sein Autor wird über Ihren Kommentar nicht benachrichtigt – wir benachrichtigen nur Autoren von Fotos, die zu Freemap hochgeladen wurden.',

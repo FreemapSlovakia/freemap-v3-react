@@ -1253,7 +1253,14 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         {missesCommentMail && (
                           <Alert variant="warning" className="mt-2 mb-0">
                             <FaExclamationTriangle />{' '}
-                            <Text m={gm} k="viewer.commentsNotMailed" />{' '}
+                            <Text
+                              m={gm}
+                              k={
+                                user?.email
+                                  ? 'viewer.commentsNotMailed'
+                                  : 'viewer.commentsNotMailedNoEmail'
+                              }
+                            />{' '}
                             <AccountEmailLink>
                               <Text m={gm} k="viewer.commentsNotMailedLink" />
                             </AccountEmailLink>

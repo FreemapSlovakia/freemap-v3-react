@@ -86,6 +86,8 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noComments: 'Nincs hozzászólás',
     commentsNotMailed:
       'Az itteni új hozzászólásokról nem kap e-mailt: fiókjában nincs megerősített e-mail-cím.',
+    commentsNotMailedNoEmail:
+      'Az itteni új hozzászólásokról nem kap e-mailt: fiókjában nincs e-mail-cím.',
     commentsNotMailedLink: 'Állítsa be a fiókjában',
     wikimediaCommentNotNotified:
       'Ez a fénykép a Wikimedia Commonsról származik. A szerzője nem kap értesítést a hozzászólásáról – csak a Freemapra feltöltött fényképek szerzőit értesítjük.',

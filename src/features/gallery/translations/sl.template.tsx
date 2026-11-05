@@ -84,6 +84,8 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     noComments: 'Ni komentarjev',
     commentsNotMailed:
       'O novih komentarjih tukaj ne boste prejeli e-pošte: vaš račun nima potrjenega e-poštnega naslova.',
+    commentsNotMailedNoEmail:
+      'O novih komentarjih tukaj ne boste prejeli e-pošte: vaš račun nima e-poštnega naslova.',
     commentsNotMailedLink: 'Nastavite ga v svojem računu',
     wikimediaCommentNotNotified:
       'Ta fotografija je z Wikimedia Commons. Njen avtor ne bo obveščen o vašem komentarju – obveščamo samo avtorje fotografij, naloženih na Freemap.',
