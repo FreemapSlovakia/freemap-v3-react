@@ -47,6 +47,13 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Load a link's POI by its id.** A `panel=object/…` POI the objects layer
+      hasn't loaded waits in `objects.awaitedSelection`, beside the one
+      selection, and every selecting must let go of it. Selecting it at once
+      instead (as a changeset element or an OSM element is) leaves an orphan
+      whenever no fetch follows or the fetch fails: only an area fetch can bring
+      it. With the POI fetched by id, the way `osmLoad` fetches an element, it
+      could be selected at once and `awaitedSelection` dropped.
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see

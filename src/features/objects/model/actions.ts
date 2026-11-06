@@ -21,6 +21,9 @@ export const objectsSetFilter = createAction<string[]>('OBJECTS_SET_FILTER');
 export const objectsSetResult =
   createAction<ObjectsResult[]>('OBJECTS_SET_RESULT');
 
+/** Drops one object, kept only while it was selected. */
+export const objectsRelease = createAction<OsmFeatureId>('OBJECTS_RELEASE');
+
 /**
  * Replaces the whole marker style (shape + color) applied to displayed objects.
  * A single whole-replace setter mirrors the other style settings

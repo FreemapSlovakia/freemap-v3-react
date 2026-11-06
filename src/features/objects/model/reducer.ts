@@ -9,6 +9,7 @@ import {
   type ObjectDetailsData,
   type ObjectsResult,
   objectsAwaitSelection,
+  objectsRelease,
   objectsRouteClear,
   objectsRouteRequest,
   objectsRouteSet,
@@ -98,6 +99,11 @@ export const objectsReducer = createReducer(objectInitialState, (builder) =>
       ) {
         state.awaitedSelection = null;
       }
+    })
+    .addCase(objectsRelease, (state, { payload }) => {
+      state.objects = state.objects.filter(
+        (object) => !featureIdsEqual(object.id, payload),
+      );
     })
     .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
       const loaded = (data.objectsV2?.active ?? []).map(upgradeObjectFilter);

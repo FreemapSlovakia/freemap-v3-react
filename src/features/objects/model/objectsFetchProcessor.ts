@@ -10,6 +10,7 @@ import { fetchObjects } from '../objectsQuery.js';
 import { loadObjectsMessages } from '../translations/loadObjectsMessages.js';
 import {
   type ObjectsResult,
+  objectsRelease,
   objectsSetFilter,
   objectsSetResult,
 } from './actions.js';
@@ -94,9 +95,8 @@ export const objectsReleaseProcessor: Processor = {
       return;
     }
 
-    dispatch(
-      objectsSetResult(getState().objects.objects.filter((o) => o !== object)),
-    );
+    // Not a new result, which would let go of a POI a link awaits.
+    dispatch(objectsRelease(object.id));
   },
 };
 

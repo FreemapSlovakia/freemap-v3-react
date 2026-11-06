@@ -224,17 +224,8 @@ function parseQuery(search: string) {
   return q;
 }
 
-// The page's first, where a link from outside arrives; a later one is Back,
-// Forward or a hash edit within the app.
-let arriving = true;
-
 export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
-
-  // A reload keeps the entry's state, which every entry the app writes has.
-  const fromOutside = arriving && history.state === null;
-
-  arriving = false;
 
   setUrlUpdatingEnabled(false);
 
@@ -618,7 +609,7 @@ export function handleLocationChange(store: MyStore): void {
 
   const focus = !parsedQuery['map'];
 
-  const loadedOsmElements = handleOsmElements(
+  handleOsmElements(
     getState,
     dispatch,
     query,
@@ -1054,15 +1045,7 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   // After `objects=`, whose POIs an object selection waits for.
-  handleSelectedElement(
-    getState,
-    dispatch,
-    query,
-    panel,
-    loadedOsmElements,
-    focus,
-    fromOutside,
-  );
+  handleSelectedElement(getState, dispatch, panel, focus);
 
   handleElevationChart(getState, dispatch, query, restore !== null);
 
@@ -1331,7 +1314,7 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
  * Brings the shown OSM elements in line with the `osm-node` / `osm-way` /
  * `osm-relation` params, each of which can appear any number of times: what
  * they name is kept. A previewed result goes, unless `panel=` names it (see
- * `handleSelectedElement`). Returns the elements it starts loading.
+ * `handleSelectedElement`).
  *
  * A load that is already in flight has its element among the shown results
  * (as a placeholder), so it isn't started again by a second location change
@@ -1345,7 +1328,7 @@ function handleOsmElements(
   query: Record<string, string | string[]>,
   focus: boolean,
   selected: OsmFeatureId | undefined,
-): OsmFeatureId[] {
+): void {
   const wanted = osmElementTypes.flatMap((elementType) => {
     const param = query[`osm-${elementType}`];
 
@@ -1387,23 +1370,17 @@ function handleOsmElements(
   if (previewId && wanted.some((w) => featureIdsEqual(w, previewId))) {
     dispatch(searchKeepResult(previewId));
   }
-
-  return toLoad;
 }
 
 /**
- * `panel=`'s OSM element (a search result, kept or only looked at) or POI,
- * and the first kept element of a link from outside without `panel=`, which
- * an old one selected without saying so. Absent, such a selection is let go.
+ * `panel=`'s OSM element (a search result, kept or only looked at) or POI.
+ * Absent, such a selection is let go.
  */
 function handleSelectedElement(
   getState: () => RootState,
   dispatch: Dispatch<RootAction>,
-  query: Record<string, string | string[]>,
   panel: PanelParam | null,
-  loaded: OsmFeatureId[],
   focus: boolean,
-  fromOutside: boolean,
 ) {
   const state = getState();
 
@@ -1465,17 +1442,7 @@ function handleSelectedElement(
     return;
   }
 
-  const [first] = loaded;
-
   if (
-    fromOutside &&
-    query['panel'] === undefined &&
-    first &&
-    selection === null &&
-    !state.changesetInspector.inspected
-  ) {
-    dispatch(selectFeature({ type: 'search', id: first }));
-  } else if (
     selection?.type === 'objects' ||
     // A result picked by name, its panel not opened, is in no `panel=` to
     // lack, so it stays.
