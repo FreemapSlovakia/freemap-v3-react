@@ -1,3 +1,8 @@
+import {
+  isElementType,
+  osmIdKey,
+  osmIdOf,
+} from '@features/changesets/model/changesetDiff.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 
 /**
@@ -16,12 +21,6 @@ export type PanelParam =
   | { type: 'object'; id: OsmFeatureId }
   /** A Wikipedia article, `<lang>:<title>`; the title may hold a `/`. */
   | { type: 'wiki'; id: string };
-
-const ELEMENT_TYPES = new Set<string>([
-  'node',
-  'way',
-  'relation',
-] satisfies OsmFeatureId['elementType'][]);
 
 /** As `encodePanel` writes one, so a link reads back exactly as written. */
 const positive = (s: string | undefined) =>
@@ -60,12 +59,8 @@ const osmId = (
 ): OsmFeatureId | undefined => {
   const n = positive(id);
 
-  return elementType !== undefined && ELEMENT_TYPES.has(elementType) && n
-    ? {
-        type: 'osm',
-        elementType: elementType as OsmFeatureId['elementType'],
-        id: n,
-      }
+  return elementType !== undefined && isElementType(elementType) && n
+    ? osmIdOf({ type: elementType, id: n })
     : undefined;
 };
 
@@ -111,11 +106,7 @@ export function decodePanel(raw: string): PanelParam | null {
       const element = osmId(b, c);
 
       return element
-        ? {
-            type: 'changeset',
-            id,
-            element: `${element.elementType}/${element.id}`,
-          }
+        ? { type: 'changeset', id, element: osmIdKey(element) }
         : null;
     }
 

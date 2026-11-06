@@ -246,6 +246,46 @@ export const urlProcessor: Processor = {
  * `forced` marks the rate-limited rewrite: it derives again even though no
  * slice has changed since it was scheduled, and writes without waiting further.
  */
+/** What the state's panel is, as `panel=` names it. */
+function selectionPanel({
+  main: { selection, detailsShown },
+  changesetInspector: { inspected },
+  objects: { awaitedSelection },
+}: RootState): PanelParam | null {
+  if (inspected) {
+    return {
+      type: 'changeset',
+      id: inspected.id,
+      element:
+        selection?.type === 'changeset-element' ? selection.id : undefined,
+    };
+  }
+
+  switch (selection?.type) {
+    case 'event':
+    case 'osm-note':
+    case 'wiki':
+      return selection;
+
+    case 'objects':
+      return { type: 'object', id: selection.id };
+
+    case 'search':
+      // Only an OSM element, a geocoder's hit having nothing to fetch it by;
+      // and only with its panel open, not picked by name to be looked at.
+      return selection.id.type === 'osm' && detailsShown
+        ? { type: 'osm', id: selection.id }
+        : null;
+
+    case undefined:
+      // Awaited, a link's POI is still what it names.
+      return awaitedSelection ? { type: 'object', id: awaitedSelection } : null;
+
+    default:
+      return null;
+  }
+}
+
 function updateUrl(state: RootState, forced: boolean): void {
   const {
     map,
@@ -698,31 +738,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['follow', main.selection?.id]);
   }
 
-  const panel: PanelParam | null = changesetInspector.inspected
-    ? {
-        type: 'changeset',
-        id: changesetInspector.inspected.id,
-        element:
-          main.selection?.type === 'changeset-element'
-            ? main.selection.id
-            : undefined,
-      }
-    : main.selection?.type === 'event' ||
-        main.selection?.type === 'osm-note' ||
-        main.selection?.type === 'wiki'
-      ? main.selection
-      : main.selection?.type === 'objects'
-        ? { type: 'object', id: main.selection.id }
-        : // Only an OSM element, a geocoder's hit having nothing to fetch it by;
-          // and only with its panel open, not picked by name to be looked at.
-          main.selection?.type === 'search' &&
-            main.selection.id.type === 'osm' &&
-            main.detailsShown
-          ? { type: 'osm', id: main.selection.id }
-          : // Awaited, a link's POI is still what it names.
-            !main.selection && objects.awaitedSelection
-            ? { type: 'object', id: objects.awaitedSelection }
-            : null;
+  const panel = selectionPanel(state);
 
   if (panel) {
     queryParts.push(['panel', encodePanel(panel)]);

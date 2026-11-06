@@ -1,7 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import { selectFeature } from '@app/store/actions.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
-import { userLayersSelector } from '@app/store/selectors.js';
 import type { RootState } from '@app/store/store.js';
 import { isAbortError } from '@shared/isAbortError.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
@@ -11,16 +10,16 @@ import {
   wikiLoadPreview,
   wikiSetPreview,
 } from '../actions.js';
-import { selectedWikiId, WIKI_LAYER } from '../selectors.js';
-
-const layerOn = (state: RootState) =>
-  userLayersSelector(state).includes(WIKI_LAYER);
+import { selectedWikiId, wikiLayerOnSelector } from '../selectors.js';
 
 /** Turning the layer off lets go of its article; a link naming one turns it on. */
 export const wikiLayerOffProcessor: Processor = {
-  stateChangePredicate: layerOn,
+  stateChangePredicate: wikiLayerOnSelector,
   handle({ getState, dispatch }) {
-    if (!layerOn(getState()) && selectedWikiId(getState()) !== null) {
+    if (
+      !wikiLayerOnSelector(getState()) &&
+      selectedWikiId(getState()) !== null
+    ) {
       dispatch(selectFeature(null));
     }
   },
@@ -84,16 +83,13 @@ const WikiResponse2Schema = z.object({
 export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   actionCreator: wikiLoadPreview,
   errorKey: 'general.loadError',
-  handle: async (params) => {
+  handle: async ({ getState, dispatch, action }) => {
     try {
-      await loadPreview(params);
+      dispatch(wikiSetPreview(await loadPreview(getState, action.payload)));
     } catch (err) {
       // Nothing would show the article, nor retry it: selecting it again does.
-      if (
-        !isAbortError(err) &&
-        selectedWikiId(params.getState()) === params.action.payload
-      ) {
-        params.dispatch(selectFeature(null));
+      if (!isAbortError(err) && selectedWikiId(getState()) === action.payload) {
+        dispatch(selectFeature(null));
       }
 
       throw err;
@@ -101,18 +97,15 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   },
 };
 
-async function loadPreview({
-  getState,
-  dispatch,
-  action,
-}: Parameters<
-  NonNullable<Processor<typeof wikiLoadPreview>['handle']>
->[0]): Promise<void> {
-  const p = action.payload.indexOf(':');
+async function loadPreview(
+  getState: () => RootState,
+  id: string,
+): Promise<WikiPreview> {
+  const p = id.indexOf(':');
 
-  let lang = action.payload.slice(0, p);
+  let lang = id.slice(0, p);
 
-  let title = action.payload.slice(p + 1);
+  let title = id.slice(p + 1);
 
   const { language } = getState().l10n;
 
@@ -177,11 +170,5 @@ async function loadPreview({
 
   const data = WikiResponse2Schema.parse(await res.json());
 
-  const preview: WikiPreview = {
-    ...Object.values(data.query.pages)[0]!,
-    lang,
-    langTitle: title,
-  };
-
-  dispatch(wikiSetPreview(preview));
+  return { ...Object.values(data.query.pages)[0]!, lang, langTitle: title };
 }

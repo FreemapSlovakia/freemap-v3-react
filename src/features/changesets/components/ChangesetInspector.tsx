@@ -1,4 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
+import { encodePanel } from '@app/url/panelParam.js';
 import { Text } from '@features/l10n/Text.js';
 import { HorizontalScroller } from '@shared/components/HorizontalScroller.js';
 import { LinkButton } from '@shared/components/LinkButton.js';
@@ -121,7 +122,7 @@ export function ChangesetInspector({ root, view }: Props): ReactElement {
       ) : (
         <ChangesetLabel id={inspected.id} />
       ),
-      href: `#panel=changeset/${inspected.id}`,
+      href: `#panel=${encodePanel({ type: 'changeset', id: inspected.id })}`,
       leave: () => dispatch(changesetsInspect(null)),
     });
   }

@@ -150,7 +150,11 @@ import {
   parseViewshed,
   sameViewpoint,
 } from '@features/viewshed/viewshedUrl.js';
-import { selectedWikiId, WIKI_LAYER } from '@features/wiki/model/selectors.js';
+import {
+  selectedWikiId,
+  WIKI_LAYER,
+  wikiLayerOnSelector,
+} from '@features/wiki/model/selectors.js';
 import {
   type ColorizingMode,
   ColorizingModeSchema,
@@ -191,11 +195,7 @@ import {
 } from '../store/actions.js';
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
-import {
-  isToolOpen,
-  openToolsSelector,
-  userLayersSelector,
-} from '../store/selectors.js';
+import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
 import { type PanelParam, panelFromQuery } from './panelParam.js';
@@ -1043,7 +1043,7 @@ export function handleLocationChange(store: MyStore): void {
   if (wikiId !== null) {
     if (selectedWiki !== wikiId) {
       // Its marker shown, as an event's is, for the panel to pan to.
-      if (!userLayersSelector(getState()).includes(WIKI_LAYER)) {
+      if (!wikiLayerOnSelector(getState())) {
         dispatch(mapToggleLayer({ type: WIKI_LAYER, enable: true }));
       }
 

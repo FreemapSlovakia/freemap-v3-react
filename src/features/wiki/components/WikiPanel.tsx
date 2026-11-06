@@ -3,17 +3,10 @@ import { Text } from '@features/l10n/Text.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
 import { wikiPage } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
 import { FaWikipediaW } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import type { WikiPreview } from '../model/actions.js';
 import { selectedWikiId } from '../model/selectors.js';
-
-/** The article's preview, or the `<lang>:<title>` it is loading for. */
-type Item = { preview: WikiPreview } | { loading: string };
-
-const articleUrl = (lang: string, title: string) =>
-  `https://${lang}.wikipedia.org/wiki/${wikiPage(title)}`;
 
 /** The selected Wikipedia article's panel. */
 export default function WikiPanel(): ReactElement {
@@ -23,20 +16,16 @@ export default function WikiPanel(): ReactElement {
 
   const preview = useAppSelector((state) => state.wiki.preview);
 
+  // The `<lang>:<title>` the preview is loading for.
   const loading = useAppSelector((state) => state.wiki.loading);
 
   const point = useAppSelector((state) =>
-    state.wiki.points.find((p) => p.wikipedia === id),
-  );
-
-  const item = useMemo<Item | null>(
-    () => (preview ? { preview } : loading ? { loading } : null),
-    [preview, loading],
+    id === null ? undefined : state.wiki.points.find((p) => p.wikipedia === id),
   );
 
   return (
     <DockPanel
-      item={item}
+      item={preview ?? loading}
       show={id !== null}
       icon={<FaWikipediaW />}
       title={() => 'Wikipedia'}
@@ -44,48 +33,48 @@ export default function WikiPanel(): ReactElement {
       onClose={() => dispatch(selectFeature(null))}
     >
       {(item) => {
-        if ('loading' in item) {
-          const [lang = '', title = ''] = item.loading.split(/:(.*)/);
+        let lang, title, label, body;
 
-          return (
+        if (typeof item === 'string') {
+          [lang = '', title = ''] = item.split(/:(.*)/);
+
+          label = title;
+
+          body = <Text k="general.loading" />;
+        } else {
+          ({ lang, langTitle: title, title: label } = item);
+
+          body = (
             <>
-              <p className="lead fw-semibold">
-                <a href={articleUrl(lang, title)} target="wikipedia">
-                  {title}
-                </a>
-              </p>
+              {item.thumbnail && (
+                <img
+                  src={item.thumbnail.source}
+                  width={item.thumbnail.width}
+                  height={item.thumbnail.height}
+                  alt={item.title}
+                  className="mb-3 mw-100 h-auto rounded"
+                />
+              )}
 
-              <Text k="general.loading" />
+              {/* Wikipedia's own extract, as its API sends it. */}
+              <div dangerouslySetInnerHTML={{ __html: item.extract }} />
             </>
           );
         }
-
-        const { preview } = item;
 
         return (
           <>
             <p className="lead fw-semibold">
               <a
-                href={articleUrl(preview.lang, preview.langTitle)}
+                href={`https://${lang}.wikipedia.org/wiki/${wikiPage(title)}`}
                 // One named tab for every article link.
                 target="wikipedia"
               >
-                {preview.title}
+                {label}
               </a>
             </p>
 
-            {preview.thumbnail && (
-              <img
-                src={preview.thumbnail.source}
-                width={preview.thumbnail.width}
-                height={preview.thumbnail.height}
-                alt={preview.title}
-                className="mb-3 mw-100 h-auto rounded"
-              />
-            )}
-
-            {/* Wikipedia's own extract, as its API sends it. */}
-            <div dangerouslySetInnerHTML={{ __html: preview.extract }} />
+            {body}
           </>
         );
       }}

@@ -1,3 +1,4 @@
+import { encodePanel } from '@app/url/panelParam.js';
 import { Text } from '@features/l10n/Text.js';
 import { getOsmChangesetUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import { usePaged } from '@shared/components/LoadMoreSentinel.js';
@@ -9,6 +10,7 @@ import type { ReactElement } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { changesetsInspect, type HistoryVersion } from '../model/actions.js';
+import { osmIdKey } from '../model/changesetDiff.js';
 import { changesetElementSelect } from '../model/inspection.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
 
@@ -79,7 +81,11 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
                     }
                   : inAppLink(
                       // As the click: the changeset, at this element.
-                      `#panel=changeset/${version.changeset}/${id.elementType}/${id.id}`,
+                      `#panel=${encodePanel({
+                        type: 'changeset',
+                        id: version.changeset,
+                        element: osmIdKey(id),
+                      })}`,
                       () => inspect(version.changeset),
                     ))}
               >
