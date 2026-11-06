@@ -10,6 +10,7 @@ import {
   wikiLoadPreview,
   wikiSetPreview,
 } from '../actions.js';
+import { cleanExtract } from '../cleanExtract.js';
 import { selectedWikiId, wikiLayerOnSelector } from '../selectors.js';
 
 /** Turning the layer off lets go of its article; a link naming one turns it on. */
@@ -170,5 +171,12 @@ async function loadPreview(
 
   const data = WikiResponse2Schema.parse(await res.json());
 
-  return { ...Object.values(data.query.pages)[0]!, lang, langTitle: title };
+  const page = Object.values(data.query.pages)[0]!;
+
+  return {
+    ...page,
+    extract: cleanExtract(page.extract),
+    lang,
+    langTitle: title,
+  };
 }
