@@ -567,8 +567,12 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(changesetsSetParams(changesetParams));
   }
 
-  // What has a panel of its own; see `panelParam.ts`.
-  const panel = panelFromQuery(query);
+  // What has a panel of its own; see `panelParam.ts`. A query-string link (the
+  // SEO pages', whose URLs are indexed) opens its first `osm-*` element: the
+  // app writes only the hash, so such a link comes from outside.
+  const panel =
+    panelFromQuery(query) ??
+    (document.location.hash ? null : firstOsmElement(query));
 
   const inspection = panel?.type === 'changeset' ? panel : null;
 
@@ -1310,6 +1314,28 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
   );
 }
 
+/** The elements the `osm-node` / `osm-way` / `osm-relation` params name. */
+function osmElementsOf(
+  query: Record<string, string | string[]>,
+): OsmFeatureId[] {
+  return osmElementTypes.flatMap((elementType) => {
+    const param = query[`osm-${elementType}`];
+
+    return (param === undefined ? [] : Array.isArray(param) ? param : [param])
+      .map((value) => parseInt(value, 10))
+      .filter((id) => id > 0)
+      .map((id): OsmFeatureId => ({ type: 'osm', elementType, id }));
+  });
+}
+
+function firstOsmElement(
+  query: Record<string, string | string[]>,
+): PanelParam | null {
+  const [first] = osmElementsOf(query);
+
+  return first ? { type: 'osm', id: first } : null;
+}
+
 /**
  * Brings the shown OSM elements in line with the `osm-node` / `osm-way` /
  * `osm-relation` params, each of which can appear any number of times: what
@@ -1329,14 +1355,7 @@ function handleOsmElements(
   focus: boolean,
   selected: OsmFeatureId | undefined,
 ): void {
-  const wanted = osmElementTypes.flatMap((elementType) => {
-    const param = query[`osm-${elementType}`];
-
-    return (param === undefined ? [] : Array.isArray(param) ? param : [param])
-      .map((value) => parseInt(value, 10))
-      .filter((id) => id > 0)
-      .map((id): OsmFeatureId => ({ type: 'osm', elementType, id }));
-  });
+  const wanted = osmElementsOf(query);
 
   const shown = getState()
     .search.selectedResults.map(({ id }) => id)

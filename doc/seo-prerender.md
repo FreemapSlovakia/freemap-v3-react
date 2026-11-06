@@ -49,6 +49,8 @@ Each category is two queries: one for the matching ids (a GIN scan on `kv` ANDed
 
 The boundary test is `ST_Intersects` **and `NOT ST_Touches`**: neighbouring polygons share the border line, so intersection alone gives Slovakia ~400 foreign municipalities with Slovak-language pages. `NOT ST_Touches` still keeps a route that crosses the border, which testing the label point instead would drop (2916 hiking routes vs 2777). It costs nothing measurable — it only runs on the rows the indexes already left.
 
+A page's URL is `?layers=X&osm-<type>=<id>&lang=<lang>`, with no `panel=`: the query string is also the prerender's file name, and nginx serves none holding a `/`. The app opens the element's panel for an `osm-*` link in the query string, so a visitor from a search result lands on its details.
+
 Sitemap shards list the pages the run actually wrote, not the ids it fetched: the tag batches trail the id query by minutes, and anything deleted from OSM in between would otherwise be advertised without a page behind it.
 
 | Country | Lang | Boundary relation | Category set |
