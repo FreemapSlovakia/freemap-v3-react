@@ -199,7 +199,8 @@ export const changesetsReturnToHistoryProcessor: Processor<
         ? state.objects.objects.some(isThere)
         : state.search.selectedResults.some(isThere))
     ) {
-      dispatch(osmLoad({ ids: [history.id], focus: false, pin: true }));
+      // Unpinned: a kept one would still be there, so it was only looked at.
+      dispatch(osmLoad({ ids: [history.id], focus: false }));
 
       selection = { type: 'search', id: history.id };
     }

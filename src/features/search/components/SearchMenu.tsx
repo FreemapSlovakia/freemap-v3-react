@@ -1,4 +1,5 @@
 import type { RootState } from '@app/store/store.js';
+import { encodePanel } from '@app/url/panelParam.js';
 import { useOpenManual } from '@features/documents/hooks/useOpenManual.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
@@ -737,7 +738,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   onBlur={() => dispatch(searchUnsetHover(result.id))}
                   {...(result.id.type === 'osm'
                     ? {
-                        href: `#osm-${result.id.elementType}=${result.id.id}`,
+                        href: `#panel=${encodePanel({ type: 'osm', id: result.id })}`,
                       }
                     : ({ as: 'button', type: 'button' } as const))}
                   active={

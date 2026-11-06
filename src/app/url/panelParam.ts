@@ -6,10 +6,8 @@ import {
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 
 /**
- * The `panel=` parameter: what has a panel of its own, one at a time. An
- * inspection counts as one, with the element of it selected after it. A tool's
- * own selection (a tracked device's `follow=`) stays out: it runs beside an
- * inspection, while any of these, being the selection, takes its place.
+ * The `panel=` parameter: what has a panel of its own, one at a time, an
+ * inspection included. A tool's selection (`follow=`) stays out of it.
  */
 export type PanelParam =
   | { type: 'event'; id: string }

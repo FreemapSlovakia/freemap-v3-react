@@ -1,3 +1,4 @@
+import { encodePanel } from '@app/url/panelParam.js';
 import { Text } from '@features/l10n/Text.js';
 import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
 import { inAppLink } from '@shared/inAppLink.js';
@@ -10,6 +11,7 @@ import {
   type DiffElement,
   hasMoved,
   isIndirect,
+  osmIdOf,
 } from '../model/changesetDiff.js';
 import { changesetElementOpen } from '../model/inspection.js';
 import { useChangesetsMessages } from '../translations/useChangesetsMessages.js';
@@ -78,13 +80,17 @@ export function ChangesetElementDetails({ element }: Props): ReactElement {
           element.id
         ) : (
           <a
-            {...inAppLink(`#osm-${element.type}=${element.id}`, () => {
-              for (const action of changesetElementOpen(element)) {
-                dispatch(action);
-              }
+            {...inAppLink(
+              // Kept, as the click keeps it.
+              `#osm-${element.type}=${element.id}&panel=${encodePanel({ type: 'osm', id: osmIdOf(element) })}`,
+              () => {
+                for (const action of changesetElementOpen(element)) {
+                  dispatch(action);
+                }
 
-              trackMatomo(['trackEvent', 'Changesets', 'openElement']);
-            })}
+                trackMatomo(['trackEvent', 'Changesets', 'openElement']);
+              },
+            )}
           >
             {element.id}
           </a>

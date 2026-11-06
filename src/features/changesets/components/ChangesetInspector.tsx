@@ -94,7 +94,7 @@ export function ChangesetInspector({ root, view }: Props): ReactElement {
       {
         key: 'root',
         label: root ?? history.name,
-        href: `#osm-${history.id.elementType}=${history.id.id}`,
+        href: `#panel=${encodePanel({ type: 'osm', id: history.id })}`,
       },
       {
         key: 'history',

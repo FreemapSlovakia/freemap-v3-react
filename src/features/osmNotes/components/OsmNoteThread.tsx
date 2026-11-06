@@ -1,3 +1,4 @@
+import { encodePanel } from '@app/url/panelParam.js';
 import { osmElementOpen } from '@features/osm/model/osmElementOpen.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { inAppLink } from '@shared/inAppLink.js';
@@ -34,13 +35,17 @@ function useLinkify(showOnMap: string | undefined) {
             <>
               {' ('}
               <a
-                {...inAppLink(`#osm-${id.elementType}=${id.id}`, () => {
-                  for (const action of osmElementOpen(id)) {
-                    dispatch(action);
-                  }
+                {...inAppLink(
+                  // Kept, as the click keeps it.
+                  `#osm-${id.elementType}=${id.id}&panel=${encodePanel({ type: 'osm', id })}`,
+                  () => {
+                    for (const action of osmElementOpen(id)) {
+                      dispatch(action);
+                    }
 
-                  trackMatomo(['trackEvent', 'OsmNotes', 'openElement']);
-                })}
+                    trackMatomo(['trackEvent', 'OsmNotes', 'openElement']);
+                  },
+                )}
               >
                 {showOnMap}
               </a>

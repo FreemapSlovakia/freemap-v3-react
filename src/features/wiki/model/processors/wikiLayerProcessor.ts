@@ -110,7 +110,21 @@ export const wikiLayerProcessor: Processor = {
       const wikidata = item[1];
 
       if (wikipedia) {
-        wikipedia = decodeURIComponent(wikipedia.replaceAll('_', ' '));
+        wikipedia = wikipedia.replaceAll('_', ' ');
+
+        try {
+          wikipedia = decodeURIComponent(wikipedia);
+        } catch {
+          // A literal `%`, not an escape.
+        }
+
+        // A tag without its `<lang>:` (or a URL) names no article to load.
+        if (!/^([a-z]{2,3}(-[a-z0-9]+)*|simple):[^/]/i.test(wikipedia)) {
+          wikipedia = null;
+        }
+
+        // The point's id, as the wikidata-resolved ones are written.
+        item[0] = wikipedia;
       }
 
       if (wikipedia) {

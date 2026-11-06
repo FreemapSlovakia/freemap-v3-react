@@ -1454,7 +1454,10 @@ function handleSelectedElement(
           dispatch(selectFeature(null));
         }
 
-        dispatch(objectsAwaitSelection(panel.id));
+        // Without `objects=` no fetch would bring it.
+        if (state.objects.active.length > 0) {
+          dispatch(objectsAwaitSelection(panel.id));
+        }
       }
     }
 

@@ -239,13 +239,6 @@ export const urlProcessor: Processor = {
   },
 };
 
-/**
- * Derives the URL from `state` and writes it to the address bar and the history
- * entry when it differs from what they already say.
- *
- * `forced` marks the rate-limited rewrite: it derives again even though no
- * slice has changed since it was scheduled, and writes without waiting further.
- */
 /** What the state's panel is, as `panel=` names it. */
 function selectionPanel({
   main: { selection, detailsShown },
@@ -277,15 +270,20 @@ function selectionPanel({
         ? { type: 'osm', id: selection.id }
         : null;
 
-    case undefined:
-      // Awaited, a link's POI is still what it names.
-      return awaitedSelection ? { type: 'object', id: awaitedSelection } : null;
-
     default:
-      return null;
+      // Awaited, a link's POI is still what it names, beside a tool's selection
+      // too (which it then replaces).
+      return awaitedSelection ? { type: 'object', id: awaitedSelection } : null;
   }
 }
 
+/**
+ * Derives the URL from `state` and writes it to the address bar and the history
+ * entry when it differs from what they already say.
+ *
+ * `forced` marks the rate-limited rewrite: it derives again even though no
+ * slice has changed since it was scheduled, and writes without waiting further.
+ */
 function updateUrl(state: RootState, forced: boolean): void {
   const {
     map,
