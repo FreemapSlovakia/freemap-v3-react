@@ -13,6 +13,7 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { Modal } from '@shared/components/Modal.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { getCurrentPosition, latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -29,7 +30,6 @@ import {
   Dropdown,
   Form,
   InputGroup,
-  Modal,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';

@@ -23,6 +23,7 @@ import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import { AccountEmailLink } from '@features/auth/components/AccountEmailLink.js';
 import { hasRole } from '@features/auth/model/types.js';
+import { Modal } from '@shared/components/Modal.js';
 import {
   type ChangeEvent,
   Fragment,
@@ -42,7 +43,6 @@ import {
   Dropdown,
   Form,
   InputGroup,
-  Modal,
   Spinner,
 } from 'react-bootstrap';
 import {
@@ -811,7 +811,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       size="xl"
       keyboard={false}
       contentClassName="bg-body-tertiary"

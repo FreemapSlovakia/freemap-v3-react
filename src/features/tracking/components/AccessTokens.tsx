@@ -5,11 +5,12 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { type ReactElement, useEffect } from 'react';
-import { Alert, ListGroup, Modal } from 'react-bootstrap';
+import { Alert, ListGroup } from 'react-bootstrap';
 import { FaBullseye, FaChevronLeft, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';

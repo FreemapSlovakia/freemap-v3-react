@@ -64,6 +64,13 @@ export async function confirmDiscard(): Promise<'discard' | 'keep' | 'gone'> {
 
 /** `close` for the user's own dismissal: Cancel, ×, Escape, the backdrop. */
 export function askBeforeClosing(close: () => void): void {
+  // At once when there is nothing to ask about, as a plain close would.
+  if (!closeGuarded()) {
+    close();
+
+    return;
+  }
+
   void confirmDiscard().then((answer) => {
     if (answer === 'discard') {
       close();

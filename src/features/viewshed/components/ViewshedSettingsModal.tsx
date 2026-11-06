@@ -10,19 +10,19 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
+import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type ReactNode,
   type SubmitEvent,
   useState,
 } from 'react';
-import { Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 import { FaCheck, FaCog } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { viewshedSetSettings } from '../model/actions.js';
@@ -169,8 +169,6 @@ export default function ViewshedSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  const dismiss = () => askBeforeClosing(close);
-
   // Both heights are metres above the ground, and a number field can be left
   // empty mid-edit.
   const invalidEye =
@@ -196,7 +194,7 @@ export default function ViewshedSettingsModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
       // The colour picker's popover is portalled to `<body>`, so the focus trap

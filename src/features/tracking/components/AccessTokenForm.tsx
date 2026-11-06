@@ -6,13 +6,14 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Form, Modal } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { FaBullseye, FaCheck } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';

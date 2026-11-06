@@ -11,6 +11,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import {
@@ -27,7 +28,7 @@ import { scrollIntoCenter } from '@shared/scrollIntoCenter.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 import clsx from 'clsx';
 import type { ReactElement } from 'react';
-import { Button, ListGroup, Modal, ProgressBar } from 'react-bootstrap';
+import { Button, ListGroup, ProgressBar } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCrosshairs,

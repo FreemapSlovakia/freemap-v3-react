@@ -1,7 +1,7 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { CachedMapsList } from './CachedMapsList.js';
 import { CacheTilesForm } from './CacheTilesForm.js';

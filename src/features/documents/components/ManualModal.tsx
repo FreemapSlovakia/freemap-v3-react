@@ -6,11 +6,12 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Button, Form, Modal, Nav } from 'react-bootstrap';
+import { Button, Form, Nav } from 'react-bootstrap';
 import { FaBook, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { getManualChapters } from '@/manual/index.js';

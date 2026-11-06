@@ -13,15 +13,15 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
+import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import { FaCheck, FaCog } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -157,8 +157,6 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  const dismiss = () => askBeforeClosing(close);
-
   // The eye is metres above the ground, and a number field can be left empty
   // mid-edit. The band needs no such check: the presets and the two sliders
   // cannot express a bad one, each running 1..ALT_LIMIT on its own side.
@@ -216,7 +214,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
       // The colour picker's popover is portalled to <body>, so the focus trap

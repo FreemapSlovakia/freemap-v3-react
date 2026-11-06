@@ -11,15 +11,14 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { layerLabel } from '@shared/layerName.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, useRef, useState } from 'react';
-import { Modal } from 'react-bootstrap';
 import { FaLayerGroup, FaPlus } from 'react-icons/fa';
 import { MdDashboardCustomize } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
@@ -120,7 +119,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={() => askBeforeClosing(close)}
+      onHide={close}
       scrollable
       size="lg"
       className={previewing ? 'd-none' : undefined}

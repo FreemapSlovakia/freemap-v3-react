@@ -6,9 +6,10 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { FaRegAddressCard } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveModal } from '../store/actions.js';

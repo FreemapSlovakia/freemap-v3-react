@@ -41,6 +41,17 @@
         "noCommonJs": "error",
         "noNamespace": "error",
         "noNonNullAssertion": "off",
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "paths": {
+              "react-bootstrap": {
+                "importNames": ["Modal"],
+                "message": "Use Modal from @shared/components/Modal.js: its ×, Escape and backdrop ask before losing a form being edited."
+              }
+            }
+          }
+        },
         "useAsConstAssertion": "error"
       },
       "suspicious": {
@@ -72,6 +83,14 @@
   },
   "overrides": [
     { "includes": ["src/**/*.ts", "src/**/*.tsx"] },
+    {
+      "includes": [
+        "src/shared/components/Modal.tsx",
+        "src/shared/components/ModalProvider.tsx",
+        "src/shared/components/FmModalFooter.tsx"
+      ],
+      "linter": { "rules": { "style": { "noRestrictedImports": "off" } } }
+    },
     {
       "includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       "linter": {

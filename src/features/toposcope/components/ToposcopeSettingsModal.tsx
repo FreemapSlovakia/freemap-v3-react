@@ -8,11 +8,12 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
+import { Modal } from '@shared/components/Modal.js';
 import { PlaceholderHint } from '@shared/components/PlaceholderHint.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Form, Modal } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { FaCompass } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { toposcopeSet, toposcopeSetInscription } from '../model/actions.js';

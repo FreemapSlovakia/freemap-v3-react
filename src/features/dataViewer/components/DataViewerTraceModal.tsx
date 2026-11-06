@@ -8,6 +8,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { isClosedRing } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useHeldModal } from '@shared/hooks/useHeldModal.js';
@@ -19,7 +20,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { Alert, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Alert, Form, InputGroup } from 'react-bootstrap';
 import { FaCheck, FaTree, FaWater } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { useTraceKinds } from '../hooks/useTraceKinds.js';

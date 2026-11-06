@@ -148,6 +148,18 @@ label wraps to two lines (see `CustomMapForm`'s zoom fields,
 `1.5rem`, wider than any `gap-*` the rest of the form is spaced by, so it has to
 be set to whichever step its neighbours use.
 
+## Unsaved input
+
+A modal is the `Modal` from `@shared/components/Modal.js`, not react-bootstrap's:
+its ×, Escape and backdrop ask before losing a form being edited, as
+`FmDismissButton` does for Cancel. Its `Header`, `Body` and `Footer` are
+react-bootstrap's own. Biome's `noRestrictedImports` refuses react-bootstrap's
+`Modal` except in `Modal.tsx`, `ModalProvider.tsx` (the question itself) and
+`FmModalFooter.tsx`. A form says it holds such input with `useDirtyForm(dirty)`
+(or `useDirtySince(value)` against its first render); any other way away from
+it that the user takes — a link, a shortcut, a button that replaces the view —
+goes through `askBeforeClosing`.
+
 ## Modal footers
 
 A footer's buttons sit in a `flex-wrap: wrap` row, so on a phone — and in a

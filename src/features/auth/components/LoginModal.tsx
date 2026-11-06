@@ -8,10 +8,11 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Alert, Modal } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { FaGem, FaSignInAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAuthMessages } from '../translations/useAuthMessages.js';

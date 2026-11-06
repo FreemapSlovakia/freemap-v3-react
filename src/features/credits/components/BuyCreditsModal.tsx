@@ -8,6 +8,7 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -19,7 +20,6 @@ import {
   Dropdown,
   Form,
   InputGroup,
-  Modal,
 } from 'react-bootstrap';
 import { FaCheck, FaCoins, FaStopwatch } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';

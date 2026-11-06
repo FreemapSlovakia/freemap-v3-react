@@ -8,6 +8,7 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
@@ -21,14 +22,7 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 import { type ReactElement, useMemo, useState } from 'react';
-import {
-  Badge,
-  Dropdown,
-  Form,
-  InputGroup,
-  ListGroup,
-  Modal,
-} from 'react-bootstrap';
+import { Badge, Dropdown, Form, InputGroup, ListGroup } from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCalendarDay,

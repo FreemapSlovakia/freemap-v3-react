@@ -1,7 +1,6 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
+import { Modal } from '@shared/components/Modal.js';
 import type { ReactElement } from 'react';
-import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { BrowseCacheSettings } from './BrowseCacheSettings.js';
 
@@ -13,7 +12,7 @@ export default function BrowseCacheModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={() => askBeforeClosing(() => dispatch(setActiveModal(null)))}
+      onHide={() => dispatch(setActiveModal(null))}
       contentClassName="bg-body-tertiary"
       scrollable
     >

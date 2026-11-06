@@ -9,17 +9,17 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
+import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ChangeEvent,
   type ReactElement,
   type SubmitEvent,
   useState,
 } from 'react';
-import { Form, Modal } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { FaChartArea, FaCheck } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { elevationSetSettings } from '../model/actions.js';
@@ -115,8 +115,6 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  const dismiss = () => askBeforeClosing(close);
-
   // Fills the form fields with defaults; the user then applies them with Save
   // (or closes without saving).
   const handleResetDefaults = () => {
@@ -181,7 +179,7 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
     >

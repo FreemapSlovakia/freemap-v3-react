@@ -20,12 +20,12 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { MarkdownField } from '@shared/components/MarkdownField.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirmChoice } from '@shared/components/ModalProvider.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type ReactNode,
@@ -41,7 +41,6 @@ import {
   Button,
   Form,
   InputGroup,
-  Modal,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';
@@ -744,7 +743,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={() => askBeforeClosing(close)}
+      onHide={close}
       size="lg"
       className={pickingStart ? 'd-none' : undefined}
       backdropClassName={pickingStart ? 'd-none' : undefined}

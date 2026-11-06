@@ -21,13 +21,14 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { linkTarget, Markdown } from '@shared/components/Markdown.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
-import { Alert, Badge, Image, Modal, Spinner, Table } from 'react-bootstrap';
+import { Alert, Badge, Image, Spinner, Table } from 'react-bootstrap';
 import { FaCamera, FaGem, FaUser, FaUserEdit } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';

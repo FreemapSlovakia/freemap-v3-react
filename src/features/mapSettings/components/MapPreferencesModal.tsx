@@ -20,13 +20,13 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
@@ -36,7 +36,7 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Form, Modal, ToggleButton } from 'react-bootstrap';
+import { Form, ToggleButton } from 'react-bootstrap';
 import { FaCheck, FaSlidersH } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
@@ -119,8 +119,6 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
-
-  const dismiss = () => askBeforeClosing(close);
 
   // Fills the form fields with defaults; the user then applies them with Save
   // (or closes without saving).
@@ -257,7 +255,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
     >

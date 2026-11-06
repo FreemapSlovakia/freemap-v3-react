@@ -31,6 +31,7 @@ import type { Batch, BatchEdit, BatchField } from '@shared/batchProperties.js';
 import { COLORS } from '@shared/colors.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
+import { Modal } from '@shared/components/Modal.js';
 import {
   InsertToken,
   PlaceholderHint,
@@ -57,7 +58,6 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useInsertAtCaret } from '@shared/hooks/useInsertAtCaret.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import {
   Fragment,
@@ -68,7 +68,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Accordion, Form, Modal } from 'react-bootstrap';
+import { Accordion, Form } from 'react-bootstrap';
 import { FaCheck, FaTag } from 'react-icons/fa';
 import { ReactTags } from 'react-tag-autocomplete';
 import {
@@ -435,7 +435,7 @@ export function FeaturePropertiesModal({
   return (
     <Modal
       show={show}
-      onHide={() => askBeforeClosing(close)}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
       // The color picker's popover is portalled to <body> (outside this

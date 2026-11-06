@@ -6,10 +6,11 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { HintTooltip } from '@shared/components/HintTooltip.js';
+import { Modal } from '@shared/components/Modal.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { FaMountain } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {

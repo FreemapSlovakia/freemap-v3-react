@@ -20,6 +20,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import {
   useConfirm,
   useConfirmCancel,
@@ -54,7 +55,6 @@ import {
   Button,
   Form,
   InputGroup,
-  Modal,
   Spinner,
   ToggleButton,
 } from 'react-bootstrap';

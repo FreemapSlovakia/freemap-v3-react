@@ -11,13 +11,13 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
+import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Form, Modal } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -59,8 +59,6 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  const dismiss = () => askBeforeClosing(close);
-
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
@@ -93,7 +91,7 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
       // The color picker's popover is portalled to <body>; disable enforceFocus

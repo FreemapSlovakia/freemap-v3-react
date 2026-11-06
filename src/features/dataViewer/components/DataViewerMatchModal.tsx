@@ -9,13 +9,14 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   type TransportType,
   transportTypeDefs,
 } from '@shared/transportTypeDefs.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Alert, Form, Modal } from 'react-bootstrap';
+import { Alert, Form } from 'react-bootstrap';
 import { FaCheck, FaMagic } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { hasPerPointData } from '../matchTrack.js';

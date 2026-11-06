@@ -30,6 +30,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
@@ -42,7 +43,7 @@ import {
 } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useState } from 'react';
-import { Alert, Modal } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { FaCheck } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';

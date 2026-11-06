@@ -11,6 +11,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -24,7 +25,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Alert, Form, Modal, Spinner, ToggleButton } from 'react-bootstrap';
+import { Alert, Form, Spinner, ToggleButton } from 'react-bootstrap';
 import {
   FaDownload,
   FaDropbox,

@@ -4,13 +4,14 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import {
   type ReactElement,
   type SubmitEvent,
   useEffect,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import { TbAngle } from 'react-icons/tb';
 import { useDrawingMessages } from '../translations/useDrawingMessages.js';
 

@@ -25,13 +25,13 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { HintTooltip } from '@shared/components/HintTooltip.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
-import { Accordion, Modal } from 'react-bootstrap';
+import { Accordion } from 'react-bootstrap';
 import {
   FaAddressCard,
   FaEraser,
@@ -153,7 +153,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
   return (
     <Modal
       show={show}
-      onHide={() => askBeforeClosing(close)}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
       className={pickingHome ? 'd-none' : undefined}

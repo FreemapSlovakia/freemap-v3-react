@@ -8,12 +8,12 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Form, Modal } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { type RouteStyle, routePlannerSetStyle } from '../model/actions.js';
@@ -65,8 +65,6 @@ export default function RoutePlannerStyleModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  const dismiss = () => askBeforeClosing(close);
-
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
@@ -78,7 +76,7 @@ export default function RoutePlannerStyleModal({ show }: Props): ReactElement {
   useDocumentTitle(show ? rpm?.style.title : undefined);
 
   return (
-    <Modal show={show} onHide={dismiss} contentClassName="bg-body-tertiary">
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>

@@ -14,12 +14,12 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -28,7 +28,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Form, Modal, Spinner } from 'react-bootstrap';
+import { Form, Spinner } from 'react-bootstrap';
 import { FaUpload } from 'react-icons/fa';
 import { SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch, useStore } from 'react-redux';
@@ -201,11 +201,7 @@ export default function DataViewerOsmUploadModal({
   };
 
   return (
-    <Modal
-      show={show}
-      onHide={() => askBeforeClosing(close)}
-      contentClassName="bg-body-tertiary"
-    >
+    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>

@@ -10,6 +10,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import {
@@ -23,7 +24,6 @@ import {
 import {
   Form,
   InputGroup,
-  Modal,
   ToggleButton,
   ToggleButtonGroup,
 } from 'react-bootstrap';

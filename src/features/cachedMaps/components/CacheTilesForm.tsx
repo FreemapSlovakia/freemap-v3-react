@@ -27,6 +27,7 @@ import {
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
+import { Modal } from '@shared/components/Modal.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useExportPrices } from '@shared/exportPrices.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
@@ -68,7 +69,6 @@ import {
   Dropdown,
   Form,
   InputGroup,
-  Modal,
   Spinner,
   ToggleButton,
 } from 'react-bootstrap';

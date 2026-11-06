@@ -5,13 +5,14 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import type { ReactElement, SubmitEvent } from 'react';
-import { Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 import { FaBullseye, FaCheck } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';

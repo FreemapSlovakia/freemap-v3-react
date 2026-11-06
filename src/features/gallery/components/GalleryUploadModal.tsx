@@ -9,11 +9,11 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import clsx from 'clsx';
 import {
   type DragEvent as ReactDragEvent,
@@ -25,7 +25,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Form, Modal } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { type FileRejection, useDropzone } from 'react-dropzone';
 import { FaCamera, FaUpload } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -247,7 +247,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={() => askBeforeClosing(handleClose)}
+      onHide={handleClose}
       size="lg"
       contentClassName="bg-body-tertiary"
       scrollable

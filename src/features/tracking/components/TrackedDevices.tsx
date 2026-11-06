@@ -7,9 +7,10 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { Alert, ListGroup, Modal } from 'react-bootstrap';
+import { Alert, ListGroup } from 'react-bootstrap';
 import { FaEye, FaPlus } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';

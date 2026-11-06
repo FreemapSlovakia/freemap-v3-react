@@ -4,9 +4,9 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -14,7 +14,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import { FaTable } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { channelLabel } from '../channelLabel.js';
@@ -60,12 +60,10 @@ export default function DataViewerVertexModal({
 
   const close = () => dispatch(setActiveModal(null));
 
-  const dismiss = () => askBeforeClosing(close);
-
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
     >

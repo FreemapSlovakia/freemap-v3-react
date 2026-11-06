@@ -17,12 +17,13 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { layerName } from '@shared/layerName.js';
 import { RENDERER_ROUTES } from '@shared/mapDefinitions.js';
 import { type ReactElement, useMemo, useState } from 'react';
-import { Accordion, Modal } from 'react-bootstrap';
+import { Accordion } from 'react-bootstrap';
 import { FaList } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {

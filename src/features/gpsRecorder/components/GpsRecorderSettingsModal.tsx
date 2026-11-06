@@ -10,12 +10,12 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
+import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 import { FaCheck, FaCog } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { gpsRecorderSetSettings } from '../model/actions.js';
@@ -85,8 +85,6 @@ export default function GpsRecorderSettingsModal({
     dispatch(setActiveModal(null));
   };
 
-  const dismiss = () => askBeforeClosing(close);
-
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
@@ -100,7 +98,7 @@ export default function GpsRecorderSettingsModal({
   return (
     <Modal
       show={show}
-      onHide={dismiss}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
       // The colour picker's popover is portalled to <body>, so the modal's focus

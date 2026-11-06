@@ -7,9 +7,9 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import clsx from 'clsx';
 import type { ReactElement } from 'react';
-import { Modal } from 'react-bootstrap';
 import { useDropzone } from 'react-dropzone';
 import { FaUpload } from 'react-icons/fa';
 import { MdShapeLine } from 'react-icons/md';

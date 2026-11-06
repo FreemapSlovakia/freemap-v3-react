@@ -35,6 +35,7 @@ import {
   MapLayerItem,
   type MapLayerItemDef,
 } from '@shared/components/MapLayerItem.js';
+import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { useExportPrices } from '@shared/exportPrices.js';
@@ -64,7 +65,6 @@ import {
   Dropdown,
   Form,
   InputGroup,
-  Modal,
   Spinner,
   ToggleButton,
 } from 'react-bootstrap';

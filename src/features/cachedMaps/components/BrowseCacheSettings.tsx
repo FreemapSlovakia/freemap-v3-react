@@ -7,13 +7,14 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useState } from 'react';
-import { Col, Form, Modal, Row } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
 import { FaCheck, FaDatabase, FaTrash } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import type { TileServeMode } from '../browseCache.js';

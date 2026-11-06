@@ -1,9 +1,8 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import type { ReactElement } from 'react';
-import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useTrackingMessages } from '../translations/useTrackingMessages.js';
 import { AccessTokenForm } from './AccessTokenForm.js';
@@ -64,7 +63,7 @@ export default function TrackingModal({ show }: Props): ReactElement {
     <Modal
       scrollable
       onHide={() => {
-        askBeforeClosing(() => dispatch(setActiveModal(null)));
+        dispatch(setActiveModal(null));
       }}
       show={show}
       size={isList ? 'lg' : undefined}

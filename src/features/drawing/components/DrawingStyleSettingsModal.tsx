@@ -7,10 +7,10 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
-import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type ReactNode,
@@ -18,7 +18,6 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
@@ -110,7 +109,7 @@ export function DrawingStyleSettingsModal({
   return (
     <Modal
       show={show}
-      onHide={() => askBeforeClosing(close)}
+      onHide={close}
       contentClassName="bg-body-tertiary"
       scrollable
       // The color picker's popover is portalled to <body> (outside this modal's

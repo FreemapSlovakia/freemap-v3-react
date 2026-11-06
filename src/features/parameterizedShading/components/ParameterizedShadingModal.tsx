@@ -1,11 +1,12 @@
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { Modal } from '@shared/components/Modal.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import type { ReactElement } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, InputGroup } from 'react-bootstrap';
 import { hexaToColor } from '../model/Shading.js';
 import {
   DEFAULT_PRESET_PARAMS,

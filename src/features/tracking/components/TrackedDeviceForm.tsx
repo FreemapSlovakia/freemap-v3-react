@@ -7,6 +7,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -15,7 +16,7 @@ import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
-import { Form, InputGroup, Modal } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 import { FaBullseye, FaCheck } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';

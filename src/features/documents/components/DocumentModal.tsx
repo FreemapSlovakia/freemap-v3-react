@@ -4,9 +4,9 @@ import {
   FmDismissButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Modal } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { getDocuments } from '@/documents/index.js';
 import { useMarkdownLinks } from '../hooks/useMarkdownLinks.js';
