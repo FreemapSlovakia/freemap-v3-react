@@ -220,9 +220,6 @@ const hu: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   invalidFormat: 'A fájl formátuma nem támogatott, vagy a fájl érvénytelen.',
   someFilesFailed: ({ names }) =>
     `Néhány fájlt nem sikerült betölteni: ${names}.`,
-  unsaved: 'Nem mentett',
-  unsavedTooltip:
-    'Ezek az adatok nem férnek el az oldal címében (URL), és egyetlen mentett térképen sem szerepelnek – csak ebben a böngészőben maradnak meg. Mentse őket a térképei közé, hogy megmaradjanak.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a nyomvonal illesztésekor', err),
   snapshotGone:

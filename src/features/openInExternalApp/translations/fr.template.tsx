@@ -17,6 +17,10 @@ const fr: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   geoApp: 'Application de cartes',
   url: 'Partager la localisation',
   image: 'Partager la photo',
+  linkIncompleteMap:
+    'Les modifications de la carte ne sont pas enregistrées. Le lien ouvre la carte telle qu’elle a été enregistrée en dernier sur le serveur.',
+  linkIncompleteData:
+    'Les données de la carte sont trop volumineuses pour tenir dans un lien. Pour les partager, enregistrez-les d’abord dans « Mes cartes ».',
 };
 
 export default fr;

@@ -222,9 +222,6 @@ const pl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     'Plik nie jest w obsługiwanym formacie lub jest nieprawidłowy.',
   someFilesFailed: ({ names }) =>
     `Nie udało się wczytać niektórych plików: ${names}.`,
-  unsaved: 'Niezapisane',
-  unsavedTooltip:
-    'Tych danych nie da się umieścić w adresie strony (URL) i nie ma ich w żadnej zapisanej mapie – zostają tylko w tej przeglądarce. Zapisz je w swoich mapach, aby je zachować.',
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Wystąpił błąd podczas dopasowywania śladu', err),
   snapshotGone:

@@ -1,5 +1,6 @@
 import type { RootState } from '@app/store/store.js';
 import { getMapContentParts } from '@app/url/mapContentParts.js';
+import { localTrack } from '@features/dataViewer/model/localTrack.js';
 import type { BlockedReason } from './actions.js';
 import { fingerprintState } from './mapDocument.js';
 
@@ -87,4 +88,31 @@ export function mapDirtySelector(state: RootState): boolean {
     // The one change the digest can't see, so it is recorded rather than derived.
     (routeRecomputed || fingerprintState(state) !== savedFingerprint)
   );
+}
+
+/** A map's unsaved changes, or data too big for the link and in no map. */
+export function unsavedContentSelector(state: RootState): boolean {
+  return state.myMaps.activeMap
+    ? mapDirtySelector(state)
+    : localTrack(state) !== null;
+}
+
+/**
+ * Why the page's link would open something other than what is on screen: the
+ * map's server copy lacks changes (also while a save waits to be sent), or the
+ * data is too big for the link.
+ */
+export function linkIncompleteSelector(
+  state: RootState,
+): 'map' | 'data' | undefined {
+  const { activeMap, outbox } = state.myMaps;
+
+  if (activeMap) {
+    return mapDirtySelector(state) ||
+      outbox.some((entry) => entry.mapId === activeMap.id)
+      ? 'map'
+      : undefined;
+  }
+
+  return localTrack(state) ? 'data' : undefined;
 }

@@ -1,5 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { navigateWithoutLeaving } from '@shared/leaveGuard.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import z from 'zod';
 import { locusInstall } from './actions.js';
@@ -13,7 +14,9 @@ export const locusInstallProcessor: Processor<typeof locusInstall> = {
     if (!getState().auth.user) {
       trackMatomo(['trackEvent', 'Locus', 'install']);
 
-      window.location.href = `locus-actions://${`${process.env['API_URL']}/locus/install`.replace('://', '/')}`;
+      navigateWithoutLeaving(
+        `locus-actions://${`${process.env['API_URL']}/locus/install`.replace('://', '/')}`,
+      );
 
       return;
     }
@@ -28,6 +31,6 @@ export const locusInstallProcessor: Processor<typeof locusInstall> = {
       expectedStatus: 200,
     });
 
-    window.location.href = InstallSchema.parse(await res.json()).url;
+    navigateWithoutLeaving(InstallSchema.parse(await res.json()).url);
   },
 };

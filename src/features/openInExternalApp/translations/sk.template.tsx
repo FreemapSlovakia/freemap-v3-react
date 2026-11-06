@@ -17,6 +17,10 @@ const sk: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   geoApp: 'Mapová aplikácia',
   url: 'Zdieľať polohu',
   image: 'Zdieľať fotografiu',
+  linkIncompleteMap:
+    'Zmeny v mape nie sú uložené. Odkaz otvorí mapu, ako bola naposledy uložená na serveri.',
+  linkIncompleteData:
+    'Dáta na mape sú príliš veľké, aby sa zmestili do odkazu. Ak ich chcete zdieľať, uložte ich najprv do „Moje mapy“.',
 };
 
 export default sk;

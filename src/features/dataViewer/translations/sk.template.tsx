@@ -13,9 +13,6 @@ const sk: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   moreInfo: 'Viac info',
   breakApart: 'Rozdeliť na časti',
   saveAsMap: 'Uložiť do mojich máp',
-  unsaved: 'Neuložené',
-  unsavedTooltip:
-    'Tieto dáta sa nedajú vložiť do adresy stránky (URL) a nie sú v žiadnej uloženej mape – zostávajú len v tomto prehliadači. Uložte ich do svojich máp, aby ste ich zachovali.',
   loginToSaveMap: 'Pre uloženie trasy do vašich máp sa najprv prihláste.',
   snapshotGone: 'Dáta z tohto kroku už tento prehliadač neuchováva.',
   snapshotFailed:

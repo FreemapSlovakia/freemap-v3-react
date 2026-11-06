@@ -54,6 +54,6 @@ The browser's **Back** button undoes your last change.
 
 ## Keeping your drawing
 
-Your drawing is written into the link in the address bar – copy it and others will see the same. A very large drawing doesn't fit into the link; the toolbar then shows **Unsaved**, and the drawing stays only in this browser. To keep it, choose :FaSave: **Save to my maps** in the :FaEllipsisV: menu (you need to be logged in); your saved maps are in :FaRegMap: [My maps](#show=my-maps).
+Your drawing is written into the link in the address bar – copy it and others will see the same. A very large drawing doesn't fit into the link and stays only in this browser; **Copy page URL** in the main menu then carries a :FaExclamationTriangle.text-warning: warning, and closing the page asks first. To keep it, choose :FaSave: **Save to my maps** in the :FaEllipsisV: menu (you need to be logged in); your saved maps are in :FaRegMap: [My maps](#show=my-maps).
 
 Importing GPX and other files, the elevation profile, colouring a track and export are described in [Tracks and files](#show=manual/tracks).

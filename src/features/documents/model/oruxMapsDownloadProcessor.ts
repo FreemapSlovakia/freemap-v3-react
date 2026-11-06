@@ -1,5 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { navigateWithoutLeaving } from '@shared/leaveGuard.js';
 import { saveBlob } from '@shared/saveBlob.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { oruxMapsDownload } from './actions.js';
@@ -13,7 +14,7 @@ export const oruxMapsDownloadProcessor: Processor<typeof oruxMapsDownload> = {
     if (!getState().auth.user) {
       trackMatomo(['trackEvent', 'OruxMaps', 'download']);
 
-      window.location.href = `${process.env['API_URL']}${PATH}`;
+      navigateWithoutLeaving(`${process.env['API_URL']}${PATH}`);
 
       return;
     }

@@ -224,9 +224,6 @@ const cs: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   invalidFormat: 'Soubor není v podporovaném formátu nebo je neplatný.',
   someFilesFailed: ({ names }) =>
     `Některé soubory se nepodařilo načíst: ${names}.`,
-  unsaved: 'Neuloženo',
-  unsavedTooltip:
-    'Tato data nejde vložit do adresy stránky (URL) a nejsou v žádné uložené mapě – zůstávají jen v tomto prohlížeči. Uložte je do svých map, abyste je zachovali.',
 };
 
 export default cs;

@@ -13,8 +13,6 @@ export type DataViewerMessages = {
   /** Splits a multi-point, multi-polygon or collection into its members. */
   breakApart: string;
   saveAsMap: string;
-  unsaved: string;
-  unsavedTooltip: string;
   loginToSaveMap: string;
   /** A history step whose data this browser no longer keeps. */
   snapshotGone: string;

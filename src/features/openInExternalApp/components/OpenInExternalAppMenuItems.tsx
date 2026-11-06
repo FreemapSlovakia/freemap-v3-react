@@ -1,11 +1,14 @@
 import type { ExternalTarget, OsmObjectLinks } from '@app/store/actions.js';
 import { Text } from '@features/l10n/Text.js';
+import { linkIncompleteSelector } from '@features/myMaps/model/selectors.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Chord } from '@shared/components/Chord.js';
 import { CountryFlag } from '@shared/components/CountryFlag.js';
+import { GlyphMarker } from '@shared/components/GlyphMarker.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { canShareFile } from '@shared/webShare.js';
@@ -14,6 +17,7 @@ import { Dropdown } from 'react-bootstrap';
 import {
   FaAndroid,
   FaClipboard,
+  FaExclamationTriangle,
   FaLink,
   FaMapMarkedAlt,
   FaShareAlt,
@@ -154,6 +158,21 @@ export function SharePageItems({
 
   const { canCopy, hasShare, canShareImage } = pageItemFlags(props);
 
+  const linkIncomplete = useAppSelector(linkIncompleteSelector);
+
+  const mark = linkIncomplete && !props.url && (
+    <GlyphMarker
+      size="sm"
+      hint={
+        linkIncomplete === 'map'
+          ? oeam?.linkIncompleteMap
+          : oeam?.linkIncompleteData
+      }
+    >
+      <FaExclamationTriangle />
+    </GlyphMarker>
+  );
+
   return (
     <>
       {canCopy && (
@@ -162,6 +181,7 @@ export function SharePageItems({
           <MenuLabel>
             <Text k="general.copyPageUrl" />
           </MenuLabel>
+          {mark}
           {showKbdShortcut && (
             <MenuGutter>
               <Chord external="copy" />
@@ -176,6 +196,7 @@ export function SharePageItems({
           <MenuLabel>
             <Text m={oeam} k="url" />
           </MenuLabel>
+          {!canCopy && mark}
         </Dropdown.Item>
       )}
 

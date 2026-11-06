@@ -7,6 +7,7 @@ import {
 } from '@features/dataViewer/model/actions.js';
 import { storeTrackDurably } from '@features/dataViewer/trackStore.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
+import { navigateWithoutLeaving } from '@shared/leaveGuard.js';
 import type { FeatureCollection } from 'geojson';
 import type { Dispatch } from 'redux';
 import {
@@ -367,7 +368,7 @@ export const startHandler: ProcessorHandler = async (params) => {
 
     // Nothing answered. An installed recorder handles the intent and hands
     // focus back; a missing one lands the user on the download page.
-    window.location.href = RECORDER_INTENT_URL;
+    navigateWithoutLeaving(RECORDER_INTENT_URL);
 
     try {
       status = await waitForStatus();
@@ -397,7 +398,7 @@ export const startHandler: ProcessorHandler = async (params) => {
       // lifts. So hand the job to the recorder's own activity, where the same
       // call is allowed. The config asked for above is already saved on its
       // side, so the recording it starts is the one that was requested.
-      window.location.href = RECORDER_INTENT_URL;
+      navigateWithoutLeaving(RECORDER_INTENT_URL);
 
       await waitForRecording();
     }

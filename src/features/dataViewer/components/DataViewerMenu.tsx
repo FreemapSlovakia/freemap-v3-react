@@ -34,7 +34,6 @@ import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { ToolMenu } from '@shared/components/ToolMenu.js';
-import { UnsavedWarningIcon } from '@shared/components/UnsavedWarningIcon.js';
 import { elevationCoverage } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
@@ -63,7 +62,6 @@ import {
   dataViewerSetElevationPrompt,
 } from '../model/actions.js';
 import { targetsCoverage } from '../model/elevationTargets.js';
-import { inLinkSelector } from '../model/urlForm.js';
 import { hasOsmTraceLine } from '../osmTrace.js';
 import { isSimplifiable } from '../simplifyTrack.js';
 import { isRecording } from '../trackChannels.js';
@@ -89,8 +87,6 @@ export function DataViewerMenu(): ReactElement {
 
   const drawTool = useAppSelector(openDrawToolSelector);
 
-  const inLink = useAppSelector(inLinkSelector);
-
   const features = useAppSelector(
     (state) => state.trackViewer.trackGeojson?.features,
   );
@@ -111,11 +107,6 @@ export function DataViewerMenu(): ReactElement {
   const hasActiveMap = useAppSelector((state) =>
     Boolean(state.myMaps.activeMap),
   );
-
-  // Data that is in no saved map and that the link doesn't carry exists nowhere
-  // but this browser. A reload does put it back (`trackStore.ts`), but that copy
-  // goes with the browser's storage, so it still deserves saying.
-  const unsaved = hasTrack && !hasActiveMap && canUpload && !inLink;
 
   const handleSaveAsMap = () => {
     if (loggedIn) {
@@ -236,13 +227,6 @@ export function DataViewerMenu(): ReactElement {
 
   return (
     <ToolMenu tool="import-file">
-      {unsaved && (
-        <UnsavedWarningIcon
-          label={tvm?.unsaved}
-          tooltip={tvm?.unsavedTooltip}
-        />
-      )}
-
       {/* Drawing is a mode of this toolbar: picking one takes map clicks. */}
       <SelectDropdown
         breakpoint="lg"

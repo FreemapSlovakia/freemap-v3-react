@@ -221,9 +221,6 @@ const it: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   onlyOne: "E' atteso un singolo file.",
   invalidFormat: 'Il file non è in un formato supportato o non è valido.',
   someFilesFailed: ({ names }) => `Impossibile caricare alcuni file: ${names}.`,
-  unsaved: 'Non salvata',
-  unsavedTooltip:
-    "Questi dati non possono stare nell'indirizzo della pagina (URL) e non sono in nessuna mappa salvata: restano solo in questo browser. Li salvi nelle sue mappe per conservarli.",
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Errore durante l’aggancio della traccia', err),
   snapshotGone:

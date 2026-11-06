@@ -17,6 +17,10 @@ const it: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   geoApp: 'App di mappe',
   url: 'Condividi posizione',
   image: 'Condividi foto',
+  linkIncompleteMap:
+    'Le modifiche alla mappa non sono salvate. Il link apre la mappa come è stata salvata l’ultima volta sul server.',
+  linkIncompleteData:
+    'I dati sulla mappa sono troppo grandi per stare in un link. Per condividerli, li salvi prima in «Le mie mappe».',
 };
 
 export default it;

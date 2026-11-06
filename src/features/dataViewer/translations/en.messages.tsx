@@ -12,9 +12,6 @@ const en: DataViewerMessages = {
   moreInfo: 'More info',
   breakApart: 'Break apart',
   saveAsMap: 'Save to my maps',
-  unsaved: 'Unsaved',
-  unsavedTooltip:
-    'This data cannot be put in the page address (URL) and is not in any saved map — it stays only in this browser. Save it to your maps to keep it.',
   loginToSaveMap: 'Log in first to save the track to your maps.',
   snapshotGone:
     'The data shown at this step is no longer kept in this browser.',

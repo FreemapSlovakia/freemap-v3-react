@@ -1,4 +1,3 @@
-import type { RootState } from '@app/store/store.js';
 import type { QueryPart } from '@app/url/mapContentParts.js';
 import { positionCount } from '@shared/geoutils.js';
 import {
@@ -87,10 +86,6 @@ export function featuresInLink({
   trackGeojson: FeatureCollection | null;
 }): boolean {
   return urlWire(trackGeojson) !== undefined;
-}
-
-export function inLinkSelector(state: RootState): boolean {
-  return featuresInLink(state.trackViewer);
 }
 
 const completeCache = new WeakMap<FeatureCollection, FeatureCollection>();

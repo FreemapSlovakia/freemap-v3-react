@@ -16,6 +16,10 @@ const en: OpenInExternalAppMessages = {
   geoApp: 'Map app',
   url: 'Share location',
   image: 'Share photo',
+  linkIncompleteMap:
+    'The changes to the map are not saved. The link opens the map as it was last saved on the server.',
+  linkIncompleteData:
+    'The data on the map is too big to fit in a link. To share it, first save it to “My maps”.',
 };
 
 export default en;

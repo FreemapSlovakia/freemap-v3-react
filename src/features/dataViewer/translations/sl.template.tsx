@@ -216,9 +216,6 @@ const sl: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   invalidFormat: 'Datoteka ni v podprti obliki ali je neveljavna.',
   someFilesFailed: ({ names }) =>
     `Nekaterih datotek ni bilo mogoče naložiti: ${names}.`,
-  unsaved: 'Ni shranjeno',
-  unsavedTooltip:
-    'Teh podatkov ni mogoče vstaviti v naslov strani (URL) in niso v nobenem shranjenem zemljevidu – ostanejo samo v tem brskalniku. Shranite jih med svoje zemljevide, da jih ohranite.',
   snapshotGone: 'Podatkov iz tega koraka ta brskalnik ne hrani več.',
   snapshotFailed:
     'Ta brskalnik podatkov ni mogel ohraniti, zato se ob ponovnem nalaganju strani izgubijo. Če jih želite obdržati, jih shranite med svoje zemljevide.',

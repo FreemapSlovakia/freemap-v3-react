@@ -13,6 +13,7 @@ import { attachMapStateHandler } from '@features/map/mapStateHandler.js';
 import { attachWheelZoomCalibration } from '@features/map/wheelZoomCalibration.js';
 import { mapsOfflineIdsLoaded } from '@features/myMaps/model/actions.js';
 import { refreshOutbox } from '@features/myMaps/model/processors/mapsOutboxProcessor.js';
+import { unsavedContentSelector } from '@features/myMaps/model/selectors.js';
 import {
   getOfflineMapCount,
   getOfflineMapIds,
@@ -21,6 +22,7 @@ import { getPendingCount } from '@features/myMaps/outboxStore.js';
 import { attachOutboxSync } from '@features/myMaps/outboxSync.js';
 import { attachWebMcp } from '@features/webMcp/attachWebMcp.js';
 import { ModalProvider } from '@shared/components/ModalProvider.js';
+import { addLeaveReason, attachLeaveGuard } from '@shared/leaveGuard.js';
 import {
   registerOfflineContentProvider,
   syncStaticCache,
@@ -163,6 +165,14 @@ attachMapStateHandler(store);
 attachWheelZoomCalibration(store);
 
 attachOutboxSync(store);
+
+// An embed shows the host's map, which its visitor has nothing of their own in.
+if (!window.fmEmbedded) {
+  attachLeaveGuard();
+
+  // Not `linkIncompleteSelector`: a queued save survives the page.
+  addLeaveReason(() => unsavedContentSelector(store.getState()));
+}
 
 // An embedded map is a slice of someone else's page, and a crawler runs no agent.
 if (!window.fmEmbedded && !window.isRobot) {

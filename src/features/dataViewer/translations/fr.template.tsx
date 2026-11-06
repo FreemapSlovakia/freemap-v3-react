@@ -224,9 +224,6 @@ const fr: DeepPartialWithRequiredObjects<DataViewerMessages> = {
     'Le fichier n’est pas dans un format pris en charge ou est invalide.',
   someFilesFailed: ({ names }) =>
     `Certains fichiers n’ont pas pu être chargés : ${names}.`,
-  unsaved: 'Non enregistrée',
-  unsavedTooltip:
-    "Ces données ne peuvent pas figurer dans l'adresse de la page (URL) et ne sont dans aucune carte enregistrée : elles restent uniquement dans ce navigateur. Enregistrez-les dans vos cartes pour les conserver.",
   matchingError: ({ err }) =>
     addError(getMessages()!, 'Erreur lors du calage de la trace', err),
   snapshotGone:

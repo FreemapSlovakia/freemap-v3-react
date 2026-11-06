@@ -17,6 +17,10 @@ const pl: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   geoApp: 'Aplikacja mapowa',
   url: 'Udostępnij lokalizację',
   image: 'Udostępnij zdjęcie',
+  linkIncompleteMap:
+    'Zmiany na mapie nie są zapisane. Link otwiera mapę w wersji ostatnio zapisanej na serwerze.',
+  linkIncompleteData:
+    'Dane na mapie są za duże, aby zmieścić się w linku. Aby je udostępnić, należy najpierw zapisać je w „Moje mapy”.',
 };
 
 export default pl;

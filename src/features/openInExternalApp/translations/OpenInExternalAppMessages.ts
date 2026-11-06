@@ -16,4 +16,8 @@ export type OpenInExternalAppMessages = {
   geoApp: string;
   url: string;
   image: string;
+  /** Beside the page's link while the connected map's server copy lacks changes. */
+  linkIncompleteMap: string;
+  /** Beside the page's link while the data is too big for it. */
+  linkIncompleteData: string;
 };

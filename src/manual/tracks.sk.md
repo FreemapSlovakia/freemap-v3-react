@@ -20,7 +20,7 @@ Trasy sa zobrazia ako čiary – záznam trasy so značkou štartu a cieľa – 
 - :FaChartArea: **Výškový profil** – pozrite nižšie.
 - :FaInfoCircle: **Viac info** – vzdialenosť, celkové stúpanie a klesanie, najnižší a najvyšší bod a pri zázname aj čas štartu a príchodu do cieľa, trvanie a priemerná rýchlosť.
 
-Malá trasa sa uchováva v adrese stránky, takže ju zdieľate spolu s odkazom. Veľká zostáva len v tomto prehliadači a na lište sa zobrazí výstraha :FaExclamationTriangle.text-warning:, že trasa nie je uložená; uchováte ju cez :FaEllipsisV: → :FaSave: **Uložiť do mojich máp** (vyžaduje prihlásenie).
+Malá trasa sa uchováva v adrese stránky, takže ju zdieľate spolu s odkazom. Veľká zostáva len v tomto prehliadači: položka **Kopírovať URL stránky** v hlavnom menu potom nesie výstrahu :FaExclamationTriangle.text-warning: a zatvorenie stránky si vyžiada potvrdenie; uchováte ju cez :FaEllipsisV: → :FaSave: **Uložiť do mojich máp** (vyžaduje prihlásenie).
 
 ## Výškový profil
 

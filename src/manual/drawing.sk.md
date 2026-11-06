@@ -54,6 +54,6 @@ Tlačidlom **Späť** v prehliadači vrátite poslednú zmenu.
 
 ## Uloženie kresby
 
-Kresba sa zapisuje do odkazu v adresnom riadku prehliadača – skopírujte ho a ostatní uvidia to isté. Veľmi veľká kresba sa do odkazu nezmestí; lišta potom ukáže **Neuložené** a kresba zostane len v tomto prehliadači. Ak si ju chcete ponechať, zvoľte :FaSave: **Uložiť do mojich máp** v menu :FaEllipsisV: (vyžaduje prihlásenie); uložené mapy nájdete v dialógu :FaRegMap: [Moje mapy](#show=my-maps).
+Kresba sa zapisuje do odkazu v adresnom riadku prehliadača – skopírujte ho a ostatní uvidia to isté. Veľmi veľká kresba sa do odkazu nezmestí a zostane len v tomto prehliadači; položka **Kopírovať URL stránky** v hlavnom menu potom nesie varovanie :FaExclamationTriangle.text-warning: a zatvorenie stránky si vyžiada potvrdenie. Ak si ju chcete ponechať, zvoľte :FaSave: **Uložiť do mojich máp** v menu :FaEllipsisV: (vyžaduje prihlásenie); uložené mapy nájdete v dialógu :FaRegMap: [Moje mapy](#show=my-maps).
 
 Import súborov GPX a iných, výškový profil, vyfarbenie trasy a export opisuje kapitola [Trasy a súbory](#show=manual/tracks).

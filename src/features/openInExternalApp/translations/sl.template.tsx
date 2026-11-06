@@ -17,6 +17,10 @@ const sl: DeepPartialWithRequiredObjects<OpenInExternalAppMessages> = {
   geoApp: 'Aplikacija za zemljevide',
   url: 'Deli lokacijo',
   image: 'Deli fotografijo',
+  linkIncompleteMap:
+    'Spremembe zemljevida niso shranjene. Povezava odpre zemljevid, kot je bil nazadnje shranjen na strežniku.',
+  linkIncompleteData:
+    'Podatki na zemljevidu so preveliki, da bi se prilegali povezavi. Če jih želite deliti, jih najprej shranite v »Moji zemljevidi«.',
 };
 
 export default sl;

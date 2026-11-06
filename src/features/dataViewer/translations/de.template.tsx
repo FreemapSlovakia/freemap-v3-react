@@ -221,9 +221,6 @@ const de: DeepPartialWithRequiredObjects<DataViewerMessages> = {
   invalidFormat: 'Die Datei hat kein unterstütztes Format oder ist ungültig.',
   someFilesFailed: ({ names }) =>
     `Einige Dateien konnten nicht geladen werden: ${names}.`,
-  unsaved: 'Nicht gespeichert',
-  unsavedTooltip:
-    'Diese Daten passen nicht in die Seitenadresse (URL) und sind in keiner gespeicherten Karte – sie bleiben nur in diesem Browser. Speichern Sie sie in Ihren Karten, um sie zu behalten.',
   snapshotGone:
     'Die in diesem Schritt angezeigten Daten werden in diesem Browser nicht mehr aufbewahrt.',
   snapshotFailed:
