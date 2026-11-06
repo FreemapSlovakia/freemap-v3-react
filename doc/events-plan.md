@@ -166,6 +166,9 @@ from the selection toolbar (**Edit**).
 - [ ] Marker clustering.
 - [ ] **Copy link** on the event.
 - [ ] Follows and the _Who_ filter.
+- [ ] **Who sees the participants**: public to anyone who can open the event
+      for now; once there are follows, narrow it to the people one follows,
+      or as Facebook events do it.
 - [x] Formatted description: Markdown, written with **Write / Preview** tabs
       and rendered by `shared/components/Markdown` from `marked`'s tokens into
       React elements — never HTML, so raw markup shows as text, images as
