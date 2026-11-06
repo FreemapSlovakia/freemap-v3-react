@@ -39,6 +39,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zapri',
     collapse: 'Strni',
     expand: 'Razširi',
+    showMore: 'Prikaži več',
     apply: 'Uporabi',
     exitFullscreen: 'Izhod iz celozaslonskega načina',
     fullscreen: 'Celozaslonski način',

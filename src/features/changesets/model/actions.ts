@@ -47,8 +47,6 @@ export const changesetsInspect = createAction(
 /** The element a history is of, and how to get back to its details. */
 export interface HistoryOf {
   id: OsmFeatureId;
-  /** As its details head it, for the inspector's breadcrumb. */
-  name: string;
   /** The selection its details are of, restored to go back to them. */
   selection: ObjectsSelection | SearchSelection;
 }
@@ -65,6 +63,8 @@ export const changesetsShowHistory = createAction<HistoryOf | null>(
  */
 export const changesetsReturnToHistory = createAction<{
   selection: HistoryOf['selection'];
+  /** The element to load again, gone from the map meanwhile. */
+  reload?: OsmFeatureId;
 }>('CHANGESETS_RETURN_TO_HISTORY');
 
 /** One version of an element, as its history lists it. */

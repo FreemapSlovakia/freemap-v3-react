@@ -1,0 +1,40 @@
+.slide {
+  background: #000;
+}
+
+/* Arrow clicks are ignored while a slide moves, so it moves briefly. */
+.carousel :global(.carousel-item) {
+  transition-duration: 0.2s;
+}
+
+/* A 3:2 photo, the commonest, fills the frame up to an even border. */
+.slide a {
+  display: block;
+  padding: 0.5rem;
+}
+
+.slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+}
+
+/* A gradient keeps white text readable over a light photo. */
+.caption {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+  padding: 1.5rem 0.5rem 0.25rem;
+  background: linear-gradient(transparent, rgb(0 0 0 / 75%));
+  color: #fff;
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.caption > span:first-child {
+  flex: 1;
+}

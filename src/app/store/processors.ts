@@ -22,6 +22,7 @@ import {
 import {
   changesetsHistoryProcessor,
   changesetsHistorySelectionProcessor,
+  changesetsReloadHistoryElementProcessor,
   changesetsReturnToHistoryProcessor,
 } from '@features/changesets/model/historyProcessor.js';
 import {
@@ -264,6 +265,7 @@ export const processors = [
   changesetsHistoryProcessor,
   changesetsHistorySelectionProcessor,
   changesetsReturnToHistoryProcessor,
+  changesetsReloadHistoryElementProcessor,
   authInitProcessor,
   authTrackProcessor,
   l10nSetLanguageProcessor,

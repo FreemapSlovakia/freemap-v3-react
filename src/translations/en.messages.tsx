@@ -37,6 +37,7 @@ const messages: Messages = {
     cancelAutoClose: 'Cancel auto-close',
     collapse: 'Collapse',
     expand: 'Expand',
+    showMore: 'Show more',
     apply: 'Apply',
     exitFullscreen: 'Exit fullscreen mode',
     fullscreen: 'Fullscreen',

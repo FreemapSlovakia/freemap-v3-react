@@ -3,6 +3,7 @@ import {
   changesetsInspect,
   changesetsSet,
   changesetsSetParams,
+  changesetsShowHistory,
 } from '@features/changesets/model/actions.js';
 import {
   VERBATIM_KEYS,
@@ -1051,6 +1052,8 @@ export function handleLocationChange(store: MyStore): void {
   // After `objects=`, whose POIs an object selection waits for.
   handleSelectedElement(getState, dispatch, panel, focus);
 
+  handleElementHistory(getState, dispatch, panel);
+
   handleElevationChart(getState, dispatch, query, restore !== null);
 
   // A `track-uid=` / `import-url=` link is nothing but its track.
@@ -1388,6 +1391,52 @@ function handleOsmElements(
 
   if (previewId && wanted.some((w) => featureIdsEqual(w, previewId))) {
     dispatch(searchKeepResult(previewId));
+  }
+}
+
+/** `panel=`'s `/history`: the element's versions shown, or back to its details. */
+function handleElementHistory(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  panel: PanelParam | null,
+) {
+  const { history, inspected } = getState().changesetInspector;
+
+  if (panel?.type !== 'osm' && panel?.type !== 'object') {
+    // An inspection may be drilled into from it; nothing else is under it.
+    if (history && !inspected && panel?.type !== 'changeset') {
+      dispatch(changesetsShowHistory(null));
+    }
+
+    return;
+  }
+
+  const { id } = panel;
+
+  const shown = history !== null && featureIdsEqual(history.id, id);
+
+  const { main, objects } = getState();
+
+  // A POI the link can't bring (no `objects=`) has no details to hold it.
+  const hosted =
+    panel.type === 'osm' ||
+    (main.selection?.type === 'objects' &&
+      featureIdsEqual(main.selection.id, id)) ||
+    (objects.awaitedSelection !== null &&
+      featureIdsEqual(objects.awaitedSelection, id));
+
+  if (panel.history && !shown && hosted) {
+    dispatch(
+      changesetsShowHistory({
+        id,
+        selection:
+          panel.type === 'osm'
+            ? { type: 'search', id }
+            : { type: 'objects', id },
+      }),
+    );
+  } else if (!panel.history && shown && !inspected) {
+    dispatch(changesetsShowHistory(null));
   }
 }
 

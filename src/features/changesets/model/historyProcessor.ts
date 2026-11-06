@@ -151,7 +151,9 @@ export const changesetsHistoryProcessor: Processor<
  * selected, by whatever means, drops it, leaving an inspection on its own.
  */
 export const changesetsHistorySelectionProcessor: Processor = {
-  stateChangePredicate: (state) => state.main.selection,
+  // A string: a fresh array would differ on every action.
+  stateChangePredicate: (state) =>
+    JSON.stringify([state.main.selection, state.objects.awaitedSelection]),
   handle: ({ dispatch, getState }) => {
     const state = getState();
 
@@ -159,12 +161,17 @@ export const changesetsHistorySelectionProcessor: Processor = {
 
     const { selection } = state.main;
 
+    const { awaitedSelection } = state.objects;
+
     if (
       history &&
       !(inspected
         ? !selection || selection.type === 'changeset-element'
-        : (selection?.type === 'objects' || selection?.type === 'search') &&
-          featureIdsEqual(selection.id, history.id))
+        : ((selection?.type === 'objects' || selection?.type === 'search') &&
+            featureIdsEqual(selection.id, history.id)) ||
+          // A link's POI, its details still to come.
+          (awaitedSelection !== null &&
+            featureIdsEqual(awaitedSelection, history.id)))
     ) {
       dispatch(changesetsShowHistory(null));
     }
@@ -183,28 +190,43 @@ export const changesetsReturnToHistoryProcessor: Processor<
   statePredicate: (state) =>
     state.changesetInspector.history !== null &&
     state.changesetInspector.inspected !== null,
-  transform: ({ dispatch, getState }) => {
+  transform: ({ getState }) => {
     const state = getState();
 
     const history = state.changesetInspector.history!;
-
-    let { selection } = history;
 
     // Gone from the objects layer or the search results meanwhile, the element
     // is loaded on its own.
     const isThere = (o: { id: FeatureId }) => featureIdsEqual(o.id, history.id);
 
-    if (
-      !(selection.type === 'objects'
+    const { selection } = history;
+
+    const present =
+      selection.type === 'objects'
         ? state.objects.objects.some(isThere)
-        : state.search.selectedResults.some(isThere))
-    ) {
-      // Unpinned: a kept one would still be there, so it was only looked at.
-      dispatch(osmLoad({ ids: [history.id], focus: false }));
+        : state.search.selectedResults.some(isThere);
 
-      selection = { type: 'search', id: history.id };
+    return present
+      ? changesetsReturnToHistory({ selection })
+      : // Unpinned: a kept one would still be there, so it was only looked at.
+        changesetsReturnToHistory({
+          selection: { type: 'search', id: history.id },
+          reload: history.id,
+        });
+  },
+};
+
+/**
+ * Not from the transform above: a load it started would be cancelled by the
+ * action it returns, whose processors compare against the state before both.
+ */
+export const changesetsReloadHistoryElementProcessor: Processor<
+  typeof changesetsReturnToHistory
+> = {
+  actionCreator: changesetsReturnToHistory,
+  handle: ({ action, dispatch }) => {
+    if (action.payload.reload) {
+      dispatch(osmLoad({ ids: [action.payload.reload], focus: false }));
     }
-
-    return changesetsReturnToHistory({ selection });
   },
 };

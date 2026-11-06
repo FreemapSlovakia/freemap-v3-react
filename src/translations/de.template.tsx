@@ -39,6 +39,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Schließen',
     collapse: 'Einklappen',
     expand: 'Ausklappen',
+    showMore: 'Mehr anzeigen',
     apply: 'Anwenden',
     exitFullscreen: 'Vollbildmodus beenden',
     fullscreen: 'Vollbild',

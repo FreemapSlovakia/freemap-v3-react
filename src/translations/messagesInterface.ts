@@ -19,6 +19,7 @@ export type Messages = {
     cancelAutoClose: string;
     collapse: string;
     expand: string;
+    showMore: string;
     apply: string;
     exitFullscreen: string;
     fullscreen: string;

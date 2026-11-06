@@ -1,13 +1,21 @@
 import { selectFeature } from '@app/store/actions.js';
 import { Text } from '@features/l10n/Text.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
-import { wikiPage } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Badge } from 'react-bootstrap';
 import { FaWikipediaW } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { useWikidataItem } from '../hooks/useWikidataItem.js';
+import type { WikiPreview } from '../model/actions.js';
 import { selectedWikiId } from '../model/selectors.js';
+import { CommonsImages } from './CommonsImages.js';
+import {
+  ArticleThumbnail,
+  articleUrl,
+  WikiArticleBody,
+} from './WikiArticleBody.js';
+import { WikidataFacts } from './WikidataFacts.js';
 
 /** The selected Wikipedia article's panel. */
 export default function WikiPanel(): ReactElement {
@@ -36,42 +44,21 @@ export default function WikiPanel(): ReactElement {
       onClose={() => dispatch(selectFeature(null))}
     >
       {(item) => {
-        let lang, title, label, body;
+        let lang, title, label;
 
         if (typeof item === 'string') {
           [lang = '', title = ''] = item.split(/:(.*)/);
 
           label = title;
-
-          body = <Text k="general.loading" />;
         } else {
           ({ lang, langTitle: title, title: label } = item);
-
-          body = (
-            <>
-              {item.thumbnail && (
-                <img
-                  src={item.thumbnail.source}
-                  width={item.thumbnail.width}
-                  height={item.thumbnail.height}
-                  alt={item.title}
-                  className="mb-3 mw-100 h-auto rounded"
-                />
-              )}
-
-              {/* Wikipedia's own extract, as its API sends it. */}
-              <div dangerouslySetInnerHTML={{ __html: item.extract }} />
-            </>
-          );
         }
-
-        const href = `https://${lang}.wikipedia.org/wiki/${wikiPage(title)}`;
 
         return (
           <>
             <p className="lead fw-semibold">
               {/* One named tab for every article link. */}
-              <a href={href} target="wikipedia">
+              <a href={articleUrl(lang, title)} target="wikipedia">
                 {label}
               </a>
 
@@ -83,27 +70,44 @@ export default function WikiPanel(): ReactElement {
               )}
             </p>
 
-            {body}
-
-            {typeof item !== 'string' && (
-              // Attribution CC BY-SA requires of reused article text.
-              <p className="small text-body-secondary mt-3 mb-0">
-                <a href={href} target="wikipedia">
-                  Wikipedia
-                </a>
-                {' · '}
-                <a
-                  href="https://creativecommons.org/licenses/by-sa/4.0/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  CC BY-SA 4.0
-                </a>
-              </p>
+            {typeof item === 'string' ? (
+              <Text k="general.loading" />
+            ) : (
+              <Article article={item} />
             )}
           </>
         );
       }}
     </DockPanel>
+  );
+}
+
+function Article({ article }: { article: WikiPreview }) {
+  const loaded = useWikidataItem(article.wikidata);
+
+  const item = loaded.state === 'done' ? loaded.data : undefined;
+
+  const thumbnail = <ArticleThumbnail article={article} />;
+
+  return (
+    <>
+      {loaded.state === 'loading' ? (
+        thumbnail
+      ) : (
+        // The article's picture first; a local, non-Commons one stays alone.
+        <CommonsImages
+          files={[
+            ...(article.pageimage ? [article.pageimage] : []),
+            ...(item?.images ?? []),
+          ]}
+          category={item?.commonsCategory}
+          fallback={thumbnail}
+        />
+      )}
+
+      {item && <WikidataFacts item={item} />}
+
+      <WikiArticleBody article={article} />
+    </>
   );
 }

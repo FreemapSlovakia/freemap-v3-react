@@ -38,6 +38,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Bezárás',
     collapse: 'Összecsukás',
     expand: 'Kibontás',
+    showMore: 'Továbbiak',
     apply: 'Alkalmaz',
     exitFullscreen: 'Kilépés a teljes képernyős módból',
     fullscreen: 'Teljes képernyő',

@@ -1,4 +1,5 @@
 import { categoryKeys } from '@osm/osmNameResolver.js';
+import { parseWikipediaTag } from '@shared/wikipediaTag.js';
 import { Fragment, type ReactNode } from 'react';
 
 type Props = {
@@ -124,12 +125,12 @@ function hrefFor(tag: string, value: string): string | undefined {
 
   if (last === 'wikipedia' || tag.startsWith('wikipedia:')) {
     // `en:Title`, or `wikipedia:en=Title`; no language, no link.
-    const m = /^([a-z][a-z-]{1,11}):(.+)$/.exec(value);
+    const parsed = parseWikipediaTag(value);
 
-    const lang = m?.[1] ?? /^wikipedia:([a-z-]+)$/.exec(tag)?.[1];
+    const lang = parsed?.lang ?? /^wikipedia:([a-z-]+)$/.exec(tag)?.[1];
 
     return lang
-      ? `https://${lang}.wikipedia.org/wiki/${wikiPage(m?.[2] ?? value)}`
+      ? `https://${lang}.wikipedia.org/wiki/${wikiPage(parsed?.title ?? value)}`
       : undefined;
   }
 

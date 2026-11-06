@@ -13,10 +13,10 @@ export type PanelParam =
   | { type: 'event'; id: string }
   | { type: 'osm-note'; id: number }
   | { type: 'changeset'; id: number; element?: string }
-  /** An OSM element as a search result, kept or only looked at. */
-  | { type: 'osm'; id: OsmFeatureId }
+  /** An OSM element as a search result, kept or only looked at; `history` its versions shown. */
+  | { type: 'osm'; id: OsmFeatureId; history?: true }
   /** A POI of the objects layer, selected once the layer has it. */
-  | { type: 'object'; id: OsmFeatureId }
+  | { type: 'object'; id: OsmFeatureId; history?: true }
   /** A Wikipedia article, `<lang>:<title>`; the title may hold a `/`. */
   | { type: 'wiki'; id: string };
 
@@ -25,6 +25,8 @@ const positive = (s: string | undefined) =>
   s !== undefined && /^[1-9]\d*$/.test(s) ? Number(s) : undefined;
 
 export function encodePanel(panel: PanelParam): string {
+  const history = 'history' in panel && panel.history ? '/history' : '';
+
   switch (panel.type) {
     case 'event':
       return `event/${panel.id}`;
@@ -38,10 +40,10 @@ export function encodePanel(panel: PanelParam): string {
         : `changeset/${panel.id}`;
 
     case 'osm':
-      return `osm-${panel.id.elementType}/${panel.id.id}`;
+      return `osm-${panel.id.elementType}/${panel.id.id}${history}`;
 
     case 'object':
-      return `object/${panel.id.elementType}/${panel.id.id}`;
+      return `object/${panel.id.elementType}/${panel.id.id}${history}`;
 
     case 'wiki':
       return `wiki/${panel.id}`;
@@ -109,19 +111,25 @@ export function decodePanel(raw: string): PanelParam | null {
     }
 
     case 'object': {
-      const id = c === undefined ? osmId(a, b) : undefined;
+      const id = c === undefined || c === 'history' ? osmId(a, b) : undefined;
 
-      return id ? { type: 'object', id } : null;
+      return id
+        ? { type: 'object', id, ...(c === 'history' && { history: true }) }
+        : null;
     }
 
     default: {
       // `osm-node/<id>`, as the `osm-node=` of a kept one reads.
       const id =
-        type?.startsWith('osm-') && b === undefined
+        type?.startsWith('osm-') &&
+        (b === undefined || b === 'history') &&
+        c === undefined
           ? osmId(type.slice(4), a)
           : undefined;
 
-      return id ? { type: 'osm', id } : null;
+      return id
+        ? { type: 'osm', id, ...(b === 'history' && { history: true }) }
+        : null;
     }
   }
 }

@@ -73,7 +73,7 @@ function pickLang(value: ExtMetaValue, language: string): string | undefined {
   return undefined;
 }
 
-function stripHtml(html: string | undefined): string | undefined {
+export function stripHtml(html: string | undefined): string | undefined {
   if (!html) {
     return undefined;
   }
@@ -112,7 +112,7 @@ function stripHtml(html: string | undefined): string | undefined {
  * `<a href="//commons.wikimedia.org/wiki/User:Foo">Foo</a>`. Extract the plain
  * name plus the (absolute) profile URL, if any.
  */
-function parseArtist(html: string | undefined): {
+export function parseArtist(html: string | undefined): {
   name?: string;
   url?: string;
 } {
@@ -224,7 +224,7 @@ export interface WikimediaMeta {
  * an error page. Descending so we can pick the largest that fits.
  * See https://www.mediawiki.org/wiki/Common_thumbnail_sizes
  */
-const STANDARD_THUMB_WIDTHS = [
+export const STANDARD_THUMB_WIDTHS = [
   3840, 1920, 1280, 960, 500, 330, 250, 120, 60, 40, 20,
 ];
 
@@ -380,6 +380,6 @@ export async function fetchWikimediaMeta(
  * the input if it doesn't match (an unexpected shape / a non-thumb URL), so the
  * caller still gets a usable image.
  */
-function scaleThumbUrl(thumburl: string, width: number): string {
+export function scaleThumbUrl(thumburl: string, width: number): string {
   return thumburl.replace(/(\d+)px-([^/]*)$/, `${width}px-$2`);
 }

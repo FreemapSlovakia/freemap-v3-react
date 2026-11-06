@@ -40,6 +40,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     close: 'Zavřít',
     collapse: 'Sbalit',
     expand: 'Rozbalit',
+    showMore: 'Zobrazit více',
     apply: 'Použiť',
     exitFullscreen: 'Zrušit zobrazení na celou obrazovku',
     fullscreen: 'Na celou obrazovku',

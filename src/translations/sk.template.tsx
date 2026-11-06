@@ -39,6 +39,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     cancelAutoClose: 'Zrušiť automatické zatvorenie',
     collapse: 'Zbaliť',
     expand: 'Rozbaliť',
+    showMore: 'Zobraziť viac',
     apply: 'Použiť',
     exitFullscreen: 'Zrušiť zobrazenie na celú obrazovku',
     fullscreen: 'Na celú obrazovku',

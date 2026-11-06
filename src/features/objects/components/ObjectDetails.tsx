@@ -10,6 +10,10 @@ import { getOsmElementUrl } from '@features/openInExternalApp/externalUrlUtils.j
 import type { SearchResult } from '@features/search/model/actions.js';
 import { resultCoords } from '@features/search/model/resultUtils.js';
 import {
+  WikiObjectImages,
+  WikiObjectSection,
+} from '@features/wiki/components/WikiObjectSection.js';
+import {
   getNameFromOsmElement,
   osmTypeAndId,
   resolveGenericName,
@@ -126,6 +130,8 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
       typeof v === 'string' ? v : JSON.stringify(v),
     ]);
 
+  const tags = Object.fromEntries(properties);
+
   const history = useAppSelector((state) => state.changesetInspector.history);
 
   // What to select again to come back here from its history's changesets.
@@ -208,13 +214,14 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
         <p>{geojson.properties['description']}</p>
       )}
 
+      <WikiObjectImages tags={tags} />
+
       {geojson.properties && (
         <OsmTagsTable tags={properties} osm={parsedId.success} />
       )}
 
       {parsedId.success && historySelection && (
         <p className="mb-2">
-          {/* A button, as the URL has nothing to open the history by. */}
           <Button
             size="sm"
             variant="secondary"
@@ -222,7 +229,6 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
               dispatch(
                 changesetsShowHistory({
                   id: parsedId.data,
-                  name: nameOrKinds,
                   selection: historySelection,
                 }),
               );
@@ -235,7 +241,7 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
         </p>
       )}
 
-      <span>
+      <p className="mb-3">
         <Text m={om} k="source" />:{' '}
         {/* An OSM element's source opens it there, as the ⋮ menu does. */}
         {parsedId.success ? (
@@ -249,7 +255,10 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
         ) : (
           <SourceName result={result} />
         )}
-      </span>
+      </p>
+
+      {/* After the source, which credits the tags above. */}
+      <WikiObjectSection tags={tags} />
     </>
   );
 }

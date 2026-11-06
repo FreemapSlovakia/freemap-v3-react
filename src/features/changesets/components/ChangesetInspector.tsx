@@ -1,6 +1,8 @@
 import { selectFeature } from '@app/store/actions.js';
 import { encodePanel } from '@app/url/panelParam.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { osmTypeAndId } from '@osm/osmNameResolver.js';
 import { HorizontalScroller } from '@shared/components/HorizontalScroller.js';
 import { LinkButton } from '@shared/components/LinkButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -87,14 +89,26 @@ export function ChangesetInspector({ root, view }: Props): ReactElement {
 
   const { label } = useElementName();
 
+  const m = useMessages();
+
+  // Named as its changed element is, once its diff is in; by type and id before.
+  const historyName =
+    history &&
+    (element?.type === history.id.elementType && element.id === history.id.id
+      ? label(element)
+      : osmTypeAndId(m, history.id.elementType, history.id.id));
+
   const crumbs: Crumb[] = [];
 
   if (history) {
     crumbs.push(
       {
         key: 'root',
-        label: root ?? history.name,
-        href: `#panel=${encodePanel({ type: 'osm', id: history.id })}`,
+        label: root ?? historyName,
+        href: `#panel=${encodePanel({
+          type: history.selection.type === 'objects' ? 'object' : 'osm',
+          id: history.id,
+        })}`,
       },
       {
         key: 'history',
@@ -131,7 +145,7 @@ export function ChangesetInspector({ root, view }: Props): ReactElement {
     crumbs.push({
       key: 'element',
       // Loading, it can only be the history's own.
-      label: element ? label(element) : history?.name,
+      label: element ? label(element) : historyName,
       leave: () => dispatch(selectFeature(null)),
     });
   }

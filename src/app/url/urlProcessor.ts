@@ -32,6 +32,7 @@ import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
+import { featureIdsEqual, type OsmFeatureId } from '@shared/types/featureId.js';
 import { serializeLatLon } from '@shared/urlSerialization.js';
 import { encodeActiveModal, showWithoutSection } from '../store/activeModal.js';
 import type { Processor } from '../store/middleware/processorMiddleware.js';
@@ -242,9 +243,15 @@ export const urlProcessor: Processor = {
 /** What the state's panel is, as `panel=` names it. */
 function selectionPanel({
   main: { selection, detailsShown },
-  changesetInspector: { inspected },
+  changesetInspector: { inspected, history },
   objects: { awaitedSelection },
 }: RootState): PanelParam | null {
+  // Its own entry, so Back returns from the versions to the details.
+  const withHistory = (id: OsmFeatureId) =>
+    history && featureIdsEqual(history.id, id)
+      ? ({ history: true } as const)
+      : {};
+
   if (inspected) {
     return {
       type: 'changeset',
@@ -261,19 +268,25 @@ function selectionPanel({
       return selection;
 
     case 'objects':
-      return { type: 'object', id: selection.id };
+      return { type: 'object', id: selection.id, ...withHistory(selection.id) };
 
     case 'search':
       // Only an OSM element, a geocoder's hit having nothing to fetch it by;
       // and only with its panel open, not picked by name to be looked at.
       return selection.id.type === 'osm' && detailsShown
-        ? { type: 'osm', id: selection.id }
+        ? { type: 'osm', id: selection.id, ...withHistory(selection.id) }
         : null;
 
     default:
       // Awaited, a link's POI is still what it names, beside a tool's selection
       // too (which it then replaces).
-      return awaitedSelection ? { type: 'object', id: awaitedSelection } : null;
+      return awaitedSelection
+        ? {
+            type: 'object',
+            id: awaitedSelection,
+            ...withHistory(awaitedSelection),
+          }
+        : null;
   }
 }
 
@@ -367,6 +380,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     changesets.authorName,
     changesets.days,
     changesetInspector.inspected?.id,
+    changesetInspector.history?.id,
     gallery.activeImageId,
     gallery.filter,
     eventsFilter,

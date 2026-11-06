@@ -30,8 +30,24 @@ describe('panel=', () => {
       },
     ],
     [
+      'osm-relation/1690324/history',
+      {
+        type: 'osm',
+        id: { type: 'osm', elementType: 'relation', id: 1690324 },
+        history: true,
+      },
+    ],
+    [
       'object/way/123',
       { type: 'object', id: { type: 'osm', elementType: 'way', id: 123 } },
+    ],
+    [
+      'object/way/123/history',
+      {
+        type: 'object',
+        id: { type: 'osm', elementType: 'way', id: 123 },
+        history: true,
+      },
     ],
     ['wiki/sk:Bratislava', { type: 'wiki', id: 'sk:Bratislava' }],
     // A title's slash is its own.
@@ -62,6 +78,8 @@ describe('panel=', () => {
     'osm-node/1/2',
     'object/node',
     'object/node/1/2',
+    'osm-node/1/history/x',
+    'object/node/1/history/x',
   ])('reads %s as nothing', (raw) => {
     expect(decodePanel(raw)).toBeNull();
   });
