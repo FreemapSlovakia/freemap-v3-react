@@ -47,6 +47,14 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
+- [ ] **Back re-pushes an app-driven map fit.** After a fit (an inspected
+      changeset's, `fitLoadedMap` from `changesetsInspectProcessor`) the view
+      change pushes its own entry. Going Back to the entry before it restores
+      the old view, but `mapStateHandler`'s `moveend` then reports the fitted
+      view again and `urlProcessor` pushes it anew, wiping Forward. Repro: open
+      an element's History, a version, then Back. Likely a race between
+      `mapRefocusProcessor`'s awaited `setView` and a `moveend` with the old
+      center; probably not specific to changesets.
 - [ ] **Load a link's POI by its id.** A `panel=object/…` POI the objects layer
       hasn't loaded waits in `objects.awaitedSelection`, beside the one
       selection, and every selecting must let go of it. Selecting it at once

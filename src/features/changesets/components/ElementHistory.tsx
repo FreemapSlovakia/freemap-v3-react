@@ -1,4 +1,5 @@
 import { encodePanel } from '@app/url/panelParam.js';
+import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { Text } from '@features/l10n/Text.js';
 import { getOsmChangesetUrl } from '@features/openInExternalApp/externalUrlUtils.js';
 import { usePaged } from '@shared/components/LoadMoreSentinel.js';
@@ -38,7 +39,14 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
   });
 
   const inspect = (changeset: number) => {
-    dispatch(changesetsInspect(changeset, { fromHistory: true }));
+    // One history entry for both steps: the selection writes it.
+    setUrlUpdatingEnabled(false);
+
+    try {
+      dispatch(changesetsInspect(changeset, { fromHistory: true }));
+    } finally {
+      setUrlUpdatingEnabled(true);
+    }
 
     // Its element selected, as a click on the map does, so the inspector's
     // panel takes the drill over from its details'.
