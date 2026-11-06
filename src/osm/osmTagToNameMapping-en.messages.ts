@@ -2324,6 +2324,34 @@ export const osmTagToNameMapping: OsmTagToNameMapping = {
     horrible: 'Horrible trail visibility',
     no: 'No trail visibility',
   },
+  // The `highway` subtree names the way by the detail, not as a plain path.
+  ladder: {
+    '*': {
+      '*': 'Ladder',
+      highway: {
+        '*': 'Ladder',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Rungs',
+      highway: {
+        '*': 'Path with rungs',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Safety rope',
+      highway: {
+        '*': 'Path with safety rope',
+      },
+    },
+    no: '',
+  },
   zoo: {
     aquarium: 'Aquarium',
     aviary: 'Aviary',

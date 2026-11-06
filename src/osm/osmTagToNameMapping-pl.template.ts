@@ -2310,6 +2310,33 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intermediate: 'Średnia widoczność szlaku',
     no: 'Brak widoczności szlaku',
   },
+  ladder: {
+    '*': {
+      '*': 'Drabina',
+      highway: {
+        '*': 'Drabina',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Klamry',
+      highway: {
+        '*': 'Ścieżka z klamrami',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Lina asekuracyjna',
+      highway: {
+        '*': 'Ścieżka z liną asekuracyjną',
+      },
+    },
+    no: '',
+  },
 
   tunnel: {
     '*': {

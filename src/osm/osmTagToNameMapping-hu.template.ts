@@ -2312,6 +2312,33 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intermediate: 'Közepes ösvényláthatóság',
     no: 'Nincs ösvényláthatóság',
   },
+  ladder: {
+    '*': {
+      '*': 'Létra',
+      highway: {
+        '*': 'Létra',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Lépővasak',
+      highway: {
+        '*': 'Ösvény lépővasakkal',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Biztosítókötél',
+      highway: {
+        '*': 'Ösvény biztosítókötéllel',
+      },
+    },
+    no: '',
+  },
 
   tunnel: {
     '*': {

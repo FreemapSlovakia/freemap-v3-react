@@ -2197,6 +2197,33 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intermediate: 'Střední viditelnost stezky',
     no: 'Žádná viditelnost stezky',
   },
+  ladder: {
+    '*': {
+      '*': 'Žebřík',
+      highway: {
+        '*': 'Žebřík',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Stupačky',
+      highway: {
+        '*': 'Stezka se stupačkami',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Jisticí lano',
+      highway: {
+        '*': 'Stezka s jisticím lanem',
+      },
+    },
+    no: '',
+  },
 
   tunnel: {
     '*': {

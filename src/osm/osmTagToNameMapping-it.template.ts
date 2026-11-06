@@ -2314,6 +2314,33 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     intermediate: 'Visibilità sentiero media',
     no: 'Nessuna visibilità sentiero',
   },
+  ladder: {
+    '*': {
+      '*': 'Scala a pioli',
+      highway: {
+        '*': 'Scala a pioli',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Staffe',
+      highway: {
+        '*': 'Sentiero con staffe',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Corda fissa',
+      highway: {
+        '*': 'Sentiero con corda fissa',
+      },
+    },
+    no: '',
+  },
 
   tunnel: {
     '*': {

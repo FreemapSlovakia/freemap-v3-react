@@ -2329,6 +2329,33 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     horrible: 'Zelo slaba vidnost poti',
     no: 'Brez vidnosti poti',
   },
+  ladder: {
+    '*': {
+      '*': 'Lestev',
+      highway: {
+        '*': 'Lestev',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Klini',
+      highway: {
+        '*': 'Pot s klini',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Jeklenica',
+      highway: {
+        '*': 'Pot z jeklenico',
+      },
+    },
+    no: '',
+  },
   zoo: {
     aquarium: 'Akvarij',
     aviary: 'Voliera',

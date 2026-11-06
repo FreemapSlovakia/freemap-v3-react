@@ -2329,6 +2329,33 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     horrible: 'Sehr schlechte Wegsichtbarkeit',
     no: 'Keine Wegsichtbarkeit',
   },
+  ladder: {
+    '*': {
+      '*': 'Leiter',
+      highway: {
+        '*': 'Leiter',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Trittbügel',
+      highway: {
+        '*': 'Weg mit Trittbügeln',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Sicherungsseil',
+      highway: {
+        '*': 'Weg mit Sicherungsseil',
+      },
+    },
+    no: '',
+  },
 
   access: {
     customers: 'Nur für Kunden',

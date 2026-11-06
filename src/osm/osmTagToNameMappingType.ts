@@ -2336,6 +2336,33 @@ export type OsmTagToNameMapping = {
     horrible: string;
     no: string;
   };
+  ladder: {
+    '*': {
+      '*': string;
+      highway: {
+        '*': string;
+      };
+    };
+    no: string;
+  };
+  rungs: {
+    '*': {
+      '*': string;
+      highway: {
+        '*': string;
+      };
+    };
+    no: string;
+  };
+  safety_rope: {
+    '*': {
+      '*': string;
+      highway: {
+        '*': string;
+      };
+    };
+    no: string;
+  };
   zoo: {
     aquarium: string;
     aviary: string;

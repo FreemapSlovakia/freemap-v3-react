@@ -2323,6 +2323,33 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     horrible: 'Très mauvaise visibilité du sentier',
     no: 'Aucune visibilité du sentier',
   },
+  ladder: {
+    '*': {
+      '*': 'Échelle',
+      highway: {
+        '*': 'Échelle',
+      },
+    },
+    no: '',
+  },
+  rungs: {
+    '*': {
+      '*': 'Échelons',
+      highway: {
+        '*': 'Sentier avec échelons',
+      },
+    },
+    no: '',
+  },
+  safety_rope: {
+    '*': {
+      '*': 'Corde fixe',
+      highway: {
+        '*': 'Sentier avec corde fixe',
+      },
+    },
+    no: '',
+  },
   zoo: {
     aquarium: 'Aquarium',
     aviary: 'Volière',
