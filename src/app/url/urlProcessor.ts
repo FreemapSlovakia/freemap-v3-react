@@ -343,6 +343,11 @@ function updateUrl(state: RootState, forced: boolean): void {
     // replace the entry navigated to.
     lastWrittenRest = null;
 
+    // And what was last derived: the state moved without it (a modal opened
+    // by Back), so undoing that change would otherwise compare as no change.
+    // The address-bar check below keeps a re-derive from writing anything.
+    previousRest = [];
+
     // Drop an owed rewrite rather than running it: on a popstate restore the
     // entry it would replace is the one just navigated to. `previousView` has
     // already advanced past it, so forget the viewport too — otherwise a
