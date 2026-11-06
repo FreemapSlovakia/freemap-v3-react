@@ -83,7 +83,7 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
           href={coverUrl(event.cover, 'large')}
           target="_blank"
           rel="noopener noreferrer"
-          className="mb-1"
+          className="mb-2"
         >
           <img
             src={coverUrl(event.cover, 'thumb')}

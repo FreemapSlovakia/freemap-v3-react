@@ -70,7 +70,8 @@ from the selection toolbar (**Edit**).
 ### 4. Participants, discussion, notifications
 
 - **Interested** / **Going**, one of them per user, toggled from the event;
-  both counted in its details, with the names of who is going.
+  both counted in its details, with the names of who is going and who is
+  interested.
 - Until there is a thread, the description carries a way to reach the
   organizer; the form asks for it.
 - A discussion thread per event, for logged-in users, in the event's panel.
@@ -113,8 +114,7 @@ from the selection toolbar (**Edit**).
       status), `PUT`/`DELETE /events/{id}/participation`, the counts and the
       caller's own status on every event. Web: the two toggles with their
       counts in the event's panel; pressing the active one withdraws it, and
-      a logged-out user is offered to log in. Who is going goes into the
-      panel in Release 2.
+      a logged-out user is offered to log in.
 - [x] 2. **Contact hint**: until there is a discussion, the form's
       description asks for a way to reach the organizer (phone, email, a chat
       group).
@@ -129,7 +129,10 @@ from the selection toolbar (**Edit**).
 
 - [x] **The event's panel** in place of the toast and the selection toolbar:
       the actions and the details, docked over the map.
-- [ ] **Who is going**, listed in the panel.
+- [x] **Who is going**, listed in the panel. API:
+      `GET /events/{id}/participants`, going first, each by when they said so.
+      Web: loaded whenever the selected event is set or refreshed; the going
+      and the interested under the details, as user chips.
 - [ ] **Discussion.** API: an `eventComment` table, list and post (and the
       author or a moderator deleting), as the photo comments. Web: the thread
       in the panel, newest last, posting for logged-in users.

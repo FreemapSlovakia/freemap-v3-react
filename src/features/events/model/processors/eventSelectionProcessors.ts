@@ -8,9 +8,11 @@ import {
 } from '@features/myMaps/model/actions.js';
 import {
   type EventItem,
+  EventParticipantSchema,
   EventSchema,
   eventsOpen,
   eventsOpenDone,
+  eventsSetParticipants,
   eventsSetSelected,
 } from '../actions.js';
 import {
@@ -63,6 +65,42 @@ export const eventSelectionProcessor: Processor = {
     dispatch(eventsSetSelected(event));
   },
 };
+
+/**
+ * Loads who is going and who is interested whenever the selected event is set,
+ * refreshed copies included, so the names follow the counts.
+ */
+export const eventsParticipantsProcessor: Processor<typeof eventsSetSelected> =
+  {
+    actionCreator: eventsSetSelected,
+    async handle({ getState, dispatch, action }) {
+      const event = action.payload;
+
+      if (!event) {
+        return;
+      }
+
+      // Without a toast: the counts still show, and offline the event itself
+      // comes from the list.
+      try {
+        const res = await httpRequest({
+          getState,
+          url: `/events/${encodeURIComponent(event.id)}/participants`,
+          expectedStatus: 200,
+          cancelActions: [eventsSetSelected],
+        });
+
+        dispatch(
+          eventsSetParticipants({
+            eventId: event.id,
+            items: EventParticipantSchema.array().parse(await res.json()),
+          }),
+        );
+      } catch (err) {
+        console.warn('Event participants not loaded', err);
+      }
+    },
+  };
 
 /** Turning the layer off lets go of its event. */
 export const eventsLayerOffProcessor: Processor = {

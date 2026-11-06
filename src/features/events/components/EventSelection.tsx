@@ -12,6 +12,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
+import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import type { ReactElement } from 'react';
@@ -68,9 +69,74 @@ export default function EventSelection(): ReactElement | null {
           <EventActions event={event} />
 
           <EventDetails event={event} />
+
+          <EventParticipants event={event} />
         </>
       )}
     </DockPanel>
+  );
+}
+
+/** Who is going and who is interested, each under the label of its button. */
+function EventParticipants({
+  event,
+}: {
+  event: EventItem;
+}): ReactElement | null {
+  const em = useEventsMessages();
+
+  const participants = useAppSelector((state) => state.events.participants);
+
+  if (!em) {
+    return null;
+  }
+
+  const items =
+    participants?.eventId === event.id ? participants.items : undefined;
+
+  // Counted as the buttons count, while a refreshed list is on its way.
+  const groups = [
+    {
+      status: 'going',
+      icon: <FaCheck />,
+      label: em.selection.going,
+      count: event.goingCount,
+    },
+    {
+      status: 'interested',
+      icon: <FaStar />,
+      label: em.selection.interested,
+      count: event.interestedCount,
+    },
+  ] as const;
+
+  return (
+    <>
+      {groups.map(({ status, icon, label, count }) => {
+        const users = items?.filter((p) => p.status === status) ?? [];
+
+        return (
+          users.length > 0 && (
+            <div key={status} className="mt-3">
+              <div className="d-flex align-items-center gap-1 fw-semibold mb-1">
+                {icon} {label} · {count}
+              </div>
+
+              <div className="d-flex flex-wrap column-gap-3 row-gap-1">
+                {users.map(({ user }) => (
+                  <span
+                    key={user.id}
+                    className="d-inline-flex align-items-center"
+                  >
+                    <UserChip user={user} />
+                  </span>
+                ))}
+              </div>
+            </div>
+          )
+        );
+      })}
+    </>
   );
 }
 

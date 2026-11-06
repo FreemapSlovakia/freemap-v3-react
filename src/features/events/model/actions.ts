@@ -54,6 +54,8 @@ export type Attributes = {
   [K in keyof typeof AttributesShape]: z.infer<(typeof AttributesShape)[K]>;
 };
 
+export const ParticipationSchema = z.enum(['interested', 'going']);
+
 export const EventSchema = z.object({
   id: z.string(),
   userId: z.number(),
@@ -82,7 +84,7 @@ export const EventSchema = z.object({
   interestedCount: z.number(),
   goingCount: z.number(),
   /** The user's own; null when logged out or undecided. */
-  myParticipation: z.enum(['interested', 'going']).nullable(),
+  myParticipation: ParticipationSchema.nullable(),
 });
 
 export type EventItem = z.infer<typeof EventSchema>;
@@ -139,6 +141,20 @@ export const eventsSetParticipation = createAction<{
 export const eventsSetSelected = createAction<EventItem | null>(
   'EVENTS_SET_SELECTED',
 );
+
+export const EventParticipantSchema = z.object({
+  user: EventSchema.shape.user,
+  status: ParticipationSchema,
+  createdAt: IsoDateSchema,
+});
+
+export type EventParticipant = z.infer<typeof EventParticipantSchema>;
+
+/** An event's participants, as loaded for its panel. */
+export const eventsSetParticipants = createAction<{
+  eventId: string;
+  items: EventParticipant[];
+}>('EVENTS_SET_PARTICIPANTS');
 
 /** Loads an event's linked map into the user's own, appended or replacing it. */
 export const eventsOpen = createAction<{

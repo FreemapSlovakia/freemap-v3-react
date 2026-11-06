@@ -2,6 +2,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type EventItem,
+  type EventParticipant,
   type EventPoint,
   eventsConfirmPick,
   eventsOpen,
@@ -10,6 +11,7 @@ import {
   eventsSaveDone,
   eventsSetFilter,
   eventsSetList,
+  eventsSetParticipants,
   eventsSetPickingStart,
   eventsSetPickPosition,
   eventsSetPickRadius,
@@ -22,6 +24,8 @@ export interface EventsState {
   list: EventItem[];
   filter: EventsFilter;
   selected: EventItem | null;
+  /** Who is going to the selected event and who is interested. */
+  participants: { eventId: string; items: EventParticipant[] } | null;
   /** The event whose map is loading, to select again once it has. */
   opening: { id: string; mapId: string } | null;
   pickingStart: boolean;
@@ -38,6 +42,7 @@ const initialState: EventsState = {
   list: [],
   filter: {},
   selected: null,
+  participants: null,
   opening: null,
   pickingStart: false,
   pickPosition: null,
@@ -56,6 +61,9 @@ export const eventsReducer = createReducer(initialState, (builder) => {
     })
     .addCase(eventsSetSelected, (state, { payload }) => {
       state.selected = payload;
+    })
+    .addCase(eventsSetParticipants, (state, { payload }) => {
+      state.participants = payload;
     })
     .addCase(eventsOpen, (state, { payload }) => {
       state.opening = { id: payload.id, mapId: payload.mapId };

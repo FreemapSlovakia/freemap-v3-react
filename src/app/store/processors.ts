@@ -64,6 +64,7 @@ import {
   eventsLayerOffProcessor,
   eventsOpenedProcessor,
   eventsOpenProcessor,
+  eventsParticipantsProcessor,
 } from '@features/events/model/processors/eventSelectionProcessors.js';
 import { eventsDeleteProcessor } from '@features/events/model/processors/eventsDeleteProcessor.js';
 import {
@@ -351,6 +352,7 @@ export const processors = [
   eventsDeleteProcessor,
   eventsParticipationProcessor,
   eventSelectionProcessor,
+  eventsParticipantsProcessor,
   eventsLayerOffProcessor,
   eventsOpenProcessor,
   eventsOpenedProcessor,
