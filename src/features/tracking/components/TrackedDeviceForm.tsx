@@ -10,6 +10,7 @@ import {
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidFloat, isInvalidInt } from '@shared/numberValidator.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
@@ -89,6 +90,20 @@ export function TrackedDeviceForm(): ReactElement {
   const invalidMaxAge = isInvalidInt(maxAge, false, 0);
   const invalidSplitDistance = isInvalidFloat(splitDistance, false, 0);
   const invalidSplitDuration = isInvalidInt(splitDuration, false, 0);
+
+  useDirtyForm(
+    useDirtySince([
+      id,
+      label,
+      color,
+      width,
+      fromTime,
+      maxCount,
+      maxAge,
+      splitDistance,
+      splitDuration,
+    ]),
+  );
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -290,9 +305,7 @@ export function TrackedDeviceForm(): ReactElement {
 
         <FmDismissButton
           label={m?.general.cancel}
-          onClick={() => {
-            dispatch(setActiveModal({ type: 'tracking-watched' }));
-          }}
+          onClick={() => dispatch(setActiveModal({ type: 'tracking-watched' }))}
         />
       </FmModalFooter>
     </Form>

@@ -33,6 +33,7 @@ import {
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
 import { layerLabel } from '@shared/layerName.js';
 import {
   type CustomLayerDef,
@@ -221,21 +222,21 @@ export function CustomMapEditor({ request }: Props): ReactElement {
     };
   };
 
-  const [initial] = useState(() => startFor(request));
+  const [start, setStart] = useState(() => startFor(request));
 
-  const [view, setView] = useState<View>(initial.view);
+  const [view, setView] = useState<View>(start.view);
 
   const [draft, setDraft] = useState<CustomLayerDef | undefined>(undefined);
 
-  const [presetDraft, setPresetDraft] = useState(initial.presetDraft);
+  const [presetDraft, setPresetDraft] = useState(start.presetDraft);
 
-  const [namedDraft, setNamedDraft] = useState(initial.namedDraft);
+  const [namedDraft, setNamedDraft] = useState(start.namedDraft);
 
   const namedSourceRef = useAppSelector((state) =>
     namedDraft ? mapByIdSelector(state)[namedDraft.source] : undefined,
   );
 
-  const [visibility, setVisibility] = useState(initial.visibility);
+  const [visibility, setVisibility] = useState(start.visibility);
 
   // Only a new request starts the form over; the fields are the user's after.
   const [shownRequest, setShownRequest] = useState(request);
@@ -244,22 +245,30 @@ export function CustomMapEditor({ request }: Props): ReactElement {
   const [generation, setGeneration] = useState(0);
 
   if (shownRequest !== request) {
-    const start = startFor(request);
+    const next = startFor(request);
 
     setShownRequest(request);
 
     setGeneration(generation + 1);
 
+    setStart(next);
+
     setDraft(undefined);
 
-    setView(start.view);
+    setView(next.view);
 
-    setPresetDraft(start.presetDraft);
+    setPresetDraft(next.presetDraft);
 
-    setNamedDraft(start.namedDraft);
+    setNamedDraft(next.namedDraft);
 
-    setVisibility(start.visibility);
+    setVisibility(next.visibility);
   }
+
+  // The map form guards its own fields.
+  useDirtyForm(
+    JSON.stringify([presetDraft, namedDraft, visibility]) !==
+      JSON.stringify([start.presetDraft, start.namedDraft, start.visibility]),
+  );
 
   const fromMap = Boolean(
     request.addPreset || request.addPresetFrom || request.addNamedFrom,

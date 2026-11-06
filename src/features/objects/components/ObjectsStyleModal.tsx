@@ -14,6 +14,8 @@ import { MarkerTypeSelect } from '@shared/components/MarkerTypeSelect.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Form, Modal } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush } from 'react-icons/fa';
@@ -57,6 +59,8 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
+  const dismiss = () => askBeforeClosing(close);
+
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
@@ -82,12 +86,14 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     editedColor !== color ||
     editedLabelVisibility !== labelVisibility;
 
+  useDirtyForm(dirty);
+
   useDocumentTitle(show ? om?.style.title : undefined);
 
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       contentClassName="bg-body-tertiary"
       scrollable
       // The color picker's popover is portalled to <body>; disable enforceFocus

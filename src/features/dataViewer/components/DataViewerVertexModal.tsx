@@ -5,6 +5,8 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -58,10 +60,12 @@ export default function DataViewerVertexModal({
 
   const close = () => dispatch(setActiveModal(null));
 
+  const dismiss = () => askBeforeClosing(close);
+
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       contentClassName="bg-body-tertiary"
       scrollable
     >
@@ -101,6 +105,10 @@ function VertexForm({
   const vm = useDataViewerMessages();
 
   const [texts, setTexts] = useState<Record<string, string>>({});
+
+  useDirtyForm(
+    fields.some((field) => (texts[field.key] ?? field.text) !== field.text),
+  );
 
   const parsed = fields.map(
     (field) =>

@@ -17,13 +17,10 @@ import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import {
-  type ReactElement,
-  type SubmitEvent,
-  useEffect,
-  useState,
-} from 'react';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
+import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -147,20 +144,11 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
   });
 
   // A copy to edit, so a render landing underneath the modal can't rewrite what
-  // is being typed and Cancel really is a cancel.
+  // is being typed and Cancel really is a cancel. Each opening mounts afresh
+  // (`AsyncModal`), so this seeds it.
   const [draft, setDraft] = useState<Draft>(() => seedDraft(settings));
 
-  // Re-seeded on opening, not only on mounting: `AsyncModal` keeps this around
-  // for a second after it closes so it can animate out, and reopening inside
-  // that second would otherwise bring back the very edits Cancel threw away —
-  // with Save then committing them.
-  //
-  // biome-ignore lint/correctness/useExhaustiveDependencies: opening is the event; the settings are read at that moment, not followed
-  useEffect(() => {
-    if (show) {
-      setDraft(seedDraft(settings));
-    }
-  }, [show]);
+  useDirtyForm(useDirtySince(draft));
 
   const patch = (values: Partial<Draft>) =>
     setDraft((d) => ({ ...d, ...values }));
@@ -168,6 +156,8 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
   const close = () => {
     dispatch(setActiveModal(null));
   };
+
+  const dismiss = () => askBeforeClosing(close);
 
   // The eye is metres above the ground, and a number field can be left empty
   // mid-edit. The band needs no such check: the presets and the two sliders
@@ -226,7 +216,7 @@ export default function PanoramaSettingsModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       contentClassName="bg-body-tertiary"
       scrollable
       // The colour picker's popover is portalled to <body>, so the focus trap

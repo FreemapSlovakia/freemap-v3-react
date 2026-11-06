@@ -8,9 +8,10 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { Form, Modal } from 'react-bootstrap';
 import { FaSave } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -66,20 +67,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
     target ? state.myMaps.offlineIds.includes(target.id) : false,
   );
 
+  // Seeded once: the modal mounts a fresh form per map, and an `offlineIds`
+  // update mid-edit must not overwrite the user's pending toggle.
   const [offline, setOffline] = useState(wasOffline);
-
-  // Re-seed the checkbox only when a different map is edited — not whenever
-  // `offlineIds` changes — so an offlineIds update mid-edit can't resurrect the
-  // initial value over the user's pending toggle.
-  const lastTargetId = useRef(target?.id);
-
-  useEffect(() => {
-    if (lastTargetId.current !== target?.id) {
-      lastTargetId.current = target?.id;
-
-      setOffline(wasOffline);
-    }
-  }, [target?.id, wasOffline]);
 
   const m = useMessages();
 
@@ -129,6 +119,9 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   const handleWriterDelete = (index: number) => {
     setWriters((writers) => writers.toSpliced(index, 1));
   };
+
+  // Done leaves the form, which takes its guard along.
+  useDirtyForm(useDirtySince([name, writers, offline]));
 
   const save = () => {
     const offlineChanged = target && offline !== wasOffline;

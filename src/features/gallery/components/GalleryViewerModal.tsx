@@ -18,6 +18,7 @@ import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import 'pannellum';
 import 'pannellum/build/pannellum.css';
 import { AccountEmailLink } from '@features/auth/components/AccountEmailLink.js';
@@ -77,6 +78,7 @@ import {
   gallerySubmitStars,
   type Picture,
 } from '../model/actions.js';
+import { galleryEditChangedSelector } from '../model/selectors.js';
 import { pictureIdToPath } from '../pictureIdPath.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import {
@@ -254,6 +256,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const editModel = useAppSelector((state) => state.gallery.editModel);
 
+  // The comment and the edit are guarded by `GalleryModals`.
+  const editChanged = useAppSelector(galleryEditChangedSelector);
+
   const saveErrors = useAppSelector((state) => state.gallery.saveErrors);
 
   const user = useAppSelector((state) => state.auth.user);
@@ -384,7 +389,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           throw new Error();
         }
 
-        dispatch(galleryRequestImage(imageIds[idx]));
+        askBeforeClosing(() => dispatch(galleryRequestImage(imageIds[idx])));
       }
     },
     [dispatch, imageIds],
@@ -708,6 +713,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     dispatch(galleryClear());
   }, [dispatch]);
 
+  // Leaving the photo drops the comment typed for it.
+  const dismiss = () => askBeforeClosing(close);
+
   // Wikimedia photos are read-only here (no local edit/delete/tags).
   const canEdit = Boolean(
     image &&
@@ -803,7 +811,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       size="xl"
       keyboard={false}
       contentClassName="bg-body-tertiary"
@@ -951,7 +959,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   (editModel || index < 1) && 'carousel-control-disabled',
                   pano && 'carousel-control-short',
                 )}
-                onClick={() => dispatch(galleryRequestImage('prev'))}
+                onClick={() =>
+                  askBeforeClosing(() => dispatch(galleryRequestImage('prev')))
+                }
               >
                 <span className="carousel-control-prev-icon" />
               </button>
@@ -967,7 +977,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     'carousel-control-disabled',
                   pano && 'carousel-control-short',
                 )}
-                onClick={() => dispatch(galleryRequestImage('next'))}
+                onClick={() =>
+                  askBeforeClosing(() => dispatch(galleryRequestImage('next')))
+                }
               >
                 <span className="carousel-control-next-icon" />
               </button>
@@ -1479,7 +1491,12 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
           <Button
             variant="dark"
             onClick={() => {
-              dispatch(galleryEditPicture());
+              // Leaving the edit keeps the comment, so only the edit asks.
+              if (editChanged) {
+                askBeforeClosing(() => dispatch(galleryEditPicture()));
+              } else {
+                dispatch(galleryEditPicture());
+              }
             }}
           >
             <FaTimes /> <Text k="general.cancel" /> <kbd>Esc</kbd>
@@ -1487,7 +1504,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
         ) : (
           <LongPressTooltip label={m?.general.close} breakpoint="md" kbd="Esc">
             {({ label, labelClassName, props }) => (
-              <Button variant="dark" onClick={close} {...props}>
+              <Button variant="dark" onClick={dismiss} {...props}>
                 <FaTimes />
                 <span className={labelClassName}> {label}</span>
               </Button>

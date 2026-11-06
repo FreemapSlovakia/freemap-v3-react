@@ -1,7 +1,9 @@
 import { showGalleryViewerSelector } from '@app/store/selectors.js';
 import { AsyncModal } from '@shared/components/AsyncModal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
 import { type ReactElement, useEffect, useRef } from 'react';
+import { galleryInputPendingSelector } from '../model/selectors.js';
 import './gallery.css';
 
 const galleryViewerModalFactory = () =>
@@ -28,6 +30,9 @@ export function GalleryModals(): ReactElement {
       state.main.activeModal?.type === 'gallery-upload' &&
       state.gallery.pickingPositionForId === null,
   );
+
+  // Here, not in the modals: they unmount while a position is picked.
+  useDirtyForm(useAppSelector(galleryInputPendingSelector));
 
   const pickedItemId = useRef<number | null>(null);
 

@@ -8,6 +8,7 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
@@ -57,6 +58,9 @@ export function AccessTokenForm(): ReactElement {
   // const [listingLabel, setListingLabel] = useTextInputState(
   //   accessToken?.listingLabel ?? '',
   // );
+
+  // A successful save leaves the form, which takes its guard along.
+  useDirtyForm(useDirtySince([note, timeFrom, timeTo]));
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
@@ -140,9 +144,7 @@ export function AccessTokenForm(): ReactElement {
 
         <FmDismissButton
           label={m?.general.cancel}
-          onClick={() => {
-            dispatch(trackingActions.modifyAccessToken(undefined));
-          }}
+          onClick={() => dispatch(trackingActions.modifyAccessToken(undefined))}
         />
       </FmModalFooter>
     </Form>

@@ -3,6 +3,7 @@ import { setActiveModal } from '@app/store/actions.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { FaRegMap } from 'react-icons/fa';
@@ -50,7 +51,7 @@ export default function MyMapsModal({ show }: Props): ReactElement {
     <Modal
       scrollable
       show={show}
-      onHide={close}
+      onHide={() => askBeforeClosing(close)}
       size="lg"
       contentClassName="bg-body-tertiary"
     >
@@ -68,6 +69,8 @@ export default function MyMapsModal({ show }: Props): ReactElement {
 
       {editTarget !== null ? (
         <MyMapsModalForm
+          // A fresh form per map, seeded from it.
+          key={editTarget === 'new' ? '' : editTarget.id}
           target={editTarget === 'new' ? undefined : editTarget}
           onDone={() => setEditTarget(null)}
         />

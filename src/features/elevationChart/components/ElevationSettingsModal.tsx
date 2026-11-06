@@ -11,6 +11,8 @@ import {
 import { HintMark } from '@shared/components/HintMark.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ChangeEvent,
   type ReactElement,
@@ -113,6 +115,8 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
+  const dismiss = () => askBeforeClosing(close);
+
   // Fills the form fields with defaults; the user then applies them with Save
   // (or closes without saving).
   const handleResetDefaults = () => {
@@ -167,6 +171,8 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
     ditchFillWindow !== initialDitchFillWindow ||
     gradeWindow !== initialGradeWindow;
 
+  useDirtyForm(dirty);
+
   const atDefault =
     despikeWindow === String(elevationSettingsInitialState.despikeWindow) &&
     ditchFillWindow === String(elevationSettingsInitialState.ditchFillWindow) &&
@@ -175,7 +181,7 @@ export default function ElevationSettingsModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       contentClassName="bg-body-tertiary"
       scrollable
     >

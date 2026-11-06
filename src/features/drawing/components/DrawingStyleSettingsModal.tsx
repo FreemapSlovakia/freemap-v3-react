@@ -8,7 +8,9 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type ReactNode,
@@ -89,6 +91,8 @@ export function DrawingStyleSettingsModal({
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
+  useDirtyForm(editor.dirty || labelVisibility !== currentLabelVisibility);
+
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
@@ -106,7 +110,7 @@ export function DrawingStyleSettingsModal({
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={() => askBeforeClosing(close)}
       contentClassName="bg-body-tertiary"
       scrollable
       // The color picker's popover is portalled to <body> (outside this modal's

@@ -9,11 +9,11 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
-import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import clsx from 'clsx';
 import {
   type DragEvent as ReactDragEvent,
@@ -59,8 +59,6 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
   const gm = useGalleryMessages();
 
   const dispatch = useDispatch();
-
-  const confirm = useConfirm();
 
   const items = useAppSelector((state) => state.gallery.items);
 
@@ -119,18 +117,8 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     });
   };
 
-  const handleClose = async () => {
-    if (
-      !items.length ||
-      (await confirm({
-        message: m?.general.closeWithoutSaving,
-        confirmLabel: m?.general.yes,
-        cancelLabel: m?.general.no,
-        confirmStyle: 'danger',
-      }))
-    ) {
-      dispatch(setActiveModal(null));
-    }
+  const handleClose = () => {
+    dispatch(setActiveModal(null));
   };
 
   const handleItemAdd = (item: GalleryItem) => {
@@ -259,7 +247,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={handleClose}
+      onHide={() => askBeforeClosing(handleClose)}
       size="lg"
       contentClassName="bg-body-tertiary"
       scrollable

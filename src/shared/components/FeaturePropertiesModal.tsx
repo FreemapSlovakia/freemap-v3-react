@@ -55,7 +55,9 @@ import {
   valueText,
 } from '@shared/featureProperties.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useInsertAtCaret } from '@shared/hooks/useInsertAtCaret.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { isInvalidFloat } from '@shared/numberValidator.js';
 import {
   Fragment,
@@ -235,6 +237,30 @@ export function FeaturePropertiesModal({
 
   const [editedDetails, setEditedDetails] = useState(initial.details);
 
+  // Against the first render, not `initial`: that follows the store underneath.
+  const edited = useDirtySince([
+    editedLabel,
+    editedRows,
+    editedColor,
+    editedMarkerType,
+    editedIcon,
+    editedFillColor,
+    editedWidth,
+    editedType,
+    editedDash,
+    editedLineCap,
+    editedLineJoin,
+    editedLineKind,
+    editedChannels,
+    editedDetails,
+  ]);
+
+  // Batch mode marks a field taken or kept, which the values alone don't show.
+  useDirtyForm(
+    (batch !== undefined && (touched.size > 0 || changedKeys.size > 0)) ||
+      edited,
+  );
+
   // The tag input measures itself when mounted, which is while the modal is
   // still opening; a second mount sizes it right (as the gallery form does).
   const [tagsKey, setTagsKey] = useState(0);
@@ -409,7 +435,7 @@ export function FeaturePropertiesModal({
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={() => askBeforeClosing(close)}
       contentClassName="bg-body-tertiary"
       scrollable
       // The color picker's popover is portalled to <body> (outside this

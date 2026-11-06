@@ -5,6 +5,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { ModalShownContext } from '../hooks/useDirtyForm.js';
 import { type ShowProps, useShow } from '../hooks/useShow.js';
 
 type Props<T extends ComponentType<ShowProps>> = {
@@ -30,6 +31,8 @@ export function AsyncModal({
   }
 
   return useShow(show) && Modal ? (
-    <Modal key={opening.count} show={show} />
+    <ModalShownContext value={show}>
+      <Modal key={opening.count} show={show} />
+    </ModalShownContext>
   ) : null;
 }

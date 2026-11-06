@@ -13,12 +13,13 @@ import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type ReactNode,
   type SubmitEvent,
-  useEffect,
   useState,
 } from 'react';
 import { Form, InputGroup, Modal } from 'react-bootstrap';
@@ -155,19 +156,11 @@ export default function ViewshedSettingsModal({ show }: Props): ReactElement {
 
   const nfGamma = useNumberFormat({ maximumFractionDigits: 2 });
 
-  // A copy to edit, so Cancel really is a cancel.
+  // A copy to edit, so Cancel really is a cancel. Each opening mounts afresh
+  // (`AsyncModal`), so this seeds it.
   const [draft, setDraft] = useState<Draft>(() => seedDraft(settings));
 
-  // Re-seeded on opening, not only on mounting: `AsyncModal` keeps this around
-  // for a second after it closes so it can animate out, and reopening inside
-  // that second would otherwise bring back the very edits Cancel threw away.
-  //
-  // biome-ignore lint/correctness/useExhaustiveDependencies: opening is the event; the settings are read at that moment, not followed
-  useEffect(() => {
-    if (show) {
-      setDraft(seedDraft(settings));
-    }
-  }, [show]);
+  useDirtyForm(useDirtySince(draft));
 
   const patch = (values: Partial<Draft>) =>
     setDraft((d) => ({ ...d, ...values }));
@@ -175,6 +168,8 @@ export default function ViewshedSettingsModal({ show }: Props): ReactElement {
   const close = () => {
     dispatch(setActiveModal(null));
   };
+
+  const dismiss = () => askBeforeClosing(close);
 
   // Both heights are metres above the ground, and a number field can be left
   // empty mid-edit.
@@ -201,7 +196,7 @@ export default function ViewshedSettingsModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       contentClassName="bg-body-tertiary"
       scrollable
       // The colour picker's popover is portalled to `<body>`, so the focus trap

@@ -24,6 +24,8 @@ import { useConfirmChoice } from '@shared/components/ModalProvider.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type ReactNode,
@@ -344,6 +346,10 @@ export default function EventFormModal({ show }: Props): ReactElement {
     toDraft(editing, target?.mapId, language),
   );
 
+  // What the draft is compared to for unsaved changes: as seeded, with what the
+  // map fills in on opening.
+  const [pristine, setPristine] = useState(draft);
+
   /** A newly chosen cover image; `null` once removed, unset keeps the event's. */
   const [cover, setCover] = useState<File | null>();
 
@@ -414,7 +420,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
   const fillingFor = useRef<string | null>(null);
 
   const fillFromMap = useCallback(
-    async (mapId: string) => {
+    async (mapId: string, asSeeded = false) => {
       fillingFor.current = mapId;
 
       try {
@@ -484,6 +490,25 @@ export default function EventFormModal({ show }: Props): ReactElement {
           return next;
         });
 
+        // Into the empty fields only, as the fill itself: what was typed while
+        // the map loaded stays the user's.
+        if (asSeeded) {
+          setPristine(
+            (seeded) =>
+              Object.fromEntries(
+                Object.entries(seeded).map(([key, value]) => {
+                  const fill = filled[key as keyof Draft];
+
+                  const empty = Array.isArray(value)
+                    ? !value.length
+                    : value === '';
+
+                  return [key, fill !== undefined && empty ? fill : value];
+                }),
+              ) as Draft,
+          );
+        }
+
         setFillNote(stats ? null : (em?.form.noTripStats ?? null));
       } catch (err) {
         // A map already moved away from has nothing left to say.
@@ -543,6 +568,8 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
       setDraft(draft);
 
+      setPristine(draft);
+
       autoFilled.current = event?.mapId
         ? {
             position: draft.position,
@@ -593,7 +620,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
     setFillNote(null);
 
     if (!target?.id && target?.mapId) {
-      void fillFromMap(target.mapId);
+      void fillFromMap(target.mapId, true);
     }
   }, [openKey, editing, target?.id, target?.mapId, fillFromMap, seed]);
 
@@ -608,6 +635,13 @@ export default function EventFormModal({ show }: Props): ReactElement {
       dispatch(eventsStartPicked(null));
     }
   }, [show, picked, dispatch, language]);
+
+  // The save processor closes the modal once the event is stored.
+  useDirtyForm(
+    JSON.stringify(draft) !== JSON.stringify(pristine) ||
+      cover !== undefined ||
+      organizer !== undefined,
+  );
 
   const startPoint = parsePosition(draft.position);
 
@@ -710,7 +744,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={() => askBeforeClosing(close)}
       size="lg"
       className={pickingStart ? 'd-none' : undefined}
       backdropClassName={pickingStart ? 'd-none' : undefined}

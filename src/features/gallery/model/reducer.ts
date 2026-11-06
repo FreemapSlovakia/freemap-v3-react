@@ -65,6 +65,8 @@ export interface GalleryState {
   comment: string;
   filter: GalleryFilter;
   editModel: PictureModel | null;
+  /** `editModel` as the edit opened, for its unsaved changes. */
+  editSeed: PictureModel | null;
   showPosition: boolean;
   language: string;
   saveErrors: GalleryItemError[];
@@ -100,6 +102,7 @@ export const galleryInitialState: GalleryState = {
   },
 
   editModel: null,
+  editSeed: null,
   saveErrors: [],
   showPosition: false,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
@@ -112,6 +115,8 @@ const closedViewer = {
   imageFetchFailed: false,
   activeImageId: null,
   editModel: null,
+  // Closing asks first when one is typed (`galleryInputPendingSelector`).
+  comment: '',
 } satisfies Partial<GalleryState>;
 
 export const galleryReducer = createReducer(galleryInitialState, (builder) =>
@@ -146,13 +151,16 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(galleryRequestImage, (state, action) => {
       const set = (activeImageId: number) => {
+        const same = activeImageId === state.activeImageId;
+
         Object.assign(state, {
           activeImageId,
           // Another photo's record must not stay on screen if the fetch fails.
-          // A re-fetch of the same photo keeps it until the fresh one lands.
-          image: activeImageId === state.activeImageId ? state.image : null,
+          // A re-fetch of the same photo (after a rating, a tag) keeps it until
+          // the fresh one lands, and the comment being typed.
+          image: same ? state.image : null,
           imageFetchFailed: false,
-          comment: '',
+          comment: same ? state.comment : '',
           editModel: null,
         });
       };
@@ -322,6 +330,12 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
             premium: Boolean(state.image?.premium),
             license: state.image?.license ?? DEFAULT_PHOTO_LICENSE,
           };
+
+      // A copy, not the same object: the edit is changed in place.
+      state.editSeed = state.editModel && {
+        ...state.editModel,
+        tags: [...state.editModel.tags],
+      };
     })
     .addCase(gallerySetEditModel, (state, action) => {
       state.editModel = action.payload;

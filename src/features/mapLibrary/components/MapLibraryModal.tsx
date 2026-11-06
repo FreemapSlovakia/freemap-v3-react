@@ -17,6 +17,7 @@ import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
 import { layerLabel } from '@shared/layerName.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, useRef, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { FaLayerGroup, FaPlus } from 'react-icons/fa';
@@ -119,7 +120,7 @@ export default function MapLibraryModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={() => askBeforeClosing(close)}
       scrollable
       size="lg"
       className={previewing ? 'd-none' : undefined}

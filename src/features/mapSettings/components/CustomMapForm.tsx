@@ -9,6 +9,7 @@ import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
 import { HintMark } from '@shared/components/HintMark.js';
 import { IconPicker } from '@shared/components/IconPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useModelChangeHandlers } from '@shared/hooks/useModelChangeHandlers.js';
 import type { CustomLayerDef } from '@shared/mapDefinitions.js';
 import { type Layer, wms } from '@shared/wms.js';
@@ -167,6 +168,9 @@ function valueToModel(value?: CustomLayerDef): Model {
 
 export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
   const [model, setModel] = useState<Model>(() => valueToModel(value));
+
+  // The fields, not what they report: a map without a URL reports nothing.
+  useDirtyForm(useDirtySince(model));
 
   const localVersion = useRef(0);
 

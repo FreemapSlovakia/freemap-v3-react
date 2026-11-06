@@ -19,6 +19,7 @@ import { MarkdownField } from '@shared/components/MarkdownField.js';
 import { useModalLink } from '@shared/components/ShowModalLink.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
@@ -151,6 +152,19 @@ export function PersonalInfoSection(): ReactElement | null {
     setPreviewUrl(null);
     setPicture(undefined);
   }, [pictureCacheBust]);
+
+  // Trimmed, as Save stores them. Of the address only clearing it: a new one
+  // waits on its code, maybe for days, and Save would not keep it either.
+  useDirtyForm(
+    Boolean(user) &&
+      (name.trim() !== user?.name.trim() ||
+        (email.trim() === '' && (user?.email ?? '') !== '') ||
+        description.trim() !== (user?.description ?? '').trim() ||
+        picture !== undefined ||
+        new Set(publicFields).symmetricDifference(
+          new Set(user?.publicFields ?? []),
+        ).size > 0),
+  );
 
   if (!user) {
     return null;

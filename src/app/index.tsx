@@ -6,6 +6,7 @@ import { readBrowseCacheStats } from '@features/cachedMaps/browseCache.js';
 import { getCachedTileMaps } from '@features/cachedMaps/cache.js';
 import { cachedMapsLoaded } from '@features/cachedMaps/model/actions.js';
 import { syncBrowseCache } from '@features/cachedMaps/model/browseCacheProcessor.js';
+import { galleryClear } from '@features/gallery/model/actions.js';
 import { invokeGeoip } from '@features/geoip/model/actions.js';
 import { attachRecorderConnection } from '@features/gpsRecorder/connection.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
@@ -23,6 +24,7 @@ import { attachOutboxSync } from '@features/myMaps/outboxSync.js';
 import { attachWebMcp } from '@features/webMcp/attachWebMcp.js';
 import { ModalProvider } from '@shared/components/ModalProvider.js';
 import { addLeaveReason, attachLeaveGuard } from '@shared/leaveGuard.js';
+import { closeGuarded, confirmDiscard } from '@shared/modalCloseGuard.js';
 import {
   registerOfflineContentProvider,
   syncStaticCache,
@@ -35,7 +37,8 @@ import { Provider } from 'react-redux';
 import { ErrorCatcher } from './components/ErrorCatcher.js';
 import { Main } from './components/Main.js';
 import { attachKeyboardHandler } from './keyboardHandler.js';
-import { init, setEmbedFeatures } from './store/actions.js';
+import { init, setActiveModal, setEmbedFeatures } from './store/actions.js';
+import { encodeActiveModal } from './store/activeModal.js';
 import { setStore as setErrorHandlerStore } from './store/middleware/globalErrorHandler.js';
 import { startPerfWatchdog } from './store/middleware/perfWatchdog.js';
 import { createReduxStore } from './store/store.js';
@@ -45,7 +48,16 @@ import './styles/index.css';
 import { createCookieConsentToastAction } from '@features/cookieConsent/model/toastAction.js';
 import { handleLocationChange } from './url/locationChangeHandler.js';
 import { restoreStashedUrl } from './url/sessionStash.js';
-import { setUrlUpdatingEnabled } from './url/urlUpdating.js';
+import {
+  awayFromShownEntry,
+  holdShownEntry,
+  noteShownEntry,
+  restoreShownEntry,
+} from './url/shownEntry.js';
+import {
+  isUrlUpdatingEnabled,
+  setUrlUpdatingEnabled,
+} from './url/urlUpdating.js';
 
 window.localStorageFallback = storage;
 
@@ -146,8 +158,73 @@ syncStaticCache().catch((err) => {
   console.warn('Static cache sync failed:', err);
 });
 
+let askingOnPopstate = false;
+
 window.addEventListener('popstate', () => {
-  handleLocationChange(store);
+  // A second Back while asking: the answer applies to wherever it ends up.
+  if (askingOnPopstate) {
+    return;
+  }
+
+  if (!closeGuarded() || !awayFromShownEntry()) {
+    handleLocationChange(store);
+
+    noteShownEntry();
+
+    return;
+  }
+
+  askingOnPopstate = true;
+
+  const wasUpdatingUrl = isUrlUpdatingEnabled();
+
+  // Until answered, nothing may rewrite the entry the browser is on, nor take
+  // it for the one shown.
+  setUrlUpdatingEnabled(false);
+
+  holdShownEntry(true);
+
+  void confirmDiscard().then((answer) => {
+    askingOnPopstate = false;
+
+    holdShownEntry(false);
+
+    if (answer === 'keep') {
+      // A Forward while asking may have come back already.
+      if (awayFromShownEntry()) {
+        restoreShownEntry();
+      }
+
+      setUrlUpdatingEnabled(wasUpdatingUrl);
+    } else {
+      const { main, gallery } = store.getState();
+
+      handleLocationChange(store);
+
+      // What the URL doesn't take away stays through it; Yes was to close it.
+      if (answer === 'discard') {
+        const after = store.getState();
+
+        // Unchanged as the URL encodes it, so a Back that moved to another view
+        // of the same modal (another section, a list) is left there.
+        if (
+          main.activeModal &&
+          encodeActiveModal(after.main.activeModal) ===
+            encodeActiveModal(main.activeModal)
+        ) {
+          store.dispatch(setActiveModal(null));
+        } else if (
+          !main.activeModal &&
+          gallery.activeImageId !== null &&
+          after.gallery.activeImageId === gallery.activeImageId
+        ) {
+          store.dispatch(galleryClear());
+        }
+      }
+    }
+
+    noteShownEntry();
+  });
 });
 
 handleLocationChange(store);

@@ -25,6 +25,8 @@ import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCanSaveSettings } from '@shared/hooks/useCanSaveSettings.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
@@ -117,6 +119,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
+
+  const dismiss = () => askBeforeClosing(close);
 
   // Fills the form fields with defaults; the user then applies them with Save
   // (or closes without saving).
@@ -232,6 +236,8 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     headingSource !== initialHeadingSource ||
     showBearingLine !== initialShowBearingLine;
 
+  useDirtyForm(dirty);
+
   // `maxZoom` counts only while it can be written; left out, a signed-in offline
   // user's non-default value would keep the reset button alive forever.
   const atDefault =
@@ -251,7 +257,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       contentClassName="bg-body-tertiary"
       scrollable
     >

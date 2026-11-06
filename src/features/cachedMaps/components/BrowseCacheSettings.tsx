@@ -10,6 +10,7 @@ import {
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useState } from 'react';
 import { Col, Form, Modal, Row } from 'react-bootstrap';
@@ -48,6 +49,8 @@ export function BrowseCacheSettings(): ReactElement {
   const stats = useAppSelector((state) => state.cachedMaps.browseStats);
 
   const [draft, setDraft] = useState(settings);
+
+  useDirtyForm(JSON.stringify(draft) !== JSON.stringify(settings));
 
   const nf = useNumberFormat({
     minimumFractionDigits: 0,

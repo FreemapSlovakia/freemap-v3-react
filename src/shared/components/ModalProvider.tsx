@@ -170,9 +170,12 @@ export function useConfirm(): ConfirmFn {
  * link that opens another modal which would otherwise sit beneath it.
  */
 export function useConfirmCancel(): () => void {
-  return useCallback(() => {
-    handle?.cancel();
-  }, []);
+  return useCallback(cancelOpenModal, []);
+}
+
+/** Cancels the open dialog, as {@link useConfirmCancel} does, outside React. */
+export function cancelOpenModal(): void {
+  handle?.cancel();
 }
 
 export function ModalProvider({
@@ -372,6 +375,7 @@ export function ModalProvider({
           <FmDismissButton
             label={options.cancelLabel ?? m?.general.cancel}
             onClick={() => close('cancel')}
+            unguarded
           />
         </FmModalFooter>
       </Modal>

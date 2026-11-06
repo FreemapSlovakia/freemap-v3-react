@@ -16,8 +16,10 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import {
   type ReactElement,
   type SubmitEvent,
@@ -129,6 +131,9 @@ export default function DataViewerOsmUploadModal({
 
   const [tags, setTags] = useState('');
 
+  // The upload processor closes the modal once the trace is in.
+  useDirtyForm(useDirtySince([description, tags]));
+
   const [visibility, setVisibility] = usePersistentState<OsmGpxVisibility>(
     'fm.dataViewer.osmGpxVisibility',
     String,
@@ -196,7 +201,11 @@ export default function DataViewerOsmUploadModal({
   };
 
   return (
-    <Modal show={show} onHide={close} contentClassName="bg-body-tertiary">
+    <Modal
+      show={show}
+      onHide={() => askBeforeClosing(close)}
+      contentClassName="bg-body-tertiary"
+    >
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Header closeButton>
           <Modal.Title>

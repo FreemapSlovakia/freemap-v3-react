@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { Button, type ButtonProps, Modal } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
+import { askBeforeClosing } from '../modalCloseGuard.js';
 import classes from './FmModalFooter.module.css';
 import { LongPressTooltip } from './LongPressTooltip.js';
 
@@ -212,16 +213,20 @@ type DismissProps = {
   label: ReactNode;
   onClick: () => void;
   disabled?: boolean;
+  /** For the question `askBeforeClosing` asks itself, which it must not ask. */
+  unguarded?: boolean;
 };
 
 /**
  * The footer's dismiss button, the first to drop to its glyph: the ✕, the
- * variant and the last position already name it.
+ * variant and the last position already name it. It asks before losing a form
+ * being edited (`useDirtyForm`).
  */
 export function FmDismissButton({
   label,
   onClick,
   disabled,
+  unguarded,
 }: DismissProps): ReactElement {
   return (
     <CollapsibleButton
@@ -230,7 +235,7 @@ export function FmDismissButton({
       label={label}
       kbd="Esc"
       priority={DISMISS_PRIORITY}
-      onClick={onClick}
+      onClick={unguarded ? onClick : () => askBeforeClosing(onClick)}
       disabled={disabled}
     />
   );

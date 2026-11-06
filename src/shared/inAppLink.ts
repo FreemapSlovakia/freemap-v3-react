@@ -1,3 +1,4 @@
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import type { MouseEvent } from 'react';
 
 /**
@@ -18,7 +19,8 @@ export function inAppLink(href: string | undefined, follow: () => void) {
 
       e.preventDefault();
 
-      follow();
+      // It replaces what is shown, a form being edited included.
+      askBeforeClosing(follow);
     },
   };
 }

@@ -3,7 +3,11 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { pictureIdToPath } from '../../pictureIdPath.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
-import { galleryRequestImage, gallerySubmitComment } from '../actions.js';
+import {
+  galleryRequestImage,
+  gallerySetComment,
+  gallerySubmitComment,
+} from '../actions.js';
 
 export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,
@@ -36,6 +40,9 @@ export const gallerySubmitCommentProcessor: Processor = {
     }
 
     if (getState().gallery.activeImageId === id) {
+      // Posted: the re-fetch of the same photo keeps what is typed.
+      dispatch(gallerySetComment(''));
+
       dispatch(galleryRequestImage(id));
     }
   },

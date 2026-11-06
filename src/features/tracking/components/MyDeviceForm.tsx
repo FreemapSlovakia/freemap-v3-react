@@ -6,6 +6,7 @@ import {
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { useTextInputState } from '@shared/hooks/useTextInputState.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -46,6 +47,9 @@ export function MyDeviceForm(): ReactElement {
   const [maxAge, setMaxAge] = useTextInputState(
     typeof device?.maxAge === 'number' ? (device?.maxAge / 60).toString() : '',
   );
+
+  // A successful save leaves the form, which takes its guard along.
+  useDirtyForm(useDirtySince([token, name, maxCount, maxAge]));
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
@@ -163,9 +167,7 @@ export function MyDeviceForm(): ReactElement {
 
         <FmDismissButton
           label={m?.general.cancel}
-          onClick={() => {
-            dispatch(trackingActions.modifyDevice(undefined));
-          }}
+          onClick={() => dispatch(trackingActions.modifyDevice(undefined))}
         />
       </FmModalFooter>
     </Form>

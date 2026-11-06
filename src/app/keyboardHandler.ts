@@ -22,6 +22,7 @@ import {
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
 } from '@features/gallery/model/actions.js';
+import { galleryEditChangedSelector } from '@features/gallery/model/selectors.js';
 import { toggledFeaturesOpacity } from '@features/map/featuresOpacity.js';
 import { getMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import {
@@ -49,6 +50,7 @@ import {
   effectiveShortcut,
   isLayerInstalled,
 } from '@shared/mapLibrary/installed.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { toolDefinitions } from '@shared/toolDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Shortcut } from '@shared/types/common.js';
@@ -684,7 +686,19 @@ export function attachKeyboardHandler(store: MyStore): void {
     }
 
     if (action) {
-      store.dispatch(action);
+      // What replaces a modal or leaves the photo; toggling the edit keeps the
+      // comment, so only a changed edit asks there.
+      if (
+        setActiveModal.match(action) ||
+        galleryClear.match(action) ||
+        galleryRequestImage.match(action) ||
+        (galleryEditPicture.match(action) &&
+          galleryEditChangedSelector(store.getState()))
+      ) {
+        askBeforeClosing(() => store.dispatch(action));
+      } else {
+        store.dispatch(action);
+      }
 
       e.preventDefault();
     }

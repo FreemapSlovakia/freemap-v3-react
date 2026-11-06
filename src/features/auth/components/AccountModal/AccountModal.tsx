@@ -29,6 +29,7 @@ import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Accordion, Modal } from 'react-bootstrap';
 import {
@@ -152,7 +153,7 @@ export default function AccountModal({ show }: Props): ReactElement | null {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={() => askBeforeClosing(close)}
       contentClassName="bg-body-tertiary"
       scrollable
       className={pickingHome ? 'd-none' : undefined}

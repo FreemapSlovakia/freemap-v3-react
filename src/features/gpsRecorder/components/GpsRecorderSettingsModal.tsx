@@ -12,6 +12,8 @@ import {
 import { HintMark } from '@shared/components/HintMark.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Form, InputGroup, Modal } from 'react-bootstrap';
 import { FaCheck, FaCog } from 'react-icons/fa';
@@ -55,6 +57,13 @@ export default function GpsRecorderSettingsModal({
 
   const invalidWidth = !(Number(width) > 0);
 
+  // The fields as typed too: the draft takes only valid values.
+  useDirtyForm(
+    JSON.stringify(draft) !== JSON.stringify(saved) ||
+      interval !== String(saved.intervalMs / 1000) ||
+      width !== String(saved.style.width),
+  );
+
   const set = (patch: Partial<GpsRecorderSettingsState>) =>
     setDraft((current) => ({ ...current, ...patch }));
 
@@ -76,6 +85,8 @@ export default function GpsRecorderSettingsModal({
     dispatch(setActiveModal(null));
   };
 
+  const dismiss = () => askBeforeClosing(close);
+
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
@@ -89,7 +100,7 @@ export default function GpsRecorderSettingsModal({
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={dismiss}
       contentClassName="bg-body-tertiary"
       scrollable
       // The colour picker's popover is portalled to <body>, so the modal's focus

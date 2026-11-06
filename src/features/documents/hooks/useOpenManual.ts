@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { useDispatch } from 'react-redux';
 
@@ -12,9 +13,11 @@ export function useOpenManual(
 ): (chapter: string) => void {
   const dispatch = useDispatch();
 
-  return (chapter) => {
-    trackMatomo(['trackEvent', 'Manual', from, chapter]);
+  // It replaces the modal it is opened from, a form being edited included.
+  return (chapter) =>
+    askBeforeClosing(() => {
+      trackMatomo(['trackEvent', 'Manual', from, chapter]);
 
-    dispatch(setActiveModal({ type: 'manual', chapter }));
-  };
+      dispatch(setActiveModal({ type: 'manual', chapter }));
+    });
 }
