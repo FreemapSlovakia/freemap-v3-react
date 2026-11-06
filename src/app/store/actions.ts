@@ -185,6 +185,13 @@ export interface EventSelection {
   id: string;
 }
 
+/** A Wikipedia article, as its marker names it. */
+export interface WikiSelection {
+  type: 'wiki';
+  /** `<lang>:<title>`, which `wikiLoadPreview` takes. */
+  id: string;
+}
+
 export type Selection =
   | ChangesetElementSelection
   | OsmNoteSelection
@@ -195,7 +202,8 @@ export type Selection =
   | TrackingSelection
   | RoutePointSelection
   | RouteSegmentSelection
-  | SearchSelection;
+  | SearchSelection
+  | WikiSelection;
 
 /** The selections with a docked panel of their own, which take its place. */
 const PANEL_SELECTIONS: ReadonlySet<Selection['type']> = new Set([
@@ -203,6 +211,7 @@ const PANEL_SELECTIONS: ReadonlySet<Selection['type']> = new Set([
   'objects',
   'osm-note',
   'event',
+  'wiki',
 ]);
 
 export const hasPanel = (type: Selection['type'] | undefined): boolean =>

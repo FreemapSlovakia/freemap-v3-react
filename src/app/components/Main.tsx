@@ -212,6 +212,12 @@ const osmNoteSelectionFactory = () =>
     '@features/osmNotes/components/OsmNoteSelection.js'
   );
 
+const wikiPanelFactory = () =>
+  import(
+    /* webpackChunkName: "wiki-panel" */
+    '@features/wiki/components/WikiPanel.js'
+  );
+
 const changesetInspectorPanelFactory = () =>
   import(
     /* webpackChunkName: "changeset-inspector-panel" */
@@ -1109,6 +1115,8 @@ export function Main(): ReactElement {
           {picked.has('osm-note') && (
             <AsyncComponent factory={osmNoteSelectionFactory} />
           )}
+
+          {picked.has('wiki') && <AsyncComponent factory={wikiPanelFactory} />}
 
           {picked.has('inspection') && (
             <AsyncComponent factory={changesetInspectorPanelFactory} />

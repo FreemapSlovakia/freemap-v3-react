@@ -1,4 +1,3 @@
-import { setActiveModal } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type WikiPoint,
@@ -34,15 +33,5 @@ export const wikiReducer = createReducer(initialState, (builder) =>
       state.loading = payload;
 
       state.preview = null;
-    })
-    .addCase(setActiveModal, (state, { payload }) => {
-      // Any of them cancels a load in flight (`cancelActions`).
-      state.loading = null;
-
-      // The preview is a modal too, and `show=` names only one: what opens
-      // replaces it.
-      if (payload !== null) {
-        state.preview = null;
-      }
     }),
 );

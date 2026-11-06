@@ -264,10 +264,13 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
       }
     })
     .addCase(selectFeature, (state, action) => {
+      // An embed selects only what it can show read-only: a tracked device, a
+      // Wikipedia article.
       if (
         window.fmEmbedded &&
         action.payload &&
-        action.payload.type !== 'tracking'
+        action.payload.type !== 'tracking' &&
+        action.payload.type !== 'wiki'
       ) {
         return;
       }

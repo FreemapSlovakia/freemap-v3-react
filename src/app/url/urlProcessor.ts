@@ -29,7 +29,6 @@ import { serializeToposcope } from '@features/toposcope/toposcopeUrl.js';
 import { VIEWSHED_LAYER } from '@features/viewshed/api.js';
 import { grantedRadiusKm } from '@features/viewshed/request.js';
 import { serializeViewshed } from '@features/viewshed/viewshedUrl.js';
-import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
 import { isPremiumColorizingMode } from '@shared/colorizers/premiumColorize.js';
 import { isCatalogId } from '@shared/mapLibrary/catalogId.js';
 import { mapIndexById } from '@shared/mapLibrary/mapIndex.js';
@@ -263,7 +262,6 @@ function updateUrl(state: RootState, forced: boolean): void {
     tracking,
     search,
     objects,
-    wiki,
     elevationChart,
     toposcope,
     panorama,
@@ -375,8 +373,6 @@ function updateUrl(state: RootState, forced: boolean): void {
     main.panelTools,
     objects.active,
     objects.awaitedSelection,
-    wiki.preview,
-    wiki.loading,
     elevationChart.target,
     // Kept identical by the reducer while it doesn't move, so a live track's
     // profile arriving per fix doesn't rewrite the URL along with it.
@@ -679,20 +675,14 @@ function updateUrl(state: RootState, forced: boolean): void {
   queryParts.push(...filterToQuery(eventsFilter));
 
   {
-    // The gallery viewer (own + Wikimedia Commons photos) and the Wikipedia
-    // preview keep their own slice state but serialize through the same packed
-    // `show=` param.
-    const wikiKey =
-      wiki.loading ?? (wiki.preview ? wikiPreviewKey(wiki.preview) : null);
-
+    // The gallery viewer (own + Wikimedia Commons photos) keeps its own slice
+    // state but serializes through the same packed `show=` param.
     const show =
       encodeActiveModal(main.activeModal) ??
       encodeActiveModal(
         gallery.activeImageId
           ? { type: 'gallery-viewer', id: gallery.activeImageId }
-          : wikiKey
-            ? { type: 'wiki', key: wikiKey }
-            : null,
+          : null,
       );
 
     if (show !== null) {
@@ -717,7 +707,9 @@ function updateUrl(state: RootState, forced: boolean): void {
             ? main.selection.id
             : undefined,
       }
-    : main.selection?.type === 'event' || main.selection?.type === 'osm-note'
+    : main.selection?.type === 'event' ||
+        main.selection?.type === 'osm-note' ||
+        main.selection?.type === 'wiki'
       ? main.selection
       : main.selection?.type === 'objects'
         ? { type: 'object', id: main.selection.id }

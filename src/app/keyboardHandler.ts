@@ -100,14 +100,10 @@ function vertexDeletable(state: RootState): boolean {
 }
 
 // Overlays that own their open-state outside main.activeModal: the gallery
-// viewer (own + Wikimedia Commons photos), and the Wikipedia preview (shown
-// while loading or once previewed). The picking/selecting overlays are tracked
-// by `isSuspendedModal` instead.
+// viewer (own + Wikimedia Commons photos). The picking/selecting overlays are
+// tracked by `isSuspendedModal` instead.
 const isShowingModal = (state: RootState) =>
-  Boolean(state.main.activeModal) ||
-  Boolean(state.gallery.activeImageId) ||
-  Boolean(state.wiki.preview) ||
-  Boolean(state.wiki.loading);
+  Boolean(state.main.activeModal) || Boolean(state.gallery.activeImageId);
 
 /**
  * What Escape does now: the one action, of all the controls offering a way

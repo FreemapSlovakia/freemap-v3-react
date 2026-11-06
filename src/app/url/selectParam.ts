@@ -12,7 +12,9 @@ export type SelectParam =
   /** An OSM element as a search result, kept or only looked at. */
   | { type: 'osm'; id: OsmFeatureId }
   /** A POI of the objects layer, selected once the layer has it. */
-  | { type: 'object'; id: OsmFeatureId };
+  | { type: 'object'; id: OsmFeatureId }
+  /** A Wikipedia article, `<lang>:<title>`; the title may hold a `/`. */
+  | { type: 'wiki'; id: string };
 
 const ELEMENT_TYPES = new Set<string>([
   'node',
@@ -42,8 +44,14 @@ export function encodeSelect(select: SelectParam): string {
 
     case 'object':
       return `object/${select.id.elementType}/${select.id.id}`;
+
+    case 'wiki':
+      return `wiki/${select.id}`;
   }
 }
+
+/** `<lang>:<title>`, as a marker names its article — the tag's, any case. */
+const wikiId = (raw: string) => (/^[^:/]+:.+/.test(raw) ? raw : undefined);
 
 const osmId = (
   elementType: string | undefined,
@@ -62,6 +70,13 @@ const osmId = (
 
 /** `null` for anything malformed, which then selects nothing. */
 export function decodeSelect(raw: string): SelectParam | null {
+  // A title is the rest, slashes and all.
+  if (raw.startsWith('wiki/')) {
+    const id = wikiId(raw.slice('wiki/'.length));
+
+    return id ? { type: 'wiki', id } : null;
+  }
+
   // A trailing slash, as a pasted link may carry, is no part of it.
   const [type, a, b, c, ...rest] = raw.replace(/\/+$/, '').split('/');
 
@@ -157,6 +172,14 @@ export function selectFromQuery(
 
   if (event !== undefined) {
     return decodeSelect(`event/${event}`);
+  }
+
+  // An older link names an article as `show=wiki/<lang>:<title>`, which opened
+  // over its selection rather than in place of it.
+  const show = one('show');
+
+  if (show?.startsWith('wiki/')) {
+    return decodeSelect(show);
   }
 
   const changeset = legacyId('changeset');

@@ -150,11 +150,7 @@ import {
   parseViewshed,
   sameViewpoint,
 } from '@features/viewshed/viewshedUrl.js';
-import {
-  wikiLoadPreview,
-  wikiSetPreview,
-} from '@features/wiki/model/actions.js';
-import { wikiPreviewKey } from '@features/wiki/model/wikiPreviewKey.js';
+import { selectedWikiId, WIKI_LAYER } from '@features/wiki/model/selectors.js';
 import {
   type ColorizingMode,
   ColorizingModeSchema,
@@ -194,7 +190,11 @@ import {
 } from '../store/actions.js';
 import { decodeActiveModal, encodeActiveModal } from '../store/activeModal.js';
 import type { RootAction } from '../store/rootAction.js';
-import { isToolOpen, openToolsSelector } from '../store/selectors.js';
+import {
+  isToolOpen,
+  openToolsSelector,
+  userLayersSelector,
+} from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
@@ -841,11 +841,10 @@ export function handleLocationChange(store: MyStore): void {
 
     const next = showRaw === undefined ? null : decodeActiveModal(showRaw);
 
-    const mainNext =
-      next?.type === 'gallery-viewer' || next?.type === 'wiki' ? null : next;
+    const mainNext = next?.type === 'gallery-viewer' ? null : next;
 
-    // First: any `setActiveModal` closes the viewer and the preview, and cancels
-    // a preview's load, so it must not follow the requests below.
+    // First: any `setActiveModal` closes the viewer, so it must not follow the
+    // request below.
     if (
       encodeActiveModal(getState().main.activeModal) !==
       encodeActiveModal(mainNext)
@@ -853,27 +852,14 @@ export function handleLocationChange(store: MyStore): void {
       dispatch(setActiveModal(mainNext));
     }
 
-    // The gallery viewer and the Wikimedia Commons preview own their own slice
-    // state; everything else lives in main.activeModal.
+    // The gallery viewer owns its own slice state; everything else lives in
+    // main.activeModal.
     if (next?.type === 'gallery-viewer') {
       if (getState().gallery.activeImageId !== next.id) {
         dispatch(galleryRequestImage(next.id));
       }
     } else if (getState().gallery.activeImageId) {
       dispatch(galleryClear());
-    }
-
-    if (next?.type === 'wiki') {
-      const w = getState().wiki;
-
-      const current =
-        w.loading ?? (w.preview ? wikiPreviewKey(w.preview) : null);
-
-      if (current !== next.key) {
-        dispatch(wikiLoadPreview(next.key));
-      }
-    } else if (getState().wiki.preview || getState().wiki.loading) {
-      dispatch(wikiSetPreview(null));
     }
   }
 
@@ -1045,6 +1031,23 @@ export function handleLocationChange(store: MyStore): void {
       dispatch(selectFeature({ type: 'event', id: eventId }));
     }
   } else if (selectedEvent !== null) {
+    dispatch(selectFeature(null));
+  }
+
+  const wikiId = select?.type === 'wiki' ? select.id : null;
+
+  const selectedWiki = selectedWikiId(getState());
+
+  if (wikiId !== null) {
+    if (selectedWiki !== wikiId) {
+      // Its marker shown, as an event's is, for the panel to pan to.
+      if (!userLayersSelector(getState()).includes(WIKI_LAYER)) {
+        dispatch(mapToggleLayer({ type: WIKI_LAYER, enable: true }));
+      }
+
+      dispatch(selectFeature({ type: 'wiki', id: wikiId }));
+    }
+  } else if (selectedWiki !== null) {
     dispatch(selectFeature(null));
   }
 

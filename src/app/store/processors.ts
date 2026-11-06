@@ -202,7 +202,11 @@ import {
   weatherRadarRefreshProcessor,
 } from '@features/weatherRadar/model/processors.js';
 import { wikiLayerProcessor } from '@features/wiki/model/processors/wikiLayerProcessor.js';
-import { wikiLoadPreviewProcessor } from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
+import {
+  wikiLayerOffProcessor,
+  wikiLoadPreviewProcessor,
+  wikiSelectionProcessor,
+} from '@features/wiki/model/processors/wikiLoadPreviewProcessor.js';
 import { cancelProcessor } from '@/processors/cancelProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
@@ -349,6 +353,8 @@ export const processors = [
   eventsOpenProcessor,
   eventsOpenedProcessor,
   wikiLayerProcessor,
+  wikiLayerOffProcessor,
+  wikiSelectionProcessor,
   wikiLoadPreviewProcessor,
   osmNotesLayerProcessor,
   osmNoteSelectionProcessor,

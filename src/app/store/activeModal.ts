@@ -181,8 +181,7 @@ export type ActiveModal =
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
   /** `returnTo` is what Close goes back to; it is not in the URL. */
-  | { type: 'user'; id: number; returnTo?: ActiveModal }
-  | { type: 'wiki'; key: string };
+  | { type: 'user'; id: number; returnTo?: ActiveModal };
 
 /**
  * Serializes the open modal to the packed `show=` value (`type` or `type/arg`),
@@ -215,8 +214,6 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
       return `gallery-viewer/${modal.id}`;
     case 'user':
       return `user/${modal.id}`;
-    case 'wiki':
-      return `wiki/${modal.key}`;
     default:
       // Only URL-serializable ids go in `show=`; data-viewer-properties doesn't.
       return UrlModalIdSchema.safeParse(modal.type).success ? modal.type : null;
@@ -298,8 +295,6 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
         ? { type: 'gallery-viewer', id: -pageId }
         : null;
     }
-    case 'wiki':
-      return arg ? { type: 'wiki', key: arg } : null;
     default: {
       const r = UrlModalIdSchema.safeParse(type);
 

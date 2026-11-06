@@ -33,6 +33,11 @@ describe('select=', () => {
       'object/way/123',
       { type: 'object', id: { type: 'osm', elementType: 'way', id: 123 } },
     ],
+    ['wiki/sk:Bratislava', { type: 'wiki', id: 'sk:Bratislava' }],
+    // A title's slash is its own.
+    ['wiki/en:AC/DC', { type: 'wiki', id: 'en:AC/DC' }],
+    // As an OSM tag may write it.
+    ['wiki/DE:Zugspitze', { type: 'wiki', id: 'DE:Zugspitze' }],
   ];
 
   it.each(kinds)('round-trips %s', (raw, select) => {
@@ -49,7 +54,9 @@ describe('select=', () => {
     'changeset/7/area/1',
     'changeset/7/node',
     'changeset/7/node/1/extra',
-    'wiki/sk:Bratislava',
+    'wiki/Bratislava',
+    'wiki/',
+    'wiki/sk:',
     'osm-area/1',
     'osm-node',
     'osm-node/1/2',
@@ -87,6 +94,15 @@ describe('select=', () => {
       type: 'osm-note',
       id: 42,
     });
+  });
+
+  it('reads an older link’s show=wiki/ as the article selected', () => {
+    expect(selectFromQuery({ show: 'wiki/sk:Bratislava' })).toEqual({
+      type: 'wiki',
+      id: 'sk:Bratislava',
+    });
+
+    expect(selectFromQuery({ show: 'manual' })).toBeNull();
   });
 
   it('reads old links as leniently as before', () => {

@@ -47,12 +47,6 @@ Still emitting at info level (non-blocking, optional cleanup):
 
 ## Cleanups
 
-- [ ] **Move selection details from toasts to `DockPanel`.** Events, objects
-      (POIs), search results, OSM notes and the changeset inspector are done
-      (see [`doc/ui-conventions.md`](./doc/ui-conventions.md), _The docked
-      panel_). Next: the Wikipedia preview, now a `show=` modal: a `wiki`
-      selection, `select=wiki/<lang>:<title>` (a row in `selectParam.ts`),
-      `show=wiki/…` still read.
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
       `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
       `useMemo` is left. Same method — see
@@ -298,15 +292,14 @@ split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
 `state.main.activeModal` is a `Selection`-like discriminated union
 `{ type; …args } | null` serialized through the packed `show=type/arg` codec
 (`encodeActiveModal`/`decodeShow` in `src/app/store/actions.ts`); the gallery
-viewer (own + Wikimedia Commons photos) and the Wikipedia
-(`show=wiki/<lang>:<title>`) preview both route through the same `show=` param.
+viewer (own + Wikimedia Commons photos) routes through the same `show=` param.
 (Legacy `show=wmc/<pageId>` now decodes to the gallery viewer.)
 
 Optional deeper cleanup (not required; `show=` is already the single param):
 
-- [ ] **Fold `gallery-viewer`/`wiki` state into `activeModal`.** Replace
-      `gallery.activeImageId` / `wiki.preview` with
-      `activeModal.type === 'gallery-viewer' | 'wiki'` as the source of
+- [ ] **Fold `gallery-viewer` state into `activeModal`.** Replace
+      `gallery.activeImageId` with
+      `activeModal.type === 'gallery-viewer'` as the source of
       truth. Needs moving the `next`/`prev` resolution out of the
       `galleryRequestImage` reducer into a processor, and updating
       `showGalleryViewerSelector`, `GalleryViewerModal`, and the gallery
