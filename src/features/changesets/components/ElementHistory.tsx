@@ -79,7 +79,7 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
                     }
                   : inAppLink(
                       // As the click: the changeset, at this element.
-                      `#select=changeset/${version.changeset}/${id.elementType}/${id.id}`,
+                      `#panel=changeset/${version.changeset}/${id.elementType}/${id.id}`,
                       () => inspect(version.changeset),
                     ))}
               >

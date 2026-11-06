@@ -1,11 +1,12 @@
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 
 /**
- * The `select=` parameter: what has a panel of its own, one at a time. An
+ * The `panel=` parameter: what has a panel of its own, one at a time. An
  * inspection counts as one, with the element of it selected after it. A tool's
- * own selection (a tracked device's `follow=`) stays out, running beside it.
+ * own selection (a tracked device's `follow=`) stays out: it runs beside an
+ * inspection, while any of these, being the selection, takes its place.
  */
-export type SelectParam =
+export type PanelParam =
   | { type: 'event'; id: string }
   | { type: 'osm-note'; id: number }
   | { type: 'changeset'; id: number; element?: string }
@@ -22,31 +23,31 @@ const ELEMENT_TYPES = new Set<string>([
   'relation',
 ] satisfies OsmFeatureId['elementType'][]);
 
-/** As `encodeSelect` writes one, so a link reads back exactly as written. */
+/** As `encodePanel` writes one, so a link reads back exactly as written. */
 const positive = (s: string | undefined) =>
   s !== undefined && /^[1-9]\d*$/.test(s) ? Number(s) : undefined;
 
-export function encodeSelect(select: SelectParam): string {
-  switch (select.type) {
+export function encodePanel(panel: PanelParam): string {
+  switch (panel.type) {
     case 'event':
-      return `event/${select.id}`;
+      return `event/${panel.id}`;
 
     case 'osm-note':
-      return `osm-note/${select.id}`;
+      return `osm-note/${panel.id}`;
 
     case 'changeset':
-      return select.element
-        ? `changeset/${select.id}/${select.element}`
-        : `changeset/${select.id}`;
+      return panel.element
+        ? `changeset/${panel.id}/${panel.element}`
+        : `changeset/${panel.id}`;
 
     case 'osm':
-      return `osm-${select.id.elementType}/${select.id.id}`;
+      return `osm-${panel.id.elementType}/${panel.id.id}`;
 
     case 'object':
-      return `object/${select.id.elementType}/${select.id.id}`;
+      return `object/${panel.id.elementType}/${panel.id.id}`;
 
     case 'wiki':
-      return `wiki/${select.id}`;
+      return `wiki/${panel.id}`;
   }
 }
 
@@ -69,7 +70,7 @@ const osmId = (
 };
 
 /** `null` for anything malformed, which then selects nothing. */
-export function decodeSelect(raw: string): SelectParam | null {
+export function decodePanel(raw: string): PanelParam | null {
   // A title is the rest, slashes and all.
   if (raw.startsWith('wiki/')) {
     const id = wikiId(raw.slice('wiki/'.length));
@@ -137,13 +138,13 @@ export function decodeSelect(raw: string): SelectParam | null {
 }
 
 /**
- * The parameter a query asks for: `select=`, else the forms before it, which
- * old links still carry, their ids read as leniently as they were. Of those a
- * note or an event wins over `changeset=`: selecting one ends an inspection.
+ * The parameter a query asks for: `panel=`, else the older forms links still
+ * carry, their ids read by `Number()`. Of those a note or an event wins over
+ * `changeset=`: selecting one ends an inspection.
  */
-export function selectFromQuery(
+export function panelFromQuery(
   query: Record<string, string | string[]>,
-): SelectParam | null {
+): PanelParam | null {
   const one = (key: string) => {
     const value = query[key];
 
@@ -156,10 +157,10 @@ export function selectFromQuery(
     return Number.isInteger(n) && n > 0 ? n : undefined;
   };
 
-  const select = one('select');
+  const panel = one('panel');
 
-  if (select !== undefined) {
-    return decodeSelect(select);
+  if (panel !== undefined) {
+    return decodePanel(panel);
   }
 
   const note = legacyId('osm-note');
@@ -171,15 +172,15 @@ export function selectFromQuery(
   const event = one('event');
 
   if (event !== undefined) {
-    return decodeSelect(`event/${event}`);
+    return decodePanel(`event/${event}`);
   }
 
-  // An older link names an article as `show=wiki/<lang>:<title>`, which opened
-  // over its selection rather than in place of it.
+  // `show=wiki/<lang>:<title>` is read as `panel=wiki/…`, after a note or an
+  // event in the same link.
   const show = one('show');
 
   if (show?.startsWith('wiki/')) {
-    return decodeSelect(show);
+    return decodePanel(show);
   }
 
   const changeset = legacyId('changeset');

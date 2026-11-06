@@ -46,7 +46,7 @@ import {
   type QueryPart,
   serializeQuery,
 } from './mapContentParts.js';
-import { encodeSelect, type SelectParam } from './selectParam.js';
+import { encodePanel, type PanelParam } from './panelParam.js';
 import { stashUrl } from './sessionStash.js';
 import { serializeZoom } from './urlMapUtils.js';
 import { isReplacingEntry, isUrlUpdatingEnabled } from './urlUpdating.js';
@@ -698,7 +698,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['follow', main.selection?.id]);
   }
 
-  const select: SelectParam | null = changesetInspector.inspected
+  const panel: PanelParam | null = changesetInspector.inspected
     ? {
         type: 'changeset',
         id: changesetInspector.inspected.id,
@@ -724,8 +724,8 @@ function updateUrl(state: RootState, forced: boolean): void {
             ? { type: 'object', id: objects.awaitedSelection }
             : null;
 
-  if (select) {
-    queryParts.push(['select', encodeSelect(select)]);
+  if (panel) {
+    queryParts.push(['panel', encodePanel(panel)]);
   }
 
   const sq = mapId ? serializeQuery(historyParts) : undefined;

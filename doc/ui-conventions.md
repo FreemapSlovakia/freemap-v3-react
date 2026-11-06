@@ -483,7 +483,7 @@ details go when they outgrow a toast: a react-bootstrap `Offcanvas` without a
 backdrop or focus trap, docked on the right, or over the lower half of the screen
 below `md`. Events, objects (POIs), search results, OSM notes, a changeset
 inspection and Wikipedia articles have one — the selections `hasPanel` lists, an
-inspection counting as one — each in the URL as `select=` (`selectParam.ts`).
+inspection counting as one — each in the URL as `panel=` (`panelParam.ts`).
 
 - **The map runs under it; the controls make room.** While it is in, `body` has
   `fm-docked-end` or `fm-docked-bottom` and `--fm-dock-size`, which inset the

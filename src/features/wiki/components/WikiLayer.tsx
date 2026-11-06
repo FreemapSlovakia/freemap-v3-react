@@ -3,6 +3,7 @@ import { HALO_OPACITY, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Icon, type IconOptions } from 'leaflet';
 import { type ReactElement, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { FaWikipediaW } from 'react-icons/fa';
 import { Marker, Pane, Tooltip } from 'react-leaflet';
@@ -13,9 +14,26 @@ import classes from './WikiLayer.module.css';
 /** The ring a selected marker wears, as `RichMarker`'s `halo` draws it. */
 const SELECTED_RING = `0 0 0 ${HALO_WIDTH / 2}px color-mix(in srgb, ${SELECTION_COLOR} ${HALO_OPACITY * 100}%, transparent)`;
 
-class WikiIcon extends Icon<IconOptions & { selected?: boolean }> {
-  static template: ChildNode | undefined;
+/**
+ * The glyph every marker clones, rendered once and at once into an element of
+ * its own: a root on a marker's element would be lost, or doubled, as Leaflet
+ * swaps or reuses it. At load, as `flushSync` can't run within a render.
+ */
+const GLYPH: Node = (() => {
+  const holder = document.createElement('div');
 
+  const root = createRoot(holder);
+
+  flushSync(() => root.render(<FaWikipediaW />));
+
+  const node = holder.firstChild!.cloneNode(true);
+
+  root.unmount();
+
+  return node;
+})();
+
+class WikiIcon extends Icon<IconOptions & { selected?: boolean }> {
   createIcon(oldIcon?: HTMLElement) {
     const reuse = oldIcon && oldIcon.tagName === 'DIV';
 
@@ -30,15 +48,7 @@ class WikiIcon extends Icon<IconOptions & { selected?: boolean }> {
 
     div.style.boxShadow = this.options.selected ? SELECTED_RING : '';
 
-    if (WikiIcon.template) {
-      div.appendChild(WikiIcon.template.cloneNode(true));
-    } else {
-      const root = createRoot(div);
-
-      root.render(<FaWikipediaW />);
-
-      WikiIcon.template = div.childNodes.item(0);
-    }
+    div.appendChild(GLYPH.cloneNode(true));
 
     return div;
   }

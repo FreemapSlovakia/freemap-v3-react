@@ -10,6 +10,7 @@ import { CRS, Point } from 'leaflet';
 import RBush, { type BBox } from 'rbush';
 import z from 'zod';
 import { type WikiPoint, wikiSetPoints } from '../actions.js';
+import { WIKI_LAYER } from '../selectors.js';
 
 const WikiResponseSchema = z.object({
   entities: z
@@ -48,11 +49,11 @@ export const wikiLayerProcessor: Processor = {
 
     const prevMap = prevState.map;
 
-    const ok0 = layers.includes('w');
+    const ok0 = layers.includes(WIKI_LAYER);
 
     const ok = ok0 && zoom >= 8;
 
-    const prevOk0 = prevMap.layers.includes('w');
+    const prevOk0 = prevMap.layers.includes(WIKI_LAYER);
 
     const prevOk = prevOk0 && prevMap.zoom >= 8;
 

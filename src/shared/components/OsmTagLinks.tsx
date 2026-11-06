@@ -34,7 +34,7 @@ function breakable(value: string): ReactNode {
 }
 
 /** A wiki page path; a `#section` stays an anchor. */
-function wikiPage(title: string): string {
+export function wikiPage(title: string): string {
   const [page, ...section] = title.replaceAll(' ', '_').split('#');
 
   return (

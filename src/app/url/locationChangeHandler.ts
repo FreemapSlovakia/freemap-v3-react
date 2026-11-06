@@ -181,6 +181,7 @@ import type { TypedValue } from '@shared/urlSerialization.js';
 import type { Dispatch } from 'redux';
 import {
   closeTool,
+  hasPanel,
   openTool,
   selectFeature,
   setActiveModal,
@@ -197,8 +198,8 @@ import {
 } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
+import { type PanelParam, panelFromQuery } from './panelParam.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
-import { type SelectParam, selectFromQuery } from './selectParam.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
 import { setUrlUpdatingEnabled } from './urlUpdating.js';
 
@@ -230,7 +231,8 @@ let arriving = true;
 export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
 
-  const fromOutside = arriving;
+  // A reload keeps the entry's state, which every entry the app writes has.
+  const fromOutside = arriving && history.state === null;
 
   arriving = false;
 
@@ -574,10 +576,10 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(changesetsSetParams(changesetParams));
   }
 
-  // What has a panel of its own; see `selectParam.ts`.
-  const select = selectFromQuery(query);
+  // What has a panel of its own; see `panelParam.ts`.
+  const panel = panelFromQuery(query);
 
-  const inspection = select?.type === 'changeset' ? select : null;
+  const inspection = panel?.type === 'changeset' ? panel : null;
 
   if (
     (inspection?.id ?? null) !==
@@ -621,7 +623,7 @@ export function handleLocationChange(store: MyStore): void {
     dispatch,
     query,
     focus,
-    select?.type === 'osm' ? select.id : undefined,
+    panel?.type === 'osm' ? panel.id : undefined,
   );
 
   handleGallery(getState, dispatch, query);
@@ -1005,7 +1007,7 @@ export function handleLocationChange(store: MyStore): void {
     }
   }
 
-  const noteId = select?.type === 'osm-note' ? select.id : null;
+  const noteId = panel?.type === 'osm-note' ? panel.id : null;
 
   const selectedNoteId = selectedOsmNoteId(getState());
 
@@ -1018,7 +1020,7 @@ export function handleLocationChange(store: MyStore): void {
   }
 
   // After `layers=`, which would otherwise turn the events layer off again.
-  const eventId = select?.type === 'event' ? select.id : null;
+  const eventId = panel?.type === 'event' ? panel.id : null;
 
   const selectedEvent = selectedEventId(getState());
 
@@ -1034,7 +1036,7 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(selectFeature(null));
   }
 
-  const wikiId = select?.type === 'wiki' ? select.id : null;
+  const wikiId = panel?.type === 'wiki' ? panel.id : null;
 
   const selectedWiki = selectedWikiId(getState());
 
@@ -1056,7 +1058,7 @@ export function handleLocationChange(store: MyStore): void {
     getState,
     dispatch,
     query,
-    select,
+    panel,
     loadedOsmElements,
     focus,
     fromOutside,
@@ -1328,7 +1330,7 @@ function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
 /**
  * Brings the shown OSM elements in line with the `osm-node` / `osm-way` /
  * `osm-relation` params, each of which can appear any number of times: what
- * they name is kept. A previewed result goes, unless `select=` names it (see
+ * they name is kept. A previewed result goes, unless `panel=` names it (see
  * `handleSelectedElement`). Returns the elements it starts loading.
  *
  * A load that is already in flight has its element among the shown results
@@ -1390,15 +1392,15 @@ function handleOsmElements(
 }
 
 /**
- * `select=`'s OSM element (a search result, kept or only looked at) or POI,
- * and the first kept element of a link from outside without `select=`, which
+ * `panel=`'s OSM element (a search result, kept or only looked at) or POI,
+ * and the first kept element of a link from outside without `panel=`, which
  * an old one selected without saying so. Absent, such a selection is let go.
  */
 function handleSelectedElement(
   getState: () => RootState,
   dispatch: Dispatch<RootAction>,
   query: Record<string, string | string[]>,
-  select: SelectParam | null,
+  panel: PanelParam | null,
   loaded: OsmFeatureId[],
   focus: boolean,
   fromOutside: boolean,
@@ -1411,48 +1413,53 @@ function handleSelectedElement(
   if (
     state.objects.awaitedSelection &&
     !(
-      select?.type === 'object' &&
-      featureIdsEqual(select.id, state.objects.awaitedSelection)
+      panel?.type === 'object' &&
+      featureIdsEqual(panel.id, state.objects.awaitedSelection)
     )
   ) {
     dispatch(objectsAwaitSelection(null));
   }
 
-  if (select?.type === 'osm') {
+  if (panel?.type === 'osm') {
     if (
       selection?.type === 'search' &&
-      featureIdsEqual(selection.id, select.id)
+      featureIdsEqual(selection.id, panel.id)
     ) {
       return;
     }
 
     const shown = state.search.selectedResults.some((result) =>
-      featureIdsEqual(result.id, select.id),
+      featureIdsEqual(result.id, panel.id),
     );
 
     // Shown — kept, maybe still loading — it is only selected; else it is
     // looked at, a stand-in its own load fills.
     dispatch(
       shown
-        ? selectFeature({ type: 'search', id: select.id })
-        : searchSelectResult({ result: loadingResult(select.id), focus }),
+        ? selectFeature({ type: 'search', id: panel.id })
+        : searchSelectResult({ result: loadingResult(panel.id), focus }),
     );
 
     return;
   }
 
-  if (select?.type === 'object') {
+  if (panel?.type === 'object') {
     if (
       !(
-        selection?.type === 'objects' &&
-        featureIdsEqual(selection.id, select.id)
+        selection?.type === 'objects' && featureIdsEqual(selection.id, panel.id)
       )
     ) {
-      dispatch(
-        state.objects.objects.some((o) => featureIdsEqual(o.id, select.id))
-          ? selectFeature({ type: 'objects', id: select.id })
-          : objectsAwaitSelection(select.id),
-      );
+      if (state.objects.objects.some((o) => featureIdsEqual(o.id, panel.id))) {
+        dispatch(selectFeature({ type: 'objects', id: panel.id }));
+      } else {
+        // What else has a panel goes now, or it would be written back over
+        // the link's POI; deselecting lets go of an awaited one, so first.
+        if (hasPanel(selection?.type)) {
+          dispatch(selectFeature(null));
+        }
+
+        dispatch(objectsAwaitSelection(panel.id));
+      }
     }
 
     return;
@@ -1462,7 +1469,7 @@ function handleSelectedElement(
 
   if (
     fromOutside &&
-    query['select'] === undefined &&
+    query['panel'] === undefined &&
     first &&
     selection === null &&
     !state.changesetInspector.inspected
@@ -1470,7 +1477,7 @@ function handleSelectedElement(
     dispatch(selectFeature({ type: 'search', id: first }));
   } else if (
     selection?.type === 'objects' ||
-    // A result picked by name, its panel not opened, is in no `select=` to
+    // A result picked by name, its panel not opened, is in no `panel=` to
     // lack, so it stays.
     (selection?.type === 'search' &&
       selection.id.type === 'osm' &&

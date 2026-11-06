@@ -1,6 +1,7 @@
 import { selectFeature } from '@app/store/actions.js';
 import { Text } from '@features/l10n/Text.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
+import { wikiPage } from '@shared/components/OsmTagLinks.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useMemo } from 'react';
 import { FaWikipediaW } from 'react-icons/fa';
@@ -11,11 +12,8 @@ import { selectedWikiId } from '../model/selectors.js';
 /** The article's preview, or the `<lang>:<title>` it is loading for. */
 type Item = { preview: WikiPreview } | { loading: string };
 
-// Escaped, or a `?` or `#` in the title would end the path.
 const articleUrl = (lang: string, title: string) =>
-  `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(
-    title.replaceAll(' ', '_'),
-  ).replaceAll('%2F', '/')}`;
+  `https://${lang}.wikipedia.org/wiki/${wikiPage(title)}`;
 
 /** The selected Wikipedia article's panel. */
 export default function WikiPanel(): ReactElement {

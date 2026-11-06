@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
-  decodeSelect,
-  encodeSelect,
-  type SelectParam,
-  selectFromQuery,
-} from './selectParam.js';
+  decodePanel,
+  encodePanel,
+  type PanelParam,
+  panelFromQuery,
+} from './panelParam.js';
 
-describe('select=', () => {
-  const kinds: [string, SelectParam][] = [
+describe('panel=', () => {
+  const kinds: [string, PanelParam][] = [
     ['event/NtSXf9PO', { type: 'event', id: 'NtSXf9PO' }],
     ['osm-note/4000000', { type: 'osm-note', id: 4000000 }],
     ['changeset/191453628', { type: 'changeset', id: 191453628 }],
@@ -40,9 +40,9 @@ describe('select=', () => {
     ['wiki/DE:Zugspitze', { type: 'wiki', id: 'DE:Zugspitze' }],
   ];
 
-  it.each(kinds)('round-trips %s', (raw, select) => {
-    expect(decodeSelect(raw)).toEqual(select);
-    expect(encodeSelect(select)).toBe(raw);
+  it.each(kinds)('round-trips %s', (raw, panel) => {
+    expect(decodePanel(raw)).toEqual(panel);
+    expect(encodePanel(panel)).toBe(raw);
   });
 
   it.each([
@@ -63,60 +63,60 @@ describe('select=', () => {
     'object/node',
     'object/node/1/2',
   ])('reads %s as nothing', (raw) => {
-    expect(decodeSelect(raw)).toBeNull();
+    expect(decodePanel(raw)).toBeNull();
   });
 
   it('reads the forms before it, from old links', () => {
-    expect(selectFromQuery({ event: 'NtSXf9PO' })).toEqual({
+    expect(panelFromQuery({ event: 'NtSXf9PO' })).toEqual({
       type: 'event',
       id: 'NtSXf9PO',
     });
 
-    expect(selectFromQuery({ 'osm-note': '42' })).toEqual({
+    expect(panelFromQuery({ 'osm-note': '42' })).toEqual({
       type: 'osm-note',
       id: 42,
     });
 
-    expect(selectFromQuery({ changeset: '7' })).toEqual({
+    expect(panelFromQuery({ changeset: '7' })).toEqual({
       type: 'changeset',
       id: 7,
     });
   });
 
-  it('prefers select= to the old forms, and a note to an inspection', () => {
-    expect(selectFromQuery({ select: 'osm-note/42', changeset: '7' })).toEqual({
+  it('prefers panel= to the old forms, and a note to an inspection', () => {
+    expect(panelFromQuery({ panel: 'osm-note/42', changeset: '7' })).toEqual({
       type: 'osm-note',
       id: 42,
     });
 
     // Selecting the note ends an inspection.
-    expect(selectFromQuery({ changeset: '7', 'osm-note': '42' })).toEqual({
+    expect(panelFromQuery({ changeset: '7', 'osm-note': '42' })).toEqual({
       type: 'osm-note',
       id: 42,
     });
   });
 
   it('reads an older link’s show=wiki/ as the article selected', () => {
-    expect(selectFromQuery({ show: 'wiki/sk:Bratislava' })).toEqual({
+    expect(panelFromQuery({ show: 'wiki/sk:Bratislava' })).toEqual({
       type: 'wiki',
       id: 'sk:Bratislava',
     });
 
-    expect(selectFromQuery({ show: 'manual' })).toBeNull();
+    expect(panelFromQuery({ show: 'manual' })).toBeNull();
   });
 
   it('reads old links as leniently as before', () => {
-    expect(selectFromQuery({ 'osm-note': '0042' })).toEqual({
+    expect(panelFromQuery({ 'osm-note': '0042' })).toEqual({
       type: 'osm-note',
       id: 42,
     });
   });
 
   it('takes a trailing slash, and only the ids it writes', () => {
-    expect(decodeSelect('changeset/7/')).toEqual({ type: 'changeset', id: 7 });
+    expect(decodePanel('changeset/7/')).toEqual({ type: 'changeset', id: 7 });
 
-    expect(decodeSelect('osm-note/1e3')).toBeNull();
+    expect(decodePanel('osm-note/1e3')).toBeNull();
 
-    expect(decodeSelect('changeset/7/node/007')).toBeNull();
+    expect(decodePanel('changeset/7/node/007')).toBeNull();
   });
 });

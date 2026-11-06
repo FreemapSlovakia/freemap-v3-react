@@ -34,7 +34,7 @@ Params are read from `document.location.hash || document.location.search` (so `?
 |---|---|---|---|
 | `tools` | Open tools' toolbars | r/w | `,`-separated tool ids; at most one map-click tool (route planner, drawing, map details) opens — the first named |
 | `tool` | Open tool's toolbar (older spelling) | read-only | read exactly like `tools` |
-| `show` | Open modal / viewer; an older link's `wiki/<lang>:<title>` is read as `select=wiki/…` | r/w | `type` or `type/arg` (e.g. `gallery-viewer/123`) |
+| `show` | Open modal / viewer; an older link's `wiki/<lang>:<title>` is read as `panel=wiki/…` | r/w | `type` or `type/arg` (e.g. `gallery-viewer/123`) |
 | `document`, `tip`, `image`, `wmc` | Legacy modal aliases → `show=…` | read-only | id |
 | `manual` | Alias of `show=manual/<chapter>`, for the SEO prerender (nginx serves no query holding a `/`) | read-only | chapter id |
 
@@ -81,13 +81,13 @@ Params are read from `document.location.hash || document.location.search` (so `?
 | Param | Controls | R/W | Format |
 |---|---|---|---|
 | `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
-| `select` | The selection with a panel of its own (`src/app/url/selectParam.ts`): `event/<id>` (turns the events layer on), `osm-note/<id>` (fetched when the layer hasn't loaded it), `changeset/<id>` (inspected, without opening the tool) `changeset/<id>/<node\|way\|relation>/<id>` (with that element selected; one its diff lacks is dropped), `osm-<node\|way\|relation>/<id>` (an OSM element as a search result: kept when `osm-*` lists it, else only looked at, loaded as a stand-in) `object/<node\|way\|relation>/<id>` (a POI, selected once the objects layer has it) and `wiki/<lang>:<title>` (a Wikipedia article; the title may hold a `/`). Absent, such a selection is let go, except that a link opened from outside with `osm-*` alone (an old one) selects the first element it loads; a POI awaited keeps its `select=` until it is selected or something else is | r/w | `kind/id` |
+| `panel` | The selection with a panel of its own (`src/app/url/panelParam.ts`): `event/<id>` (turns the events layer on), `osm-note/<id>` (fetched when the layer hasn't loaded it), `changeset/<id>` (inspected, without opening the tool) `changeset/<id>/<node\|way\|relation>/<id>` (with that element selected; one its diff lacks is dropped), `osm-<node\|way\|relation>/<id>` (an OSM element as a search result: kept when `osm-*` lists it, else only looked at, loaded as a stand-in) `object/<node\|way\|relation>/<id>` (a POI, selected once the objects layer has it) and `wiki/<lang>:<title>` (a Wikipedia article; the title may hold a `/`). Absent, such a selection is let go, except that a link opened from outside with `osm-*` alone (an old one) selects the first element it loads; a POI awaited keeps its `panel=` until it is selected or something else is | r/w | `kind/id` |
 | `event`, `osm-note`, `changeset` | The forms before `select`, still read when it is absent; a note or an event wins over `changeset` | r | id |
 | `changesets-days` | Changesets time window | r/w | integer days |
 | `changesets-author` | Changesets author filter | r/w | username |
 | `gallery-user-id`, `gallery-tag`, `gallery-rating-from`/`-to`, `gallery-taken-at-from`/`-to`, `gallery-created-at-from`/`-to`, `gallery-pano`, `gallery-premium` | Gallery filters | r/w | see source |
 | `track` | Live-tracking device + props | r/w | `token[/prop:value…]` |
-| `follow` | Followed live device; a tool's selection, apart from `select` and beside an inspection | r/w | token or id |
+| `follow` | Followed live device; a tool's selection, apart from `select`: it runs beside an inspection, while a `select` kind, being the selection, replaces it | r/w | token or id |
 
 A search / map-details result the user merely picked is *previewed*: it is on the map only for as long as it is the selected feature, and it is not written to the URL. The selection toolbar's **Keep on the map** toggle keeps it, and only then does it get an `osm-*` param. Elements read from these params come back kept, and the first of them is selected.
 

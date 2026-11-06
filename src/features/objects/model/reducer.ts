@@ -4,7 +4,7 @@ import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { searchSelectResult } from '@features/search/model/actions.js';
 import { upgradeObjectFilter } from '@osm/taxon.js';
 import { createReducer } from '@reduxjs/toolkit';
-import type { OsmFeatureId } from '@shared/types/featureId.js';
+import { featureIdsEqual, type OsmFeatureId } from '@shared/types/featureId.js';
 import {
   type ObjectDetailsData,
   type ObjectsResult,
@@ -87,6 +87,17 @@ export const objectsReducer = createReducer(objectInitialState, (builder) =>
     })
     .addCase(objectsSetResult, (state, action) => {
       state.objects = action.payload;
+
+      // One fetch to bring it, the link's own: one it lacks is not waited for,
+      // or the POI would take the selection whenever a pan brought it in.
+      const awaited = state.awaitedSelection;
+
+      if (
+        awaited &&
+        !action.payload.some((object) => featureIdsEqual(object.id, awaited))
+      ) {
+        state.awaitedSelection = null;
+      }
     })
     .addCase(mapsLoaded, (state, { payload: { merge, data } }) => {
       const loaded = (data.objectsV2?.active ?? []).map(upgradeObjectFilter);
