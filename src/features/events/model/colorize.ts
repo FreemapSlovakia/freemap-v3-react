@@ -1,7 +1,7 @@
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
 import color from 'color';
 import z from 'zod';
-import type { Difficulty, EventItem } from './actions.js';
+import type { Difficulty, EventSummary } from './actions.js';
 
 export const EventsColorizeBySchema = z.enum([
   'when',
@@ -145,7 +145,7 @@ const localMidnight = (d: Date) =>
  * Its start and end by the viewer's clock; one with no end, or no times,
  * lasts its last day through.
  */
-function spanOf(event: EventItem): [number, number] {
+function spanOf(event: EventSummary): [number, number] {
   if (event.dateOnly) {
     return [
       localMidnight(event.startAt).getTime(),
@@ -162,7 +162,7 @@ function spanOf(event: EventItem): [number, number] {
 }
 
 export function mineCategory(
-  event: EventItem,
+  event: EventSummary,
   userId: number | undefined,
 ): MineCategory {
   return userId !== undefined && event.userId === userId
@@ -178,7 +178,7 @@ const stat = (scale: EventScale, value: number | null) =>
 
 /** The marker's colour under a mode. */
 export function eventColor(
-  event: EventItem,
+  event: EventSummary,
   by: EventsColorizeBy | null,
   userId: number | undefined,
   now: number,

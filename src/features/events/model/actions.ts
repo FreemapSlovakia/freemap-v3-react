@@ -94,6 +94,27 @@ export const EventSchema = z.object({
 
 export type EventItem = z.infer<typeof EventSchema>;
 
+/** An event as the layer lists it (`?summary=1`); the rest by its id. */
+export const EventSummarySchema = EventSchema.pick({
+  id: true,
+  userId: true,
+  title: true,
+  startAt: true,
+  endAt: true,
+  dateOnly: true,
+  startPoint: true,
+  transports: true,
+  distance: true,
+  duration: true,
+  ascent: true,
+  difficulty: true,
+  dogs: true,
+  children: true,
+  myParticipation: true,
+});
+
+export type EventSummary = z.infer<typeof EventSummarySchema>;
+
 export const coverUrl = (name: string, size: 'large' | 'thumb') =>
   `${process.env['API_URL']}/events/covers/${encodeURIComponent(name)}${size === 'thumb' ? '?size=thumb' : ''}`;
 
@@ -112,7 +133,7 @@ export type EventBody = TripStats &
     visibility: EventVisibility;
   };
 
-export const eventsSetList = createAction<EventItem[]>('EVENTS_SET_LIST');
+export const eventsSetList = createAction<EventSummary[]>('EVENTS_SET_LIST');
 
 export const eventsLoadList = createAction('EVENTS_LOAD_LIST');
 

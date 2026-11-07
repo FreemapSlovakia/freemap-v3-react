@@ -171,8 +171,18 @@ from the selection toolbar (**Edit**).
   - [x] KČT parser, dry run to JSON.
   - [x] API: `dateOnly` and `sourceKey`; web: date-only events shown and
         entered.
-  - [ ] Web: the layer loads only what is in view from a zoom, and by
-        default the next two months — before the first import.
+  - [ ] Web, before the first import — never limited silently by time, or a
+        hidden event gets entered again:
+    - [x] the layer loads all events matching the filter as summaries
+          (`GET /events?summary=1`: no description, cover, organizer or
+          counts; up to 10000), once per filter change, not per pan; the
+          selected one is fetched in full;
+    - [ ] the API's JSON compressed;
+    - [ ] marker clustering, for thousands of markers zoomed out;
+    - a filter set stays shown as the pressed **Filter** button, as the
+      gallery's;
+    - [ ] the form warns of a similar event — within a few km on the same
+          day, whatever the filter — linking it.
   - [ ] The KČT account, posting and deleting, a full run, the fm5 timer.
         Deleting needs every upcoming event of the source, whatever its
         visibility: `GET /events?source=` lists 1000 at most, the caller's

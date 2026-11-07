@@ -7,6 +7,7 @@ import z from 'zod';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import {
   EventSchema,
+  EventSummarySchema,
   eventsLoadList,
   eventsSetFilter,
   eventsSetList,
@@ -52,29 +53,47 @@ export const eventsLoadListProcessor: Processor = {
     try {
       const res = await httpRequest({
         getState,
-        url: `/events?${objectToURLSearchParams(filterToRequest(state.events.filter))}`,
+        url: `/events?${objectToURLSearchParams({ ...filterToRequest(state.events.filter), summary: '1' })}`,
         expectedStatus: 200,
         cancelActions: triggers,
       });
 
-      const list = z.array(EventSchema).parse(await res.json());
+      dispatch(
+        eventsSetList(z.array(EventSummarySchema).parse(await res.json())),
+      );
+    } catch (err) {
+      await toastError(err, loadEventsMessages, 'fetchListError');
 
-      dispatch(eventsSetList(list));
+      return;
+    }
 
-      // Its copy may be out of date too — the user's own participation after
-      // logging in, say.
-      const selectedId = selectedEventId(getState());
+    // The selected one may be out of date too — the user's own participation
+    // after logging in, say; the list has only its summary.
+    const selectedId = selectedEventId(getState());
 
-      const selected = list.find((e) => e.id === selectedId);
+    if (selectedId === null || !getState().events.selected) {
+      return;
+    }
+
+    try {
+      const res = await httpRequest({
+        getState,
+        url: `/events/${encodeURIComponent(selectedId)}`,
+        expectedStatus: 200,
+        cancelActions: triggers,
+      });
+
+      const selected = EventSchema.parse(await res.json());
 
       if (
-        selected &&
+        selectedEventId(getState()) === selected.id &&
         JSON.stringify(selected) !== JSON.stringify(getState().events.selected)
       ) {
         dispatch(eventsSetSelected(selected));
       }
     } catch (err) {
-      await toastError(err, loadEventsMessages, 'fetchListError');
+      // The details shown stay; the list is what this run was for.
+      console.warn('Selected event not refreshed', err);
     }
   },
 };

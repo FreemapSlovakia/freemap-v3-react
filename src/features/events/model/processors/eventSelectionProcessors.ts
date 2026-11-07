@@ -37,29 +37,25 @@ export const eventSelectionProcessor: Processor = {
       return;
     }
 
-    let event: EventItem | undefined = getState().events.list.find(
-      (e) => e.id === id,
-    );
+    // In full: the list holds summaries only.
+    let event: EventItem;
 
-    // The filter may have dropped it since it was picked.
-    if (!event) {
-      try {
-        const res = await httpRequest({
-          getState,
-          url: `/events/${encodeURIComponent(id)}`,
-          expectedStatus: 200,
-          stateChangePredicate: selectedEventId,
-        });
+    try {
+      const res = await httpRequest({
+        getState,
+        url: `/events/${encodeURIComponent(id)}`,
+        expectedStatus: 200,
+        stateChangePredicate: selectedEventId,
+      });
 
-        event = EventSchema.parse(await res.json());
-      } catch (err) {
-        // Nothing would show the selection, so nothing could dismiss it.
-        if (selectedEventId(getState()) === id) {
-          dispatch(selectFeature(null));
-        }
-
-        throw err;
+      event = EventSchema.parse(await res.json());
+    } catch (err) {
+      // Nothing would show the selection, so nothing could dismiss it.
+      if (selectedEventId(getState()) === id) {
+        dispatch(selectFeature(null));
       }
+
+      throw err;
     }
 
     dispatch(eventsSetSelected(event));

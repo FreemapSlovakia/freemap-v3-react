@@ -276,12 +276,11 @@ export default function EventFormModal({ show }: Props): ReactElement {
       : undefined,
   );
 
+  // The selected one only: the list holds summaries, without the description.
   const known = useAppSelector((state) =>
-    target?.id === undefined
-      ? undefined
-      : ([state.events.selected, ...state.events.list].find(
-          (e) => e?.id === target.id,
-        ) ?? undefined),
+    target?.id !== undefined && state.events.selected?.id === target.id
+      ? state.events.selected
+      : undefined,
   );
 
   // One a link names that the store doesn't hold, fetched for the form alone:

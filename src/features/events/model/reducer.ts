@@ -4,6 +4,7 @@ import {
   type EventItem,
   type EventParticipant,
   type EventPoint,
+  type EventSummary,
   eventsConfirmPick,
   eventsOpen,
   eventsOpenDone,
@@ -21,7 +22,8 @@ import {
 import type { EventsFilter } from './filter.js';
 
 export interface EventsState {
-  list: EventItem[];
+  /** Summaries, for the markers and the list; the selected one in full. */
+  list: EventSummary[];
   filter: EventsFilter;
   selected: EventItem | null;
   /** Who is going to the selected event and who is interested. */
