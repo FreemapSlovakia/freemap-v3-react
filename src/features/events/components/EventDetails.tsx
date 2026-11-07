@@ -122,7 +122,10 @@ export function EventDetails({
     event.difficulty && {
       id: 'difficulty',
       icon: DIFFICULTY_ICONS[event.difficulty],
-      text: em?.difficulty[event.difficulty] ?? event.difficulty,
+      text: labelled(
+        em?.form.difficulty,
+        em?.difficulty[event.difficulty] ?? event.difficulty,
+      ),
     },
     event.dogs !== null && {
       id: 'dogs',
