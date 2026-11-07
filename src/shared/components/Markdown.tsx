@@ -55,9 +55,21 @@ function block(token: MarkedToken, link: LinkRenderer): ReactNode {
     case 'list': {
       const List = token.ordered ? 'ol' : 'ul';
 
+      const start =
+        token.ordered && token.start !== '' ? Number(token.start) : 1;
+
+      // The numbers sit in the padding, right-aligned: one wider than it, as
+      // "45.", would stick out left of the text.
+      const digits = String(start + token.items.length - 1).length;
+
       return (
         <List
-          className="mb-0 ps-4"
+          className={token.ordered ? 'mb-0' : 'mb-0 ps-4'}
+          style={
+            token.ordered
+              ? { paddingInlineStart: `calc(${digits}ch + 1rem)` }
+              : undefined
+          }
           start={token.ordered && token.start !== '' ? token.start : undefined}
         >
           {token.items.map((item, i) => (
