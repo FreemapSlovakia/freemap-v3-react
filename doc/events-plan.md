@@ -203,6 +203,12 @@ from the selection toolbar (**Edit**).
         occasion's day over a route time left on a day it moved from; in the
         nightly run. termeszetjaro.hu, the federation's,
         is behind a bot challenge and on Outdooractive's contract API: not used.
+  - [x] DATAtourisme, France (`datatourisme.mjs`): its API (a free key,
+        `DATATOURISME_API_KEY`), the `Rambling` events with a hiking word in
+        the title or text (producers file lotos there too), one event per
+        day it is held, none of a period over two days; credited to
+        DATAtourisme, the producer and its update date (Licence Ouverte).
+        Not data.gouv.fr's daily files: its robots.txt disallows them.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
       duration, ascent, difficulty, dogs, children; a legend, the
