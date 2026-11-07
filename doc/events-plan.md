@@ -193,7 +193,7 @@ from the selection toolbar (**Edit**).
         its summit (the only one so named, or the nearest within 30 km of
         the club's home, of any country), said so in the description; others
         skipped.
-  - [ ] The KČT and KST accounts, a full run, the nightly GitHub Action on the fm5
+  - [x] The KČT and KST accounts, a full run, the nightly GitHub Action on the fm5
         runner.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
