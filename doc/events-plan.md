@@ -214,6 +214,11 @@ from the selection toolbar (**Edit**).
         taken; placed by the page's coordinates, else the start address on
         Photon within 15 km of the town, else at the town, said so. ÖVV,
         Austria's, disallows all in its robots.txt; IVV's own API is closed.
+  - [x] South Tyrol (`suedtirol.mjs`): the Open Data Hub's tourism API (no
+        key), the CC0 events with a hiking word in the title, one event per
+        date; a standing offer (over three dates a week) skipped, a series
+        posted six weeks ahead. Italy's federations give nothing: FIASP
+        disallows all, CAI's central calendar is empty, FIE lists news.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
       duration, ascent, difficulty, dogs, children; a legend, the
