@@ -209,6 +209,11 @@ from the selection toolbar (**Edit**).
         day it is held, none of a period over two days; credited to
         DATAtourisme, the producer and its update date (Licence Ouverte).
         Not data.gouv.fr's daily files: its robots.txt disallows them.
+  - [x] DVV, Germany's walking days and guided hikes (`dvv.mjs`): its list of
+        the next three months, one page of marked-up entries, no contacts
+        taken; placed by the page's coordinates, else the start address on
+        Photon within 15 km of the town, else at the town, said so. ÖVV,
+        Austria's, disallows all in its robots.txt; IVV's own API is closed.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
       duration, ascent, difficulty, dogs, children; a legend, the
