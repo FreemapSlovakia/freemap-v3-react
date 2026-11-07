@@ -222,6 +222,11 @@ split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
       for manual pending state, and **React Compiler** eligibility (decide first —
       it would let many hand-written `useMemo`/`useCallback` be dropped, changing
       how much manual hook churn is worthwhile).
+- [ ] **Temporal API, once Safari ships it.** core-js doesn't polyfill it, so
+  until then it costs a separate polyfill (~20 kB gz). Candidates: date-only
+  events as `Temporal.PlainDate` instead of UTC midnights
+  (`src/features/events/components/relativeTime.ts`, `useEventDatesFormat`),
+  and in the API the harvester's hand-rolled `zonedToIso` once fm5's Node has it.
 
 ## Decisions worth not relitigating
 

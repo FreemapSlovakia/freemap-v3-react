@@ -3,14 +3,25 @@ import { Markdown } from '@shared/components/Markdown.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { useRelativeTimeFormat } from '@shared/hooks/useRelativeTimeFormat.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
 import { Badge } from 'react-bootstrap';
-import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
+import {
+  FaChild,
+  FaDog,
+  FaRegCalendarAlt,
+  FaRegClock,
+  FaRegMap,
+  FaRulerHorizontal,
+} from 'react-icons/fa';
+import { MdTrendingDown, MdTrendingUp } from 'react-icons/md';
 import { coverUrl, type EventItem } from '../model/actions.js';
 import { iconOfKind } from '../model/transports.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
+import { eventRelativeTime } from './relativeTime.js';
 import { useEventDatesFormat } from './useEventDatesFormat.js';
 
 /**
@@ -39,24 +50,75 @@ export function EventDetails({
     minute: '2-digit',
   });
 
-  const stats = [
-    event.distance !== null &&
-      `${new Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(event.distance / 1000)} km`,
-    event.duration !== null && formatDuration(event.duration, language),
-    event.ascent !== null && `↗ ${event.ascent} m`,
-    event.descent !== null && `↘ ${event.descent} m`,
-  ].filter(Boolean);
+  // State, not a render-time read, which the React Compiler would freeze.
+  const [now, setNow] = useState(() => new Date());
 
-  // Named where no stats follow, or an icon alone wouldn't say what it is.
-  const icons = event.transports.map((kind) => (
-    <span key={kind} className="d-inline-flex align-items-center gap-1">
-      {iconOfKind(kind)}
-      {stats.length === 0 && rpm?.transportType[kind as TransportTypeMsgKey]}
-    </span>
-  ));
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 60_000);
 
-  // Icon and words: an icon alone can't say "no".
-  const attributes = [
+    return () => window.clearInterval(id);
+  }, []);
+
+  const relativeFormat = useRelativeTimeFormat({ numeric: 'auto' });
+
+  const kmFormat = useNumberFormat({
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+
+  const relative = eventRelativeTime(event, relativeFormat, now);
+
+  const relativeNode = (
+    <span className="text-body-secondary"> ({relative.text})</span>
+  );
+
+  const labelled = (label: string | undefined, value: string) =>
+    label ? `${label}: ${value}` : value;
+
+  // One per line, each labelled: an icon alone can't say what it is, or "no".
+  const details = [
+    // The transports share a line, each with its own icon.
+    event.transports.length > 0 && {
+      id: 'transports',
+      icon: null,
+      text: (
+        <span className="d-flex flex-wrap align-items-center column-gap-1">
+          {event.transports.map((kind, i) => (
+            <span key={kind} className="d-inline-flex align-items-center gap-1">
+              {i > 0 && '· '}
+              {iconOfKind(kind)}
+              {rpm?.transportType[kind as TransportTypeMsgKey]}
+            </span>
+          ))}
+        </span>
+      ),
+    },
+    event.distance !== null && {
+      id: 'distance',
+      icon: <FaRulerHorizontal />,
+      text: labelled(
+        em?.form.length,
+        `${kmFormat.format(event.distance / 1000)} km`,
+      ),
+    },
+    event.duration !== null && {
+      id: 'duration',
+      icon: <FaRegClock />,
+      text: labelled(
+        em?.form.duration,
+        formatDuration(event.duration, language),
+      ),
+    },
+    event.ascent !== null && {
+      id: 'ascent',
+      icon: <MdTrendingUp />,
+      text: labelled(em?.form.ascent, `${event.ascent} m`),
+    },
+    event.descent !== null && {
+      id: 'descent',
+      icon: <MdTrendingDown />,
+      text: labelled(em?.form.descent, `${event.descent} m`),
+    },
     event.difficulty && {
       id: 'difficulty',
       icon: DIFFICULTY_ICONS[event.difficulty],
@@ -72,7 +134,7 @@ export function EventDetails({
       icon: <FaChild />,
       text: (event.children ? em?.card.children : em?.card.noChildren) ?? '',
     },
-  ].filter((a) => a !== false && a !== null);
+  ].filter((d) => d !== false && d !== null);
 
   return (
     <div className="d-flex flex-column gap-1">
@@ -108,31 +170,21 @@ export function EventDetails({
 
       <div className="d-flex align-items-center gap-1">
         <FaRegCalendarAlt className="flex-shrink-0" />
-        {formatDates(event)}
+        <span>
+          {formatDates(event, { of: relative.anchor, node: relativeNode })}
+        </span>
       </div>
 
       <div className="d-flex align-items-center">
         <UserChip user={event.user} />
       </div>
 
-      {(icons.length > 0 || stats.length > 0) && (
-        <div className="d-flex flex-wrap align-items-center gap-2">
-          {icons}
-          {stats.join(' · ')}
+      {details.map(({ id, icon, text }) => (
+        <div key={id} className="d-flex align-items-center gap-1">
+          {icon && <span className="flex-shrink-0 d-inline-flex">{icon}</span>}
+          {text}
         </div>
-      )}
-
-      {attributes.length > 0 && (
-        <div className="d-flex flex-wrap align-items-center column-gap-1">
-          {attributes.map(({ id, icon, text }, i) => (
-            <span key={id} className="d-inline-flex align-items-center gap-1">
-              {i > 0 && '· '}
-              {icon}
-              {text}
-            </span>
-          ))}
-        </div>
-      )}
+      ))}
 
       {event.mapId !== null && (
         <div className="d-flex flex-wrap align-items-center column-gap-2 row-gap-1">

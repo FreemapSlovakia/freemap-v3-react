@@ -145,7 +145,9 @@ const localMidnight = (d: Date) =>
  * Its start and end by the viewer's clock; one with no end, or no times,
  * lasts its last day through.
  */
-function spanOf(event: EventSummary): [number, number] {
+export function spanOf(
+  event: Pick<EventSummary, 'startAt' | 'endAt' | 'dateOnly'>,
+): [number, number] {
   if (event.dateOnly) {
     return [
       localMidnight(event.startAt).getTime(),
