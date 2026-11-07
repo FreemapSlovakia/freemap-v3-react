@@ -419,6 +419,12 @@ elevation (`photo`, `historicphoto`, `elevation`) get `scaleWithDpi`, as the
 built-in aerials do, and maps with labels neither. The API's
 `src/mapCatalog.test.ts` checks the ids, templates, WMS URLs and credits.
 
+Store builds older than `GET /map-catalog` read `src/features/mapLibrary/
+curated/curatedCatalog.json` and `eli/eliCatalog.json` from this repo's `main`
+on raw GitHub. `.github/workflows/legacy-catalog.yml` copies them there daily
+from freemap-v3-api's `main`, unchanged; it and the copies go once those
+builds are out of use.
+
 ### WMS without CORS
 
 A WMS map draws as images, which need no CORS, but its layer list (capabilities)

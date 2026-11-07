@@ -1,0 +1,47 @@
+name: Legacy map catalog
+
+# Store builds older than GET /map-catalog read the catalog from raw GitHub at
+# these paths; this keeps them a copy of freemap-v3-api's. Delete once those
+# builds are gone.
+on:
+  schedule:
+    - cron: '30 5 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: legacy-catalog
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Copy the catalog
+        run: |
+          base=https://raw.githubusercontent.com/FreemapSlovakia/freemap-v3-nodejs-backend/main/mapCatalog
+          for f in curated/curatedCatalog.json eli/eliCatalog.json; do
+            mkdir -p "src/features/mapLibrary/$(dirname "$f")"
+            curl -fsSL --retry 3 "$base/$f" -o "$RUNNER_TEMP/catalog.json"
+            # Never commit an error page or an emptied catalog over a good one.
+            node -e 'const { maps } = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")); if (!maps?.length) process.exit(1)' "$RUNNER_TEMP/catalog.json"
+            mv "$RUNNER_TEMP/catalog.json" "src/features/mapLibrary/$f"
+          done
+
+      # A push with GITHUB_TOKEN starts no other workflow, so no deploy.
+      - name: Commit
+        run: |
+          git add src/features/mapLibrary/curated src/features/mapLibrary/eli
+          if git diff --cached --quiet; then
+            echo "The catalog is unchanged."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -q -m "chore(map-library): legacy catalog copy"
+          git push
