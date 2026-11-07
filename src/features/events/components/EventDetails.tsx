@@ -68,8 +68,15 @@ export function EventDetails({
     <span className="text-body-secondary"> ({relative.text})</span>
   );
 
+  // Bold key, plain value, as the description's `**Start:**` and the app's <dt>.
   const labelled = (label: string | undefined, value: string) =>
-    label ? `${label}: ${value}` : value;
+    label ? (
+      <span>
+        <strong>{label}:</strong> {value}
+      </span>
+    ) : (
+      value
+    );
 
   // One per line, each labelled: an icon alone can't say what it is, or "no".
   const details = [
