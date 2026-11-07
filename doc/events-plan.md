@@ -158,8 +158,8 @@ from the selection toolbar (**Edit**).
       emails, also any sentence of a note giving one — linking the source
       page instead. Photon geocodes a place the source gives no coordinates
       for; an event without a usable place is skipped, and one matching a
-      hand-entered event (within a day, within 10 km, half the title's words)
-      too. A source without
+      hand-entered event (within a day; within 10 km and half the title's
+      words, or within 30 km and the same title) too. A source without
       a start time gives a **date-only** event. `sourceKey`
       (`<source>:<id there>`) upserts through `POST /events`; the source is
       the master, so a re-harvest overwrites hand edits of what it supplies,
@@ -189,8 +189,10 @@ from the selection toolbar (**Edit**).
   - [x] Posting and deleting (`--post`), sources as modules in
         `scripts/event-sources/`.
   - [x] KST yearbook parser (`kst.mjs`, needs `pdftotext`), dry run.
-  - [ ] KST events with no meeting place in the yearbook: skipped, or a
-        summit walk placed at its summit.
+  - [x] KST events with no meeting place in the yearbook: a summit walk at
+        its summit (the only one so named, or the nearest within 30 km of
+        the club's home, of any country), said so in the description; others
+        skipped.
   - [ ] The KČT and KST accounts, a full run, the nightly GitHub Action on the fm5
         runner.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
