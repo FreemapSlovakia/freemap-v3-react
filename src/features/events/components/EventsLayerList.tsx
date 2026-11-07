@@ -2,12 +2,12 @@ import { selectFeature } from '@app/store/actions.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
 import { distanceTo } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { type ReactElement, useMemo } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { selectedEventId } from '../model/selectors.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
+import { useEventDatesFormat } from './useEventDatesFormat.js';
 
 /** The events the layer shows, on its page in the map layers panel. */
 export function EventsLayerList(): ReactElement {
@@ -41,7 +41,7 @@ export function EventsLayerList(): ReactElement {
 
   const selectedId = useAppSelector(selectedEventId);
 
-  const dateFormat = useDateTimeFormat({
+  const formatDates = useEventDatesFormat({
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -67,8 +67,7 @@ export function EventsLayerList(): ReactElement {
           <div className="text-truncate">{event.title}</div>
 
           <small className="text-truncate d-block">
-            {dateFormat.format(event.startAt)}
-            {event.endAt && ` – ${dateFormat.format(event.endAt)}`}
+            {formatDates(event)}
             {km !== undefined && ` · ${kmFormat.format(km)} km`}
           </small>
         </ListGroup.Item>

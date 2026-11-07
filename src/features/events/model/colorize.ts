@@ -137,13 +137,28 @@ export const EVENT_SCALES = {
   },
 } satisfies Record<string, EventScale>;
 
-/** Started and not over; one with no end lasts the day it starts. */
-function isHappening(event: EventItem, now: number) {
+/** A date-only event's day (its UTC date) at the viewer's local midnight. */
+const localMidnight = (d: Date) =>
+  new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+
+/**
+ * Its start and end by the viewer's clock; one with no end, or no times,
+ * lasts its last day through.
+ */
+function spanOf(event: EventItem): [number, number] {
+  if (event.dateOnly) {
+    return [
+      localMidnight(event.startAt).getTime(),
+      localMidnight(event.endAt ?? event.startAt).setHours(24, 0, 0, 0),
+    ];
+  }
+
   const start = event.startAt.getTime();
 
-  const end = event.endAt?.getTime() ?? new Date(start).setHours(24, 0, 0, 0);
-
-  return start <= now && now < end;
+  return [
+    start,
+    event.endAt?.getTime() ?? new Date(start).setHours(24, 0, 0, 0),
+  ];
 }
 
 export function mineCategory(
@@ -173,11 +188,13 @@ export function eventColor(
       return EVENT_COLOR;
 
     case 'when': {
-      if (isHappening(event, now)) {
+      const [start, end] = spanOf(event);
+
+      if (start <= now && now < end) {
         return HAPPENING_COLOR;
       }
 
-      const ahead = event.startAt.getTime() - now;
+      const ahead = start - now;
 
       return ahead < 0 ? MUTED_COLOR : stat(EVENT_SCALES.when, ahead);
     }

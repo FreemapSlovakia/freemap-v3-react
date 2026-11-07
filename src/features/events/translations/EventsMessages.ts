@@ -29,6 +29,9 @@ export type EventsMessages = {
     coverTooLarge: string;
     start: string;
     end: string;
+    endHint: string;
+    endBeforeStart: string;
+    dateOnly: string;
     linkedMap: string;
     noMap: string;
     newMapFromContent: string;

@@ -68,7 +68,10 @@ export default function EventSelection(): ReactElement | null {
         <>
           <EventActions event={event} />
 
-          <EventDetails event={event} />
+          <EventDetails
+            event={event}
+            mapActions={<EventMapActions event={event} />}
+          />
 
           <EventParticipants event={event} />
         </>
@@ -140,6 +143,58 @@ function EventParticipants({
   );
 }
 
+/** Opening the linked map, beside its name; none while it is loaded here. */
+function EventMapActions({ event }: { event: EventItem }): ReactElement | null {
+  const dispatch = useDispatch();
+
+  const em = useEventsMessages();
+
+  const activeMapId = useAppSelector((state) => state.myMaps.activeMap?.id);
+
+  const online = useOnline();
+
+  const askLoadMerge = useAskLoadMerge();
+
+  const { mapId } = event;
+
+  if (mapId === null || activeMapId === mapId) {
+    return null;
+  }
+
+  return (
+    <Dropdown as={ButtonGroup} size="sm">
+      <Button
+        variant="primary"
+        href={mapUrl(mapId)}
+        target="_blank"
+        rel="noopener"
+        className="fm-no-ext"
+        disabled={!online}
+      >
+        <FaExternalLinkAlt /> {em?.selection.openInNewTab}
+      </Button>
+
+      <Dropdown.Toggle split variant="primary" disabled={!online} />
+
+      <FmDropdownMenu>
+        <Dropdown.Item
+          as="button"
+          onClick={async () => {
+            const merge = await askLoadMerge();
+
+            if (merge !== null) {
+              dispatch(eventsOpen({ id: event.id, mapId, merge }));
+            }
+          }}
+        >
+          <FaCloudDownloadAlt />
+          <MenuLabel>{em?.selection.loadHere}</MenuLabel>
+        </Dropdown.Item>
+      </FmDropdownMenu>
+    </Dropdown>
+  );
+}
+
 function EventActions({ event }: { event: EventItem }): ReactElement {
   const dispatch = useDispatch();
 
@@ -153,13 +208,9 @@ function EventActions({ event }: { event: EventItem }): ReactElement {
 
   const online = useOnline();
 
-  const askLoadMerge = useAskLoadMerge();
-
   const confirm = useConfirm();
 
-  const { mapId } = event;
-
-  const loaded = mapId !== null && activeMapId === mapId;
+  const loaded = event.mapId !== null && activeMapId === event.mapId;
 
   // Pressing the active one withdraws it.
   const participate = (status: 'interested' | 'going') => {
@@ -224,39 +275,6 @@ function EventActions({ event }: { event: EventItem }): ReactElement {
       >
         <FaCheck /> {em?.selection.going} · {event.goingCount}
       </Button>
-
-      {mapId !== null && !loaded && (
-        <Dropdown as={ButtonGroup}>
-          <Button
-            variant="primary"
-            href={mapUrl(mapId)}
-            target="_blank"
-            rel="noopener"
-            className="fm-no-ext"
-            disabled={!online}
-          >
-            <FaExternalLinkAlt /> {em?.selection.openInNewTab}
-          </Button>
-
-          <Dropdown.Toggle split variant="primary" disabled={!online} />
-
-          <FmDropdownMenu>
-            <Dropdown.Item
-              as="button"
-              onClick={async () => {
-                const merge = await askLoadMerge();
-
-                if (merge !== null) {
-                  dispatch(eventsOpen({ id: event.id, mapId, merge }));
-                }
-              }}
-            >
-              <FaCloudDownloadAlt />
-              <MenuLabel>{em?.selection.loadHere}</MenuLabel>
-            </Dropdown.Item>
-          </FmDropdownMenu>
-        </Dropdown>
-      )}
 
       {event.canWrite && (
         <>

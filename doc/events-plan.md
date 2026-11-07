@@ -55,7 +55,8 @@ content in place. Its actions:
   or replace as My maps' Load does. The layer stays on and the event selected;
   **Back to events** disconnects and clears the map.
 - **Edit** and **Delete** for the owner.
-- Neither open action without a linked map.
+- Both open actions sit beside the linked map's name in the details, not
+  among the actions; neither without a linked map.
 
 ### 3. Create and edit
 
@@ -146,18 +147,36 @@ from the selection toolbar (**Edit**).
 
 ### Later
 
-- [ ] **AI harvester** of club calendars, on fm5 on a schedule. Per source (a
-      URL and its organizer account): fetch only what robots.txt allows,
-      politely, re-reading a page only when its hash changes; an LLM (Haiku)
-      extracts events into a fixed schema and formats the description as
-      Markdown in the hand-formatted house style (bold labels, lists, links on
-      their words, phone numbers as "+421 908 479 116", **Zdroj:** last),
-      dropping members-only events; Photon
-      geocodes the meeting place, marked approximate, and an event without a
-      usable place is skipped; a source key (URL + date) upserts through the
-      API with an `events:write` token, and events gone from the source go.
-      A new source's first runs land in a review list, not on the map. No
-      social networks — their terms forbid it.
+- [ ] **Harvester** of club calendars (`freemap-v3-api/scripts/harvest-events.mjs`),
+      on fm5 on a schedule. Per source one organizer account (KČT: one
+      account for all its clubs, the club named in the description, until a
+      club asks to manage its own); fetch only what robots.txt allows,
+      politely, re-reading a page only when its list entry changes or it is
+      two weeks old; one failing page is skipped, not the run. The
+      description in the house style (bold labels, lists, **Zdroj:** last)
+      but without the source's contacts — private people's names, phones and
+      emails, also any sentence of a note giving one — linking the source
+      page instead. Photon geocodes a place the source gives no coordinates
+      for; an event without a usable place is skipped, and one matching a
+      hand-entered event (within a day, within 10 km, half the title's words)
+      too. A source without
+      a start time gives a **date-only** event. `sourceKey`
+      (`<source>:<id there>`) upserts through `POST /events`; the source is
+      the master, so a re-harvest overwrites hand edits of what it supplies,
+      keeping the owner, linked map, visibility and cover, and brings back
+      one deleted here while the source still lists it. The source's
+      upcoming events (`GET /events?source=`) gone from it are deleted.
+      Sources needing extraction from prose or PDFs (KST's yearbook) through
+      an LLM (Haiku). No social networks — their terms forbid it.
+  - [x] KČT parser, dry run to JSON.
+  - [x] API: `dateOnly` and `sourceKey`; web: date-only events shown and
+        entered.
+  - [ ] Web: the layer loads only what is in view from a zoom, and by
+        default the next two months — before the first import.
+  - [ ] The KČT account, posting and deleting, a full run, the fm5 timer.
+        Deleting needs every upcoming event of the source, whatever its
+        visibility: `GET /events?source=` lists 1000 at most, the caller's
+        public or own ones.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
       duration, ascent, difficulty, dogs, children; a legend, the

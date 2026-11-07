@@ -72,6 +72,11 @@ export const EventSchema = z.object({
   description: z.string().nullable(),
   startAt: IsoDateSchema,
   endAt: IsoDateSchema.nullable(),
+  /**
+   * No time was given: `startAt` and `endAt` are UTC midnights of their days,
+   * shown in UTC so the day is the same everywhere.
+   */
+  dateOnly: z.boolean().default(false),
   startPoint: EventPointSchema,
   visibility: EventVisibilitySchema,
   /** The cover image's name; see {@link coverUrl}. */
@@ -102,6 +107,7 @@ export type EventBody = TripStats &
     description: string | null;
     startAt: string;
     endAt: string | null;
+    dateOnly: boolean;
     startPoint: EventPoint;
     visibility: EventVisibility;
   };

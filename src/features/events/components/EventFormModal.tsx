@@ -93,8 +93,10 @@ type Props = { show: boolean };
 type Draft = {
   title: string;
   description: string;
+  /** `YYYY-MM-DD` with `dateOnly`. */
   startAt: string;
   endAt: string;
+  dateOnly: boolean;
   /** The start point as typed, in any notation `parseCoordinates` reads. */
   position: string;
   visibility: EventVisibility;
@@ -170,6 +172,14 @@ function toDateTimeLocal(d: Date | null | undefined): string {
     .slice(0, 16);
 }
 
+/** A draft's time as an instant; a date-only one's day as its UTC midnight. */
+const fromDraftTime = (s: string, dateOnly: boolean) =>
+  dateOnly ? `${s.slice(0, 10)}T00:00:00.000Z` : new Date(s).toISOString();
+
+/** A time as the draft holds it; a date-only one's day is its UTC date. */
+const toDraftTime = (d: Date | null | undefined, dateOnly: boolean) =>
+  d && dateOnly ? d.toISOString().slice(0, 10) : toDateTimeLocal(d);
+
 const str = (n: number | null | undefined) => (n == null ? '' : String(n));
 
 /** The numbers only: transports are picked, not typed, so they merge apart. */
@@ -198,8 +208,9 @@ function toDraft(
   return {
     title: event?.title ?? '',
     description: event?.description ?? '',
-    startAt: toDateTimeLocal(event?.startAt),
-    endAt: toDateTimeLocal(event?.endAt),
+    startAt: toDraftTime(event?.startAt, event?.dateOnly ?? false),
+    endAt: toDraftTime(event?.endAt, event?.dateOnly ?? false),
+    dateOnly: event?.dateOnly ?? false,
     position: event ? latLonToString(event.startPoint, language) : '',
     visibility: event?.visibility ?? 'public',
     mapId: event?.mapId ?? mapId ?? '',
@@ -652,10 +663,14 @@ export default function EventFormModal({ show }: Props): ReactElement {
       ? coverUrl(editing.cover, 'thumb')
       : undefined);
 
+  // Both in the same format, so compared as strings; typed, `min` won't stop it.
+  const endBeforeStart = draft.endAt !== '' && draft.endAt < draft.startAt;
+
   const valid =
     !coverTooLarge &&
     draft.title.trim() !== '' &&
     draft.startAt !== '' &&
+    !endBeforeStart &&
     startPoint !== null &&
     [
       draft.distance,
@@ -714,8 +729,14 @@ export default function EventFormModal({ show }: Props): ReactElement {
           mapId: mapId === NEW_MAP ? null : mapId || null,
           title: draft.title.trim(),
           description: draft.description.trim() || null,
-          startAt: new Date(draft.startAt).toISOString(),
-          endAt: draft.endAt ? new Date(draft.endAt).toISOString() : null,
+          startAt: fromDraftTime(draft.startAt, draft.dateOnly),
+          // A one-day date-only event has no end, as a harvested one.
+          endAt:
+            draft.endAt &&
+            !(draft.dateOnly && draft.endAt.slice(0, 10) === draft.startAt)
+              ? fromDraftTime(draft.endAt, draft.dateOnly)
+              : null,
+          dateOnly: draft.dateOnly,
           startPoint,
           visibility: draft.visibility,
           transports: draft.transports,
@@ -889,7 +910,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
               <Form.Label className="required">{em?.form.start}</Form.Label>
 
               <Form.Control
-                type="datetime-local"
+                type={draft.dateOnly ? 'date' : 'datetime-local'}
                 value={draft.startAt}
                 onChange={(e) => set({ startAt: e.currentTarget.value })}
               />
@@ -899,13 +920,40 @@ export default function EventFormModal({ show }: Props): ReactElement {
               <Form.Label>{em?.form.end}</Form.Label>
 
               <Form.Control
-                type="datetime-local"
+                type={draft.dateOnly ? 'date' : 'datetime-local'}
                 value={draft.endAt}
                 min={draft.startAt || undefined}
+                isInvalid={endBeforeStart}
                 onChange={(e) => set({ endAt: e.currentTarget.value })}
               />
+
+              <Form.Control.Feedback type="invalid">
+                {em?.form.endBeforeStart}
+              </Form.Control.Feedback>
+
+              {!endBeforeStart && <Form.Text>{em?.form.endHint}</Form.Text>}
             </Form.Group>
           </div>
+
+          <Form.Check
+            id="eventDateOnly"
+            className="mb-3"
+            label={em?.form.dateOnly}
+            checked={draft.dateOnly}
+            onChange={(e) => {
+              const dateOnly = e.currentTarget.checked;
+
+              // The dates kept; times spanning the same days, to refine.
+              const convert = (s: string, time: string) =>
+                !s ? s : dateOnly ? s.slice(0, 10) : `${s}T${time}`;
+
+              set({
+                dateOnly,
+                startAt: convert(draft.startAt, '00:00'),
+                endAt: convert(draft.endAt, '23:59'),
+              });
+            }}
+          />
 
           <Form.Group controlId="eventMap" className="mb-3">
             <Form.Label>

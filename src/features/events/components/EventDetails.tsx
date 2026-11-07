@@ -3,25 +3,34 @@ import { Markdown } from '@shared/components/Markdown.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
-import type { ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Badge } from 'react-bootstrap';
 import { FaChild, FaDog, FaRegCalendarAlt, FaRegMap } from 'react-icons/fa';
 import { coverUrl, type EventItem } from '../model/actions.js';
 import { iconOfKind } from '../model/transports.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
+import { useEventDatesFormat } from './useEventDatesFormat.js';
 
-/** An event's details, as its panel shows them under its actions. */
-export function EventDetails({ event }: { event: EventItem }): ReactElement {
+/**
+ * An event's details, as its panel shows them under its actions; `mapActions`
+ * go beside the linked map's name.
+ */
+export function EventDetails({
+  event,
+  mapActions,
+}: {
+  event: EventItem;
+  mapActions?: ReactNode;
+}): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
   const em = useEventsMessages();
 
   const rpm = useRoutePlannerMessages();
 
-  const dateFormat = useDateTimeFormat({
+  const formatDates = useEventDatesFormat({
     weekday: 'short',
     year: 'numeric',
     month: 'short',
@@ -99,8 +108,7 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
 
       <div className="d-flex align-items-center gap-1">
         <FaRegCalendarAlt className="flex-shrink-0" />
-        {dateFormat.format(event.startAt)}
-        {event.endAt && ` – ${dateFormat.format(event.endAt)}`}
+        {formatDates(event)}
       </div>
 
       <div className="d-flex align-items-center">
@@ -126,9 +134,15 @@ export function EventDetails({ event }: { event: EventItem }): ReactElement {
         </div>
       )}
 
-      {event.mapName && (
-        <div className="d-flex align-items-center gap-1">
-          <FaRegMap /> {event.mapName}
+      {event.mapId !== null && (
+        <div className="d-flex flex-wrap align-items-center column-gap-2 row-gap-1">
+          {event.mapName && (
+            <span className="d-flex align-items-center gap-1">
+              <FaRegMap /> {event.mapName}
+            </span>
+          )}
+
+          {mapActions}
         </div>
       )}
 
