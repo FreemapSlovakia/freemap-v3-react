@@ -27,16 +27,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 11.5.0
-
       # No `cache: pnpm` — that ships the store to GitHub's cache service, and
       # on a self-hosted runner the store is already on the box, outside the
       # workspace `actions/checkout` cleans.
       - uses: actions/setup-node@v6
         with:
           node-version: 24
+
+      # Not pnpm/action-setup: it installs with the runner's bundled npm, which
+      # the runner's self-updates ship broken.
+      - run: npm install -g pnpm@11.5.0
 
       - run: pnpm install --frozen-lockfile
 
