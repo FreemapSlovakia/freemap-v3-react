@@ -3,9 +3,9 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import eventsBody from '@shared/mapLibrary/defs/events.js';
-import type { ReactElement } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { FaCalendarDay } from 'react-icons/fa';
-import { Pane, Tooltip } from 'react-leaflet';
+import { Pane, Tooltip, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { eventColor, stackOrder } from '../model/colorize.js';
 import { eventsLayerOnSelector, selectedEventId } from '../model/selectors.js';
@@ -30,6 +30,22 @@ export function EventsLayer(): ReactElement | null {
     (state) => state.map.zoom >= (eventsBody.minZoom ?? 0),
   );
 
+  const map = useMap();
+
+  // Only the markers in view, and half a view around it: a thousand Leaflet
+  // markers off screen still slow every pan and zoom.
+  const [bounds, setBounds] = useState(() => map.getBounds().pad(0.5));
+
+  useEffect(() => {
+    const update = () => setBounds(map.getBounds().pad(0.5));
+
+    map.on('moveend', update);
+
+    return () => {
+      map.off('moveend', update);
+    };
+  }, [map]);
+
   if (!layerActive) {
     return null;
   }
@@ -46,7 +62,11 @@ export function EventsLayer(): ReactElement | null {
   const shown = [
     ...(zoomOk
       ? stackOrder(
-          list.filter((e) => e.id !== selectedId),
+          list.filter(
+            (e) =>
+              e.id !== selectedId &&
+              bounds.contains([e.startPoint.lat, e.startPoint.lon]),
+          ),
           colorizeBy,
           userId,
           now,
