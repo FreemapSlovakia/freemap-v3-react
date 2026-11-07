@@ -204,10 +204,15 @@ export function EventDetails({
         </div>
       )}
 
+      {/* The organizer's free text, apart from the fields above it. */}
       {event.description && (
-        <div className="mt-1" style={{ overflowWrap: 'anywhere' }}>
-          <Markdown text={event.description} />
-        </div>
+        <>
+          <hr className="my-2" />
+
+          <div style={{ overflowWrap: 'anywhere' }}>
+            <Markdown text={event.description} />
+          </div>
+        </>
       )}
     </div>
   );
