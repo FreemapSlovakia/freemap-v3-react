@@ -1,7 +1,8 @@
 import type { MapBody } from '@shared/mapDefinitions.js';
 
 const def: MapBody<'events'> = {
-  minZoom: 0,
+  // Below it the markers hide (EventsLayer), and the layer shows the zoom warning.
+  minZoom: 8,
   zIndex: 8,
   attribution: [],
 };

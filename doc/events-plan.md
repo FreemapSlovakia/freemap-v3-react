@@ -164,35 +164,43 @@ from the selection toolbar (**Edit**).
       (`<source>:<id there>`) upserts through `POST /events`; the source is
       the master, so a re-harvest overwrites hand edits of what it supplies,
       keeping the owner, linked map, visibility and cover, and brings back
-      one deleted here while the source still lists it. The source's
-      upcoming events (`GET /events?source=`) gone from it are deleted.
-      Sources needing extraction from prose or PDFs (KST's yearbook) through
-      an LLM (Haiku). No social networks — their terms forbid it.
+      one deleted here while the source still lists it. Every run posts
+      every event; a complete one deletes the source's not yet started
+      events (`GET /events/sources/{source}`, an eventManager's: any
+      visibility, no cap) it no longer lists, unless a quarter of them would
+      go at once. An eventManager's app token with `events:write` posts each
+      for the source's organizer account (`--create-organizer`, once).
+      A parser reads every source; an LLM (Claude Haiku, `ANTHROPIC_API_KEY`)
+      only the smallest part no parser reads reliably — for KST's yearbook
+      PDF, where participants meet, as place and municipality in the
+      nominative, matched strictly on Photon (the municipality by name, the
+      place within 10 km by a word of its name, or a summit by its whole
+      name), answers cached. No social networks — their terms forbid it.
   - [x] KČT parser, dry run to JSON.
   - [x] API: `dateOnly` and `sourceKey`; web: date-only events shown and
         entered.
-  - [ ] Web, before the first import — never limited silently by time, or a
-        hidden event gets entered again:
-    - [x] the layer loads all events matching the filter as summaries
-          (`GET /events?summary=1`: no description, cover, organizer or
-          counts; up to 10000), once per filter change, not per pan; the
-          selected one is fetched in full;
-    - [ ] the API's JSON compressed;
-    - [ ] marker clustering, for thousands of markers zoomed out;
-    - a filter set stays shown as the pressed **Filter** button, as the
-      gallery's;
-    - [ ] the form warns of a similar event — within a few km on the same
-          day, whatever the filter — linking it.
-  - [ ] The KČT account, posting and deleting, a full run, the fm5 timer.
-        Deleting needs every upcoming event of the source, whatever its
-        visibility: `GET /events?source=` lists 1000 at most, the caller's
-        public or own ones.
+  - [x] Web, before the first import — never limited silently by time, or a
+        hidden event gets entered again: the layer loads all events matching
+        the filter as summaries (`GET /events?summary=1`: no description,
+        cover, organizer or counts; up to 10000), once per filter change,
+        not per pan, the selected one fetched in full; a filter set shows as
+        the pressed **Filter** button, as the gallery's. The API's JSON is
+        compressed: brotli, else gzip, in fm6's `backend.freemap.sk` vhost.
+  - [x] Posting and deleting (`--post`), sources as modules in
+        `scripts/event-sources/`.
+  - [x] KST yearbook parser (`kst.mjs`, needs `pdftotext`), dry run.
+  - [ ] KST events with no meeting place in the yearbook: skipped, or a
+        summit walk placed at its summit.
+  - [ ] The KČT and KST accounts, a full run, the nightly GitHub Action on the fm5
+        runner.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
       duration, ascent, difficulty, dogs, children; a legend, the
       `eventsSettings` slice and `events-cb=`. Transport is also the marker's
       icon when an event names one.
-- [ ] Marker clustering.
+- [ ] Marker clustering, once the markers get slow zoomed out.
+- [ ] **Similar event** warning in the form: one within a few km on the same
+      day, whatever the filter, linked.
 - [ ] **Copy link** on the event.
 - [ ] Follows and the _Who_ filter.
 - [ ] **Who sees the participants**: public to anyone who can open the event

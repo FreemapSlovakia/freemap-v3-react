@@ -9,6 +9,7 @@ import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import {
   MarkerIcon,
   MarkerLeafletIcon,
+  markerIconKey,
   markerIconOptions,
 } from '@shared/components/RichMarker.js';
 import { HALO_PANE, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
@@ -215,20 +216,21 @@ function ResultGeometry({
       // rather than the pin's tip (matches RichMarker).
       const compact = markerType === 'ring' || markerType === 'square';
 
+      const iconProps = {
+        color: markerColor,
+        halo: active ? SELECTION_COLOR : undefined,
+        markerType,
+        poiOpacity: window.fmHeadless?.searchResultStyle?.opacity ?? 1,
+        poi: img[0],
+      };
+
       return marker(latLng, {
         interactive: !preview,
         icon: new MarkerLeafletIcon({
           ...markerIconOptions,
           iconAnchor: compact ? [12, 12] : markerIconOptions.iconAnchor,
-          icon: (
-            <MarkerIcon
-              color={markerColor}
-              halo={active ? SELECTION_COLOR : undefined}
-              markerType={markerType}
-              poiOpacity={window.fmHeadless?.searchResultStyle?.opacity ?? 1}
-              poi={img[0]}
-            />
-          ),
+          icon: <MarkerIcon {...iconProps} />,
+          iconKey: markerIconKey(iconProps),
         }),
       });
     },

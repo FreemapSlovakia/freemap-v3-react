@@ -4,11 +4,14 @@ import { poiIconGlyphRect } from '@shared/poiIconGlyph.js';
 import type Leaflet from 'leaflet';
 import { type BaseIconOptions, DomUtil, Icon } from 'leaflet';
 import {
+  Component,
   type CSSProperties,
   cloneElement,
+  isValidElement,
   type ReactElement,
   type SVGProps,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
 } from 'react';
@@ -79,7 +82,7 @@ export interface IconSvg {
 // Loose shape accepted by the low-level renderer, which receives the content
 // props already destructured (and thus uncorrelated). Public callers use the
 // mutually-exclusive `IconProps` below.
-interface MarkerIconProps extends BaseIconProps {
+export interface MarkerIconProps extends BaseIconProps {
   label?: string | number;
   poi?: string;
   faIcon?: ReactElement;
@@ -133,25 +136,10 @@ export const markerIconOptions = {
 };
 
 /**
- * Applies `interactive` to a marker that is already on the map.
- *
- * Leaflet wires up interactivity (the `leaflet-interactive` class, the map's
- * hit-test target and the drag handler) while building the icon, and
- * react-leaflet doesn't diff the option, so the declarative way to change it is
- * remounting the marker — which throws the icon element away and re-renders its
- * content through a fresh async React root, leaving the marker blank for a frame
- * (a visible blink whenever e.g. `state.main.mapTool` changes). Mutating the
- * live marker avoids that.
- *
- * `draggable` is re-applied here because Leaflet only creates the drag handler
- * for an interactive marker, and on re-creation restores the handler's previous
- * enabled state instead of the current option.
- *
- * react-leaflet won't diff `interactive` itself — see
- * https://github.com/PaulLeCam/react-leaflet/issues/843, closed with the stance
- * that it only mirrors props Leaflet has a setter for, and that apps wanting
- * more should wrap the layer in a custom component
- * (`createLayerComponent`/`createPathComponent`, as the tile layers here do).
+ * Applies `interactive` to a marker already on the map. react-leaflet doesn't
+ * diff it (react-leaflet#843), and remounting would rebuild the icon — a blink
+ * whenever e.g. `state.main.mapTool` changes. `draggable` is re-applied too:
+ * Leaflet makes the drag handler only for an interactive marker.
  */
 function setMarkerInteractive(
   marker: Leaflet.Marker,
@@ -253,44 +241,41 @@ export function RichMarker({
     }
   }, [interactive, draggable]);
 
-  const icon = useMemo(
-    () =>
-      new MarkerLeafletIcon({
-        iconAnchor:
-          markerType === 'ring' || markerType === 'square'
-            ? [12, 12]
-            : markerIconOptions.iconAnchor,
-        tooltipAnchor:
-          markerType === 'ring' || markerType === 'square'
-            ? [0, -10]
-            : [0, -35],
-        iconSize: markerIconOptions.iconSize,
-        icon: (
-          <MarkerIcon
-            color={color}
-            glyphColor={glyphColor}
-            halo={halo}
-            faIcon={stableFaIcon}
-            iconSvg={iconSvg}
-            poi={poiName}
-            poiOpacity={poiOpacity}
-            label={label}
-            markerType={markerType}
-          />
-        ),
-      }),
-    [
+  const icon = useMemo(() => {
+    const iconProps: MarkerIconProps = {
       color,
       glyphColor,
       halo,
-      stableFaIcon,
+      faIcon: stableFaIcon,
       iconSvg,
-      poiName,
+      poi: poiName,
       poiOpacity,
       label,
       markerType,
-    ],
-  );
+    };
+
+    return new MarkerLeafletIcon({
+      iconAnchor:
+        markerType === 'ring' || markerType === 'square'
+          ? [12, 12]
+          : markerIconOptions.iconAnchor,
+      tooltipAnchor:
+        markerType === 'ring' || markerType === 'square' ? [0, -10] : [0, -35],
+      iconSize: markerIconOptions.iconSize,
+      icon: <MarkerIcon {...iconProps} />,
+      iconKey: markerIconKey(iconProps),
+    });
+  }, [
+    color,
+    glyphColor,
+    halo,
+    stableFaIcon,
+    iconSvg,
+    poiName,
+    poiOpacity,
+    label,
+    markerType,
+  ]);
 
   return (
     <Marker
@@ -304,24 +289,209 @@ export function RichMarker({
   );
 }
 
-export class MarkerLeafletIcon extends Icon<
-  BaseIconOptions & { icon: ReactElement }
+// Marker content is stateless SVG: each look renders once, in one hidden root,
+// and every marker gets a copy of its markup.
+const iconHtml = new Map<string, string>();
+
+/** Markers whose look is still rendering, by its key. */
+const waiting = new Map<string, Set<IconDiv>>();
+
+/** Looks to render, each under a request number of its own. */
+const pending = new Map<string, { icon: ReactElement; request: number }>();
+
+type IconDiv = HTMLElement & { _fmIconKey?: string };
+
+let iconRoot: Root | undefined;
+
+let requests = 0;
+
+/** A look rendered once and unshared: keyless, or props that don't serialise. */
+const UNSHARED = 'unshared:';
+
+/** Hands a rendered look's markup to the markers waiting for it. */
+function settle(id: string, html: string, failed = false) {
+  // A failure blanks only the markers waiting now; the look is tried again.
+  if (!failed && !id.startsWith(UNSHARED)) {
+    iconHtml.set(id, html);
+  }
+
+  for (const div of waiting.get(id) ?? []) {
+    // Not if the marker was given another look meanwhile.
+    if (div._fmIconKey === id) {
+      div.innerHTML = html;
+    }
+  }
+
+  waiting.delete(id);
+
+  pending.delete(id);
+}
+
+function CapturedIcon({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactElement;
+}): ReactElement {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    settle(id, ref.current!.innerHTML);
+  }, [id]);
+
+  return <div ref={ref}>{children}</div>;
+}
+
+/** One look that throws leaves its markers blank, not all in the batch. */
+class IconBoundary extends Component<
+  { id: string; children: ReactElement },
+  { failed: boolean }
 > {
-  createIcon(oldIcon?: HTMLElement & { _fm_root?: HTMLElement }): HTMLElement {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error('Marker icon not rendered', error);
+
+    settle(this.props.id, '', true);
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
+function showIcon(div: IconDiv, key: string, icon: ReactElement) {
+  div._fmIconKey = key;
+
+  const html = iconHtml.get(key);
+
+  if (html !== undefined) {
+    div.innerHTML = html;
+
+    return;
+  }
+
+  // Blank until it arrives: the old look at a new anchor would jump.
+  div.replaceChildren();
+
+  const divs = waiting.get(key);
+
+  if (divs) {
+    divs.add(div);
+
+    return;
+  }
+
+  // Looks are few (colour × glyph); a bound keeps arbitrary labels in check.
+  if (iconHtml.size > 5000) {
+    iconHtml.clear();
+  }
+
+  waiting.set(key, new Set([div]));
+
+  pending.set(key, { icon, request: ++requests });
+
+  // Once for a whole batch of new looks, not once each.
+  if (!renderQueued) {
+    renderQueued = true;
+
+    queueMicrotask(renderPending);
+  }
+}
+
+let renderQueued = false;
+
+function renderPending() {
+  renderQueued = false;
+
+  iconRoot ??= createRoot(document.createElement('div'));
+
+  // Keyed by the request too: a look asked for again after the cache dropped
+  // it mounts anew, so its effect runs again.
+  iconRoot.render(
+    [...pending].map(([id, { icon, request }]) => (
+      <IconBoundary key={`${id}#${request}`} id={id}>
+        <CapturedIcon id={id}>{icon}</CapturedIcon>
+      </IconBoundary>
+    )),
+  );
+}
+
+/**
+ * What makes two markers' content the same, for sharing its markup; undefined
+ * where it can't be told.
+ */
+export function markerIconKey({
+  faIcon,
+  ...props
+}: MarkerIconProps): string | undefined {
+  const fa = faIcon && elementKey(faIcon);
+
+  return fa === null ? undefined : JSON.stringify([props, fa]);
+}
+
+const objectIds = new WeakMap<object, number>();
+
+let objectCount = 0;
+
+/** A function or component by identity, which JSON would drop. */
+function idOf(value: object): number {
+  if (!objectIds.has(value)) {
+    objectIds.set(value, ++objectCount);
+  }
+
+  return objectIds.get(value)!;
+}
+
+/**
+ * A glyph by its component and props — nested elements and functions by
+ * identity; null where unserialisable.
+ */
+function elementKey(element: ReactElement): string | null {
+  const { type } = element;
+
+  // An intrinsic element (`<svg>`) is its tag; a WeakMap takes objects only.
+  const id = typeof type === 'string' ? type : idOf(type);
+
+  try {
+    return `${id}:${JSON.stringify(element.props, (_, value: unknown) =>
+      typeof value === 'function'
+        ? `fn${idOf(value)}`
+        : isValidElement(value)
+          ? `el${elementKey(value)}`
+          : value,
+    )}`;
+  } catch {
+    return null;
+  }
+}
+
+export class MarkerLeafletIcon extends Icon<
+  BaseIconOptions & {
+    icon: ReactElement;
+    /** Shared by icons rendering alike (`markerIconKey`); unset, a look of its own. */
+    iconKey?: string;
+  }
+> {
+  createIcon(oldIcon?: HTMLElement): HTMLElement {
     const reuse = oldIcon?.tagName === 'DIV';
 
-    const div = (
-      reuse ? oldIcon : document.createElement('div')
-    ) as HTMLElement & { _fm_root?: Root };
+    const div: IconDiv = reuse ? oldIcon : document.createElement('div');
 
-    if (!div._fm_root) {
-      // Leaflet's Icon._setIconStyles is an untyped internal method.
-      (this as any)._setIconStyles(div, 'icon');
+    // On a reused element too: a new icon may have another anchor (pin → ring).
+    // Leaflet's Icon._setIconStyles is an untyped internal method.
+    (this as any)._setIconStyles(div, 'icon');
 
-      div._fm_root = createRoot(div);
-    }
-
-    div._fm_root.render(this.options.icon);
+    showIcon(
+      div,
+      this.options.iconKey ?? `${UNSHARED}${++requests}`,
+      this.options.icon,
+    );
 
     return div;
   }

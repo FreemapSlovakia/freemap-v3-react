@@ -176,6 +176,79 @@ const yesNo = (value: boolean | null) =>
 const stat = (scale: EventScale, value: number | null) =>
   value === null ? MUTED_COLOR : scale.colorAt(tOf(scale, value));
 
+const MINE_RANK: Record<MineCategory, number> = {
+  mine: 3,
+  going: 2,
+  interested: 1,
+  others: 0,
+};
+
+const DIFFICULTY_RANK: Record<Difficulty, number> = {
+  easy: 4,
+  moderate: 3,
+  demanding: 2,
+  expert: 1,
+};
+
+/** How high its marker stacks under a mode; what the mode greys out lowest. */
+function stackRank(
+  event: EventSummary,
+  by: EventsColorizeBy | null,
+  userId: number | undefined,
+  now: number,
+): number {
+  switch (by) {
+    case null:
+      return 0;
+
+    case 'when': {
+      const [start, end] = spanOf(event);
+
+      return start <= now && now < end ? 2 : start > now ? 1 : 0;
+    }
+
+    case 'mine':
+      return MINE_RANK[mineCategory(event, userId)];
+
+    case 'transport':
+      return event.transports.length ? 1 : 0;
+
+    case 'distance':
+    case 'duration':
+    case 'ascent':
+      return event[by] === null ? -Infinity : -event[by];
+
+    case 'difficulty':
+      return event.difficulty ? DIFFICULTY_RANK[event.difficulty] : 0;
+
+    case 'dogs':
+    case 'children':
+      return event[by] === null ? 0 : event[by] ? 2 : 1;
+  }
+}
+
+/**
+ * The events bottom to top as their markers stack: by what the mode shows
+ * (mine over others, shorter over longer, the unsaid lowest), then the earlier
+ * over the later.
+ */
+export function stackOrder<T extends EventSummary>(
+  events: T[],
+  by: EventsColorizeBy | null,
+  userId: number | undefined,
+  now: number,
+): T[] {
+  // Ranked once each, not on every comparison.
+  return events
+    .map((event) => ({ event, rank: stackRank(event, by, userId, now) }))
+    .toSorted(
+      (a, b) =>
+        a.rank - b.rank ||
+        b.event.startAt.getTime() - a.event.startAt.getTime(),
+    )
+    .map(({ event }) => event);
+}
+
 /** The marker's colour under a mode. */
 export function eventColor(
   event: EventSummary,
