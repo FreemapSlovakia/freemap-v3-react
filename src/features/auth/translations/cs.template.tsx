@@ -90,11 +90,15 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Prémiová přiblížení (16+) stínování terénu v aplikacích jako Locus, pokud máte prémiový přístup',
       'tiles:aerial':
         'Prémiové přiblížení (20) slovenské a české letecké mapy v aplikacích jako Locus, pokud máte prémiový přístup',
+      'users:read':
+        'Vyhledávání a zobrazení uživatelských účtů (správce uživatelů)',
+      'users:write':
+        'Úprava a slučování uživatelských účtů (správce uživatelů)',
     },
     title: 'Aplikační tokeny',
     about: 'Co jsou aplikační tokeny?',
     intro:
-      'Aplikační token umožní jiné aplikaci nebo skriptu používat Freemap vaším jménem, například zobrazovat prémiové fotografie. Může dělat jen to, co mu dovolí jeho oprávnění, a nic se samotným účtem.',
+      'Aplikační token umožní jiné aplikaci nebo skriptu používat Freemap vaším jménem, například zobrazovat prémiové fotografie. Může dělat jen to, co mu dovolí jeho oprávnění, a nic se samotným účtem, pokud nejste správce uživatelů a nedáte mu oprávnění k uživatelským účtům.',
     usage: (
       <>
         Token posílejte v HTTP hlavičce <code>Authorization</code> každého
@@ -117,6 +121,8 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     never: 'Bez omezení',
     days: ({ count }) => `${count} dní`,
     customDate: 'Do data',
+    roleScopeExpiry:
+      'Token s oprávněními k uživatelským účtům musí vypršet do 7 dní od vytvoření.',
     pastDate: 'Datum platnosti musí být v budoucnosti.',
     lastUsed: 'Naposledy použit',
     neverUsed: 'Zatím nepoužit',

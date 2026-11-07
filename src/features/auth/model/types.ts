@@ -138,9 +138,20 @@ export const AppTokenScopeSchema = z.enum([
   'tiles:outdoor',
   'tiles:shading',
   'tiles:aerial',
+  'users:read',
+  'users:write',
 ]);
 
 export type AppTokenScope = z.infer<typeof AppTokenScopeSchema>;
+
+/** Scopes only a holder of the role may put on a token, as the API enforces. */
+export const SCOPE_ROLES: Partial<Record<AppTokenScope, Role>> = {
+  'users:read': 'userManager',
+  'users:write': 'userManager',
+};
+
+/** The API's limit on a token holding a role scope. */
+export const ROLE_SCOPE_MAX_DAYS = 7;
 
 export const AppTokenSchema = z.object({
   id: z.number(),

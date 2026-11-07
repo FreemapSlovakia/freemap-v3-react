@@ -72,7 +72,7 @@ const en: AuthMessages = {
     title: 'App tokens',
     about: 'What are app tokens?',
     intro:
-      'An app token lets another application or a script use Freemap as you, for example to show premium photos. It can do only what its permissions allow, and nothing with your account itself.',
+      'An app token lets another application or a script use Freemap as you, for example to show premium photos. It can do only what its permissions allow, and nothing with your account itself unless you are a user manager and give it the user account permissions.',
     usage: (
       <>
         Send the token in the HTTP <code>Authorization</code> header of each
@@ -107,11 +107,15 @@ const en: AuthMessages = {
         'Premium zooms (16+) of the terrain shadings in apps such as Locus, if you have premium',
       'tiles:aerial':
         'Premium zooms (20) of the Slovak and Czech aerial imagery in apps such as Locus, if you have premium',
+      'users:read': 'Find and view user accounts (user manager)',
+      'users:write': 'Change and merge user accounts (user manager)',
     },
     expiration: 'Expires',
     never: 'Never',
     days: ({ count }) => `In ${count} days`,
     customDate: 'On a date',
+    roleScopeExpiry:
+      'A token with user account permissions must expire within 7 days of its creation.',
     pastDate: 'The expiry date must be in the future.',
     lastUsed: 'Last used',
     neverUsed: 'Not used yet',

@@ -91,11 +91,15 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Zoom premium (16+) delle ombreggiature del terreno in app come Locus, se ha l’accesso premium',
       'tiles:aerial':
         'Zoom premium (20) delle ortofoto slovacche e ceche in app come Locus, se ha l’accesso premium',
+      'users:read':
+        'Cercare e visualizzare gli account utente (gestore degli utenti)',
+      'users:write':
+        'Modificare e unire gli account utente (gestore degli utenti)',
     },
     title: 'Token delle app',
     about: 'Che cosa sono i token delle app?',
     intro:
-      'Un token dell’app consente a un’altra applicazione o a uno script di usare Freemap a suo nome, ad esempio per mostrare le foto premium. Può fare solo ciò che i suoi permessi consentono, e nulla con l’account stesso.',
+      'Un token dell’app consente a un’altra applicazione o a uno script di usare Freemap a suo nome, ad esempio per mostrare le foto premium. Può fare solo ciò che i suoi permessi consentono, e nulla con l’account stesso, a meno che Lei sia gestore degli utenti e gli conceda i permessi sugli account utente.',
     usage: (
       <>
         Invii il token nell’intestazione HTTP <code>Authorization</code> di ogni
@@ -118,6 +122,8 @@ const it: DeepPartialWithRequiredObjects<AuthMessages> = {
     never: 'Mai',
     days: ({ count }) => `Tra ${count} giorni`,
     customDate: 'In una data',
+    roleScopeExpiry:
+      'Un token con permessi sugli account utente deve scadere entro 7 giorni dalla sua creazione.',
     pastDate: 'La data di scadenza deve essere nel futuro.',
     lastUsed: 'Ultimo utilizzo',
     neverUsed: 'Non ancora usato',

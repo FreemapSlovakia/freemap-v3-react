@@ -90,11 +90,15 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Powiększenia premium (16+) cieniowania terenu w aplikacjach takich jak Locus, jeśli jest dostęp premium',
       'tiles:aerial':
         'Powiększenie premium (20) słowackich i czeskich ortofotomap w aplikacjach takich jak Locus, jeśli jest dostęp premium',
+      'users:read':
+        'Wyszukiwanie i przeglądanie kont użytkowników (administrator użytkowników)',
+      'users:write':
+        'Zmiana i scalanie kont użytkowników (administrator użytkowników)',
     },
     title: 'Tokeny aplikacji',
     about: 'Czym są tokeny aplikacji?',
     intro:
-      'Token aplikacji pozwala innej aplikacji lub skryptowi korzystać z Freemap w imieniu użytkownika, na przykład wyświetlać zdjęcia premium. Może robić tylko to, na co pozwalają jego uprawnienia, i nic z samym kontem.',
+      'Token aplikacji pozwala innej aplikacji lub skryptowi korzystać z Freemap w imieniu użytkownika, na przykład wyświetlać zdjęcia premium. Może robić tylko to, na co pozwalają jego uprawnienia, i nic z samym kontem – chyba że token administratora użytkowników otrzyma uprawnienia do kont użytkowników.',
     usage: (
       <>
         Token należy wysyłać w nagłówku HTTP <code>Authorization</code> każdego
@@ -117,6 +121,8 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
     never: 'Bez ograniczeń',
     days: ({ count }) => `Za ${count} dni`,
     customDate: 'Do daty',
+    roleScopeExpiry:
+      'Token z uprawnieniami do kont użytkowników musi wygasnąć w ciągu 7 dni od utworzenia.',
     pastDate: 'Data ważności musi przypadać w przyszłości.',
     lastUsed: 'Ostatnio użyty',
     neverUsed: 'Jeszcze nieużyty',

@@ -91,11 +91,15 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Premium povečave (16+) senčenj terena v aplikacijah, kot je Locus, če imate premium dostop',
       'tiles:aerial':
         'Premium povečava (20) slovaških in čeških letalskih posnetkov v aplikacijah, kot je Locus, če imate premium dostop',
+      'users:read':
+        'Iskanje in ogled uporabniških računov (upravitelj uporabnikov)',
+      'users:write':
+        'Spreminjanje in združevanje uporabniških računov (upravitelj uporabnikov)',
     },
     title: 'Aplikacijski žetoni',
     about: 'Kaj so aplikacijski žetoni?',
     intro:
-      'Aplikacijski žeton drugi aplikaciji ali skripti omogoča, da v vašem imenu uporablja Freemap, na primer za prikaz premium fotografij. Naredi lahko le to, kar mu dovoljujejo njegova dovoljenja, s samim računom pa ničesar.',
+      'Aplikacijski žeton drugi aplikaciji ali skripti omogoča, da v vašem imenu uporablja Freemap, na primer za prikaz premium fotografij. Naredi lahko le to, kar mu dovoljujejo njegova dovoljenja, s samim računom pa ničesar, razen če ste upravitelj uporabnikov in mu dodelite dovoljenja za uporabniške račune.',
     usage: (
       <>
         Žeton pošljite v glavi HTTP <code>Authorization</code> vsake zahteve na
@@ -118,6 +122,8 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     never: 'Brez omejitve',
     days: ({ count }) => `Čez ${count} dni`,
     customDate: 'Do datuma',
+    roleScopeExpiry:
+      'Žeton z dovoljenji za uporabniške račune mora poteči v 7 dneh od nastanka.',
     pastDate: 'Datum poteka mora biti v prihodnosti.',
     lastUsed: 'Nazadnje uporabljen',
     neverUsed: 'Še ni bil uporabljen',

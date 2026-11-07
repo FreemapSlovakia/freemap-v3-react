@@ -64,13 +64,13 @@ V časti **Odpojiť** stlačte pripojeného poskytovateľa a po potvrdení sa po
 
 ## Aplikačné tokeny
 
-Aplikačný token umožní inej aplikácii alebo skriptu používať Freemap vo vašom mene – napríklad zobrazovať prémiové priblíženia Outdoor mapy v Locuse alebo pracovať s vašimi fotografiami, mapami či zariadeniami cez Freemap API. Token umožňuje len to, čo povoľujú oprávnenia tokenu, a nič so samotným účtom: cez token nemožno zmeniť osobné údaje, poskytovateľov prihlásenia ani nákupy, ani vytvoriť ďalšie tokeny. :FaInfoCircle: **Čo sú aplikačné tokeny?** v tejto časti ukazuje, ako aplikácia token posiela.
+Aplikačný token umožní inej aplikácii alebo skriptu používať Freemap vo vašom mene – napríklad zobrazovať prémiové priblíženia Outdoor mapy v Locuse alebo pracovať s vašimi fotografiami, mapami či zariadeniami cez Freemap API. Token umožňuje len to, čo povoľujú oprávnenia tokenu, a nič so samotným účtom: cez token nemožno zmeniť osobné údaje, poskytovateľov prihlásenia ani nákupy, ani vytvoriť ďalšie tokeny. Výnimkou je token správcu používateľov s oprávnením na zmeny používateľských účtov. :FaInfoCircle: **Čo sú aplikačné tokeny?** v tejto časti ukazuje, ako aplikácia token posiela.
 
 Stlačte :FaPlus: **Nový token** a vyplňte:
 
 - **Poznámka** – na čo token slúži, aby ste ho v zozname spoznali.
-- **Oprávnenia** – zaškrtnite len to, čo aplikácia potrebuje: prezeranie alebo zmeny fotografií, mojich máp či sledovaných zariadení a prémiové priblíženia Outdoor mapy, tieňovaní terénu a slovenskej a českej leteckej mapy. Priblíženia máp fungujú v iných aplikáciách ako JOSM, len ak máte prémiový prístup.
-- **Platnosť do** – **Bez obmedzenia**, 30, 90 alebo 365 dní, alebo **Do dátumu**.
+- **Oprávnenia** – zaškrtnite len to, čo aplikácia potrebuje: prezeranie alebo zmeny fotografií, mojich máp či sledovaných zariadení a prémiové priblíženia Outdoor mapy, tieňovaní terénu a slovenskej a českej leteckej mapy. Priblíženia máp fungujú v iných aplikáciách ako JOSM, len ak máte prémiový prístup. Správca používateľov vidí aj oprávnenia k používateľským účtom; token s nimi musí vypršať do 7 dní od vytvorenia.
+- **Platnosť do** – **Bez obmedzenia**, 7, 30, 90 alebo 365 dní, alebo **Do dátumu**; s oprávnením k používateľským účtom len 7 dní alebo **Do dátumu** do 7 dní od vytvorenia tokenu.
 
 Token vytvoríte tlačidlom :FaCheck: **Nový token** pod formulárom. Token sa zobrazí iba raz: skopírujte ho tlačidlom :FaClipboard: a uložte si ho – neskôr sa už prečítať nedá. Token uchovávajte v tajnosti, rovnako ako heslo.
 

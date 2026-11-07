@@ -97,11 +97,15 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Zooms premium (16+) des ombrages du terrain dans des applications comme Locus, si vous avez l’accès premium',
       'tiles:aerial':
         'Zoom premium (20) des images aériennes slovaques et tchèques dans des applications comme Locus, si vous avez l’accès premium',
+      'users:read':
+        'Rechercher et consulter les comptes utilisateurs (gestionnaire des utilisateurs)',
+      'users:write':
+        'Modifier et fusionner les comptes utilisateurs (gestionnaire des utilisateurs)',
     },
     title: 'Jetons d’application',
     about: 'Que sont les jetons d’application ?',
     intro:
-      'Un jeton d’application permet à une autre application ou à un script d’utiliser Freemap en votre nom, par exemple pour afficher des photos premium. Il ne peut faire que ce que ses autorisations permettent, et rien sur le compte lui-même.',
+      'Un jeton d’application permet à une autre application ou à un script d’utiliser Freemap en votre nom, par exemple pour afficher des photos premium. Il ne peut faire que ce que ses autorisations permettent, et rien sur le compte lui-même, sauf si vous êtes gestionnaire des utilisateurs et lui donnez les autorisations sur les comptes utilisateurs.',
     usage: (
       <>
         Envoyez le jeton dans l’en-tête HTTP <code>Authorization</code> de
@@ -124,6 +128,8 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     never: 'Jamais',
     days: ({ count }) => `Dans ${count} jours`,
     customDate: 'À une date',
+    roleScopeExpiry:
+      'Un jeton avec des autorisations sur les comptes utilisateurs doit expirer dans les 7 jours suivant sa création.',
     pastDate: 'La date d’expiration doit être dans le futur.',
     lastUsed: 'Dernière utilisation',
     neverUsed: 'Pas encore utilisé',

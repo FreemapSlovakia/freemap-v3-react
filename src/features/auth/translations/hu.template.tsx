@@ -90,11 +90,15 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
         'A domborzatárnyékolások prémium nagyítási szintjei (16+) olyan alkalmazásokban, mint a Locus, prémium hozzáféréssel',
       'tiles:aerial':
         'A szlovák és cseh légifotók prémium nagyítási szintje (20) olyan alkalmazásokban, mint a Locus, prémium hozzáféréssel',
+      'users:read':
+        'Felhasználói fiókok keresése és megtekintése (felhasználókezelő)',
+      'users:write':
+        'Felhasználói fiókok módosítása és összevonása (felhasználókezelő)',
     },
     title: 'Alkalmazástokenek',
     about: 'Mik azok az alkalmazástokenek?',
     intro:
-      'Az alkalmazástoken lehetővé teszi, hogy egy másik alkalmazás vagy szkript az Ön nevében használja a Freemapet, például prémium fotók megjelenítésére. Csak azt teheti, amit az engedélyei megengednek, magával a fiókkal semmit.',
+      'Az alkalmazástoken lehetővé teszi, hogy egy másik alkalmazás vagy szkript az Ön nevében használja a Freemapet, például prémium fotók megjelenítésére. Csak azt teheti, amit az engedélyei megengednek, magával a fiókkal semmit – kivéve, ha Ön felhasználókezelő, és megadja neki a felhasználói fiókokra vonatkozó engedélyeket.',
     usage: (
       <>
         A tokent a Freemap API-hoz intézett minden kérés{' '}
@@ -117,6 +121,8 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     never: 'Soha',
     days: ({ count }) => `${count} nap múlva`,
     customDate: 'Adott napon',
+    roleScopeExpiry:
+      'A felhasználói fiókokra vonatkozó engedélyekkel rendelkező tokennek a létrehozásától számított 7 napon belül le kell járnia.',
     pastDate: 'A lejárati dátumnak a jövőben kell lennie.',
     lastUsed: 'Utoljára használva',
     neverUsed: 'Még nem használták',

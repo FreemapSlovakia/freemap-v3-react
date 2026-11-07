@@ -89,11 +89,14 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Premium-Zoomstufen (16+) der Geländeschattierungen in Apps wie Locus, mit Premium-Zugang',
       'tiles:aerial':
         'Premium-Zoomstufe (20) der slowakischen und tschechischen Luftbilder in Apps wie Locus, mit Premium-Zugang',
+      'users:read': 'Benutzerkonten suchen und ansehen (Benutzerverwalter)',
+      'users:write':
+        'Benutzerkonten ändern und zusammenführen (Benutzerverwalter)',
     },
     title: 'App-Tokens',
     about: 'Was sind App-Tokens?',
     intro:
-      'Ein App-Token erlaubt einer anderen Anwendung oder einem Skript, Freemap in Ihrem Namen zu nutzen, etwa um Premium-Fotos anzuzeigen. Es kann nur das tun, was seine Berechtigungen erlauben, und nichts mit dem Konto selbst.',
+      'Ein App-Token erlaubt einer anderen Anwendung oder einem Skript, Freemap in Ihrem Namen zu nutzen, etwa um Premium-Fotos anzuzeigen. Es kann nur das tun, was seine Berechtigungen erlauben, und nichts mit dem Konto selbst, außer Sie sind Benutzerverwalter und geben ihm die Berechtigungen für Benutzerkonten.',
     usage: (
       <>
         Senden Sie das Token im HTTP-Header <code>Authorization</code> jeder
@@ -116,6 +119,8 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     never: 'Unbegrenzt',
     days: ({ count }) => `In ${count} Tagen`,
     customDate: 'Bis zu einem Datum',
+    roleScopeExpiry:
+      'Ein Token mit Berechtigungen für Benutzerkonten muss innerhalb von 7 Tagen nach seiner Erstellung ablaufen.',
     pastDate: 'Das Ablaufdatum muss in der Zukunft liegen.',
     lastUsed: 'Zuletzt verwendet',
     neverUsed: 'Noch nicht verwendet',

@@ -96,6 +96,7 @@ export type AuthMessages = {
     never: string;
     days: (props: { count: number }) => string;
     customDate: string;
+    roleScopeExpiry: string;
     pastDate: string;
     lastUsed: string;
     neverUsed: string;

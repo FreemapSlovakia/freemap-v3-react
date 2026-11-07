@@ -5,6 +5,9 @@ import {
   type AppTokenScope,
   AppTokenScopeSchema,
   CreatedAppTokenSchema,
+  hasRole,
+  ROLE_SCOPE_MAX_DAYS,
+  SCOPE_ROLES,
 } from '@features/auth/model/types.js';
 import { loadAuthMessages } from '@features/auth/translations/loadAuthMessages.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
@@ -49,7 +52,20 @@ import {
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 
-const EXPIRATION_DAYS = [30, 90, 365] as const;
+/** The expiry choices, as the select's values; a role scope limits them. */
+const expirationChoices = (roleScoped: boolean) =>
+  roleScoped
+    ? [String(ROLE_SCOPE_MAX_DAYS), 'custom']
+    : ['never', String(ROLE_SCOPE_MAX_DAYS), '30', '90', '365', 'custom'];
+
+const hasRoleScope = (scopes: Iterable<AppTokenScope>) =>
+  [...scopes].some((scope) => SCOPE_ROLES[scope]);
+
+/** The latest expiry the API takes for a role scope, with a minute's slack. */
+const roleScopeDeadline = (form: AppToken | 'new' | null) =>
+  (form && form !== 'new' ? form.createdAt.getTime() : Date.now()) +
+  ROLE_SCOPE_MAX_DAYS * 86_400_000 +
+  60_000;
 
 /** The `datetime-local` value of a date. */
 function toLocalInput(date: Date) {
@@ -70,6 +86,8 @@ export function AppTokensSection(): ReactElement | null {
   const online = useOnline();
 
   const authToken = useAppSelector((state) => state.auth.user?.authToken);
+
+  const user = useAppSelector((state) => state.auth.user);
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
@@ -215,6 +233,21 @@ export function AppTokensSection(): ReactElement | null {
       return;
     }
 
+    if (
+      hasRoleScope(scopes) &&
+      (!expiresAt || expiresAt.getTime() > roleScopeDeadline(form))
+    ) {
+      dispatch(
+        toastsAdd({
+          messageKey: 'appTokens.roleScopeExpiry',
+          messageLoader: loadAuthMessages,
+          style: 'warning',
+        }),
+      );
+
+      return;
+    }
+
     setBusy(true);
 
     // Cancelled and reopened while the request ran: leave the new form open.
@@ -331,16 +364,30 @@ export function AppTokensSection(): ReactElement | null {
     setForm(target);
   };
 
+  const roleScoped = hasRoleScope(scopes);
+
   const toggleScope = (scope: AppTokenScope) => {
-    setScopes((scopes) => {
-      const next = new Set(scopes);
+    const next = new Set(scopes);
 
-      if (!next.delete(scope)) {
-        next.add(scope);
-      }
+    if (!next.delete(scope)) {
+      next.add(scope);
+    }
 
-      return next;
-    });
+    setScopes(next);
+
+    const roleScopedNext = hasRoleScope(next);
+
+    const choices = expirationChoices(roleScopedNext);
+
+    // A role scope's limit replaces a longer expiry at once, not on submit.
+    if (
+      !choices.includes(expiration) ||
+      (roleScopedNext &&
+        expiration === 'custom' &&
+        !(new Date(expiresOn).getTime() <= roleScopeDeadline(form)))
+    ) {
+      setExpiration(choices[0]);
+    }
   };
 
   const formElement = form && (
@@ -370,21 +417,28 @@ export function AppTokensSection(): ReactElement | null {
             <Text m={am} k="appTokens.scopes" />
           </Form.Label>
 
-          {AppTokenScopeSchema.options.map((scope) => (
-            <Form.Check
-              key={scope}
-              id={`appTokenScope-${scope}`}
-              type="checkbox"
-              label={
-                <>
-                  <Badge bg="secondary">{scope}</Badge>{' '}
-                  {am?.appTokens.scopeNames[scope]}
-                </>
-              }
-              checked={scopes.has(scope)}
-              onChange={() => toggleScope(scope)}
-            />
-          ))}
+          {AppTokenScopeSchema.options
+            .filter((scope) => {
+              const role = SCOPE_ROLES[scope];
+
+              // One already held stays, to be unticked after losing the role.
+              return !role || hasRole(user, role) || scopes.has(scope);
+            })
+            .map((scope) => (
+              <Form.Check
+                key={scope}
+                id={`appTokenScope-${scope}`}
+                type="checkbox"
+                label={
+                  <>
+                    <Badge bg="secondary">{scope}</Badge>{' '}
+                    {am?.appTokens.scopeNames[scope]}
+                  </>
+                }
+                checked={scopes.has(scope)}
+                onChange={() => toggleScope(scope)}
+              />
+            ))}
         </Form.Group>
 
         <Form.Group controlId="appTokenExpiration" className="mb-3">
@@ -396,16 +450,18 @@ export function AppTokensSection(): ReactElement | null {
             value={expiration}
             onChange={(e) => setExpiration(e.currentTarget.value)}
           >
-            <option value="never">{am?.appTokens.never}</option>
-
-            {EXPIRATION_DAYS.map((count) => (
-              <option key={count} value={count}>
-                {am?.appTokens.days({ count })}
+            {expirationChoices(roleScoped).map((choice) => (
+              <option key={choice} value={choice}>
+                {choice === 'never'
+                  ? am?.appTokens.never
+                  : choice === 'custom'
+                    ? am?.appTokens.customDate
+                    : am?.appTokens.days({ count: Number(choice) })}
               </option>
             ))}
-
-            <option value="custom">{am?.appTokens.customDate}</option>
           </Form.Select>
+
+          {roleScoped && <Form.Text>{am?.appTokens.roleScopeExpiry}</Form.Text>}
 
           {expiration === 'custom' && (
             <div className="mt-2">
