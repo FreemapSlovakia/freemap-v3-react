@@ -9,6 +9,7 @@ import {
   LegendTick,
 } from '@shared/components/Legend.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNow } from '@shared/hooks/useNow.js';
 import type { ReactElement, ReactNode } from 'react';
 import { FaCalendarDay, FaPalette } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -134,11 +135,11 @@ export function EventsLegend(): ReactElement | null {
 
   const userId = useAppSelector((state) => state.auth.user?.id);
 
+  const now = useNow();
+
   if (!by) {
     return null;
   }
-
-  const now = Date.now();
 
   // A category is listed only when some marker wears it, the layer's
   // selected one among them.

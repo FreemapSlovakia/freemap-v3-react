@@ -1,6 +1,7 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNow } from '@shared/hooks/useNow.js';
 import type { LatLon } from '@shared/types/common.js';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import type { PanoramaDepth } from '../depth.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
 import type { PanoramaRenderData } from '../renderHolder.js';
@@ -34,21 +35,6 @@ export function skyHidden(
   render: Pick<PanoramaRenderInfo, 'depthLift'> | null,
 ): boolean {
   return Boolean(render?.depthLift);
-}
-
-const NOW_TICK_MS = 60_000;
-
-/** The current time, re-read once a minute. */
-function useNow(): number {
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), NOW_TICK_MS);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  return now;
 }
 
 /** Today as `YYYY-MM-DD`, rolling over at midnight. */

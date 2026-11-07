@@ -16,7 +16,7 @@ import { HALO_OPACITY, HALO_PANE, HALO_PANE_Z } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 // Imported for its side effect, before any layer can bind a tooltip.
-import '../leafletTooltipFocusFix.js';
+import '../leafletTooltipFixes.js';
 // Imported for its side effect, before any tile layer can redraw.
 import '../leafletTileZoomFix.js';
 // Imported for its side effect: registers the `doubleTapDragZoom` map handler.

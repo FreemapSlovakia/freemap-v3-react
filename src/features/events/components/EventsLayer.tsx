@@ -2,8 +2,9 @@ import { selectFeature } from '@app/store/actions.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNow } from '@shared/hooks/useNow.js';
 import eventsBody from '@shared/mapLibrary/defs/events.js';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { FaCalendarDay } from 'react-icons/fa';
 import { Pane, Tooltip, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -46,11 +47,22 @@ export function EventsLayer(): ReactElement | null {
     };
   }, [map]);
 
+  // Ranked over the whole list, then culled per pan: a marker entering the
+  // view, or one selected, restacks no other. Ticking, as "when" ranks and
+  // colours by what has started.
+  const now = useNow();
+
+  // Only "when" ranks by the time: the others aren't re-sorted every minute.
+  const rankNow = colorizeBy === 'when' ? now : 0;
+
+  const ranked = useMemo(
+    () => stackOrder(list, colorizeBy, userId, rankNow),
+    [list, colorizeBy, userId, rankNow],
+  );
+
   if (!layerActive) {
     return null;
   }
-
-  const now = Date.now();
 
   // By its id: the full one, or while it loads its summary. The filter may have
   // dropped it, and zoomed out it is the only one shown.
@@ -60,26 +72,21 @@ export function EventsLayer(): ReactElement | null {
       : list.find((e) => e.id === selectedId);
 
   const shown = [
-    ...(zoomOk
-      ? stackOrder(
-          list.filter(
-            (e) =>
-              e.id !== selectedId &&
-              bounds.contains([e.startPoint.lat, e.startPoint.lon]),
-          ),
-          colorizeBy,
-          userId,
-          now,
-        )
-      : []),
-    ...(selectedItem ? [selectedItem] : []),
+    ...(zoomOk ? ranked : [])
+      .map((event, rank) => ({ event, rank }))
+      .filter(
+        ({ event }) =>
+          event.id !== selectedId &&
+          bounds.contains([event.startPoint.lat, event.startPoint.lon]),
+      ),
+    ...(selectedItem ? [{ event: selectedItem, rank: ranked.length }] : []),
   ];
 
   return (
     // A pane of its own under the other markers: the stacking offsets below
     // would lift these above route points, drawing points and results.
     <Pane name="fm-events" style={{ zIndex: 590 }}>
-      {shown.map((event, i) => (
+      {shown.map(({ event, rank }) => (
         <RichMarker
           key={event.id}
           position={{ lat: event.startPoint.lat, lng: event.startPoint.lon }}
@@ -92,7 +99,7 @@ export function EventsLayer(): ReactElement | null {
           halo={event.id === selectedId ? SELECTION_COLOR : undefined}
           // Leaflet stacks by the marker's y plus this, so a step must outdo
           // the y apart two overlapping markers can be; the selected is last.
-          zIndexOffset={i * 100}
+          zIndexOffset={rank * 100}
           eventHandlers={{
             click() {
               dispatch(selectFeature({ type: 'event', id: event.id }));

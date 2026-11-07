@@ -112,9 +112,10 @@ const soonColor = (t: number) =>
 
 export const EVENT_SCALES = {
   when: {
-    half: 7 * DAY_MS,
+    half: 30 * DAY_MS,
     colorAt: soonColor,
-    ticks: [0, 1, 3, 7, 14, 30, 90],
+    // Up to a year: harvested calendars list events months ahead.
+    ticks: [0, 3, 7, 14, 30, 90, 365],
     factor: DAY_MS,
   },
   distance: {

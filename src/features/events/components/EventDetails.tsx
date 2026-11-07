@@ -3,10 +3,11 @@ import { Markdown } from '@shared/components/Markdown.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useNow } from '@shared/hooks/useNow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useRelativeTimeFormat } from '@shared/hooks/useRelativeTimeFormat.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
-import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Badge } from 'react-bootstrap';
 import {
   FaChild,
@@ -50,14 +51,9 @@ export function EventDetails({
     minute: '2-digit',
   });
 
-  // State, not a render-time read, which the React Compiler would freeze.
-  const [now, setNow] = useState(() => new Date());
+  const nowMs = useNow();
 
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(new Date()), 60_000);
-
-    return () => window.clearInterval(id);
-  }, []);
+  const now = new Date(nowMs);
 
   const relativeFormat = useRelativeTimeFormat({ numeric: 'auto' });
 
