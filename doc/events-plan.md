@@ -195,6 +195,14 @@ from the selection toolbar (**Edit**).
         skipped.
   - [x] The KČT and KST accounts, a full run, the nightly GitHub Action on the fm5
         runner.
+  - [x] TTT, Hungary's long-distance hikes (`ttt.mjs`): the JSON API tturak.hu's
+        own pages read (`hikeoccasion/list` returns every occasion since 2017
+        whatever the dates, `hikeoccasion/{id}` the routes, organizer and
+        coordinates, `hikeparams/all` the codes), no LLM; one event per
+        occasion at its longest route's start, the routes listed, the
+        occasion's day over a route time left on a day it moved from; in the
+        nightly run. termeszetjaro.hu, the federation's,
+        is behind a bot challenge and on Outdooractive's contract API: not used.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
       duration, ascent, difficulty, dogs, children; a legend, the
