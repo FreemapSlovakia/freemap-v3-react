@@ -157,8 +157,8 @@ export function EventTraits({
   }
 
   return (
-    // Wraps onto further lines rather than widen a narrow row.
-    <span className="d-inline-flex flex-wrap justify-content-end align-items-center column-gap-2">
+    // Loose marks, so the caller's flex line wraps them one by one.
+    <>
       {marks.map(({ key, hint, glyph, text }) =>
         glyph ? (
           <span
@@ -187,6 +187,6 @@ export function EventTraits({
           </LongPressTooltip>
         ),
       )}
-    </span>
+    </>
   );
 }

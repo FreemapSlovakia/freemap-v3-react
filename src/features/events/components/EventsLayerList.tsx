@@ -365,21 +365,22 @@ export function EventsLayerList(): ReactElement {
             >
               <div className="text-truncate">{event.title}</div>
 
-              {/* The traits wrap under the dates rather than squeeze them out. */}
-              <small className="d-flex flex-wrap align-items-center column-gap-2">
-                <span className="text-truncate">{formatDates(event)}</span>
-
-                <span className="ms-auto">
-                  <EventTraits
-                    event={event}
-                    traits={traits}
-                    near={
-                      km !== undefined && isNearSort(effectiveSort)
-                        ? { sort: effectiveSort, km }
-                        : undefined
-                    }
-                  />
+              {/* Traits fill the dates' line and wrap one by one, kept right:
+                  the dates' me-auto takes the first line's slack. */}
+              <small className="d-flex flex-wrap justify-content-end align-items-center column-gap-2">
+                <span className="text-truncate me-auto">
+                  {formatDates(event)}
                 </span>
+
+                <EventTraits
+                  event={event}
+                  traits={traits}
+                  near={
+                    km !== undefined && isNearSort(effectiveSort)
+                      ? { sort: effectiveSort, km }
+                      : undefined
+                  }
+                />
               </small>
             </ListGroup.Item>
           ))}
