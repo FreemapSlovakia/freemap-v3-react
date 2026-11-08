@@ -30,7 +30,7 @@ Each changeset is a marker with the mapper's name and the changeset's descriptio
 
 ## Inspecting a changeset
 
-Click a marker, or a changeset in the **Map layers** panel. The map zooms to the changeset and its panel opens on the right, or over the lower half of a phone's screen (where :FaChevronDown: and :FaChevronUp: in its header shrink it to the header or stretch it to the whole screen), with its **Author:**, **Description:**, **Time:** and other tags, such as the editor used. Clicking the author's name shows only that mapper's changesets.
+Click a marker, or a changeset in the **Map layers** panel. The map zooms to the changeset and its panel opens on the right, or over the lower half of a phone's screen (where :BsChevronDown: and :BsChevronUp: in its header shrink it to the header or stretch it to the whole screen), with its **Author:**, **Description:**, **Time:** and other tags, such as the editor used. Clicking the author's name shows only that mapper's changesets.
 
 The changed elements are drawn on the map: green for **created**, orange for **modified** and red, dashed, for **deleted**; where something moved, its previous shape is dashed grey. The panel gives the counts of each and lists the changed relations, which are not drawn. The **Map layers** panel lists the changed elements; picking one zooms to it. If the changes are hard to see, lower :MdBrightness6: **Map brightness** in the :FaCog: menu.
 

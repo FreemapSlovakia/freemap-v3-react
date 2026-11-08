@@ -542,6 +542,12 @@ a[target]:not(
   --bs-offcanvas-height: 100dvh;
 }
 
+/* Its edge is the screen's: the translucent border would show the map. Over
+   Bootstrap's `.offcanvas.offcanvas-bottom`, whichever loads last. */
+.offcanvas-bottom.fm-dock.fm-dock-full {
+  border-top-width: 0;
+}
+
 .fm-dock.fm-dock-min {
   --bs-offcanvas-height: auto;
 }

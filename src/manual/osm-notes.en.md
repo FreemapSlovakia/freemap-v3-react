@@ -12,7 +12,7 @@ Turn on the :FaStickyNote: **OSM notes** overlay: it is in the menu under :FaEll
 
 ## Reading a note
 
-Click a pin to select the note. Its panel opens on the right, or over the lower half of a phone's screen (where :FaChevronDown: and :FaChevronUp: in its header shrink it to the header or stretch it to the whole screen), with its comments – what was written, by whom and when, and whether the note was closed or reopened. Links in a comment open in a new tab; a link to an OpenStreetMap element is followed by **show on map**, which finds the element and selects it in Freemap.
+Click a pin to select the note. Its panel opens on the right, or over the lower half of a phone's screen (where :BsChevronDown: and :BsChevronUp: in its header shrink it to the header or stretch it to the whole screen), with its comments – what was written, by whom and when, and whether the note was closed or reopened. Links in a comment open in a new tab; a link to an OpenStreetMap element is followed by **show on map**, which finds the element and selects it in Freemap.
 
 At the top of the panel, :FaEllipsisV: **Actions** holds the actions for the place, as in the map's context menu, and :FaExternalLinkAlt: **Open in…** beside it holds:
 

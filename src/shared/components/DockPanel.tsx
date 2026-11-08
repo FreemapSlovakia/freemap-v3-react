@@ -6,6 +6,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
+import clsx from 'clsx';
 import {
   type MouseEvent,
   type ReactElement,
@@ -16,7 +17,7 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { Button, Offcanvas } from 'react-bootstrap';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import { useDispatch } from 'react-redux';
 
 // Below Bootstrap's `md` the panel docks at the bottom.
@@ -40,6 +41,9 @@ let docked: { node: HTMLElement; observer: ResizeObserver } | undefined;
 type Size = 'min' | 'half' | 'full';
 
 const SIZES: Size[] = ['min', 'half', 'full'];
+
+// Bootstrap Icons, as the × is, enlarged and thickened to its larger, heavier x-lg.
+const CHEVRON = { size: '1.2em', stroke: 'currentColor', strokeWidth: 0.6 };
 
 // One size for all panels, for the session: they stay mounted once used, so a
 // size of each one's own would reopen as it was left, not as last chosen.
@@ -306,7 +310,12 @@ export function DockPanel<T>({
     >
       <Offcanvas.Header
         closeButton
-        className={sized === 'min' ? 'gap-2 fm-cursor-pointer' : 'gap-2'}
+        className={clsx(
+          'gap-2',
+          sized === 'min' && 'fm-cursor-pointer',
+          // The summary line follows close under it.
+          sized === 'min' && summary && 'pb-1',
+        )}
         onClick={restore}
       >
         <Offcanvas.Title className="d-flex align-items-center gap-2 fs-6 fw-bold min-w-0">
@@ -337,7 +346,7 @@ export function DockPanel<T>({
           {side === 'bottom' && step > 0 && (
             <SizeButton
               label={m?.general.collapse}
-              icon={<FaChevronDown />}
+              icon={<BsChevronDown {...CHEVRON} />}
               onClick={() => setSize(SIZES[step - 1]!)}
             />
           )}
@@ -345,7 +354,7 @@ export function DockPanel<T>({
           {side === 'bottom' && step < SIZES.length - 1 && (
             <SizeButton
               label={m?.general.expand}
-              icon={<FaChevronUp />}
+              icon={<BsChevronUp {...CHEVRON} />}
               onClick={() => setSize(SIZES[step + 1]!)}
             />
           )}
