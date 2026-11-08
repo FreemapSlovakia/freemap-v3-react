@@ -3,6 +3,7 @@ import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
 import type { EventsColorizeBy } from './colorize.js';
 import type { EventsFilter } from './filter.js';
+import type { EventsListSort } from './listSort.js';
 
 /** Map overlay-layer code for the events markers layer. */
 export const EVENTS_LAYER = 'A';
@@ -227,4 +228,12 @@ export const eventsColorizeBy = createAction<EventsColorizeBy | null>(
 /** Shows or hides the colorize legend; toggles without a payload. */
 export const eventsToggleLegend = createAction<boolean | undefined>(
   'EVENTS_TOGGLE_LEGEND',
+);
+
+export const eventsSetListSort = createAction<EventsListSort>(
+  'EVENTS_SET_LIST_SORT',
+);
+
+export const eventsSetListInView = createAction<boolean>(
+  'EVENTS_SET_LIST_IN_VIEW',
 );

@@ -111,6 +111,22 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
       </>
     ),
   },
+  list: {
+    search: 'Hledat v názvech',
+    inView: 'Jen v aktuálním zobrazení',
+    noMatch: 'Žádná akce neodpovídá.',
+    sorts: {
+      date: 'Podle data',
+      title: 'Podle názvu',
+      lengthAsc: 'Od nejkratší',
+      lengthDesc: 'Od nejdelší',
+      ascentAsc: 'Od nejmenšího stoupání',
+      ascentDesc: 'Od největšího stoupání',
+      nearMap: 'Nejblíže ke středu mapy',
+      nearHome: 'Nejblíže k domovu',
+      nearPlace: 'Nejblíže k místu z filtru',
+    },
+  },
   selection: {
     backToEvents: 'Zpět na akce',
     interested: 'Mám zájem',

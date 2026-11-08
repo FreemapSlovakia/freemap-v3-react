@@ -119,6 +119,22 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
       </>
     ),
   },
+  list: {
+    search: 'Hľadať v názvoch',
+    inView: 'Len v aktuálnom zobrazení',
+    noMatch: 'Žiadna akcia nezodpovedá.',
+    sorts: {
+      date: 'Podľa dátumu',
+      title: 'Podľa názvu',
+      lengthAsc: 'Od najkratšej',
+      lengthDesc: 'Od najdlhšej',
+      ascentAsc: 'Od najmenšieho stúpania',
+      ascentDesc: 'Od najväčšieho stúpania',
+      nearMap: 'Najbližšie k stredu mapy',
+      nearHome: 'Najbližšie k domovu',
+      nearPlace: 'Najbližšie k miestu z filtra',
+    },
+  },
   selection: {
     backToEvents: 'Späť na akcie',
     interested: 'Mám záujem',

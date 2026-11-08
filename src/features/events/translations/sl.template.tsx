@@ -116,6 +116,22 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
       </>
     ),
   },
+  list: {
+    search: 'Iskanje v naslovih',
+    inView: 'Samo v trenutnem pogledu',
+    noMatch: 'Noben dogodek se ne ujema.',
+    sorts: {
+      date: 'Po datumu',
+      title: 'Po naslovu',
+      lengthAsc: 'Od najkrajšega',
+      lengthDesc: 'Od najdaljšega',
+      ascentAsc: 'Od najmanjšega vzpona',
+      ascentDesc: 'Od največjega vzpona',
+      nearMap: 'Najbližje središču zemljevida',
+      nearHome: 'Najbližje domu',
+      nearPlace: 'Najbližje kraju iz filtra',
+    },
+  },
   selection: {
     backToEvents: 'Nazaj na dogodke',
     interested: 'Zanima me',

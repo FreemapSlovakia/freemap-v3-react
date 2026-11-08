@@ -17,6 +17,7 @@ import {
   GRADE_WINDOW_WHOLE_LINE,
 } from '@features/elevationChart/model/settingsReducer.js';
 import { EventsColorizeBySchema } from '@features/events/model/colorize.js';
+import { EventsListSortSchema } from '@features/events/model/listSort.js';
 import { eventsSettingsInitialState } from '@features/events/model/settingsReducer.js';
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
@@ -454,6 +455,9 @@ export const PersistedEventsSettingsSchema = z
   .object({
     colorizeBy: EventsColorizeBySchema.nullable(),
     showLegend: z.boolean(),
+    // An unknown value resets this field alone, not the slice.
+    listSort: EventsListSortSchema.catch('date'),
+    listInView: z.boolean().catch(false),
   })
   .partial();
 

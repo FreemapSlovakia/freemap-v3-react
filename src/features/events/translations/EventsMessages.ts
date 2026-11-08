@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Difficulty } from '../model/actions.js';
 import type { EventsColorizeBy, MineCategory } from '../model/colorize.js';
+import type { EventsListSort } from '../model/listSort.js';
 
 export type EventsMessages = {
   noEvents: string;
@@ -89,6 +90,14 @@ export type EventsMessages = {
     noChildren: string;
     /** Under the participation buttons of an imported event; `source` is its calendar's name, styled. */
     importedNote: (props: { source: ReactNode }) => ReactNode;
+  };
+  /** The layer's event list in the map layers panel. */
+  list: {
+    search: string;
+    /** The checkbox keeping the list to the map's view. */
+    inView: string;
+    noMatch: string;
+    sorts: Record<EventsListSort, string>;
   };
   selection: {
     backToEvents: string;

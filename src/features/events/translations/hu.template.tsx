@@ -97,6 +97,22 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
       </>
     ),
   },
+  list: {
+    search: 'Keresés a címekben',
+    inView: 'Csak az aktuális nézetben',
+    noMatch: 'Nincs megfelelő esemény.',
+    sorts: {
+      date: 'Dátum szerint',
+      title: 'Cím szerint',
+      lengthAsc: 'A legrövidebbtől',
+      lengthDesc: 'A leghosszabbtól',
+      ascentAsc: 'A legkisebb emelkedéstől',
+      ascentDesc: 'A legnagyobb emelkedéstől',
+      nearMap: 'A térkép közepéhez legközelebb',
+      nearHome: 'Az otthonhoz legközelebb',
+      nearPlace: 'A szűrő helyéhez legközelebb',
+    },
+  },
   selection: {
     backToEvents: 'Vissza az eseményekhez',
     interested: 'Érdekel',

@@ -62,7 +62,10 @@ import {
   resolvedCustomLayersSelector,
   type WmsLayerDef,
 } from '@features/mapLibrary/model/selectors.js';
-import { PanelHeaderSlotContext } from '@features/mapSettings/panelHeaderSlot.js';
+import {
+  PanelHeaderSlotContext,
+  PanelToolbarSlotContext,
+} from '@features/mapSettings/panelHeaderSlot.js';
 import {
   colorToHexa,
   hexaToColor,
@@ -238,6 +241,8 @@ export default function MapLayersPanel(): ReactElement {
 
   const [headerSlot, setHeaderSlot] = useState<HTMLDivElement | null>(null);
 
+  const [toolbarSlot, setToolbarSlot] = useState<HTMLDivElement | null>(null);
+
   const opened = useRef(false);
 
   const featuresListed = featureRows.length > 0;
@@ -326,12 +331,17 @@ export default function MapLayersPanel(): ReactElement {
           </LongPressTooltip>
         </div>
 
+        {/* Empty, it takes no room. */}
+        <div ref={setToolbarSlot} className="px-2" />
+
         <div className={clsx(classes.list, 'px-2 pb-2')}>
           {feature ? (
             <MapFeatureItems feature={feature.id} elements={at.elements} />
           ) : target ? (
             <PanelHeaderSlotContext value={headerSlot}>
-              <LayerSettings key={setupKey(target)} target={target} />
+              <PanelToolbarSlotContext value={toolbarSlot}>
+                <LayerSettings key={setupKey(target)} target={target} />
+              </PanelToolbarSlotContext>
             </PanelHeaderSlotContext>
           ) : at.preset !== undefined ? (
             <PresetLayers id={at.preset} onOpen={setPlace} />

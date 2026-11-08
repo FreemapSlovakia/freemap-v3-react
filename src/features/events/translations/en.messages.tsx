@@ -115,6 +115,22 @@ const en: EventsMessages = {
       </>
     ),
   },
+  list: {
+    search: 'Search in titles',
+    inView: 'Only those in the current view',
+    noMatch: 'No event matches.',
+    sorts: {
+      date: 'By date',
+      title: 'By title',
+      lengthAsc: 'Shortest first',
+      lengthDesc: 'Longest first',
+      ascentAsc: 'Least ascent first',
+      ascentDesc: 'Most ascent first',
+      nearMap: 'Nearest to the map center',
+      nearHome: 'Nearest to home',
+      nearPlace: 'Nearest to the filter’s place',
+    },
+  },
   selection: {
     backToEvents: 'Back to events',
     interested: 'Interested',

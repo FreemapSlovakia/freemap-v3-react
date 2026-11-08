@@ -106,6 +106,22 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
       </>
     ),
   },
+  list: {
+    search: 'Rechercher dans les titres',
+    inView: 'Seulement dans la vue actuelle',
+    noMatch: 'Aucun événement ne correspond.',
+    sorts: {
+      date: 'Par date',
+      title: 'Par titre',
+      lengthAsc: 'Du plus court',
+      lengthDesc: 'Du plus long',
+      ascentAsc: 'Du plus faible dénivelé',
+      ascentDesc: 'Du plus fort dénivelé',
+      nearMap: 'Au plus près du centre de la carte',
+      nearHome: 'Au plus près du domicile',
+      nearPlace: 'Au plus près du lieu du filtre',
+    },
+  },
   selection: {
     backToEvents: 'Retour aux événements',
     interested: 'Ça m’intéresse',

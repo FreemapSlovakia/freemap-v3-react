@@ -117,6 +117,22 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
       </>
     ),
   },
+  list: {
+    search: 'In Titeln suchen',
+    inView: 'Nur im aktuellen Kartenausschnitt',
+    noMatch: 'Keine Veranstaltung passt.',
+    sorts: {
+      date: 'Nach Datum',
+      title: 'Nach Titel',
+      lengthAsc: 'Kürzeste zuerst',
+      lengthDesc: 'Längste zuerst',
+      ascentAsc: 'Geringster Anstieg zuerst',
+      ascentDesc: 'Größter Anstieg zuerst',
+      nearMap: 'Nächste zur Kartenmitte',
+      nearHome: 'Nächste zum Zuhause',
+      nearPlace: 'Nächste zum Ort im Filter',
+    },
+  },
   selection: {
     backToEvents: 'Zurück zu den Veranstaltungen',
     interested: 'Interessiert',

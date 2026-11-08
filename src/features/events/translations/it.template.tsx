@@ -98,6 +98,22 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
       </>
     ),
   },
+  list: {
+    search: 'Cerca nei titoli',
+    inView: 'Solo nella vista attuale',
+    noMatch: 'Nessun evento corrisponde.',
+    sorts: {
+      date: 'Per data',
+      title: 'Per titolo',
+      lengthAsc: 'Dal più corto',
+      lengthDesc: 'Dal più lungo',
+      ascentAsc: 'Dal dislivello minore',
+      ascentDesc: 'Dal dislivello maggiore',
+      nearMap: 'Più vicini al centro della mappa',
+      nearHome: 'Più vicini a casa',
+      nearPlace: 'Più vicini al luogo del filtro',
+    },
+  },
   selection: {
     backToEvents: 'Torna agli eventi',
     interested: 'Interessato',
