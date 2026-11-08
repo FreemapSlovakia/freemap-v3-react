@@ -247,6 +247,18 @@ from the selection toolbar (**Edit**).
       (Tiptap) reading and writing the same Markdown.
 - [ ] If the new tab proves clumsy (phones): a read-only view drawing a linked
       map without loading it into the editors.
+- [ ] **The list's 10000 cap.** `GET /events?summary=1` returns at most 10000,
+      ordered by start, and the client isn't told — a filter reaching far into
+      the past, or upcoming events past 10000, silently drop the latest (the
+      default view, ending now onward, is ~2600 today). Then load by the map's
+      view (`bbox`, which the API already takes), and move the list's search,
+      sort and nearest-to-home server-side, as they now work over all events.
+- [ ] **A page per public event** for crawlers (`sitemap-generator/`, see
+      [`seo-prerender.md`](./seo-prerender.md)), as the POI pages are: title,
+      dates, start place, description, `schema.org/Event` JSON-LD, linking the
+      event selected. The generator reads events from the API or its database.
+      `panel=event/<id>` can't be in the page's URL (nginx prerenders no query
+      holding a `/`); the older `event=<id>`, still read, opens it.
 
 New texts go into `src/features/events/translations/`, in English and Slovak;
 the other languages fall back to English until Release 2.

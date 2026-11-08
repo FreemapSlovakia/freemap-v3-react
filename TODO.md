@@ -746,11 +746,3 @@ distance probe, a premium quality tier. What it does not do yet is issues under
       are nodata. Sample z17 vs z18 first. The rest of France can come from
       RGE ALTI at z15 below it, re-interpolated with a cubic spline where its
       5 m lattice shows (bilinear facets otherwise shade as squares).
-
-## SEO (`sitemap-generator/`, see [`doc/seo-prerender.md`](./doc/seo-prerender.md))
-
-- [ ] **A page per public event**, as the POI pages are: title, dates, start
-      place, description, `schema.org/Event` JSON-LD, linking the event
-      selected. The generator reads events from the API or its database.
-      `panel=event/<id>` can't be in the page's URL (nginx prerenders no query
-      holding a `/`); the older `event=<id>`, still read, opens it.
