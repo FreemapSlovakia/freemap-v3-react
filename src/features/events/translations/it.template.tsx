@@ -115,6 +115,12 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearHome: 'Più vicini a casa',
       nearPlace: 'Più vicini al luogo del filtro',
     },
+    show: 'Mostrato nelle righe',
+    distanceFrom: {
+      nearMap: 'Distanza dal centro della mappa',
+      nearHome: 'Distanza da casa',
+      nearPlace: 'Distanza dal luogo del filtro',
+    },
   },
   selection: {
     backToEvents: 'Torna agli eventi',

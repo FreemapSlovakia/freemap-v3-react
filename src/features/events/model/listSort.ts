@@ -20,19 +20,68 @@ export const EventsListSortSchema = z.enum([
 
 export type EventsListSort = z.infer<typeof EventsListSortSchema>;
 
-/** Where each distance sort measures from; null where it has no origin now. */
-export type SortOrigins = {
-  nearMap: LatLon;
-  nearHome: LatLon | null;
-  nearPlace: LatLon | null;
+/** What a row of the list may show beside its dates. */
+export const EventsListTraitSchema = z.enum([
+  'transport',
+  'difficulty',
+  'dogs',
+  'children',
+  'length',
+  'duration',
+  'ascent',
+]);
+
+export type EventsListTrait = z.infer<typeof EventsListTraitSchema>;
+
+export const DEFAULT_LIST_TRAITS: EventsListTrait[] = [
+  'transport',
+  'difficulty',
+  'dogs',
+  'children',
+  'length',
+];
+
+type Stat = 'length' | 'duration' | 'ascent';
+
+/** The stat a sort orders by and which way; rows show it whatever is ticked. */
+export const STAT_SORTS: Partial<
+  Record<EventsListSort, { stat: Stat; sign: 1 | -1 }>
+> = {
+  lengthAsc: { stat: 'length', sign: 1 },
+  lengthDesc: { stat: 'length', sign: -1 },
+  durationAsc: { stat: 'duration', sign: 1 },
+  durationDesc: { stat: 'duration', sign: -1 },
+  ascentAsc: { stat: 'ascent', sign: 1 },
+  ascentDesc: { stat: 'ascent', sign: -1 },
 };
+
+const STAT_FIELD = {
+  length: 'distance',
+  duration: 'duration',
+  ascent: 'ascent',
+} as const satisfies Record<Stat, keyof EventSummary>;
+
+const NEAR_SORTS = [
+  'nearMap',
+  'nearHome',
+  'nearPlace',
+] as const satisfies EventsListSort[];
+
+export type EventsNearSort = (typeof NEAR_SORTS)[number];
+
+export const isNearSort = (sort: EventsListSort): sort is EventsNearSort =>
+  (NEAR_SORTS as readonly EventsListSort[]).includes(sort);
+
+/** Where each distance sort measures from; null where it has no origin now. */
+export type SortOrigins = Record<EventsNearSort, LatLon | null>;
 
 export type ListedEvent = { event: EventSummary; km?: number };
 
 /** By a stat, those without it last, whichever way. */
 const byStat =
-  (key: 'distance' | 'ascent' | 'duration', sign: 1 | -1) =>
-  (a: ListedEvent, b: ListedEvent) => {
+  (stat: Stat, sign: 1 | -1) => (a: ListedEvent, b: ListedEvent) => {
+    const key = STAT_FIELD[stat];
+
     const x = a.event[key];
 
     const y = b.event[key];
@@ -55,51 +104,30 @@ export function sortEvents(
   const byDate = (a: ListedEvent, b: ListedEvent) =>
     a.event.startAt.getTime() - b.event.startAt.getTime();
 
-  switch (sort) {
-    case 'title': {
-      const collator = new Intl.Collator(language);
+  if (sort === 'title') {
+    const collator = new Intl.Collator(language);
 
-      return listed.toSorted((a, b) =>
-        collator.compare(a.event.title, b.event.title),
-      );
-    }
-
-    case 'lengthAsc':
-      return listed.toSorted(byStat('distance', 1));
-
-    case 'lengthDesc':
-      return listed.toSorted(byStat('distance', -1));
-
-    case 'ascentAsc':
-      return listed.toSorted(byStat('ascent', 1));
-
-    case 'ascentDesc':
-      return listed.toSorted(byStat('ascent', -1));
-
-    case 'durationAsc':
-      return listed.toSorted(byStat('duration', 1));
-
-    case 'durationDesc':
-      return listed.toSorted(byStat('duration', -1));
-
-    case 'nearMap':
-    case 'nearHome':
-    case 'nearPlace': {
-      const origin = origins[sort];
-
-      if (!origin) {
-        return listed.toSorted(byDate);
-      }
-
-      return listed
-        .map(({ event }) => ({
-          event,
-          km: distanceTo(origin, event.startPoint) / 1000,
-        }))
-        .toSorted((a, b) => a.km - b.km);
-    }
-
-    default:
-      return listed.toSorted(byDate);
+    return listed.toSorted((a, b) =>
+      collator.compare(a.event.title, b.event.title),
+    );
   }
+
+  const statSort = STAT_SORTS[sort];
+
+  if (statSort) {
+    return listed.toSorted(byStat(statSort.stat, statSort.sign));
+  }
+
+  const origin = isNearSort(sort) ? origins[sort] : null;
+
+  if (origin) {
+    return listed
+      .map(({ event }) => ({
+        event,
+        km: distanceTo(origin, event.startPoint) / 1000,
+      }))
+      .toSorted((a, b) => a.km - b.km);
+  }
+
+  return listed.toSorted(byDate);
 }

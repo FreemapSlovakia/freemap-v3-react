@@ -17,7 +17,11 @@ import {
   GRADE_WINDOW_WHOLE_LINE,
 } from '@features/elevationChart/model/settingsReducer.js';
 import { EventsColorizeBySchema } from '@features/events/model/colorize.js';
-import { EventsListSortSchema } from '@features/events/model/listSort.js';
+import {
+  DEFAULT_LIST_TRAITS,
+  EventsListSortSchema,
+  EventsListTraitSchema,
+} from '@features/events/model/listSort.js';
 import { eventsSettingsInitialState } from '@features/events/model/settingsReducer.js';
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
@@ -458,6 +462,19 @@ export const PersistedEventsSettingsSchema = z
     // An unknown value resets this field alone, not the slice.
     listSort: EventsListSortSchema.catch('date'),
     listInView: z.boolean().catch(false),
+    // An unknown trait is dropped, not the whole choice.
+    listTraits: z
+      .array(z.unknown())
+      .transform((a) => [
+        ...new Set(
+          a.flatMap((t) => {
+            const r = EventsListTraitSchema.safeParse(t);
+
+            return r.success ? [r.data] : [];
+          }),
+        ),
+      ])
+      .catch(DEFAULT_LIST_TRAITS),
   })
   .partial();
 

@@ -128,6 +128,12 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearHome: 'Nejblíže k domovu',
       nearPlace: 'Nejblíže k místu z filtru',
     },
+    show: 'Zobrazeno v řádcích',
+    distanceFrom: {
+      nearMap: 'Vzdálenost od středu mapy',
+      nearHome: 'Vzdálenost od domova',
+      nearPlace: 'Vzdálenost od místa z filtru',
+    },
   },
   selection: {
     backToEvents: 'Zpět na akce',

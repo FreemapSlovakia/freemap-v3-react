@@ -2,9 +2,14 @@ import { selectFeature } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { onMap } from '@features/map/hooks/leafletElementHolder.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
-import { PanelToolbarSlotContext } from '@features/mapSettings/panelHeaderSlot.js';
+import {
+  PanelHeaderSlotContext,
+  PanelToolbarSlotContext,
+} from '@features/mapSettings/panelHeaderSlot.js';
+import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { usePaged } from '@shared/components/LoadMoreSentinel.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { fuzzyMatch, prepareFuzzyTarget } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNow } from '@shared/hooks/useNow.js';
@@ -17,15 +22,23 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Form, ListGroup, ToggleButton } from 'react-bootstrap';
+import { Dropdown, Form, ListGroup, ToggleButton } from 'react-bootstrap';
 import { createPortal } from 'react-dom';
+import { FaEye, FaRegCheckSquare, FaRegSquare } from 'react-icons/fa';
 import { MdCropFree } from 'react-icons/md';
 import { useDispatch, useStore } from 'react-redux';
-import { eventsSetListInView, eventsSetListSort } from '../model/actions.js';
+import {
+  eventsSetListInView,
+  eventsSetListSort,
+  eventsToggleListTrait,
+} from '../model/actions.js';
 import { eventColor } from '../model/colorize.js';
 import {
   type EventsListSort,
   EventsListSortSchema,
+  EventsListTraitSchema,
+  isNearSort,
+  STAT_SORTS,
   sortEvents,
 } from '../model/listSort.js';
 import { selectedEventId } from '../model/selectors.js';
@@ -69,6 +82,10 @@ export function EventsLayerList(): ReactElement {
   const inView = useAppSelector((state) => state.eventsSettings.listInView);
 
   const toolbarSlot = useContext(PanelToolbarSlotContext);
+
+  const headerSlot = useContext(PanelHeaderSlotContext);
+
+  const listTraits = useAppSelector((state) => state.eventsSettings.listTraits);
 
   const [query, setQuery] = useState('');
 
@@ -174,9 +191,14 @@ export function EventsLayerList(): ReactElement {
     reset();
   }, [query, effectiveSort, center, inView, near, home, bounds]);
 
-  const kmFormat = new Intl.NumberFormat(language, {
-    maximumFractionDigits: 1,
-  });
+  // What the rows show: the ticked traits and the stat the list is sorted by.
+  const traits = new Set(listTraits);
+
+  const sortedStat = STAT_SORTS[effectiveSort]?.stat;
+
+  if (sortedStat) {
+    traits.add(sortedStat);
+  }
 
   const selectedId = useAppSelector(selectedEventId);
 
@@ -186,8 +208,59 @@ export function EventsLayerList(): ReactElement {
     day: 'numeric',
   });
 
+  const display = (
+    <Dropdown
+      autoClose="outside"
+      onSelect={(key) => {
+        const trait = EventsListTraitSchema.parse(key);
+
+        if (!listTraits.includes(trait)) {
+          trackMatomo(['trackEvent', 'Events', 'listTrait', trait]);
+        }
+
+        dispatch(eventsToggleListTrait(trait));
+      }}
+    >
+      <LongPressTooltip label={em?.list.show}>
+        {({ props }) => (
+          <Dropdown.Toggle
+            variant="secondary"
+            className="flex-shrink-0"
+            {...props}
+          >
+            <FaEye />
+          </Dropdown.Toggle>
+        )}
+      </LongPressTooltip>
+
+      <FmDropdownMenu>
+        {EventsListTraitSchema.options.map((trait) => (
+          <Dropdown.Item
+            as="button"
+            key={trait}
+            eventKey={trait}
+            active={traits.has(trait)}
+            // The stat sorted by shows whatever is ticked.
+            disabled={trait === sortedStat}
+          >
+            {traits.has(trait) ? <FaRegCheckSquare /> : <FaRegSquare />}
+            <MenuLabel>{em?.form[trait]}</MenuLabel>
+          </Dropdown.Item>
+        ))}
+      </FmDropdownMenu>
+    </Dropdown>
+  );
+
+  const header = headerSlot && createPortal(display, headerSlot);
+
   if (events.length === 0) {
-    return <p className="text-muted mb-2">{em?.noEvents}</p>;
+    return (
+      <>
+        {header}
+
+        <p className="text-muted mb-2">{em?.noEvents}</p>
+      </>
+    );
   }
 
   const controls = (
@@ -267,6 +340,8 @@ export function EventsLayerList(): ReactElement {
       {/* In the panel's toolbar, staying put while the list scrolls. */}
       {toolbarSlot ? createPortal(controls, toolbarSlot) : controls}
 
+      {header}
+
       {list.length === 0 ? (
         <p className="text-muted mb-2">{em?.list.noMatch}</p>
       ) : (
@@ -290,14 +365,20 @@ export function EventsLayerList(): ReactElement {
             >
               <div className="text-truncate">{event.title}</div>
 
-              <small className="d-flex align-items-center gap-2">
-                <span className="text-truncate">
-                  {formatDates(event)}
-                  {km !== undefined && ` · ${kmFormat.format(km)} km`}
-                </span>
+              {/* The traits wrap under the dates rather than squeeze them out. */}
+              <small className="d-flex flex-wrap align-items-center column-gap-2">
+                <span className="text-truncate">{formatDates(event)}</span>
 
                 <span className="ms-auto">
-                  <EventTraits event={event} />
+                  <EventTraits
+                    event={event}
+                    traits={traits}
+                    near={
+                      km !== undefined && isNearSort(effectiveSort)
+                        ? { sort: effectiveSort, km }
+                        : undefined
+                    }
+                  />
                 </span>
               </small>
             </ListGroup.Item>

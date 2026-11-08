@@ -3,7 +3,7 @@ import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
 import type { EventsColorizeBy } from './colorize.js';
 import type { EventsFilter } from './filter.js';
-import type { EventsListSort } from './listSort.js';
+import type { EventsListSort, EventsListTrait } from './listSort.js';
 
 /** Map overlay-layer code for the events markers layer. */
 export const EVENTS_LAYER = 'A';
@@ -236,4 +236,8 @@ export const eventsSetListSort = createAction<EventsListSort>(
 
 export const eventsSetListInView = createAction<boolean>(
   'EVENTS_SET_LIST_IN_VIEW',
+);
+
+export const eventsToggleListTrait = createAction<EventsListTrait>(
+  'EVENTS_TOGGLE_LIST_TRAIT',
 );

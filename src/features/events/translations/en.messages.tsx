@@ -132,6 +132,12 @@ const en: EventsMessages = {
       nearHome: 'Nearest to home',
       nearPlace: 'Nearest to the filter’s place',
     },
+    show: 'Shown in rows',
+    distanceFrom: {
+      nearMap: 'Distance from the map center',
+      nearHome: 'Distance from home',
+      nearPlace: 'Distance from the filter’s place',
+    },
   },
   selection: {
     backToEvents: 'Back to events',

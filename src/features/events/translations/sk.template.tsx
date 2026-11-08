@@ -136,6 +136,12 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearHome: 'Najbližšie k domovu',
       nearPlace: 'Najbližšie k miestu z filtra',
     },
+    show: 'Zobrazené v riadkoch',
+    distanceFrom: {
+      nearMap: 'Vzdialenosť od stredu mapy',
+      nearHome: 'Vzdialenosť od domova',
+      nearPlace: 'Vzdialenosť od miesta z filtra',
+    },
   },
   selection: {
     backToEvents: 'Späť na akcie',

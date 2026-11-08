@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Difficulty } from '../model/actions.js';
 import type { EventsColorizeBy, MineCategory } from '../model/colorize.js';
-import type { EventsListSort } from '../model/listSort.js';
+import type { EventsListSort, EventsNearSort } from '../model/listSort.js';
 
 export type EventsMessages = {
   noEvents: string;
@@ -98,6 +98,10 @@ export type EventsMessages = {
     inView: string;
     noMatch: string;
     sorts: Record<EventsListSort, string>;
+    /** The header's dropdown of what each row shows. */
+    show: string;
+    /** Names the distance a row shows under a distance sort. */
+    distanceFrom: Record<EventsNearSort, string>;
   };
   selection: {
     backToEvents: string;

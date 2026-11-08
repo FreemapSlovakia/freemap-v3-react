@@ -133,6 +133,12 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearHome: 'Najbližje domu',
       nearPlace: 'Najbližje kraju iz filtra',
     },
+    show: 'Prikazano v vrsticah',
+    distanceFrom: {
+      nearMap: 'Razdalja od središča zemljevida',
+      nearHome: 'Razdalja od doma',
+      nearPlace: 'Razdalja od kraja iz filtra',
+    },
   },
   selection: {
     backToEvents: 'Nazaj na dogodke',

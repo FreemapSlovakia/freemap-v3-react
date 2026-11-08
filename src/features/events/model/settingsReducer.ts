@@ -4,9 +4,14 @@ import {
   eventsSetListInView,
   eventsSetListSort,
   eventsToggleLegend,
+  eventsToggleListTrait,
 } from './actions.js';
 import type { EventsColorizeBy } from './colorize.js';
-import type { EventsListSort } from './listSort.js';
+import {
+  DEFAULT_LIST_TRAITS,
+  type EventsListSort,
+  type EventsListTrait,
+} from './listSort.js';
 
 export interface EventsSettingsState {
   colorizeBy: EventsColorizeBy | null;
@@ -15,6 +20,8 @@ export interface EventsSettingsState {
   listSort: EventsListSort;
   /** That list holds only the events within the map's view. */
   listInView: boolean;
+  /** What each of its rows shows beside the dates. */
+  listTraits: EventsListTrait[];
 }
 
 export const eventsSettingsInitialState: EventsSettingsState = {
@@ -22,6 +29,7 @@ export const eventsSettingsInitialState: EventsSettingsState = {
   showLegend: true,
   listSort: 'date',
   listInView: false,
+  listTraits: DEFAULT_LIST_TRAITS,
 };
 
 export const eventsSettingsReducer = createReducer(
@@ -39,5 +47,12 @@ export const eventsSettingsReducer = createReducer(
       })
       .addCase(eventsSetListInView, (state, action) => {
         state.listInView = action.payload;
+      })
+      .addCase(eventsToggleListTrait, (state, action) => {
+        const trait = action.payload;
+
+        state.listTraits = state.listTraits.includes(trait)
+          ? state.listTraits.filter((t) => t !== trait)
+          : [...state.listTraits, trait];
       }),
 );

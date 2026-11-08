@@ -114,6 +114,12 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearHome: 'Az otthonhoz legközelebb',
       nearPlace: 'A szűrő helyéhez legközelebb',
     },
+    show: 'A sorokban látható',
+    distanceFrom: {
+      nearMap: 'Távolság a térkép közepétől',
+      nearHome: 'Távolság az otthontól',
+      nearPlace: 'Távolság a szűrő helyétől',
+    },
   },
   selection: {
     backToEvents: 'Vissza az eseményekhez',
