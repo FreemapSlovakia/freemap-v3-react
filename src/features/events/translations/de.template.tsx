@@ -128,6 +128,8 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'Längste zuerst',
       ascentAsc: 'Geringster Anstieg zuerst',
       ascentDesc: 'Größter Anstieg zuerst',
+      durationAsc: 'Kürzeste Dauer zuerst',
+      durationDesc: 'Längste Dauer zuerst',
       nearMap: 'Nächste zur Kartenmitte',
       nearHome: 'Nächste zum Zuhause',
       nearPlace: 'Nächste zum Ort im Filter',

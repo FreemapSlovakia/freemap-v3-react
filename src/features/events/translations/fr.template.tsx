@@ -117,6 +117,8 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'Du plus long',
       ascentAsc: 'Du plus faible dénivelé',
       ascentDesc: 'Du plus fort dénivelé',
+      durationAsc: 'De la plus courte durée',
+      durationDesc: 'De la plus longue durée',
       nearMap: 'Au plus près du centre de la carte',
       nearHome: 'Au plus près du domicile',
       nearPlace: 'Au plus près du lieu du filtre',

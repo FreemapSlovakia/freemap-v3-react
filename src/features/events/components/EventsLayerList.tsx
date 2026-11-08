@@ -30,6 +30,7 @@ import {
 } from '../model/listSort.js';
 import { selectedEventId } from '../model/selectors.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
+import { EventTraits } from './EventTraits.js';
 import { useEventDatesFormat } from './useEventDatesFormat.js';
 
 const PAGE = 50;
@@ -289,9 +290,15 @@ export function EventsLayerList(): ReactElement {
             >
               <div className="text-truncate">{event.title}</div>
 
-              <small className="text-truncate d-block">
-                {formatDates(event)}
-                {km !== undefined && ` · ${kmFormat.format(km)} km`}
+              <small className="d-flex align-items-center gap-2">
+                <span className="text-truncate">
+                  {formatDates(event)}
+                  {km !== undefined && ` · ${kmFormat.format(km)} km`}
+                </span>
+
+                <span className="ms-auto">
+                  <EventTraits event={event} />
+                </span>
               </small>
             </ListGroup.Item>
           ))}

@@ -130,6 +130,8 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'Od najdlhšej',
       ascentAsc: 'Od najmenšieho stúpania',
       ascentDesc: 'Od najväčšieho stúpania',
+      durationAsc: 'Od najkratšieho trvania',
+      durationDesc: 'Od najdlhšieho trvania',
       nearMap: 'Najbližšie k stredu mapy',
       nearHome: 'Najbližšie k domovu',
       nearPlace: 'Najbližšie k miestu z filtra',

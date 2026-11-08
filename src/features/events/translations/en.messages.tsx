@@ -126,6 +126,8 @@ const en: EventsMessages = {
       lengthDesc: 'Longest first',
       ascentAsc: 'Least ascent first',
       ascentDesc: 'Most ascent first',
+      durationAsc: 'Shortest duration first',
+      durationDesc: 'Longest duration first',
       nearMap: 'Nearest to the map center',
       nearHome: 'Nearest to home',
       nearPlace: 'Nearest to the filter’s place',

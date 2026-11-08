@@ -109,6 +109,8 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'Dal più lungo',
       ascentAsc: 'Dal dislivello minore',
       ascentDesc: 'Dal dislivello maggiore',
+      durationAsc: 'Dalla durata minore',
+      durationDesc: 'Dalla durata maggiore',
       nearMap: 'Più vicini al centro della mappa',
       nearHome: 'Più vicini a casa',
       nearPlace: 'Più vicini al luogo del filtro',

@@ -127,6 +127,8 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'Od najdaljšega',
       ascentAsc: 'Od najmanjšega vzpona',
       ascentDesc: 'Od največjega vzpona',
+      durationAsc: 'Od najkrajšega trajanja',
+      durationDesc: 'Od najdaljšega trajanja',
       nearMap: 'Najbližje središču zemljevida',
       nearHome: 'Najbližje domu',
       nearPlace: 'Najbližje kraju iz filtra',

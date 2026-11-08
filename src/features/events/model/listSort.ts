@@ -11,6 +11,8 @@ export const EventsListSortSchema = z.enum([
   'lengthDesc',
   'ascentAsc',
   'ascentDesc',
+  'durationAsc',
+  'durationDesc',
   'nearMap',
   'nearHome',
   'nearPlace',
@@ -29,7 +31,7 @@ export type ListedEvent = { event: EventSummary; km?: number };
 
 /** By a stat, those without it last, whichever way. */
 const byStat =
-  (key: 'distance' | 'ascent', sign: 1 | -1) =>
+  (key: 'distance' | 'ascent' | 'duration', sign: 1 | -1) =>
   (a: ListedEvent, b: ListedEvent) => {
     const x = a.event[key];
 
@@ -73,6 +75,12 @@ export function sortEvents(
 
     case 'ascentDesc':
       return listed.toSorted(byStat('ascent', -1));
+
+    case 'durationAsc':
+      return listed.toSorted(byStat('duration', 1));
+
+    case 'durationDesc':
+      return listed.toSorted(byStat('duration', -1));
 
     case 'nearMap':
     case 'nearHome':

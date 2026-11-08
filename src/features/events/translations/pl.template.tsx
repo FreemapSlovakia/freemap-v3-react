@@ -108,6 +108,8 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'Od najdłuższych',
       ascentAsc: 'Od najmniejszego podejścia',
       ascentDesc: 'Od największego podejścia',
+      durationAsc: 'Od najkrótszego czasu trwania',
+      durationDesc: 'Od najdłuższego czasu trwania',
       nearMap: 'Najbliżej środka mapy',
       nearHome: 'Najbliżej domu',
       nearPlace: 'Najbliżej miejsca z filtra',

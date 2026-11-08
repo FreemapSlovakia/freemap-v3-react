@@ -122,6 +122,8 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'Od nejdelší',
       ascentAsc: 'Od nejmenšího stoupání',
       ascentDesc: 'Od největšího stoupání',
+      durationAsc: 'Od nejkratšího trvání',
+      durationDesc: 'Od nejdelšího trvání',
       nearMap: 'Nejblíže ke středu mapy',
       nearHome: 'Nejblíže k domovu',
       nearPlace: 'Nejblíže k místu z filtru',

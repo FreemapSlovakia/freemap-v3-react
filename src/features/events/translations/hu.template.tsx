@@ -108,6 +108,8 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
       lengthDesc: 'A leghosszabbtól',
       ascentAsc: 'A legkisebb emelkedéstől',
       ascentDesc: 'A legnagyobb emelkedéstől',
+      durationAsc: 'A legrövidebb időtartamtól',
+      durationDesc: 'A leghosszabb időtartamtól',
       nearMap: 'A térkép közepéhez legközelebb',
       nearHome: 'Az otthonhoz legközelebb',
       nearPlace: 'A szűrő helyéhez legközelebb',
