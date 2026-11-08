@@ -43,6 +43,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     apply: 'Anwenden',
     exitFullscreen: 'Vollbildmodus beenden',
     fullscreen: 'Vollbild',
+    minimize: 'Minimieren',
+    maximize: 'Maximieren',
     yes: 'Ja',
     no: 'Nein',
     masl,

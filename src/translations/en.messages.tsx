@@ -41,6 +41,8 @@ const messages: Messages = {
     apply: 'Apply',
     exitFullscreen: 'Exit fullscreen mode',
     fullscreen: 'Fullscreen',
+    minimize: 'Minimize',
+    maximize: 'Maximize',
     yes: 'Yes',
     no: 'No',
     masl,

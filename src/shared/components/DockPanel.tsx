@@ -17,7 +17,12 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { Button, Offcanvas } from 'react-bootstrap';
-import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
+import {
+  BsChevronDoubleDown,
+  BsChevronDoubleUp,
+  BsChevronDown,
+  BsChevronUp,
+} from 'react-icons/bs';
 import { useDispatch } from 'react-redux';
 
 // Below Bootstrap's `md` the panel docks at the bottom.
@@ -40,10 +45,34 @@ let docked: { node: HTMLElement; observer: ResizeObserver } | undefined;
 /** How much of a phone's height the bottom panel takes. */
 type Size = 'min' | 'half' | 'full';
 
-const SIZES: Size[] = ['min', 'half', 'full'];
+type SizeButtonDef = {
+  to: Size;
+  label: 'minimize' | 'collapse' | 'expand' | 'maximize';
+  icon: ReactElement;
+};
 
 // Bootstrap Icons, as the × is, enlarged and thickened to its larger, heavier x-lg.
 const CHEVRON = { size: '1.2em', stroke: 'currentColor', strokeWidth: 0.6 };
+
+// Per size, a step each way it can go and, from either end, a jump to the other.
+const SIZE_BUTTONS: Record<Size, SizeButtonDef[]> = {
+  min: [
+    { to: 'half', label: 'expand', icon: <BsChevronUp {...CHEVRON} /> },
+    { to: 'full', label: 'maximize', icon: <BsChevronDoubleUp {...CHEVRON} /> },
+  ],
+  half: [
+    { to: 'min', label: 'collapse', icon: <BsChevronDown {...CHEVRON} /> },
+    { to: 'full', label: 'expand', icon: <BsChevronUp {...CHEVRON} /> },
+  ],
+  full: [
+    {
+      to: 'min',
+      label: 'minimize',
+      icon: <BsChevronDoubleDown {...CHEVRON} />,
+    },
+    { to: 'half', label: 'collapse', icon: <BsChevronDown {...CHEVRON} /> },
+  ],
+};
 
 // One size for all panels, for the session: they stay mounted once used, so a
 // size of each one's own would reopen as it was left, not as last chosen.
@@ -198,8 +227,6 @@ export function DockPanel<T>({
 
   const size = useSize();
 
-  const step = SIZES.indexOf(size);
-
   // Only at the bottom: on the side the map keeps its width beside it.
   const sized = side === 'bottom' ? size : 'half';
 
@@ -343,21 +370,15 @@ export function DockPanel<T>({
             <ManualHeaderButton chapter={manual} from="panel" />
           )}
 
-          {side === 'bottom' && step > 0 && (
-            <SizeButton
-              label={m?.general.collapse}
-              icon={<BsChevronDown {...CHEVRON} />}
-              onClick={() => setSize(SIZES[step - 1]!)}
-            />
-          )}
-
-          {side === 'bottom' && step < SIZES.length - 1 && (
-            <SizeButton
-              label={m?.general.expand}
-              icon={<BsChevronUp {...CHEVRON} />}
-              onClick={() => setSize(SIZES[step + 1]!)}
-            />
-          )}
+          {side === 'bottom' &&
+            SIZE_BUTTONS[sized].map(({ to, label, icon }) => (
+              <SizeButton
+                key={to}
+                label={m?.general[label]}
+                icon={icon}
+                onClick={() => setSize(to)}
+              />
+            ))}
         </div>
       </Offcanvas.Header>
 

@@ -43,6 +43,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     apply: 'Uporabi',
     exitFullscreen: 'Izhod iz celozaslonskega načina',
     fullscreen: 'Celozaslonski način',
+    minimize: 'Pomanjšaj',
+    maximize: 'Povečaj',
     yes: 'Da',
     no: 'Ne',
     masl,
