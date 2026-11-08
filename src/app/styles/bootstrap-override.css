@@ -51,11 +51,10 @@
   }
 }
 
-/* ManualHeaderButton and a docked panel's size buttons: matched to .btn-close
-   beside them, which takes the auto margin otherwise and would leave the book
-   in the middle */
+/* ManualHeaderButton: matched to .btn-close beside it, which takes the
+   auto margin otherwise and would leave the book in the middle */
 .modal-header .fm-modal-manual,
-.offcanvas-header :is(.fm-modal-manual, .fm-header-glyph) {
+.offcanvas-header .fm-modal-manual {
   margin-left: auto;
   /* Flex so the glyph has no baseline gap under it, centred like the × */
   display: flex;

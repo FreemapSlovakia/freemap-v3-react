@@ -23,6 +23,10 @@
     right: var(--fm-dock-size, 0px);
   }
 
+  :global(body.fm-dock-resizing) & {
+    transition: none;
+  }
+
   /* Above a panel up to half the screen; over a taller one, which they are
      above anyway, as a full-screen one leaves no room. */
   :global(body.fm-docked-bottom) & {

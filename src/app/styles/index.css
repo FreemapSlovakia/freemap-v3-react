@@ -551,3 +551,26 @@ a[target]:not(
 .fm-dock.fm-dock-min {
   --bs-offcanvas-height: auto;
 }
+
+/* Dragged by its header, see `DockPanel`; the browser mustn't scroll instead. */
+.fm-dock .fm-dock-grab {
+  touch-action: none;
+}
+
+.offcanvas-header.fm-dock-grab {
+  position: relative;
+
+  /* The handle, in the header's top padding. */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    width: 2.5rem;
+    height: 4px;
+    margin-left: -1.25rem;
+    border-radius: 2px;
+    background: var(--bs-secondary-color);
+    opacity: 0.5;
+  }
+}

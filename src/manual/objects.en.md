@@ -28,7 +28,7 @@ Its :FaEllipsisV: menu holds:
 
 ## Object details
 
-Click an object to select it. Its panel then opens on the right, or over the lower half of a phone's screen (where :BsChevronDown: and :BsChevronUp: in its header shrink it to the header or stretch it to the whole screen, :BsChevronDoubleDown: and :BsChevronDoubleUp: in one step), with the details:
+Click an object to select it. Its panel then opens on the right, or over the lower half of a phone's screen (where dragging its header shrinks it to the header or stretches it to the whole screen), with the details:
 
 - the name and the kinds of the place. Each kind is a button that shows or hides objects of that type; :FaChevronRight: adds the **More general types**.
 - the **Elevation** read from the terrain model,

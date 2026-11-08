@@ -42,8 +42,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     apply: 'Alkalmaz',
     exitFullscreen: 'Kilépés a teljes képernyős módból',
     fullscreen: 'Teljes képernyő',
-    minimize: 'Minimalizálás',
-    maximize: 'Maximalizálás',
     yes: 'Igen',
     no: 'Nem',
     masl,

@@ -23,9 +23,6 @@ export type Messages = {
     apply: string;
     exitFullscreen: string;
     fullscreen: string;
-    minimize: string;
-    /** A panel stretched to the whole screen, unlike `fullscreen`, the browser's. */
-    maximize: string;
     yes: string;
     no: string;
     masl: string;

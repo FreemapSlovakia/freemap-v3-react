@@ -43,8 +43,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     apply: 'Použiť',
     exitFullscreen: 'Zrušiť zobrazenie na celú obrazovku',
     fullscreen: 'Na celú obrazovku',
-    minimize: 'Minimalizovať',
-    maximize: 'Maximalizovať',
     yes: 'Áno',
     no: 'Nie',
     masl,

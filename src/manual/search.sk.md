@@ -22,7 +22,7 @@ Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, č
 
 ## Vybraný výsledok
 
-Výberom výsledku sa mapa presunie naň a výsledok sa vyberie: vykreslí sa farbou výberu a otvorí sa jeho panel – vpravo, na telefóne cez dolnú polovicu obrazovky, kde ho :BsChevronDown: a :BsChevronUp: v hlavičke zmenšia na hlavičku alebo zväčšia na celú obrazovku, :BsChevronDoubleDown: a :BsChevronDoubleUp: naraz. Panel obsahuje názov, druh, značky OpenStreetMap a ďalšie údaje o mieste, ako ich opisuje kapitola [Objekty](#show=manual/objects), a nad nimi:
+Výberom výsledku sa mapa presunie naň a výsledok sa vyberie: vykreslí sa farbou výberu a otvorí sa jeho panel – vpravo, na telefóne cez dolnú polovicu obrazovky, kde ho ťahanie za hlavičku zmenší na hlavičku alebo zväčší na celú obrazovku. Panel obsahuje názov, druh, značky OpenStreetMap a ďalšie údaje o mieste, ako ich opisuje kapitola [Objekty](#show=manual/objects), a nad nimi:
 
 - :FaThumbtack: **Ponechať na mape** – výsledok zostane na mape, aj keď vyberiete ďalší, takže ich môžete mať viac vedľa seba. Ponechaný výsledok odstránite tlačidlom :FaTrash: **Zmazať** alebo klávesom <kbd>Del</kbd>.
 - :FaEllipsisV: obsahuje :FaPencilAlt: **Skonvertovať na kreslenie**, ktoré z výsledku urobí kresbu na úpravu (pozri [Kreslenie](#show=manual/drawing)), a akcie pre miesto ako v kontextovom menu mapy.

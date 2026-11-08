@@ -132,6 +132,11 @@
   :global(body.fm-docked-end) & {
     right: var(--fm-dock-size, 0);
   }
+
+  /* Following a dragged panel frame by frame; see `DockPanel`. */
+  :global(body.fm-dock-resizing) & {
+    transition: none;
+  }
 }
 
 :global(body.fm-docked-bottom) .type-zoom-control {

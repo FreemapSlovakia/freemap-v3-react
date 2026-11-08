@@ -12,7 +12,7 @@ Zapnite prekrytie :FaStickyNote: **Poznámky OSM**: nájdete ho v ponuke pod :Fa
 
 ## Čítanie poznámky
 
-Kliknutím na špendlík poznámku vyberiete. Otvorí sa jej panel – vpravo, na telefóne cez dolnú polovicu obrazovky (tam ho :BsChevronDown: a :BsChevronUp: v hlavičke zmenšia na hlavičku alebo zväčšia na celú obrazovku, :BsChevronDoubleDown: a :BsChevronDoubleUp: naraz) – s jej komentármi: čo kto a kedy napísal a či bola poznámka zatvorená alebo znovu otvorená. Odkazy v komentári sa otvoria na novej karte; za odkazom na prvok OpenStreetMap je **zobraziť na mape**, ktoré prvok vyhľadá a vyberie vo Freemape.
+Kliknutím na špendlík poznámku vyberiete. Otvorí sa jej panel – vpravo, na telefóne cez dolnú polovicu obrazovky (tam ho ťahanie za hlavičku zmenší na hlavičku alebo zväčší na celú obrazovku) – s jej komentármi: čo kto a kedy napísal a či bola poznámka zatvorená alebo znovu otvorená. Odkazy v komentári sa otvoria na novej karte; za odkazom na prvok OpenStreetMap je **zobraziť na mape**, ktoré prvok vyhľadá a vyberie vo Freemape.
 
 V hornej časti panela obsahuje :FaEllipsisV: **Akcie** akcie pre miesto ako v kontextovom menu mapy a ponuka :FaExternalLinkAlt: **Otvoriť v…** vedľa nej obsahuje:
 
