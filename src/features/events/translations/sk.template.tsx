@@ -122,7 +122,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
   list: {
     search: 'Hľadať v názvoch',
     inView: 'Len v aktuálnom zobrazení',
-    noMatch: 'Žiadna akcia nezodpovedá.',
+    noMatch: 'Žiadna akcia nezodpovedá kritériám.',
     sorts: {
       date: 'Podľa dátumu',
       title: 'Podľa názvu',

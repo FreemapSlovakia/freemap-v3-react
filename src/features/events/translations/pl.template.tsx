@@ -100,7 +100,7 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
   list: {
     search: 'Szukaj w tytułach',
     inView: 'Tylko w bieżącym widoku',
-    noMatch: 'Żadne wydarzenie nie pasuje.',
+    noMatch: 'Żadne wydarzenie nie spełnia kryteriów.',
     sorts: {
       date: 'Według daty',
       title: 'Według tytułu',

@@ -118,7 +118,7 @@ const en: EventsMessages = {
   list: {
     search: 'Search in titles',
     inView: 'Only those in the current view',
-    noMatch: 'No event matches.',
+    noMatch: 'No event matches the criteria.',
     sorts: {
       date: 'By date',
       title: 'By title',

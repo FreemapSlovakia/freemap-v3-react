@@ -100,7 +100,7 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
   list: {
     search: 'Keresés a címekben',
     inView: 'Csak az aktuális nézetben',
-    noMatch: 'Nincs megfelelő esemény.',
+    noMatch: 'Nincs a feltételeknek megfelelő esemény.',
     sorts: {
       date: 'Dátum szerint',
       title: 'Cím szerint',

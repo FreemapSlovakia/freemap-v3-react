@@ -119,7 +119,7 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
   list: {
     search: 'Iskanje v naslovih',
     inView: 'Samo v trenutnem pogledu',
-    noMatch: 'Noben dogodek se ne ujema.',
+    noMatch: 'Noben dogodek ne ustreza merilom.',
     sorts: {
       date: 'Po datumu',
       title: 'Po naslovu',

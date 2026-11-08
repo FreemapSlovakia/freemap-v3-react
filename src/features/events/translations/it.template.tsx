@@ -101,7 +101,7 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
   list: {
     search: 'Cerca nei titoli',
     inView: 'Solo nella vista attuale',
-    noMatch: 'Nessun evento corrisponde.',
+    noMatch: 'Nessun evento corrisponde ai criteri.',
     sorts: {
       date: 'Per data',
       title: 'Per titolo',

@@ -1107,63 +1107,71 @@ function LayerSettings({
 
       {technology === 'events' && <EventsLayerList />}
 
-      {/* The map's own actions, set off from what its sections edit. */}
-      <hr />
+      {/* The map's own actions, set off from what its sections edit. The
+          events layer has none: nothing of it to save or reset. */}
+      {technology !== 'events' && (
+        <>
+          <hr />
 
-      {/* Labels give way to icons, least important first, when room runs out. */}
-      <FmModalFooter
-        as="div"
-        className="d-flex flex-nowrap justify-content-end gap-1 text-nowrap"
-      >
-        {/* As set up here, under a name of its own. */}
-        {mapOrigin !== 'cached' &&
-          hasOwnConfig(technology) &&
-          !window.fmEmbedded && (
+          {/* Labels give way to icons, least important first, when room runs out. */}
+          <FmModalFooter
+            as="div"
+            className="d-flex flex-nowrap justify-content-end gap-1 text-nowrap"
+          >
+            {/* As set up here, under a name of its own. */}
+            {mapOrigin !== 'cached' &&
+              hasOwnConfig(technology) &&
+              !window.fmEmbedded && (
+                <FmFooterButton
+                  variant="secondary"
+                  priority={2}
+                  icon={<FaSave />}
+                  label={msm?.saveAsMap}
+                  disabled={!canSave}
+                  onClick={() =>
+                    dispatch(
+                      setActiveModal({
+                        type: 'map-manager',
+                        customMap: {
+                          addNamedFrom: target,
+                          closeOnCancel: true,
+                        },
+                      }),
+                    )
+                  }
+                />
+              )}
+
+            {/* Its server, zooms and default kind are the map's own, in its form. */}
+            {mapOrigin === 'custom' && !window.fmEmbedded && (
+              <FmFooterButton
+                variant="secondary"
+                priority={1}
+                icon={<FaPencilAlt />}
+                label={m?.general.modify}
+                disabled={!canSave}
+                onClick={() =>
+                  dispatch(
+                    setActiveModal({
+                      type: 'map-manager',
+                      customMap: { edit: target.type, closeOnCancel: true },
+                    }),
+                  )
+                }
+              />
+            )}
+
             <FmFooterButton
               variant="secondary"
-              priority={2}
-              icon={<FaSave />}
-              label={msm?.saveAsMap}
-              disabled={!canSave}
-              onClick={() =>
-                dispatch(
-                  setActiveModal({
-                    type: 'map-manager',
-                    customMap: { addNamedFrom: target, closeOnCancel: true },
-                  }),
-                )
-              }
+              priority={0}
+              icon={<FaUndo />}
+              label={m?.general.resetToDefaults}
+              disabled={isEmptySetup(setup)}
+              onClick={() => dispatch(mapLayerSetupReset(target))}
             />
-          )}
-
-        {/* Its server, zooms and default kind are the map's own, in its form. */}
-        {mapOrigin === 'custom' && !window.fmEmbedded && (
-          <FmFooterButton
-            variant="secondary"
-            priority={1}
-            icon={<FaPencilAlt />}
-            label={m?.general.modify}
-            disabled={!canSave}
-            onClick={() =>
-              dispatch(
-                setActiveModal({
-                  type: 'map-manager',
-                  customMap: { edit: target.type, closeOnCancel: true },
-                }),
-              )
-            }
-          />
-        )}
-
-        <FmFooterButton
-          variant="secondary"
-          priority={0}
-          icon={<FaUndo />}
-          label={m?.general.resetToDefaults}
-          disabled={isEmptySetup(setup)}
-          onClick={() => dispatch(mapLayerSetupReset(target))}
-        />
-      </FmModalFooter>
+          </FmModalFooter>
+        </>
+      )}
     </div>
   );
 }

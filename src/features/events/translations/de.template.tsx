@@ -120,7 +120,7 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
   list: {
     search: 'In Titeln suchen',
     inView: 'Nur im aktuellen Kartenausschnitt',
-    noMatch: 'Keine Veranstaltung passt.',
+    noMatch: 'Keine Veranstaltung entspricht den Kriterien.',
     sorts: {
       date: 'Nach Datum',
       title: 'Nach Titel',
