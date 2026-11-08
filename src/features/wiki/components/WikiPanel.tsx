@@ -39,7 +39,9 @@ export default function WikiPanel(): ReactElement {
       item={preview ?? loading}
       show={id !== null}
       icon={<FaWikipediaW />}
-      title={() => 'Wikipedia'}
+      title={(item) =>
+        typeof item === 'string' ? item.split(/:(.*)/)[1] : item.title
+      }
       keepVisible={() => point}
       onClose={() => dispatch(selectFeature(null))}
     >

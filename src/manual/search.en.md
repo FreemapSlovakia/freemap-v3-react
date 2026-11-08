@@ -22,7 +22,7 @@ Without an internet connection only coordinates, a bounding box, tile numbers an
 
 ## A picked result
 
-Picking a result moves the map to it and selects it: it is drawn in the selection colour and its panel opens on the right, or over the lower half of a phone's screen. The panel holds the name, kind, OpenStreetMap tags and other data of the place, as described in [Objects](#show=manual/objects), and above them:
+Picking a result moves the map to it and selects it: it is drawn in the selection colour and its panel opens on the right, or over the lower half of a phone's screen, where :FaChevronDown: and :FaChevronUp: in its header shrink it to the header or stretch it to the whole screen. The panel holds the name, kind, OpenStreetMap tags and other data of the place, as described in [Objects](#show=manual/objects), and above them:
 
 - :FaThumbtack: **Keep on the map** – the result stays on the map when you pick another one, so you can keep several side by side. A kept result is removed with :FaTrash: **Delete**, or with <kbd>Del</kbd>.
 - :FaEllipsisV: holds :FaPencilAlt: **Convert to drawing**, which turns the result into a drawing you can edit (see [Drawing](#show=manual/drawing)), and the actions for the place, as in the map's context menu.

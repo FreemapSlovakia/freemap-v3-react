@@ -57,8 +57,8 @@ import {
 } from '../model/listSort.js';
 import { selectedEventId } from '../model/selectors.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
-import { EventTraits, traitLabel } from './EventTraits.js';
-import { useEventDatesFormat } from './useEventDatesFormat.js';
+import { EventLine } from './EventLine.js';
+import { EventIndicators, traitLabel } from './EventTraits.js';
 
 const PAGE = 50;
 
@@ -232,12 +232,6 @@ export function EventsLayerList(): ReactElement {
   }
 
   const selectedId = useAppSelector(selectedEventId);
-
-  const formatDates = useEventDatesFormat({
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
 
   const display = (
     <Dropdown
@@ -415,26 +409,22 @@ export function EventsLayerList(): ReactElement {
                 });
               }}
             >
-              <div className="text-truncate">{event.title}</div>
+              <div className="d-flex align-items-center gap-2">
+                <span className="text-truncate me-auto">{event.title}</span>
 
-              {/* Traits fill the dates' line and wrap one by one, kept right:
-                  the dates' me-auto takes the first line's slack. */}
-              <small className="d-flex flex-wrap justify-content-end align-items-center column-gap-2">
-                <span className="text-truncate me-auto">
-                  {formatDates(event)}
-                </span>
+                <EventIndicators event={event} traits={traits} />
+              </div>
 
-                <EventTraits
-                  event={event}
-                  traits={traits}
-                  near={
-                    km !== undefined && isNearSort(effectiveSort)
-                      ? { sort: effectiveSort, km }
-                      : undefined
-                  }
-                  sorted={sortedStat}
-                />
-              </small>
+              <EventLine
+                event={event}
+                traits={traits}
+                near={
+                  km !== undefined && isNearSort(effectiveSort)
+                    ? { sort: effectiveSort, km }
+                    : undefined
+                }
+                sorted={sortedStat}
+              />
             </ListGroup.Item>
           ))}
         </ListGroup>

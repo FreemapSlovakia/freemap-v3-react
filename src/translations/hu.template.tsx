@@ -220,8 +220,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   selections: {
-    objects: 'Objektum (érdekes pont, POI)',
-    event: 'Esemény',
     drawPoints: 'Pont',
     drawLines: 'Vonal',
     drawPolygons: 'Sokszög',

@@ -51,10 +51,11 @@
   }
 }
 
-/* ManualHeaderButton: matched to .btn-close beside it, which takes the
-   auto margin otherwise and would leave the book in the middle */
+/* ManualHeaderButton and a docked panel's size buttons: matched to .btn-close
+   beside them, which takes the auto margin otherwise and would leave the book
+   in the middle */
 .modal-header .fm-modal-manual,
-.offcanvas-header .fm-modal-manual {
+.offcanvas-header :is(.fm-modal-manual, .fm-header-glyph) {
   margin-left: auto;
   /* Flex so the glyph has no baseline gap under it, centred like the × */
   display: flex;
@@ -78,6 +79,26 @@
 /* The header's own gap already spaces the two */
 .offcanvas-header .fm-modal-manual + .btn-close {
   margin-left: 0;
+}
+
+/* A docked panel's header buttons, pushed right as a group; empty, it takes no
+   room and leaves the × its own auto margin. */
+.offcanvas-header .fm-dock-actions {
+  display: flex;
+  gap: var(--fm-space-2);
+  margin-left: auto;
+
+  &:empty {
+    display: none;
+  }
+
+  & > * {
+    margin-left: 0;
+  }
+
+  &:not(:empty) + .btn-close {
+    margin-left: 0;
+  }
 }
 
 /* Inline, not floated: a float is left out of the row's intrinsic width, so a

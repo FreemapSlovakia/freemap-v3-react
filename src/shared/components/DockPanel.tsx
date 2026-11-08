@@ -1,9 +1,13 @@
 import { pickingModeSelector } from '@app/store/selectors.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
+  type MouseEvent,
   type ReactElement,
   type ReactNode,
   useEffect,
@@ -11,7 +15,8 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react';
-import { Offcanvas } from 'react-bootstrap';
+import { Button, Offcanvas } from 'react-bootstrap';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 // Below Bootstrap's `md` the panel docks at the bottom.
@@ -30,6 +35,39 @@ function useNarrow(): boolean {
 
 // One panel docks at a time.
 let docked: { node: HTMLElement; observer: ResizeObserver } | undefined;
+
+/** How much of a phone's height the bottom panel takes. */
+type Size = 'min' | 'half' | 'full';
+
+const SIZES: Size[] = ['min', 'half', 'full'];
+
+// One size for all panels, for the session: they stay mounted once used, so a
+// size of each one's own would reopen as it was left, not as last chosen.
+let sharedSize: Size = 'half';
+
+const sizeListeners = new Set<() => void>();
+
+/** The user's choice, by ▼, ▲ or a tap on a minimized panel. */
+function setSize(next: Size) {
+  trackMatomo(['trackEvent', 'Panel', 'size', next]);
+
+  sharedSize = next;
+
+  for (const listener of sizeListeners) {
+    listener();
+  }
+}
+
+function useSize(): Size {
+  return useSyncExternalStore(
+    (onChange) => {
+      sizeListeners.add(onChange);
+
+      return () => sizeListeners.delete(onChange);
+    },
+    () => sharedSize,
+  );
+}
 
 /**
  * Has the app's controls make room for the panel: its size goes to
@@ -69,6 +107,31 @@ function release() {
   document.body.style.removeProperty('--fm-dock-size');
 }
 
+function SizeButton({
+  label,
+  icon,
+  onClick,
+}: {
+  label: ReactNode;
+  icon: ReactNode;
+  onClick: () => void;
+}): ReactElement {
+  return (
+    <LongPressTooltip label={label}>
+      {({ props }) => (
+        <Button
+          variant="link"
+          className="fm-header-glyph"
+          onClick={onClick}
+          {...props}
+        >
+          {icon}
+        </Button>
+      )}
+    </LongPressTooltip>
+  );
+}
+
 type Props<T> = {
   /** What the panel is about; a new one replaces the content in place. */
   item: T | null;
@@ -76,6 +139,10 @@ type Props<T> = {
   show?: boolean;
   icon: ReactNode;
   title: (item: T) => ReactNode;
+  /** A line under the title while the panel is minimized to its header. */
+  summary?: (item: T) => ReactNode;
+  /** Marks beside the title while minimized, clipped once the title is short. */
+  marks?: (item: T) => ReactNode;
   /** The manual chapter its header's book button opens, as a modal's does. */
   manual?: string;
   /** A place on the map to keep clear of the panel, panned to when hidden. */
@@ -94,6 +161,8 @@ export function DockPanel<T>({
   show = item !== null,
   icon,
   title,
+  summary,
+  marks,
   manual,
   keepVisible,
   onClose,
@@ -121,6 +190,15 @@ export function DockPanel<T>({
 
   const side = narrow ? 'bottom' : 'end';
 
+  const m = useMessages();
+
+  const size = useSize();
+
+  const step = SIZES.indexOf(size);
+
+  // Only at the bottom: on the side the map keeps its width beside it.
+  const sized = side === 'bottom' ? size : 'half';
+
   // The side it has slid in on, so what it covers can be measured.
   const [enteredSide, setEnteredSide] = useState<'end' | 'bottom' | null>(null);
 
@@ -138,6 +216,52 @@ export function DockPanel<T>({
       void panToUncovered(dispatch, { lat, lon }, { ifHidden: true });
     }
   }, [entered, lat, lon, dispatch]);
+
+  // Come to half, the panel pans the place out from under it, once laid out:
+  // from minimized it covered less, from full screen there was no map to pan
+  // into. A header-high one doesn't animate, so from it a frame is enough.
+  const shownSize = useRef(sized);
+
+  useEffect(() => {
+    const was = shownSize.current;
+
+    shownSize.current = sized;
+
+    if (
+      was === sized ||
+      sized !== 'half' ||
+      !entered ||
+      lat === undefined ||
+      lon === undefined
+    ) {
+      return;
+    }
+
+    const pan = () =>
+      void panToUncovered(dispatch, { lat, lon }, { ifHidden: true });
+
+    if (was === 'min') {
+      const frame = requestAnimationFrame(pan);
+
+      return () => cancelAnimationFrame(frame);
+    }
+
+    // `.fm-dock`'s height transition, and a frame.
+    const timer = setTimeout(pan, 350);
+
+    return () => clearTimeout(timer);
+  }, [sized, entered, lat, lon, dispatch]);
+
+  // A tap on a minimized panel, but on its buttons, brings it back up; ▲ is
+  // the keyboard's way.
+  const restore = (e: MouseEvent) => {
+    if (
+      sized === 'min' &&
+      !(e.target instanceof Element && e.target.closest('button, a'))
+    ) {
+      setSize('half');
+    }
+  };
 
   const nodeRef = useRef<HTMLElement | null>(null);
 
@@ -178,23 +302,67 @@ export function DockPanel<T>({
       autoFocus={false}
       restoreFocus={false}
       keyboard={false}
-      className="fm-dock"
+      className={`fm-dock fm-dock-${sized}`}
     >
-      <Offcanvas.Header closeButton className="gap-2">
+      <Offcanvas.Header
+        closeButton
+        className={sized === 'min' ? 'gap-2 fm-cursor-pointer' : 'gap-2'}
+        onClick={restore}
+      >
         <Offcanvas.Title className="d-flex align-items-center gap-2 fs-6 fw-bold min-w-0">
           <span className="flex-shrink-0">{icon}</span>
 
-          <span>{title(kept)}</span>
+          {/* One line, so a minimized panel stays a header. */}
+          {/* Gives way first, to a few letters; then the marks are clipped. */}
+          <span
+            className="text-truncate"
+            style={{ flexShrink: 100, minWidth: '4em' }}
+          >
+            {title(kept)}
+          </span>
+
+          {sized === 'min' && marks && (
+            <span className="d-flex overflow-hidden text-nowrap fw-normal">
+              {marks(kept)}
+            </span>
+          )}
         </Offcanvas.Title>
 
-        {/* An embed offers no manual. */}
-        {manual && !window.fmEmbedded && (
-          <ManualHeaderButton chapter={manual} from="panel" />
-        )}
+        <div className="fm-dock-actions">
+          {/* An embed offers no manual. */}
+          {manual && !window.fmEmbedded && (
+            <ManualHeaderButton chapter={manual} from="panel" />
+          )}
+
+          {side === 'bottom' && step > 0 && (
+            <SizeButton
+              label={m?.general.collapse}
+              icon={<FaChevronDown />}
+              onClick={() => setSize(SIZES[step - 1]!)}
+            />
+          )}
+
+          {side === 'bottom' && step < SIZES.length - 1 && (
+            <SizeButton
+              label={m?.general.expand}
+              icon={<FaChevronUp />}
+              onClick={() => setSize(SIZES[step + 1]!)}
+            />
+          )}
+        </div>
       </Offcanvas.Header>
+
+      {sized === 'min' && summary && (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: ▲ is the keyboard's way
+        <div className="px-3 pb-2 fm-cursor-pointer" onClick={restore}>
+          {summary(kept)}
+        </div>
+      )}
 
       <Offcanvas.Body
         className={loading ? 'pt-0 opacity-50' : 'pt-0'}
+        // Hidden, not unmounted, so its state outlasts a minimize.
+        hidden={sized === 'min'}
         inert={loading}
       >
         {children(kept)}

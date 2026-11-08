@@ -28,7 +28,7 @@ V ponuke :FaEllipsisV: na lište nájdete:
 
 ## Podrobnosti o objekte
 
-Kliknutím na objekt ho vyberiete a otvorí sa panel objektu – vpravo, na telefóne cez dolnú polovicu obrazovky – s podrobnosťami:
+Kliknutím na objekt ho vyberiete a otvorí sa panel objektu – vpravo, na telefóne cez dolnú polovicu obrazovky (tam ho :FaChevronDown: a :FaChevronUp: v hlavičke zmenšia na hlavičku alebo zväčšia na celú obrazovku) – s podrobnosťami:
 
 - názov a druhy miesta. Každý druh je tlačidlo, ktoré zobrazí alebo skryje objekty daného typu; :FaChevronRight: pridá **Všeobecnejšie typy**.
 - **Nadmorská výška** podľa modelu terénu,

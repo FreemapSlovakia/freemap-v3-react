@@ -5,7 +5,7 @@ import { formatDuration } from '@shared/durationFormatter.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
-import type { ReactElement, ReactNode } from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 import {
   FaBan,
   FaCheck,
@@ -34,6 +34,7 @@ function Not({ children }: { children: ReactNode }): ReactElement {
   );
 }
 
+/** A glyph that says it all (an indicator), or a figure with its unit or glyph (a value). */
 type Mark = {
   key: string;
   hint?: ReactNode;
@@ -58,16 +59,7 @@ export function traitLabel(
   }
 }
 
-/**
- * What an event says of itself, as a row of glyphs and figures — those of
- * `traits` it states — led by its distance from a distance sort's origin.
- */
-export function EventTraits({
-  event,
-  traits,
-  near,
-  sorted,
-}: {
+type Props = {
   event: Pick<
     EventSummary,
     | 'transports'
@@ -82,30 +74,19 @@ export function EventTraits({
     | 'goingCount'
   >;
   traits: ReadonlySet<EventsListTrait>;
+  /** A distance sort's origin, the event's distance from it leading the values. */
   near?: { sort: EventsNearSort; km: number };
   /** The stat the list is sorted by, shown even where it is zero. */
   sorted?: EventsListTrait;
-}): ReactElement | null {
+};
+
+/** Transports, difficulty, dogs and children, those of `traits` the event states. */
+function useIndicators({ event, traits }: Props): Mark[] {
   const em = useEventsMessages();
 
   const rpm = useRoutePlannerMessages();
 
-  const language = useAppSelector((state) => state.l10n.language);
-
-  const kmFormat = useNumberFormat({ maximumFractionDigits: 1 });
-
-  const mFormat = useNumberFormat({ maximumFractionDigits: 0 });
-
   const marks: Mark[] = [];
-
-  if (near) {
-    marks.push({
-      key: 'near',
-      hint: em?.list.distanceFrom[near.sort],
-      glyph: <FaLocationArrow />,
-      text: `${kmFormat.format(near.km)} km`,
-    });
-  }
 
   if (traits.has('transport')) {
     for (const kind of event.transports) {
@@ -155,6 +136,30 @@ export function EventTraits({
           <FaChild />
         </Not>
       ),
+    });
+  }
+
+  return marks;
+}
+
+/** The figures and the organizer, those of `traits` the event states. */
+function useValues({ event, traits, near, sorted }: Props): Mark[] {
+  const em = useEventsMessages();
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const kmFormat = useNumberFormat({ maximumFractionDigits: 1 });
+
+  const mFormat = useNumberFormat({ maximumFractionDigits: 0 });
+
+  const marks: Mark[] = [];
+
+  if (near) {
+    marks.push({
+      key: 'near',
+      hint: em?.list.distanceFrom[near.sort],
+      glyph: <FaLocationArrow />,
+      text: `${kmFormat.format(near.km)} km`,
     });
   }
 
@@ -218,42 +223,72 @@ export function EventTraits({
     });
   }
 
-  if (marks.length === 0) {
-    return null;
-  }
+  return marks;
+}
+
+function Glyph({ hint, glyph }: Pick<Mark, 'hint' | 'glyph'>): ReactElement {
+  return (
+    // The row opens the event on a tap; a long press names the mark.
+    <GlyphMarker hint={hint} color={null} size="inherit" cursor="pointer">
+      {glyph}
+    </GlyphMarker>
+  );
+}
+
+/** The event's indicators as one tight group, as beside its title. */
+export function EventIndicators(props: Props): ReactElement | null {
+  const marks = useIndicators(props);
+
+  return marks.length === 0 ? null : (
+    <span className="d-inline-flex align-items-center flex-shrink-0">
+      {marks.map(({ key, hint, glyph }) => (
+        <Glyph key={key} hint={hint} glyph={glyph} />
+      ))}
+    </span>
+  );
+}
+
+// Its first space is a no-break one (U+00A0), binding the dot to the value
+// before it, so a line never starts with one.
+const SEPARATOR = ' · ';
+
+/**
+ * The event's values as running text, each one whole, separated by middle
+ * dots; `afterText` puts a dot before the first too.
+ */
+export function EventValues({
+  afterText,
+  ...props
+}: Props & { afterText?: boolean }): ReactElement {
+  const marks = useValues(props);
 
   return (
-    // Loose marks, so the caller's flex line wraps them one by one.
     <>
-      {marks.map(({ key, hint, glyph, text, truncate }) =>
-        glyph ? (
-          <span
-            key={key}
-            className="d-inline-flex align-items-center gap-1 text-nowrap min-w-0"
-            style={truncate ? { maxWidth: '12em' } : undefined}
-          >
-            {/* The row opens the event on a tap; a long press names the mark. */}
-            <GlyphMarker
-              hint={hint}
-              color={null}
-              size="inherit"
-              cursor="pointer"
+      {marks.map(({ key, hint, glyph, text, truncate }, i) => (
+        <Fragment key={key}>
+          {(i > 0 || afterText) && SEPARATOR}
+
+          {glyph ? (
+            <span
+              className="d-inline-flex align-items-center gap-1 text-nowrap align-bottom"
+              style={{ maxWidth: truncate ? 'min(12em, 100%)' : '100%' }}
             >
-              {glyph}
-            </GlyphMarker>
-            {truncate ? <span className="text-truncate">{text}</span> : text}
-          </span>
-        ) : (
-          // A bare figure, named by its tooltip.
-          <LongPressTooltip key={key} label={hint}>
-            {({ props }) => (
-              <span className="text-nowrap" {...props}>
-                {text}
-              </span>
-            )}
-          </LongPressTooltip>
-        ),
-      )}
+              <Glyph hint={hint} glyph={glyph} />
+
+              {truncate ? <span className="text-truncate">{text}</span> : text}
+            </span>
+          ) : (
+            // A bare figure, named by its tooltip.
+            <LongPressTooltip label={hint}>
+              {({ props: target }) => (
+                <span className="text-nowrap" {...target}>
+                  {text}
+                </span>
+              )}
+            </LongPressTooltip>
+          )}
+        </Fragment>
+      ))}
     </>
   );
 }

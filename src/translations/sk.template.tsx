@@ -219,8 +219,6 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   selections: {
-    objects: 'Objekt (POI)',
-    event: 'Akcia',
     drawPoints: 'Bod',
     drawLines: 'Čiara',
     drawPolygons: 'Polygón',

@@ -3,6 +3,7 @@ import { changesetsShowHistory } from '@features/changesets/model/actions.js';
 import {
   ElevationValue,
   hasElevationLine,
+  useElevationFormat,
 } from '@features/elevationChart/components/ElevationValue.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
@@ -53,36 +54,98 @@ type Props = {
   details: ObjectDetailsData;
 };
 
-export function ObjectDetails({ result, details }: Props): ReactElement {
-  const { elevation, terrain, atTerrainPoint } = details;
-
-  const { id, geojson } = result;
-
+/**
+ * A result's name, and failing one all its kinds, else its type and id, as the
+ * inspector names a changed one.
+ */
+function useResultName(result: SearchResult) {
   const genericNameParts = useGenericNameParts(result);
-
-  const imgs = resolveGenericName(
-    osmTagToIconMapping,
-    geojson.properties ?? {},
-  );
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const displayName =
-    result.displayName ||
-    getNameFromOsmElement(geojson.properties ?? {}, language);
-
-  const parsedId = OsmFeatureIdSchema.safeParse(id);
-
   const m = useMessages();
 
-  // All its kinds where it has no name, else its type and id, as the inspector
-  // names a changed one.
+  const displayName =
+    result.displayName ||
+    getNameFromOsmElement(result.geojson.properties ?? {}, language);
+
+  const parsedId = OsmFeatureIdSchema.safeParse(result.id);
+
   const nameOrKinds =
     displayName ||
     genericNameParts.map((part) => part.text).join(', ') ||
     (parsedId.success
       ? osmTypeAndId(m, parsedId.data.elementType, parsedId.data.id)
       : '');
+
+  return { displayName, nameOrKinds, genericNameParts, parsedId };
+}
+
+/** What a result's panel header names it by. */
+export function ResultName({ result }: { result: SearchResult }): ReactElement {
+  return <>{useResultName(result).nameOrKinds}</>;
+}
+
+/** A result's type icons, beside its name in a minimized panel. */
+export function ResultMarks({
+  result,
+}: {
+  result: SearchResult;
+}): ReactElement {
+  return (
+    <>
+      {resolveGenericName(
+        osmTagToIconMapping,
+        result.geojson.properties ?? {},
+      ).map((img) => (
+        <IconGlyph key={img} poi={img} />
+      ))}
+    </>
+  );
+}
+
+/** A result's kinds, where its name heads it, and its elevation, as a line. */
+export function ResultSummary({
+  result,
+  details,
+}: {
+  result: SearchResult;
+  details: ObjectDetailsData;
+}): ReactElement {
+  const { displayName, genericNameParts } = useResultName(result);
+
+  const m = useMessages();
+
+  // As the body's elevation line writes it.
+  const nfEle = useElevationFormat(details.elevation);
+
+  const { elevation } = details.elevation;
+
+  return (
+    <small className="d-block text-truncate">
+      {[
+        displayName && genericNameParts.map((part) => part.text).join(', '),
+        typeof elevation === 'number' &&
+          `${nfEle.format(elevation)} ${m?.general.masl ?? 'm'}`,
+      ]
+        .filter(Boolean)
+        .join(' · ')}
+    </small>
+  );
+}
+
+export function ObjectDetails({ result, details }: Props): ReactElement {
+  const { elevation, terrain, atTerrainPoint } = details;
+
+  const { id, geojson } = result;
+
+  const imgs = resolveGenericName(
+    osmTagToIconMapping,
+    geojson.properties ?? {},
+  );
+
+  const { displayName, nameOrKinds, genericNameParts, parsedId } =
+    useResultName(result);
 
   const om = useObjectsMessages();
 

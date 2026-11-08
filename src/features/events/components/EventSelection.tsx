@@ -40,21 +40,25 @@ import {
   eventsOpen,
   eventsSetParticipation,
 } from '../model/actions.js';
+import { EventsListTraitSchema } from '../model/listSort.js';
 import { selectedEventId } from '../model/selectors.js';
 import { loadEventsMessages } from '../translations/loadEventsMessages.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { EventDetails } from './EventDetails.js';
+import { EventLine } from './EventLine.js';
+import { EventIndicators } from './EventTraits.js';
 
 /** The linked map in a tab of its own: the full app, leaving this one's map be. */
 function mapUrl(mapId: string): string {
   return `${location.origin}${location.pathname}#id=${encodeURIComponent(mapId)}`;
 }
 
+// A minimized panel has the width for all an event states.
+const ALL_TRAITS = new Set(EventsListTraitSchema.options);
+
 /** The selected event's panel. */
 export default function EventSelection(): ReactElement | null {
   const dispatch = useDispatch();
-
-  const m = useMessages();
 
   const event = useAppSelector((state) => state.events.selected);
 
@@ -66,7 +70,9 @@ export default function EventSelection(): ReactElement | null {
       item={event}
       show={shown}
       icon={<FaCalendarDay />}
-      title={() => m?.selections.event}
+      title={(event) => event.title}
+      summary={(event) => <EventLine event={event} traits={ALL_TRAITS} />}
+      marks={(event) => <EventIndicators event={event} traits={ALL_TRAITS} />}
       keepVisible={(event) => event.startPoint}
       onClose={() => dispatch(selectFeature(null))}
     >

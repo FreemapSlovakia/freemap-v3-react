@@ -213,8 +213,6 @@ const messages: Messages = {
   },
 
   selections: {
-    objects: 'Object (POI)',
-    event: 'Event',
     drawPoints: 'Point',
     drawLines: 'Line',
     drawPolygons: 'Polygon',

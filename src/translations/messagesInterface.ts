@@ -181,8 +181,6 @@ export type Messages = {
     nw: string;
   };
   selections: {
-    objects: string;
-    event: string;
     drawPoints: string;
     drawLines: string;
     drawPolygons: string;

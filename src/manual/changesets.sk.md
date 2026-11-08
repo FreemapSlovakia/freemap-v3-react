@@ -30,7 +30,7 @@ Každá sada zmien je na mape značka s menom mapéra a popisom sady. Ukázaním
 
 ## Preskúmanie sady zmien
 
-Kliknite na značku alebo na sadu zmien v paneli **Vrstvy mapy**. Mapa sa priblíži na sadu zmien a otvorí sa jej panel – vpravo, na telefóne cez dolnú polovicu obrazovky – s údajmi **Autor:**, **Popis:**, **Čas:** a ďalšie tagy sady, napríklad použitý editor. Kliknutím na meno autora sa zobrazia len sady zmien tohto autora.
+Kliknite na značku alebo na sadu zmien v paneli **Vrstvy mapy**. Mapa sa priblíži na sadu zmien a otvorí sa jej panel – vpravo, na telefóne cez dolnú polovicu obrazovky (tam ho :FaChevronDown: a :FaChevronUp: v hlavičke zmenšia na hlavičku alebo zväčšia na celú obrazovku) – s údajmi **Autor:**, **Popis:**, **Čas:** a ďalšie tagy sady, napríklad použitý editor. Kliknutím na meno autora sa zobrazia len sady zmien tohto autora.
 
 Zmenené prvky sa vykreslia na mape: zelenou **vytvorené**, oranžovou **upravené** a červenou prerušovanou čiarou **zmazané**; pri presunutom prvku je pôvodný tvar prvku sivý a prerušovaný. Panel uvádza počty prvkov v každej skupine a vypisuje zmenené relácie, ktoré sa na mape nekreslia. Panel **Vrstvy mapy** vypisuje zmenené prvky; výberom prvku sa mapa na tento prvok priblíži. Ak sú zmeny zle vidieť, znížte :MdBrightness6: **Jas mapy** v ponuke :FaCog:.
 

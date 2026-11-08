@@ -533,4 +533,15 @@ a[target]:not(
   /* Over the header and the bottom controls (1010), under a panel the header
      puts in full screen (1012, see `Main.module.css`). */
   --bs-offcanvas-zindex: 1011;
+  --bs-offcanvas-transition:
+    transform 0.3s ease-in-out, height 0.3s ease-in-out;
+}
+
+/* A phone's bottom panel at its other heights; see `DockPanel`. */
+.fm-dock.fm-dock-full {
+  --bs-offcanvas-height: 100dvh;
+}
+
+.fm-dock.fm-dock-min {
+  --bs-offcanvas-height: auto;
 }

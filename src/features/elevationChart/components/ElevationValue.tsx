@@ -65,6 +65,20 @@ export type ElevationValueProps = ElevationReading & {
   offer?: boolean;
 };
 
+/**
+ * How a reading's number is written: a decimal only where a national LiDAR
+ * model answered; off SRTM or GEDTM30 it would be noise.
+ */
+export function useElevationFormat({
+  sources,
+  national = hasSubMeterPrecision(sources),
+}: Pick<ElevationReading, 'sources' | 'national'>): Intl.NumberFormat {
+  return useNumberFormat({
+    minimumFractionDigits: 0,
+    maximumFractionDigits: national ? 1 : 0,
+  });
+}
+
 /** Whether `ElevationValue` renders anything for the reading. */
 export function hasElevationLine({
   loading,
@@ -132,12 +146,7 @@ export function ElevationValue({
   className,
   offer = true,
 }: ElevationValueProps): ReactElement | null {
-  // A decimal only where a national LiDAR model answered; off SRTM or GEDTM30 it
-  // would be noise, and every other elevation readout writes whole metres.
-  const nfEle = useNumberFormat({
-    minimumFractionDigits: 0,
-    maximumFractionDigits: national ? 1 : 0,
-  });
+  const nfEle = useElevationFormat({ sources: reportedSources, national });
 
   const m = useMessages();
 

@@ -4,7 +4,12 @@ import {
   selectFeature,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { ObjectDetails } from '@features/objects/components/ObjectDetails.js';
+import {
+  ObjectDetails,
+  ResultMarks,
+  ResultName,
+  ResultSummary,
+} from '@features/objects/components/ObjectDetails.js';
 import { useObjectActions } from '@features/objects/components/useObjectActions.js';
 import {
   type ObjectDetailsData,
@@ -50,8 +55,6 @@ type Item = { result: SearchResult; details: ObjectDetailsData };
  * found by name, only being looked at — opens it on a click on the map.
  */
 export default function SearchResultPanel(): ReactElement {
-  const m = useMessages();
-
   const dispatch = useDispatch();
 
   const result = useAppSelector(activeSearchResultSelector);
@@ -76,7 +79,9 @@ export default function SearchResultPanel(): ReactElement {
       item={item}
       show={shown}
       icon={<FaSearch />}
-      title={() => m?.search.result}
+      title={({ result }) => <ResultName result={result} />}
+      marks={({ result }) => <ResultMarks result={result} />}
+      summary={(item) => <ResultSummary {...item} />}
       manual="search"
       keepVisible={({ result }) => resultCoords(result) ?? undefined}
       onClose={() => {

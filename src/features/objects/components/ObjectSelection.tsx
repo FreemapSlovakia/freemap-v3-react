@@ -1,5 +1,4 @@
 import { selectFeature } from '@app/store/actions.js';
-import { useMessages } from '@features/l10n/l10nInjector.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { resultCoords } from '@features/search/model/resultUtils.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
@@ -18,7 +17,12 @@ import {
 } from '../model/actions.js';
 import { objectToSearchResult } from '../model/objectToSearchResult.js';
 import { objectDetailsSelector } from '../model/selectors.js';
-import { ObjectDetails } from './ObjectDetails.js';
+import {
+  ObjectDetails,
+  ResultMarks,
+  ResultName,
+  ResultSummary,
+} from './ObjectDetails.js';
 import { ObjectsConvertMenu } from './ObjectsConvertMenu.js';
 import { useObjectActions } from './useObjectActions.js';
 
@@ -30,8 +34,6 @@ type Item = {
 
 /** The selected object's panel. */
 export default function ObjectSelection(): ReactElement {
-  const m = useMessages();
-
   const dispatch = useDispatch();
 
   const object = useAppSelector((state) => {
@@ -58,7 +60,9 @@ export default function ObjectSelection(): ReactElement {
       item={item}
       show={object !== undefined}
       icon={<FaMapMarkerAlt />}
-      title={() => m?.selections.objects}
+      title={({ result }) => <ResultName result={result} />}
+      marks={({ result }) => <ResultMarks result={result} />}
+      summary={(item) => <ResultSummary {...item} />}
       manual="objects"
       keepVisible={({ result }) => resultCoords(result) ?? undefined}
       onClose={() => {
