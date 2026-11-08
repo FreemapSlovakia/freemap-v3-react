@@ -113,8 +113,12 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearMap: 'A térkép közepéhez legközelebb',
       nearHome: 'Az otthonhoz legközelebb',
       nearPlace: 'A szűrő helyéhez legközelebb',
+      interestedDesc: 'Legtöbb érdeklődő elöl',
+      goingDesc: 'Legtöbb résztvevő elöl',
     },
     show: 'A sorokban látható',
+    interestedCount: 'Érdeklődők',
+    goingCount: 'Résztvevők',
     distanceFrom: {
       nearMap: 'Távolság a térkép közepétől',
       nearHome: 'Távolság az otthontól',

@@ -100,22 +100,28 @@ export const EventSchema = z.object({
 export type EventItem = z.infer<typeof EventSchema>;
 
 /** An event as the layer lists it (`?summary=1`); the rest by its id. */
-export const EventSummarySchema = EventSchema.pick({
-  id: true,
-  userId: true,
-  title: true,
-  startAt: true,
-  endAt: true,
-  dateOnly: true,
-  startPoint: true,
-  transports: true,
-  distance: true,
-  duration: true,
-  ascent: true,
-  difficulty: true,
-  dogs: true,
-  children: true,
-  myParticipation: true,
+export const EventSummarySchema = z.object({
+  ...EventSchema.pick({
+    id: true,
+    userId: true,
+    title: true,
+    startAt: true,
+    endAt: true,
+    dateOnly: true,
+    startPoint: true,
+    transports: true,
+    distance: true,
+    duration: true,
+    ascent: true,
+    difficulty: true,
+    dogs: true,
+    children: true,
+    myParticipation: true,
+  }).shape,
+  // Optional or defaulted, as the web may deploy before the API sends them.
+  user: EventSchema.shape.user.optional(),
+  interestedCount: z.number().default(0),
+  goingCount: z.number().default(0),
 });
 
 export type EventSummary = z.infer<typeof EventSummarySchema>;

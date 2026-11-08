@@ -102,6 +102,9 @@ export type EventsMessages = {
     show: string;
     /** Names the distance a row shows under a distance sort. */
     distanceFrom: Record<EventsNearSort, string>;
+    /** Those who said they are interested in / going to an event, as counted. */
+    interestedCount: string;
+    goingCount: string;
   };
   selection: {
     backToEvents: string;

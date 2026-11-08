@@ -8,15 +8,19 @@ import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
 import type { ReactElement, ReactNode } from 'react';
 import {
   FaBan,
+  FaCheck,
   FaChild,
   FaDog,
   FaLocationArrow,
   FaRegClock,
+  FaStar,
+  FaUser,
 } from 'react-icons/fa';
 import { MdTrendingUp } from 'react-icons/md';
 import type { EventSummary } from '../model/actions.js';
 import type { EventsListTrait, EventsNearSort } from '../model/listSort.js';
 import { iconOfKind } from '../model/transports.js';
+import type { EventsMessages } from '../translations/EventsMessages.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICONS } from './difficultyIcons.js';
 
@@ -30,7 +34,29 @@ function Not({ children }: { children: ReactNode }): ReactElement {
   );
 }
 
-type Mark = { key: string; hint?: ReactNode; glyph?: ReactNode; text?: string };
+type Mark = {
+  key: string;
+  hint?: ReactNode;
+  glyph?: ReactNode;
+  text?: string;
+  /** Cut short, the whole of it in the hint. */
+  truncate?: boolean;
+};
+
+/** A trait's name, as the menu of what rows show lists it. */
+export function traitLabel(
+  em: EventsMessages | undefined,
+  trait: EventsListTrait,
+): string | undefined {
+  switch (trait) {
+    case 'interested':
+      return em?.list.interestedCount;
+    case 'going':
+      return em?.list.goingCount;
+    default:
+      return em?.form[trait];
+  }
+}
 
 /**
  * What an event says of itself, as a row of glyphs and figures — those of
@@ -40,6 +66,7 @@ export function EventTraits({
   event,
   traits,
   near,
+  sorted,
 }: {
   event: Pick<
     EventSummary,
@@ -50,9 +77,14 @@ export function EventTraits({
     | 'distance'
     | 'duration'
     | 'ascent'
+    | 'user'
+    | 'interestedCount'
+    | 'goingCount'
   >;
   traits: ReadonlySet<EventsListTrait>;
   near?: { sort: EventsNearSort; km: number };
+  /** The stat the list is sorted by, shown even where it is zero. */
+  sorted?: EventsListTrait;
 }): ReactElement | null {
   const em = useEventsMessages();
 
@@ -152,6 +184,40 @@ export function EventTraits({
     });
   }
 
+  if (traits.has('organizer') && event.user) {
+    const { name } = event.user;
+
+    marks.push({
+      key: 'organizer',
+      hint: em ? `${em.form.organizer}: ${name}` : name,
+      glyph: <FaUser />,
+      text: name,
+      truncate: true,
+    });
+  }
+
+  // A count of nobody says nothing, unless the list is sorted by it.
+  if (
+    traits.has('interested') &&
+    (event.interestedCount > 0 || sorted === 'interested')
+  ) {
+    marks.push({
+      key: 'interested',
+      hint: traitLabel(em, 'interested'),
+      glyph: <FaStar />,
+      text: mFormat.format(event.interestedCount),
+    });
+  }
+
+  if (traits.has('going') && (event.goingCount > 0 || sorted === 'going')) {
+    marks.push({
+      key: 'going',
+      hint: traitLabel(em, 'going'),
+      glyph: <FaCheck />,
+      text: mFormat.format(event.goingCount),
+    });
+  }
+
   if (marks.length === 0) {
     return null;
   }
@@ -159,11 +225,12 @@ export function EventTraits({
   return (
     // Loose marks, so the caller's flex line wraps them one by one.
     <>
-      {marks.map(({ key, hint, glyph, text }) =>
+      {marks.map(({ key, hint, glyph, text, truncate }) =>
         glyph ? (
           <span
             key={key}
-            className="d-inline-flex align-items-center gap-1 text-nowrap"
+            className="d-inline-flex align-items-center gap-1 text-nowrap min-w-0"
+            style={truncate ? { maxWidth: '12em' } : undefined}
           >
             {/* The row opens the event on a tap; a long press names the mark. */}
             <GlyphMarker
@@ -174,7 +241,7 @@ export function EventTraits({
             >
               {glyph}
             </GlyphMarker>
-            {text}
+            {truncate ? <span className="text-truncate">{text}</span> : text}
           </span>
         ) : (
           // A bare figure, named by its tooltip.

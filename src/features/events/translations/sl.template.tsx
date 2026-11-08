@@ -132,8 +132,12 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearMap: 'Najbližje središču zemljevida',
       nearHome: 'Najbližje domu',
       nearPlace: 'Najbližje kraju iz filtra',
+      interestedDesc: 'Od največjega zanimanja',
+      goingDesc: 'Od največ udeležencev',
     },
     show: 'Prikazano v vrsticah',
+    interestedCount: 'Zainteresirani',
+    goingCount: 'Udeleženci',
     distanceFrom: {
       nearMap: 'Razdalja od središča zemljevida',
       nearHome: 'Razdalja od doma',

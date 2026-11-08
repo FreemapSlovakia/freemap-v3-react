@@ -54,4 +54,18 @@ describe('events list sort', () => {
   it('falls back to the date without an origin', () => {
     expect(ids('nearHome')).toEqual(['a', 'b', 'c']);
   });
+
+  it('puts the most going first, ties by date', () => {
+    const counted = [
+      { ...events[0]!, goingCount: 0 },
+      { ...events[1]!, goingCount: 0 },
+      { ...events[2]!, goingCount: 2 },
+    ];
+
+    expect(
+      sortEvents(counted, 'goingDesc', origins, 'sk').map(
+        ({ event }) => event.id,
+      ),
+    ).toEqual(['c', 'a', 'b']);
+  });
 });

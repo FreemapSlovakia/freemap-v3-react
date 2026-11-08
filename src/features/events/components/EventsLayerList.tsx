@@ -10,6 +10,7 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { usePaged } from '@shared/components/LoadMoreSentinel.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
+import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { fuzzyMatch, prepareFuzzyTarget } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNow } from '@shared/hooks/useNow.js';
@@ -24,8 +25,21 @@ import {
 } from 'react';
 import { Dropdown, Form, ListGroup, ToggleButton } from 'react-bootstrap';
 import { createPortal } from 'react-dom';
-import { FaEye, FaRegCheckSquare, FaRegSquare } from 'react-icons/fa';
-import { MdCropFree } from 'react-icons/md';
+import {
+  FaCheck,
+  FaCrosshairs,
+  FaEye,
+  FaHome,
+  FaMapMarkerAlt,
+  FaRegCalendarAlt,
+  FaRegCheckSquare,
+  FaRegClock,
+  FaRegSquare,
+  FaRulerHorizontal,
+  FaSortAlphaDown,
+  FaStar,
+} from 'react-icons/fa';
+import { MdCropFree, MdTrendingUp } from 'react-icons/md';
 import { useDispatch, useStore } from 'react-redux';
 import {
   eventsSetListInView,
@@ -43,10 +57,27 @@ import {
 } from '../model/listSort.js';
 import { selectedEventId } from '../model/selectors.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
-import { EventTraits } from './EventTraits.js';
+import { EventTraits, traitLabel } from './EventTraits.js';
 import { useEventDatesFormat } from './useEventDatesFormat.js';
 
 const PAGE = 50;
+
+// A stat's two directions share its icon.
+const SORT_ICONS: Record<EventsListSort, ReactElement> = {
+  date: <FaRegCalendarAlt />,
+  title: <FaSortAlphaDown />,
+  lengthAsc: <FaRulerHorizontal />,
+  lengthDesc: <FaRulerHorizontal />,
+  ascentAsc: <MdTrendingUp />,
+  ascentDesc: <MdTrendingUp />,
+  durationAsc: <FaRegClock />,
+  durationDesc: <FaRegClock />,
+  nearMap: <FaCrosshairs />,
+  nearHome: <FaHome />,
+  nearPlace: <FaMapMarkerAlt />,
+  interestedDesc: <FaStar />,
+  goingDesc: <FaCheck />,
+};
 
 /** The events the layer shows, on its page in the map layers panel. */
 export function EventsLayerList(): ReactElement {
@@ -244,7 +275,7 @@ export function EventsLayerList(): ReactElement {
             disabled={trait === sortedStat}
           >
             {traits.has(trait) ? <FaRegCheckSquare /> : <FaRegSquare />}
-            <MenuLabel>{em?.form[trait]}</MenuLabel>
+            <MenuLabel>{traitLabel(em, trait)}</MenuLabel>
           </Dropdown.Item>
         ))}
       </FmDropdownMenu>
@@ -284,12 +315,15 @@ export function EventsLayerList(): ReactElement {
       />
 
       <div className="d-flex gap-2 mb-2">
-        <Form.Select
-          size="sm"
-          className="flex-grow-1 w-auto"
-          value={effectiveSort}
-          onChange={(e) => {
-            const next = EventsListSortSchema.parse(e.currentTarget.value);
+        <Dropdown
+          className="flex-grow-1 min-w-0"
+          onSelect={(key) => {
+            const next = EventsListSortSchema.parse(key);
+
+            // As a select's change, picking the current one is nothing.
+            if (next === effectiveSort) {
+              return;
+            }
 
             if (next === 'nearMap') {
               setCenter(mapCenter());
@@ -300,12 +334,30 @@ export function EventsLayerList(): ReactElement {
             dispatch(eventsSetListSort(next));
           }}
         >
-          {EventsListSortSchema.options.map((option) => (
-            <option key={option} value={option} disabled={unavailable[option]}>
-              {em?.list.sorts[option]}
-            </option>
-          ))}
-        </Form.Select>
+          <Dropdown.Toggle
+            as={SelectToggle}
+            className="form-select-sm w-100 d-flex align-items-center gap-2"
+          >
+            {SORT_ICONS[effectiveSort]}
+            <MenuLabel>{em?.list.sorts[effectiveSort]}</MenuLabel>
+          </Dropdown.Toggle>
+
+          <FmDropdownMenu>
+            {EventsListSortSchema.options.map((option) => (
+              <Dropdown.Item
+                as="button"
+                type="button"
+                key={option}
+                eventKey={option}
+                active={option === effectiveSort}
+                disabled={unavailable[option]}
+              >
+                {SORT_ICONS[option]}
+                <MenuLabel>{em?.list.sorts[option]}</MenuLabel>
+              </Dropdown.Item>
+            ))}
+          </FmDropdownMenu>
+        </Dropdown>
 
         <LongPressTooltip label={em?.list.inView}>
           {({ props }) => (
@@ -380,6 +432,7 @@ export function EventsLayerList(): ReactElement {
                       ? { sort: effectiveSort, km }
                       : undefined
                   }
+                  sorted={sortedStat}
                 />
               </small>
             </ListGroup.Item>

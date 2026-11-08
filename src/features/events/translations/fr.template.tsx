@@ -122,8 +122,12 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
       nearMap: 'Au plus près du centre de la carte',
       nearHome: 'Au plus près du domicile',
       nearPlace: 'Au plus près du lieu du filtre',
+      interestedDesc: 'Les plus suivis d’abord',
+      goingDesc: 'Le plus de participants d’abord',
     },
     show: 'Affiché dans les lignes',
+    interestedCount: 'Intéressés',
+    goingCount: 'Participants',
     distanceFrom: {
       nearMap: 'Distance du centre de la carte',
       nearHome: 'Distance du domicile',
