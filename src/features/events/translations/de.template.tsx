@@ -98,6 +98,11 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     unsaid: 'Auch Veranstaltungen ohne Angabe',
     unsaidHint:
       'Anreise, Schwierigkeit, Länge, Dauer und Anstieg: Veranstaltungen ohne diese Angaben werden ebenfalls angezeigt.',
+    origin: 'Herkunft',
+    originHint:
+      'Übernommene Veranstaltungen werden automatisch aus den Kalendern von Organisationen wie Wandervereinen übernommen. Ihre Veranstalter verfolgen sie hier nicht; Einzelheiten und Änderungen finden Sie in der in der Beschreibung genannten Quelle. Hier eingetragene Veranstaltungen fügen ihre Veranstalter selbst hinzu.',
+    own: 'Hier eingetragen',
+    imported: 'Übernommen',
   },
   card: {
     unlisted: 'Nicht gelistet',
@@ -105,6 +110,12 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     noDogs: 'Keine Hunde',
     children: 'Für Kinder geeignet',
     noChildren: 'Nicht für Kinder',
+    importedNote: ({ source }) => (
+      <>
+        Diese Veranstaltung stammt aus dem Kalender von {source}; weder ihr
+        Veranstalter noch die meisten Teilnehmenden verfolgen sie hier.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Zurück zu den Veranstaltungen',

@@ -20,6 +20,8 @@ export interface EventsFilter {
   dogs?: boolean;
   /** Only events that said they suit children, or that they don't; unset, any. */
   children?: boolean;
+  /** Only imported events (harvested, see `EventItem`), or only own ones; unset, any. */
+  imported?: boolean;
   /** Lets events that leave transport, difficulty or a range's stat unsaid through. */
   unsaid?: boolean;
 }
@@ -37,7 +39,8 @@ export const isFilterEmpty = (f: EventsFilter): boolean =>
   isEmptyRange(f.ascent) &&
   !f.difficulty?.length &&
   f.dogs === undefined &&
-  f.children === undefined;
+  f.children === undefined &&
+  f.imported === undefined;
 
 /** A date input can yield an Invalid Date (a 6-digit year); it reads as none. */
 const validDate = (d: Date | undefined) =>
@@ -161,6 +164,10 @@ export function filterToQuery(f: EventsFilter): [string, string][] {
     parts.push(['events-children', f.children ? '1' : '0']);
   }
 
+  if (f.imported !== undefined) {
+    parts.push(['events-imported', f.imported ? '1' : '0']);
+  }
+
   if (f.unsaid) {
     parts.push(['events-unsaid', '1']);
   }
@@ -205,6 +212,7 @@ export function filterFromQuery(
     difficulty: difficulty.length ? difficulty : undefined,
     dogs: parseYesNo(query['events-dogs']),
     children: parseYesNo(query['events-children']),
+    imported: parseYesNo(query['events-imported']),
     unsaid: query['events-unsaid'] === '1' || undefined,
   };
 
@@ -285,6 +293,10 @@ export function filterToRequest(
 
   if (f.children !== undefined) {
     params['children'] = f.children ? '1' : '0';
+  }
+
+  if (f.imported !== undefined) {
+    params['imported'] = f.imported ? '1' : '0';
   }
 
   if (f.unsaid) {

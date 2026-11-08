@@ -97,6 +97,11 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     unsaid: 'Vključno z dogodki, ki tega ne navajajo',
     unsaidHint:
       'Prevoz, zahtevnost, dolžina, trajanje in vzpon: prikazani so tudi dogodki, ki jih ne navajajo.',
+    origin: 'Izvor',
+    originHint:
+      'Prevzeti dogodki se samodejno prevzemajo iz koledarjev organizacij, na primer planinskih društev. Njihovi organizatorji jih tukaj ne spremljajo; podrobnosti in spremembe najdete v viru, navedenem v opisu. Dogodke, vnesene tukaj, dodajajo njihovi organizatorji sami.',
+    own: 'Vneseni tukaj',
+    imported: 'Prevzeti',
   },
   card: {
     unlisted: 'Neobjavljen',
@@ -104,6 +109,12 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     noDogs: 'Brez psov',
     children: 'Primerno za otroke',
     noChildren: 'Ni primerno za otroke',
+    importedNote: ({ source }) => (
+      <>
+        Dogodek je prevzet iz koledarja {source}; niti njegov organizator niti
+        večina udeležencev ga tukaj ne spremlja.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Nazaj na dogodke',

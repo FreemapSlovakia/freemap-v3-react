@@ -16,7 +16,13 @@ import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import type { ReactElement } from 'react';
-import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
+import {
+  Alert,
+  Button,
+  ButtonGroup,
+  ButtonToolbar,
+  Dropdown,
+} from 'react-bootstrap';
 import {
   FaArrowLeft,
   FaCalendarDay,
@@ -243,78 +249,88 @@ function EventActions({ event }: { event: EventItem }): ReactElement {
   };
 
   return (
-    <ButtonToolbar className="gap-2 mb-3">
-      {loaded && (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            dispatch(mapsDisconnect());
-
-            // Takes the selection too, leaving the event markers.
-            dispatch(clearMapFeatures());
-          }}
-        >
-          <FaArrowLeft /> {em?.selection.backToEvents}
-        </Button>
-      )}
-
-      <Button
-        variant="outline-primary"
-        active={event.myParticipation === 'interested'}
-        disabled={!online}
-        onClick={() => participate('interested')}
-      >
-        <FaStar /> {em?.selection.interested} · {event.interestedCount}
-      </Button>
-
-      <Button
-        variant="outline-primary"
-        active={event.myParticipation === 'going'}
-        disabled={!online}
-        onClick={() => participate('going')}
-      >
-        <FaCheck /> {em?.selection.going} · {event.goingCount}
-      </Button>
-
-      {event.canWrite && (
-        <>
+    <>
+      <ButtonToolbar className={event.imported ? 'gap-2 mb-2' : 'gap-2 mb-3'}>
+        {loaded && (
           <Button
             variant="secondary"
-            disabled={!online}
-            onClick={() =>
-              dispatch(setActiveModal({ type: 'event-form', id: event.id }))
-            }
-          >
-            <FaEdit /> {m?.general.modify}
-          </Button>
+            onClick={() => {
+              dispatch(mapsDisconnect());
 
-          <LongPressTooltip label={m?.general.delete}>
-            {({ props }) => (
-              <Button
-                variant="danger"
-                disabled={!online}
-                onClick={async () => {
-                  if (
-                    await confirm({
-                      title: em?.selection.deleteTitle,
-                      message: em?.selection.deleteMessage({
-                        title: event.title,
-                      }),
-                      confirmLabel: m?.general.delete,
-                      confirmStyle: 'danger',
-                    })
-                  ) {
-                    dispatch(eventsDelete(event.id));
-                  }
-                }}
-                {...props}
-              >
-                <FaTrash />
-              </Button>
-            )}
-          </LongPressTooltip>
-        </>
+              // Takes the selection too, leaving the event markers.
+              dispatch(clearMapFeatures());
+            }}
+          >
+            <FaArrowLeft /> {em?.selection.backToEvents}
+          </Button>
+        )}
+
+        <Button
+          variant="outline-primary"
+          active={event.myParticipation === 'interested'}
+          disabled={!online}
+          onClick={() => participate('interested')}
+        >
+          <FaStar /> {em?.selection.interested} · {event.interestedCount}
+        </Button>
+
+        <Button
+          variant="outline-primary"
+          active={event.myParticipation === 'going'}
+          disabled={!online}
+          onClick={() => participate('going')}
+        >
+          <FaCheck /> {em?.selection.going} · {event.goingCount}
+        </Button>
+
+        {event.canWrite && (
+          <>
+            <Button
+              variant="secondary"
+              disabled={!online}
+              onClick={() =>
+                dispatch(setActiveModal({ type: 'event-form', id: event.id }))
+              }
+            >
+              <FaEdit /> {m?.general.modify}
+            </Button>
+
+            <LongPressTooltip label={m?.general.delete}>
+              {({ props }) => (
+                <Button
+                  variant="danger"
+                  disabled={!online}
+                  onClick={async () => {
+                    if (
+                      await confirm({
+                        title: em?.selection.deleteTitle,
+                        message: em?.selection.deleteMessage({
+                          title: event.title,
+                        }),
+                        confirmLabel: m?.general.delete,
+                        confirmStyle: 'danger',
+                      })
+                    ) {
+                      dispatch(eventsDelete(event.id));
+                    }
+                  }}
+                  {...props}
+                >
+                  <FaTrash />
+                </Button>
+              )}
+            </LongPressTooltip>
+          </>
+        )}
+      </ButtonToolbar>
+
+      {/* Its organizer is the calendar's account: whoever comes, nobody here
+        hears of it. */}
+      {event.imported && (
+        <Alert variant="warning" className="small py-2 px-3 mb-3">
+          {em?.card.importedNote({ source: <em>{event.user.name}</em> })}
+        </Alert>
       )}
-    </ButtonToolbar>
+    </>
   );
 }

@@ -78,6 +78,11 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     unsaid: 'Azokkal az eseményekkel együtt, amelyek ezt nem adják meg',
     unsaidHint:
       'Közlekedés, nehézség, hossz, időtartam és emelkedés: azok az események is megjelennek, amelyek ezeket nem adják meg.',
+    origin: 'Eredet',
+    originHint:
+      'Az átvett eseményeket automatikusan vesszük át szervezetek, például túraegyesületek naptáraiból. Szervezőik itt nem követik őket; a részletek és a változások a leírásban megadott forrásban találhatók. Az itt rögzített eseményeket maguk a szervezőik adják hozzá.',
+    own: 'Itt rögzített',
+    imported: 'Átvett',
   },
   card: {
     unlisted: 'Nem listázott',
@@ -85,6 +90,12 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     noDogs: 'Kutya nélkül',
     children: 'Gyerekeknek is alkalmas',
     noChildren: 'Gyerekeknek nem alkalmas',
+    importedNote: ({ source }) => (
+      <>
+        Ez az esemény a(z) {source} naptárából származik; sem a szervezője, sem
+        a résztvevők többsége nem követi itt.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Vissza az eseményekhez',

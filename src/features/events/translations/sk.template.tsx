@@ -100,6 +100,11 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     unsaid: 'Vrátane akcií, ktoré to nemajú uvedené',
     unsaidHint:
       'Doprava, náročnosť, dĺžka, trvanie a stúpanie: akcie, ktoré ich neuvádzajú, budú tiež zobrazené.',
+    origin: 'Pôvod',
+    originHint:
+      'Prevzaté akcie sa automaticky preberajú z kalendárov organizácií, napríklad turistických klubov. Ich organizátori ich tu nesledujú; podrobnosti a zmeny nájdete v zdroji uvedenom v popise. Akcie zadané tu pridávajú sami ich organizátori.',
+    own: 'Zadané tu',
+    imported: 'Prevzaté',
   },
   card: {
     unlisted: 'Nezverejnená',
@@ -107,6 +112,12 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     noDogs: 'Bez psov',
     children: 'Vhodné pre deti',
     noChildren: 'Nevhodné pre deti',
+    importedNote: ({ source }) => (
+      <>
+        Akcia je prevzatá z kalendára {source}; jej organizátor ani väčšina
+        účastníkov ju tu nesledujú.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Späť na akcie',

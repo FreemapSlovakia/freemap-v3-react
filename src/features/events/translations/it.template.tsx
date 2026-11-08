@@ -79,6 +79,11 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     unsaid: 'Includi gli eventi che non lo indicano',
     unsaidHint:
       'Mezzo, difficoltà, lunghezza, durata e salita: vengono mostrati anche gli eventi che non li indicano.',
+    origin: 'Origine',
+    originHint:
+      'Gli eventi importati vengono ripresi automaticamente dai calendari di organizzazioni come i club escursionistici. I loro organizzatori non li seguono qui; per dettagli e modifiche consulti la fonte indicata nella descrizione. Gli eventi inseriti qui sono aggiunti dai loro stessi organizzatori.',
+    own: 'Inseriti qui',
+    imported: 'Importati',
   },
   card: {
     unlisted: 'Non elencato',
@@ -86,6 +91,12 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     noDogs: 'Senza cani',
     children: 'Adatto ai bambini',
     noChildren: 'Non adatto ai bambini',
+    importedNote: ({ source }) => (
+      <>
+        Questo evento è importato dal calendario di {source}; né l’organizzatore
+        né la maggior parte dei partecipanti lo seguono qui.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Torna agli eventi',

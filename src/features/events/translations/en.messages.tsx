@@ -96,6 +96,11 @@ const en: EventsMessages = {
     unsaid: 'Include events that don’t say',
     unsaidHint:
       'Transport, difficulty, length, duration and ascent: events that leave them out are shown too.',
+    origin: 'Origin',
+    originHint:
+      'Imported events are taken over automatically from the calendars of organizations such as hiking clubs. Their organizers don’t follow them here; for details and changes, see the source linked in the description. Events entered here are added by their organizers themselves.',
+    own: 'Entered here',
+    imported: 'Imported',
   },
   card: {
     unlisted: 'Unlisted',
@@ -103,6 +108,12 @@ const en: EventsMessages = {
     noDogs: 'No dogs',
     children: 'Suitable for children',
     noChildren: 'Not for children',
+    importedNote: ({ source }) => (
+      <>
+        This event is imported from the {source} calendar; neither its organizer
+        nor most of its participants follow it here.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Back to events',

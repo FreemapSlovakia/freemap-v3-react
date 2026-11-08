@@ -92,6 +92,11 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     unsaid: 'Včetně akcí, které to nemají uvedeno',
     unsaidHint:
       'Doprava, náročnost, délka, trvání a stoupání: akce, které je neuvádějí, se zobrazí také.',
+    origin: 'Původ',
+    originHint:
+      'Převzaté akce se automaticky přebírají z kalendářů organizací, například turistických klubů. Jejich pořadatelé je zde nesledují; podrobnosti a změny najdete ve zdroji uvedeném v popisu. Akce zadané zde přidávají sami jejich pořadatelé.',
+    own: 'Zadané zde',
+    imported: 'Převzaté',
   },
   card: {
     unlisted: 'Nezveřejněná',
@@ -99,6 +104,12 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     noDogs: 'Bez psů',
     children: 'Vhodné pro děti',
     noChildren: 'Nevhodné pro děti',
+    importedNote: ({ source }) => (
+      <>
+        Akce je převzatá z kalendáře {source}; její pořadatel ani většina
+        účastníků ji tu nesledují.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Zpět na akce',

@@ -20,6 +20,7 @@ const full: EventsFilter = {
   difficulty: ['easy', 'moderate'],
   dogs: true,
   children: false,
+  imported: false,
   unsaid: true,
 };
 
@@ -119,6 +120,7 @@ describe('events filter', () => {
       difficulty: 'easy,moderate',
       dogs: '1',
       children: '0',
+      imported: '0',
       unsaid: '1',
     });
   });

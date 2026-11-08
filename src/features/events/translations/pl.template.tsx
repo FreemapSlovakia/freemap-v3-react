@@ -78,6 +78,11 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     unsaid: 'Także wydarzenia, które tego nie podają',
     unsaidHint:
       'Transport, trudność, długość, czas trwania i podejście: wydarzenia, które ich nie podają, również zostaną wyświetlone.',
+    origin: 'Pochodzenie',
+    originHint:
+      'Zaimportowane wydarzenia są przejmowane automatycznie z kalendarzy organizacji, np. klubów turystycznych. Ich organizatorzy nie śledzą ich tutaj; szczegóły i zmiany są dostępne w źródle podanym w opisie. Wydarzenia dodane tutaj dodają sami ich organizatorzy.',
+    own: 'Dodane tutaj',
+    imported: 'Zaimportowane',
   },
   card: {
     unlisted: 'Niepubliczne',
@@ -85,6 +90,12 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     noDogs: 'Bez psów',
     children: 'Odpowiednie dla dzieci',
     noChildren: 'Nie dla dzieci',
+    importedNote: ({ source }) => (
+      <>
+        To wydarzenie pochodzi z kalendarza {source}; ani jego organizator, ani
+        większość uczestników nie śledzą go tutaj.
+      </>
+    ),
   },
   selection: {
     backToEvents: 'Wróć do wydarzeń',

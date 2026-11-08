@@ -79,6 +79,10 @@ export const EventSchema = z.object({
   dateOnly: z.boolean().default(false),
   startPoint: EventPointSchema,
   visibility: EventVisibilitySchema,
+  /** Harvested from a calendar and on the source's account: no organizer here
+   * reads its discussion or sees who comes. Defaulted, as the web may deploy
+   * before the API sends it. */
+  imported: z.boolean().default(false),
   /** The cover image's name; see {@link coverUrl}. */
   cover: z.string().nullable(),
   ...TripStatsShape,

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Difficulty } from '../model/actions.js';
 import type { EventsColorizeBy, MineCategory } from '../model/colorize.js';
 
@@ -73,6 +74,11 @@ export type EventsMessages = {
     to: string;
     unsaid: string;
     unsaidHint: string;
+    /** Whether the events are imported from calendars or entered here. */
+    origin: string;
+    originHint: string;
+    own: string;
+    imported: string;
   };
   /** What the details show. */
   card: {
@@ -81,6 +87,8 @@ export type EventsMessages = {
     noDogs: string;
     children: string;
     noChildren: string;
+    /** Under the participation buttons of an imported event; `source` is its calendar's name, styled. */
+    importedNote: (props: { source: ReactNode }) => ReactNode;
   };
   selection: {
     backToEvents: string;

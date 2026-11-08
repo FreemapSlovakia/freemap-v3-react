@@ -136,7 +136,14 @@ from the selection toolbar (**Edit**).
       and the interested under the details, as user chips.
 - [ ] **Discussion.** API: an `eventComment` table, list and post (and the
       author or a moderator deleting), as the photo comments. Web: the thread
-      in the panel, newest last, posting for logged-in users.
+      in the panel, newest last, posting for logged-in users. On an imported
+      event (`imported`: harvested and still on the calendar's account) it
+      stays, for users among themselves, under a warning that the organizer
+      doesn't read it and is asked through the source.
+- [x] **Imported events told apart**: `imported` on the event (a `sourceKey`,
+      and an owner with no way to log in, so one handed to the club's real
+      account is its own again); a warning under Interested/Going, and the
+      filter's **Origin** with a hint (`imported=1|0`, `events-imported`).
 - [ ] **Email notifications**: the organizer on a new comment or someone
       going; the interested and going on a change of time or place, on the
       event being deleted, and on new comments. One opt-out in the account, as

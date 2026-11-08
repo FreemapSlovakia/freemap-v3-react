@@ -11,6 +11,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { Modal } from '@shared/components/Modal.js';
@@ -239,6 +240,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
   const [children, setChildren] = useState<boolean>();
 
+  const [imported, setImported] = useState<boolean>();
+
   const [unsaid, setUnsaid] = useState(false);
 
   const [distance, setDistance] = useState(toRangeDraft(undefined));
@@ -265,6 +268,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
       setDogs(filter.dogs);
 
       setChildren(filter.children);
+
+      setImported(filter.imported);
 
       setUnsaid(Boolean(filter.unsaid));
 
@@ -332,6 +337,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
         difficulty: difficulty.length ? difficulty : undefined,
         dogs,
         children,
+        imported,
         unsaid: unsaid || undefined,
         distance: fromRangeDraft(distance),
         duration: fromRangeDraft(duration),
@@ -573,6 +579,51 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
               }
             />
           </div>
+
+          <Form.Group className="mb-3">
+            <Form.Label className="d-block">
+              {em?.filter.origin} <HintMark hint={em?.filter.originHint} />
+            </Form.Label>
+
+            <ToggleButtonGroup
+              type="radio"
+              name="eventsImported"
+              value={
+                imported === undefined ? ANY : imported ? 'imported' : 'own'
+              }
+              onChange={(next: string) =>
+                setImported(next === ANY ? undefined : next === 'imported')
+              }
+              className="d-flex flex-wrap gap-2"
+            >
+              <ToggleButton
+                id="events-imported-any"
+                value={ANY}
+                variant="outline-primary"
+                className="rounded flex-grow-0"
+              >
+                {em?.any}
+              </ToggleButton>
+
+              <ToggleButton
+                id="events-imported-own"
+                value="own"
+                variant="outline-primary"
+                className="rounded flex-grow-0"
+              >
+                {em?.filter.own}
+              </ToggleButton>
+
+              <ToggleButton
+                id="events-imported-yes"
+                value="imported"
+                variant="outline-primary"
+                className="rounded flex-grow-0"
+              >
+                {em?.filter.imported}
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Form.Group>
 
           <div className="d-flex flex-wrap gap-3">
             <RangeInput
