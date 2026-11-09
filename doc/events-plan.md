@@ -168,7 +168,9 @@ from the selection toolbar (**Edit**).
       hand-entered event (within a day; within 10 km and half the title's
       words, or within 30 km and the same title) too. A source without
       a start time gives a **date-only** event. `sourceKey`
-      (`<source>:<id there>`) upserts through `POST /events`; the source is
+      (`<source>:<id there>`) upserts through `POST /events`. Events imported
+      by hand carry `manual:<event id>`, so they count as imported, and the
+      duplicate check takes them as hand-entered. The source is
       the master, so a re-harvest overwrites hand edits of what it supplies,
       keeping the owner, linked map, visibility and cover, and brings back
       one deleted here while the source still lists it. Every run posts
