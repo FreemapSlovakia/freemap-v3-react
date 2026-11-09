@@ -362,6 +362,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     findPlace: 'Nájsť miesto alebo adresu',
     result: 'Nález',
     showMore: 'Zobraziť viac',
+    recent: 'Nedávne hľadania',
     keepOnMap: 'Ponechať na mape',
     offlineHint:
       'Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, čísla dlaždíc (z/x/y) alebo vložený GeoJSON.',

@@ -322,6 +322,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   search: {
     showMore: 'Zobrazit více',
+    recent: 'Nedávná hledání',
     inProgress: 'Hledám…',
     noResults: 'Nebyly nalezeny žádné výsledky',
     prompt: 'Zadejte lokalitu',

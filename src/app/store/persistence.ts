@@ -74,7 +74,10 @@ import {
   MAX_ALTERNATIVES,
   routePlannerSettingsInitialState,
 } from '@features/routePlanner/model/settingsReducer.js';
-import { SearchResultStyleSchema } from '@features/search/model/actions.js';
+import {
+  RecentSearchSchema,
+  SearchResultStyleSchema,
+} from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
 import {
@@ -384,6 +387,11 @@ export const PersistedSearchSettingsSchema = z
   .object({
     resultStyle: SearchResultStyleSchema.partial(),
     labelVisibility: LabelVisibilitySchema,
+    // An unreadable entry is dropped alone, not the whole list.
+    recent: RecentSearchSchema.nullable()
+      .catch(null)
+      .array()
+      .transform((items) => items.filter((item) => item !== null)),
   })
   .partial();
 
@@ -702,6 +710,7 @@ const PERSIST: PersistEntry[] = [
     persist: (s) => ({
       resultStyle: s.resultStyle,
       labelVisibility: s.labelVisibility,
+      recent: s.recent,
     }),
   }),
   defineEntry({

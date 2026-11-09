@@ -32,7 +32,9 @@ A place found by its name opens no panel, so the map stays in view; clicking the
 
 A result you have not kept goes away when you close its panel with × or press <kbd>Esc</kbd>, or select something else. Kept OpenStreetMap elements are part of the link to the map, so whoever opens it sees them too.
 
-How results are drawn is set in :FaPaintBrush: **Lookup style** at the end of the box's list, followed by :FaBook: **Manual**, which opens this chapter; with the box empty, ▾ beside it opens just these two rows.
+Clicking into the empty box lists the **Recent searches**: the last eight places, coordinates, bounding boxes and tiles picked from the list, newest first. Picking one goes to it again; :FaTimes: or <kbd>Delete</kbd> on a row forgets it.
+
+How results are drawn is set in :FaPaintBrush: **Lookup style** at the end of the box's list, followed by :FaBook: **Manual**, which opens this chapter; with the box empty, ▾ beside it opens these two rows, under the recent searches if there are any.
 
 ## Functions, maps and more
 

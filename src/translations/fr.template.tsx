@@ -319,6 +319,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
   search: {
     showMore: 'Afficher plus',
+    recent: 'Recherches récentes',
     offlineHint:
       'Sans connexion Internet, seules les coordonnées, un cadre de délimitation, des numéros de tuile (z/x/y) ou du GeoJSON collé peuvent être trouvés.',
     fetchingError: ({ err }) => addError(messages, 'Erreur de recherche', err),

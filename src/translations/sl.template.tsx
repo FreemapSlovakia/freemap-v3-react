@@ -321,6 +321,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   search: {
     showMore: 'Prikaži več',
+    recent: 'Nedavna iskanja',
     offlineHint:
       'Brez internetne povezave je mogoče najti samo koordinate, omejevalni okvir, številke ploščic (z/x/y) ali prilepljen GeoJSON.',
     inProgress: 'Iščem…',

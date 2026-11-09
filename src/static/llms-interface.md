@@ -4,7 +4,7 @@
 
 - Access: the search box at the top of the page ("Search places and functions")
 
-The box's dropdown ends with a **Lookup style** row opening the modal of that name (see [OSM data](/llms-osm.md)) and a **Manual** row opening the manual's Search chapter; while the box is empty, its ▾ caret opens the dropdown with those two rows alone. They are not shown in an embedded map.
+The box's dropdown ends with a **Lookup style** row opening the modal of that name (see [OSM data](/llms-osm.md)) and a **Manual** row opening the manual's Search chapter; while the box is empty, its ▾ caret opens the dropdown with those two rows. Focusing the empty box lists **Recent searches** above them — the last eight results picked from the list (place-name hits, coordinates, bounding boxes and tiles), newest first, kept in the browser; picking one goes to it again (offline only coordinates, bounding boxes and tiles can be picked), and its × or <kbd>Delete</kbd> forgets it. None of these rows are shown in an embedded map.
 
 The box also finds POI types: from two characters on, the types matching the query are listed under an **Objects (POIs)** caption as checkboxes that switch them on the map (see [OSM data](/llms-osm.md)). Picking one leaves the query and the list up, so several can be switched on in a row.
 

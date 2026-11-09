@@ -315,6 +315,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   search: {
     showMore: 'Pokaż więcej',
+    recent: 'Ostatnie wyszukiwania',
     offlineHint:
       'Bez połączenia z internetem można znaleźć tylko współrzędne, obszar ograniczający, numery kafelków (z/x/y) lub wklejony GeoJSON.',
     inProgress: 'Wyszukiwanie…',

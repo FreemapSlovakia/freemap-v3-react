@@ -329,6 +329,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   search: {
     showMore: 'Több megjelenítése',
+    recent: 'Legutóbbi keresések',
     offlineHint:
       'Internetkapcsolat nélkül csak koordináták, határoló keret, csempeszámok (z/x/y) vagy beillesztett GeoJSON találhatók meg.',
     inProgress: 'Keresés…',

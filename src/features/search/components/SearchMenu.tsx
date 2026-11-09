@@ -70,6 +70,7 @@ import {
   FaDrawPolygon,
   FaPaintBrush,
   FaSearch,
+  FaTimes,
 } from 'react-icons/fa';
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
@@ -83,6 +84,8 @@ import {
   type SearchResult,
   type SearchSource,
   searchLimitStep,
+  searchRecentAdd,
+  searchRecentRemove,
   searchSelectResult,
   searchSetHover,
   searchSetQuery,
@@ -160,6 +163,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const query = useAppSelector((state) => state.search.query);
 
+  const recent = useAppSelector((state) => state.searchSettings.recent);
+
   const more = useAppSelector((state) => state.search.more);
 
   // A request already running would answer the same Show more twice, so it is
@@ -233,6 +238,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   // Offline the box still finds what the query itself carries; anything else
   // has to be asked of the geocoder, and only that goes dead.
   const needsGeocoder = !online && Boolean(value) && !isLocalSearchQuery(value);
+
+  const hasRecent = recent.length > 0 && !window.fmEmbedded;
+
+  const recentShown = !value && results.length === 0 && hasRecent;
+
+  const hasRows =
+    results.length > 0 ||
+    commands.length > 0 ||
+    poiMatches.length > 0 ||
+    recentShown;
 
   // Suggest while typing, skipping what has already been asked for.
   useEffect(() => {
@@ -317,9 +332,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         if (results.length > 0) {
           dispatch(searchSetResults([]));
         }
+
+        // Opened here, by the user emptying the box, rather than by the effect
+        // below, which would also open it after a command pick empties it.
+        if (!value && hasRecent) {
+          setOpen(true);
+        }
       }
     },
-    [dispatch, query, results.length],
+    [dispatch, query, results.length, hasRecent],
   );
 
   const handleSelect = useCallback(
@@ -381,14 +402,23 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         return;
       }
 
-      const result = results.find(
-        (item) => stringifyFeatureId(item.id) === eventKey,
+      const fromRecent = eventKey.startsWith('recent-');
+
+      const key = fromRecent ? eventKey.slice(7) : eventKey;
+
+      const result = (fromRecent ? recent : results).find(
+        (item) => stringifyFeatureId(item.id) === key,
       );
 
       if (result) {
         // Where a search ends now that suggestions answer most of them: an
         // Enter is the rarity, so counting one would count almost nothing.
-        trackMatomo(['trackEvent', 'Search', 'pick', result.source]);
+        trackMatomo([
+          'trackEvent',
+          'Search',
+          fromRecent ? 'recent' : 'pick',
+          result.source,
+        ]);
 
         dispatch(
           searchSelectResult({
@@ -396,11 +426,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             details: pickShowsDetailsSelector(store.getState(), result),
           }),
         );
+
+        dispatch(searchRecentAdd(result));
       }
 
       setOpen(false);
     },
-    [commands, query, results, objectsActive, dispatch, store],
+    [commands, query, results, recent, objectsActive, dispatch, store],
   );
 
   const showMore = useCallback(() => {
@@ -469,11 +501,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       if (!inputRef.current || document.activeElement === inputRef.current) {
         setOpen(true);
       }
-    } else {
+    } else if (!recentShown) {
+      // Emptied results under an empty box leave the recent searches up.
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, commands, poiMatches]);
+  }, [results, commands, poiMatches, recentShown]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -529,14 +562,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
     // Only ever opens. The caret opens the list and then focuses the input, so
     // closing here would shut an empty box's list again on the way in.
-    setOpen(
-      (open) =>
-        open ||
-        results.length > 0 ||
-        commands.length > 0 ||
-        poiMatches.length > 0,
-    );
-  }, [results, commands, poiMatches]);
+    setOpen((open) => open || hasRows);
+  }, [hasRows]);
 
   const handleInputBlur = useCallback(() => {
     setInputFocused(false);
@@ -727,30 +754,44 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               <Fragment key={id}>
                 {divider}
 
-                <Dropdown.Item
+                <ResultItem
                   eventKey={id}
-                  onClick={preventDefault}
-                  onMouseEnter={() => dispatch(searchSetHover(result))}
-                  onMouseLeave={() => dispatch(searchUnsetHover(result.id))}
-                  // Arrowing through the list previews too, the focus being
-                  // where the pointer would be.
-                  onFocus={() => dispatch(searchSetHover(result))}
-                  onBlur={() => dispatch(searchUnsetHover(result.id))}
-                  {...(result.id.type === 'osm'
-                    ? {
-                        href: `#panel=${encodePanel({ type: 'osm', id: result.id })}`,
-                      }
-                    : ({ as: 'button', type: 'button' } as const))}
+                  result={result}
                   active={
                     selection?.type === 'search' &&
                     featureIdsEqual(result.id, selection.id)
                   }
-                >
-                  <Result value={result} />
-                </Dropdown.Item>
+                />
               </Fragment>
             );
           })}
+
+          {recentShown && (
+            <>
+              <div className="dropdown-caption-divider">
+                <Text k="search.recent" />
+              </div>
+
+              {recent.map((result) => {
+                const id = stringifyFeatureId(result.id);
+
+                return (
+                  <ResultItem
+                    key={id}
+                    eventKey={`recent-${id}`}
+                    result={result}
+                    removable
+                    // A place-name hit is a centroid until OSM answers.
+                    disabled={!online && result.incomplete}
+                    active={
+                      selection?.type === 'search' &&
+                      featureIdsEqual(result.id, selection.id)
+                    }
+                  />
+                );
+              })}
+            </>
+          )}
 
           {canShowMore && (
             <Dropdown.Item
@@ -794,9 +835,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
           {!window.fmEmbedded && (
             <>
-              {(results.length > 0 ||
-                commands.length > 0 ||
-                poiMatches.length > 0) && <Dropdown.Divider />}
+              {hasRows && <Dropdown.Divider />}
 
               <Dropdown.Item
                 {...styleLink}
@@ -834,6 +873,92 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         </FmDropdownMenu>
       </Dropdown>
     </Form>
+  );
+}
+
+function ResultItem({
+  eventKey,
+  result,
+  active,
+  disabled,
+  removable,
+}: {
+  eventKey: string;
+  result: SearchResult;
+  active?: boolean;
+  disabled?: boolean;
+  /** A recent search, which the row can forget. */
+  removable?: boolean;
+}) {
+  const dispatch = useDispatch();
+
+  const remove = () => {
+    trackMatomo(['trackEvent', 'Search', 'recentRemove', result.source]);
+
+    dispatch(searchUnsetHover(result.id));
+
+    dispatch(searchRecentRemove(result.id));
+  };
+
+  return (
+    <Dropdown.Item
+      eventKey={eventKey}
+      onClick={preventDefault}
+      onMouseEnter={() => dispatch(searchSetHover(result))}
+      onMouseLeave={() => dispatch(searchUnsetHover(result.id))}
+      // Arrowing through the list previews too, the focus being where the
+      // pointer would be.
+      onFocus={() => dispatch(searchSetHover(result))}
+      onBlur={() => dispatch(searchUnsetHover(result.id))}
+      {...(result.id.type === 'osm'
+        ? {
+            href: `#panel=${encodePanel({ type: 'osm', id: result.id })}`,
+          }
+        : ({ as: 'button', type: 'button' } as const))}
+      active={active}
+      disabled={disabled}
+      onKeyDown={
+        removable
+          ? (e) => {
+              if (e.key === 'Delete') {
+                e.preventDefault();
+
+                // The row goes, so the focus moves on to the one below it
+                // (Lookup style at the latest) rather than drop out of the list.
+                const items = [
+                  ...(e.currentTarget
+                    .closest('.dropdown-menu')
+                    ?.querySelectorAll<HTMLElement>('.dropdown-item') ?? []),
+                ];
+
+                items[items.indexOf(e.currentTarget) + 1]?.focus();
+
+                remove();
+              }
+            }
+          : undefined
+      }
+    >
+      <Result value={result} />
+
+      {removable && (
+        // A span, as the row is itself a link or a button; stopping the click
+        // keeps it from picking the row. Padded and stretched for touch.
+        // biome-ignore lint/a11y/useKeyWithClickEvents: the row takes Delete
+        <span
+          className="flex-shrink-0 align-self-stretch d-flex align-items-center p-1 me-n2 opacity-50"
+          onClick={(e) => {
+            e.preventDefault();
+
+            e.stopPropagation();
+
+            remove();
+          }}
+        >
+          <FaTimes />
+        </span>
+      )}
+    </Dropdown.Item>
   );
 }
 

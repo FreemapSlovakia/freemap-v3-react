@@ -32,7 +32,9 @@ Miesto nájdené podľa názvu panel neotvorí, aby mapa zostala na očiach; otv
 
 Výsledok, ktorý ste neponechali, zmizne, keď jeho panel zatvoríte tlačidlom × alebo klávesom <kbd>Esc</kbd>, prípadne keď vyberiete niečo iné. Ponechané prvky OpenStreetMap sú súčasťou odkazu na mapu, takže ich uvidí aj ten, kto ho otvorí.
 
-Ako sa výsledky vykresľujú, nastavíte v :FaPaintBrush: **Štýl nálezu** na konci zoznamu poľa, za ktorým nasleduje :FaBook: **Príručka** otvárajúca túto kapitolu; pri prázdnom poli ▾ vedľa neho otvorí len tieto dva riadky.
+Kliknutím do prázdneho poľa sa zobrazia **Nedávne hľadania**: posledných osem miest, súradníc, ohraničení a dlaždíc vybraných zo zoznamu, najnovšie navrchu. Výberom niektorého sa naň znova presuniete; :FaTimes: alebo <kbd>Delete</kbd> na riadku ho zabudne.
+
+Ako sa výsledky vykresľujú, nastavíte v :FaPaintBrush: **Štýl nálezu** na konci zoznamu poľa, za ktorým nasleduje :FaBook: **Príručka** otvárajúca túto kapitolu; pri prázdnom poli ▾ vedľa neho otvorí tieto dva riadky, pod nedávnymi hľadaniami, ak nejaké sú.
 
 ## Funkcie, mapy a ďalšie
 

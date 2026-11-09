@@ -134,6 +134,20 @@ export const SavedSearchResultSchema = z.object({
 
 export type SavedSearchResult = z.infer<typeof SavedSearchResultSchema>;
 
+export const RecentSearchSchema = z.object({
+  ...SavedSearchResultSchema.shape,
+  address: z.string().optional(),
+});
+
+export type RecentSearch = z.infer<typeof RecentSearchSchema>;
+
+/** Remembers a result picked from the box, moving it to the top if known. */
+export const searchRecentAdd = createAction<SearchResult>('SEARCH_RECENT_ADD');
+
+export const searchRecentRemove = createAction<FeatureId>(
+  'SEARCH_RECENT_REMOVE',
+);
+
 export const searchSetQuery = createAction<{
   query: string;
   fromUrl?: boolean;

@@ -273,6 +273,7 @@ export type Messages = {
     findPlace: string;
     result: string;
     showMore: string;
+    recent: string;
     keepOnMap: string;
     offlineHint: string;
     sources: Record<SearchSource, string>;

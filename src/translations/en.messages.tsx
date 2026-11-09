@@ -326,6 +326,7 @@ const messages: Messages = {
     findPlace: 'Find a place or address',
     result: 'Lookup',
     showMore: 'Show more',
+    recent: 'Recent searches',
     keepOnMap: 'Keep on the map',
     offlineHint:
       'Without an internet connection only coordinates, a bounding box, tile numbers (z/x/y) or pasted GeoJSON can be found.',
