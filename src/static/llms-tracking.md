@@ -36,7 +36,7 @@ Each watched device is added with a **New watched device** form: Watch Token (re
 
 - Access: Main menu > GPS recorder
 - URL path: `/#tools=gps-recorder`
-- **Android only**, and it needs a separate app: the *Freemap GPS Recorder*, a self-hosted APK the tool links to when it isn't installed. The tool is hidden entirely on other platforms.
+- **Android only**, and it needs a separate app: the _Freemap GPS Recorder_, a self-hosted APK the tool links to when it isn't installed. The tool is hidden entirely on other platforms.
 
 Records a GPS track with the Android app while the map shows it live, so the recording survives the browser being closed, backgrounded or killed — the phone does the recording, the page is a viewer and a remote control. The toolbar offers:
 

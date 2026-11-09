@@ -10,7 +10,7 @@ type-ahead, which is what lets the search box suggest as you type.
 Photon indexes only the languages present in the dump, and `-languages` can
 only select from that set — a downstream user cannot configure around a missing
 language. The published export set carried no `name:sk`, so a Slovak user could
-not find foreign exonyms ("Paríž"). Slovak names *inside* Slovakia are fine via
+not find foreign exonyms ("Paríž"). Slovak names _inside_ Slovakia are fine via
 the plain `name` tag; it is exonyms that break.
 
 [komoot/photon discussion #1101](https://github.com/komoot/photon/discussions/1101)
@@ -39,11 +39,11 @@ unsuitable: 12 threads, ~45 GB RAM available while already swapping, and its
 only free space is on spinning disks — Photon's Lucene index wants SSD/NVMe and
 enough RAM to hold the working set in page cache.
 
-| Path | Contents |
-| --- | --- |
-| `/opt/photon/` | jar, `photon.service`, vhost files, `nginx-photon.conf` |
-| `/fm/data4/photon/` | the index (Photon creates `photon_data/` inside `-data-dir`) |
-| `/fm/data4/martin/photon-install/` | dump, `import.sh`, `import.log` |
+| Path                               | Contents                                                     |
+| ---------------------------------- | ------------------------------------------------------------ |
+| `/opt/photon/`                     | jar, `photon.service`, vhost files, `nginx-photon.conf`      |
+| `/fm/data4/photon/`                | the index (Photon creates `photon_data/` inside `-data-dir`) |
+| `/fm/data4/martin/photon-install/` | dump, `import.sh`, `import.log`                              |
 
 Both `/opt/photon` and `/fm/data4/photon` are `freemap:freemap` mode 2775, so
 members of the `freemap` group stage files there without sudo.
@@ -227,7 +227,7 @@ Three things about the response that the mapping exists for:
 - **`osm_type` is `N`/`W`/`R`**, not `node`/`way`/`relation`. Anything comparing
   a hit against an OSM element has to convert — map-details dedupes the reverse
   hit against the nearby/surrounding elements exactly there.
-- **`extent` is `[west, north, east, south]`**, which is *not* the GeoJSON bbox
+- **`extent` is `[west, north, east, south]`**, which is _not_ the GeoJSON bbox
   order. `photonExtentToBBox` reorders it; getting this wrong yields a box that
   is inside-out in latitude rather than an obvious error.
 - **There is no `display_name`.** Photon answers with separate address parts,
@@ -243,7 +243,7 @@ which are otherwise keyed the way OSM tags an element:
 
 - **Some classes are invented.** Nominatim labels an object that has address
   tags but no main tag `place=house`, an interpolation `place=house_number`, and
-  a computed postcode area `place=postcode` (that one carries *no* `osm_id`, so
+  a computed postcode area `place=postcode` (that one carries _no_ `osm_id`, so
   the app mints a synthetic feature id and never upgrades it); Photon falls back
   to `place=yes` for a class it cannot use. They are mapped under `place:` in
   `osmTagToNameMapping-*`, marked by a comment — `place=house` is genuinely

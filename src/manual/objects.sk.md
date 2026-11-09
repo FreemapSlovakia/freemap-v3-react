@@ -8,7 +8,7 @@ Objekty sú miesta určitého typu – vrcholy, pramene, útulne, vyhliadky, kr�
 
 ## Vyhľadanie typov miest
 
-Do vyhľadávacieho poľa hore napíšte, aký druh miesta hľadáte, napríklad *prameň* alebo *vrchol*. Od druhého znaku zoznam ukáže zodpovedajúce typy pod nadpisom **Objekty (POI)**, nad miestami nájdenými podľa názvu. Typ nájdete aj podľa značky OpenStreetMap, napríklad `amenity=pub`.
+Do vyhľadávacieho poľa hore napíšte, aký druh miesta hľadáte, napríklad _prameň_ alebo _vrchol_. Od druhého znaku zoznam ukáže zodpovedajúce typy pod nadpisom **Objekty (POI)**, nad miestami nájdenými podľa názvu. Typ nájdete aj podľa značky OpenStreetMap, napríklad `amenity=pub`.
 
 Každý typ má zaškrtávacie políčko. Zaškrtnutím sa objekty daného typu zobrazia na mape; zoznam zostane otvorený, takže môžete zaškrtnúť viac typov za sebou. Zrušením zaškrtnutia v tom istom riadku typ znova skryjete.
 

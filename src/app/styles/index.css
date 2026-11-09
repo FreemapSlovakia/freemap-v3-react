@@ -443,7 +443,7 @@ button#freemap-logo {
    pair, not the second — these containers wrap, and see `doc/ui-conventions.md`
    for why that matters. */
 :is(.fm-toolbar, .btn-toolbar, .dropdown-item, .gap-1)
-> .fm-marker-target:has(+ .fm-marker-target) {
+  > .fm-marker-target:has(+ .fm-marker-target) {
   margin-inline-end: calc(-1 * var(--fm-space-1));
 }
 

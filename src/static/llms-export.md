@@ -95,7 +95,7 @@ Opens a modal to export the user's own map data as a GPX, GeoJSON or KML file. T
 
 When a single map feature is selected (a point, line or polygon of Drawing and data, an object, a live track, the planned route, or a lookup result), an **Only the selected item** toggle appears (on by default) that narrows the export to just that one feature instead of its whole source.
 
-For the file/share/Google Drive/Dropbox targets an **Elevation** control chooses whether to fill elevation from the elevation API into exported points, lines and the planned route: *Keep recorded* (leave as-is), *Fill missing* (only coordinates lacking elevation), or *Override all* (replace every elevation). Polygons are always skipped.
+For the file/share/Google Drive/Dropbox targets an **Elevation** control chooses whether to fill elevation from the elevation API into exported points, lines and the planned route: _Keep recorded_ (leave as-is), _Fill missing_ (only coordinates lacking elevation), or _Override all_ (replace every elevation). Polygons are always skipped.
 
 While the export runs its controls are disabled and a spinner replaces the icon on the export button. **Close** stays active: it gives up on the export — one that is filling elevation is abandoned outright, while one that is not carries on and downloads its file with the modal already gone.
 

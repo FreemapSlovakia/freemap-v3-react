@@ -8,7 +8,7 @@ Objects are places of a given type – peaks, springs, shelters, viewpoints, pub
 
 ## Finding types of places
 
-Type the kind of place you are looking for into the search box at the top, for example *spring* or *peak*. From the second character on, the list shows the matching types under the **Objects (POIs)** caption, above the places found by name. A type can also be found by its OpenStreetMap tag, such as `amenity=pub`.
+Type the kind of place you are looking for into the search box at the top, for example _spring_ or _peak_. From the second character on, the list shows the matching types under the **Objects (POIs)** caption, above the places found by name. A type can also be found by its OpenStreetMap tag, such as `amenity=pub`.
 
 Each type has a checkbox. Ticking it shows objects of that type on the map; the list stays open, so you can tick several types in a row. Unticking the same row hides that type again.
 

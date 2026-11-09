@@ -31,7 +31,7 @@ export function useHtmlMeta(): void {
     const fullTitle = (subTitle ? `${subTitle} | ` : '') + title;
 
     if (titleElement) {
-      titleElement.innerText = fullTitle;
+      titleElement.textContent = fullTitle;
     }
 
     document.title = fullTitle;

@@ -20,15 +20,15 @@ Covered here: [button variants](#button-variants),
 role gets the same variant whether the button sits in a modal, a side panel, or
 a floating toolbar over the map.
 
-| Role | Variant | Use for |
-| --- | --- | --- |
-| **Dismiss** | `dark` | The close / cancel / hide button — the one with `<FaTimes />` that closes a modal (`onClick={close}`, often `+ <kbd>Esc</kbd>`) or dismisses a map-overlay toolbar (`setActiveModal(null)`, `selectFeature(null)`, …). This is what makes the close button read as "the X". A floating panel that only closes — the Map layers panel, a toast — takes Bootstrap's `CloseButton` in its corner instead. |
-| **Primary action** | `primary` | The one main confirm / submit / CTA of a form or footer. At most one prominent per surface (e.g. a `type="submit"` Save). |
-| **Neutral action** | `secondary` | Everything else: secondary actions, `Dropdown.Toggle`, action buttons in selection/drawing toolbars, the default for `ResponsiveActions`. When in doubt, this is the default. |
-| **Destructive** | `danger` | Delete / Remove / Cancel-download and other irreversible actions. **Solid, not `outline-danger`.** Also turns the packed `ResponsiveActions` dropdown item red. |
-| **Toggle** | `outline-primary` | `ToggleButton` / `ToggleButtonGroup` members — bootstrap fills them solid-primary when checked. For a lone `active`-driven toggle button, use `primary` when active and `outline-primary` when not. |
-| **Upsell / notice** | `warning` | Premium prompts, support/donate CTAs, attention notices. Keep rare — it's an attention color. |
-| **Inline text link** | `link` | A button that should read as a hyperlink: inside prose, in a dense row, or a footer entry that goes to another screen rather than acting on this one (see the offline-maps list's link to the browse cache). |
+| Role                 | Variant           | Use for                                                                                                                                                                                                                                                                                                                                                                                                |
+| -------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Dismiss**          | `dark`            | The close / cancel / hide button — the one with `<FaTimes />` that closes a modal (`onClick={close}`, often `+ <kbd>Esc</kbd>`) or dismisses a map-overlay toolbar (`setActiveModal(null)`, `selectFeature(null)`, …). This is what makes the close button read as "the X". A floating panel that only closes — the Map layers panel, a toast — takes Bootstrap's `CloseButton` in its corner instead. |
+| **Primary action**   | `primary`         | The one main confirm / submit / CTA of a form or footer. At most one prominent per surface (e.g. a `type="submit"` Save).                                                                                                                                                                                                                                                                              |
+| **Neutral action**   | `secondary`       | Everything else: secondary actions, `Dropdown.Toggle`, action buttons in selection/drawing toolbars, the default for `ResponsiveActions`. When in doubt, this is the default.                                                                                                                                                                                                                          |
+| **Destructive**      | `danger`          | Delete / Remove / Cancel-download and other irreversible actions. **Solid, not `outline-danger`.** Also turns the packed `ResponsiveActions` dropdown item red.                                                                                                                                                                                                                                        |
+| **Toggle**           | `outline-primary` | `ToggleButton` / `ToggleButtonGroup` members — bootstrap fills them solid-primary when checked. For a lone `active`-driven toggle button, use `primary` when active and `outline-primary` when not.                                                                                                                                                                                                    |
+| **Upsell / notice**  | `warning`         | Premium prompts, support/donate CTAs, attention notices. Keep rare — it's an attention color.                                                                                                                                                                                                                                                                                                          |
+| **Inline text link** | `link`            | A button that should read as a hyperlink: inside prose, in a dense row, or a footer entry that goes to another screen rather than acting on this one (see the offline-maps list's link to the browse cache).                                                                                                                                                                                           |
 
 ### Toggle state vs. pointer state
 
@@ -240,13 +240,13 @@ Bootstrap keeps its scales in Sass, and the app's own rules are plain CSS, so
 literal be re-typed into a rule. Nothing in `index.css` or a component's CSS
 should carry a spacing or size number that Bootstrap already has a name for.
 
-| Token | Derived from | Is |
-| --- | --- | --- |
-| `--fm-space-0…5` | `$spacers`, key for key | `--fm-space-2` is what `.p-2` / `.gap-2` use |
+| Token                  | Derived from                | Is                                                                                   |
+| ---------------------- | --------------------------- | ------------------------------------------------------------------------------------ |
+| `--fm-space-0…5`       | `$spacers`, key for key     | `--fm-space-2` is what `.p-2` / `.gap-2` use                                         |
 | `--fm-shadow-1` / `-2` | blur off `$spacers` 1 and 2 | what lifts a thing off the map: toolbars, then the floating panels dragged over them |
 
 The two shadows are the app's own rather than Bootstrap's `.shadow`, which drops
-its shadow *below* the box — right for a card on a page, wrong over a map, where
+its shadow _below_ the box — right for a card on a page, wrong over a map, where
 a panel is a loose sheet and its top edge has to lift too. So they spread evenly
 and differ only in blur.
 
@@ -270,11 +270,11 @@ ends up reading as two sizes.
 Three steps are the only sizes an icon takes, and all three are Bootstrap's own
 classes — the app has none of its own here:
 
-| Class | Is | Use for |
-| --- | --- | --- |
-| `small` | `0.875em` | A mark subordinate to the text it annotates, or one inside a `btn-sm`. Relative, so it stays proportional wherever it lands. |
-| `fs-6` | `1rem` | **The default.** What a `.btn`'s own icon comes out at, and so what a mark in a menu row — where everything is text-sized — has to be. |
-| `fs-5` | `1.25rem` | A glyph that is the whole control and has nothing to match — the social links in the main menu. Rare. |
+| Class   | Is        | Use for                                                                                                                                |
+| ------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `small` | `0.875em` | A mark subordinate to the text it annotates, or one inside a `btn-sm`. Relative, so it stays proportional wherever it lands.           |
+| `fs-6`  | `1rem`    | **The default.** What a `.btn`'s own icon comes out at, and so what a mark in a menu row — where everything is text-sized — has to be. |
+| `fs-5`  | `1.25rem` | A glyph that is the whole control and has nothing to match — the social links in the main menu. Rare.                                  |
 
 `fs-*` carries `!important`, so a container cannot resize the marks inside it
 from CSS. Resize them where they are made instead — a different `size` on the
@@ -311,7 +311,7 @@ explanation entirely, and for an acting mark the action with it.
 
 **`GlyphMarker`** is the one place that decides all of it — the glyph's size, the
 hit area, and pointer events inside a disabled container (a disabled control takes
-pointer events away from its content, and the mark is often what says *why* it is
+pointer events away from its content, and the mark is often what says _why_ it is
 disabled). `OfflineBadge`, `PremiumGem`, `ExperimentalFunction`, `StatusIcon` /
 `UnsavedWarningIcon`, `CountryFlag` and `MapSwitchButton`'s layer badges are all
 thin wrappers over it. A new mark should be one too, not another hand-rolled
@@ -337,7 +337,7 @@ the mark instead.
 Being real padding rather than an overlay, two marks side by side **tile** — one
 can never swallow the other's taps or its tooltip. Where the container already
 puts a step between its children, the first of two marks swallows that gap with a
-trailing negative margin, so the pair doesn't end up a step *plus* a gap *plus* a
+trailing negative margin, so the pair doesn't end up a step _plus_ a gap _plus_ a
 step apart. Every mark keeps the same 24px box that way, and the two boxes meet
 edge to edge; dropping the second mark's leading padding instead would close the
 same distance but leave it 20px wide against its neighbour's 24.
@@ -353,7 +353,7 @@ container with no gap at all needs nothing: two marks already tile there.
 
 **The two axes cost differently.** Block padding is free — that direction is the
 line's own leading, dead space, and it is given straight back as margin so
-nothing moves. Inline padding is not: it is real width, so a mark *does* push its
+nothing moves. Inline padding is not: it is real width, so a mark _does_ push its
 neighbours a step apart. That is the deal, and it is why the step is one unit and
 not two — grow it further and the row visibly reshuffles. Reaching instead of
 pushing (padding plus a negative margin) is available where the surrounding text
@@ -362,7 +362,7 @@ that follows, and it must never reach over another mark.
 
 **A mark brings its own step and no more.** Anything wider is the call site's or
 the container's to say — a `gap`, or an `ms-1` where running text wants more air
-than the step (see `ElevationValue`). The mark carries no inline *margin*, so a
+than the step (see `ElevationValue`). The mark carries no inline _margin_, so a
 margin utility on it composes normally, and its own step is padding rather than
 margin so the room is room a finger can use.
 
@@ -384,13 +384,13 @@ were custom classes hiding three Bootstrap utilities and a `:has()` rule that
 guessed what the call site already knew. Write it out instead, where it can be
 read without opening a stylesheet:
 
-| Wanted | Written |
-| --- | --- |
-| A toolbar head (icon + name, its own long-press target) | `align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2` |
-| The same, where the icon is itself a button | drop `px-1 py-2 my-n2` — the button is the target and sits where a button sits |
-| A bare readout or hint in a toolbar | `px-1`, or `ps-1` where a mark follows — a toolbar gives its marks a margin of their own |
-| A taller target on a phrase in prose | `py-2` — vertical padding on an inline box doesn't move the line |
-| A target on a standalone icon link | `p-2 m-n2`, with the row's `gap-3` so the targets meet rather than overlap |
+| Wanted                                                  | Written                                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A toolbar head (icon + name, its own long-press target) | `align-self-center d-inline-flex align-items-center gap-2 px-1 py-2 my-n2`                                                                                                                                                                                                          |
+| The same, where the icon is itself a button             | drop `px-1 py-2 my-n2` — the button is the target and sits where a button sits                                                                                                                                                                                                      |
+| A bare readout or hint in a toolbar                     | `px-1`, or `ps-1` where a mark follows — a toolbar gives its marks a margin of their own                                                                                                                                                                                            |
+| A taller target on a phrase in prose                    | `py-2` — vertical padding on an inline box doesn't move the line                                                                                                                                                                                                                    |
+| A target on a standalone icon link                      | `p-2 m-n2`, with the row's `gap-3` so the targets meet rather than overlap                                                                                                                                                                                                          |
 | A mark where the sentence already puts a space after it | `me-n1 position-relative` — reach over that space instead of adding a second one. `position-relative` is the point: inline content that follows paints over an in-flow box, so without it the gap looks right but answers to the sentence rather than to the mark (see `UserChip`). |
 
 ## Where a hint goes
@@ -423,13 +423,13 @@ inserted between two buttons lands wherever its own class puts it.
 
 These containers own the gap; nothing inside them carries a margin:
 
-| Container | Gap | Where |
-| --- | --- | --- |
-| `.fm-toolbar` | `0.25rem` | `index.css` |
-| `.btn-toolbar` | `0.25rem` | `bootstrap-override.css` — a `gap-*` utility overrides it where a toolbar wants more air (see `Toast`) |
-| `.dropdown-item` | `0.25rem` | `bootstrap-override.css`; a one-line flex row, its label text in a `MenuLabel` so that it, and only it, ends in an ellipsis where the row doesn't fit |
-| `ResponsiveActions` | `gap` prop | its own `d-inline-flex` |
-| A button row in a floating panel | `gap-1` | the panel's header, toolbar and footer rows (`MapLayersPanel`) — a panel over the map takes the toolbars' rhythm, not a modal's |
+| Container                        | Gap        | Where                                                                                                                                                 |
+| -------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.fm-toolbar`                    | `0.25rem`  | `index.css`                                                                                                                                           |
+| `.btn-toolbar`                   | `0.25rem`  | `bootstrap-override.css` — a `gap-*` utility overrides it where a toolbar wants more air (see `Toast`)                                                |
+| `.dropdown-item`                 | `0.25rem`  | `bootstrap-override.css`; a one-line flex row, its label text in a `MenuLabel` so that it, and only it, ends in an ellipsis where the row doesn't fit |
+| `ResponsiveActions`              | `gap` prop | its own `d-inline-flex`                                                                                                                               |
+| A button row in a floating panel | `gap-1`    | the panel's header, toolbar and footer rows (`MapLayersPanel`) — a panel over the map takes the toolbars' rhythm, not a modal's                       |
 
 The gap between buttons follows the **surface**: whatever floats over the map
 (toolbars, the Map layers panel) spaces its buttons by `0.25rem`; modals and
@@ -447,7 +447,7 @@ in a row of controls, and is separated by `ms-1` (or a plain space). Making ever
 `.btn` and `.form-label` a flex container to avoid that would cost more than it
 buys.
 
-That includes a `GlyphMarker`: it carries no inline *margin* of its own, so a
+That includes a `GlyphMarker`: it carries no inline _margin_ of its own, so a
 margin utility on it composes normally with its step of padding.
 
 A component that renders a row appearing in several kinds of container lays that
@@ -459,7 +459,7 @@ text.
 
 Two separators are in use, and they are not interchangeable:
 
-- **` · ` (middot) is the default** — short peers on one line: `label: value`
+- **`·` (middot) is the default** — short peers on one line: `label: value`
   runs, a count appended to a button, two clauses of one hint.
 - **`｜` (U+FF5C, fullwidth) is for a dense strip** of independent facts or
   control groups that wraps across lines, where a middot is too light to find the

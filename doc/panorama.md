@@ -22,7 +22,7 @@ this side:
   that arrives at the end, so `renderPanorama` invents a token, sends it as
   `X-Job`, and subscribes to `GET /progress/{token}` — an `EventSource`
   reporting `phase` (`queued`/`rendering`/`encoding`/`done`), how many renders
-  are `ahead`, and `percent`. Subscribed *before* the request, or the queued
+  are `ahead`, and `percent`. Subscribed _before_ the request, or the queued
   phase is missed. Both ends must close it: `done` is the last event and a
   browser reopens a stream that ends. An unrecognised phase — the service's
   `unknown`, for a token whose request hasn't landed yet — reports nothing, and
@@ -71,7 +71,7 @@ it can stay open beside the route planner. Where to stand is asked for
 explicitly, by a split button wearing the same standing figure its map marker
 wears (the viewshed's pair wear an eye, the toposcope's the viewpoint starburst
 — one glyph per observer, so a map carrying several says which is which; the
-binoculars are the viewshed *layer's* own mark, in the switcher and its toolbar
+binoculars are the viewshed _layer's_ own mark, in the switcher and its toolbar
 title): its own
 press raises `picking: 'viewpoint'`, a picking mode like the toposcope's centre
 (see `pickingModeSelector`), and its one menu item takes the GPS instead. The
@@ -98,7 +98,7 @@ click as well, and a press on the wedge is a press on the map under every mode
 that wants one, with the wedge standing over the very ground being pointed at;
 only the click that ends a swing is swallowed. And the pointer is captured,
 since a swing leaves the wedge at once. A view turning by itself is stopped on the way in, as a drag
-in the picture stops it. The eye marker underneath keeps the drag that *moves*
+in the picture stops it. The eye marker underneath keeps the drag that _moves_
 the viewpoint: the eye moves house, the wedge looks elsewhere.
 
 **The mark it leaves is dragged the same way.** The crosshair takes a drag: the
@@ -133,7 +133,7 @@ draws nothing — but the two figures keep being said, in the tooltip and in the
 box: they are of the place on the map, which is where the mark is, and only the
 dot is a claim about the picture. Emptying the tooltip instead was worse than
 useless: Leaflet opens one on a hover, so a tooltip unmounted mid-drag never
-came back for the rest of it. The snap is the *drop*'s business, not the drag's:
+came back for the rest of it. The snap is the _drop_'s business, not the drag's:
 letting go there still puts the mark on the nearest thing that can be seen.
 
 **Aiming is a mode asking a different question**, and the one that leaves the
@@ -161,7 +161,7 @@ already begun to disagree about which distance the elevation belongs to.
 **A place that cannot be seen is moved to one that can.** A hidden place lies in
 a jump between two adjacent rows — the ridge that hides it, and the first
 terrain visible beyond it — and the mark goes to whichever of the two stands
-nearer to it, in the picture and on the map alike. Marking where it *would* be
+nearer to it, in the picture and on the map alike. Marking where it _would_ be
 would draw a crosshair and a line of sight over ground this picture never saw.
 Beyond everything the column holds it is the last silhouette; nearer than the
 frame reaches, the bottom row; a column of nothing but sky leaves no mark.
@@ -238,7 +238,7 @@ refused permission dispatches `toggleLocate(false)` and a toast without ever
 dispatching `locateFailed` at all. Waiting on the failure actions alone left the
 button spinning for ever behind a "could not get position" toast. So any toggle
 clears the flag — which is also right for the user turning locating off by hand
-— and the processor sets the flag *after* its own `toggleLocate`, or it would
+— and the processor sets the flag _after_ its own `toggleLocate`, or it would
 clear the wait it is starting.
 
 Even that leaves one hole, because `locateProcessor` runs **inside** that
@@ -292,7 +292,7 @@ before anything else, and the ⋮ then exists only once the row is short of room
 It is not the "Toposcope from here" among the viewpoint's place actions — that
 one only stands the dial here and leaves the rays to whatever is already drawn.
 
-What can be done with the *place* is not in this menu at all. Both places the
+What can be done with the _place_ is not in this menu at all. Both places the
 picture answers for carry their own `PlaceActionsButton` — the map context
 menu's own items, so the answer is the same wherever a place is named — each in
 the box that names it: the viewpoint's under the eye-elevation readout, the
@@ -306,7 +306,7 @@ that is rarely touched and still instant, and the haze slider spent a day in the
 modal on that mistake.
 
 Two deliberate exceptions, both request parameters kept in the toolbar because
-they are how a view is *framed* while looking at it: quality and the vertical
+they are how a view is _framed_ while looking at it: quality and the vertical
 view. Nothing else in the toolbar costs a render, and nothing in the modal is
 free.
 
@@ -388,7 +388,7 @@ picker writes to the modal's own draft, so the dispatch is the one deliberate
 act in the whole gesture. `MAX_RECENT_GRADIENTS` is what is left of the picker's
 own eighteen after the built-ins — read off them rather than written down, since
 the picker cuts the list there and a swatch added later would otherwise push the
-newest ramp off the end silently. They go *after* the built-ins so a swatch
+newest ramp off the end silently. They go _after_ the built-ins so a swatch
 stays where it was found, and one that is already a built-in is not kept at all.
 
 **Positions are not metres.** The service maps distance to `s = 2d / (d + far)`,
@@ -429,7 +429,7 @@ here no control can fix afterwards. A ramp ending past `range` is a `400`, so
 was set under. `normalizeStops` sorts, because the service refuses a list that
 goes backwards. And it cuts at `GRADIENT_MAX_STOPS`, because the picker's bar
 adds a stop per click with no ceiling of its own — past the service's every
-render is a `400`, and the ramp is *persisted*, so the settings would carry it
+render is a `400`, and the ramp is _persisted_, so the settings would carry it
 back after a reload.
 
 That last one is also why `groundGradient` and `recentGradients` are `.catch()`
@@ -535,7 +535,7 @@ before the new one is written in.
 stored one is outside it. Clamping to the near end instead was wrong twice
 over: the re-aimed render would open looking at its own edge with the place
 that was asked for off screen, and the view's settle timer — still running
-against the *old* picture while the new one renders — writes a clamped bearing
+against the _old_ picture while the new one renders — writes a clamped bearing
 back in between. A bearing the new picture never held says nothing about where
 in it to look; one it does hold is left alone, so an Update keeps the view.
 
@@ -560,7 +560,7 @@ half the step.
 A render is **one setting, not a tier**: `detail`, pixels per degree — a stop
 from `DETAIL_STOPS` (5…150, absolute, so one of them means the same picture in
 every frame) or `DETAIL_MAX`, the last stop, which follows the frame. Tiers
-bundled resolution with sampling under words like *Detailed*, which priced the
+bundled resolution with sampling under words like _Detailed_, which priced the
 same picture twice as soon as a cap held two tiers to one resolution.
 
 **The rays per pixel follow from it**, `raysForDetail`. The service casts them
@@ -568,7 +568,7 @@ per output column and box-averages the block behind each pixel, so they are
 antialiasing across bearing: at one ray a column is a single bearing and
 anything narrower than it is there whole or not at all. Two things escape the
 average and are why it is not merely cosmetic — the distance buffer takes the
-*nearest* sub-sample, and a summit's visibility is answered by the rays
+_nearest_ sub-sample, and a summit's visibility is answered by the rays
 bracketing its bearing.
 
 What that is worth depends on how wide a column is. `TARGET_RAYS_PER_DEG` (60)
@@ -582,11 +582,11 @@ buffer.
 **Without premium an account is held by the rays a render costs** —
 `FREE_RAYS`, 1800, which is exactly what a full turn at the coarsest stop has
 always cost, so nothing anyone had is taken away. What is new is that the
-budget is now *spent*: a 30° slice is cheap in rays, so it buys 20 px/° where
+budget is now _spent_: a 30° slice is cheap in rays, so it buys 20 px/° where
 the old free tier gave 5 everywhere. `grantedCeiling` tries both sides of the
 sampling step and takes the better, since the step makes the budget
 non-monotonic in detail. It is the single place any of this is said; asking for
-*less* is never blocked.
+_less_ is never blocked.
 
 The setting **defaults above the free figure**, because the account decides
 what is granted: a premium user would otherwise sit on the coarse picture until
@@ -668,7 +668,7 @@ three ways: such a name and its leader are drawn at `REVEALED_OPACITY`,
 the toposcope obeys it too), and the ⓘ panel gains a caveat.
 
 Both of those, and the checkbox itself, key on **`render.depthLift`, not the
-setting** — the setting says what the *next* render will do, and a lift staged
+setting** — the setting says what the _next_ render will do, and a lift staged
 or taken away without pressing Update would otherwise hide the one control that
 can bring back names hidden in the picture still on screen.
 
@@ -714,7 +714,7 @@ on the main thread**:
   see the note in `depthDecoder.ts`.
 - **The picture** is decoded by `createImageBitmap` before it is published, and
   published as the bitmap rather than as an object URL. An `<img>` decode does
-  not do: a browser's decoded-image cache is keyed by the *scale* the image was
+  not do: a browser's decoded-image cache is keyed by the _scale_ the image was
   drawn at, so decoding at natural size paid nothing towards the scaled-down
   paint that followed, and the picture was decoded a second time on the paint
   path — seconds of frozen tab after the bar had reached 100%. A decode that
@@ -792,7 +792,7 @@ beam and nothing to do with this panel.
 gesture speed, which two mechanisms would otherwise punish:
 
 - Every dispatch writes the persisted state to localStorage
-  (`statePersistingMiddleware` runs on *every* action), so the bearing reaches
+  (`statePersistingMiddleware` runs on _every_ action), so the bearing reaches
   the store only once the turning settles — not per frame.
 - `urlProcessor` chooses `replaceState` only when `restSignature` is unchanged;
   anything else takes the **unpaced** `pushState` branch. So `panorama-az` is a
@@ -822,7 +822,7 @@ way). One source, so a look changed in the settings modal moves all of them.
 
 **Everything read out of the picture is anchored at `sightFrom`** — the render's
 own viewpoint — rather than at the pin: the wedge, and the sight line each mark
-carries. The pin only stages where the *next* render goes, so a drag leaves it
+carries. The pin only stages where the _next_ render goes, so a drag leaves it
 standing somewhere the picture never saw, and lines drawn from there cross
 country nobody measured. Where the two have come apart — the pin under the
 finger, or `atRenderedViewpoint` false after the drop — a faded, undraggable eye
@@ -867,7 +867,7 @@ a ridge picked out of the picture can be tens of kilometres off, or land behind
 the panel itself — is **centred**, which is where the eye goes looking for it.
 Both halves are `panToUncovered(probe, { ifHidden: true })`
 (`src/features/map/panToUncovered.ts`), which hit-tests a grid over the map for
-the largest rectangle nothing covers: on screen means well inside *that*, and
+the largest rectangle nothing covers: on screen means well inside _that_, and
 centring means the middle of it, not of the map. The elevation chart's
 click-to-show and the toposcope's ray and centre presses use the same helper
 the same way, with a wider inset (`GENEROUS_MARGIN_PX`).
@@ -892,7 +892,7 @@ between the two wherever the weight does, times a haze term
 `exp(-distance / hazeM)`. Both are the user's; the square root is the default.
 
 The distance term alone still flattered the horizon: it is a slow falloff and the
-far field is *wide* — a ring at 150 km holds far more mountains than one at 15 —
+far field is _wide_ — a ring at 150 km holds far more mountains than one at 15 —
 so distant giants crowded out the near hills, and thinning the names took the
 near ones first. The haze term says a summit has to be **seeable**, not merely
 big; it barely touches anything close and falls away hard past `hazeM`
@@ -904,8 +904,8 @@ there at all.
 
 **Both terms scale a signed number, which is the trap.** Dominance is negative
 for a top that never rises clear of its own ridge, and scaling a negative number
-*down* raises it — so multiplying by a falloff made a subordinate top rank
-*better* the further off it was, exactly backwards, and across most of the near
+_down_ raises it — so multiplying by a falloff made a subordinate top rank
+_better_ the further off it was, exactly backwards, and across most of the near
 field the weighting exists to protect. `labelRank` therefore divides by the
 falloff where the dominance is negative and multiplies where it is positive:
 either way the rank drops with distance, and every top that stands clear
@@ -923,7 +923,7 @@ the distance falloff to that total.
 
 **Summed before the falloff, not after**, which is the only order that works.
 Where the total is positive the two are identical arithmetic; where it is
-negative they are not, because the falloff *divides* there. Adding afterwards
+negative they are not, because the falloff _divides_ there. Adding afterwards
 would multiply a hemmed-in summit's dominance by `√distance` while dividing its
 prominence by it, so no prominence could ever lift it — and negative dominance
 is exactly what "hemmed in by taller neighbours" reads as, the case the term
@@ -942,7 +942,7 @@ Three more decisions in that shape, none of them free choices:
 - **Discounted where the match had to reach.** 1.7% of matches inside 50 m are
   badly wrong against 5.4% past 100 m, so `matchTrust` drops to
   `PROM_DOUBTED_TRUST` past 50 m. Two steps, not a ramp: the service matches two
-  ways — position alone within 150 m, position *and* elevation agreeing out to
+  ways — position alone within 150 m, position _and_ elevation agreeing out to
   400 m — so distance does not order them, and a ramp to zero would throw away
   the corroborated band precisely because it is the far one. The 0.7 is
   provisional; the service has not measured that band's error rate, since
@@ -968,7 +968,7 @@ field on `PanoramaLabel`: it would be stale the moment a slider moved.
 
 `labelDistanceWeight` is the exponent `p` in `dominance / distance ** p`, from
 `0` to `2` in quarter steps. Two of its stops are the only things a rank can be
-read as *measuring* — `0` is **real size** (raw metres, so the far massif wins)
+read as _measuring_ — `0` is **real size** (raw metres, so the far massif wins)
 and `1` is **apparent size** (the angle it subtends, so the near hill wins) —
 and `1` sits in the **middle** of the scale, which is where weighing both
 equally belongs. `0.5` is the default and asks a summit twice as far for `√2`
@@ -1039,7 +1039,7 @@ more names with no new request.
 
 **A name the layout then can't fit leaves a hole**, rather than the next
 candidate taking its place. The count-based version backfilled — it walked the
-ranked list until that many were *placed* — and that is exactly what cannot be
+ranked list until that many were _placed_ — and that is exactly what cannot be
 kept: whether a label finds air depends on screen positions, so which summit
 backfills would depend on where the view points, and the flicker would be back
 one level down. A vertically crowded skyline therefore shows slightly fewer
@@ -1059,7 +1059,7 @@ is not how often a control is used but what it costs: the toolbar carries what
 rearranges the picture already in hand, the modal carries what has to be asked
 for again. Everything in `PanoramaSettingsModal` is a request parameter, and the
 Save button stages a render for it; nothing in the toolbar's own menus does.
-Quality and the vertical view are the two deliberate exceptions — they *are*
+Quality and the vertical view are the two deliberate exceptions — they _are_
 request parameters, but they are how a view is framed while looking at it, so
 burying them behind a modal would cost more than the rule is worth.
 
@@ -1077,7 +1077,7 @@ account has premium and asks for more.
 **The service has no peak-distance cut** — peaks come back filtered only by
 visibility and whatever `peak_filter` says, then cut to `max_peaks`, and no list
 is sent to it (the peaks are its own `--peaks` GeoPackage). Its `range` looks like the same
-thing and is not: it bounds the terrain the render *sees* — a setting of its own
+thing and is not: it bounds the terrain the render _sees_ — a setting of its own
 under "Quality", not a way to thin names — so narrowing it to drop a name would take the
 ridge out of the picture too, and cost a whole render. Hence a client-side
 filter.
@@ -1116,14 +1116,14 @@ none keeps its one line in a box laid out for two.
 The request **orders and then cuts**, which is the service's intended shape:
 `peak_rank` says what matters, `max_peaks` (5000) says how many survive. What a
 cut drops is unrecoverable — no client filter restores what was never sent — so
-the only thing that makes a cut safe is that the order is *ours*. It once was
+the only thing that makes a cut safe is that the order is _ours_. It once was
 not, and a summit 2.1 km from an Ötztal viewpoint was dropped while distant
 massifs filled the payload; that report is where this whole area came from.
 
 **The cap does bind** — a Tatra summit answers with 6055 peaks, so 1055 of them
 never reach the client — and what it drops is chosen by an order pinned at the
-**default** weights. In principle that is a trap: a user who has moved *Rank
-peaks by* or *Favour real mountains* to an end is served a set truncated by an
+**default** weights. In principle that is a trap: a user who has moved _Rank
+peaks by_ or _Favour real mountains_ to an end is served a set truncated by an
 ordering they had moved away from, and no slider can ask for the rest without
 another render.
 
@@ -1202,7 +1202,7 @@ the viewpoint's own elevation.
 Three because each covers where the other two aren't: the readout is the only
 one a finger can read (there is no hover to open a tooltip with), the tooltip
 is the one that works when the panel is small or the map is what you are
-looking at, and the colour is what says *which* of a hundred names on the
+looking at, and the colour is what says _which_ of a hundred names on the
 skyline the other two are talking about.
 
 `distance` and `azimuth` sit on the probe itself rather than inside `peak`,
@@ -1250,7 +1250,7 @@ other.
 
 A converted summit is an ordinary drawing point — `poi:peak`, `props.name` and
 `props.ele`, label `{p:name}` — because the dial has no store of its own: its
-rays *are* the drawn points, and its default templates then read the name over
+rays _are_ the drawn points, and its default templates then read the name over
 the elevation and distance with nothing typed in. The point is what carries the
 conversion into a saved map, a URL and a GeoJSON export.
 

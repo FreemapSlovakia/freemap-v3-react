@@ -107,26 +107,26 @@ Uvedené mapy vo formáte mapsforge sa aktualizujú každý utorok a piatok.
 
 Do aplikácie, ktorá vie pridať vlastnú online mapu (dlaždice XYZ), zadajte niektorú z týchto adries:
 
-| Mapa | Adresa | Zoom | Prémium od |
-| --- | --- | --- | --- |
-| Outdoorová mapa <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
-| Turistické trasy KST <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
-| Outdoorová mapa bez podkladu <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
-| Turistické trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| Cyklotrasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| Lyžiarske trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| Jazdecké trasy <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| Náročnosť MTB <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Náročnosť chodníkov (SAC) <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Zjazdnosť ciest <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Vrstevnice <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Detailné tieňovanie (SR) | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 16 |
-| Tieňovanie DMP1 (SR) | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–18 | |
-| Ortofotomozaika SR a ČR | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 20 |
-| Ortofotomozaika SR 2017–2019 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
-| Ortofotomozaika SR 2020–2022 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
-| Ortofotomozaika ČR 2022–2023 | <code>https://<wbr>ortofoto-cz-2022-2023<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | |
-| Lesné cesty NLC (SR) | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code> | 11–15 | |
+| Mapa                                         | Adresa                                                                                                              | Zoom  | Prémium od |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----- | ---------- |
+| Outdoorová mapa <sup>2</sup>                 | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>                        | 5–20  | 19         |
+| Turistické trasy KST <sup>2</sup>            | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>               | 5–20  | 19         |
+| Outdoorová mapa bez podkladu <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>     | 5–20  | 19         |
+| Turistické trasy <sup>1, 2</sup>             | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>     | 9–20  | 19         |
+| Cyklotrasy <sup>1, 2</sup>                   | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>    | 9–20  | 19         |
+| Lyžiarske trasy <sup>1, 2</sup>              | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>        | 9–20  | 19         |
+| Jazdecké trasy <sup>1, 2</sup>               | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>      | 9–20  | 19         |
+| Náročnosť MTB <sup>1, 2</sup>                | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>        | 12–20 | 19         |
+| Náročnosť chodníkov (SAC) <sup>1, 2</sup>    | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>        | 12–20 | 19         |
+| Zjazdnosť ciest <sup>1, 2</sup>              | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19         |
+| Vrstevnice <sup>1, 2</sup>                   | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>   | 12–20 | 19         |
+| Detailné tieňovanie (SR)                     | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>           | 0–20  | 16         |
+| Tieňovanie DMP1 (SR)                         | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>               | 0–18  |            |
+| Ortofotomozaika SR a ČR                      | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>                   | 0–20  | 20         |
+| Ortofotomozaika SR 2017–2019                 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>                | 0–19  |            |
+| Ortofotomozaika SR 2020–2022                 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>                | 0–19  |            |
+| Ortofotomozaika ČR 2022–2023                 | <code>https://<wbr>ortofoto-cz-2022-2023<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>      | 0–20  |            |
+| Lesné cesty NLC (SR)                         | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code>                        | 11–15 |            |
 
 - <sup>1</sup> Priehľadná vrstva, ktorá sa kladie na inú mapu.
 - <sup>2</sup> Pre displeje s vysokým rozlíšením pridajte za `{y}` príponu `@2x`, `@3x` alebo `@4x`.

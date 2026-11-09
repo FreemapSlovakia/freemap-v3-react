@@ -18,7 +18,7 @@ Feature folder: `src/features/gpsRecorder/`.
 Two gates, both in [`support.ts`](../src/features/gpsRecorder/support.ts):
 
 - **Platform** — Android, because the recorder is an Android APK. Deliberately
-  *not* narrowed to Chromium: the Chromium-specific pieces (`targetAddressSpace`,
+  _not_ narrowed to Chromium: the Chromium-specific pieces (`targetAddressSpace`,
   the Local Network Access permission) degrade to no-ops elsewhere. Tested
   against the userAgent string, not `navigator.userAgentData` — that one is both
   Chromium-only and secure-context-only, so over plain http on a dev host it is
@@ -48,27 +48,27 @@ schemas are `looseObject`, so the recorder may add fields freely.
 been released to anyone but its developers, so `MIN_RECORDER_VERSION_CODE` names
 the current build and everything is written against it: every field the recorder
 always sends is required, nothing is feature-detected, and there are no fallbacks.
-When the recorder changes, raise that constant and *delete* whatever the new
+When the recorder changes, raise that constant and _delete_ whatever the new
 contract makes unnecessary rather than keeping a branch for the version before it.
 An older APK fails the schema outright — `getStatus` probes the body for a
 `version` first, so it is reported as outdated with the download link rather than
 as an answer that makes no sense.
 
-| | |
-| --- | --- |
-| `GET /status` | `{ recording, config, count, lastSeq, generation, fields, version: { code, name }, permissions: { fine, background, notifications }, batteryExempt, oem: { vendor, needed, acknowledged }, canRecord, setupComplete, port, portEcho }` |
-| `POST /start` | begin recording; body is the `RecorderConfig` |
-| `POST /stop` | end recording |
-| `GET /track?since=<seq>` | `{ fields: [...], points: [[...], ...] }` — everything **above** the cursor (`since` is exclusive) |
-| `DELETE /track` | discard the whole track |
-| `GET /stream` | SSE; an unnamed event is a point (`id:` its `seq`, `data:` one bare row or a batch), a named `status` event is the whole status object |
+|                          |                                                                                                                                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /status`            | `{ recording, config, count, lastSeq, generation, fields, version: { code, name }, permissions: { fine, background, notifications }, batteryExempt, oem: { vendor, needed, acknowledged }, canRecord, setupComplete, port, portEcho }` |
+| `POST /start`            | begin recording; body is the `RecorderConfig`                                                                                                                                                                                          |
+| `POST /stop`             | end recording                                                                                                                                                                                                                          |
+| `GET /track?since=<seq>` | `{ fields: [...], points: [[...], ...] }` — everything **above** the cursor (`since` is exclusive)                                                                                                                                     |
+| `DELETE /track`          | discard the whole track                                                                                                                                                                                                                |
+| `GET /stream`            | SSE; an unnamed event is a point (`id:` its `seq`, `data:` one bare row or a batch), a named `status` event is the whole status object                                                                                                 |
 
 **Points travel columnar**, not as objects: a row per fix, ordered by the
 `fields` header — as of versionCode 11 that is `["seq","ts","lat","lon","alt",
 "acc","spd","brg","altMsl","altAcc","spdAcc","brgAcc","sat","src","seg"]`. `ts`
 is epoch milliseconds; `seq` is the recorder-assigned monotonic id that doubles
 as both the `/track?since=` cursor and the SSE event id. `decodePoints` reads
-rows *by the declared column order*, so a recorder that reorders or adds columns
+rows _by the declared column order_, so a recorder that reorders or adds columns
 costs nothing here.
 
 **Two altitudes, and the exported one is `altMsl`.** GPX `<ele>` means metres
@@ -99,7 +99,7 @@ point of it, and the live view stops on a column nothing here even reads.
 order comes from the `status` frame the stream opens with — which the contract
 puts before any point on every connection, so the order is always known by the
 first row. The stream that decodes the rows owns the order: a sync settling late
-cannot install a stale one over the live stream's own. A sync only ever *seeds*
+cannot install a stale one over the live stream's own. A sync only ever _seeds_
 it (`seedRecorderFields`), and only while no stream has named one — a connect
 frame this app could not read would otherwise leave every row undecodable, under
 a toolbar that reads `Live`, with no sync armed to repair it.
@@ -151,7 +151,7 @@ devtools instead of being printed over the map.
 ### What the recorder owns
 
 - **The sampling config** travels with `POST /start`, and the recorder reports
-  back what it clamped it to. `maxAccuracyM` is applied *there*, so this app runs
+  back what it clamped it to. `maxAccuracyM` is applied _there_, so this app runs
   no filter of its own — a second one could only disagree with the file on disk.
 - **`seg`**, the segment ordinal, which it bumps on every start. That makes it the
   authority on where a recording was interrupted, so this app keeps no break list
@@ -169,7 +169,7 @@ non-`www` are different origins and both must be listed.
 
 Point a dev server's hostname at `local.freemap.sk` (it resolves to loopback and
 is a freemap.sk subdomain, so it is no weaker than controlling the site's DNS) —
-`localhost:8080` is *not* allowed and will be blocked.
+`localhost:8080` is _not_ allowed and will be blocked.
 
 versionCode 2 answered with a single hardcoded `https://freemap.sk` regardless
 of the request. Since `freemap.sk` 301-redirects to `www.freemap.sk`, the
@@ -201,7 +201,7 @@ exemption fixes). `recorderFetch` reads that body and maps both to
 - **`EventSource` cannot pass it.** The stream therefore only works once an
   earlier gestured fetch has been granted the permission — which is why the
   start flow calls `/status` first.
-- **Every request carries a deadline on the *answer*** (`recorderClient.ts`: 3 s
+- **Every request carries a deadline on the _answer_** (`recorderClient.ts`: 3 s
   for `/status`, 8 s for a transport command, 20 s for a track, which the
   recorder composes whole before sending a byte of it). Nothing here crosses a
   network, so a recorder that has not begun answering is not slow but gone — and
@@ -215,7 +215,7 @@ exemption fixes). `recorderFetch` reads that body and maps both to
   transfer budget fails at the same point on every retry, and since nothing was
   merged each retry starts from `since=0` again — a download that can never
   finish, reported as a recorder that is not there. What is not survivable is a
-  body that *stopped* coming, so that is what is measured.
+  body that _stopped_ coming, so that is what is measured.
 - An expired deadline of either kind is reported as `unreachable`: a Local
   Network Access block is refused at once, so it can never be what ran out the
   clock.
@@ -224,7 +224,7 @@ exemption fixes). `recorderFetch` reads that body and maps both to
   to answer on it reports neither open nor error, and a handle in hand is what
   disarms the backoff — so a silent stream would park the connection on
   `connecting` until the page went away. It is dropped like one that failed.
-- **A Local Network Access *prompt* needs a real user gesture.** Once the
+- **A Local Network Access _prompt_ needs a real user gesture.** Once the
   permission is granted, nothing else does — so the tool syncs on mount and on a
   timer, and only offers a gestured "Connect" button (on the failure toast)
   after a failure, which is the one case a fresh prompt could help. The Record
@@ -264,7 +264,7 @@ it can record but cannot be started from here.
 The state is ordinary rather than exotic: stop a recording, stay in the browser,
 press Record again. The recovery is the launch intent, where the recorder's own
 visible activity makes the call and Android allows it. `POST /start` saves the
-config *before* trying to start, so the recording the intent begins is the one
+config _before_ trying to start, so the recording the intent begins is the one
 that was asked for — the fallback loses nothing.
 
 It is also why a `/resume` cannot fail the same way, on a recorder that has one:
@@ -284,10 +284,10 @@ business and not this app's.
   `navigator.permissions.query({ name: 'local-network-access' })`.
 - **`setup-needed`** — reachable but reporting `missingPermissions`; link back
   into the app via the intent.
-- **`unreachable`** — nothing answered, which does *not* mean nothing is
+- **`unreachable`** — nothing answered, which does _not_ mean nothing is
   installed: a recorder that was killed or swiped off the task list answers
   exactly the same way, and telling that user to install what they already have
-  is both wrong and no help. A recorder killed *mid-body* counts as silence too:
+  is both wrong and no help. A recorder killed _mid-body_ counts as silence too:
   the connection drops and the body read reports a `TypeError`, told apart from
   the `SyntaxError` of an answer that arrived whole and made no sense (which is
   `protocol`, and says the recorder is there and talking).
@@ -306,7 +306,7 @@ for the cases that came from the user asking to record — `setup-needed` and
 `needs-foreground` — where the recorder resolves what is in the way and then
 begins the recording that was wanted. Everything else uses
 `RECORDER_OPEN_INTENT_URL` (`open`): an unreachable recorder, and the setup
-checklist, which the user opened to *read*. A `start` link there finds
+checklist, which the user opened to _read_. A `start` link there finds
 `canRecord` already true — none of the `setupComplete` items block recording —
 starts a recording nobody asked for, and hands focus back before the screen has
 been seen, which shows up as the page flickering and nothing else.
@@ -339,7 +339,7 @@ three answers to one question, and only one of them can be what the toolbar show
 
 **Wanted** is: the platform supports the recorder, the page is visible, and either
 the follow flag is set or the tool is open. `applyStatus` sets that flag from the
-recorder's own answer — recording, or holding points — which is why *every* status
+recorder's own answer — recording, or holding points — which is why _every_ status
 goes through it and none is dispatched raw: a Finish or a Delete that stored its
 status directly would leave the page following a recorder it had just emptied, this
 session and on the next load. Changing the flag calls the reconcile itself, being
@@ -359,8 +359,8 @@ frozen with it comes back reporting `OPEN` while nothing arrives on it — loopb
 delivers no reset for the browser to notice, so it believes in the socket for tens
 of seconds, then replays every fix above its last event id in one burst: a
 screenful of dispatches and a page that locks up. Until then the live view is dead
-while reading as `Live`. So going away closes the stream *and aborts the sync in
-flight*; coming back opens a fresh one, which carries no `Last-Event-ID` and
+while reading as `Live`. So going away closes the stream _and aborts the sync in
+flight_; coming back opens a fresh one, which carries no `Last-Event-ID` and
 therefore replays nothing, and the `/track?since=` catch-up fills the gap. Nothing
 is lost either way: the recorder owns the track.
 
@@ -384,7 +384,7 @@ the run also means a reconcile they provoke mid-flow joins them instead of racin
 them.
 
 **An abandoned run's caller is answered by the replacement** — in loudness, in
-when it is told, and in *what* it is told. A restart is not a failure and must
+when it is told, and in _what_ it is told. A restart is not a failure and must
 not read as one: the replacement's status is the newer of the two, so it answers
 the question at least as well, and a caller that acts on the answer (the
 take-the-track flow) would otherwise give up whenever a doorbell it rang itself
@@ -414,7 +414,7 @@ nothing to say costs a round trip and can abandon a catch-up that would then
 start over from the beginning.
 
 The connect frame is the one that usually says nothing: the sync that attached
-the stream read the same status moments earlier. *Usually*, though — that sync
+the stream read the same status moments earlier. _Usually_, though — that sync
 catches up **before** it attaches anything, so a stop or a clear during a
 download that took seconds arrives in the connect frame first, with nothing else
 coming to notice it, because a stream in hand is what disarms the retries. What
@@ -433,7 +433,7 @@ ride whose distance and clock have just stopped advancing is news, so a reconnec
 after a stream that has carried fixes reports out loud. A teardown deliberately
 does **not** take that back: the page going away is not the live view failing, and
 a screen switched off and on again is the commonest way to arrive at exactly the
-frozen figures the rule exists for. The second is a *hopeless* failure, whoever
+frozen figures the rule exists for. The second is a _hopeless_ failure, whoever
 asked — see the backoff below. Otherwise, whether a failure is the end of
 following is decided by the retries rather than by one of them.
 
@@ -472,7 +472,7 @@ no checkboxes.
 
 Two consequences worth knowing. The sync that opening the tool raises is keyed on
 the tool being open rather than on the component mounting, because a recording
-mounts it on its own — and it is only the *loud ask* that lives in the menu.
+mounts it on its own — and it is only the _loud ask_ that lives in the menu.
 Whether there should be a connection at all is the store's answer:
 `gpsRecorderToolProcessor` watches `isToolOpen` and calls the reconcile, so a
 tool opened or closed while the menu is unmounted (the map is in a pick mode, or
@@ -496,7 +496,7 @@ A sync itself is three steps:
    attached, so a resync never drops a working stream; failure goes to the
    backoff. The settle is bound to its run: one from a run that has been
    restarted or torn down is ignored, so an abandoned run can never attach a
-   stream or arm a retry on the connection's behalf. A run that breaks *without*
+   stream or arm a retry on the connection's behalf. A run that breaks _without_
    settling — a handler that threw outside its own `try` — is settled as a
    failure by the core, because an unsettled run arms nothing and is exactly
    where a chain would end silently.
@@ -520,7 +520,7 @@ catch-up is what notices.
 
 The wait widens 1 s → 30 s over five attempts, and two things rewind it.
 
-**A stream that keeps running** — proof has to be a *duration*, not an event.
+**A stream that keeps running** — proof has to be a _duration_, not an event.
 Every instant a stream can reach is one a recorder dying immediately afterwards
 also reaches: `onopen` fires on response headers, and the connect `status` frame
 fires on the first thing the server writes, so rewinding on either lets a
@@ -581,7 +581,7 @@ so the attempts are not spent on a connection that is not broken. The stream's o
 **A self-check covers the edge that never arrives.** Everything above assumes
 each edge reaches the reconcile as an event, and `visibilitychange` is the one a
 phone does not dependably deliver: a page frozen with the screen has been seen to
-come back without one, leaving the connection torn down by the `hidden` that *did*
+come back without one, leaving the connection torn down by the `hidden` that _did_
 arrive and `idle` with no stream, run or retry left that would ever ask again.
 Nothing else here can notice that, because wanting a connection and having none is
 a contradiction only the reconcile is in a position to see. So `WATCHDOG_MS`
@@ -591,7 +591,7 @@ costs nothing and a missing one costs the ride. The recorder is asked nothing by
 any of it: a reconcile with a stream, a run, a retry or a pending sync in hand
 does nothing at all, so this is a check on the state machine rather than a poll.
 
-The timer is armed on there being something to connect *for* — the follow flag or
+The timer is armed on there being something to connect _for_ — the follow flag or
 the tool — rather than on the connection being wanted, and so keeps running while
 the page is hidden. That is the point: a timer the hidden page had disarmed could
 not notice the event it went missing. The browser throttles it to almost nothing
@@ -606,7 +606,7 @@ handles — a catch-up downloading is `syncing`, an open stream is `live`, an at
 under way (a sync in flight, or a stream not open yet) is `connecting`, the wait
 before the next attempt is `reconnecting`, and nothing at all is `idle` — and every
 transition publishes it. A
-catch-up is *bracketed* by `whileCatchingUp` rather than announcing itself on the
+catch-up is _bracketed_ by `whileCatchingUp` rather than announcing itself on the
 way in, so no early return can leave the toolbar spinning on a wait that has
 finished — which is otherwise a line of undo in every handler that catches up, and
 one forgotten line away from a Record button that spins for good.
@@ -691,7 +691,7 @@ mistaken for the setup-related one.
 highest id ever handed out, so a client asking `?since=` an old cursor is never
 served different points under ids it already believes it has. That is exactly
 why `generation` — the count of how many times the track has been thrown away —
-is the *only* reliable signal that what we hold is gone, and why `syncHandler`
+is the _only_ reliable signal that what we hold is gone, and why `syncHandler`
 compares it on every status rather than watching `lastSeq`. (A `lastSeq` test
 looks right and isn't: it drops to 0 on a clear, then climbs back past the old
 cursor within a couple of fixes, so any sync after that would silently keep the
@@ -794,11 +794,11 @@ the climb baseline, and counts no distance across it.
 The altitude is shown as recorded (`keepRecorded`, credited `recorded`): nothing
 is sampled, densified or smoothed. Those passes correct a terrain model, and this
 is a measurement — which is also why `source` defaults to the GNSS receiver (see
-*Settings*).
+_Settings_).
 
 The button appears once two fixes carry an altitude (`selectRecorderHasProfile`);
 below that there is a chart of gaps rather than a profile. A recording that has
-none *yet* resolves as `pending`, so the chart stays aimed and fills in when the
+none _yet_ resolves as `pending`, so the chart stays aimed and fills in when the
 altitudes start arriving — and so does a recorder that hasn't answered yet, since
 a reload restores this target from the URL while the whole track is still being
 refetched. `gone` is only for a track the recorder has reported on and that holds
@@ -884,7 +884,7 @@ marker to wherever the last one was taken while the browser's watch stayed
 blocked from saying otherwise. Releasing hands back mid-pause and reclaims on
 resume.
 
-Where the recording has *reached* is a separate claim from where the user is, so
+Where the recording has _reached_ is a separate claim from where the user is, so
 `GpsRecorderResult` marks the newest fix as the track's head regardless of
 locating — and the track and its head open the tool when clicked, as a loaded
 track opens the import tool.

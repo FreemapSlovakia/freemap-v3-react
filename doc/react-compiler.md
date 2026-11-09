@@ -40,7 +40,7 @@ its body.
 
 ## What actually goes wrong
 
-The compiler keys each memo block on the values it can *see*. Three traps, all
+The compiler keys each memo block on the values it can _see_. Three traps, all
 found in this codebase:
 
 **A value read during render from a source the compiler cannot see gets frozen.**
@@ -49,7 +49,7 @@ module-level mutable variables. `BearingLine` measures in screen pixels off the
 live map, so it opts out. `MapControls` reads Leaflet's live min/max zoom, which
 follows the attached layers, so it opts out too. Worst case was `Panorama`, which
 called `getPanoramaRenderData()` — a bare call with no reactive input, which the
-compiler cached against the memo-cache *sentinel*, i.e. once per mount — so the
+compiler cached against the memo-cache _sentinel_, i.e. once per mount — so the
 rendered picture never appeared. The fix is to make the read reactive:
 `renderHolder.ts` notifies and the component subscribes with
 `useSyncExternalStore`, as `auth/pictureCacheBust.ts` does.

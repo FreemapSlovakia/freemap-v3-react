@@ -35,7 +35,7 @@ The `builtin:swc-loader` rule sets `env: { targets: browserTargets, mode: 'usage
 
 There is no `splitChunks` CSS grouping, so a `.module.css` imported **only** by
 lazily-loaded components is duplicated into each of their chunk stylesheets.
-Loading the second such component appends that copy *after* the first
+Loading the second such component appends that copy _after_ the first
 component's own CSS, and any pair of rules that disagree at equal specificity —
 one class each — silently swaps winner.
 
@@ -60,7 +60,7 @@ bites when a feature stylesheet overrides a shared one **at equal specificity** 
 one class each.
 
 **Load order will not settle it for you.** The chunk-CSS runtime inserts a
-stylesheet *relative to an existing link* — `n.parentNode.insertBefore(l,
+stylesheet _relative to an existing link_ — `n.parentNode.insertBefore(l,
 n.nextSibling)`, not `head.appendChild` — so a lazily-loaded feature sheet can
 land **ahead of `main.css`** and lose a tie it looks like it should win. Reading
 the emitted CSS and reasoning "this one is fetched later, so it wins" is how the
@@ -74,7 +74,7 @@ Two fixes, and which one applies depends on why the stylesheet is duplicated:
   from all of them.
 - **Raise the overriding rule's specificity**, so load order stops mattering at
   all. This is the only option when the stylesheet belongs to a shared
-  *component*, since it follows that component into every chunk that uses it and
+  _component_, since it follows that component into every chunk that uses it and
   no import changes that. (`optimization.removeAvailableModules` does not help
   either — those chunks do not all descend from one parent.)
 

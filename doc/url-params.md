@@ -1,6 +1,6 @@
 # URL parameter reference
 
-Freemap syncs most application state through the **URL hash** (`#name=value&name2=value2…`). The mapping lives in two modules (see [`architecture.md`](./architecture.md) → *URL ⇄ state synchronization*):
+Freemap syncs most application state through the **URL hash** (`#name=value&name2=value2…`). The mapping lives in two modules (see [`architecture.md`](./architecture.md) → _URL ⇄ state synchronization_):
 
 - **state → URL**: [`src/app/url/urlProcessor.ts`](../src/app/url/urlProcessor.ts) — the last processor in the chain, so it sees final state.
 - **URL → state**: [`src/app/url/locationChangeHandler.ts`](../src/app/url/locationChangeHandler.ts) (map viewport: [`urlMapUtils.ts`](../src/app/url/urlMapUtils.ts)).
@@ -17,89 +17,89 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 ## Map & layers
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `map` | Viewport | r/w | `zoom/lat/lon` |
-| `geo` | Viewport via RFC 5870 geo URI | read-only | `geo:lat,lon[,ele][?z=zoom]` |
-| `layers` | Active base + overlay layers | r/w | `~`-separated layer codes (e.g. `X~I~w`) |
-| `shading` | Parametric shading settings shared by the shading layers | r/w | `bgColor!comp_params!…`; a component's type may carry `~contrast~brightness` |
-| `custom-layers` | Custom WMS/TMS/MapLibre defs | r/w | JSON array |
-| `id` | Loaded saved-map id | r/w | map UUID |
-| `embed` | Embedded-mode feature flags | r/w | `,`-separated: `search`, `noMapSwitch`, `noLocateMe` |
-| `lang` | UI language | read-only | language code (`en`, `sk`, …) |
+| Param           | Controls                                                 | R/W       | Format                                                                       |
+| --------------- | -------------------------------------------------------- | --------- | ---------------------------------------------------------------------------- |
+| `map`           | Viewport                                                 | r/w       | `zoom/lat/lon`                                                               |
+| `geo`           | Viewport via RFC 5870 geo URI                            | read-only | `geo:lat,lon[,ele][?z=zoom]`                                                 |
+| `layers`        | Active base + overlay layers                             | r/w       | `~`-separated layer codes (e.g. `X~I~w`)                                     |
+| `shading`       | Parametric shading settings shared by the shading layers | r/w       | `bgColor!comp_params!…`; a component's type may carry `~contrast~brightness` |
+| `custom-layers` | Custom WMS/TMS/MapLibre defs                             | r/w       | JSON array                                                                   |
+| `id`            | Loaded saved-map id                                      | r/w       | map UUID                                                                     |
+| `embed`         | Embedded-mode feature flags                              | r/w       | `,`-separated: `search`, `noMapSwitch`, `noLocateMe`                         |
+| `lang`          | UI language                                              | read-only | language code (`en`, `sk`, …)                                                |
 
 ## Tools & modals
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `tools` | Open tools' toolbars | r/w | `,`-separated tool ids; at most one map-click tool (route planner, drawing, map details) opens — the first named |
-| `tool` | Open tool's toolbar (older spelling) | read-only | read exactly like `tools` |
-| `show` | Open modal / viewer; an older link's `wiki/<lang>:<title>` is read as `panel=wiki/…` | r/w | `type` or `type/arg` (e.g. `gallery-viewer/123`) |
-| `document`, `tip`, `image`, `wmc` | Legacy modal aliases → `show=…` | read-only | id |
-| `manual` | Alias of `show=manual/<chapter>`, for the SEO prerender (nginx serves no query holding a `/`) | read-only | chapter id |
+| Param                             | Controls                                                                                      | R/W       | Format                                                                                                           |
+| --------------------------------- | --------------------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------------------- |
+| `tools`                           | Open tools' toolbars                                                                          | r/w       | `,`-separated tool ids; at most one map-click tool (route planner, drawing, map details) opens — the first named |
+| `tool`                            | Open tool's toolbar (older spelling)                                                          | read-only | read exactly like `tools`                                                                                        |
+| `show`                            | Open modal / viewer; an older link's `wiki/<lang>:<title>` is read as `panel=wiki/…`          | r/w       | `type` or `type/arg` (e.g. `gallery-viewer/123`)                                                                 |
+| `document`, `tip`, `image`, `wmc` | Legacy modal aliases → `show=…`                                                               | read-only | id                                                                                                               |
+| `manual`                          | Alias of `show=manual/<chapter>`, for the SEO prerender (nginx serves no query holding a `/`) | read-only | chapter id                                                                                                       |
 
 ## Route planner
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `points` | Waypoints | r/w | `,`-separated `[transport/]lat/lon` |
-| `transport` | Transport type | r/w | transport id |
-| `route-mode` | `route` / `trip` / `roundtrip` / `isochrone` | r/w | mode (omitted for `route`) |
-| `milestones` | Distance milestones | r/w | `abs` / `rel` |
-| `trip-distance`, `trip-seed` | Roundtrip target / seed | r/w | integer |
-| `iso-buckets`, `iso-distance-limit`, `iso-time-limit` | Isochrone params | r/w | integer |
-| `route-params-hash` | Premium route validation hash | r/w | string |
+| Param                                                 | Controls                                     | R/W | Format                              |
+| ----------------------------------------------------- | -------------------------------------------- | --- | ----------------------------------- |
+| `points`                                              | Waypoints                                    | r/w | `,`-separated `[transport/]lat/lon` |
+| `transport`                                           | Transport type                               | r/w | transport id                        |
+| `route-mode`                                          | `route` / `trip` / `roundtrip` / `isochrone` | r/w | mode (omitted for `route`)          |
+| `milestones`                                          | Distance milestones                          | r/w | `abs` / `rel`                       |
+| `trip-distance`, `trip-seed`                          | Roundtrip target / seed                      | r/w | integer                             |
+| `iso-buckets`, `iso-distance-limit`, `iso-time-limit` | Isochrone params                             | r/w | integer                             |
+| `route-params-hash`                                   | Premium route validation hash                | r/w | string                              |
 
 ## Drawing and data: sources and display
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `track-uid` | Saved track id to import once; never written back | read-only | UUID |
-| `import-url` | External GPX/KML/TCX/GeoJSON to import once; never written back | read-only | URL-encoded URL |
-| `gpx-url`, `load` | Legacy aliases of `import-url` | read-only | URL |
-| `track-colorize-by` | Track colorization mode | r/w | mode id |
-| `track-style` | **Default style for unstyled imported features** | read-only | [style codec](#style-codec) |
+| Param               | Controls                                                        | R/W       | Format                      |
+| ------------------- | --------------------------------------------------------------- | --------- | --------------------------- |
+| `track-uid`         | Saved track id to import once; never written back               | read-only | UUID                        |
+| `import-url`        | External GPX/KML/TCX/GeoJSON to import once; never written back | read-only | URL-encoded URL             |
+| `gpx-url`, `load`   | Legacy aliases of `import-url`                                  | read-only | URL                         |
+| `track-colorize-by` | Track colorization mode                                         | r/w       | mode id                     |
+| `track-style`       | **Default style for unstyled imported features**                | read-only | [style codec](#style-codec) |
 
 ## Objects (POIs)
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `objects` | Active category filter | r/w | `;`-separated category ids |
+| Param           | Controls                     | R/W       | Format                                                         |
+| --------------- | ---------------------------- | --------- | -------------------------------------------------------------- |
+| `objects`       | Active category filter       | r/w       | `;`-separated category ids                                     |
 | `objects-style` | **POI marker color & shape** | read-only | [style codec](#style-codec) — uses `C` (color) and `S` (shape) |
 
 ## Search / map details
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `q` | Search query | read-only | text |
+| Param          | Controls                                               | R/W       | Format                      |
+| -------------- | ------------------------------------------------------ | --------- | --------------------------- |
+| `q`            | Search query                                           | read-only | text                        |
 | `search-style` | **Search / map-details result style** (full style set) | read-only | [style codec](#style-codec) |
 
 `search-style` styles the geometry both the **search** and **map details** features display (they render through the same component). `window.fmHeadless.searchResultStyle` (set by the headless image renderer) still takes precedence over it.
 
 ## OSM elements, changesets, gallery, tracking
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `osm-node`, `osm-way`, `osm-relation` | Load/highlight a **kept** OSM element; repeatable | r/w | integer id |
-| `panel` | The selection with a panel of its own (`src/app/url/panelParam.ts`): `event/<id>` (turns the events layer on), `osm-note/<id>` (fetched when the layer hasn't loaded it), `changeset/<id>` (inspected, without opening the tool) `changeset/<id>/<node\|way\|relation>/<id>` (with that element selected; one its diff lacks is dropped), `osm-<node\|way\|relation>/<id>` (an OSM element as a search result: kept when `osm-*` lists it, else only looked at, loaded as a stand-in) `object/<node\|way\|relation>/<id>` (a POI, selected once the objects layer has it; without `objects=` it is not waited for), either of the last two with `/history` appended (its versions shown in place of its details, an entry of its own so Back returns to them) and `wiki/<lang>:<title>` (a Wikipedia article; the title may hold a `/`). Absent, such a selection is let go; `osm-*` alone selects nothing, except in a query string (`?…`, as the SEO pages link), where its first element is selected; a POI awaited keeps its `panel=` until it is selected or something else is | r/w | `kind/id` |
-| `event`, `osm-note`, `changeset` | The forms before `panel`, still read when it is absent; a note or an event wins over `changeset` | r | id |
-| `changesets-days` | Changesets time window | r/w | integer days |
-| `changesets-author` | Changesets author filter | r/w | username |
-| `gallery-user-id`, `gallery-tag`, `gallery-rating-from`/`-to`, `gallery-taken-at-from`/`-to`, `gallery-created-at-from`/`-to`, `gallery-pano`, `gallery-premium` | Gallery filters | r/w | see source |
-| `track` | Live-tracking device + props | r/w | `token[/prop:value…]` |
-| `follow` | Followed live device; a tool's selection, apart from `panel`: it runs beside an inspection, while a `panel` kind, being the selection, replaces it | r/w | token or id |
+| Param                                                                                                                                                            | Controls                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | R/W | Format                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --------------------- |
+| `osm-node`, `osm-way`, `osm-relation`                                                                                                                            | Load/highlight a **kept** OSM element; repeatable                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | r/w | integer id            |
+| `panel`                                                                                                                                                          | The selection with a panel of its own (`src/app/url/panelParam.ts`): `event/<id>` (turns the events layer on), `osm-note/<id>` (fetched when the layer hasn't loaded it), `changeset/<id>` (inspected, without opening the tool) `changeset/<id>/<node\|way\|relation>/<id>` (with that element selected; one its diff lacks is dropped), `osm-<node\|way\|relation>/<id>` (an OSM element as a search result: kept when `osm-*` lists it, else only looked at, loaded as a stand-in) `object/<node\|way\|relation>/<id>` (a POI, selected once the objects layer has it; without `objects=` it is not waited for), either of the last two with `/history` appended (its versions shown in place of its details, an entry of its own so Back returns to them) and `wiki/<lang>:<title>` (a Wikipedia article; the title may hold a `/`). Absent, such a selection is let go; `osm-*` alone selects nothing, except in a query string (`?…`, as the SEO pages link), where its first element is selected; a POI awaited keeps its `panel=` until it is selected or something else is | r/w | `kind/id`             |
+| `event`, `osm-note`, `changeset`                                                                                                                                 | The forms before `panel`, still read when it is absent; a note or an event wins over `changeset`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | r   | id                    |
+| `changesets-days`                                                                                                                                                | Changesets time window                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | r/w | integer days          |
+| `changesets-author`                                                                                                                                              | Changesets author filter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | r/w | username              |
+| `gallery-user-id`, `gallery-tag`, `gallery-rating-from`/`-to`, `gallery-taken-at-from`/`-to`, `gallery-created-at-from`/`-to`, `gallery-pano`, `gallery-premium` | Gallery filters                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | r/w | see source            |
+| `track`                                                                                                                                                          | Live-tracking device + props                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | r/w | `token[/prop:value…]` |
+| `follow`                                                                                                                                                         | Followed live device; a tool's selection, apart from `panel`: it runs beside an inspection, while a `panel` kind, being the selection, replaces it                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | r/w | token or id           |
 
-A search / map-details result the user merely picked is *previewed*: it is on the map only for as long as it is the selected feature, and it is not written to the URL. The selection toolbar's **Keep on the map** toggle keeps it, and only then does it get an `osm-*` param. Elements read from these params come back kept, none of them selected unless `panel=` names it.
+A search / map-details result the user merely picked is _previewed_: it is on the map only for as long as it is the selected feature, and it is not written to the URL. The selection toolbar's **Keep on the map** toggle keeps it, and only then does it get an `osm-*` param. Elements read from these params come back kept, none of them selected unless `panel=` names it.
 
 ## Drawing geometry
 
 These place standalone map annotations — markers, lines, filled areas — not routing. To open a link showing a **map with markers/points**, use `point` (one per marker); it is the drawing-point param, distinct from the route planner's plural `points` (waypoints of a computed route). Each param is repeatable and accepts optional [style fields](#style-codec) after the coordinates (a leading `%1E` separates them from the last coordinate).
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `point` (repeatable), `info-point` | Point(s) / markers | r/w | `lat/lon[/ele][,lat/lon[/ele]…][<style fields>]` |
-| `line`, `polygon` (repeatable) | Line / polygon | r/w | `vertex,vertex,…[<style fields>]` |
-| `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords |
+| Param                                                                                   | Controls                   | R/W       | Format                                           |
+| --------------------------------------------------------------------------------------- | -------------------------- | --------- | ------------------------------------------------ |
+| `point` (repeatable), `info-point`                                                      | Point(s) / markers         | r/w       | `lat/lon[/ele][,lat/lon[/ele]…][<style fields>]` |
+| `line`, `polygon` (repeatable)                                                          | Line / polygon             | r/w       | `vertex,vertex,…[<style fields>]`                |
+| `distance-measurement-points`, `area-measurement-points`, `elevation-measurement-point` | Legacy measurement aliases | read-only | coords                                           |
 
 These params carry the whole Drawing and data collection, in order, whenever it fits: every feature must read back meaning the same (`featureToWire` round-trips it and compares — times as instants, a style as the one it resolves to, so `.000Z`, an offset or a simplestyle-only style still fit; coordinates at the link's 6 decimals), and the encoded params must stay within `URL_FEATURES_BUDGET` (8000 characters, `model/urlForm.ts`). Otherwise none of them are written and the collection lives in a browser snapshot named by `history.state.tr` (see [elevation-and-colorizers.md](./elevation-and-colorizers.md#local-data-has-history)). A `track-uid` or `import-url` link is read on its own; once its track is here, the entry is replaced by these params or a snapshot ([entry-content.md](./entry-content.md)).
 
@@ -111,20 +111,20 @@ These params carry the whole Drawing and data collection, in order, whenever it 
 
 The dial's **centre and rays are drawn points**, so they travel in the `point=` params above: the centre is the first point carrying the property `toposcope=center` (`%1EPtoposcope%1Fcenter`) — that, and nothing else, is what makes it the centre; its viewpoint icon is only how it looks. This param carries only the dial's own settings, and is omitted entirely while they are all at their defaults.
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
+| Param       | Controls      | R/W | Format                            |
+| ----------- | ------------- | --- | --------------------------------- |
 | `toposcope` | Dial settings | r/w | `%1E`-separated fields, see below |
 
 Field codes (`serializeToposcope` / `parseToposcope` in [`toposcopeUrl.ts`](../src/features/toposcope/toposcopeUrl.ts)); a field is written only when it differs from the default, and one out of range is read as absent:
 
-| Code | Meaning | Default |
-|---|---|---|
-| `R` | Inner circle radius, 0–80 of the dial's 200-unit span | `25` |
-| `O` | Outer circle radius — the ring the rays stop at, 30–98. The band between it and the inscription circle at 99 is what the inscriptions are written in, centred | `90` |
-| `S` | Scale of the writing on the dial, 25–400 % | `100` |
-| `U` | Turn the western half's labels so none reads upside down (`U0` / `U1`) | on |
-| `A` | Template for a ray's first line | `{label}` |
-| `B` | Template for its second line | `[{elevation} · ]{distance}` |
+| Code    | Meaning                                                                                                                                                                                                                 | Default                                 |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `R`     | Inner circle radius, 0–80 of the dial's 200-unit span                                                                                                                                                                   | `25`                                    |
+| `O`     | Outer circle radius — the ring the rays stop at, 30–98. The band between it and the inscription circle at 99 is what the inscriptions are written in, centred                                                           | `90`                                    |
+| `S`     | Scale of the writing on the dial, 25–400 %                                                                                                                                                                              | `100`                                   |
+| `U`     | Turn the western half's labels so none reads upside down (`U0` / `U1`)                                                                                                                                                  | on                                      |
+| `A`     | Template for a ray's first line                                                                                                                                                                                         | `{label}`                               |
+| `B`     | Template for its second line                                                                                                                                                                                            | `[{elevation} · ]{distance}`            |
 | `0`–`3` | The four inscriptions along the outer circle, from the S–E quadrant clockwise. `{attribution}` expands to the map data credit, `{credit}` to the portal's own ("Toposcope by Freemap Slovakia" / "… Europe", by domain) | `''`, `{attribution}`, `''`, `{credit}` |
 
 A ray's lines are written from **templates** rather than from the point's own label. A template can name `{label}` (the point's label, its own property references already resolved), `{elevation}`, `{elevation_ft}`, `{distance}`, `{distance_mi}`, `{azimuth}`, `{location}`, and `{p:<name>}` for any property the point carries. A name the dial knows but has no value for expands to nothing, and a `[…]` group around it goes with it — so the default second line `[{elevation} · ]{distance}` on a point with no elevation reads as the distance alone — while a name it doesn't know stays as written, as in a drawing label. The first template is written above the ray and the second below it. Each yields as many lines as its text and its values have — a multi-line point label or `{location}` keeps its own lines, all of them on that template's side — and one that comes out empty leaves nothing on its side.
@@ -133,17 +133,16 @@ Nothing about the toposcope is kept in localStorage, and it is deliberately **no
 
 ## Panorama
 
-| Param | Controls | R/W | Format |
-|---|---|---|---|
-| `panorama` | Viewpoint | r/w | `lat,lon` (6 decimals) |
-| `panorama-az` | Bearing the view faces | r/w | whole degrees |
-| `panorama-tilt` | Vertical band framed | r/w | preset name (`standard` / `wide` / `flat`), or `altMin,altMax` degrees for a custom band |
-| `panorama-fov` | Horizontal view of a slice | r/w | degrees; written only for a slice, absent is the full turn — and under a slice `panorama-az` is the direction the slice faces |
-| `panorama-sky` | Which sky paths are drawn | r/w | `sun`, `moon`, `sun,moon` or `none`; not written for the default (sun only), which absent means; an invalid value is ignored |
-| `panorama-date` | Day the sky paths are drawn for | r/w | `YYYY-MM-DD`; absent is the reader's today, and today is never written; an invalid value is ignored |
+| Param           | Controls                        | R/W | Format                                                                                                                        |
+| --------------- | ------------------------------- | --- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `panorama`      | Viewpoint                       | r/w | `lat,lon` (6 decimals)                                                                                                        |
+| `panorama-az`   | Bearing the view faces          | r/w | whole degrees                                                                                                                 |
+| `panorama-tilt` | Vertical band framed            | r/w | preset name (`standard` / `wide` / `flat`), or `altMin,altMax` degrees for a custom band                                      |
+| `panorama-fov`  | Horizontal view of a slice      | r/w | degrees; written only for a slice, absent is the full turn — and under a slice `panorama-az` is the direction the slice faces |
+| `panorama-sky`  | Which sky paths are drawn       | r/w | `sun`, `moon`, `sun,moon` or `none`; not written for the default (sun only), which absent means; an invalid value is ignored  |
+| `panorama-date` | Day the sky paths are drawn for | r/w | `YYYY-MM-DD`; absent is the reader's today, and today is never written; an invalid value is ignored                           |
 
 The picture itself is not in the link: arriving with a viewpoint renders it again, which is why the params are acted on only while `tools=panorama` is open — a render is seconds of somebody else's server, and without the panel there is nothing to render into. The framing params override the reader's standing preferences in the `panoramaSettings` slice, since what the sender framed is part of what they show; the rest of the view (quality, label density, whether it turns by itself) stays in localStorage. `panorama-az` and `panorama-date` are in `COALESCED_KEYS` in `urlProcessor.ts`, alongside `map`: a change confined to them replaces the current history entry rather than pushing one.
-
 
 ## Style codec
 
@@ -151,24 +150,24 @@ The drawing geometry params and the per-feature default-style params (`track-sty
 
 Fields are joined by the record-separator character `\x1e` (URL-encoded `%1E`). Each field is a one-letter code followed by its value:
 
-| Code | Meaning | Example |
-|---|---|---|
-| `C` | Stroke / marker color (RGBA hex) | `C%23ff0000` → `#ff0000` |
-| `F` | Fill color (RGBA hex) | `F%2300ff0033` |
-| `W` | Line width (number) | `W6` |
-| `D` | Dash array (comma-separated numbers) | `D4,4` |
-| `K` | Line cap — `b`utt / `s`quare / `r`ound; absent, the viewer's default style decides | `Kb` |
-| `J` | Line join — `m`iter / `b`evel / `r`ound; absent, the viewer's default style decides | `Jm` |
-| `S` | Marker shape — `s`quare / `r`ing / `p`in; absent, the viewer's default style decides | `Sr` |
-| `I` | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome) | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
-| `L` | Label (drawing geometry only) | `LMy point` |
-| `P` | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only | `Pname%1FSitno%1Fele%1F1009` |
-| `M` | Keys the editor owns but can't always reproduce, written back verbatim: a point's `sym`, `marker-symbol` or `icon` that no icon of ours says (an unmapped Garmin symbol, a KML image URL), simplestyle `marker-size`, and a `title` beside the `name` — key/value pairs like `P`'s (links only) | `Msym%1FFlag, Blue` |
-| `Q` | Properties whose values aren't strings — numbers, booleans, `null`, objects and arrays — as key/JSON pairs joined by `\x1f`, so they read back with their type; JSON escapes both separators inside a string (links only; a saved map's `lines` keep the plain shape) | `Qnumber%1F3%1Fflag%1Ftrue%1Fx%1Fnull` |
-| `H` | Hole of the polygon at this position among the `line`/`polygon` params, then `.member` for a multi-polygon's later member | `H0`, `H0.2` |
-| `V` | Columns of the vertex values, joined by `\x1f` (lines; a polygon ring only `ele`) | `Vele%1Ftime%1Fheart` |
-| `Y` | `fm:kind` — what the feature is (`track`, `route`, …) | `Ytrack` |
-| `G` | GPX element it came from (`_gpxType`, lines only) | `Gtrk` |
+| Code | Meaning                                                                                                                                                                                                                                                                                         | Example                                                      |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `C`  | Stroke / marker color (RGBA hex)                                                                                                                                                                                                                                                                | `C%23ff0000` → `#ff0000`                                     |
+| `F`  | Fill color (RGBA hex)                                                                                                                                                                                                                                                                           | `F%2300ff0033`                                               |
+| `W`  | Line width (number)                                                                                                                                                                                                                                                                             | `W6`                                                         |
+| `D`  | Dash array (comma-separated numbers)                                                                                                                                                                                                                                                            | `D4,4`                                                       |
+| `K`  | Line cap — `b`utt / `s`quare / `r`ound; absent, the viewer's default style decides                                                                                                                                                                                                              | `Kb`                                                         |
+| `J`  | Line join — `m`iter / `b`evel / `r`ound; absent, the viewer's default style decides                                                                                                                                                                                                             | `Jm`                                                         |
+| `S`  | Marker shape — `s`quare / `r`ing / `p`in; absent, the viewer's default style decides                                                                                                                                                                                                            | `Sr`                                                         |
+| `I`  | Marker icon spec — `poi:<name>` (bundled POI icon) or `fa:<name>` (Font Awesome)                                                                                                                                                                                                                | `Ipoi%3Aanimal_shelter` → `poi:animal_shelter` (`%3A` = `:`) |
+| `L`  | Label (drawing geometry only)                                                                                                                                                                                                                                                                   | `LMy point`                                                  |
+| `P`  | Properties — key/value pairs joined by the unit separator `\x1f` (URL-encoded `%1F`), drawing geometry only                                                                                                                                                                                     | `Pname%1FSitno%1Fele%1F1009`                                 |
+| `M`  | Keys the editor owns but can't always reproduce, written back verbatim: a point's `sym`, `marker-symbol` or `icon` that no icon of ours says (an unmapped Garmin symbol, a KML image URL), simplestyle `marker-size`, and a `title` beside the `name` — key/value pairs like `P`'s (links only) | `Msym%1FFlag, Blue`                                          |
+| `Q`  | Properties whose values aren't strings — numbers, booleans, `null`, objects and arrays — as key/JSON pairs joined by `\x1f`, so they read back with their type; JSON escapes both separators inside a string (links only; a saved map's `lines` keep the plain shape)                           | `Qnumber%1F3%1Fflag%1Ftrue%1Fx%1Fnull`                       |
+| `H`  | Hole of the polygon at this position among the `line`/`polygon` params, then `.member` for a multi-polygon's later member                                                                                                                                                                       | `H0`, `H0.2`                                                 |
+| `V`  | Columns of the vertex values, joined by `\x1f` (lines; a polygon ring only `ele`)                                                                                                                                                                                                               | `Vele%1Ftime%1Fheart`                                        |
+| `Y`  | `fm:kind` — what the feature is (`track`, `route`, …)                                                                                                                                                                                                                                           | `Ytrack`                                                     |
+| `G`  | GPX element it came from (`_gpxType`, lines only)                                                                                                                                                                                                                                               | `Gtrk`                                                       |
 
 Colors are RGBA hex; the alpha channel carries the opacity (e.g. `#3388ff33` ≈ 20 % opacity).
 

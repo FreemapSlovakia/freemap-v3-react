@@ -335,7 +335,7 @@ class LScaledTileLayer extends TileLayer {
         const a = document.createElement('a');
 
         a.href = '#show=premium';
-        a.innerText = this.premiumOnlyText;
+        a.textContent = this.premiumOnlyText;
         a.onclick = this.handlePremiumClick;
 
         div.appendChild(a);

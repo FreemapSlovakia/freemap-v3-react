@@ -42,21 +42,21 @@ Ersetzen Sie `{token}` durch den Token Ihres Geräts aus :FaMobileAlt: [Meine Ge
 
 Die Adresse akzeptiert HTTP `GET` oder `POST` mit folgenden Parametern:
 
-| Parameter | Beschreibung |
-|---|---|
-| `location` | Breiten- und Längengrad in Grad, durch Komma getrennt **(erforderlich, oder `lat` und `lon`)** |
-| `lat` | Breitengrad in Grad |
-| `lon` | Längengrad in Grad |
-| `time`, `timestamp` | Von JavaScript lesbares Datum mit Uhrzeit oder Unix-Zeit in Sekunden oder Millisekunden |
-| `alt`, `altitude` | Höhe in Metern |
-| `speed` | Geschwindigkeit in m/s |
-| `speedKmh` | Geschwindigkeit in km/h |
-| `acc`, `accuracy` | Genauigkeit in Metern |
-| `hdop` | Horizontale DOP |
-| `bearing`, `heading` | Richtung in Grad |
-| `battery`, `batt` | Akkustand in Prozent |
-| `gsm_signal` | GSM-Signalstärke in Prozent |
-| `message` | Notiz / Nachricht |
+| Parameter            | Beschreibung                                                                                   |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| `location`           | Breiten- und Längengrad in Grad, durch Komma getrennt **(erforderlich, oder `lat` und `lon`)** |
+| `lat`                | Breitengrad in Grad                                                                            |
+| `lon`                | Längengrad in Grad                                                                             |
+| `time`, `timestamp`  | Von JavaScript lesbares Datum mit Uhrzeit oder Unix-Zeit in Sekunden oder Millisekunden        |
+| `alt`, `altitude`    | Höhe in Metern                                                                                 |
+| `speed`              | Geschwindigkeit in m/s                                                                         |
+| `speedKmh`           | Geschwindigkeit in km/h                                                                        |
+| `acc`, `accuracy`    | Genauigkeit in Metern                                                                          |
+| `hdop`               | Horizontale DOP                                                                                |
+| `bearing`, `heading` | Richtung in Grad                                                                               |
+| `battery`, `batt`    | Akkustand in Prozent                                                                           |
+| `gsm_signal`         | GSM-Signalstärke in Prozent                                                                    |
+| `message`            | Notiz / Nachricht                                                                              |
 
 ### Traccar
 

@@ -64,7 +64,7 @@ export function getHikingSkUrl(
   const point = CRS.EPSG3857.project({ lat, lng: lon });
 
   const params: Record<string, string> = {
-    zoom: String(zoom > 15 ? 15 : zoom),
+    zoom: String(Math.min(zoom, 15)),
     lon: String(point.x),
     lat: String(point.y),
     layers: '00B00FFFTTFTTTTFFFFFFTTT',
@@ -141,9 +141,10 @@ export function getMapyCzUrl(
   zoom: number,
   includePoint?: boolean,
 ): string {
-  return `https://mapy.com/zakladni?x=${lon}&y=${lat}&z=${
-    zoom > 19 ? 19 : zoom
-  }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`;
+  return `https://mapy.com/zakladni?x=${lon}&y=${lat}&z=${Math.min(
+    zoom,
+    19,
+  )}${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`;
 }
 
 export function getWazeUrl(lat: number, lon: number, zoom: number): string {

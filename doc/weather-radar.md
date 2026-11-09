@@ -125,7 +125,7 @@ primary on a track reads as a filled-in portion.
   animation. The selection has three states, all decided by `pinnedTime` in the
   reducer:
   - **`null` is live** — follow the newest observed frame, so a refresh carries
-    the view forward. Picking that frame *stores* `null`, rather than its
+    the view forward. Picking that frame _stores_ `null`, rather than its
     timestamp, or playing to the end would silently freeze the layer until the
     frame aged off the list, hours later.
   - **Any other frame pins** to its absolute time and stays there as the
@@ -209,7 +209,7 @@ only after every one of its tiles has settled.
 
 "Resolved" and not "painted", which is a distinction worth keeping: a frame
 whose every tile 404s is never painted, and its layer stays in the pool so
-Leaflet never re-fires `load`. Waiting for *that* stalls the loop for the full
+Leaflet never re-fires `load`. Waiting for _that_ stalls the loop for the full
 timeout on every pass rather than once. The timeout still covers the frame that
 is merely slow.
 

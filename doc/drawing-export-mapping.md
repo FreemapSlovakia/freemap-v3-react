@@ -36,20 +36,20 @@ import.
 
 ### GPX export (per `<wpt>`)
 
-| State field  | GPX element(s)               | Notes                                                                                                                                         |
-| ------------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `coords`     | `lat`/`lon` attrs on `<wpt>` | Core                                                                                                                                          |
-| `label`      | `<name>`                     | Core                                                                                                                                          |
-| `icon`       | `<sym>`                      | Curated `iconSpec → Garmin sym name`; falls back to literal text / stripped poi/fa name when no curated mapping exists                        |
-| `icon`       | `<osmand:icon>`              | Curated `iconSpec → OsmAnd icon name` (e.g. `amenity_restaurant`)                                                                             |
-| `markerType` | `<osmand:background>`        | `pin → octagon`, `square → square`, `ring → circle`                                                                                           |
-| `color`      | `<osmand:color>`             | Plain hex (alpha truncated)                                                                                                                   |
-| `markerType` | `<fm:markerType>`            | **Lossless**                                                                                                                                  |
-| `icon`       | `<fm:icon>`                  | **Lossless** — preserves `fa:` / `poi:` / literal text prefix                                                                                 |
-| `color`      | `<fm:color>`                 | **Lossless** — preserves full `#RRGGBBAA`                                                                                                     |
-| `label`      | `<name>` (rendered) + `<fm:label>` (raw)     | `<name>` carries the label with its `{p:…}` and computed placeholders already expanded, which is what a consumer should show; `<fm:label>` carries it as written, so our own importer restores the template |
-| `props`      | `<fm:prop key="…">` / GeoJSON `properties`   | **Lossless** — one element per pair, every key, since `<name>` says only what the two of them rendered to |
-| (derived)    | `<locus:icon>`               | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi drawing). Purely visual; not source of truth. |
+| State field  | GPX element(s)                             | Notes                                                                                                                                                                                                       |
+| ------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `coords`     | `lat`/`lon` attrs on `<wpt>`               | Core                                                                                                                                                                                                        |
+| `label`      | `<name>`                                   | Core                                                                                                                                                                                                        |
+| `icon`       | `<sym>`                                    | Curated `iconSpec → Garmin sym name`; falls back to literal text / stripped poi/fa name when no curated mapping exists                                                                                      |
+| `icon`       | `<osmand:icon>`                            | Curated `iconSpec → OsmAnd icon name` (e.g. `amenity_restaurant`)                                                                                                                                           |
+| `markerType` | `<osmand:background>`                      | `pin → octagon`, `square → square`, `ring → circle`                                                                                                                                                         |
+| `color`      | `<osmand:color>`                           | Plain hex (alpha truncated)                                                                                                                                                                                 |
+| `markerType` | `<fm:markerType>`                          | **Lossless**                                                                                                                                                                                                |
+| `icon`       | `<fm:icon>`                                | **Lossless** — preserves `fa:` / `poi:` / literal text prefix                                                                                                                                               |
+| `color`      | `<fm:color>`                               | **Lossless** — preserves full `#RRGGBBAA`                                                                                                                                                                   |
+| `label`      | `<name>` (rendered) + `<fm:label>` (raw)   | `<name>` carries the label with its `{p:…}` and computed placeholders already expanded, which is what a consumer should show; `<fm:label>` carries it as written, so our own importer restores the template |
+| `props`      | `<fm:prop key="…">` / GeoJSON `properties` | **Lossless** — one element per pair, every key, since `<name>` says only what the two of them rendered to                                                                                                   |
+| (derived)    | `<locus:icon>`                             | Self-contained SVG data URL mirroring `RichMarker` (shape + inner white + glyph: text/fa path/poi drawing). Purely visual; not source of truth.                                                             |
 
 ### GeoJSON export (per Point feature)
 
@@ -74,7 +74,6 @@ icon       ← freemap:icon        → osmAndIconToIconSpec(osmand:icon)
 color      ← freemap:color       → osmand:color
                                  → marker-color
 ```
-
 
 ## Properties
 
@@ -245,18 +244,18 @@ they're audited by eye and exercised through round-trip exports.
 
 ## Source file index
 
-| File                                                                            | Role                                                                                                                   |
-| ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `src/features/export/garminSymMapping.ts`                                       | Garmin sym ↔ iconSpec                                                                                                  |
-| `src/features/export/osmandIconMapping.ts`                                      | OsmAnd icon/background ↔ iconSpec/markerType                                                                           |
-| `src/features/export/model/processors/gpxExportProcessorHandler.ts`             | GPX writer (`addDrawingPoints`, `addDrawingLines`, marker SVG builder for Locus icon)                                  |
-| `src/features/export/model/processors/geojsonExportProcessorHandler.ts`         | GeoJSON writer                                                                                                         |
-| `src/features/dataViewer/parseGpx.ts`                                           | GPX → GeoJSON reader; writes the canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk/rte features |
-| `src/processors/convertToDrawingProcessor.ts`                                   | Turns other tools' features into features of the collection                                                            |
-| `src/shared/styleFromProperties.ts`                                             | `*StyleFromProperties` priority chains, and the `*StyleToProperties` writers the data viewer's properties editor uses  |
-| `src/shared/featureProperties.ts`                                               | Which property keys are the feature's own data vs. style/bookkeeping; the `freemap:props` table reader                 |
-| `src/shared/drawingIcons.tsx`                                                   | iconSpec parser, FA loader, POI name↔URL maps, `tagsToPoiIconSpec`                                                     |
-| `src/shared/components/RichMarker.tsx`                                          | Renderer the Locus icon SVG mirrors                                                                                    |
+| File                                                                    | Role                                                                                                                      |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/export/garminSymMapping.ts`                               | Garmin sym ↔ iconSpec                                                                                                     |
+| `src/features/export/osmandIconMapping.ts`                              | OsmAnd icon/background ↔ iconSpec/markerType                                                                              |
+| `src/features/export/model/processors/gpxExportProcessorHandler.ts`     | GPX writer (`addDrawingPoints`, `addDrawingLines`, marker SVG builder for Locus icon)                                     |
+| `src/features/export/model/processors/geojsonExportProcessorHandler.ts` | GeoJSON writer                                                                                                            |
+| `src/features/dataViewer/parseGpx.ts`                                   | GPX → GeoJSON reader; writes the canonical `freemap:*` / `osmand:*` / `gpx_style:hasFill` props onto wpt/trk/rte features |
+| `src/processors/convertToDrawingProcessor.ts`                           | Turns other tools' features into features of the collection                                                               |
+| `src/shared/styleFromProperties.ts`                                     | `*StyleFromProperties` priority chains, and the `*StyleToProperties` writers the data viewer's properties editor uses     |
+| `src/shared/featureProperties.ts`                                       | Which property keys are the feature's own data vs. style/bookkeeping; the `freemap:props` table reader                    |
+| `src/shared/drawingIcons.tsx`                                           | iconSpec parser, FA loader, POI name↔URL maps, `tagsToPoiIconSpec`                                                        |
+| `src/shared/components/RichMarker.tsx`                                  | Renderer the Locus icon SVG mirrors                                                                                       |
 
 ## Adding a new field
 

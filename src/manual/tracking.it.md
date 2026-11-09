@@ -42,21 +42,21 @@ Sostituisca `{token}` con il token del suo dispositivo, che trova in :FaMobileAl
 
 L'indirizzo accetta HTTP `GET` o `POST` con i seguenti parametri:
 
-| Parametro | Descrizione |
-|---|---|
-| `location` | Latitudine e longitudine in gradi, separate da una virgola **(obbligatorio, oppure `lat` e `lon`)** |
-| `lat` | Latitudine in gradi |
-| `lon` | Longitudine in gradi |
-| `time`, `timestamp` | Data e ora interpretabili da JavaScript oppure tempo Unix in secondi o millisecondi |
-| `alt`, `altitude` | Altitudine in metri |
-| `speed` | Velocità in m/s |
-| `speedKmh` | Velocità in km/h |
-| `acc`, `accuracy` | Precisione in metri |
-| `hdop` | DOP orizzontale |
-| `bearing`, `heading` | Direzione in gradi |
-| `battery`, `batt` | Livello della batteria in percentuale |
-| `gsm_signal` | Intensità del segnale GSM in percentuale |
-| `message` | Nota / messaggio |
+| Parametro            | Descrizione                                                                                         |
+| -------------------- | --------------------------------------------------------------------------------------------------- |
+| `location`           | Latitudine e longitudine in gradi, separate da una virgola **(obbligatorio, oppure `lat` e `lon`)** |
+| `lat`                | Latitudine in gradi                                                                                 |
+| `lon`                | Longitudine in gradi                                                                                |
+| `time`, `timestamp`  | Data e ora interpretabili da JavaScript oppure tempo Unix in secondi o millisecondi                 |
+| `alt`, `altitude`    | Altitudine in metri                                                                                 |
+| `speed`              | Velocità in m/s                                                                                     |
+| `speedKmh`           | Velocità in km/h                                                                                    |
+| `acc`, `accuracy`    | Precisione in metri                                                                                 |
+| `hdop`               | DOP orizzontale                                                                                     |
+| `bearing`, `heading` | Direzione in gradi                                                                                  |
+| `battery`, `batt`    | Livello della batteria in percentuale                                                               |
+| `gsm_signal`         | Intensità del segnale GSM in percentuale                                                            |
+| `message`            | Nota / messaggio                                                                                    |
 
 ### Traccar
 

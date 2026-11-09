@@ -32,7 +32,7 @@ terrain in 16 of them** — so planning abroad works the same as planning at hom
 with that, plus the workbench.
 
 **Do not frame it as "Mapy stops at the border".** An early draft did, citing a 2020
-nakole post by *Favorit1970* who went looking because Mapy.cz had no previews on the
+nakole post by _Favorit1970_ who went looking because Mapy.cz had no previews on the
 Slovak side. Martin rejected it (2026-09-16), rightly: Mapy.com has changed a great deal
 since — it has just shipped abandoned railway lines, among other things — and a stale
 claim about a competitor invites a public correction that costs more than the argument
@@ -40,31 +40,31 @@ was worth. **State what Freemap has; say nothing about what anyone else lacks.**
 
 ## Warm channels found
 
-| Venue | State |
-|---|---|
-| **nakole.cz** — new topic ✅ **POSTED 2026-09-16** | https://www.nakole.cz/diskuse/31509-outdoorova-mapa-a-planovac-teren-z-narodnich-vyskovych-modelu.html — rubric *Cestování na kole*. The old *Mapy na Internetu III.* index thread could not be used — it is **full**: replying returns *"Byl překročen maximální počet povolených příspěvků k jednomu tématu… založte si, prosím, nové téma."* Its real last posts are **July 2024** — an earlier note here claimed July 2026, which was wrong: those dates came from the sidebar classifieds, not the thread. No *Mapy na Internetu IV.* exists. The other relevant threads are dead too: *Plánovač tras – doporučte* ended 2019, *Jakou navigaci* 2020, *GPS* 2008. **Do not found "Mapy na Internetu IV." ourselves** — starting the successor to a community institution, as a zero-post member, with a post about our own map, is what regulars remember badly. A plain new topic in a normal rubric is the right move instead, and is what the forum's own error message tells you to do. |
-| **bike-forum.cz** | Largest Czech MTB/road forum, and Freemap is known there — *Mapy.cz versus Topo Czech V4* mentions it ten times, plus `wiki.freemap.sk/FileDownload` (2021) and *"Slováci na freemap.sk mají proxy na heatmap"* (2023). **But its map threads are stale too**: newest relevant post May 2024 (*Plánování cyklo trasy v Komoot a Mapy.cz*), so under the thread-age rule they cannot be revived. A fresh thread is possible; check the forum's overall activity first. Registration `/registrace` needs a **maths question + reCAPTCHA** — Martin must do it. |
-| **geocaching.cz** | Already lists freemap.sk tiles as a GME map source (28+ page thread), plus `geocaching.cz/wiki/Free_mapy_(garmin)`. Warm, and a different audience. |
-| `treking.cz`, `horydoly.cz`, `mtbs.cz`, `turistika.cz` | Editorial sites, not forums — these are **embed/partnership targets**, not places to post. Turistika.cz has ~60 k Facebook followers. |
+| Venue                                                  | State                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **nakole.cz** — new topic ✅ **POSTED 2026-09-16**     | https://www.nakole.cz/diskuse/31509-outdoorova-mapa-a-planovac-teren-z-narodnich-vyskovych-modelu.html — rubric _Cestování na kole_. The old _Mapy na Internetu III._ index thread could not be used — it is **full**: replying returns _"Byl překročen maximální počet povolených příspěvků k jednomu tématu… založte si, prosím, nové téma."_ Its real last posts are **July 2024** — an earlier note here claimed July 2026, which was wrong: those dates came from the sidebar classifieds, not the thread. No _Mapy na Internetu IV._ exists. The other relevant threads are dead too: _Plánovač tras – doporučte_ ended 2019, _Jakou navigaci_ 2020, _GPS_ 2008. **Do not found "Mapy na Internetu IV." ourselves** — starting the successor to a community institution, as a zero-post member, with a post about our own map, is what regulars remember badly. A plain new topic in a normal rubric is the right move instead, and is what the forum's own error message tells you to do. |
+| **bike-forum.cz**                                      | Largest Czech MTB/road forum, and Freemap is known there — _Mapy.cz versus Topo Czech V4_ mentions it ten times, plus `wiki.freemap.sk/FileDownload` (2021) and _"Slováci na freemap.sk mají proxy na heatmap"_ (2023). **But its map threads are stale too**: newest relevant post May 2024 (_Plánování cyklo trasy v Komoot a Mapy.cz_), so under the thread-age rule they cannot be revived. A fresh thread is possible; check the forum's overall activity first. Registration `/registrace` needs a **maths question + reCAPTCHA** — Martin must do it.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **geocaching.cz**                                      | Already lists freemap.sk tiles as a GME map source (28+ page thread), plus `geocaching.cz/wiki/Free_mapy_(garmin)`. Warm, and a different audience.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `treking.cz`, `horydoly.cz`, `mtbs.cz`, `turistika.cz` | Editorial sites, not forums — these are **embed/partnership targets**, not places to post. Turistika.cz has ~60 k Facebook followers.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ## The Strava heatmap — answered, and how to handle it
 
 Czech cyclists partly know Freemap **for the Strava heatmap overlay** (bike-forum.cz,
-2023: *"Slováci na freemap.sk mají proxy na heatmap co nevyžaduje přihlášení"*).
+2023: _"Slováci na freemap.sk mají proxy na heatmap co nevyžaduje přihlášení"_).
 
 **It was removed in June 2026 for licensing reasons** — displaying it was not compatible
 with Strava's API terms. Publicly announced, so link the announcement rather than
 re-explaining:
 https://en.osm.town/@FreemapSlovakia/116738960588819696
 
-> *"We've removed the Strava heatmap layer from Freemap — displaying it on our site
+> _"We've removed the Strava heatmap layer from Freemap — displaying it on our site
 > wasn't compatible with Strava's API terms. It was useful for many of you and we're
 > sorry to see it go, but fair data and licensing matters more to us. Tracing paths from
 > Strava into OpenStreetMap is still fine — done in your editor (iD, JOSM) with your own
-> Strava account."*
+> Strava account."_
 
 **Raise it proactively in any post aimed at Czech cyclists.** They remember Freemap
-partly *for* that layer; being told by a third party that it's gone reads as a bait and
+partly _for_ that layer; being told by a third party that it's gone reads as a bait and
 switch, whereas saying it first — with the licensing reason — is the same credibility
 move that worked with Bergmax's bug.
 
@@ -102,9 +102,9 @@ inconsistent with our own evidence:
   engaged, a tracked bug, a swisstopo endorsement). The framing did the work, not the
   existence of a prior thread.
 - nakole's own software **instructs** you to start one when a topic fills:
-  *"založte si, prosím, nové téma."*
+  _"založte si, prosím, nové téma."_
 - **The forum is busy**: the discussion index carries posts dated 4–14 September 2026,
-  i.e. daily. Only the *map* threads went quiet, which is an opportunity rather than a
+  i.e. daily. Only the _map_ threads went quiet, which is an opportunity rather than a
   warning — nobody has had anything new to say about maps there since 2024.
 
 What remains true: the old threads themselves must not be revived (thread-age rule), and
@@ -134,7 +134,7 @@ for in issue #41, open since January. Worth knowing before a Czech asks.
 
 https://www.nakole.cz/diskuse/31509-outdoorova-mapa-a-planovac-teren-z-narodnich-vyskovych-modelu.html
 
-Rubric *Cestování na kole*. Countries tagged: Česko, Slovensko, Rakousko, Polsko,
+Rubric _Cestování na kole_. Countries tagged: Česko, Slovensko, Rakousko, Polsko,
 Německo, Itálie, Švýcarsko, Slovinsko, Chorvatsko, Maďarsko — **not all 46**. That field
 feeds the forum's destination filter, so tagging every covered country would push the
 post into the browse list of people looking for trips to Portugal or Norway; from a
@@ -150,12 +150,12 @@ post never claims it does.)
   `iframe.contentDocument`.
 - Fields: `temaId` (rubric select; **12 = Cestování na kole**, 1 = Technické rady,
   15 = MTB a krosová kola, 4 = Ostatní – cyklo), `zemeId[]` (**mandatory** multi-select —
-  submitting without it fails with a red *"Vyberte zemi"*), `subjekt` (title), `text`.
-- **Hard limit 2 000 characters**, counted live as *"Znaků: n/2000"*. Over-length text is
+  submitting without it fails with a red _"Vyberte zemi"_), `subjekt` (title), `text`.
+- **Hard limit 2 000 characters**, counted live as _"Znaků: n/2000"_. Over-length text is
   silently truncated mid-sentence when pasted. Budget for it: the version first written
   was 2 280 and had to be cut.
-- Existing topics fill up and then refuse replies: *"Byl překročen maximální počet
-  povolených příspěvků k jednomu tématu."*
+- Existing topics fill up and then refuse replies: _"Byl překročen maximální počet
+  povolených příspěvků k jednomu tématu."_
 
 ### What actually went out
 
@@ -166,8 +166,8 @@ Differs from the first draft in three ways Martin asked for, all worth carrying 
    distinctive.
 2. **Facebook and Mastodon links added** alongside freemap.eu.
 3. **More of the application named**, using the app's own Czech labels so a reader can
-   find each one: *Objekty (POI)*, *Fotografie*, *Moje mapy*, *Vlastní mapy*, *Panorama*,
-   *Viditelnost odsud*, plus import/export, offline, and high-quality printing with DPI.
+   find each one: _Objekty (POI)_, _Fotografie_, _Moje mapy_, _Vlastní mapy_, _Panorama_,
+   _Viditelnost odsud_, plus import/export, offline, and high-quality printing with DPI.
 
 > **Titulek:** Outdoorová mapa a plánovač — terén z národních výškových modelů, 46 zemí
 >
@@ -270,7 +270,7 @@ has; say nothing about what anyone else does not.
 </details>
 
 **Not mentioned deliberately:** the Strava heatmap. Removed June 2026 over Strava's API
-terms; Czech *cyclists* on bike-forum knew Freemap partly for it, but raising it
+terms; Czech _cyclists_ on bike-forum knew Freemap partly for it, but raising it
 unprompted in an introduction would be odd. Have the answer ready if asked.
 
 ## Next after this

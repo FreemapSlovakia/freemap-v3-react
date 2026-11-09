@@ -109,26 +109,26 @@ Maps in Mapsforge format are updated every Tuesday and Friday.
 
 In an app that lets you add your own online map (XYZ tiles), enter one of these addresses:
 
-| Map | Address | Zoom | Premium from |
-| --- | --- | --- | --- |
-| Outdoor map <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
-| KST hiking trails <sup>2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
-| Outdoor map without base <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 5–20 | 19 |
-| Hiking trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| Bicycle trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| Ski trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| Horse trails <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 9–20 | 19 |
-| MTB difficulty <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Hiking difficulty (SAC) <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Road smoothness <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Contour lines <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19 |
-| Detailed hillshading (SK) | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 16 |
-| DMP1 hillshading (SK) | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–18 | |
-| Orthophoto SK and CZ | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | 20 |
-| Orthophoto SK 2017–2019 | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
-| Orthophoto SK 2020–2022 | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–19 | |
-| Orthophoto CZ 2022–2023 | <code>https://<wbr>ortofoto-cz-2022-2023<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code> | 0–20 | |
-| NLC forest roads (SK) | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code> | 11–15 | |
+| Map                                      | Address                                                                                                             | Zoom  | Premium from |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----- | ------------ |
+| Outdoor map <sup>2</sup>                 | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>                        | 5–20  | 19           |
+| KST hiking trails <sup>2</sup>           | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>kst/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>               | 5–20  | 19           |
+| Outdoor map without base <sup>1, 2</sup> | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>aerial/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>     | 5–20  | 19           |
+| Hiking trails <sup>1, 2</sup>            | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>hiking/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>     | 9–20  | 19           |
+| Bicycle trails <sup>1, 2</sup>           | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>bicycle/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>    | 9–20  | 19           |
+| Ski trails <sup>1, 2</sup>               | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>ski/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>        | 9–20  | 19           |
+| Horse trails <sup>1, 2</sup>             | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>horse/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>      | 9–20  | 19           |
+| MTB difficulty <sup>1, 2</sup>           | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>mtb/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>        | 12–20 | 19           |
+| Hiking difficulty (SAC) <sup>1, 2</sup>  | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>sac/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>        | 12–20 | 19           |
+| Road smoothness <sup>1, 2</sup>          | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>smoothness/<wbr>{z}/<wbr>{x}/<wbr>{y}</code> | 12–20 | 19           |
+| Contour lines <sup>1, 2</sup>            | <code>https://<wbr>outdoor<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>o/<wbr>contours/<wbr>{z}/<wbr>{x}/<wbr>{y}</code>   | 12–20 | 19           |
+| Detailed hillshading (SK)                | <code>https://<wbr>sk-hires-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>           | 0–20  | 16           |
+| DMP1 hillshading (SK)                    | <code>https://<wbr>dmp1-shading<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>               | 0–18  |              |
+| Orthophoto SK and CZ                     | <code>https://<wbr>ortofoto<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>                   | 0–20  | 20           |
+| Orthophoto SK 2017–2019                  | <code>https://<wbr>ofmozaika1c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>                | 0–19  |              |
+| Orthophoto SK 2020–2022                  | <code>https://<wbr>ofmozaika2c<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>                | 0–19  |              |
+| Orthophoto CZ 2022–2023                  | <code>https://<wbr>ortofoto-cz-2022-2023<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.jpg</code>      | 0–20  |              |
+| NLC forest roads (SK)                    | <code>https://<wbr>nlc<wbr>.tiles<wbr>.freemap<wbr>.sk/<wbr>{z}/<wbr>{x}/<wbr>{y}.png</code>                        | 11–15 |              |
 
 - <sup>1</sup> A transparent overlay that goes over another map.
 - <sup>2</sup> For high-resolution screens, add `@2x`, `@3x` or `@4x` after `{y}`.

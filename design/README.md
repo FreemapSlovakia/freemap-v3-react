@@ -39,5 +39,5 @@ Then, before committing the result:
   the viewBox and breaks the ratio above. See
   [`doc/build-and-deploy.md`](../doc/build-and-deploy.md).
 - **Check the result renders the same** as what it replaces. Inkscape and
-  librsvg lay live text out differently, so compare the *exported* file, never
+  librsvg lay live text out differently, so compare the _exported_ file, never
   the master, against the previous shipped one.

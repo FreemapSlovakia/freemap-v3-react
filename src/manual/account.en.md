@@ -44,7 +44,7 @@ An account given special permissions, such as photo moderation, also shows :FaUs
 - **Profile picture** – :FaUpload: **Choose picture** picks an image of at most 5 MB, :FaTimes: **Remove** clears it.
 - **Name** – required.
 - **Email** and **About me** – optional.
-- **Show on my public profile** – the confirmed email address and the connected OpenStreetMap, GitHub or Strava profiles, each shown only when ticked. Its words *my public profile* open your profile as others see it.
+- **Show on my public profile** – the confirmed email address and the connected OpenStreetMap, GitHub or Strava profiles, each shown only when ticked. Its words _my public profile_ open your profile as others see it.
 
 Press :FaCheck: **Save** to store the changes.
 
@@ -58,7 +58,7 @@ Below them, :FaHome: **Home position** is saved as soon as you set it: :FaMapMar
 
 Several providers can lead to one Freemap account. Under **Connect**, press a provider you want to add; after you confirm its login, you can log in with it too. If that provider account already belongs to another Freemap account, the two accounts are joined into one.
 
-The older of the two accounts is the one that stays, whichever you were logged in to, and links to the other one's profile lead to it. Its name stays unless it is only the generic *Freemap user*, both **About me** texts are kept, and the photos, maps, purchases and providers of both move into it. Devices logged in to the other account have to log in again.
+The older of the two accounts is the one that stays, whichever you were logged in to, and links to the other one's profile lead to it. Its name stays unless it is only the generic _Freemap user_, both **About me** texts are kept, and the photos, maps, purchases and providers of both move into it. Devices logged in to the other account have to log in again.
 
 Under **Disconnect**, press a connected provider to remove it, after a confirmation. The last remaining provider cannot be disconnected, unless the account has a confirmed email to log in with.
 

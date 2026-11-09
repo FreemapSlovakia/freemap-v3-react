@@ -28,13 +28,13 @@ Facebook Page (not Instagram).
 Use the export button — this is the path that worked on 2026-08-13, and it is enough on its
 own; stop once the file is downloaded. In the **Export metric data** dialog:
 
-- Tab **Facebook** (not Instagram), Page: *Freemap - tvoja mapa, tvoj nástroj*
-- **Date range:** *This year*, or a range covering everything since the last export
+- Tab **Facebook** (not Instagram), Page: _Freemap - tvoja mapa, tvoj nástroj_
+- **Date range:** _This year_, or a range covering everything since the last export
 - **Metric presets:** open it and tick **everything** — the default is 5 of them, and a
   missing column means exporting again
-- **Data view: Lifetime** — per-post totals. *Daily* gives one row per post per day, which
+- **Data view: Lifetime** — per-post totals. _Daily_ gives one row per post per day, which
   is far harder to reduce
-- **Content level: Post** — one row per post. *Page* is aggregate only; *Video* is
+- **Content level: Post** — one row per post. _Page_ is aggregate only; _Video_ is
   video-only (worth a second export if video watch-time is the question)
 - **Filter: Creation date**
 

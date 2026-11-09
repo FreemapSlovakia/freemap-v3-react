@@ -559,7 +559,7 @@ class LShadingLayer extends LGridLayer {
         const a = document.createElement('a');
 
         a.href = '#show=premium';
-        a.innerText = this._options.premiumOnlyText;
+        a.textContent = this._options.premiumOnlyText;
         a.onclick = this.handlePremiumClick;
 
         div.appendChild(a);

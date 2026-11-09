@@ -26,7 +26,7 @@ What it generates:
 
   **Descriptions belong near 160 characters** — a search result truncates the tail, so a premium or coverage caveat put last is the part that disappears. Every hub whose copy carries such a caveat is held under that (the cadastre and aerial `layers=S` premium zooms, the radar band, the viewshed and panorama bare-earth limit, the credits cost of the offline export, and offline maps needing no other app); measure the copy **expanded**, since `{brand}` grows by three characters. Many hubs without a caveat still run to ~240 — mostly the non-`sk`/`en` translations, which came out longer than the English they were written from. Trimming those is a worthwhile follow-up, not a correctness problem.
 
-  Note `premiumFromZoom` is *not* a minimum zoom — the layer works below it and is paywalled at and above it (`coords.z >= premiumFromZoom`). Reading it the other way is a mistake the cadastre copy shipped with once.
+  Note `premiumFromZoom` is _not_ a minimum zoom — the layer works below it and is paywalled at and above it (`coords.z >= premiumFromZoom`). Reading it the other way is a mistake the cadastre copy shipped with once.
 
   Copy outside `sk`/`en` has not had a native review — the same caveat the POI page copy carries.
 - **Per-feature POI pages** — `objects.ts`, see below.
@@ -53,13 +53,13 @@ A page's URL is `?layers=X&osm-<type>=<id>&lang=<lang>`, with no `panel=`: the q
 
 Sitemap shards list the pages the run actually wrote, not the ids it fetched: the tag batches trail the id query by minutes, and anything deleted from OSM in between would otherwise be advertised without a page behind it.
 
-| Country | Lang | Boundary relation | Category set |
-| --- | --- | --- | --- |
-| Slovakia | `sk` | 14296 | **full** (outdoor + admin/amenities/buildings/landuse/leisure/man_made/shops) |
-| Czechia | `cs` | 51684 | outdoor-only |
-| Hungary | `hu` | 21335 | outdoor-only |
-| Poland | `pl` | 49715 | outdoor-only |
-| Italy | `it` | 365331 | outdoor-only |
+| Country  | Lang | Boundary relation | Category set                                                                  |
+| -------- | ---- | ----------------- | ----------------------------------------------------------------------------- |
+| Slovakia | `sk` | 14296             | **full** (outdoor + admin/amenities/buildings/landuse/leisure/man_made/shops) |
+| Czechia  | `cs` | 51684             | outdoor-only                                                                  |
+| Hungary  | `hu` | 21335             | outdoor-only                                                                  |
+| Poland   | `pl` | 49715             | outdoor-only                                                                  |
+| Italy    | `it` | 365331            | outdoor-only                                                                  |
 
 - **One language per country** — never all 9 (that would be a thin-content / crawl-budget explosion, and locals search in the local language anyway). Domain follows the language via `langBase`, so e.g. Polish POI pages are `freemap.eu/?…&lang=pl` and land in `sitemap-index-eu.xml`; Czech ones stay on freemap.sk.
 - **Outdoor-only for non-SK countries** — `OUTDOOR_CATEGORIES` = hiking/bicycle/ski routes, high-value **natural landmarks** (`peak|volcano|saddle|ridge|arete|spring|hot_spring|geyser|cave_entrance|cliff|arch|glacier`), protected areas, alpine/wilderness huts. Deliberately **excludes** `buildings`/`amenities`/`shops`/`landuse` and the unrestricted `natural=*` set abroad: those run to hundreds of thousands / millions of thin pages in big countries (query cost, disk, crawl budget). Slovakia keeps the `FULL_CATEGORIES` set (unchanged, already indexed, including broad `naturals`).
@@ -84,7 +84,7 @@ Use the `:pull` form in that clone: unlike the runner's checkout it does not ref
 
 Scale, as of the Europe import: **317 747 pages** (SK 143 090, IT 104 004, CZ 30 309, PL 26 873, HU 13 471), about 1.3 GB. Roughly 3 minutes of that is database time; the rest is rendering and writing the files.
 
-**Two guards stand between a bad crawl and `rsync --delete`**, because the dangerous failure is not a crash but a *successful* run that produced nothing — a database mid-import, or a boundary relation with no usable geometry. A country that yields zero features throws, and so does a total under `MIN_TOTAL_PAGES` (200 000, against today's 317 747). Neither catches a database that is loaded but only slightly short, so raise the floor if the corpus grows a lot.
+**Two guards stand between a bad crawl and `rsync --delete`**, because the dangerous failure is not a crash but a _successful_ run that produced nothing — a database mid-import, or a boundary relation with no usable geometry. A country that yields zero features throws, and so does a total under `MIN_TOTAL_PAGES` (200 000, against today's 317 747). Neither catches a database that is loaded but only slightly short, so raise the floor if the corpus grows a lot.
 
 **Scheduled runs** — `.github/workflows/sitemap.yml`, monthly plus `workflow_dispatch`, on a **self-hosted runner on fm5 installed under the `freemap` account** (labels `self-hosted`, `fm5`). Running as any other user loses both the peer auth and the fm6 ssh alias. It is separate from `deploy.yml` because it regenerates from OSM data rather than from a push, and writes `www/sitemap/` rather than `www/`.
 

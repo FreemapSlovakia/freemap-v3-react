@@ -75,7 +75,7 @@ button.carousel-control-next {
 
 /* Re-arm the icon of a panorama arrow, the one part of the control that clicks. */
 button:is(.carousel-control-prev, .carousel-control-next).carousel-control-short
-:is(.carousel-control-prev-icon, .carousel-control-next-icon) {
+  :is(.carousel-control-prev-icon, .carousel-control-next-icon) {
   pointer-events: auto;
 }
 
@@ -98,9 +98,9 @@ button:is(.carousel-control-prev, .carousel-control-next).carousel-control-short
 
   /* Highlight the enabled arrow under the cursor or keyboard focus. */
   .carousel
-  button:is(.carousel-control-prev, .carousel-control-next):not(
-    .carousel-control-disabled
-  ):is(:hover, :focus-visible) {
+    button:is(.carousel-control-prev, .carousel-control-next):not(
+      .carousel-control-disabled
+    ):is(:hover, :focus-visible) {
     opacity: 1;
   }
 

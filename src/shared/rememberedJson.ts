@@ -102,6 +102,7 @@ export function rememberedJson<T>(
     };
   }
 
+  // biome-ignore lint/correctness/noComponentHookFactories: callers create the store once, at module level
   function useValue(): T | null {
     return useSyncExternalStore(
       subscribe,

@@ -53,7 +53,7 @@ viewshed can wait behind a panorama and says so.
 ## A layer, not a tool
 
 The overlay is in the layer registry (`v`, `technology: 'viewshed'`) and reaches
-the map through `Layers.tsx` like any other. What it is *of* lives in the
+the map through `Layers.tsx` like any other. What it is _of_ lives in the
 feature's own slices, the way the weather radar's does:
 
 - `viewshed` — the viewpoint, the render in flight and the finished
@@ -101,7 +101,7 @@ pays.
 
 Distance and detail, the two settings that decide what a render costs: without
 premium the range is held at `FREE_RADIUS_MAX_KM` (20 km) and the tier to what
-`FREE_PIXELS` affords *at the reach being rendered* — the raster the free reach
+`FREE_PIXELS` affords _at the reach being rendered_ — the raster the free reach
 comes to at the coarsest tier, so nothing an account had is taken away, but a
 short viewshed spends the same allowance on detail instead. 20 km still buys
 the coarsest; 10 km buys `fast`, 5 km `detailed`. Pixels rise with the tier, so

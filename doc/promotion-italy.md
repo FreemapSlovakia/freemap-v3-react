@@ -7,7 +7,7 @@ in [`promotion-roadmap.md`](./promotion-roadmap.md).
 **Two venues, opposite treatments** — this is the thing to keep straight:
 
 - **avventurosamente.it** — knows Freemap since 2023 and likes it. Never introduce
-  it there; post what *changed*.
+  it there; post what _changed_.
 - **mtb-forum.it** (MTB MAG) — no mention of Freemap anywhere. Cold, so an
   introduction is correct, but earn it with a useful answer first.
 
@@ -17,23 +17,23 @@ Italy is **not a cold market**. It is a warm one that nobody has ever answered.
 
 `avventurosamente.it` — the biggest Italian general-outdoor community — already
 carries a **Freemap entry in its Risorse directory**, created 11 Apr 2023 by user
-*Skelter*, **5 088 views**, never updated since:
+_Skelter_, **5 088 views**, never updated since:
 
 > https://www.avventurosamente.it/xf/risorse/freemap.495/
 > Link: `https://www.freemap.sk/#map=9/43.188156/12.310181&layers=X`
 
 And Freemap comes up unprompted in their map threads, favourably:
 
-- *"Tra quelle che ho messo freemap.sk mi sembra la più simile a Mapy, ed è anche
-  quella fatta meglio."* — Sustuso
-- *"Sì, ha una grafica molto buona."* — AleZan
+- _"Tra quelle che ho messo freemap.sk mi sembra la più simile a Mapy, ed è anche
+  quella fatta meglio."_ — Sustuso
+- _"Sì, ha una grafica molto buona."_ — AleZan
   (both in the **MOBAC / 4UMaps** thread, `/xf/threads/…-4umaps.62858/`)
 
 Three conclusions drive everything below.
 
 1. **Freemap is already known here, and liked.** So there is nothing to introduce.
    Anything that reads as "let me present my project" is redundant to the people who
-   already use it and ad-shaped to everyone else. What they do *not* know is what
+   already use it and ad-shaped to everyone else. What they do _not_ know is what
    changed since 2023 — that is the post with a right to exist.
 2. **The strongest thread is a rescue, not an introduction.** `4UMaps` shut down and
    Italians are still looking for a replacement offline source. That is an audience
@@ -46,15 +46,15 @@ Three conclusions drive everything below.
 
 ## Channel plan, best first
 
-| # | Action | Venue | Why it ranks here |
-|---|--------|-------|-------------------|
-| 1 | Refresh the Risorse entry | avventurosamente.it | 5 k views on a 2023 feature list that undersells what exists now. Pure upside, zero spam risk. |
-| 2 | Reply in the 4UMaps/MOBAC thread | avventurosamente.it | Highest-intent readers in Italy. On-topic, genuinely useful. |
-| 3 | "What changed since 2023" thread | avventurosamente.it | Only after 1–2, and framed as news rather than an introduction — they already know the map. |
-| 4 | Same, adapted | fuorivia.com, hikr.org (IT) | Second-tier general hiking. |
-| 5 | MTB cut of the copy | mtb-forum.it | Different audience, different hook (route planner + surface/steepness). |
-| 6 | Partnership/embed mail | camminodelledolomiti.it, amicodelpopolo.it | Warm inbound linkers; slower, needs a reply. |
-| 7 | OSM Italia intro post | community.openstreetmap.org | Mappers, not end users. Supplementary — do it last. |
+| #   | Action                           | Venue                                      | Why it ranks here                                                                              |
+| --- | -------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| 1   | Refresh the Risorse entry        | avventurosamente.it                        | 5 k views on a 2023 feature list that undersells what exists now. Pure upside, zero spam risk. |
+| 2   | Reply in the 4UMaps/MOBAC thread | avventurosamente.it                        | Highest-intent readers in Italy. On-topic, genuinely useful.                                   |
+| 3   | "What changed since 2023" thread | avventurosamente.it                        | Only after 1–2, and framed as news rather than an introduction — they already know the map.    |
+| 4   | Same, adapted                    | fuorivia.com, hikr.org (IT)                | Second-tier general hiking.                                                                    |
+| 5   | MTB cut of the copy              | mtb-forum.it                               | Different audience, different hook (route planner + surface/steepness).                        |
+| 6   | Partnership/embed mail           | camminodelledolomiti.it, amicodelpopolo.it | Warm inbound linkers; slower, needs a reply.                                                   |
+| 7   | OSM Italia intro post            | community.openstreetmap.org                | Mappers, not end users. Supplementary — do it last.                                            |
 
 Everything below is written to **attract, never to sell**: no prices, no premium,
 no feature gating mentioned. The map does the converting.
@@ -124,10 +124,10 @@ Account `MartinFreemap` approved by staff 2026-09-04 14:02.
 thread-age rule it must not be revived. The demand it documents is still real, so post
 this as a **new thread** in `Orientamento, cartografia, GPS, bussole` instead, without
 quoting or @-mentioning anyone from the old thread. Retitle it, e.g.
-*"Mappe offline senza MOBAC — scaricare l'area direttamente dal browser"*, and drop
+_"Mappe offline senza MOBAC — scaricare l'area direttamente dal browser"_, and drop
 the "arrivo tardi sul thread" opening (replaced below).
 
-The point of this post is to be *useful about their problem*, and let the map be
+The point of this post is to be _useful about their problem_, and let the map be
 noticed on the way past.
 
 > Ciao a tutti,
@@ -173,7 +173,7 @@ noticed on the way past.
 > Se provate e qualcosa sull'Italia vi sembra sbagliato o mancante, ditelo pure
 > qui: il rendering è nostro e si può correggere.
 
-## Draft 3 — "what changed since 2023", *Orientamento, cartografia, GPS, bussole*
+## Draft 3 — "what changed since 2023", _Orientamento, cartografia, GPS, bussole_
 
 Post this **after** 1 and 2 have been up for a few days.
 
@@ -271,7 +271,7 @@ Same disclosure, different lead: terrain + surface, not scenery.
 ## Draft 5 — partnership / embed mail (IT)
 
 To `camminodelledolomiti.it`, `amicodelpopolo.it` and the other inbound linkers.
-Subject: *Freemap.eu — mappa interattiva da incorporare nelle vostre pagine dei percorsi*
+Subject: _Freemap.eu — mappa interattiva da incorporare nelle vostre pagine dei percorsi_
 
 > Buongiorno,
 >
@@ -326,9 +326,9 @@ PM Skelter → new thread.**
 ### Facebook leads (unverified sizes)
 
 Facebook groups index badly from outside; these came out of open search and need
-member counts checked inside FB: *Sentierando Social*, *Orobie Trekking*,
-*Trekking Milano*, *Trekking Lombardia*, *Gruppo Escursionisti Brescia*,
-*Camminando Monti e Valli*. Regional rather than national — Italy has no single
+member counts checked inside FB: _Sentierando Social_, _Orobie Trekking_,
+_Trekking Milano_, _Trekking Lombardia_, _Gruppo Escursionisti Brescia_,
+_Camminando Monti e Valli_. Regional rather than national — Italy has no single
 big group like the Polish one that worked.
 
 ## A product-side lever worth more than any post
@@ -356,7 +356,7 @@ tile caches this large.
 **So the lever is inbound links, not existing users.** Every new Italian arriving
 through a post written from here can be pointed at `.eu` from the start, with no
 data to migrate. Every draft in this file already links only to `freemap.eu`, and
-the Risorse-entry request to Skelter is exactly that: fixing where *future*
+the Risorse-entry request to Skelter is exactly that: fixing where _future_
 readers land, not relocating anyone who is already settled in.
 
 Unverified, and worth settling in Matomo before acting on it at all: whether

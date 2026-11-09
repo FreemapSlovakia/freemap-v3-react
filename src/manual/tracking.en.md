@@ -42,21 +42,21 @@ Replace `{token}` with your device token from :FaMobileAlt: [My Devices](#show=t
 
 The address accepts HTTP `GET` or `POST` with these parameters:
 
-| Parameter | Description |
-|---|---|
-| `location` | Latitude and longitude in degrees, separated by a comma **(required, or `lat` and `lon`)** |
-| `lat` | Latitude in degrees |
-| `lon` | Longitude in degrees |
-| `time`, `timestamp` | JavaScript-parsable datetime or Unix time in seconds or milliseconds |
-| `alt`, `altitude` | Altitude in metres |
-| `speed` | Speed in m/s |
-| `speedKmh` | Speed in km/h |
-| `acc`, `accuracy` | Accuracy in metres |
-| `hdop` | Horizontal DOP |
-| `bearing`, `heading` | Bearing in degrees |
-| `battery`, `batt` | Battery level in percent |
-| `gsm_signal` | GSM signal strength in percent |
-| `message` | Note / message |
+| Parameter            | Description                                                                                |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| `location`           | Latitude and longitude in degrees, separated by a comma **(required, or `lat` and `lon`)** |
+| `lat`                | Latitude in degrees                                                                        |
+| `lon`                | Longitude in degrees                                                                       |
+| `time`, `timestamp`  | JavaScript-parsable datetime or Unix time in seconds or milliseconds                       |
+| `alt`, `altitude`    | Altitude in metres                                                                         |
+| `speed`              | Speed in m/s                                                                               |
+| `speedKmh`           | Speed in km/h                                                                              |
+| `acc`, `accuracy`    | Accuracy in metres                                                                         |
+| `hdop`               | Horizontal DOP                                                                             |
+| `bearing`, `heading` | Bearing in degrees                                                                         |
+| `battery`, `batt`    | Battery level in percent                                                                   |
+| `gsm_signal`         | GSM signal strength in percent                                                             |
+| `message`            | Note / message                                                                             |
 
 ### Traccar
 

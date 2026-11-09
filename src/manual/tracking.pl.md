@@ -42,21 +42,21 @@ https://backend.freemap.sk/tracking/track/{token}
 
 Adres akceptuje HTTP `GET` lub `POST` z następującymi parametrami:
 
-| Parametr | Opis |
-|---|---|
-| `location` | Szerokość i długość geograficzna w stopniach oddzielone przecinkiem **(wymagane, albo `lat` i `lon`)** |
-| `lat` | Szerokość geograficzna w stopniach |
-| `lon` | Długość geograficzna w stopniach |
-| `time`, `timestamp` | Data i czas w formacie zrozumiałym dla JavaScriptu lub czas uniksowy w sekundach albo milisekundach |
-| `alt`, `altitude` | Wysokość w metrach |
-| `speed` | Prędkość w m/s |
-| `speedKmh` | Prędkość w km/h |
-| `acc`, `accuracy` | Dokładność w metrach |
-| `hdop` | Pozioma DOP |
-| `bearing`, `heading` | Kierunek w stopniach |
-| `battery`, `batt` | Poziom naładowania baterii w procentach |
-| `gsm_signal` | Siła sygnału GSM w procentach |
-| `message` | Notatka / wiadomość |
+| Parametr             | Opis                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `location`           | Szerokość i długość geograficzna w stopniach oddzielone przecinkiem **(wymagane, albo `lat` i `lon`)** |
+| `lat`                | Szerokość geograficzna w stopniach                                                                     |
+| `lon`                | Długość geograficzna w stopniach                                                                       |
+| `time`, `timestamp`  | Data i czas w formacie zrozumiałym dla JavaScriptu lub czas uniksowy w sekundach albo milisekundach    |
+| `alt`, `altitude`    | Wysokość w metrach                                                                                     |
+| `speed`              | Prędkość w m/s                                                                                         |
+| `speedKmh`           | Prędkość w km/h                                                                                        |
+| `acc`, `accuracy`    | Dokładność w metrach                                                                                   |
+| `hdop`               | Pozioma DOP                                                                                            |
+| `bearing`, `heading` | Kierunek w stopniach                                                                                   |
+| `battery`, `batt`    | Poziom naładowania baterii w procentach                                                                |
+| `gsm_signal`         | Siła sygnału GSM w procentach                                                                          |
+| `message`            | Notatka / wiadomość                                                                                    |
 
 ### Traccar
 

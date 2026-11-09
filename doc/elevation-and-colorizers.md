@@ -50,13 +50,13 @@ real geometry, and is never serialized:
   vertices **and** densified between them, whatever it stores and whatever was chosen:
   its values are a router's or a file's, which would step against the samples at every
   vertex. A **recording** (`isRecording`: a line with per-point data such as times) keeps
-  its measurements: the elevation choice fills its gaps (*fill missing*, *override all*) —
+  its measurements: the elevation choice fills its gaps (_fill missing_, _override all_) —
   filling adds no points, so its channels stay — and only after an override is it
   densified, which drops them.
 
   The copy is kept **per line**, against the line's geometry (which a restyle leaves
   alone, so renaming or recolouring costs nothing), under what it was built for (a
-  recording's depends on the choice, or on its own *override all* this session,
+  recording's depends on the choice, or on its own _override all_ this session,
   `markOverridden`), so an edit costs only the line whose shape it changed: every other
   line keeps its copy, republished at once with its current properties. Lines are fetched only while something
   shows their elevation (`shownLines`: every line under an elevation colorize, the active
@@ -399,7 +399,7 @@ Wallonia's model and Flanders') and another none — so never zip the two.
 The API populates it for **every** model it answers from, the global `srtm` and `gedtm30`
 included, so the app holds no fallback credit of its own and none should be added back: a
 second copy of the licence text here is exactly what this arrangement removes. A Sonny
-source credits Sonny *and* each national agency his readme lists, so the list runs long —
+source credits Sonny _and_ each national agency his readme lists, so the list runs long —
 18 entries for a point in Germany, 20 for a route across it — with duplicates collapsed
 server-side, so Sonny is named once however many countries a line crosses.
 
@@ -769,7 +769,7 @@ scalar span modes `averageSpeed`, `curvature`, `maxSpeed`);
   walked and ridden parts of a multimodal route as separate networks, so neither the colour
   in force nor the metres carry across the change of key.
 - **`uncoveredIsNoData`** makes a stretch no span covers a gap rather than the last category
-  — for a mode the router answers for every metre it was *asked* about, so "no waymark" and
+  — for a mode the router answers for every metre it was _asked_ about, so "no waymark" and
   "never asked" (a car leg, an OSRM leg, a manual one) stay different. Off by default,
   because a surface changes hundreds of times per route and every gap is its own render
   layer; `trailColor` sets it, and its uncovered stretches are few and long.

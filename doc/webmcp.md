@@ -24,7 +24,7 @@ Three traps:
   it on `navigator`, so `attachWebMcp` reads either. Earlier `provideContext()`
   / `clearContext()` are gone.
 - **The calling side is string-in, string-out.** `getTools()` hands back
-  `inputSchema` as a JSON *string*, `executeTool(tool, args)` rejects an object
+  `inputSchema` as a JSON _string_, `executeTool(tool, args)` rejects an object
   with `Failed to parse input arguments` and wants `JSON.stringify(args)`, and
   the result arrives as a JSON string of `{content:[{type:'text',text}]}`. None
   of that touches registration — the `execute` callback is handed a parsed
@@ -64,7 +64,7 @@ failing twice reuses the key and an id-keyed snapshot would miss the second.
 
 What each waits for:
 
-- **search** and **describe-place** — `search.results` is a fresh array *and*
+- **search** and **describe-place** — `search.results` is a fresh array _and_
   `search.query` is the query asked for, so a stale answer for the previous
   query is not read as this one's. (`describe-place` is `searchSetQuery` with
   `@lat,lon`, which is what routes it to the map-details handler.)

@@ -7,7 +7,7 @@ name: Sitemap
 on:
   schedule:
     # Monthly, UTC.
-    - cron: '0 3 1 * *'
+    - cron: "0 3 1 * *"
   workflow_dispatch: {}
 
 concurrency:
@@ -20,7 +20,7 @@ jobs:
     # must run as the `freemap` user: the read-only role peer-authenticates over
     # the socket, and its `~/.ssh/config` carries the `freemap-fm6` alias the
     # rsync goes to. See "Running the generator" in doc/seo-prerender.md.
-    runs-on: [self-hosted, fm5]
+    runs-on: [ self-hosted, fm5 ]
     # Around 320 000 pages across five countries; ~3 minutes of that is database
     # time and the rest is rendering and writing files.
     timeout-minutes: 120

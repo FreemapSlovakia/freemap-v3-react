@@ -25,11 +25,11 @@ The set of governed files is **not** fixed — read it from `translation-manager
 
 `{LANG}` is **not** a bare language code. `sync-language-files.ts` expands the same pattern three ways:
 
-| Role | `{LANG}` becomes | Example from `src/translations/{LANG}.tsx` |
-| --- | --- | --- |
-| English master (every key) | `en.messages` | `src/translations/en.messages.tsx` |
-| Template — **source of truth, what you edit** | `<lang>.template` | `src/translations/sk.template.tsx` |
-| Generated output — gitignored, carries the TODO markers | `<lang>.messages` | `src/translations/sk.messages.tsx` |
+| Role                                                    | `{LANG}` becomes  | Example from `src/translations/{LANG}.tsx` |
+| ------------------------------------------------------- | ----------------- | ------------------------------------------ |
+| English master (every key)                              | `en.messages`     | `src/translations/en.messages.tsx`         |
+| Template — **source of truth, what you edit**           | `<lang>.template` | `src/translations/sk.template.tsx`         |
+| Generated output — gitignored, carries the TODO markers | `<lang>.messages` | `src/translations/sk.messages.tsx`         |
 
 Templates fall back to the master via `DeepPartialWithRequiredObjects<Messages>`.
 
@@ -79,7 +79,6 @@ If `$ARGUMENTS` names specific languages, process only those; otherwise process 
    The block carries everything needed: the English value (the last line) and any sibling translations. Translate into `<lang>` using both as context — don't blindly copy the Slovak.
 
 3. For each TODO key, add the translation to the matching `*.template.*` file at the same path inside the messages tree:
-
    - Locate the parent object in the template by searching for sibling keys that already exist (the English source shows which siblings to look for).
    - Use the shape-spread / object-literal style already in the file. Add the new key alongside existing siblings.
    - If a parent object exists as `{}` or is missing entirely, fill it in / create it. Some sections (e.g. `gallery.stats`, `wikimediaCommons`) are empty placeholders in some templates.

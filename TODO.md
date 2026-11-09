@@ -48,180 +48,181 @@ Still emitting at info level (non-blocking, optional cleanup):
 ## Cleanups
 
 - [ ] **Back re-pushes an app-driven map fit.** After a fit (an inspected
-      changeset's, `fitLoadedMap` from `changesetsInspectProcessor`) the view
-      change pushes its own entry. Going Back to the entry before it restores
-      the old view, but `mapStateHandler`'s `moveend` then reports the fitted
-      view again and `urlProcessor` pushes it anew, wiping Forward. Repro: open
-      an element's History, a version, then Back. Likely a race between
-      `mapRefocusProcessor`'s awaited `setView` and a `moveend` with the old
-      center; probably not specific to changesets.
+  changeset's, `fitLoadedMap` from `changesetsInspectProcessor`) the view
+  change pushes its own entry. Going Back to the entry before it restores
+  the old view, but `mapStateHandler`'s `moveend` then reports the fitted
+  view again and `urlProcessor` pushes it anew, wiping Forward. Repro: open
+  an element's History, a version, then Back. Likely a race between
+  `mapRefocusProcessor`'s awaited `setView` and a `moveend` with the old
+  center; probably not specific to changesets.
 - [ ] **Load a link's POI by its id.** A `panel=object/…` POI the objects layer
-      hasn't loaded waits in `objects.awaitedSelection`, beside the one
-      selection, and every selecting must let go of it. Selecting it at once
-      instead (as a changeset element or an OSM element is) leaves an orphan
-      whenever no fetch follows or the fetch fails: only an area fetch can bring
-      it. With the POI fetched by id, the way `osmLoad` fetches an element, it
-      could be selected at once and `awaitedSelection` dropped.
+  hasn't loaded waits in `objects.awaitedSelection`, beside the one
+  selection, and every selecting must let go of it. Selecting it at once
+  instead (as a changeset element or an OSM element is) leaves an orphan
+  whenever no fetch follows or the fetch fails: only an area fetch can bring
+  it. With the POI fetched by id, the way `osmLoad` fetches an element, it
+  could be selected at once and `awaitedSelection` dropped.
 - [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
-      `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
-      `useMemo` is left. Same method — see
-      [`doc/react-compiler.md`](./doc/react-compiler.md): take only files whose
-      emitted output contains `react/compiler-runtime`, skip anything named in a
-      dependency array, returned as a value from a hook, or reaching
-      react-leaflet, then prove the result with
-      `node scripts/react-compiler-check.mjs unchanged`. `useMemo` needs more
-      judgement than `useCallback` did: some instances exist to hold an identity
-      for a consumer rather than to save work, and a few key deliberately on a
-      content hash instead of the value (`useNumberFormat`, `useZoomColorize`) —
-      those must stay.
+  `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
+  `useMemo` is left. Same method — see
+  [`doc/react-compiler.md`](./doc/react-compiler.md): take only files whose
+  emitted output contains `react/compiler-runtime`, skip anything named in a
+  dependency array, returned as a value from a hook, or reaching
+  react-leaflet, then prove the result with
+  `node scripts/react-compiler-check.mjs unchanged`. `useMemo` needs more
+  judgement than `useCallback` did: some instances exist to hold an identity
+  for a consumer rather than to save work, and a few key deliberately on a
+  content hash instead of the value (`useNumberFormat`, `useZoomColorize`) —
+  those must stay.
 - [ ] **Optional: inline single-use one-line handlers.** After the `useCallback`
-      removal, ~85 handlers across those files are a single expression used
-      exactly once, so the named const buys nothing. Purely cosmetic: named and
-      inline forms are memoized identically. Unlike the `useCallback` removal
-      this is _not_ provably a no-op — inlining shifts where the arrow is
-      created, so the cache layout changes (equivalently, but not
-      byte-identically). Prefer doing it opportunistically while editing a file
-      rather than as a sweep; the 26 handlers used more than once stay named.
+  removal, ~85 handlers across those files are a single expression used
+  exactly once, so the named const buys nothing. Purely cosmetic: named and
+  inline forms are memoized identically. Unlike the `useCallback` removal
+  this is _not_ provably a no-op — inlining shifts where the arrow is
+  created, so the cache layout changes (equivalently, but not
+  byte-identically). Prefer doing it opportunistically while editing a file
+  rather than as a sweep; the 26 handlers used more than once stay named.
 
 - [ ] **Make `pickingModeSelector` answer _which_ mode, not just whether.**
-      It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
-      six modes, `keyboardHandler` handles them at three different priorities
-      (with nothing saying that ordering was intended), and `Main` mounts each
-      mode's component and menu behind its own flag. A `PickingMode | null`
-      string union turns the cursor into one `Record` lookup and the Escape
-      chain into one block at one priority. A `toolDefinitions`-style registry
-      that also owns the lazy factories would be too far: the modes aren't
-      uniform (map-area is a drag, gallery-show-position picks nothing,
-      home-location has a Save).
+  It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
+  six modes, `keyboardHandler` handles them at three different priorities
+  (with nothing saying that ordering was intended), and `Main` mounts each
+  mode's component and menu behind its own flag. A `PickingMode | null`
+  string union turns the cursor into one `Record` lookup and the Escape
+  chain into one block at one priority. A `toolDefinitions`-style registry
+  that also owns the lazy factories would be too far: the modes aren't
+  uniform (map-area is a drag, gallery-show-position picks nothing,
+  home-location has a Save).
 - [ ] **The crosshair list and `pickingModeSelector` have drifted.**
-      `mouseCursorSelector` gives a crosshair for four picking modes but not for
-      gallery position picking or map-area selection. Collapsing it to
-      `showGalleryPicker || picking` is a behaviour change for those two —
-      decide it deliberately rather than letting the two lists keep diverging.
-      Folds into the item above.
+  `mouseCursorSelector` gives a crosshair for four picking modes but not for
+  gallery position picking or map-area selection. Collapsing it to
+  `showGalleryPicker || picking` is a behaviour change for those two —
+  decide it deliberately rather than letting the two lists keep diverging.
+  Folds into the item above.
 - [ ] **`Attribution`'s document-link branch is unreachable.** `PREFIX =
 '?document='` (`src/shared/components/Attribution.tsx`) matches no
-      `AttributionDef.url` anywhere, so the `documentShow` interception has
-      never fired. Either something should produce such a URL — and then it
-      wants the hash form the rest of the app uses, not a query — or the branch
-      and the prefix should go.
+  `AttributionDef.url` anywhere, so the `documentShow` interception has
+  never fired. Either something should produce such a URL — and then it
+  wants the hash form the rest of the app uses, not a query — or the branch
+  and the prefix should go.
 - [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
-      abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
+  abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
 split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
-      button first, which `SplitButton` doesn't expose yet.
+  button first, which `SplitButton` doesn't expose yet.
 - [ ] **`SplitButton`'s menu can't do what `SelectDropdown`'s can** — no `kbd`,
-      `extra` (premium badge), `active` or `divider`, because it writes its own
-      item loop instead of sharing `SelectDropdown`'s. Factor the item builder
-      out of `SelectDropdown` when a split button first needs one of those.
+  `extra` (premium badge), `active` or `divider`, because it writes its own
+  item loop instead of sharing `SelectDropdown`'s. Factor the item builder
+  out of `SelectDropdown` when a split button first needs one of those.
 - [ ] **`location.fixRequest` holds one consumer**, so asking for a fix from the
-      second panel supersedes the first — its spinner stops and nothing is
-      placed, silently. Both panels open _and_ both awaiting is a corner; make
-      it a set if it ever bites.
+  second panel supersedes the first — its spinner stops and nothing is
+  placed, silently. Both panels open _and_ both awaiting is a corner; make
+  it a set if it ever bites.
 - [ ] **A panorama label with no dominance ranks below every summit.** The
-      dominance _filter_ passes it (`?? Infinity` — a cut it cannot judge should
-      not remove it), while `labelRank` scores it as a 1 m bump (`?? 1`), so the
-      thinning drops it first. Harmless today, since `labelsFromPeaks` is the
-      only source and every peak carries a figure. Whoever adds the second one
-      (map selection, drawn points, POIs — see `labels/types.ts`) has to decide
-      what its labels are worth against summits; no constant here can guess it.
-      Now two-sided: a source supplying `prominence` without a `dominance`
-      lands on that same `?? 1` and the prominence term then lifts it _above_
-      real summits — 1 + 0.3 × 800 for a big one — so the fallback is wrong in
-      both directions and the next source has to set both or neither.
+  dominance _filter_ passes it (`?? Infinity` — a cut it cannot judge should
+  not remove it), while `labelRank` scores it as a 1 m bump (`?? 1`), so the
+  thinning drops it first. Harmless today, since `labelsFromPeaks` is the
+  only source and every peak carries a figure. Whoever adds the second one
+  (map selection, drawn points, POIs — see `labels/types.ts`) has to decide
+  what its labels are worth against summits; no constant here can guess it.
+  Now two-sided: a source supplying `prominence` without a `dominance`
+  lands on that same `?? 1` and the prominence term then lifts it _above_
+  real summits — 1 + 0.3 × 800 for a big one — so the fallback is wrong in
+  both directions and the next source has to set both or neither.
 - [ ] **Mount a mark's tooltip `Overlay` only once it has been shown.** With no
-      `breakpoint`, `LongPressTooltip` sets `labelHidden` and mounts its
-      `Overlay` for the life of every mark. Hidden it draws no DOM, no popper
-      and no listeners, but it still costs ~26 of the ~38 hooks a mark carries,
-      and a layer menu or the layer-settings table holds dozens at once. Gate it
-      on `show || wasShown` instead of `labelHidden`. Measure before and after —
-      it is milliseconds on mount-once UI, so this is only worth doing if it
-      stays a small change.
+  `breakpoint`, `LongPressTooltip` sets `labelHidden` and mounts its
+  `Overlay` for the life of every mark. Hidden it draws no DOM, no popper
+  and no listeners, but it still costs ~26 of the ~38 hooks a mark carries,
+  and a layer menu or the layer-settings table holds dozens at once. Gate it
+  on `show || wasShown` instead of `labelHidden`. Measure before and after —
+  it is milliseconds on mount-once UI, so this is only worth doing if it
+  stays a small change.
 - [ ] **Remove the `*Settings` localStorage migration code (after ~2026-09).**
-      The one-time migration from the old transient-slice keys can be dropped
-      once active users have re-saved under the new keys (a couple of months
-      from 2026-06; users who haven't opened the app by then aren't worth keeping
-      it for). Delete `fallbackKey` (and `mergeFallback`) from the
-      `routePlannerSettings`/`trackingSettings`/`gallerySettings`/
-      `trackViewerSettings` PERSIST entries in `persistence.ts`; once nothing
-      sets `mergeFallback`, simplify `parseWithFallback` back to primary-wins.
-      The `fallbackKey: 'main'` migrations
-      (`drawingSettings`/`homeLocation`/`cookieConsent`) are unrelated and stay.
+  The one-time migration from the old transient-slice keys can be dropped
+  once active users have re-saved under the new keys (a couple of months
+  from 2026-06; users who haven't opened the app by then aren't worth keeping
+  it for). Delete `fallbackKey` (and `mergeFallback`) from the
+  `routePlannerSettings`/`trackingSettings`/`gallerySettings`/
+  `trackViewerSettings` PERSIST entries in `persistence.ts`; once nothing
+  sets `mergeFallback`, simplify `parseWithFallback` back to primary-wins.
+  The `fallbackKey: 'main'` migrations
+  (`drawingSettings`/`homeLocation`/`cookieConsent`) are unrelated and stay.
 - [ ] **Derive `Messages` from `en.tsx`.** `src/translations/messagesInterface.ts`
-      is hand-maintained against the master and can drift. Explore deriving the
-      type from `typeof en` (or a codegen step) so `en.tsx` is the single source.
+  is hand-maintained against the master and can drift. Explore deriving the
+  type from `typeof en` (or a codegen step) so `en.tsx` is the single source.
 - [ ] **Minor processor-middleware cleanups.** Internal `any` casts;
-      `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
-      logic. Low priority.
+  `Math.random()` for fallback toast IDs; duplicated transform/handle predicate
+  logic. Low priority.
 - [ ] **Stop remounting path layers to change `interactive`.** react-leaflet
-      doesn't diff the `interactive` option, so every `<Polyline>`/`<Polygon>`/
-      `<CircleMarker>` whose interactivity is derived from `selectingModeSelector`
-      carries it in its `key` (`trackViewer`, `tracking`, `routePlanner`'s route
-      halo, `drawing` lines) and is destroyed + rebuilt whenever
-      `state.main.mapTool` changes. Unlike markers — fixed by
-      `setMarkerInteractive` in `RichMarker.tsx`, whose async icon root made the
-      remount a visible blink — paths swap within one commit so there's no flash,
-      just wasted work on big tracks. Toggling a path's interactivity only means
-      toggling the `leaflet-interactive` class (the SVG renderer registers the
-      hit-test target unconditionally; the canvas renderer hit-tests straight off
-      `options.interactive`) — the work is in getting at the layer instance.
-      Rather than per-layer refs, do it the way react-leaflet itself recommends
-      (PaulLeCam/react-leaflet#843) and this repo already does for tile layers:
-      `createPathComponent(create, update)` wrappers whose `update` diffs
-      `interactive`. Note `createPathComponent` replaces the built-in update
-      rather than composing with it, so each wrapper must also re-implement the
-      upstream diffs (e.g. `setLatLngs` for a polyline) — copy them from
-      `@react-leaflet/core`'s `Polyline`/`Polygon` and re-check them on bumps.
-      The same wrapper would let `RichMarker` drop `setMarkerInteractive`.
-      In the route planner only the halo carries `interactive` in its key; it
-      and the foreground lines sit in separate panes, so a remounted halo can no
-      longer cover the line.
+  doesn't diff the `interactive` option, so every `<Polyline>`/`<Polygon>`/
+  `<CircleMarker>` whose interactivity is derived from `selectingModeSelector`
+  carries it in its `key` (`trackViewer`, `tracking`, `routePlanner`'s route
+  halo, `drawing` lines) and is destroyed + rebuilt whenever
+  `state.main.mapTool` changes. Unlike markers — fixed by
+  `setMarkerInteractive` in `RichMarker.tsx`, whose async icon root made the
+  remount a visible blink — paths swap within one commit so there's no flash,
+  just wasted work on big tracks. Toggling a path's interactivity only means
+  toggling the `leaflet-interactive` class (the SVG renderer registers the
+  hit-test target unconditionally; the canvas renderer hit-tests straight off
+  `options.interactive`) — the work is in getting at the layer instance.
+  Rather than per-layer refs, do it the way react-leaflet itself recommends
+  (PaulLeCam/react-leaflet#843) and this repo already does for tile layers:
+  `createPathComponent(create, update)` wrappers whose `update` diffs
+  `interactive`. Note `createPathComponent` replaces the built-in update
+  rather than composing with it, so each wrapper must also re-implement the
+  upstream diffs (e.g. `setLatLngs` for a polyline) — copy them from
+  `@react-leaflet/core`'s `Polyline`/`Polygon` and re-check them on bumps.
+  The same wrapper would let `RichMarker` drop `setMarkerInteractive`.
+  In the route planner only the halo carries `interactive` in its key; it
+  and the foreground lines sit in separate panes, so a remounted halo can no
+  longer cover the line.
 - [ ] **Decimate the drawn GPS-recorder track by zoom.** The polyline re-maps
-      every point into a fresh array per fix and Leaflet re-projects the whole
-      line, which is the remaining per-fix cost over the whole track now that the
-      statistics are folded incrementally. Only worth doing if a long recording
-      actually feels slow — measure first.
+  every point into a fresh array per fix and Leaflet re-projects the whole
+  line, which is the remaining per-fix cost over the whole track now that the
+  statistics are folded incrementally. Only worth doing if a long recording
+  actually feels slow — measure first.
 - [ ] **One primitive for state kept outside Redux.** About a dozen modules
-      hand-roll the same store — a module-level value, a listener `Set`, a
-      `useSyncExternalStore` hook — each with its own subscribe/notify code.
-      Write `createStore<T>(initial, { equal?, onObserved? })` in `src/shared/`
-      returning `{ get, set, subscribe, use(selector?) }`; `onObserved` runs on
-      the first subscriber and returns a teardown for the last. Not zustand: what
-      varies here is lazy start/stop and equality, which zustand doesn't cover
-      either. Migrate in phases:
-      1. Single values: `makeSlot` in `panorama/viewStore.ts` (becomes the
-         primitive), `pictureCacheBust`, `messagesStore`, `renderHolder` (keeps
-         closing the old bitmap in its own setter), `useDocumentTitle`. Move
-         the hovered changeset (`changesets.hovered`, `changesetsHover`) and the
-         hovered search result (`search.hoverResult`) out of Redux onto it:
-         pointer state dispatched per row crossed runs every reducer, processor
-         predicate and selector for nothing persisted or in the URL. Clearing it
-         on `changesetsInspect` then moves from the reducer to the code that
-         inspects.
-      2. `mapLayersPanelStore`: its per-field hooks become `use(selector)`;
-         conditional persistence stays its own.
-      3. Caches: `rememberedJson`, `tileCoverage`, `drawingIcons`, then
-         `tileAttribution` (tuned, see
-         [`doc/tile-attribution.md`](./doc/tile-attribution.md)). Their loading,
-         rAF/microtask batching and `listeners.size` checks move onto
-         `onObserved`; only the plumbing goes.
-      4. Optional: `breakpoints` (fits `onObserved`, works as is).
-      Out of scope: `useBsTheme`/`useOnline` (stateless DOM adapters), `compass`
-      (an event stream), `leafletElementHolder` (listeners take the value,
-      replay on subscribe, and ~20 modules use its promise). Document the
-      primitive in `doc/architecture.md` as the one way to keep state outside
-      Redux.
+  hand-roll the same store — a module-level value, a listener `Set`, a
+  `useSyncExternalStore` hook — each with its own subscribe/notify code.
+  Write `createStore<T>(initial, { equal?, onObserved? })` in `src/shared/`
+  returning `{ get, set, subscribe, use(selector?) }`; `onObserved` runs on
+  the first subscriber and returns a teardown for the last. Not zustand: what
+  varies here is lazy start/stop and equality, which zustand doesn't cover
+  either. Migrate in phases:
+  1. Single values: `makeSlot` in `panorama/viewStore.ts` (becomes the
+     primitive), `pictureCacheBust`, `messagesStore`, `renderHolder` (keeps
+     closing the old bitmap in its own setter), `useDocumentTitle`. Move
+     the hovered changeset (`changesets.hovered`, `changesetsHover`) and the
+     hovered search result (`search.hoverResult`) out of Redux onto it:
+     pointer state dispatched per row crossed runs every reducer, processor
+     predicate and selector for nothing persisted or in the URL. Clearing it
+     on `changesetsInspect` then moves from the reducer to the code that
+     inspects.
+  2. `mapLayersPanelStore`: its per-field hooks become `use(selector)`;
+     conditional persistence stays its own.
+  3. Caches: `rememberedJson`, `tileCoverage`, `drawingIcons`, then
+     `tileAttribution` (tuned, see
+     [`doc/tile-attribution.md`](./doc/tile-attribution.md)). Their loading,
+     rAF/microtask batching and `listeners.size` checks move onto
+     `onObserved`; only the plumbing goes.
+  4. Optional: `breakpoints` (fits `onObserved`, works as is).
+
+  Out of scope: `useBsTheme`/`useOnline` (stateless DOM adapters), `compass`
+  (an event stream), `leafletElementHolder` (listeners take the value,
+  replay on subscribe, and ~20 modules use its promise). Document the
+  primitive in `doc/architecture.md` as the one way to keep state outside
+  Redux.
 - [ ] **Adopt React 19 hooks codebase-wide** (own session — it's a cross-cutting
-      decision, not a local cleanup). The app uses zero Suspense today; all async
-      loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects
-      (modal lazy-loading, `useLocalMessages`). Start at `useLazy` → `use` +
-      `<Suspense>`; then `LazyToastMessage` in `Toasts.tsx` falls out for free.
-      Gotcha: `use` needs a _stable_ promise, but the `load*Messages` loaders
-      cache the resolved _value_, not the promise — so passing `loader(x)` inline
-      is the suspend-forever anti-pattern; add a per-key promise cache. Also
-      evaluate `useActionState`/`useFormStatus` for form submits, `useOptimistic`
-      for manual pending state, and **React Compiler** eligibility (decide first —
-      it would let many hand-written `useMemo`/`useCallback` be dropped, changing
-      how much manual hook churn is worthwhile).
+  decision, not a local cleanup). The app uses zero Suspense today; all async
+  loading goes through `useLazy` (`src/app/hooks/useLazy.ts`) + effects
+  (modal lazy-loading, `useLocalMessages`). Start at `useLazy` → `use` +
+  `<Suspense>`; then `LazyToastMessage` in `Toasts.tsx` falls out for free.
+  Gotcha: `use` needs a _stable_ promise, but the `load*Messages` loaders
+  cache the resolved _value_, not the promise — so passing `loader(x)` inline
+  is the suspend-forever anti-pattern; add a per-key promise cache. Also
+  evaluate `useActionState`/`useFormStatus` for form submits, `useOptimistic`
+  for manual pending state, and **React Compiler** eligibility (decide first —
+  it would let many hand-written `useMemo`/`useCallback` be dropped, changing
+  how much manual hook churn is worthwhile).
 - [ ] **Temporal API, once Safari ships it.** core-js doesn't polyfill it, so
   until then it costs a separate polyfill (~20 kB gz). Candidates: date-only
   events as `Temporal.PlainDate` instead of UTC midnights
@@ -249,12 +250,12 @@ split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
   and costs only disk.
 
 - [ ] **The changesets tool still reads the OSM editing API.**
-      `src/features/changesets/model/processor.ts:110` lists changesets from
-      `/api/0.6/changesets`, which the policy above covers too. Much milder than
-      element lookup was — it fires only on opening the tool or changing its
-      parameters, never per pan — but it is the last read-only use left. Moving
-      it means either a third-party service (OSMCha) or importing the changeset
-      replication stream ourselves; neither is worth it until the feature grows.
+  `src/features/changesets/model/processor.ts:110` lists changesets from
+  `/api/0.6/changesets`, which the policy above covers too. Much milder than
+  element lookup was — it fires only on opening the tool or changing its
+  parameters, never per pan — but it is the last read-only use left. Moving
+  it means either a third-party service (OSMCha) or importing the changeset
+  replication stream ourselves; neither is worth it until the feature grows.
 
 - **Don't rename the `overpass-*` / `nominatim-*` source ids.** They name the
   kind of lookup, not the backend — the data comes from freemap-osm-api and
@@ -318,13 +319,13 @@ viewer (own + Wikimedia Commons photos) routes through the same `show=` param.
 Optional deeper cleanup (not required; `show=` is already the single param):
 
 - [ ] **Fold `gallery-viewer` state into `activeModal`.** Replace
-      `gallery.activeImageId` with
-      `activeModal.type === 'gallery-viewer'` as the source of
-      truth. Needs moving the `next`/`prev` resolution out of the
-      `galleryRequestImage` reducer into a processor, and updating
-      `showGalleryViewerSelector`, `GalleryViewerModal`, and the gallery
-      delete/stars/comment processors. Higher churn, no user-visible change — only
-      do it if the dual state becomes a problem.
+  `gallery.activeImageId` with
+  `activeModal.type === 'gallery-viewer'` as the source of
+  truth. Needs moving the `next`/`prev` resolution out of the
+  `galleryRequestImage` reducer into a processor, and updating
+  `showGalleryViewerSelector`, `GalleryViewerModal`, and the gallery
+  delete/stars/comment processors. Higher churn, no user-visible change — only
+  do it if the dual state becomes a problem.
 
 ## Premium / monetization
 
@@ -339,11 +340,11 @@ can't be made exclusive + optics). Keep the free/open core intact.
 Bugs and feature requests are issues under `area: drawing`.
 
 - [ ] **No coverage for holes in the file formats.** The link's `H` field ↔
-      polygon rings is pinned (`drawingWire.test.ts`); nothing exercises the GPX
-      `fm:polygonId` / `fm:holeOf` pairing, KML `innerBoundaryIs`, or a saved
-      map's `holeOf` agreeing with its fingerprint. Pure functions over small
-      fixtures — cheap to pin, and where a regression would go unnoticed
-      longest.
+  polygon rings is pinned (`drawingWire.test.ts`); nothing exercises the GPX
+  `fm:polygonId` / `fm:holeOf` pairing, KML `innerBoundaryIs`, or a saved
+  map's `holeOf` agreeing with its fingerprint. Pure functions over small
+  fixtures — cheap to pin, and where a regression would go unnoticed
+  longest.
 
 ## Track viewer: generic geodata vs. recorded tracks
 
@@ -376,25 +377,25 @@ gpxUrl }`, which are in every saved map on the server;
   `track-colorize-by=`, `track-style=`.
 
 - [ ] **Rename the slices.** Needs a `storageKey` override on `PersistEntry` (so
-      the saved blob keeps the old name) plus an explicit map-document mapping.
+  the saved blob keeps the old name) plus an explicit map-document mapping.
 - [ ] **Generalize the track-flavoured helpers inside the feature** —
-      `trackStore`, `trackSelection`, `trackEndpoints`, `trackInfoToast`,
-      `useStartFinishPoints`, `trackWaypoints`, `TrackPoint`,
-      `renderTrackGeojson`, `activeTrackIndex` still read as track-only. A
-      semantic rename, not the mechanical one that's done.
+  `trackStore`, `trackSelection`, `trackEndpoints`, `trackInfoToast`,
+  `useStartFinishPoints`, `trackWaypoints`, `TrackPoint`,
+  `renderTrackGeojson`, `activeTrackIndex` still read as track-only. A
+  semantic rename, not the mechanical one that's done.
 - [ ] **One field for the armed map-click mode.** `splitting` / `splitPoint` /
-      `joinWith` model one thing — which mode the next map click is in — as
-      three fields, so the "at most one armed" invariant is re-asserted by hand
-      in `clearModes` and in each set-case, and every consumer ORs them
-      together (`keyboardHandler`'s Escape and Delete, `DataViewerResult`'s
-      `join.handleClick(…) || split.handleClick(…) || select(…)`). A
-      discriminated `mode: { type: 'split'; … } | { type: 'join'; … } | null`
-      makes it structural, and a `useTrackModes` hook then gives the map one
-      `{ armed, handleClick, handleMove, handleOut, halos }` instead of a
-      per-mode fan-out. Do it when a third mode lands, or sooner. One detail
-      to fold in: `joinWith.featureIndex` duplicates `main.selection.id` (pass
-      `selectedIndex` in, as `useTrackSplit` already does — but note the
-      selection is cleared by paths that don't dispatch `selectFeature`).
+  `joinWith` model one thing — which mode the next map click is in — as
+  three fields, so the "at most one armed" invariant is re-asserted by hand
+  in `clearModes` and in each set-case, and every consumer ORs them
+  together (`keyboardHandler`'s Escape and Delete, `DataViewerResult`'s
+  `join.handleClick(…) || split.handleClick(…) || select(…)`). A
+  discriminated `mode: { type: 'split'; … } | { type: 'join'; … } | null`
+  makes it structural, and a `useTrackModes` hook then gives the map one
+  `{ armed, handleClick, handleMove, handleOut, halos }` instead of a
+  per-mode fan-out. Do it when a third mode lands, or sooner. One detail
+  to fold in: `joinWith.featureIndex` duplicates `main.selection.id` (pass
+  `selectedIndex` in, as `useTrackSplit` already does — but note the
+  selection is cleared by paths that don't dispatch `selectFeature`).
 
 ## Drawing + data viewer merge: one collection, storage by size
 
@@ -402,67 +403,67 @@ Drawing and the data viewer become one collection of map features with one
 editor; where it is stored follows from its size, not from the tool that made it.
 
 - [x] **History for local data.** Per-entry content-hashed snapshots in
-      IndexedDB (`trackStore.ts`), `history.state.tr` naming one; Back/Forward
-      step through edits.
+  IndexedDB (`trackStore.ts`), `history.state.tr` naming one; Back/Forward
+  step through edits.
 - [x] **One model.** `trackViewer.trackGeojson` holds every point, line and
-      polygon; `drawingLines`/`drawingPoints` are gone. Features are addressed
-      by index (`feature`/`vertex` selections), vertex editing works per part
-      with channels kept, one toolbar (`import-file`) holds the draw modes,
-      and only "convert to drawing" remains as "add to the map".
+  polygon; `drawingLines`/`drawingPoints` are gone. Features are addressed
+  by index (`feature`/`vertex` selections), vertex editing works per part
+  with channels kept, one toolbar (`import-file`) holds the draw modes,
+  and only "convert to drawing" remains as "add to the map".
 - [x] **Storage by size.** `urlWire`: the URL when every feature round-trips
-      and the params fit 8000 characters, else a snapshot. My Maps documents
-      keep `points`/`lines` for what those can say.
+  and the params fit 8000 characters, else a snapshot. My Maps documents
+  keep `points`/`lines` for what those can say.
 - [x] **Richer URL codec.** `V` names per-vertex columns (`ele`, `time`
-      delta-encoded, numeric channels), `,,` breaks segments, `Y`/`G` carry
-      `fm:kind`/`_gpxType`, a point takes `/ele`.
+  delta-encoded, numeric channels), `,,` breaks segments, `Y`/`G` carry
+  `fm:kind`/`_gpxType`, a point takes `/ele`.
 - [ ] **One index remap for the collection.** Feature indices are shifted in
-      `replaceFeature`, by hand in join, in the main reducer for hole edits,
-      in `deleteProcessor` and `dataViewerSplitSelectionProcessor`, and cleaned
-      up after by the stale-selection processor. Make `replaceFeature` the only
-      length-changing primitive and apply its `old → new | null` map to every
-      index holder, the selection included.
+  `replaceFeature`, by hand in join, in the main reducer for hole edits,
+  in `deleteProcessor` and `dataViewerSplitSelectionProcessor`, and cleaned
+  up after by the stale-selection processor. Make `replaceFeature` the only
+  length-changing primitive and apply its `old → new | null` map to every
+  index holder, the selection included.
 - [ ] **Per-feature caches on the hot path.** Each edit re-hashes the whole
-      collection (`snapshotKey`, the
-      saved-map fingerprint), re-validates it (`storeSnapshot`) and
-      re-serializes it (`urlWire`). Key, hash, validate and encode per feature.
+  collection (`snapshotKey`, the
+  saved-map fingerprint), re-validates it (`storeSnapshot`) and
+  re-serializes it (`urlWire`). Key, hash, validate and encode per feature.
 - [ ] **One answer to "where do the features live"** (link, remote file,
-      snapshot) instead of `featuresInLink`, `homedElsewhere`, `localTrack`
-      and `getMapContentParts` each asking. Restoring an entry is already one
-      place (`entryContent.ts`); deciding where to write it is not.
+  snapshot) instead of `featuresInLink`, `homedElsewhere`, `localTrack`
+  and `getMapContentParts` each asking. Restoring an entry is already one
+  place (`entryContent.ts`); deciding where to write it is not.
 - [ ] **One feature folder, one name.** The tool is "Drawing and data", but its
-      code is split over `src/features/drawing/` (the point/line tools, styles
-      and `drawingSettings`, the property editor, labels, JOSM export, and the
-      `DrawingPoint`/`Line` document types in `model/actions/`, which hold no
-      actions any more) and `src/features/dataViewer/`, under the slice name
-      `trackViewer`. Step 1: move `drawing/` into `dataViewer/` and merge the
-      two translation bundles — mechanical, about 70 importers, all caught by
-      `tsc`. Step 2, optional: rename `dataViewer` / `trackViewer` to one name.
-      `trackViewerSettings` and `drawingSettings` are localStorage keys
-      (`persistence.ts`), so renaming them needs a migration; map documents keep
-      `trackViewer` / `points` / `lines` on the wire.
+  code is split over `src/features/drawing/` (the point/line tools, styles
+  and `drawingSettings`, the property editor, labels, JOSM export, and the
+  `DrawingPoint`/`Line` document types in `model/actions/`, which hold no
+  actions any more) and `src/features/dataViewer/`, under the slice name
+  `trackViewer`. Step 1: move `drawing/` into `dataViewer/` and merge the
+  two translation bundles — mechanical, about 70 importers, all caught by
+  `tsc`. Step 2, optional: rename `dataViewer` / `trackViewer` to one name.
+  `trackViewerSettings` and `drawingSettings` are localStorage keys
+  (`persistence.ts`), so renaming them needs a migration; map documents keep
+  `trackViewer` / `points` / `lines` on the wire.
 - [ ] **Edit a multi-polygon's vertices in place** — a step towards a full
-      GeoJSON editor; today Break apart is the way. `editableParts` would list
-      its rings flat and `withPart` write them back to their polygon. The work
-      is that "part > 0 is a hole" is assumed by hole selection, Detach hole,
-      Cut a hole, Make a hole and the delete rule: they need one helper saying
-      what a part is (outer or hole, of which polygon). Deleting an outer
-      ring's last usable vertex should drop that member, holes and all. Then
-      `MultiPoint` the same way (each point a part), and grouping features into
-      a multi geometry if anyone asks.
+  GeoJSON editor; today Break apart is the way. `editableParts` would list
+  its rings flat and `withPart` write them back to their polygon. The work
+  is that "part > 0 is a hole" is assumed by hole selection, Detach hole,
+  Cut a hole, Make a hole and the delete rule: they need one helper saying
+  what a part is (outer or hole, of which polygon). Deleting an outer
+  ring's last usable vertex should drop that member, holes and all. Then
+  `MultiPoint` the same way (each point a part), and grouping features into
+  a multi geometry if anyone asks.
 - [ ] **Chart identity: what it draws, not the whole collection.** The
-      track-viewer target's identity is the active line's geometry paired with
-      every point, so a property-only edit of the line (removing its `times`
-      channel) leaves a stale chart, while any point edit refetches a 2D
-      line's profile. Key it on the line's geometry and the channels it draws.
+  track-viewer target's identity is the active line's geometry paired with
+  every point, so a property-only edit of the line (removing its `times`
+  channel) leaves a stale chart, while any point edit refetches a 2D
+  line's profile. Key it on the line's geometry and the channels it draws.
 - [ ] **A line's label beside it by its angle.** Leaflet's `auto` puts it left
-      or right by which half of the map the line's centre is in. Better: above
-      a steep line, beside a flat one, from the bearing at the label's anchor.
+  or right by which half of the map the line's centre is in. Better: above
+  a steep line, beside a flat one, from the bearing at the label's anchor.
 - [ ] **Chart identity across reloads.** `elevation-chart=track-viewer` reopens
-      on the first line, not the one charted; naming the line by index in the
-      param would fix it.
+  on the first line, not the one charted; naming the line by index in the
+  param would fix it.
 - [ ] **A link with both `track-uid=` and drawing params** loads the track
-      and ignores the params; drawing beside such a track makes the whole
-      collection local.
+  and ignores the params; drawing beside such a track makes the whole
+  collection local.
 
 ## GPS recorder (`src/features/gpsRecorder/`, see [`doc/gps-recorder.md`](./doc/gps-recorder.md))
 
@@ -478,14 +479,14 @@ changes and delete whatever the new contract makes unnecessary.
 Open items are issues under `area: gps-recorder`.
 
 - [ ] **Delete `perfProbe.ts` once the recording freeze is confirmed gone.** It
-      is field instrumentation, not a feature: it times the recorder's four
-      candidate passes (catch-up page, parse, dispatch, frame) so a stall report
-      says which one was underneath. The batching that should fix the freeze and
-      the probe that measures it shipped together and have not met a real ride
-      yet, which is why it is still here. It costs a static import from
-      `perfWatchdog.ts` (so it is in the main bundle) and a `console.warn` per
-      slow pass. `perfWatchdog.ts` itself stays — that one is app-wide and not
-      about the recorder.
+  is field instrumentation, not a feature: it times the recorder's four
+  candidate passes (catch-up page, parse, dispatch, frame) so a stall report
+  says which one was underneath. The batching that should fix the freeze and
+  the probe that measures it shipped together and have not met a real ride
+  yet, which is why it is still here. It costs a static import from
+  `perfWatchdog.ts` (so it is in the main bundle) and a `console.warn` per
+  slow pass. `perfWatchdog.ts` itself stays — that one is app-wide and not
+  about the recorder.
 
 ## Photo layer: gallery + Wikimedia Commons merge
 
@@ -535,112 +536,112 @@ source and stays best-effort EXIF.
 Remaining work is issues under `area: gallery`, plus two backend-repo items:
 
 - [ ] **Reject `w<pageId>` explicitly** in the `PUT`/`DELETE`/`/image` handlers.
-      They route on `/pictures/:id` and interpolate `ctx.params.id` straight into
-      SQL, so `w123` coerces to `0` in MySQL and 404s — the right answer for the
-      wrong reason. `parsePictureId` (`src/routers/gallery/pictureId.ts`) already
-      parses the ref; use it.
+  They route on `/pictures/:id` and interpolate `ctx.params.id` straight into
+  SQL, so `w123` coerces to `0` in MySQL and 404s — the right answer for the
+  wrong reason. `parsePictureId` (`src/routers/gallery/pictureId.ts`) already
+  parses the ref; use it.
 - [ ] **Mid-download resume in the importer.** `got` won't resume a stream once
-      bytes have started, so `loadPass` retries a transient drop by restarting the
-      whole pass — up to 75 GB re-downloaded because a connection blinked.
+  bytes have started, so `loadPass` retries a transient drop by restarting the
+  whole pass — up to 75 GB re-downloaded because a connection blinked.
 
 ## Map layers and presets (`src/features/map/`, see [`doc/map-library.md`](./doc/map-library.md))
 
 Bugs and feature requests are issues under `area: maps-layers`.
 
 - [ ] **Decide a map's kind once, per drawing.** It is worked out in about eight
-      places: `withKind` in `allLayerEntries`, `libraryIndexSelector` and
-      `resolvedCustomLayersSelector` hand out defs already switched by the map's
-      own setup, so a preset's copy has to switch back (`withMemberKind` in
-      `Layers`, `capturePreset`, `useTargetDef`); the reducer's `itemKindsOf`
-      and the panel's `Stack.kindOf` each build their own item → kind lookup,
-      and the reducer's `kindsOf`/`nativeKindsOf` rebuild what
-      `layerKindsSelector`/`nativeKindsSelector` hold, since it sees only
-      `MapState`. Instead: def selectors stay native, `layerInstancesSelector`
-      sets every instance's kind (a map on its own from its setup, a preset's
-      copy from the copy's), and `withKind` runs where `Layers` draws. Lists of
-      maps not on the map — the switcher, `overlayStackSelector`, the library —
-      have no instance, so they read `layerKindsSelector` instead of
-      `def.layer`. One exported item-kind function over `MapState`-level
-      inputs, for the reducer and the stack alike. Clarity only, no known bug:
-      the `defaultOpacity` a switch-back leaves on a base copy is ignored by
-      `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
-      switched.
+  places: `withKind` in `allLayerEntries`, `libraryIndexSelector` and
+  `resolvedCustomLayersSelector` hand out defs already switched by the map's
+  own setup, so a preset's copy has to switch back (`withMemberKind` in
+  `Layers`, `capturePreset`, `useTargetDef`); the reducer's `itemKindsOf`
+  and the panel's `Stack.kindOf` each build their own item → kind lookup,
+  and the reducer's `kindsOf`/`nativeKindsOf` rebuild what
+  `layerKindsSelector`/`nativeKindsSelector` hold, since it sees only
+  `MapState`. Instead: def selectors stay native, `layerInstancesSelector`
+  sets every instance's kind (a map on its own from its setup, a preset's
+  copy from the copy's), and `withKind` runs where `Layers` draws. Lists of
+  maps not on the map — the switcher, `overlayStackSelector`, the library —
+  have no instance, so they read `layerKindsSelector` instead of
+  `def.layer`. One exported item-kind function over `MapState`-level
+  inputs, for the reducer and the stack alike. Clarity only, no known bug:
+  the `defaultOpacity` a switch-back leaves on a base copy is ignored by
+  `resolveLayerOpacity`. Medium to large — many readers expect `def.layer`
+  switched.
 - [ ] **Harvest bugs (freemap-v3-api `scripts/harvest-eli.mjs`).** Older than
-      the move to the API, found in its review:
-      - A map dropped after its grace period gets a new probe record without
-        `failingSince`; the next run, reading main's `ids.json` where it still
-        has its id, starts a new grace, the catalog matches main again and the
-        workflow closes the PR that dropped it. A dead map is then never
-        removed unless that PR is merged within its week.
-      - `answered()` takes a 404 as alive for a WMS too, though a GetMap gives
-        no 404 for an empty spot: a moved WMS stays without a countdown.
-      - National sources' WMS layer names go into the query unencoded
-        (`LAYERS=${layers.join(',')}`), then are decoded by `URLSearchParams`:
-        a `+`, `&`, `#` or space in a name is mangled.
-      - The probes fetch whatever host ELI or a national source names, from
-        fm5, with plain `fetch`: a name resolving to a private address (or
-        redirecting there) makes fm5 request its own services, and the result
-        lands in the PR report. Give the probe the proxy's public-address
-        lookup (`publicLookup` in the API's `wmsProxyHandler.ts`).
-      - The workflow's "Restore the probe record" always takes fm5's cached
-        `probe.json` over the committed one, even when a hand-run harvest
-        committed a newer one: a recovered map's old `failingSince` comes back
-        and a new failure drops it at once. Restore the newer, or merge by entry.
-      - The PR body is the report verbatim, with ELI's names and attribution:
-        an `@name` or `#123` in them notifies or cross-links on GitHub. Wrap
-        names in backticks in the report.
-      - `toWms` turns every `{placeholder}` into `x` before parsing but drops
-        only the standard WMS parameters, so one in another parameter
-        (`TIME={time}`, `DPI={dpi}`) stays in the base URL as `x`; `toLeaflet`
-        refuses unknown placeholders, `toWms` doesn't.
+  the move to the API, found in its review:
+  - A map dropped after its grace period gets a new probe record without
+    `failingSince`; the next run, reading main's `ids.json` where it still
+    has its id, starts a new grace, the catalog matches main again and the
+    workflow closes the PR that dropped it. A dead map is then never
+    removed unless that PR is merged within its week.
+  - `answered()` takes a 404 as alive for a WMS too, though a GetMap gives
+    no 404 for an empty spot: a moved WMS stays without a countdown.
+  - National sources' WMS layer names go into the query unencoded
+    (`LAYERS=${layers.join(',')}`), then are decoded by `URLSearchParams`:
+    a `+`, `&`, `#` or space in a name is mangled.
+  - The probes fetch whatever host ELI or a national source names, from
+    fm5, with plain `fetch`: a name resolving to a private address (or
+    redirecting there) makes fm5 request its own services, and the result
+    lands in the PR report. Give the probe the proxy's public-address
+    lookup (`publicLookup` in the API's `wmsProxyHandler.ts`).
+  - The workflow's "Restore the probe record" always takes fm5's cached
+    `probe.json` over the committed one, even when a hand-run harvest
+    committed a newer one: a recovered map's old `failingSince` comes back
+    and a new failure drops it at once. Restore the newer, or merge by entry.
+  - The PR body is the report verbatim, with ELI's names and attribution:
+    an `@name` or `#123` in them notifies or cross-links on GitHub. Wrap
+    names in backticks in the report.
+  - `toWms` turns every `{placeholder}` into `x` before parsing but drops
+    only the standard WMS parameters, so one in another parameter
+    (`TIME={time}`, `DPI={dpi}`) stays in the base URL as `x`; `toLeaflet`
+    refuses unknown placeholders, `toWms` doesn't.
 - [ ] **Helpers for a map's effective settings.** `effectiveShortcut` in
-      `installed.ts` serves `keyboardHandler` and `MapSwitchButton`; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
-      `CacheTilesForm` still resolve the shortcut inline, and the menu/toolbar
-      defaults are recomputed everywhere: helpers beside it, the default passed
-      in. Likewise `layerName(def, m) ?? def.type`, hand-written at six sites.
+  `installed.ts` serves `keyboardHandler` and `MapSwitchButton`; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
+  `CacheTilesForm` still resolve the shortcut inline, and the menu/toolbar
+  defaults are recomputed everywhere: helpers beside it, the default passed
+  in. Likewise `layerName(def, m) ?? def.type`, hand-written at six sites.
 
 ## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
 
 - [ ] **Report the duplicate hits upstream.** Photon answers with one OSM element
-      more than once, and with a settlement twice over. Both come from Nominatim's
-      model rather than from our index — komoot's own instance shows the same — so
-      the fix belongs upstream, not in a filter of ours over the dump: - **A relation with two classifying tags is indexed twice.** Every Slovak
-      cadastral community is `boundary=cadastral` **+**
-      `place=cadastral_community`, and Nominatim keeps a row for each
-      (`R2386490` → `place/cadastral_community` and `boundary/cadastral`,
-      confirmed via `details.php?…&class=`). A `place` tag on
-      `boundary=administrative` is absorbed instead, which is why towns come
-      back once. - **A place node and its boundary relation both answer.** `N530544488` is
-      the `label` member of `R1690324` (Košice); Nominatim links the two and
-      returns only the relation, but the JSONL dump carries no
-      `linked_place_id`, so Photon indexes both. Not the same as the closed
-      [#95](https://github.com/komoot/photon/issues/95) (three Kraków
-      relations differing only in `admin_level`, closed as a mapping issue):
-      here the link exists upstream and is merely lost in export. - **A city's address names one of the districts it contains.** Photon
-      addresses `R1690324` as _District of Košice IV_; Nominatim's own
-      `lookup` answers _Košice, Košický kraj, Slovensko_ for the same object.
-      So the address is taken from the feature's point somewhere in Photon's
-      pipeline, and Košice contains four okresy — any single one is wrong. - **Every piece of a station answers separately.** `q=kosice&limit=30`
-      returns 8 × `railway=stop`, 6 × `railway=platform` and 6 ×
-      `railway=platform_edge`, all named Košice at postcode 040 22 —
-      indistinguishable rows for one station. **`dedupe` does not cover this
+  more than once, and with a settlement twice over. Both come from Nominatim's
+  model rather than from our index — komoot's own instance shows the same — so
+  the fix belongs upstream, not in a filter of ours over the dump: - **A relation with two classifying tags is indexed twice.** Every Slovak
+  cadastral community is `boundary=cadastral` **+**
+  `place=cadastral_community`, and Nominatim keeps a row for each
+  (`R2386490` → `place/cadastral_community` and `boundary/cadastral`,
+  confirmed via `details.php?…&class=`). A `place` tag on
+  `boundary=administrative` is absorbed instead, which is why towns come
+  back once. - **A place node and its boundary relation both answer.** `N530544488` is
+  the `label` member of `R1690324` (Košice); Nominatim links the two and
+  returns only the relation, but the JSONL dump carries no
+  `linked_place_id`, so Photon indexes both. Not the same as the closed
+  [#95](https://github.com/komoot/photon/issues/95) (three Kraków
+  relations differing only in `admin_level`, closed as a mapping issue):
+  here the link exists upstream and is merely lost in export. - **A city's address names one of the districts it contains.** Photon
+  addresses `R1690324` as _District of Košice IV_; Nominatim's own
+  `lookup` answers _Košice, Košický kraj, Slovensko_ for the same object.
+  So the address is taken from the feature's point somewhere in Photon's
+  pipeline, and Košice contains four okresy — any single one is wrong. - **Every piece of a station answers separately.** `q=kosice&limit=30`
+  returns 8 × `railway=stop`, 6 × `railway=platform` and 6 ×
+  `railway=platform_edge`, all named Košice at postcode 040 22 —
+  indistinguishable rows for one station. **`dedupe` does not cover this
       and is not meant to**: it works (`q=hlavna` collapses 25 rows to 14) but
-      only for `osm_key=highway`, deliberately narrowed after
-      [#367](https://github.com/komoot/photon/issues/367), where a greedier
-      rule swallowed bus stops. Widening it is the open
-      [#588](https://github.com/komoot/photon/issues/588), not a bug.
-      `searchProcessorHandler` dedupes exact repeats by element id, which is the
-      client's share of this; the rest wants reporting at
-      `github.com/komoot/photon`. Every case above reproduces on
-      `photon.komoot.io`, which runs the same 1.3.0 and the same 2026-08-08
-      import, so none of it is our index.
+  only for `osm_key=highway`, deliberately narrowed after
+  [#367](https://github.com/komoot/photon/issues/367), where a greedier
+  rule swallowed bus stops. Widening it is the open
+  [#588](https://github.com/komoot/photon/issues/588), not a bug.
+  `searchProcessorHandler` dedupes exact repeats by element id, which is the
+  client's share of this; the rest wants reporting at
+  `github.com/komoot/photon`. Every case above reproduces on
+  `photon.komoot.io`, which runs the same 1.3.0 and the same 2026-08-08
+  import, so none of it is our index.
 
 ## Drawing properties (`props` on points and lines)
 
 - [ ] **Reconsider the carried-tag allowlist** (`CARRIED_TAGS` in
-      `drawingPointActions.ts`). Ten keys is a guess at what's useful without
-      making a bulk conversion produce an unsendable link; revisit once there's
-      a sense of what people actually reference in labels.
+  `drawingPointActions.ts`). Ten keys is a guess at what's useful without
+  making a bulk conversion produce an unsendable link; revisit once there's
+  a sense of what people actually reference in labels.
 
 ## Panorama (`src/features/panorama/`, see [`doc/panorama.md`](./doc/panorama.md))
 
@@ -649,77 +650,77 @@ distance probe, a premium quality tier. What it does not do yet is issues under
 `area: panorama`; the cleanups it left behind stay here:
 
 - [ ] **The dev server's own freeze makes the panorama hard to work on.** A
-      render landing blocks the main thread for ~5 s under `pnpm start` — the
-      JS heap goes 367 MB → 1534 MB across one React commit — while the same
-      render in a production build costs 10 ms of React work at a 36 MB heap.
-      Unminified React and Redux DevTools retaining a state snapshot per action
-      are between them the whole of it. Worth knowing before chasing a panorama
-      performance report: **measure a built bundle**, or the numbers are the
-      tooling's, not the app's. `devTools: true` in `store.ts` is unconditional,
-      so a user with the extension installed pays the same on the live site;
-      gating it on the dev build would take that away, at the cost of not being
-      able to inspect a production session.
+  render landing blocks the main thread for ~5 s under `pnpm start` — the
+  JS heap goes 367 MB → 1534 MB across one React commit — while the same
+  render in a production build costs 10 ms of React work at a 36 MB heap.
+  Unminified React and Redux DevTools retaining a state snapshot per action
+  are between them the whole of it. Worth knowing before chasing a panorama
+  performance report: **measure a built bundle**, or the numbers are the
+  tooling's, not the app's. `devTools: true` in `store.ts` is unconditional,
+  so a user with the extension installed pays the same on the live site;
+  gating it on the dev build would take that away, at the cost of not being
+  able to inspect a production session.
 - [ ] **Extract a `ColorPickerPopover` shell.** `PanoramaGroundPicker` and
-      `RgbaColorPicker` now carry the same ~60 lines: the `OverlayTrigger` /
-      `Popover` / body-portal, the swatch button, and the `setUrlUpdatingEnabled`
-      drag suspension that keeps Safari's 100-writes-per-10s pushState cap out
-      of a colour drag. That workaround exists in three places counting
-      `ShadingColorPicker`, and will be fixed in one of them. Do _not_ bolt a
-      gradient mode onto `RgbaColorPicker` — its value is a string and this
-      one's is `{color, gradient}`; the shell is the shared part.
+  `RgbaColorPicker` now carry the same ~60 lines: the `OverlayTrigger` /
+  `Popover` / body-portal, the swatch button, and the `setUrlUpdatingEnabled`
+  drag suspension that keeps Safari's 100-writes-per-10s pushState cap out
+  of a colour drag. That workaround exists in three places counting
+  `ShadingColorPicker`, and will be fixed in one of them. Do _not_ bolt a
+  gradient mode onto `RgbaColorPicker` — its value is a string and this
+  one's is `{color, gradient}`; the shell is the shared part.
 - [ ] **Share the `linear-gradient` codec with `ShadingColorPicker`.** Both
-      hand-roll `@zdila/react-gradient-color-picker`'s wire format, including
-      the upper-cased `RGBA(` that marks the selected stop, and their regexes
-      have already drifted (`\s+` vs a literal space). The stop _models_ differ
-      legitimately; only the CSS format is shared. `gradient.test.ts` covers
-      this side, the shading side has no tests at all.
+  hand-roll `@zdila/react-gradient-color-picker`'s wire format, including
+  the upper-cased `RGBA(` that marks the selected stop, and their regexes
+  have already drifted (`\s+` vs a literal space). The stop _models_ differ
+  legitimately; only the CSS format is shared. `gradient.test.ts` covers
+  this side, the shading side has no tests at all.
 - [ ] **`fadeToSky` could live on the stop.** The wire takes `'sky'` as any
-      stop's colour; the client models it as a gradient-level boolean meaning
-      "and the last one", which `previewStops`, `storedStops` and
-      `gradientRequest` each re-derive. A `{ pos, color, sky? }` stop keeps the
-      UX exactly as it is — the retained colour is what unticking restores — and
-      makes a mid-ramp sky representable. It does not remove the picker
-      round-trip: `SKY_COLOR` still goes out and comes back as a real colour.
+  stop's colour; the client models it as a gradient-level boolean meaning
+  "and the last one", which `previewStops`, `storedStops` and
+  `gradientRequest` each re-derive. A `{ pos, color, sky? }` stop keeps the
+  UX exactly as it is — the retained colour is what unticking restores — and
+  makes a mid-ramp sky representable. It does not remove the picker
+  round-trip: `SKY_COLOR` still goes out and comes back as a real colour.
 
 ## Terrain shading (`terrain.tiles.freemap.sk`)
 
 - [ ] **Keep shading exports off the interactive workers.** An offline export
-      of `h` (freemap-v3-api `downloadMap`) renders every tile on the same
-      per-CPU pool as on-screen shading, 8 at a time, so a large export slows
-      the map for everyone. Give export requests a lower priority or their own
-      small pool in terrain-tiles, or lower the API's concurrency for `h`.
+  of `h` (freemap-v3-api `downloadMap`) renders every tile on the same
+  per-CPU pool as on-screen shading, 8 at a time, so a large export slows
+  the map for everyone. Give export requests a lower priority or their own
+  small pool in terrain-tiles, or lower the API's concurrency for `h`.
 - [ ] **Key the global model `_` in `/licenses`**, as the outdoor renderer
-      does. The API's credit line recognises terrain-tiles' fallback only by
-      its id (`GLOBAL_KEYS` in freemap-v3-api `tileAttribution.ts`), so a
-      renamed model would sort among the national ones.
+  does. The API's credit line recognises terrain-tiles' fallback only by
+  its id (`GLOBAL_KEYS` in freemap-v3-api `tileAttribution.ts`), so a
+  renamed model would sort among the national ones.
 - [ ] **Derive `opaque` on the API instead of trusting the client.** The
-      shading export picks JPEG vs PNG and base map vs overlay from the
-      client's flag (`isOpaqueShading`); a wrong flag exports black where the
-      shading should show through. Needs parsing the spec, or terrain-tiles
-      saying whether a shading is opaque.
+  shading export picks JPEG vs PNG and base map vs overlay from the
+  client's flag (`isOpaqueShading`); a wrong flag exports black where the
+  shading should show through. Needs parsing the spec, or terrain-tiles
+  saying whether a shading is opaque.
 
 - [ ] **Delete the tilesets the shading layers no longer read**, once this all is
-      deployed: `dem-sk.mbtiles` and `dem-cz.mbtiles` (the old `y`/`z` sources,
-      ~1.2 TB), `dmr5-shading.mbtiles` (`5`) and `cz-shading.mbtiles` (`8`) in
-      `/fm/storage1/tilesets` on fm6, plus the `parametric-shading`,
-      `dmr5-shading` and `cz-hires-shading` vhosts and their
-      `/fm/storage-offsite/tilesets` copies. `sk-dmr-hires.mbtiles` (`7`)
-      stays until the lidar-rendered Slovak source replaces it.
+  deployed: `dem-sk.mbtiles` and `dem-cz.mbtiles` (the old `y`/`z` sources,
+  ~1.2 TB), `dmr5-shading.mbtiles` (`5`) and `cz-shading.mbtiles` (`8`) in
+  `/fm/storage1/tilesets` on fm6, plus the `parametric-shading`,
+  `dmr5-shading` and `cz-hires-shading` vhosts and their
+  `/fm/storage-offsite/tilesets` copies. `sk-dmr-hires.mbtiles` (`7`)
+  stays until the lidar-rendered Slovak source replaces it.
 - [ ] **Rebuild `at.tif` at z17 if fm6 runs short of space.** It is 1 m data
-      at z18 (~600 GB); z17 is about a quarter of that and only slightly less
-      sharp. `pl.tif` is z17 for space alone and could go to z18 once there is
-      room (~2.5 TB).
+  at z18 (~600 GB); z17 is about a quarter of that and only slightly less
+  sharp. `pl.tif` is z17 for space alone and could go to z18 once there is
+  room (~2.5 TB).
 - [ ] **Finer Austrian Länder as their own sources.** `at` is the nationwide
-      1 m ALS DTM; Tirol (statewide 0.5 m GeoTIFF mosaic, tiris) and
-      Oberösterreich (0.5 m) publish finer ones, Vorarlberg a laserscan model
-      of unconfirmed resolution. Each would go in at z18 ranked above `at`, as
-      `ch` is, with its credit added to elevation-sources.
+  1 m ALS DTM; Tirol (statewide 0.5 m GeoTIFF mosaic, tiris) and
+  Oberösterreich (0.5 m) publish finer ones, Vorarlberg a laserscan model
+  of unconfirmed resolution. Each would go in at z18 ranked above `at`, as
+  `ch` is, with its credit added to elevation-sources.
 - [ ] **Italian regional DTMs as their own sources, ranked above `it`.** `it` is
-      the IRPI-CNR HR-DTM at z15, de-blocked and de-rippled. Its Alps are
-      pixel-doubled TINITALY 10 m, because the full-coverage regional sets
-      were never used (inputs: Table 1 of EarthArXiv preprint 12152). By gain
-      for effort: 1. Trentino: 0.5 m lidar, CC BY 4.0, a plain directory listing
-      (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII). 2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`). 3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`. 4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads. 5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far. 6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
+  the IRPI-CNR HR-DTM at z15, de-blocked and de-rippled. Its Alps are
+  pixel-doubled TINITALY 10 m, because the full-coverage regional sets
+  were never used (inputs: Table 1 of EarthArXiv preprint 12152). By gain
+  for effort: 1. Trentino: 0.5 m lidar, CC BY 4.0, a plain directory listing
+  (`siatservices.provincia.tn.it/stemdata/2014_lidar_dtm_asc/`, ~194 GB ASCII). 2. South Tyrol: 2.5 m province-wide, CC0, WCS (`geoservices9.civis.bz.it`). 3. Piedmont: ICE 2009–11 5 m lidar, CC BY 4.0, WCS on `geomap.reteunitaria.piemonte.it`. 4. Friuli-VG: RAFVG 2017–20 0.5 m, CC BY 4.0, Eagle.fvg downloads. 5. Emilia-Romagna: RER 0.5 m, WCS, ~64% of the region so far. 6. Aosta (lidar, per-tile app) and Veneto (5 m lidar, per municipality).
 
       Also watch the MASE PNRR 0.25 m national reflight: it would cover
                                   Lombardy, the Apennines, Sardinia and the South, which have no usable
@@ -727,22 +728,22 @@ distance probe, a premium quality tier. What it does not do yet is issues under
                                   parts of E-R are covered, and some licences.
 
 - [ ] **Slovakia from lidar points at z18**, replacing `sk.tif` and then `7`:
-      `laz2geotiff xyz` (ground only, relative gap rule), the two-pass membrane
-      `fill` with `--reach`, clipped by an official ÚGKK border (not OSM), the
-      way Czechia was built.
+  `laz2geotiff xyz` (ground only, relative gap rule), the two-pass membrane
+  `fill` with `--reach`, clipped by an official ÚGKK border (not OSM), the
+  way Czechia was built.
 - [ ] **The other 13 German states**, one source each (`de_<state>`, keyed by
-      their elevation-sources directory) at z17, ~650 GB. Their 1 m DGM1 is
-      already in `/fm/storage2/dtm` on fm6; Bavaria, Baden-Württemberg and
-      Hessen went first by Matomo visits.
+  their elevation-sources directory) at z17, ~650 GB. Their 1 m DGM1 is
+  already in `/fm/storage2/dtm` on fm6; Bavaria, Baden-Württemberg and
+  Hessen went first by Matomo visits.
 - [ ] **Hungary**: the most engaged audience without terrain (Matomo), but no
-      open national DTM is known. Look for one.
+  open national DTM is known. Look for one.
 - [ ] **France from IGN LiDAR HD**, mountains first. RGE ALTI (on fm6) is
-      only ~5 m in the mountains; the 0.5 m LiDAR HD MNT is published for all
-      of the Alps, Pyrenees, Corsica and the Vosges (Etalab 2.0). No bulk
-      download: the WFS index `IGNF_LIDAR-HD_METADONNEE:metadata` on
-      `data.geopf.fr` gives each 1 km tile's `url_mnt` (2000×2000 Float32
-      GeoTIFF, EPSG:2154), ~40 req/s. Alps + Pyrenees ≈ 76k tiles, ~1.2 TB raw;
-      recompress as they arrive. Corsica is IGN78, lakes and military zones
-      are nodata. Sample z17 vs z18 first. The rest of France can come from
-      RGE ALTI at z15 below it, re-interpolated with a cubic spline where its
-      5 m lattice shows (bilinear facets otherwise shade as squares).
+  only ~5 m in the mountains; the 0.5 m LiDAR HD MNT is published for all
+  of the Alps, Pyrenees, Corsica and the Vosges (Etalab 2.0). No bulk
+  download: the WFS index `IGNF_LIDAR-HD_METADONNEE:metadata` on
+  `data.geopf.fr` gives each 1 km tile's `url_mnt` (2000×2000 Float32
+  GeoTIFF, EPSG:2154), ~40 req/s. Alps + Pyrenees ≈ 76k tiles, ~1.2 TB raw;
+  recompress as they arrive. Corsica is IGN78, lakes and military zones
+  are nodata. Sample z17 vs z18 first. The rest of France can come from
+  RGE ALTI at z15 below it, re-interpolated with a cubic spline where its
+  5 m lattice shows (bilinear facets otherwise shade as squares).

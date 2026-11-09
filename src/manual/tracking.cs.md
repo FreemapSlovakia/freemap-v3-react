@@ -42,21 +42,21 @@ Místo `{token}` dosaďte token zařízení z :FaMobileAlt: [Mých zařízení](
 
 Adresa přijímá HTTP `GET` nebo `POST` s těmito parametry:
 
-| Parametr | Popis |
-|---|---|
-| `location` | Zeměpisná šířka a délka ve stupních oddělené čárkou **(povinné, nebo `lat` a `lon`)** |
-| `lat` | Zeměpisná šířka ve stupních |
-| `lon` | Zeměpisná délka ve stupních |
-| `time`, `timestamp` | Datum a čas, který umí zpracovat JavaScript, nebo Unix čas v sekundách nebo milisekundách |
-| `alt`, `altitude` | Nadmořská výška v metrech |
-| `speed` | Rychlost v m/s |
-| `speedKmh` | Rychlost v km/h |
-| `acc`, `accuracy` | Přesnost v metrech |
-| `hdop` | Horizontální DOP |
-| `bearing`, `heading` | Směr ve stupních |
-| `battery`, `batt` | Úroveň baterie v procentech |
-| `gsm_signal` | Síla GSM signálu v procentech |
-| `message` | Poznámka / zpráva |
+| Parametr             | Popis                                                                                     |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| `location`           | Zeměpisná šířka a délka ve stupních oddělené čárkou **(povinné, nebo `lat` a `lon`)**     |
+| `lat`                | Zeměpisná šířka ve stupních                                                               |
+| `lon`                | Zeměpisná délka ve stupních                                                               |
+| `time`, `timestamp`  | Datum a čas, který umí zpracovat JavaScript, nebo Unix čas v sekundách nebo milisekundách |
+| `alt`, `altitude`    | Nadmořská výška v metrech                                                                 |
+| `speed`              | Rychlost v m/s                                                                            |
+| `speedKmh`           | Rychlost v km/h                                                                           |
+| `acc`, `accuracy`    | Přesnost v metrech                                                                        |
+| `hdop`               | Horizontální DOP                                                                          |
+| `bearing`, `heading` | Směr ve stupních                                                                          |
+| `battery`, `batt`    | Úroveň baterie v procentech                                                               |
+| `gsm_signal`         | Síla GSM signálu v procentech                                                             |
+| `message`            | Poznámka / zpráva                                                                         |
 
 ### Traccar
 

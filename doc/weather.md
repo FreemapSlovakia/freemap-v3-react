@@ -21,7 +21,7 @@ frames needs **no client deploy**. See
   the version parameter, not the header, is what makes a new forecast appear.
 - **WebP.** `format` is `webp`, and PNG is still served alongside it. This was
   the single largest cost of the layer: PNG tiles ran an order of magnitude
-  above a normal map tile, and an animation pass fetches *every frame* over the
+  above a normal map tile, and an animation pass fetches _every frame_ over the
   visible area, much of it on mobile data.
 - **1× tiles.** `?size=256` returns a genuine 256×256 render (`@1x.<format>`
   works too). Tiles are 512×512 @2x by default, so a non-retina screen used to
@@ -31,7 +31,7 @@ frames needs **no client deploy**. See
 
 ## Standing note: @3x or @4x renders would be worthless
 
-Should larger renders ever be considered, the ask was only ever for a *smaller*
+Should larger renders ever be considered, the ask was only ever for a _smaller_
 option. At maximum zoom a tile is already close to a pure upscale of the zoom
 below it — comparing z9 against z8 resampled ×2 gives an RMSE of 3, against 83
 for two unrelated tiles — so the pixels are ahead of the ~2 km composite grid

@@ -38,6 +38,7 @@ function mergeMeta(current: MapMeta | undefined, next: MapMeta): MapMeta {
         ...current,
         ...next,
         modifiedAt:
+          // biome-ignore lint/complexity/useMathMinMax: Dates; Math.max would return a number
           current.modifiedAt > next.modifiedAt
             ? current.modifiedAt
             : next.modifiedAt,

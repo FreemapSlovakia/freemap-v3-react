@@ -10,7 +10,9 @@
     line-height: 1.2;
     /* clicking anywhere will focus the input */
     cursor: text;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
   }
 
   &.is-active {

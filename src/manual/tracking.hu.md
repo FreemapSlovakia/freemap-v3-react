@@ -42,21 +42,21 @@ A `{token}` helyére írja be az eszköz kódját a :FaMobileAlt: [Készülékei
 
 A cím HTTP `GET` és `POST` kéréseket fogad a következő paraméterekkel:
 
-| Paraméter | Leírás |
-|---|---|
-| `location` | Szélesség és hosszúság fokban, vesszővel elválasztva **(kötelező, vagy `lat` és `lon`)** |
-| `lat` | Szélesség fokban |
-| `lon` | Hosszúság fokban |
-| `time`, `timestamp` | JavaScript által értelmezhető dátum és idő, vagy Unix-idő másodpercben vagy ezredmásodpercben |
-| `alt`, `altitude` | Magasság méterben |
-| `speed` | Sebesség m/s-ban |
-| `speedKmh` | Sebesség km/h-ban |
-| `acc`, `accuracy` | Pontosság méterben |
-| `hdop` | Vízszintes DOP |
-| `bearing`, `heading` | Irányszög fokban |
-| `battery`, `batt` | Akkumulátorszint százalékban |
-| `gsm_signal` | GSM-jelerősség százalékban |
-| `message` | Megjegyzés / üzenet |
+| Paraméter            | Leírás                                                                                        |
+| -------------------- | --------------------------------------------------------------------------------------------- |
+| `location`           | Szélesség és hosszúság fokban, vesszővel elválasztva **(kötelező, vagy `lat` és `lon`)**      |
+| `lat`                | Szélesség fokban                                                                              |
+| `lon`                | Hosszúság fokban                                                                              |
+| `time`, `timestamp`  | JavaScript által értelmezhető dátum és idő, vagy Unix-idő másodpercben vagy ezredmásodpercben |
+| `alt`, `altitude`    | Magasság méterben                                                                             |
+| `speed`              | Sebesség m/s-ban                                                                              |
+| `speedKmh`           | Sebesség km/h-ban                                                                             |
+| `acc`, `accuracy`    | Pontosság méterben                                                                            |
+| `hdop`               | Vízszintes DOP                                                                                |
+| `bearing`, `heading` | Irányszög fokban                                                                              |
+| `battery`, `batt`    | Akkumulátorszint százalékban                                                                  |
+| `gsm_signal`         | GSM-jelerősség százalékban                                                                    |
+| `message`            | Megjegyzés / üzenet                                                                           |
 
 ### Traccar
 

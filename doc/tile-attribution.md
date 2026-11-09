@@ -55,8 +55,8 @@ alike.
 
 **Not resource timing.** `Server-Timing` looks like the natural channel for an
 `<img>`, and it is unusable: WebKit restricts `PerformanceResourceTiming`'s
-`serverTiming` to same-origin outright, *"intentionally stricter than a TAO
-check"*, so it is permanently empty for tiles in Safari. A response a service
+`serverTiming` to same-origin outright, _"intentionally stricter than a TAO
+check"_, so it is permanently empty for tiles in Safari. A response a service
 worker answers with is also timing-opaque in every browser, whatever headers it
 carries. Both are why the codes come off the response instead.
 

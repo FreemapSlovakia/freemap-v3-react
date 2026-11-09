@@ -421,11 +421,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   // New comments here are mailed to the author and earlier commenters, and
   // only to a confirmed address; "known" so a stale user doesn't flash it.
   const missesCommentMail =
-    !!user &&
-    user.sendGalleryEmails &&
+    user?.sendGalleryEmails &&
     (!user.email || user.emailVerified === false) &&
     (image?.user?.id === user.id ||
-      !!comments?.some((c) => c.user.id === user.id));
+      comments?.some((c) => c.user.id === user.id) === true);
 
   // Wikimedia photos carry no server-side title/description; they come from the
   // Commons API fetch instead.
