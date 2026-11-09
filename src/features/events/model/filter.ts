@@ -1,3 +1,4 @@
+import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { DIFFICULTIES } from './actions.js';
 
 /** Inclusive; either end may be open. */
@@ -226,6 +227,33 @@ export const sameFilter = (a: EventsFilter, b: EventsFilter): boolean =>
   JSON.stringify(filterToQuery(a)) === JSON.stringify(filterToQuery(b));
 
 /**
+ * A `YYYY-MM-DD` day's local start with its offset, e.g.
+ * `2026-11-09T00:00:00+01:00`; 01:00 where DST skips midnight.
+ */
+export function localDayStart(day: string): string {
+  const [y, m, d] = day.split('-').map(Number);
+
+  // Not `new Date(y, …)`, which reads years 0–99 as 1900s.
+  const start = new Date(0);
+
+  start.setFullYear(y!, m! - 1, d);
+
+  start.setHours(0, 0, 0, 0);
+
+  // Local mean time (before ~1900) needn't be whole minutes.
+  const offset = -Math.round(start.getTimezoneOffset());
+
+  const abs = Math.abs(offset);
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  return (
+    `${day}T${toDatetimeLocal(start).split('T')[1]}` +
+    `${offset < 0 ? '-' : '+'}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`
+  );
+}
+
+/**
  * The filter as `GET /events` parameters. Without a start date only what has
  * not ended yet — unless the end date asks for the past.
  */
@@ -245,14 +273,23 @@ export function filterToRequest(
 
   const to = validDate(f.to);
 
-  // The picker yields UTC midnight, and the bound reads as inclusive of the
-  // day it names — so it goes out as that day's last instant.
+  // The picker yields UTC midnight naming a day. The end is that UTC day's
+  // last instant, as a date-only event's dates are UTC midnights; the start
+  // is the day's local start, `fromDay` covering date-only events.
   const toEnd = to && new Date(to.getTime() + 86_400_000 - 1);
 
-  if (from) {
-    params['from'] = from.toISOString();
-  } else if (!toEnd || toEnd >= now) {
-    params['from'] = now.toISOString();
+  const fromDay =
+    from || !toEnd || toEnd >= now
+      ? localDayStart(
+          from ? formatDate(from) : toDatetimeLocal(now).slice(0, 10),
+        )
+      : undefined;
+
+  if (fromDay) {
+    params['from'] = from ? new Date(fromDay).toISOString() : now.toISOString();
+
+    // Matches a date-only event, or one without an end, by its day.
+    params['fromDay'] = fromDay;
   }
 
   if (toEnd) {

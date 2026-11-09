@@ -4,10 +4,28 @@ import {
   filterFromQuery,
   filterToQuery,
   filterToRequest,
+  localDayStart,
   nearestRadiusStop,
   RADIUS_STOPS,
   sameFilter,
 } from './filter.js';
+
+// Node rereads TZ on assignment.
+function withTz(tz: string, run: () => void) {
+  const prev = process.env['TZ'];
+
+  process.env['TZ'] = tz;
+
+  try {
+    run();
+  } finally {
+    if (prev === undefined) {
+      delete process.env['TZ'];
+    } else {
+      process.env['TZ'] = prev;
+    }
+  }
+}
 
 const full: EventsFilter = {
   from: new Date('2026-11-01'),
@@ -52,9 +70,12 @@ describe('events filter', () => {
 
     const now = new Date('2026-11-03T12:00:00Z');
 
-    expect(filterToRequest(invalid, now)).toEqual({
-      from: now.toISOString(),
-    });
+    withTz('Europe/Bratislava', () =>
+      expect(filterToRequest(invalid, now)).toEqual({
+        from: now.toISOString(),
+        fromDay: '2026-11-03T00:00:00+01:00',
+      }),
+    );
   });
 
   it('reads no place from a link without a valid radius or point', () => {
@@ -85,6 +106,29 @@ describe('events filter', () => {
     expect(stopOf(1000)).toBe(1000);
   });
 
+  it("writes a day's local start with its offset", () => {
+    const cases: [string, string, string][] = [
+      ['Europe/Bratislava', '2026-11-09', '2026-11-09T00:00:00+01:00'],
+      ['America/St_Johns', '2026-11-09', '2026-11-09T00:00:00-03:30'],
+      ['Asia/Kolkata', '2026-11-09', '2026-11-09T00:00:00+05:30'],
+      // DST skips its midnight.
+      ['America/Santiago', '2026-09-06', '2026-09-06T01:00:00-03:00'],
+    ];
+
+    for (const [tz, day, start] of cases) {
+      withTz(tz, () => expect(localDayStart(day)).toBe(start));
+    }
+
+    // Local mean time, +0:57:44, as an offset the API's parser takes.
+    withTz('Europe/Prague', () => {
+      for (const day of ['1850-01-01', '0050-01-01']) {
+        expect(localDayStart(day)).toMatch(
+          new RegExp(`^${day}T00:00:00\\+00:5\\d$`),
+        );
+      }
+    });
+  });
+
   it('asks for what has not ended yet unless the dates say otherwise', () => {
     const now = new Date('2026-11-03T12:00:00Z');
 
@@ -92,14 +136,27 @@ describe('events filter', () => {
 
     expect(fromOf({})).toBe(now.toISOString());
 
+    const fromDayOf = (f: EventsFilter) => filterToRequest(f, now)['fromDay'];
+
+    withTz('Pacific/Kiritimati', () => {
+      expect(fromDayOf({})).toBe('2026-11-04T00:00:00+14:00');
+
+      expect(fromDayOf({ from: new Date('2026-01-01') })).toBe(
+        '2026-01-01T00:00:00+14:00',
+      );
+
+      // A picked start is its local day's start.
+      expect(fromOf({ from: new Date('2026-01-01') })).toBe(
+        '2025-12-31T10:00:00.000Z',
+      );
+    });
+
+    expect(fromDayOf({ to: new Date('2026-10-01') })).toBeUndefined();
+
     // Up to today still means from now on; an end in the past means the past.
     expect(fromOf({ to: new Date('2026-11-03') })).toBe(now.toISOString());
 
     expect(fromOf({ to: new Date('2026-10-01') })).toBeUndefined();
-
-    expect(fromOf({ from: new Date('2026-01-01') })).toBe(
-      new Date('2026-01-01').toISOString(),
-    );
   });
 
   it('drops unknown difficulties from a link', () => {
