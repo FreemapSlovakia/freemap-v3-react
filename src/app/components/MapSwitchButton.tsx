@@ -1,5 +1,7 @@
 import { hasRole } from '@features/auth/model/types.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
+import { EVENTS_LAYER } from '@features/events/model/actions.js';
+import { isFilterEmpty } from '@features/events/model/filter.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -102,6 +104,17 @@ import { useMediaQuery } from 'react-responsive';
 import type { Messages } from '@/translations/messagesInterface.js';
 import { setActiveModal } from '../store/actions.js';
 
+const GALLERY_LAYER = 'I';
+
+/** The filter a filtered layer's badge opens. */
+const FILTER_MODALS: Record<
+  string,
+  'gallery-filter' | 'events-filter' | undefined
+> = {
+  [GALLERY_LAYER]: 'gallery-filter',
+  [EVENTS_LAYER]: 'events-filter',
+};
+
 /**
  * A badge on a menu item, explained by the same tooltip the toolbar uses.
  *
@@ -174,9 +187,23 @@ export function MapSwitchButton(): ReactElement {
 
   const activeLayers = useAppSelector((state) => state.map.layers);
 
+  // A filtered layer's badge: it shows less than there is.
   const pictureFilterIsActive = useAppSelector((state) =>
     Object.values(state.gallery.filter).some((x) => x !== undefined),
   );
+
+  const eventFilterIsActive = useAppSelector(
+    (state) => !isFilterEmpty(state.events.filter),
+  );
+
+  const filterWarnings: Record<string, string | undefined> = {
+    ...(pictureFilterIsActive && {
+      [GALLERY_LAYER]: m?.mapLayers.photoFilterWarning,
+    }),
+    ...(eventFilterIsActive && {
+      [EVENTS_LAYER]: m?.mapLayers.eventFilterWarning,
+    }),
+  };
 
   const canPreviewLayers = useAppSelector((state) =>
     hasRole(state.auth.user, 'layerPreview'),
@@ -232,7 +259,7 @@ export function MapSwitchButton(): ReactElement {
   );
 
   // A click on an interactive badge inside a layer button / menu item acts on
-  // the badge (open the photo filter, zoom to the layer's coverage) instead of
+  // the badge (open the layer's filter, zoom to the layer's coverage) instead of
   // toggling the layer; returns whether such a badge was hit, `'keep'` when the
   // menu stays open.
   const handlePossibleBadgeClick = useCallback(
@@ -257,7 +284,11 @@ export function MapSwitchButton(): ReactElement {
           (x instanceof HTMLElement || x instanceof SVGElement) &&
           x.dataset['filter']
         ) {
-          dispatch(setActiveModal({ type: 'gallery-filter' }));
+          const type = FILTER_MODALS[x.dataset['filter']];
+
+          if (type) {
+            dispatch(setActiveModal({ type }));
+          }
 
           return true;
         }
@@ -666,10 +697,10 @@ export function MapSwitchButton(): ReactElement {
             );
           })()}
 
-        {place !== 'tooltip' && def.type === 'I' && pictureFilterIsActive && (
+        {place !== 'tooltip' && Object.hasOwn(filterWarnings, def.type) && (
           <Badge
-            label={m?.mapLayers.photoFilterWarning}
-            data={{ 'data-filter': '1' }}
+            label={filterWarnings[def.type]}
+            data={{ 'data-filter': def.type }}
           >
             <FaFilter />
           </Badge>
@@ -932,12 +963,12 @@ export function MapSwitchButton(): ReactElement {
       layersSettings[def.type]?.showInToolbar ??
       (!def.custom && Boolean(def.defaultInToolbar));
 
-    // Out of `minZoom` or coverage doesn't hide it: the accessories below
-    // offer the fix.
     if (!isOnMap(def.type) && !showInToolbar) {
       return null;
     }
 
+    // Warnings only while on: an off layer shows nothing to be wrong about.
+    // The menu warns either way.
     const active = isOnMap(def.type);
 
     // Accessories are buttons joined to the layer button, each with its
@@ -953,7 +984,7 @@ export function MapSwitchButton(): ReactElement {
     // a layer whose tiles aren't in view gets a button that zooms to its
     // coverage, at the zoom the layer needs when that is further in than
     // the extent would fit
-    const outOfCoverageBbox = getOutOfCoverageBbox(def);
+    const outOfCoverageBbox = active && getOutOfCoverageBbox(def);
 
     if (outOfCoverageBbox) {
       accessories.push({
@@ -967,8 +998,6 @@ export function MapSwitchButton(): ReactElement {
           ? m?.mapLayers.outsideViewWarning
           : findLabel(def.minZoom!),
         onClick: () => {
-          dispatch(mapToggleLayer({ type, enable: true }));
-
           dispatch(
             mapFitBbox({
               bbox: outOfCoverageBbox,
@@ -978,20 +1007,19 @@ export function MapSwitchButton(): ReactElement {
           );
         },
       });
-    } else if (!def.zoomOk) {
+    } else if (active && !def.zoomOk) {
       accessories.push({
         key: 'zoom',
         icon: <FaSearchPlus className="text-warning" />,
         tooltip: m?.mapLayers.minZoomWarning(def.minZoom!),
         onClick: () => {
-          dispatch(mapToggleLayer({ type, enable: true }));
-
           dispatch(mapRefocus({ zoom: def.minZoom }));
         },
       });
     }
 
     if (
+      active &&
       becomePremium &&
       !def.custom &&
       def.premiumFromZoom !== undefined &&
@@ -1046,7 +1074,7 @@ export function MapSwitchButton(): ReactElement {
                 def.icon
               )}
 
-              {commonBadges(def, 'toolbar')}
+              {active && commonBadges(def, 'toolbar')}
             </Button>
           )}
         </LongPressTooltip>

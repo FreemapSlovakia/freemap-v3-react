@@ -509,6 +509,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       'Visszaállítja az alkalmazás összes beállítását az alapértékekre és újratölti az oldalt? Ki lesz jelentkeztetve.',
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
+    eventFilterWarning: 'Az eseményszűrés aktív',
     minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
     outsideViewWarning: 'A jelenlegi nézet ezen a térképen kívül esik',
     offlineWarning: 'Ez a térkép nincs elmentve offline használatra',

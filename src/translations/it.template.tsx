@@ -516,6 +516,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Livelli mappa',
     switch: 'Livelli mappa',
     photoFilterWarning: 'Il filtro foto è attivo',
+    eventFilterWarning: 'Il filtro eventi è attivo',
     interactiveLayerWarning: 'Il livello dati è nascosto',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     outsideViewWarning: 'La vista corrente è al di fuori di questa mappa',

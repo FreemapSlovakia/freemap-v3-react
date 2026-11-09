@@ -577,6 +577,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Karten',
     switch: 'Karten',
     photoFilterWarning: 'Fotofilter ist aktiv',
+    eventFilterWarning: 'Veranstaltungsfilter ist aktiv',
     interactiveLayerWarning: 'Datenschicht ist ausgeblendet',
     minZoomWarning: (minZoom) => `Verfügbar ab Zoomstufe ${minZoom}`,
     outsideViewWarning:

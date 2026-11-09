@@ -28,7 +28,7 @@ Na telefóne, alebo všade, kde sa tlačidlá máp nezmestia, je na lište namie
 
 Každá mapa môže mať aj klávesovú skratku, uvedenú pri názve mapy v ponuke: kláves prepne na podkladovú mapu alebo zapne či vypne prekrytie. Mapy nájdete aj vo vyhľadávacom poli hore – stačí napísať názov mapy.
 
-Ak mapu v aktuálnom výreze nemožno zobraziť, na tlačidle mapy je žltá ikona: :FaSearchPlus.text-warning: treba priblížiť, :FaGlobeEurope.text-warning: výrez je mimo územia mapy, :FaSearchLocation.text-warning: platí oboje. Stlačením ikony sa mapa presunie tam, kde má obsah. :FaGem.text-warning: znamená, že mapa pri tomto priblížení vyžaduje [prémiový prístup](#show=premium).
+Ak zapnutú mapu v aktuálnom výreze nemožno zobraziť, na tlačidle mapy je žltá ikona: :FaSearchPlus.text-warning: treba priblížiť, :FaGlobeEurope.text-warning: výrez je mimo územia mapy, :FaSearchLocation.text-warning: platí oboje. Stlačením ikony sa mapa presunie tam, kde má obsah. :FaGem.text-warning: znamená, že mapa pri tomto priblížení vyžaduje [prémiový prístup](#show=premium). :FaFilter.text-warning: pri fotografiách alebo akciách znamená, že niektoré z nich skrýva filter; stlačením sa filter otvorí. Menu máp tieto značky ukazuje aj pri vypnutých mapách.
 
 ## Panel Vrstvy mapy
 

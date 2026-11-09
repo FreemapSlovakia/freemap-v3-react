@@ -28,7 +28,7 @@ On a phone, or wherever the map buttons don't fit, the toolbar has a single :FaR
 
 Each map can also have a keyboard shortcut, shown next to its name in the menu: the key switches to a base map or turns an overlay on and off. Maps can be found in the search box at the top too – type a map's name.
 
-If a map can't be shown in the current view, its button has a yellow icon: :FaSearchPlus.text-warning: zoom in, :FaGlobeEurope.text-warning: the view is outside the map's area, :FaSearchLocation.text-warning: both. Press it to move to where the map has content. :FaGem.text-warning: means the map needs [premium](#show=premium) at this zoom.
+If a map that is on can't be shown in the current view, its button has a yellow icon: :FaSearchPlus.text-warning: zoom in, :FaGlobeEurope.text-warning: the view is outside the map's area, :FaSearchLocation.text-warning: both. Press it to move to where the map has content. :FaGem.text-warning: means the map needs [premium](#show=premium) at this zoom. :FaFilter.text-warning: on the photos or events means a filter hides some of them; pressing it opens the filter. The map menu shows these marks for maps that are off too.
 
 ## The Map layers panel
 

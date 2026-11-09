@@ -490,6 +490,7 @@ const messages: Messages = {
     layers: 'Maps',
     switch: 'Maps',
     photoFilterWarning: 'Photo filtering is active',
+    eventFilterWarning: 'Event filtering is active',
     interactiveLayerWarning: 'Data layer is hidden',
     minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
     outsideViewWarning: 'The current view is outside this map',

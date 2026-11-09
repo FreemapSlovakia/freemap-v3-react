@@ -299,6 +299,7 @@ export type Messages = {
     layers: string;
     switch: string;
     photoFilterWarning: string;
+    eventFilterWarning: string;
     interactiveLayerWarning: string;
     minZoomWarning: (minZoom: number) => string;
     outsideViewWarning: string;

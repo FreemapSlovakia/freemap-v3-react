@@ -558,6 +558,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr zdjęć jest aktywny',
+    eventFilterWarning: 'Filtr wydarzeń jest aktywny',
     interactiveLayerWarning: 'Warstwa danych jest ukryta',
     minZoomWarning: (minZoom) => `Dostępne od poziomu powiększenia ${minZoom}`,
     outsideViewWarning: 'Bieżący widok znajduje się poza tą mapą',

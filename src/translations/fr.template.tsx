@@ -583,6 +583,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Cartes',
     switch: 'Cartes',
     photoFilterWarning: 'Le filtrage des photos est actif',
+    eventFilterWarning: 'Le filtrage des événements est actif',
     interactiveLayerWarning: 'La couche de données est masquée',
     outsideViewWarning: 'La vue actuelle est en dehors de cette carte',
     offlineWarning:

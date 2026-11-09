@@ -498,6 +498,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Zemljevidi',
     switch: 'Zemljevidi',
     photoFilterWarning: 'Filter fotografij je aktiven',
+    eventFilterWarning: 'Filter dogodkov je aktiven',
     interactiveLayerWarning: 'Podatkovni sloj je skrit',
     minZoomWarning: (minZoom) => `Dostopno od povečave ${minZoom}`,
     outsideViewWarning: 'Trenutni pogled je zunaj tega zemljevida',

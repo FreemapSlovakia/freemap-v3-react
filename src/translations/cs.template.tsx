@@ -508,6 +508,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     layers: 'Mapy',
     switch: 'Mapy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
+    eventFilterWarning: 'Filtr akcí je aktivní',
     interactiveLayerWarning: 'Datová vrstva je skryta',
     minZoomWarning: (minZoom) => `Dostupné až od přiblížení ${minZoom}`,
     outsideViewWarning: 'Aktuální výřez je mimo tuto mapu',
