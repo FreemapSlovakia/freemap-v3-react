@@ -57,11 +57,20 @@ function toTaxonCase(value: string, words: number) {
   ].join(';');
 }
 
-/** A tree genus category as saved before `genus` became its own category. */
+/**
+ * An objects filter as saved in an older form: a tree genus under
+ * `natural=tree`, or `key=*` for a key with any value, which the API reads as
+ * the literal value `*`.
+ */
 export function upgradeObjectFilter(filter: string): string {
-  return filter.startsWith('natural=tree,genus=')
-    ? filter.slice('natural=tree,'.length)
-    : filter;
+  return (
+    filter.startsWith('natural=tree,genus=')
+      ? filter.slice('natural=tree,'.length)
+      : filter
+  )
+    .split(',')
+    .map((part) => (part.endsWith('=*') ? part.slice(0, -2) : part))
+    .join(',');
 }
 
 /**

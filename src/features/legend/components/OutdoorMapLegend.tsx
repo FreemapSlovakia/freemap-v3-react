@@ -262,7 +262,10 @@ function LegendItems({
 
           <div className="d-flex flex-wrap gap-2">
             {name_w_tags.map(({ name, tags }, i) => {
-              const ts = Object.entries(tags).map(([k, v]) => `${k}=${v}`);
+              // `*` is the key with any value, which the API takes bare.
+              const ts = Object.entries(tags).map(([k, v]) =>
+                v === '*' ? k : `${k}=${v}`,
+              );
 
               return (
                 <ObjectFilterChip
