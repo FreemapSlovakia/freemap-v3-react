@@ -36,6 +36,7 @@ export default function OsmNoteSelection(): ReactElement {
       item={note}
       show={shown}
       icon={<FaStickyNote />}
+      label={m?.selection}
       // What it is about, as its first comment says.
       title={(note) => note.comments[0]?.text || m?.selection}
       summary={(note) => <NoteSummary note={note} />}

@@ -229,6 +229,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     linePoint: 'Vonal pontja',
 
     polygonPoint: 'Poligon pontja',
+    objects: 'Objektum (érdekes pont, POI)',
+    event: 'Esemény',
   },
 
   tools: {

@@ -1,4 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
+import { Text } from '@features/l10n/Text.js';
 import type { SearchResult } from '@features/search/model/actions.js';
 import { resultCoords } from '@features/search/model/resultUtils.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
@@ -60,6 +61,7 @@ export default function ObjectSelection(): ReactElement {
       item={item}
       show={object !== undefined}
       icon={<FaMapMarkerAlt />}
+      label={<Text k="selections.objects" />}
       title={({ result }) => <ResultName result={result} />}
       marks={({ result }) => <ResultMarks result={result} />}
       summary={(item) => <ResultSummary {...item} />}

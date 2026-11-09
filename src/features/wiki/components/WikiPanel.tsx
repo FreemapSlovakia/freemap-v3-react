@@ -39,6 +39,7 @@ export default function WikiPanel(): ReactElement {
       item={preview ?? loading}
       show={id !== null}
       icon={<FaWikipediaW />}
+      label="Wikipedia"
       title={(item) =>
         typeof item === 'string' ? item.split(/:(.*)/)[1] : item.title
       }

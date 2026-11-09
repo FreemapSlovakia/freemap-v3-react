@@ -4,6 +4,7 @@ import {
   setActiveModal,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import { useAskLoadMerge } from '@features/myMaps/hooks/useAskLoadMerge.js';
 import { mapsDisconnect } from '@features/myMaps/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -70,6 +71,7 @@ export default function EventSelection(): ReactElement | null {
       item={event}
       show={shown}
       icon={<FaCalendarDay />}
+      label={<Text k="selections.event" />}
       title={(event) => event.title}
       summary={(event) => <EventLine event={event} traits={ALL_TRAITS} />}
       marks={(event) => <EventIndicators event={event} traits={ALL_TRAITS} />}

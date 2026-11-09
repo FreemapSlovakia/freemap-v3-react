@@ -234,6 +234,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Tracciamento',
     linePoint: 'Punto della linea',
     polygonPoint: 'Punto del poligono',
+    objects: 'Oggetto (POI)',
+    event: 'Evento',
   },
 
   tools: {

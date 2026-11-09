@@ -4,6 +4,7 @@ import {
   selectFeature,
 } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { Text } from '@features/l10n/Text.js';
 import {
   ObjectDetails,
   ResultMarks,
@@ -79,6 +80,7 @@ export default function SearchResultPanel(): ReactElement {
       item={item}
       show={shown}
       icon={<FaSearch />}
+      label={<Text k="search.result" />}
       title={({ result }) => <ResultName result={result} />}
       marks={({ result }) => <ResultMarks result={result} />}
       summary={(item) => <ResultSummary {...item} />}

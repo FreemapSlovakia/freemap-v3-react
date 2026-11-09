@@ -188,6 +188,8 @@ export type Messages = {
     tracking: string;
     linePoint: string;
     polygonPoint: string;
+    objects: string;
+    event: string;
   };
   tools: {
     none: string;

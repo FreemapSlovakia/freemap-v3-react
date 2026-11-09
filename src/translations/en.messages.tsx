@@ -220,6 +220,8 @@ const messages: Messages = {
     tracking: 'Tracking',
     linePoint: 'Line point',
     polygonPoint: 'Polygon point',
+    objects: 'Object (POI)',
+    event: 'Event',
   },
 
   tools: {

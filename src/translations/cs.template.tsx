@@ -226,6 +226,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     tracking: 'Sledování',
     linePoint: 'Bod čáry',
     polygonPoint: 'Bod polygonu',
+    objects: 'Objekt (POI)',
+    event: 'Akce',
   },
 
   tools: {

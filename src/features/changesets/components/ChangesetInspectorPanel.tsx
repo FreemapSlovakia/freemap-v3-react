@@ -26,6 +26,7 @@ export default function ChangesetInspectorPanel(): ReactElement {
       item={view.inspected ? view : null}
       // The tool's icon, which inspecting needs no more than this.
       icon={<FaPencilAlt />}
+      label={cm?.changeset}
       title={({ inspected }: InspectorView) =>
         inspected ? `${cm?.changeset ?? ''} #${inspected.id}` : cm?.changeset
       }

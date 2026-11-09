@@ -180,6 +180,9 @@ type Props<T> = {
   /** Whether it is open; `item` alone by default. */
   show?: boolean;
   icon: ReactNode;
+  /** The header: what kind of thing it is, as the body names the item. */
+  label: ReactNode;
+  /** The header while minimized, the body hidden: the item's name. */
   title: (item: T) => ReactNode;
   /** A line under the title while the panel is minimized to its header. */
   summary?: (item: T) => ReactNode;
@@ -202,6 +205,7 @@ export function DockPanel<T>({
   item,
   show = item !== null,
   icon,
+  label,
   title,
   summary,
   marks,
@@ -494,7 +498,7 @@ export function DockPanel<T>({
             className="text-truncate"
             style={{ flexShrink: 100, minWidth: '4em' }}
           >
-            {title(kept)}
+            {sized === 'min' ? title(kept) : label}
           </span>
 
           {sized === 'min' && marks && (
