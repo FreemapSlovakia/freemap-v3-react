@@ -193,15 +193,19 @@ export function GalleryEditForm({
         controlId="azimuth"
         className="mb-3 d-flex align-items-center"
       >
-        <Form.Control
-          placeholder={gm?.editForm.azimuth}
-          type="number"
-          value={model.azimuth}
-          onChange={handleAzimuthChange}
-          min={0}
-          max={360}
-          step="any"
-        />
+        <InputGroup>
+          <Form.Control
+            placeholder={gm?.editForm.azimuth}
+            type="number"
+            value={model.azimuth}
+            onChange={handleAzimuthChange}
+            min={0}
+            max={360}
+            step="any"
+          />
+
+          <InputGroup.Text>°</InputGroup.Text>
+        </InputGroup>
 
         <Azimuth
           className="ms-2"

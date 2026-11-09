@@ -38,6 +38,7 @@ import {
   gallerySetItemForPositionPicking,
   gallerySetLayerDirty,
   gallerySetLicense,
+  gallerySetPickingAzimuth,
   gallerySetPickingPosition,
   gallerySetTags,
   gallerySetUsers,
@@ -57,6 +58,7 @@ export interface GalleryState {
   items: GalleryItem[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
+  pickingAzimuth: number | null;
   showPreview: boolean;
   uploadingId: number | null;
   tags: GalleryTag[];
@@ -81,6 +83,7 @@ export const galleryInitialState: GalleryState = {
   items: [],
   pickingPositionForId: null,
   pickingPosition: null,
+  pickingAzimuth: null,
   showPreview: false,
 
   uploadingId: null,
@@ -210,7 +213,15 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(gallerySetPickingPosition, (state, action) => {
       state.pickingPosition = action.payload;
     })
+    .addCase(gallerySetPickingAzimuth, (state, action) => {
+      state.pickingAzimuth = action.payload;
+    })
     .addCase(galleryConfirmPickedPosition, (state) => {
+      const azimuth =
+        state.pickingAzimuth === null
+          ? null
+          : ((state.pickingAzimuth % 360) + 360) % 360;
+
       if (state.pickingPositionForId === -1) {
         // the edit form can be dropped mid-picking (a newly loaded image resets
         // it) — then there is nothing to write the position into
@@ -218,6 +229,8 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
           state.editModel.dirtyPosition = state.pickingPosition
             ? latLonToString(state.pickingPosition, state.language)
             : state.editModel.dirtyPosition; // TODO language
+
+          state.editModel.azimuth = azimuth === null ? '' : String(azimuth);
         }
       } else {
         const item = state.items.find(
@@ -228,12 +241,16 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
           item.dirtyPosition = state.pickingPosition
             ? latLonToString(state.pickingPosition, state.language)
             : '';
+
+          item.azimuth = azimuth;
         }
       }
 
       state.pickingPositionForId = null;
 
       state.pickingPosition = null;
+
+      state.pickingAzimuth = null;
     })
     .addCase(gallerySetItemForPositionPicking, (state, action) => {
       state.pickingPositionForId = action.payload;
@@ -242,6 +259,13 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
         typeof action.payload === 'number' && action.payload !== -1
           ? state.items.find(({ id }) => id === action.payload)
           : undefined;
+
+      const azimuth =
+        action.payload === -1
+          ? parseFloat(state.editModel?.azimuth ?? '')
+          : (item?.azimuth ?? Number.NaN);
+
+      state.pickingAzimuth = Number.isNaN(azimuth) ? null : azimuth;
 
       state.pickingPosition =
         action.payload === -1

@@ -55,7 +55,7 @@ For each photo fill in:
 - **Name** and **Description**,
 - **Capture date and time**,
 - **Location** – type coordinates, or press :FaMapMarkerAlt: **Set the location**, click the place on the map or find it by its address in the toolbar, and confirm with :FaCheck: **OK**,
-- **Azimuth** – the shooting direction,
+- **Azimuth** – the shooting direction in degrees, or drag on the dial; while setting the location, the same fields in the toolbar show it as a blue sector at the pin,
 - **Tags**,
 - **License** – CC BY-SA 4.0 unless you choose another Creative Commons license.
 

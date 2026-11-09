@@ -1,7 +1,12 @@
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import type { LatLon } from '@shared/types/common.js';
-import type { DragEndEvent, LeafletMouseEvent } from 'leaflet';
+import type {
+  DragEndEvent,
+  LeafletEvent,
+  Marker as LeafletMarker,
+  LeafletMouseEvent,
+} from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
@@ -12,6 +17,8 @@ type Props = {
   pickAction: (position: LatLon) => UnknownAction;
   faIcon: ReactElement;
   color?: string;
+  /** Where the marker is mid-drag, for what must follow it; null on drop. */
+  onDrag?: (position: LatLon | null) => void;
 };
 
 /**
@@ -24,6 +31,7 @@ export function PickMarker({
   pickAction,
   faIcon,
   color,
+  onDrag,
 }: Props): ReactElement | null {
   const dispatch = useDispatch();
 
@@ -41,9 +49,20 @@ export function PickMarker({
     (e: DragEndEvent) => {
       const { lat, lng } = e.target.getLatLng();
 
+      onDrag?.(null);
+
       dispatch(pickAction({ lat, lon: lng }));
     },
-    [dispatch, pickAction],
+    [dispatch, pickAction, onDrag],
+  );
+
+  const handleDrag = useCallback(
+    (e: LeafletEvent) => {
+      const { lat, lng } = (e.target as LeafletMarker).getLatLng();
+
+      onDrag?.({ lat, lon: lng });
+    },
+    [onDrag],
   );
 
   return (
@@ -54,7 +73,11 @@ export function PickMarker({
         position={{ lat: position.lat, lng: position.lon }}
         color={color}
         faIcon={faIcon}
-        eventHandlers={{ dragend: handleDragEnd }}
+        eventHandlers={
+          onDrag
+            ? { drag: handleDrag, dragend: handleDragEnd }
+            : { dragend: handleDragEnd }
+        }
       />
     )
   );

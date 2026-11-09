@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import type { PointerEvent, ReactElement } from 'react';
 
 type Props = {
   value?: number | null;
@@ -7,105 +7,27 @@ type Props = {
   onChange?: (value: number) => void;
 };
 
-export function Azimuth({ value, className, size, onChange }: Props) {
+export function Azimuth({
+  value,
+  className,
+  size,
+  onChange,
+}: Props): ReactElement {
   const strokeWidth = 20 / (size ?? 20);
 
-  const dragging = useRef(false);
+  const update = (e: PointerEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget;
 
-  const svg = useRef<SVGSVGElement | null>(null);
-
-  const domPoint = useRef<DOMPoint | null>(null);
-
-  const getCoordinates = useCallback((e: MouseEvent) => {
-    const pt = domPoint.current;
-
-    if (!pt || !svg.current) {
-      return undefined;
-    }
+    const pt = svg.createSVGPoint();
 
     pt.x = e.clientX;
 
     pt.y = e.clientY;
 
-    const { x, y } = pt.matrixTransform(svg.current.getScreenCTM()?.inverse());
+    const { x, y } = pt.matrixTransform(svg.getScreenCTM()?.inverse());
 
-    return { x, y };
-  }, []);
-
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      if (!onChange) {
-        return;
-      }
-
-      if (e.type === 'mousedown') {
-        if (e.currentTarget !== svg.current) {
-          return;
-        }
-
-        e.preventDefault();
-
-        dragging.current = true;
-      } else if (!dragging.current) {
-        return;
-      }
-
-      const mouse = getCoordinates(e);
-
-      if (!mouse) {
-        return;
-      }
-
-      const azimuth = Math.PI - Math.atan2(mouse.x, mouse.y);
-
-      onChange((azimuth / Math.PI) * 180);
-    },
-    [onChange, getCoordinates],
-  );
-
-  const handleMouseUp = useCallback(() => {
-    dragging.current = false;
-  }, []);
-
-  useEffect(() => {
-    const svgCurrent = svg.current;
-
-    if (!onChange || !svgCurrent) {
-      return;
-    }
-
-    const body = document.body;
-
-    svgCurrent.addEventListener('mousedown', handleMouseMove);
-
-    body.addEventListener('mouseup', handleMouseUp);
-
-    body.addEventListener('mousemove', handleMouseMove);
-
-    body.addEventListener('mouseleave', handleMouseUp);
-
-    return () => {
-      svgCurrent.removeEventListener('mousedown', handleMouseMove);
-
-      body.removeEventListener('mouseup', handleMouseUp);
-
-      body.removeEventListener('mousemove', handleMouseMove);
-
-      body.removeEventListener('mouseleave', handleMouseUp);
-    };
-  }, [handleMouseUp, handleMouseMove, onChange]);
-
-  function setSvg(element: SVGSVGElement | null) {
-    svg.current = element;
-
-    domPoint.current = element ? element.createSVGPoint() : null;
-  }
-
-  useEffect(() => {
-    if (!onChange) {
-      return;
-    }
-  }, [onChange]);
+    onChange?.(((Math.PI - Math.atan2(x, y)) / Math.PI) * 180);
+  };
 
   return (
     <svg
@@ -113,7 +35,25 @@ export function Azimuth({ value, className, size, onChange }: Props) {
       width={size}
       height={size}
       className={className}
-      ref={setSvg}
+      style={onChange ? { touchAction: 'none', cursor: 'pointer' } : undefined}
+      onPointerDown={
+        onChange &&
+        ((e) => {
+          e.preventDefault();
+
+          e.currentTarget.setPointerCapture(e.pointerId);
+
+          update(e);
+        })
+      }
+      onPointerMove={
+        onChange &&
+        ((e) => {
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            update(e);
+          }
+        })
+      }
     >
       <circle
         cx="0"

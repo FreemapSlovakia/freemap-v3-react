@@ -55,7 +55,7 @@ Pri každej fotke vyplňte:
 - **Názov** a **Popis**,
 - **Dátum a čas fotenia**,
 - **Pozícia** – zadajte súradnice alebo stlačte :FaMapMarkerAlt: **Nastaviť pozíciu**, kliknite na miesto v mape alebo ho nájdite podľa adresy na lište a potvrďte tlačidlom :FaCheck: **OK**,
-- **Azimut** – smer fotenia,
+- **Azimut** – smer fotenia v stupňoch alebo ťahaním na kruhu; pri nastavovaní pozície ho rovnaké polia na lište ukazujú modrým výsekom pri špendlíku,
 - **Tagy**,
 - **Licencia** – CC BY-SA 4.0, ak nezvolíte inú licenciu Creative Commons.
 

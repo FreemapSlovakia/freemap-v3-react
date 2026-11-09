@@ -182,6 +182,10 @@ export const gallerySetPickingPosition = createAction<LatLon>(
   'GALLERY_SET_PICKING_POSITION',
 );
 
+export const gallerySetPickingAzimuth = createAction<number | null>(
+  'GALLERY_SET_PICKING_AZIMUTH',
+);
+
 export const galleryConfirmPickedPosition = createAction(
   'GALLERY_CONFIRM_PICKED_POSITION',
 );

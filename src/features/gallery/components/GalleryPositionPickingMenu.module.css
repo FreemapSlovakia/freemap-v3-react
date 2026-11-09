@@ -1,0 +1,13 @@
+/* `!important` beats the global `.input-group > input.form-control` 100px
+   floor. The spinner is dropped: it keeps its width even while hidden. */
+.azimuth {
+  width: 4.5em !important;
+  min-width: 0 !important;
+  appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}

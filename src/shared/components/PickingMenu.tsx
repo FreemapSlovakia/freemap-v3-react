@@ -2,8 +2,9 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { PlaceSearch } from '@features/search/components/PlaceSearch.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement, ReactNode } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, ButtonToolbar } from 'react-bootstrap';
 import { FaCheck, FaTimes } from 'react-icons/fa';
+import { useScrollClasses } from '../hooks/useScrollClasses.js';
 import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
 
@@ -40,46 +41,52 @@ export function PickingMenu({
 }: Props): ReactElement {
   const m = useMessages();
 
+  const sc = useScrollClasses('horizontal');
+
   return (
-    <div>
+    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
+      <div />
+
       <Toolbar className="mt-2">
-        <div className="px-1">{prompt}</div>
+        <ButtonToolbar>
+          <div className="px-1 align-self-center">{prompt}</div>
 
-        {onPlace && <PlaceSearch onPlace={onPlace} />}
+          {onPlace && <PlaceSearch onPlace={onPlace} />}
 
-        {children}
+          {children}
 
-        {onConfirm && (
+          {onConfirm && (
+            <LongPressTooltip
+              breakpoint="sm"
+              label={confirmLabel ?? m?.general.ok}
+            >
+              {({ label, labelClassName, props }) => (
+                <Button
+                  variant="primary"
+                  onClick={onConfirm}
+                  disabled={confirmDisabled}
+                  {...props}
+                >
+                  <FaCheck />
+                  <span className={labelClassName}> {label}</span>
+                </Button>
+              )}
+            </LongPressTooltip>
+          )}
+
           <LongPressTooltip
             breakpoint="sm"
-            label={confirmLabel ?? m?.general.ok}
+            label={m?.general.cancel}
+            kbd={cancelKbd}
           >
             {({ label, labelClassName, props }) => (
-              <Button
-                variant="primary"
-                onClick={onConfirm}
-                disabled={confirmDisabled}
-                {...props}
-              >
-                <FaCheck />
+              <Button variant="dark" onClick={onCancel} {...props}>
+                <FaTimes />
                 <span className={labelClassName}> {label}</span>
               </Button>
             )}
           </LongPressTooltip>
-        )}
-
-        <LongPressTooltip
-          breakpoint="sm"
-          label={m?.general.cancel}
-          kbd={cancelKbd}
-        >
-          {({ label, labelClassName, props }) => (
-            <Button variant="dark" onClick={onCancel} {...props}>
-              <FaTimes />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
+        </ButtonToolbar>
       </Toolbar>
     </div>
   );
