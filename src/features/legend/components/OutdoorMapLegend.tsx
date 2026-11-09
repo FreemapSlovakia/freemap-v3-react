@@ -261,42 +261,52 @@ function LegendItems({
           </div>
 
           <div className="d-flex flex-wrap gap-2">
-            {name_w_tags.map(({ name, tags }, i) => {
-              // `*` is the key with any value, which the API takes bare.
-              const ts = Object.entries(tags).map(([k, v]) =>
-                v === '*' ? k : `${k}=${v}`,
-              );
-
-              return (
-                <ObjectFilterChip
-                  key={i}
-                  filterKey={ts.join(',')}
-                  tooltip={
-                    <Table
-                      className="text-left mb-0"
-                      bordered
-                      size="sm"
-                      data-bs-theme={
-                        document.documentElement.dataset['bsTheme'] === 'light'
-                          ? 'dark'
-                          : 'light'
-                      }
-                    >
-                      <tbody>
-                        {Object.entries(tags).map(([key, value]) => (
-                          <tr key={key}>
-                            <th>{key}</th>
-                            <td>{value}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  }
-                >
-                  {strippedName(name) || '???'}
-                </ObjectFilterChip>
-              );
-            })}
+            {[
+              // Tag sets of one item that read the same make one chip.
+              ...Map.groupBy(
+                name_w_tags,
+                ({ name }) => strippedName(name) || '???',
+              ),
+            ].map(([name, sets]) => (
+              <ObjectFilterChip
+                key={name}
+                filterKeys={sets.map(({ tags }) =>
+                  Object.entries(tags)
+                    // `*` is the key with any value, which the API takes bare.
+                    .map(([k, v]) => (v === '*' ? k : `${k}=${v}`))
+                    .join(','),
+                )}
+                tooltip={
+                  <div className="d-grid gap-1">
+                    {sets.map(({ tags }, i) => (
+                      <Table
+                        key={i}
+                        className="text-left mb-0"
+                        bordered
+                        size="sm"
+                        data-bs-theme={
+                          document.documentElement.dataset['bsTheme'] ===
+                          'light'
+                            ? 'dark'
+                            : 'light'
+                        }
+                      >
+                        <tbody>
+                          {Object.entries(tags).map(([key, value]) => (
+                            <tr key={key}>
+                              <th>{key}</th>
+                              <td>{value}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    ))}
+                  </div>
+                }
+              >
+                {name}
+              </ObjectFilterChip>
+            ))}
           </div>
         </Fragment>
       ))}

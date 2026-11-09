@@ -49,7 +49,7 @@ export function GenericNameToggles({ parts, tags }: Props): ReactNode {
     category ? (
       <ObjectFilterChip
         key={key}
-        filterKey={category.key}
+        filterKeys={[category.key]}
         className="fs-6 fw-normal"
         onToggle={onToggle}
       >

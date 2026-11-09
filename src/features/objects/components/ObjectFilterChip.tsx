@@ -8,8 +8,8 @@ import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react';
 import { useDispatch } from 'react-redux';
 
 type Props = ComponentPropsWithRef<'a'> & {
-  /** The filter this chip stands for — an `ObjectCategory`'s `key`. */
-  filterKey: string;
+  /** The filters this chip stands for — `ObjectCategory` `key`s, toggled together. */
+  filterKeys: string[];
   /** What the tooltip says above the hint — the legend shows the tags there. */
   tooltip?: ReactNode;
   onToggle?: () => void;
@@ -20,7 +20,7 @@ type Props = ComponentPropsWithRef<'a'> & {
  * filter it would leave behind and nothing else — not the view it sits in.
  */
 export function ObjectFilterChip({
-  filterKey,
+  filterKeys,
   className,
   children,
   tooltip,
@@ -33,9 +33,14 @@ export function ObjectFilterChip({
 
   const active = useAppSelector((state) => state.objects.active);
 
-  const index = active.findIndex((item) => sameFilter(item, filterKey));
+  const isActive = (key: string) =>
+    active.some((item) => sameFilter(item, key));
 
-  const next = index > -1 ? active.toSpliced(index, 1) : [...active, filterKey];
+  const on = filterKeys.every(isActive);
+
+  const next = on
+    ? active.filter((item) => !filterKeys.some((key) => sameFilter(item, key)))
+    : [...active, ...filterKeys.filter((key) => !isActive(key))];
 
   // Nothing about a chip says it is a control, so the tooltip is where that is
   // said; a caller with something of its own to show takes the line above it.
@@ -50,7 +55,7 @@ export function ObjectFilterChip({
           {...tipProps}
           className={clsx(
             'px-2 rounded',
-            index > -1 ? 'bg-primary text-light' : 'bg-body-secondary',
+            on ? 'bg-primary text-light' : 'bg-body-secondary',
             className,
           )}
           href={`/#objects=${encodeURIComponent(next.join(';'))}`}
