@@ -1,8 +1,18 @@
+import { selectFeature } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { encodePanel } from '@app/url/panelParam.js';
 import { useOpenManual } from '@features/documents/hooks/useOpenManual.js';
+import { EventSearchItem } from '@features/events/components/EventSearchItem.js';
+import { EVENTS_LAYER } from '@features/events/model/actions.js';
+import {
+  eventsLayerOnSelector,
+  selectedEventId,
+} from '@features/events/model/selectors.js';
+import { useEventMatches } from '@features/events/useEventMatches.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { mapToggleLayer } from '@features/map/model/actions.js';
+import { panToUncovered } from '@features/map/panToUncovered.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import type { ObjectCategory } from '@features/objects/objectCategories.js';
@@ -232,6 +242,23 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     !online || isLocalSearchQuery(value) ? '' : value,
   );
 
+  // The query a place was picked for: events still on their way for it would
+  // reopen the list over the place.
+  const [pickedFor, setPickedFor] = useState<string | null>(null);
+
+  // Upcoming events by title, which need the API.
+  const eventMatches = useEventMatches(
+    hidden ||
+      !online ||
+      window.fmEmbedded ||
+      isLocalSearchQuery(value) ||
+      value === pickedFor
+      ? ''
+      : value,
+  );
+
+  const selectedEvent = useAppSelector(selectedEventId);
+
   const activeIndexOf = (key: string) =>
     objectsActive.findIndex((item) => sameFilter(item, key));
 
@@ -247,6 +274,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     results.length > 0 ||
     commands.length > 0 ||
     poiMatches.length > 0 ||
+    eventMatches.length > 0 ||
     recentShown;
 
   // Suggest while typing, skipping what has already been asked for.
@@ -343,6 +371,27 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [dispatch, query, results.length, hasRecent],
   );
 
+  // After a pick that goes nowhere in the results: the box is emptied and the
+  // lookup taken back, aborting one in flight. Left standing, its answer would
+  // land a moment later and open the list over whatever was just opened.
+  const spendQuery = useCallback(() => {
+    setValue('');
+
+    askedRef.current = '';
+
+    setLimit(searchLimitStep);
+
+    if (query) {
+      dispatch(searchSetQuery({ query: '' }));
+    }
+
+    if (results.length > 0) {
+      dispatch(searchSetResults([]));
+    }
+
+    setOpen(false);
+  }, [dispatch, query, results.length]);
+
   const handleSelect = useCallback(
     (eventKey: string | null) => {
       if (!eventKey) {
@@ -369,6 +418,31 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         return;
       }
 
+      if (eventKey.startsWith('event-')) {
+        const event = eventMatches.find((e) => `event-${e.id}` === eventKey);
+
+        if (event) {
+          trackMatomo(['trackEvent', 'Search', 'event']);
+
+          // As an event's link does: its layer on, to show it.
+          if (!eventsLayerOnSelector(store.getState())) {
+            dispatch(mapToggleLayer({ type: EVENTS_LAYER, enable: true }));
+          }
+
+          if (selectedEventId(store.getState()) === event.id) {
+            // Its panel is up already, and pans only on a new selection.
+            void panToUncovered(dispatch, event.startPoint, { ifHidden: true });
+          } else {
+            // Its panel pans it into view once in.
+            dispatch(selectFeature({ type: 'event', id: event.id }));
+          }
+        }
+
+        spendQuery();
+
+        return;
+      }
+
       if (eventKey.startsWith('cmd-')) {
         const id = eventKey.slice(4);
 
@@ -380,24 +454,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           dispatch(match.command.action);
         }
 
-        // The query is spent: the box is emptied and the lookup taken back,
-        // aborting one in flight. Left standing, its answer would land a
-        // moment later and open the list over whatever was just opened.
-        setValue('');
-
-        askedRef.current = '';
-
-        setLimit(searchLimitStep);
-
-        if (query) {
-          dispatch(searchSetQuery({ query: '' }));
-        }
-
-        if (results.length > 0) {
-          dispatch(searchSetResults([]));
-        }
-
-        setOpen(false);
+        spendQuery();
 
         return;
       }
@@ -428,11 +485,23 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         );
 
         dispatch(searchRecentAdd(result));
+
+        setPickedFor(value);
       }
 
       setOpen(false);
     },
-    [commands, query, results, recent, objectsActive, dispatch, store],
+    [
+      commands,
+      eventMatches,
+      results,
+      value,
+      recent,
+      objectsActive,
+      spendQuery,
+      dispatch,
+      store,
+    ],
   );
 
   const showMore = useCallback(() => {
@@ -454,15 +523,20 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const shownPoiRef = useRef('');
 
+  const shownEventsRef = useRef('');
+
   useEffect(() => {
     const commandKey = commands.map(({ command }) => command.id).join();
 
     const poiKey = poiMatches.map(({ category }) => category.key).join();
 
+    const eventKey = eventMatches.map(({ id }) => id).join();
+
     if (
       results === shownResultsRef.current &&
       commandKey === shownCommandsRef.current &&
-      poiKey === shownPoiRef.current
+      poiKey === shownPoiRef.current &&
+      eventKey === shownEventsRef.current
     ) {
       return;
     }
@@ -474,6 +548,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     shownCommandsRef.current = commandKey;
 
     shownPoiRef.current = poiKey;
+
+    shownEventsRef.current = eventKey;
 
     if (results.length) {
       const active = document.activeElement;
@@ -494,10 +570,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       // Otherwise the user has moved on to something of their own. Suggestions
       // land a keystroke's delay plus a round trip later, so taking the caret
       // back here would pull it out of whatever they are filling in now.
-    } else if (commands.length || poiMatches.length) {
-      // Answered from here rather than fetched, so the caret is in the box
-      // already — unless the list was rebuilt by something else entirely
-      // (signing in, a layer going), which is no reason to take the focus.
+    } else if (commands.length || poiMatches.length || eventMatches.length) {
+      // Answered for what is being typed, so the caret is in the box — unless
+      // something else rebuilt the list (signing in, a layer going).
       if (!inputRef.current || document.activeElement === inputRef.current) {
         setOpen(true);
       }
@@ -506,7 +581,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, commands, poiMatches, recentShown]);
+  }, [results, commands, poiMatches, eventMatches, recentShown]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -643,6 +718,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             {results.length ||
             commands.length ||
             poiMatches.length ||
+            eventMatches.length ||
             (!value && !window.fmEmbedded) ? (
               <Button variant="secondary" onClick={handleCaretClick}>
                 {open ? <FaCaretUp /> : <FaCaretDown />}
@@ -724,6 +800,20 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             />
           ))}
 
+          {eventMatches.length > 0 && (
+            <div className="dropdown-caption-divider">
+              {m?.mapLayers.letters[EVENTS_LAYER]}
+            </div>
+          )}
+
+          {eventMatches.map((event) => (
+            <EventSearchItem
+              key={event.id}
+              event={event}
+              active={event.id === selectedEvent}
+            />
+          ))}
+
           {results.map((result) => {
             const id = stringifyFeatureId(result.id);
 
@@ -734,6 +824,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             const divider =
               (commands.length > 0 ||
                 poiMatches.length > 0 ||
+                eventMatches.length > 0 ||
                 !(
                   [
                     'nominatim-forward',

@@ -44,6 +44,7 @@ From the second character on, the box also lists, above the places:
 - **Maps** – picking a map switches it on.
 - **Manual** – the chapters of this manual.
 - **Objects (POIs)** – types of places such as “spring” or “shelter”, each with a checkbox that shows all of them on the map (see [Objects](#show=manual/objects)). The list stays open, so you can tick several.
+- **Events** – from the third character, up to five events that have not ended yet whose title holds every word typed, nearest to the middle of the map first. Picking one switches the **Events** layer on and opens the event.
 
 ![Functions among the search results](./images/search-functions.en.webp)
 

@@ -44,6 +44,7 @@ Od druhého znaku pole nad miestami ponúka aj:
 - **Mapy** – výberom mapy ju zapnete.
 - **Príručka** – kapitoly tejto príručky.
 - **Objekty (POI)** – druhy miest, napr. „prameň“ alebo „útulňa“, každý so zaškrtávacím políčkom, ktoré zobrazí všetky také miesta na mape (pozri [Objekty](#show=manual/objects)). Zoznam zostane otvorený, takže ich môžete zaškrtnúť viac.
+- **Akcie** – od tretieho znaku najviac päť akcií, ktoré ešte neskončili a ktorých názov obsahuje všetky zadané slová, najbližšie k stredu mapy navrchu. Výberom sa zapne vrstva **Akcie** a otvorí sa akcia.
 
 ![Funkcie medzi výsledkami vyhľadávania](./images/search-functions.sk.webp)
 
