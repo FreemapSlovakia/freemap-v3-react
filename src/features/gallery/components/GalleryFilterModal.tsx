@@ -234,35 +234,16 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     ],
   );
 
-  const handleEraseClick = () => {
-    setTag('');
-
-    setUserId('');
-
-    setTakenAtFrom('');
-
-    setTakenAtTo('');
-
-    setCreatedAtFrom('');
-
-    setCreatedAtTo('');
-
-    setRatingFrom('');
-
-    setRatingTo('');
-
-    setPano(undefined);
-
-    setPremium(undefined);
-
-    setLicense([]);
-
-    setSources(GALLERY_SOURCES);
-  };
-
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
+
+  // As the events filter's: applied, not only cleared in the form.
+  const handleEraseClick = () => {
+    dispatch(gallerySetFilter({}));
+
+    close();
+  };
 
   const [panoCheck, setPanoCheck] = useState<HTMLInputElement | null>(null);
 
@@ -295,19 +276,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     5,
   );
 
-  const filterEmpty =
-    tag === '' &&
-    userId === '' &&
-    takenAtFrom === '' &&
-    takenAtTo === '' &&
-    createdAtFrom === '' &&
-    createdAtTo === '' &&
-    ratingFrom === '' &&
-    ratingTo === '' &&
-    pano === undefined &&
-    premium === undefined &&
-    license.length === 0 &&
-    sources.length === GALLERY_SOURCES.length;
+  // The applied filter, which Clear removes.
+  const filterEmpty = Object.values(filter).every((v) => v === undefined);
 
   useDocumentTitle(show ? gm?.filterModal.title : undefined);
 
