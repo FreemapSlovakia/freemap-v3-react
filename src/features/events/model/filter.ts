@@ -1,4 +1,3 @@
-import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { DIFFICULTIES } from './actions.js';
 
 /** Inclusive; either end may be open. */
@@ -226,31 +225,16 @@ export function filterFromQuery(
 export const sameFilter = (a: EventsFilter, b: EventsFilter): boolean =>
   JSON.stringify(filterToQuery(a)) === JSON.stringify(filterToQuery(b));
 
-/**
- * A `YYYY-MM-DD` day's local start with its offset, e.g.
- * `2026-11-09T00:00:00+01:00`; 01:00 where DST skips midnight.
- */
-export function localDayStart(day: string): string {
-  const [y, m, d] = day.split('-').map(Number);
-
+/** The local start of the day a UTC midnight names; 01:00 where DST skips midnight. */
+export function localDayStart(day: Date): Date {
   // Not `new Date(y, …)`, which reads years 0–99 as 1900s.
   const start = new Date(0);
 
-  start.setFullYear(y!, m! - 1, d);
+  start.setFullYear(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate());
 
   start.setHours(0, 0, 0, 0);
 
-  // Local mean time (before ~1900) needn't be whole minutes.
-  const offset = -Math.round(start.getTimezoneOffset());
-
-  const abs = Math.abs(offset);
-
-  const pad = (n: number) => String(n).padStart(2, '0');
-
-  return (
-    `${day}T${toDatetimeLocal(start).split('T')[1]}` +
-    `${offset < 0 ? '-' : '+'}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`
-  );
+  return start;
 }
 
 /**
@@ -275,21 +259,15 @@ export function filterToRequest(
 
   // The picker yields UTC midnight naming a day. The end is that UTC day's
   // last instant, as a date-only event's dates are UTC midnights; the start
-  // is the day's local start, `fromDay` covering date-only events.
+  // is the day's local start.
   const toEnd = to && new Date(to.getTime() + 86_400_000 - 1);
 
-  const fromDay =
-    from || !toEnd || toEnd >= now
-      ? localDayStart(
-          from ? formatDate(from) : toDatetimeLocal(now).slice(0, 10),
-        )
-      : undefined;
+  if (from || !toEnd || toEnd >= now) {
+    params['from'] = (from ? localDayStart(from) : now).toISOString();
 
-  if (fromDay) {
-    params['from'] = from ? new Date(fromDay).toISOString() : now.toISOString();
-
-    // Matches a date-only event, or one without an end, by its day.
-    params['fromDay'] = fromDay;
+    // The API matches a date-only event, or one without an end, by `from`'s
+    // day in this zone.
+    params['tz'] = Intl.DateTimeFormat().resolvedOptions().timeZone;
   }
 
   if (toEnd) {

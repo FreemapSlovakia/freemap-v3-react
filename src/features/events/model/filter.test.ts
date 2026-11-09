@@ -73,7 +73,7 @@ describe('events filter', () => {
     withTz('Europe/Bratislava', () =>
       expect(filterToRequest(invalid, now)).toEqual({
         from: now.toISOString(),
-        fromDay: '2026-11-03T00:00:00+01:00',
+        tz: 'Europe/Bratislava',
       }),
     );
   });
@@ -106,27 +106,22 @@ describe('events filter', () => {
     expect(stopOf(1000)).toBe(1000);
   });
 
-  it("writes a day's local start with its offset", () => {
+  it("finds a day's local start", () => {
     const cases: [string, string, string][] = [
-      ['Europe/Bratislava', '2026-11-09', '2026-11-09T00:00:00+01:00'],
-      ['America/St_Johns', '2026-11-09', '2026-11-09T00:00:00-03:30'],
-      ['Asia/Kolkata', '2026-11-09', '2026-11-09T00:00:00+05:30'],
+      ['Europe/Bratislava', '2026-11-09', '2026-11-08T23:00:00.000Z'],
+      ['America/St_Johns', '2026-11-09', '2026-11-09T03:30:00.000Z'],
+      ['Asia/Kolkata', '2026-11-09', '2026-11-08T18:30:00.000Z'],
       // DST skips its midnight.
-      ['America/Santiago', '2026-09-06', '2026-09-06T01:00:00-03:00'],
+      ['America/Santiago', '2026-09-06', '2026-09-06T04:00:00.000Z'],
+      // Not 1950; local mean time, +0:57:44.
+      ['Europe/Prague', '0050-01-01', '0049-12-31T23:02:16.000Z'],
     ];
 
     for (const [tz, day, start] of cases) {
-      withTz(tz, () => expect(localDayStart(day)).toBe(start));
+      withTz(tz, () =>
+        expect(localDayStart(new Date(day)).toISOString()).toBe(start),
+      );
     }
-
-    // Local mean time, +0:57:44, as an offset the API's parser takes.
-    withTz('Europe/Prague', () => {
-      for (const day of ['1850-01-01', '0050-01-01']) {
-        expect(localDayStart(day)).toMatch(
-          new RegExp(`^${day}T00:00:00\\+00:5\\d$`),
-        );
-      }
-    });
   });
 
   it('asks for what has not ended yet unless the dates say otherwise', () => {
@@ -136,22 +131,21 @@ describe('events filter', () => {
 
     expect(fromOf({})).toBe(now.toISOString());
 
-    const fromDayOf = (f: EventsFilter) => filterToRequest(f, now)['fromDay'];
+    const tzOf = (f: EventsFilter) => filterToRequest(f, now)['tz'];
 
     withTz('Pacific/Kiritimati', () => {
-      expect(fromDayOf({})).toBe('2026-11-04T00:00:00+14:00');
+      expect(tzOf({})).toBe('Pacific/Kiritimati');
 
-      expect(fromDayOf({ from: new Date('2026-01-01') })).toBe(
-        '2026-01-01T00:00:00+14:00',
-      );
-
-      // A picked start is its local day's start.
+      // A picked start is its local day's start, the day the API finds
+      // from it in `tz`.
       expect(fromOf({ from: new Date('2026-01-01') })).toBe(
         '2025-12-31T10:00:00.000Z',
       );
+
+      expect(tzOf({ from: new Date('2026-01-01') })).toBe('Pacific/Kiritimati');
     });
 
-    expect(fromDayOf({ to: new Date('2026-10-01') })).toBeUndefined();
+    expect(tzOf({ to: new Date('2026-10-01') })).toBeUndefined();
 
     // Up to today still means from now on; an end in the past means the past.
     expect(fromOf({ to: new Date('2026-11-03') })).toBe(now.toISOString());
