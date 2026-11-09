@@ -421,7 +421,7 @@ function TargetName({ target }: { target: SetupTarget }): ReactElement {
   const def = useTargetDef(target);
 
   return def ? (
-    <MapLayerItem def={def} truncate />
+    <MapLayerItem def={def} truncate noKindMark={!isMapLike(def.technology)} />
   ) : (
     <span className="text-truncate">{target.type}</span>
   );
@@ -653,6 +653,8 @@ function MapRow({
 
   const ref = useAppSelector((state) => mapByIdSelector(state)[target.type]);
 
+  const eventCount = useAppSelector((state) => state.events.list.length);
+
   // A base map too: the map is then left without one, its background showing.
   const remove = () =>
     dispatch(
@@ -685,6 +687,12 @@ function MapRow({
           <span className="d-inline-flex min-w-0">
             <MapLayerItem def={def} truncate noKindMark />
           </span>
+
+          {def.technology === 'events' && (
+            <Badge pill bg="secondary" className="flex-shrink-0">
+              {eventCount}
+            </Badge>
+          )}
 
           {unapplied && (
             <UnsavedWarningIcon
