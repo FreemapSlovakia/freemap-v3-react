@@ -7,8 +7,6 @@ import { Dropdown } from 'react-bootstrap';
 import { FaDrawPolygon, FaMapMarkerAlt, FaTags } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
-import { FmDropdownMenu } from './FmDropdownMenu.js';
-import { LongPressTooltip } from './LongPressTooltip.js';
 import { MenuLabel } from './MenuLabel.js';
 
 type Props = {
@@ -72,27 +70,3 @@ const ICONS: Record<BatchKind, ReactElement> = {
   lines: <MdPolyline />,
   polygons: <FaDrawPolygon />,
 };
-
-/** The same items under a button of their own. */
-export function BatchPropertiesDropdown({
-  size,
-  ...props
-}: Props & { size?: 'sm' }): ReactElement | null {
-  const dm = useDrawingMessages();
-
-  return kindsOf(props.counts).length === 0 ? null : (
-    <Dropdown>
-      <LongPressTooltip label={dm?.batch.title}>
-        {({ props: tooltipProps }) => (
-          <Dropdown.Toggle variant="secondary" size={size} {...tooltipProps}>
-            <FaTags />
-          </Dropdown.Toggle>
-        )}
-      </LongPressTooltip>
-
-      <FmDropdownMenu>
-        <BatchPropertiesItems {...props} />
-      </FmDropdownMenu>
-    </Dropdown>
-  );
-}

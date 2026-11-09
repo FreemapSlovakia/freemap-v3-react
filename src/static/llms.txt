@@ -62,7 +62,7 @@ Each is a Markdown fragment of this document, continuing its heading levels. Tog
 - [Photos and personal maps](/llms-photos-maps.md): the community photo layer, uploading and rating photos, the leaderboard, saved personal maps (sharing, offline flagging, writing back), and events (saved maps published as shared trips).
 - [Drawing and data](/llms-drawing.md): the one collection of points, lines and polygons — drawn, imported from GPX/GeoJSON/KML/KMZ/TCX files, or brought in from elsewhere — how it is kept (in the link or in the browser), editing, styles and labels, colorizing, matching, measurement, and the elevation profile.
 - [Routes and tracks](/llms-routes-tracks.md): the route finder (transport modes, waypoints, alternatives, isochrones, colorizing, elevation profile).
-- [OpenStreetMap objects, details and changes](/llms-osm.md): searching POIs by category, the map-details panel for an OSM element, and the recent-changes viewer.
+- [OpenStreetMap objects, details and changes](/llms-osm.md): searching POIs by category, the map-details panel for an OSM element, the recent-changes viewer, and the OSM notes overlay.
 - [Live tracking and the GPS recorder](/llms-tracking.md): tracked devices, watched devices, access tokens, and the standalone Android GPS recorder the app drives.
 - [Toposcope and panorama](/llms-views.md): the printable direction dial of surrounding summits, and the 360° terrain render with its peak names, distances and quality steps.
 - [Offline use](/llms-offline.md): what works without a connection and where settings are kept, downloaded offline maps, and caching tiles while browsing.

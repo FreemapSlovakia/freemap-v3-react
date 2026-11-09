@@ -3,11 +3,15 @@ import { fitMapToBbox } from '@features/map/fitMapToBbox.js';
 import { COLORS } from '@shared/colors.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import {
+  SwitchableTooltip,
+  usePermanentLabels,
+} from '@shared/permanentLabels.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { Point } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
 import { FaPencilAlt } from 'react-icons/fa';
-import { Rectangle, Tooltip } from 'react-leaflet';
+import { Rectangle } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
   type Changeset,
@@ -52,6 +56,8 @@ export function ChangesetsResult(): ReactElement | null {
   // Its marker or its row in the Map layers panel.
   const hovered = useAppSelector((state) => state.changesets.hovered);
 
+  const labelled = usePermanentLabels();
+
   const now = new Date();
 
   const dispatch = useDispatch();
@@ -81,6 +87,9 @@ export function ChangesetsResult(): ReactElement | null {
 
       {changesets.map((changeset) => {
         const opacity = opacityOf(changeset, now);
+
+        // Hovered in the panel's list too, the marker says which it is.
+        const permanent = labelled || changeset.id === hovered;
 
         return (
           <RichMarker
@@ -112,12 +121,12 @@ export function ChangesetsResult(): ReactElement | null {
               },
             }}
           >
-            <Tooltip
+            <SwitchableTooltip
               opacity={opacity}
               className="compact"
               offset={new Point(10, 10)}
               direction="right"
-              permanent
+              permanent={permanent}
             >
               <div className={classes.shortened}>
                 <b>
@@ -126,7 +135,7 @@ export function ChangesetsResult(): ReactElement | null {
                 </b>
                 {changeset.description}
               </div>
-            </Tooltip>
+            </SwitchableTooltip>
           </RichMarker>
         );
       })}

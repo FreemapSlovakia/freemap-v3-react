@@ -85,6 +85,12 @@ const en: MapSettingsMessages = {
   addMap: 'Add map',
   presetEmpty: 'No layers.',
   filterItems: 'Filter',
+  sorts: {
+    order: 'Original order',
+    name: 'By name',
+    longest: 'Longest first',
+    largest: 'Largest first',
+  },
   nothingInView: 'Nothing found in this part of the map.',
   presetHint:
     'Its layers are edited on the map: open the preset in the Map layers panel. Every change is kept at once.',

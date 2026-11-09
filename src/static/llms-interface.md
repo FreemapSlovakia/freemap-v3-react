@@ -147,7 +147,7 @@ At the bottom right of the main menu, there are buttons to switch the app UI the
 
 ### Map context menu (right-click)
 
-Right-clicking (or long-pressing) a location on the map opens a context menu with actions for that point. The same list is carried inline by every ⋮ menu that knows a place — see below:
+Right-clicking (or long-pressing) a location on the map opens a context menu with actions for that point. Long-pressing a feature whose label otherwise shows on hover (an event, an object, an OSM note or changeset below zoom 14, a route point…) shows its label instead, until the finger lifts. The same list is carried inline by every ⋮ menu that knows a place — see below:
 
 - Center a map here
 - Find coordinates and elevation

@@ -94,6 +94,12 @@ const it: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Aggiungi mappa',
   presetEmpty: 'Nessun livello.',
   filterItems: 'Filtra',
+  sorts: {
+    order: 'Ordine originale',
+    name: 'Per nome',
+    longest: 'Prima i più lunghi',
+    largest: 'Prima i più grandi',
+  },
   nothingInView: 'Nessun risultato in questa parte della mappa.',
   presetHint:
     'I suoi livelli si modificano sulla mappa: apra la preimpostazione nel pannello Livelli della mappa. Ogni modifica si salva subito.',

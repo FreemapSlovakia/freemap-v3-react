@@ -81,6 +81,13 @@ export type MapSettingsMessages = {
   /** The pinned search results, as a row in the Map layers panel. */
   /** Placeholder narrowing a feature's items in the Map layers panel. */
   filterItems: string;
+  /** Orders of the drawn and loaded features' list; each property is one too. */
+  sorts: {
+    order: string;
+    name: string;
+    longest: string;
+    largest: string;
+  };
   /** A feature's item list with nothing in it, as the objects in view can be. */
   nothingInView: string;
   /** Says where a preset's layers are edited. */

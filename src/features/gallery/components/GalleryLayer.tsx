@@ -1,5 +1,10 @@
+import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import { zoomOffsetOf } from '@features/map/shiftZoomGrid.js';
-import { createTileLayerComponent, updateGridLayer } from '@react-leaflet/core';
+import {
+  createTileLayerComponent,
+  updateGridLayer,
+  withPane,
+} from '@react-leaflet/core';
 import { createWorkerPool, type WorkerPool } from '@shared/workerPool.js';
 import {
   type Coords,
@@ -8,6 +13,8 @@ import {
   type Map as LeafletMap,
   GridLayer as LGridLayer,
 } from 'leaflet';
+import type { ReactElement } from 'react';
+import { Pane } from 'react-leaflet';
 import { createFilter, GALLERY_SOURCES } from '../galleryUtils.js';
 import type { GalleryColorizeBy, GalleryFilter } from '../model/actions.js';
 import { PicturesResponse } from '../model/pictures.js';
@@ -304,9 +311,9 @@ type Props = GalleryLayerOptions & {
   dirtySeq?: number; // probably unused?
 };
 
-export default createTileLayerComponent<LGalleryLayer, Props>(
+const GalleryGridLayer = createTileLayerComponent<LGalleryLayer, Props>(
   (props, context) => ({
-    instance: new LGalleryLayer(props),
+    instance: new LGalleryLayer(withPane(props, context)),
     context,
   }),
 
@@ -331,3 +338,16 @@ export default createTileLayerComponent<LGalleryLayer, Props>(
     }
   },
 );
+
+/** Above every map's tiles, and faded with the tools' features (⇧D) on top of its own opacity. */
+export default function GalleryLayer(props: Props): ReactElement {
+  return (
+    <Pane
+      name="fm-gallery"
+      className={FEATURES_PANE_CLASS}
+      style={{ zIndex: 250 }}
+    >
+      <GalleryGridLayer {...props} />
+    </Pane>
+  );
+}

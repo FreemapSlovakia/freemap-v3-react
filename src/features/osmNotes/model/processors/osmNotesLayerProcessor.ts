@@ -2,10 +2,19 @@ import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
 import { cancellableDelay } from '@shared/cancelRegister.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import z from 'zod';
-import { OSM_NOTES_LAYER, OSM_NOTES_MIN_ZOOM } from '../../api.js';
-import { osmNotesSetNotes } from '../actions.js';
+import {
+  OSM_NOTES_LAYER,
+  OSM_NOTES_LIMIT,
+  OSM_NOTES_MIN_ZOOM,
+} from '../../api.js';
+import {
+  type OsmNotesLoadState,
+  osmNotesSetLoadState,
+  osmNotesSetNotes,
+} from '../actions.js';
 import { OsmNoteFeatureSchema, toOsmNote } from '../noteSchema.js';
 
 const NotesSchema = z.object({ features: z.array(OsmNoteFeatureSchema) });
@@ -40,33 +49,54 @@ export const osmNotesLayerProcessor: Processor = {
   async handle({ getState, dispatch, prevState }) {
     const bbox = viewKey(getState());
 
+    const setLoadState = (loadState: OsmNotesLoadState) => {
+      if (getState().osmNotes.loadState !== loadState) {
+        dispatch(osmNotesSetLoadState(loadState));
+      }
+    };
+
     if (bbox === null) {
       if (getState().osmNotes.notes.length) {
         dispatch(osmNotesSetNotes([]));
       }
 
+      setLoadState('unavailable');
+
       return;
     }
 
-    // A view just turned on loads at once.
-    await cancellableDelay(viewKey(prevState) === null ? 0 : 500, {
-      stateChangePredicate: viewKey,
-    });
+    setLoadState('loading');
 
-    const res = await httpRequest({
-      getState,
-      url:
-        `${process.env['OSM_API_URL']}/api/0.6/notes.json?` +
-        objectToURLSearchParams({ bbox, closed: 0, limit: 1000 }),
-      expectedStatus: 200,
-      stateChangePredicate: viewKey,
-    });
+    try {
+      // A view just turned on loads at once.
+      await cancellableDelay(viewKey(prevState) === null ? 0 : 500, {
+        stateChangePredicate: viewKey,
+      });
 
-    const { features } = NotesSchema.parse(await res.json());
+      const res = await httpRequest({
+        getState,
+        url:
+          `${process.env['OSM_API_URL']}/api/0.6/notes.json?` +
+          objectToURLSearchParams({ bbox, closed: 0, limit: OSM_NOTES_LIMIT }),
+        expectedStatus: 200,
+        stateChangePredicate: viewKey,
+      });
 
-    // The body outlives the request's cancellation; the view may have moved on.
-    if (viewKey(getState()) === bbox) {
-      dispatch(osmNotesSetNotes(features.map(toOsmNote)));
+      const { features } = NotesSchema.parse(await res.json());
+
+      // The body outlives the request's cancellation; the view may have moved on.
+      if (viewKey(getState()) === bbox) {
+        dispatch(osmNotesSetNotes(features.map(toOsmNote)));
+
+        setLoadState('loaded');
+      }
+    } catch (err) {
+      // Cancelled, the view's next run says how its notes are coming.
+      if (!isAbortError(err) && viewKey(getState()) === bbox) {
+        setLoadState('failed');
+      }
+
+      throw err;
     }
   },
 };

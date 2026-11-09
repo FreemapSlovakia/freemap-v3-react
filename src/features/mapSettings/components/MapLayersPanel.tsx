@@ -1,5 +1,6 @@
 import { AsyncComponent } from '@app/components/AsyncComponent.js';
 import { setActiveModal } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
 import {
   type CollisionDetection,
   closestCenter,
@@ -35,7 +36,10 @@ import {
   mapPresetLayerRemove,
   type SetupTarget,
 } from '@features/map/model/actions.js';
-import { canSwitchKind } from '@features/map/model/layerKind.js';
+import {
+  canSwitchKind,
+  FEATURE_TECHNOLOGIES,
+} from '@features/map/model/layerKind.js';
 import {
   hasOwnConfig,
   isEmptySetup,
@@ -66,6 +70,8 @@ import {
   PanelHeaderSlotContext,
   PanelToolbarSlotContext,
 } from '@features/mapSettings/panelHeaderSlot.js';
+import { OsmNotesLayerList } from '@features/osmNotes/components/OsmNotesLayerList.js';
+import { shownOsmNotesSelector } from '@features/osmNotes/model/selectors.js';
 import {
   colorToHexa,
   hexaToColor,
@@ -335,19 +341,19 @@ export default function MapLayersPanel(): ReactElement {
         <div ref={setToolbarSlot} className="px-2" />
 
         <div className={clsx(classes.list, 'px-2 pb-2')}>
-          {feature ? (
-            <MapFeatureItems feature={feature.id} elements={at.elements} />
-          ) : target ? (
-            <PanelHeaderSlotContext value={headerSlot}>
-              <PanelToolbarSlotContext value={toolbarSlot}>
+          <PanelToolbarSlotContext value={toolbarSlot}>
+            {feature ? (
+              <MapFeatureItems feature={feature.id} elements={at.elements} />
+            ) : target ? (
+              <PanelHeaderSlotContext value={headerSlot}>
                 <LayerSettings key={setupKey(target)} target={target} />
-              </PanelToolbarSlotContext>
-            </PanelHeaderSlotContext>
-          ) : at.preset !== undefined ? (
-            <PresetLayers id={at.preset} onOpen={setPlace} />
-          ) : (
-            <Stack onOpen={setPlace} featureRows={featureRows} />
-          )}
+              </PanelHeaderSlotContext>
+            ) : at.preset !== undefined ? (
+              <PresetLayers id={at.preset} onOpen={setPlace} />
+            ) : (
+              <Stack onOpen={setPlace} featureRows={featureRows} />
+            )}
+          </PanelToolbarSlotContext>
         </div>
       </div>
     </Card>
@@ -421,7 +427,11 @@ function TargetName({ target }: { target: SetupTarget }): ReactElement {
   const def = useTargetDef(target);
 
   return def ? (
-    <MapLayerItem def={def} truncate noKindMark={!isMapLike(def.technology)} />
+    <MapLayerItem
+      def={def}
+      truncate
+      noKindMark={!hasKindMark(def.technology)}
+    />
   ) : (
     <span className="text-truncate">{target.type}</span>
   );
@@ -653,7 +663,9 @@ function MapRow({
 
   const ref = useAppSelector((state) => mapByIdSelector(state)[target.type]);
 
-  const eventCount = useAppSelector((state) => state.events.list.length);
+  const listedCount = useAppSelector(
+    (state) => def && LAYER_LISTS[def.technology]?.count(state),
+  );
 
   // A base map too: the map is then left without one, its background showing.
   const remove = () =>
@@ -688,9 +700,9 @@ function MapRow({
             <MapLayerItem def={def} truncate noKindMark />
           </span>
 
-          {def.technology === 'events' && (
+          {listedCount !== undefined && (
             <Badge pill bg="secondary" className="flex-shrink-0">
-              {eventCount}
+              {listedCount}
             </Badge>
           )}
 
@@ -704,7 +716,7 @@ function MapRow({
       }
       onOpen={mapHasPage(ref) ? () => onOpen(target) : undefined}
       kind={
-        isMapLike(def.technology) && (
+        hasKindMark(def.technology) && (
           <LayerKindButton
             value={def.layer}
             onChange={
@@ -719,7 +731,7 @@ function MapRow({
         )
       }
       opacity={
-        isMapLike(def.technology)
+        hasOpacity(def.technology)
           ? resolveLayerOpacity(def, setup?.opacity)
           : undefined
       }
@@ -766,11 +778,27 @@ function PresetRow({
   );
 }
 
-/**
- * Whether a layer's row offers a map's kind and opacity. The events' markers
- * are features rather than a map, so neither says anything about them.
- */
-const isMapLike = (technology: string) => technology !== 'events';
+const hasKindMark = (technology: string) =>
+  !FEATURE_TECHNOLOGIES.has(technology);
+
+const hasOpacity = (technology: string) =>
+  !FEATURE_TECHNOLOGIES.has(technology) || technology === 'gallery';
+
+/** The layers whose page lists what they show, and how many their row says. */
+const LAYER_LISTS: Partial<
+  Record<
+    string,
+    { List: () => ReactElement; count: (state: RootState) => number }
+  >
+> = {
+  events: { List: EventsLayerList, count: (state) => state.events.list.length },
+  osmNotes: {
+    List: OsmNotesLayerList,
+    count: (state) => shownOsmNotesSelector(state).length,
+  },
+};
+
+const hasList = (technology: string) => Object.hasOwn(LAYER_LISTS, technology);
 
 /** Whether a map has a page: more to set than the row's kind and opacity. */
 function mapHasPage(ref: MapRef | undefined): boolean {
@@ -784,8 +812,7 @@ function mapHasPage(ref: MapRef | undefined): boolean {
 
   const technology = ref.def?.technology ?? ref.entry.technology;
 
-  // The events layer's page lists what it shows.
-  return hasOwnConfig(technology) || technology === 'events';
+  return hasOwnConfig(technology) || hasList(technology);
 }
 
 /** The stack: the overlays and overlay presets as they stack, then the base. */
@@ -1080,6 +1107,8 @@ function LayerSettings({
 
   const { technology } = def;
 
+  const List = LAYER_LISTS[technology]?.List;
+
   return (
     <div className="pt-1">
       {/* An offline map keeps the kind it was saved with. */}
@@ -1087,7 +1116,7 @@ function LayerSettings({
         <LayerKindSwitch target={target} className="mb-2 d-flex" />
       )}
 
-      {isMapLike(technology) && (
+      {hasOpacity(technology) && (
         <LayerOpacitySlider
           className="mb-2"
           value={resolveLayerOpacity(def, setup?.opacity)}
@@ -1113,11 +1142,11 @@ function LayerSettings({
         <AsyncComponent factory={shadingSectionFactory} target={target} />
       )}
 
-      {technology === 'events' && <EventsLayerList />}
+      {List && <List />}
 
-      {/* The map's own actions, set off from what its sections edit. The
-          events layer has none: nothing of it to save or reset. */}
-      {technology !== 'events' && (
+      {/* The map's own actions, set off from what its sections edit; not
+          under a list, which would push them out of reach. */}
+      {!hasList(technology) && (
         <>
           <hr />
 

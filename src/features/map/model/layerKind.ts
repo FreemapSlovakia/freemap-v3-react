@@ -2,12 +2,20 @@ import type { LayerSetup } from './layerSetup.js';
 
 export type LayerKind = 'base' | 'overlay';
 
-/** Drawn by the app itself, partly above every map; not part of a picture. */
-export const DATA_TECHNOLOGIES: ReadonlySet<string> = new Set([
+/**
+ * Features rather than a map: faded with the tools' features (⇧D), with no
+ * kind, and no opacity of their own but the photos'.
+ */
+export const FEATURE_TECHNOLOGIES: ReadonlySet<string> = new Set([
   'gallery',
   'events',
   'wikipedia',
   'osmNotes',
+]);
+
+/** Drawn by the app itself, partly above every map; not part of a picture. */
+export const DATA_TECHNOLOGIES: ReadonlySet<string> = new Set([
+  ...FEATURE_TECHNOLOGIES,
   'radar',
   'viewshed',
 ]);

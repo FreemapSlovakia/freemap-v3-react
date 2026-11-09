@@ -52,6 +52,10 @@ import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
 import {
+  OsmNotesListSortSchema,
+  osmNotesSettingsInitialState,
+} from '@features/osmNotes/model/settingsReducer.js';
+import {
   PanoramaGradientSchema,
   PanoramaGradientStopsSchema,
 } from '@features/panorama/gradient.js';
@@ -402,6 +406,7 @@ export const PersistedDataViewerSettingsSchema = z
     colorizeTrackBy: ColorizingModeSchema.nullable(),
     colorizeLegend: z.boolean(),
     traceOutput: TraceOutputSchema.nullable(),
+    listSort: z.string().catch('order'),
   })
   .partial();
 
@@ -484,6 +489,10 @@ export const PersistedEventsSettingsSchema = z
       ])
       .catch(DEFAULT_LIST_TRAITS),
   })
+  .partial();
+
+export const PersistedOsmNotesSettingsSchema = z
+  .object({ listSort: OsmNotesListSortSchema.catch('newest') })
   .partial();
 
 /**
@@ -752,6 +761,7 @@ const PERSIST: PersistEntry[] = [
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
       traceOutput: t.traceOutput,
+      listSort: t.listSort,
     }),
   }),
   defineEntry({
@@ -835,6 +845,12 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedEventsSettingsSchema,
     initial: eventsSettingsInitialState,
     persist: (e) => e,
+  }),
+  defineEntry({
+    key: 'osmNotesSettings',
+    schema: PersistedOsmNotesSettingsSchema,
+    initial: osmNotesSettingsInitialState,
+    persist: (n) => n,
   }),
   defineEntry({
     key: 'viewshedSettings',

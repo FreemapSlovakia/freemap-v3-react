@@ -17,6 +17,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 // Imported for its side effect, before any layer can bind a tooltip.
 import '../leafletTooltipFixes.js';
+import '../leafletTooltipPeek.js';
 // Imported for its side effect, before any tile layer can redraw.
 import '../leafletTileZoomFix.js';
 // Imported for its side effect: registers the `doubleTapDragZoom` map handler.

@@ -265,13 +265,7 @@ export function Layers(): ReactNode {
     }
 
     if (layerDef.technology === 'osmNotes') {
-      return (
-        <AsyncComponent
-          factory={osmNotesLayerFactory}
-          key={id}
-          opacity={opacity}
-        />
-      );
+      return <AsyncComponent factory={osmNotesLayerFactory} key={id} />;
     }
 
     if (layerDef.technology === 'viewshed') {

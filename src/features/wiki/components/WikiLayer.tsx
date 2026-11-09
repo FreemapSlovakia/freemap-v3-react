@@ -1,8 +1,9 @@
 import { selectFeature } from '@app/store/actions.js';
+import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import { HALO_OPACITY, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { Icon, type IconOptions } from 'leaflet';
-import { type ReactElement, useEffect, useState } from 'react';
+import type { ReactElement } from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { FaWikipediaW } from 'react-icons/fa';
@@ -76,24 +77,12 @@ export function WikiLayer(): ReactElement {
 
   const selectedId = useAppSelector(selectedWikiId);
 
-  const opacity = useAppSelector(
-    (state) => state.map.layerSetups['w']?.opacity ?? 1,
-  );
-
   const dispatch = useDispatch();
 
-  // `Pane` reads its style once; set anew, it would remount every marker.
-  const [pane, setPane] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (pane) {
-      pane.style.opacity = String(opacity);
-    }
-  }, [pane, opacity]);
-
-  // A marker's article opens in the panel (`WikiPanel`).
+  // A marker's article opens in the panel (`WikiPanel`). Faded, or hidden,
+  // with the tools' features (⇧D).
   return (
-    <Pane name="wiki" ref={setPane}>
+    <Pane name="wiki" className={FEATURES_PANE_CLASS}>
       {points.map(({ id, lat, lon, name, wikipedia }) => (
         <Marker
           key={id}

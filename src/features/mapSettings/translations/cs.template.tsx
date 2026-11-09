@@ -93,6 +93,12 @@ const cs: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Přidat mapu',
   presetEmpty: 'Žádné vrstvy.',
   filterItems: 'Filtrovat',
+  sorts: {
+    order: 'Původní pořadí',
+    name: 'Podle názvu',
+    longest: 'Nejdelší první',
+    largest: 'Největší první',
+  },
   nothingInView: 'V této části mapy se nic nenašlo.',
   presetHint:
     'Její vrstvy se upravují na mapě: otevřete předvolbu v panelu Vrstvy mapy. Každá změna se uloží hned.',

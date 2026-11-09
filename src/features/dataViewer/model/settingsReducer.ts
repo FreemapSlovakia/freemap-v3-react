@@ -18,6 +18,7 @@ import {
   dataViewerSetColorizeLegend,
   dataViewerSetData,
   dataViewerSetLabelVisibility,
+  dataViewerSetListSort,
   dataViewerSetStyle,
   dataViewerSetTraceOutput,
 } from './actions.js';
@@ -35,6 +36,8 @@ export interface DataViewerSettingsState {
   colorizeLegend: boolean;
   // The trace modal's last result; unset, it is chosen by the device.
   traceOutput: TraceOutput | null;
+  /** The panel list's sort: a built-in one, or `prop:<key>` by a property. */
+  listSort: string;
 }
 
 export const dataViewerSettingsInitialState: DataViewerSettingsState = {
@@ -43,6 +46,7 @@ export const dataViewerSettingsInitialState: DataViewerSettingsState = {
   colorizeTrackBy: null,
   colorizeLegend: true,
   traceOutput: null,
+  listSort: 'order',
 };
 
 export const dataViewerSettingsReducer = createReducer(
@@ -63,6 +67,9 @@ export const dataViewerSettingsReducer = createReducer(
       })
       .addCase(dataViewerSetTraceOutput, (state, action) => {
         state.traceOutput = action.payload;
+      })
+      .addCase(dataViewerSetListSort, (state, action) => {
+        state.listSort = action.payload;
       })
       .addCase(dataViewerSetData, (state, action) => {
         // A persisted elevation-derived colorize mode would render as a flat

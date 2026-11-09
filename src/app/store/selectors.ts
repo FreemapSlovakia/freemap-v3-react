@@ -1,5 +1,6 @@
 import { COOKIE_CONSENT_TOAST_ID } from '@features/cookieConsent/model/toastAction.js';
 import { isTrackLine } from '@features/dataViewer/trackSelection.js';
+import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
 import type { PickMode } from '@features/routePlanner/model/actions.js';
 import type { Track } from '@features/tracking/model/types.js';
 import { isDrawTool } from '@shared/toolDefinitions.js';
@@ -117,9 +118,11 @@ export const showGalleryPickerSelector = createSelector(
   mapLayersSelector,
   pickingModeSelector,
   drawingLineSelector,
-  (tool, layers, picking, drawingLine) =>
-    // The picker takes clicks of its own, so it wants the map to itself.
-    !tool && layers.includes('I') && !picking && !drawingLine,
+  (state: RootState) => areFeaturesHidden(state.map.featuresOpacity),
+  (tool, layers, picking, drawingLine, hidden) =>
+    // The picker takes clicks of its own, so it wants the map to itself; not
+    // for photos faded with the features (⇧D) out of sight.
+    !tool && layers.includes('I') && !picking && !drawingLine && !hidden,
 );
 
 export const showGalleryViewerSelector = (state: RootState): boolean =>

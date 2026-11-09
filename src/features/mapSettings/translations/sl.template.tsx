@@ -94,6 +94,12 @@ const sl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Dodaj zemljevid',
   presetEmpty: 'Ni slojev.',
   filterItems: 'Filtriraj',
+  sorts: {
+    order: 'Izvirni vrstni red',
+    name: 'Po imenu',
+    longest: 'Najdaljši najprej',
+    largest: 'Največji najprej',
+  },
   nothingInView: 'V tem delu zemljevida ni bilo nič najdeno.',
   presetHint:
     'Njene sloje urejate na zemljevidu: odprite prednastavitev v plošči Sloji zemljevida. Vsaka sprememba se shrani takoj.',

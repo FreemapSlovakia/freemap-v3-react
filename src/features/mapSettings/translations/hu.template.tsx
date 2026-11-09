@@ -93,6 +93,12 @@ const hu: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Térkép hozzáadása',
   presetEmpty: 'Nincsenek rétegek.',
   filterItems: 'Szűrés',
+  sorts: {
+    order: 'Eredeti sorrend',
+    name: 'Név szerint',
+    longest: 'Leghosszabbak elöl',
+    largest: 'Legnagyobbak elöl',
+  },
   nothingInView: 'A térkép ezen részén nincs találat.',
   presetHint:
     'A rétegeit a térképen lehet szerkeszteni: nyissa meg az előbeállítást a Térképrétegek panelen. Minden változás azonnal mentődik.',

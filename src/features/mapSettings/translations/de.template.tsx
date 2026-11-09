@@ -94,6 +94,12 @@ const de: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Karte hinzufügen',
   presetEmpty: 'Keine Ebenen.',
   filterItems: 'Filtern',
+  sorts: {
+    order: 'Ursprüngliche Reihenfolge',
+    name: 'Nach Name',
+    longest: 'Längste zuerst',
+    largest: 'Größte zuerst',
+  },
   nothingInView: 'In diesem Kartenausschnitt wurde nichts gefunden.',
   presetHint:
     'Ihre Ebenen werden auf der Karte bearbeitet: Öffnen Sie die Voreinstellung im Bedienfeld Kartenebenen. Jede Änderung wird sofort gespeichert.',

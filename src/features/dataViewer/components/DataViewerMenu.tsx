@@ -349,6 +349,12 @@ export function DataViewerMenu(): ReactElement {
             </MenuGutter>
           </Dropdown.Item>
 
+          <BatchPropertiesItems
+            modal="data-viewer-batch-properties"
+            counts={batchCounts}
+            divided
+          />
+
           {hasTrack && <Dropdown.Divider />}
 
           {canUpdateElevation && (
@@ -386,12 +392,6 @@ export function DataViewerMenu(): ReactElement {
               </MenuLabel>
             </Dropdown.Item>
           )}
-
-          <BatchPropertiesItems
-            modal="data-viewer-batch-properties"
-            counts={batchCounts}
-            divided
-          />
 
           <Dropdown.Divider />
 

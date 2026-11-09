@@ -1,10 +1,4 @@
-import {
-  deleteFeature,
-  openTool,
-  type Selection,
-  selectFeature,
-} from '@app/store/actions.js';
-import { openToolsSelector } from '@app/store/selectors.js';
+import { openTool, selectFeature } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { diffElementIcon } from '@features/changesets/components/ElementTypeIcon.js';
 import { useElementName } from '@features/changesets/components/useElementName.js';
@@ -22,19 +16,12 @@ import {
 } from '@features/changesets/model/changesetDiff.js';
 import { listedChangesetsSelector } from '@features/changesets/model/selectors.js';
 import { useChangesetsMessages } from '@features/changesets/translations/useChangesetsMessages.js';
-import { dataViewerBatchCounts } from '@features/dataViewer/featureEditing.js';
+import { dataViewerSetListSort } from '@features/dataViewer/model/actions.js';
 import { drawingMeasure } from '@features/drawing/model/actions/drawingPointActions.js';
 import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
 import { recorderLineLength } from '@features/gpsRecorder/segments.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
-import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
-import { mapSetFeaturesOpacity } from '@features/map/model/actions.js';
-import {
-  fitOnceSettled,
-  fitToUncovered,
-  GENEROUS_MARGIN_PX,
-} from '@features/map/panToUncovered.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { tolledMeters } from '@features/routePlanner/model/pathDetails.js';
 import {
@@ -53,134 +40,56 @@ import { getNameFromOsmElement, getOsmName } from '@osm/osmNameResolver.js';
 import { osmPoiKind } from '@osm/osmPoiKind.js';
 import type { OsmMapping } from '@osm/types.js';
 import { useOsmMapping } from '@osm/useOsmMapping.js';
-import type { UnknownAction } from '@reduxjs/toolkit';
 import { formatArea, naturalAreaUnit } from '@shared/areaFormatter.js';
 import { splitColorAlpha } from '@shared/colorAlpha.js';
-import { BatchPropertiesDropdown } from '@shared/components/BatchPropertiesItems.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
-import { usePaged } from '@shared/components/LoadMoreSentinel.js';
-import { TruncatedText } from '@shared/components/TruncatedText.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatDuration } from '@shared/durationFormatter.js';
-import { featureLabel } from '@shared/featureProperties.js';
+import { featureDataProps, featureLabel } from '@shared/featureProperties.js';
 import { formatLocationLines } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
-import { DELETABLE_SELECTIONS, sameSelection } from '@shared/selection.js';
 import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
-import type { LatLon } from '@shared/types/common.js';
 import {
   type OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
 import { area as turfArea } from '@turf/area';
-import { bbox as turfBbox } from '@turf/bbox';
 import { length as turfLength } from '@turf/length';
-import clsx from 'clsx';
-import type { GeoJSON } from 'geojson';
-import {
-  type ComponentProps,
-  type ReactElement,
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { Form } from 'react-bootstrap';
+import { type ReactElement, useEffect, useMemo } from 'react';
 import {
   FaBullseye,
   FaDrawPolygon,
+  FaListOl,
   FaLongArrowAltRight,
   FaMapMarkerAlt,
   FaPencilAlt,
   FaPlay,
+  FaRulerHorizontal,
   FaSearch,
+  FaSortAlphaDown,
   FaStop,
+  FaTag,
 } from 'react-icons/fa';
 import { MdPolyline } from 'react-icons/md';
 import { TbMapPin } from 'react-icons/tb';
 import { useDispatch, useStore } from 'react-redux';
 import type { MapFeatureId } from '../mapFeatureCounts.js';
-import {
-  isWideScreen,
-  type PanelPlace,
-  useMapLayersPanel,
-} from '../mapLayersPanelStore.js';
 import { useMapSettingsMessages } from '../translations/useMapSettingsMessages.js';
-import classes from './MapLayersPanel.module.css';
-import { RowRemoveButton } from './RowRemoveButton.js';
-
-type Bbox = [number, number, number, number];
-
-type Item = {
-  key: string;
-  icon: ReactElement;
-  /** Its colour on the map, where it has one of its own. */
-  color?: string | null;
-  /** Also what the filter matches. */
-  label: string;
-  /** Shown in place of `label`, where plain text won't do. */
-  display?: ReactNode;
-  /** Shown muted, as what the item is where it has no label. */
-  muted?: boolean;
-  /** What kind of thing it is, muted after its name. */
-  detail?: string;
-  /** Figures worth not cutting off, on a line of their own under the name. */
-  subline?: ReactNode;
-  /** The selection it is, highlighted while current, and made by a tap. */
-  selects?: Selection;
-  /** Dispatched by a tap instead, where selecting it on the map does more. */
-  actions?: UnknownAction[];
-  /** Highlighted as current, where that isn't the selection's to say. */
-  current?: boolean;
-  /** What a pick does beside dispatching, such as counting it. */
-  onPick?: () => void;
-  /** The pointer entering (`true`) or leaving the row. */
-  onHover?: (hovering: boolean) => void;
-  /** A page of its own, which picking it opens beside its other effects. */
-  opens?: PanelPlace;
-  /** Worked out only when it is picked: a long line has many points. */
-  bbox: () => Bbox | undefined;
-};
-
-// A filter box from this many items on.
-const FILTER_FROM = 10;
-
-const PAGE_ROWS = 100;
-
-// A loop: spreading a long track into `Math.min` overflows the stack.
-function latLonBbox(points: Iterable<LatLon>): Bbox | undefined {
-  let bbox: Bbox | undefined;
-
-  for (const { lat, lon } of points) {
-    bbox = bbox
-      ? [
-          Math.min(bbox[0], lon),
-          Math.min(bbox[1], lat),
-          Math.max(bbox[2], lon),
-          Math.max(bbox[3], lat),
-        ]
-      : [lon, lat, lon, lat];
-  }
-
-  return bbox;
-}
-
-function geojsonBbox(geojson: GeoJSON | null | undefined): Bbox | undefined {
-  if (!geojson) {
-    return undefined;
-  }
-
-  const [w, s, e, n] = turfBbox(geojson);
-
-  return [w, s, e, n];
-}
+import {
+  effectiveSort,
+  geojsonBbox,
+  type Item,
+  ItemList,
+  type ItemSortOption,
+  latLonBbox,
+} from './ItemList.js';
 
 /** The items of one of the tools' features, each selected on the map by a tap. */
 export function MapFeatureItems({
@@ -213,206 +122,6 @@ export function MapFeatureItems({
     case 'changesets':
       return elements ? <ChangesetElementItems /> : <ChangesetListItems />;
   }
-}
-
-function ItemList({
-  items,
-  footer,
-  empty,
-}: {
-  items: Item[];
-  /** Under the list, about the feature as a whole. */
-  footer?: ReactNode;
-  /** Said where there are no items at all; most lists are never empty. */
-  empty?: string;
-}): ReactElement {
-  const m = useMessages();
-
-  const msm = useMapSettingsMessages();
-
-  const dispatch = useDispatch();
-
-  const store = useStore<RootState>();
-
-  // Read here alone, so selecting doesn't rebuild every list's items.
-  const selection = useAppSelector((state) => state.main.selection);
-
-  const { setOpen, setPlace } = useMapLayersPanel();
-
-  const [filter, setFilter] = useState('');
-
-  const filterable = items.length >= FILTER_FROM;
-
-  // Not while its box is gone: it would narrow the list out of sight.
-  const query = filterable ? filter.trim().toLocaleLowerCase() : '';
-
-  const matching = query
-    ? items.filter((item) =>
-        `${item.label} ${item.detail ?? ''}`
-          .toLocaleLowerCase()
-          .includes(query),
-      )
-    : items;
-
-  // Rendered rows are costly (a tooltip and an observer each), so they come a
-  // page at a time as the list scrolls.
-  const { shown, more, reset } = usePaged(matching, PAGE_ROWS);
-
-  const pick = (item: Item) => {
-    const state = store.getState();
-
-    // A picked item has to be drawn to be seen.
-    if (areFeaturesHidden(state.map.featuresOpacity)) {
-      dispatch(mapSetFeaturesOpacity(1));
-    }
-
-    for (const action of item.actions ??
-      (item.selects ? [selectFeature(item.selects)] : [])) {
-      dispatch(action);
-    }
-
-    item.onPick?.();
-
-    const after = store.getState();
-
-    const openBefore = openToolsSelector(state);
-
-    // A selection of another kind, or a tool just opened, brings up its
-    // toolbar, which may cover the item: the fit measures once it is there.
-    const toolbarComing =
-      (after.main.selection !== null &&
-        after.main.selection.type !== state.main.selection?.type) ||
-      openToolsSelector(after).some((tool) => !openBefore.includes(tool));
-
-    const bbox = item.bbox();
-
-    if (item.opens) {
-      setPlace(item.opens);
-    }
-
-    // On a phone the panel covers what was just selected; not a page opened.
-    const closing = !item.opens && !isWideScreen();
-
-    if (closing) {
-      setOpen(false);
-    }
-
-    if (!bbox) {
-      return;
-    }
-
-    // Into the part of the map nothing covers, once a closing panel is gone;
-    // not moved where it is in view already, zoomed out only to fit, and never
-    // past the store's zoom, which may be ahead of an animating map.
-    const bringIntoView = () =>
-      void fitToUncovered(dispatch, bbox, {
-        ifHidden: true,
-        margin: closing ? undefined : GENEROUS_MARGIN_PX,
-        maxZoom: store.getState().map.zoom,
-      });
-
-    fitOnceSettled(bringIntoView, toolbarComing);
-  };
-
-  return (
-    <>
-      {filterable && (
-        <Form.Control
-          type="search"
-          size="sm"
-          className="mb-1"
-          placeholder={msm?.filterItems}
-          value={filter}
-          onChange={(e) => {
-            setFilter(e.currentTarget.value);
-
-            reset();
-          }}
-        />
-      )}
-
-      {shown.map((item) => {
-        const selected =
-          item.current ??
-          (item.selects !== undefined &&
-            sameSelection(selection, item.selects));
-
-        // Selected, the row is Bootstrap's `.active`: all of it white, the
-        // muted parts a fainter white, as grey is lost on the blue.
-        const muted = selected ? 'opacity-75' : 'text-muted';
-
-        return (
-          <div
-            key={item.key}
-            className={clsx(
-              classes.row,
-              selected && classes.rowSelected,
-              'd-flex align-items-center gap-1 mx-n2 px-3',
-            )}
-            onMouseEnter={item.onHover && (() => item.onHover?.(true))}
-            onMouseLeave={item.onHover && (() => item.onHover?.(false))}
-          >
-            <button
-              type="button"
-              className={clsx(
-                classes.rowToggle,
-                'flex-grow-1 d-flex align-items-center gap-1 text-start',
-              )}
-              onClick={() => pick(item)}
-            >
-              <span
-                className="d-inline-flex flex-shrink-0"
-                style={
-                  item.color && !selected ? { color: item.color } : undefined
-                }
-              >
-                {item.icon}
-              </span>
-
-              <span className="d-flex flex-column min-w-0">
-                <TruncatedText
-                  className={clsx(item.muted && muted)}
-                  // Muted grey is lost on the tooltip's dark background.
-                  tooltip={
-                    item.detail ? `${item.label} · ${item.detail}` : undefined
-                  }
-                >
-                  {item.display ?? item.label}
-
-                  {item.detail && (
-                    <span className={muted}> · {item.detail}</span>
-                  )}
-                </TruncatedText>
-
-                {item.subline && (
-                  <TruncatedText className={clsx('small', muted)}>
-                    {item.subline}
-                  </TruncatedText>
-                )}
-              </span>
-            </button>
-
-            {/* The selection stays, unless it is this item. */}
-            {item.selects && DELETABLE_SELECTIONS.has(item.selects.type) && (
-              <RowRemoveButton
-                onClick={() => dispatch(deleteFeature(item.selects))}
-              />
-            )}
-          </div>
-        );
-      })}
-
-      {more}
-
-      {(items.length === 0 ? empty : shown.length === 0) && (
-        <p className="text-muted mt-1 mb-0">
-          {items.length === 0 ? empty : m?.search.noResults}
-        </p>
-      )}
-
-      {footer}
-    </>
-  );
 }
 
 function osmKind(
@@ -618,36 +327,113 @@ function DataItems(): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
+  const listSort = useAppSelector(
+    (state) => state.trackViewerSettings.listSort,
+  );
+
+  const dispatch = useDispatch();
+
+  const msm = useMapSettingsMessages();
+
   // Once per change: a recorded track can have tens of thousands of points. A
   // point shows where it is, having no size.
   const sizes = useMemo(
     () =>
-      (features ?? []).map((feature) => {
-        const { geometry } = feature;
+      (features ?? []).map(
+        (
+          feature,
+        ): { text?: string; length?: number; area?: number } | undefined => {
+          const { geometry } = feature;
 
-        const type = geometry?.type;
+          const type = geometry?.type;
 
-        if (type === 'Polygon' || type === 'MultiPolygon') {
-          const m2 = turfArea(feature);
+          if (type === 'Polygon' || type === 'MultiPolygon') {
+            const area = turfArea(feature);
 
-          return formatArea(m2, naturalAreaUnit(m2), language);
-        }
+            return {
+              text: formatArea(area, naturalAreaUnit(area), language),
+              area,
+            };
+          }
 
-        if (geometry?.type === 'Point') {
-          const [lon, lat] = geometry.coordinates;
+          if (geometry?.type === 'Point') {
+            const [lon, lat] = geometry.coordinates;
 
-          return formatLocationLines({ lat: lat!, lon: lon! }).replace(
-            /\s+/g,
-            ' ',
-          );
-        }
+            return {
+              text: formatLocationLines({ lat: lat!, lon: lon! }).replace(
+                /\s+/g,
+                ' ',
+              ),
+            };
+          }
 
-        return type === 'LineString' || type === 'MultiLineString'
-          ? formatDistance(turfLength(feature, { units: 'meters' }), language)
-          : undefined;
-      }),
+          if (type === 'LineString' || type === 'MultiLineString') {
+            const length = turfLength(feature, { units: 'meters' });
+
+            return { text: formatDistance(length, language), length };
+          }
+
+          return undefined;
+        },
+      ),
     [features, language],
   );
+
+  const props = useMemo(
+    () =>
+      (features ?? []).map((feature) => featureDataProps(feature.properties)),
+    [features],
+  );
+
+  const sortOptions = useMemo((): ItemSortOption[] => {
+    // Only a property two features have can order anything.
+    const counts = Map.groupBy(
+      props.flatMap((p) => Object.keys(p)),
+      (key) => key,
+    );
+
+    const keys = [...counts].flatMap(([key, all]) =>
+      all.length > 1 ? [key] : [],
+    );
+
+    return [
+      // No item has an `order` key, so they keep theirs.
+      { id: 'order', label: msm?.sorts.order, icon: <FaListOl /> },
+      { id: 'name', label: msm?.sorts.name, icon: <FaSortAlphaDown /> },
+      ...(sizes.some((size) => size?.length !== undefined)
+        ? [
+            {
+              id: 'length',
+              label: msm?.sorts.longest,
+              icon: <FaRulerHorizontal />,
+              desc: true,
+            },
+          ]
+        : []),
+      ...(sizes.some((size) => size?.area !== undefined)
+        ? [
+            {
+              id: 'area',
+              label: msm?.sorts.largest,
+              icon: <FaDrawPolygon />,
+              desc: true,
+            },
+          ]
+        : []),
+      ...keys.toSorted().map((key, i) => ({
+        id: `prop:${key}`,
+        label: key,
+        icon: <FaTag />,
+        divided: i === 0,
+      })),
+    ];
+  }, [props, sizes, msm]);
+
+  const sortedBy = effectiveSort({ options: sortOptions, value: listSort });
+
+  const sortedProp = sortedBy?.id.startsWith('prop:')
+    ? sortedBy.id.slice('prop:'.length)
+    : undefined;
 
   // Likewise, as a `{length}` label measures too.
   const names = useMemo(
@@ -659,20 +445,26 @@ function DataItems(): ReactElement {
     [features, language],
   );
 
-  const batchCounts = useMemo(
-    () => dataViewerBatchCounts(features ?? []),
-    [features],
-  );
-
   return (
     <ItemList
-      footer={
-        <BatchFooter
-          modal="data-viewer-batch-properties"
-          counts={batchCounts}
-        />
+      onSearchStart={() =>
+        trackMatomo(['trackEvent', 'DataViewer', 'listSearch'])
       }
-      items={(features ?? []).map((feature, index) => {
+      sort={{
+        options: sortOptions,
+        value: listSort,
+        onChange: (id) => {
+          trackMatomo([
+            'trackEvent',
+            'DataViewer',
+            'listSort',
+            id.startsWith('prop:') ? 'property' : id,
+          ]);
+
+          dispatch(dataViewerSetListSort(id));
+        },
+      }}
+      items={(features ?? []).map((feature, index): Item => {
         const name = names[index]!;
 
         const type = feature.geometry?.type;
@@ -681,7 +473,9 @@ function DataItems(): ReactElement {
 
         const polygon = type === 'Polygon' || type === 'MultiPolygon';
 
-        const size = sizes[index];
+        const { text: size, length, area } = sizes[index] ?? {};
+
+        const data = props[index]!;
 
         return {
           key: String(index),
@@ -700,8 +494,28 @@ function DataItems(): ReactElement {
               defaultStyle.color,
           ).color,
           label: name || size || `#${index + 1}`,
-          subline: name ? size : undefined,
+          // The property sorted by shows, as the events' sorted stat does.
+          subline:
+            [
+              name && size,
+              sortedProp !== undefined &&
+                data[sortedProp] &&
+                `${sortedProp}: ${data[sortedProp]}`,
+            ]
+              .filter(Boolean)
+              .join(' · ') || undefined,
           muted: !name,
+          search: Object.values(data).join(' '),
+          sortKeys: {
+            name: name || undefined,
+            length,
+            area,
+            ...Object.fromEntries(
+              Object.entries(data)
+                .filter(([, value]) => value !== '')
+                .map(([key, value]) => [`prop:${key}`, value]),
+            ),
+          },
           selects: { type: 'feature', id: index },
           actions: [
             selectFeature({ type: 'feature', id: index }),
@@ -879,16 +693,6 @@ function RouteItems(): ReactElement {
       }
       items={items}
     />
-  );
-}
-
-function BatchFooter(
-  props: ComponentProps<typeof BatchPropertiesDropdown>,
-): ReactElement {
-  return (
-    <div className="mt-2">
-      <BatchPropertiesDropdown size="sm" {...props} />
-    </div>
   );
 }
 

@@ -88,6 +88,11 @@ export const dataViewerSetTraceOutput = createAction<TraceOutput>(
   'DATA_VIEWER_SET_TRACE_OUTPUT',
 );
 
+/** The order of the features' list in the map layers panel. */
+export const dataViewerSetListSort = createAction<string>(
+  'DATA_VIEWER_SET_LIST_SORT',
+);
+
 /**
  * Index (into `trackGeojson.features`) of the track the elevation chart, "more
  * info" and matching act on; `null` falls back to the first line.

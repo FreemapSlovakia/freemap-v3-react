@@ -29,6 +29,7 @@ import { mapsReducer } from '@features/myMaps/model/reducer.js';
 import { objectsReducer } from '@features/objects/model/reducer.js';
 import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
 import { osmNotesReducer } from '@features/osmNotes/model/reducer.js';
+import { osmNotesSettingsReducer } from '@features/osmNotes/model/settingsReducer.js';
 import { panoramaReducer } from '@features/panorama/model/reducer.js';
 import { panoramaSettingsReducer } from '@features/panorama/model/settingsReducer.js';
 import { progressReducer } from '@features/progress/model/reducer.js';
@@ -100,4 +101,5 @@ export const reducers = {
   myMaps: mapsReducer,
   wiki: wikiReducer,
   osmNotes: osmNotesReducer,
+  osmNotesSettings: osmNotesSettingsReducer,
 };

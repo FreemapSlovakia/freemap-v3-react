@@ -1,6 +1,8 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
   type OsmNote,
+  type OsmNotesLoadState,
+  osmNotesSetLoadState,
   osmNotesSetNotes,
   osmNotesSetSelected,
 } from './actions.js';
@@ -8,11 +10,13 @@ import {
 export interface OsmNotesState {
   notes: OsmNote[];
   selected: OsmNote | null;
+  loadState: OsmNotesLoadState;
 }
 
 const initialState: OsmNotesState = {
   notes: [],
   selected: null,
+  loadState: 'unavailable',
 };
 
 export const osmNotesReducer = createReducer(initialState, (builder) =>
@@ -22,5 +26,8 @@ export const osmNotesReducer = createReducer(initialState, (builder) =>
     })
     .addCase(osmNotesSetSelected, (state, { payload }) => {
       state.selected = payload;
+    })
+    .addCase(osmNotesSetLoadState, (state, { payload }) => {
+      state.loadState = payload;
     }),
 );

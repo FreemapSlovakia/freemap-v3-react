@@ -99,6 +99,12 @@ const fr: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Ajouter une carte',
   presetEmpty: 'Aucune couche.',
   filterItems: 'Filtrer',
+  sorts: {
+    order: 'Ordre d’origine',
+    name: 'Par nom',
+    longest: 'Les plus longs d’abord',
+    largest: 'Les plus grands d’abord',
+  },
   nothingInView: 'Rien trouvé dans cette partie de la carte.',
   presetHint:
     'Ses couches se modifient sur la carte : ouvrez le préréglage dans le panneau Couches de la carte. Chaque changement est enregistré aussitôt.',

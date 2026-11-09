@@ -11,6 +11,19 @@ const en: OsmNotesMessages = {
     reopened: 'Reopened',
     hidden: 'Hidden',
   },
+  list: {
+    sorts: {
+      newest: 'Newest first',
+      oldest: 'Oldest first',
+      active: 'Recently active first',
+      comments: 'Most comments first',
+    },
+    none: 'No open notes in this part of the map.',
+    zoomIn: 'Zoom in to see the notes.',
+    failed: 'The notes could not be loaded.',
+    capped: ({ count }) =>
+      `Only the first ${count} notes in view are listed; zoom in for the rest.`,
+  },
 };
 
 export default en;

@@ -1,4 +1,5 @@
 import { selectFeature } from '@app/store/actions.js';
+import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -84,8 +85,13 @@ export function EventsLayer(): ReactElement | null {
 
   return (
     // A pane of its own under the other markers: the stacking offsets below
-    // would lift these above route points, drawing points and results.
-    <Pane name="fm-events" style={{ zIndex: 590 }}>
+    // would lift these above route points, drawing points and results. Faded,
+    // or hidden, with the tools' features (⇧D).
+    <Pane
+      name="fm-events"
+      className={FEATURES_PANE_CLASS}
+      style={{ zIndex: 590 }}
+    >
       {shown.map(({ event, rank }) => (
         <RichMarker
           key={event.id}

@@ -94,6 +94,12 @@ const pl: DeepPartialWithRequiredObjects<MapSettingsMessages> = {
   addMap: 'Dodaj mapę',
   presetEmpty: 'Brak warstw.',
   filterItems: 'Filtruj',
+  sorts: {
+    order: 'Pierwotna kolejność',
+    name: 'Według nazwy',
+    longest: 'Najdłuższe najpierw',
+    largest: 'Największe najpierw',
+  },
   nothingInView: 'Na tym fragmencie mapy nic nie znaleziono.',
   presetHint:
     'Jego warstwy edytuje się na mapie: otwórz ustawienie wstępne w panelu Warstwy mapy. Każda zmiana zapisuje się od razu.',

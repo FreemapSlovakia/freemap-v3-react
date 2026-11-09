@@ -3,14 +3,15 @@ import type { RootState } from '@app/store/store.js';
 import { onMap } from '@features/map/hooks/leafletElementHolder.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
 import {
-  PanelHeaderSlotContext,
-  PanelToolbarSlotContext,
-} from '@features/mapSettings/panelHeaderSlot.js';
+  ListSearch,
+  ListSortDropdown,
+  PanelToolbar,
+} from '@features/mapSettings/components/PanelListControls.js';
+import { PanelHeaderSlotContext } from '@features/mapSettings/panelHeaderSlot.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { usePaged } from '@shared/components/LoadMoreSentinel.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
-import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { fuzzyMatch, prepareFuzzyTarget } from '@shared/fuzzyMatch.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNow } from '@shared/hooks/useNow.js';
@@ -23,7 +24,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { Dropdown, Form, ListGroup, ToggleButton } from 'react-bootstrap';
+import { Dropdown, ListGroup, ToggleButton } from 'react-bootstrap';
 import { createPortal } from 'react-dom';
 import {
   FaCheck,
@@ -111,8 +112,6 @@ export function EventsLayerList(): ReactElement {
   const now = useNow();
 
   const inView = useAppSelector((state) => state.eventsSettings.listInView);
-
-  const toolbarSlot = useContext(PanelToolbarSlotContext);
 
   const headerSlot = useContext(PanelHeaderSlotContext);
 
@@ -290,35 +289,25 @@ export function EventsLayerList(): ReactElement {
 
   const controls = (
     <>
-      <Form.Control
-        type="search"
-        size="sm"
-        className="mb-2"
+      <ListSearch
         placeholder={em?.list.search}
         value={query}
-        onChange={(e) => {
-          const next = e.currentTarget.value;
-
-          // Once per search, not per keystroke.
-          if (!query.trim() && next.trim()) {
-            trackMatomo(['trackEvent', 'Events', 'listSearch']);
-          }
-
-          setQuery(next);
-        }}
+        onChange={setQuery}
+        onSearchStart={() =>
+          trackMatomo(['trackEvent', 'Events', 'listSearch'])
+        }
       />
 
       <div className="d-flex gap-2 mb-2">
-        <Dropdown
-          className="flex-grow-1 min-w-0"
-          onSelect={(key) => {
-            const next = EventsListSortSchema.parse(key);
-
-            // As a select's change, picking the current one is nothing.
-            if (next === effectiveSort) {
-              return;
-            }
-
+        <ListSortDropdown
+          options={EventsListSortSchema.options.map((option) => ({
+            id: option,
+            label: em?.list.sorts[option],
+            icon: SORT_ICONS[option],
+            disabled: unavailable[option],
+          }))}
+          value={effectiveSort}
+          onChange={(next) => {
             if (next === 'nearMap') {
               setCenter(mapCenter());
             }
@@ -327,31 +316,7 @@ export function EventsLayerList(): ReactElement {
 
             dispatch(eventsSetListSort(next));
           }}
-        >
-          <Dropdown.Toggle
-            as={SelectToggle}
-            className="form-select-sm w-100 d-flex align-items-center gap-2"
-          >
-            {SORT_ICONS[effectiveSort]}
-            <MenuLabel>{em?.list.sorts[effectiveSort]}</MenuLabel>
-          </Dropdown.Toggle>
-
-          <FmDropdownMenu>
-            {EventsListSortSchema.options.map((option) => (
-              <Dropdown.Item
-                as="button"
-                type="button"
-                key={option}
-                eventKey={option}
-                active={option === effectiveSort}
-                disabled={unavailable[option]}
-              >
-                {SORT_ICONS[option]}
-                <MenuLabel>{em?.list.sorts[option]}</MenuLabel>
-              </Dropdown.Item>
-            ))}
-          </FmDropdownMenu>
-        </Dropdown>
+        />
 
         <LongPressTooltip label={em?.list.inView}>
           {({ props }) => (
@@ -383,8 +348,7 @@ export function EventsLayerList(): ReactElement {
 
   return (
     <>
-      {/* In the panel's toolbar, staying put while the list scrolls. */}
-      {toolbarSlot ? createPortal(controls, toolbarSlot) : controls}
+      <PanelToolbar>{controls}</PanelToolbar>
 
       {header}
 
