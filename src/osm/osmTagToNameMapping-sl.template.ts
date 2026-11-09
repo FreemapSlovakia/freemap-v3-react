@@ -740,9 +740,9 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     yes: 'Enosmerna cesta',
   },
   foot: {
-    no: 'Prehod za pešce prepovedan',
-    yes: 'Prehod za pešce dovoljen',
-    private: 'Prehod za pešce samo za lastnike',
+    no: 'Dostop za pešce prepovedan',
+    yes: 'Dostop za pešce dovoljen',
+    private: 'Dostop za pešce samo za lastnike',
     designated: 'Namenjeno pešcem',
   },
   bicycle: {

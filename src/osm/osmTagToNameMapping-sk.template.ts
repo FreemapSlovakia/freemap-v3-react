@@ -740,10 +740,10 @@ export const osmTagToNameMapping: DeepPartial<OsmTagToNameMapping> = {
     yes: 'Jednosmerka',
   },
   foot: {
-    no: 'Vstup zakázaný',
-    yes: 'Vstup povolený',
-    private: 'Vstup len pre vlastníkov',
-    designated: 'Vstup vyhradený',
+    no: 'Vstup pre peších zakázaný',
+    yes: 'Vstup pre peších povolený',
+    private: 'Vstup pre peších len pre vlastníkov',
+    designated: 'Vstup vyhradený pre peších',
   },
   bicycle: {
     no: 'Vjazd na bicykli zakázaný',
