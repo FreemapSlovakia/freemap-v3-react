@@ -75,9 +75,6 @@ const en: EventsMessages = {
     duration: 'Duration',
     ascent: 'Ascent',
     descent: 'Descent',
-    visibility: 'Visibility',
-    public: 'Public',
-    unlisted: 'Unlisted (only by its link)',
   },
   filter: {
     title: 'Events filter',
@@ -103,7 +100,6 @@ const en: EventsMessages = {
     imported: 'Imported',
   },
   card: {
-    unlisted: 'Unlisted',
     dogsWelcome: 'Dogs welcome',
     noDogs: 'No dogs',
     children: 'Suitable for children',

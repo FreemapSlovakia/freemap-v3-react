@@ -50,10 +50,7 @@ import {
   FaCheck,
   FaChild,
   FaDog,
-  FaEye,
   FaFlag,
-  FaGlobeEurope,
-  FaLink,
   FaMapMarkerAlt,
   FaRegClock,
   FaRegImage,
@@ -75,7 +72,6 @@ import {
   type EventItem,
   type EventPoint,
   EventSchema,
-  type EventVisibility,
   eventsSave,
   eventsSetPickingStart,
   eventsSetPickPosition,
@@ -99,7 +95,6 @@ type Draft = {
   dateOnly: boolean;
   /** The start point as typed, in any notation `parseCoordinates` reads. */
   position: string;
-  visibility: EventVisibility;
   mapId: string;
   transports: string[];
   /** Kilometers. */
@@ -212,7 +207,6 @@ function toDraft(
     endAt: toDraftTime(event?.endAt, event?.dateOnly ?? false),
     dateOnly: event?.dateOnly ?? false,
     position: event ? latLonToString(event.startPoint, language) : '',
-    visibility: event?.visibility ?? 'public',
     mapId: event?.mapId ?? mapId ?? '',
     transports: event?.transports ?? [],
     difficulty: event?.difficulty ?? '',
@@ -737,7 +731,6 @@ export default function EventFormModal({ show }: Props): ReactElement {
               : null,
           dateOnly: draft.dateOnly,
           startPoint,
-          visibility: draft.visibility,
           transports: draft.transports,
           difficulty: draft.difficulty || null,
           dogs: fromTri(draft.dogs),
@@ -1242,35 +1235,6 @@ export default function EventFormModal({ show }: Props): ReactElement {
               </InputGroup>
             </Form.Group>
           </div>
-
-          <Form.Group>
-            <Form.Label className="d-block">
-              <FaEye /> {em?.form.visibility}
-            </Form.Label>
-
-            <ToggleButtonGroup
-              type="radio"
-              name="event-visibility"
-              value={draft.visibility}
-              onChange={(visibility: EventVisibility) => set({ visibility })}
-            >
-              <ToggleButton
-                id="event-visibility-public"
-                value="public"
-                variant="outline-primary"
-              >
-                <FaGlobeEurope /> {em?.form.public}
-              </ToggleButton>
-
-              <ToggleButton
-                id="event-visibility-unlisted"
-                value="unlisted"
-                variant="outline-primary"
-              >
-                <FaLink /> {em?.form.unlisted}
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Form.Group>
         </Modal.Body>
 
         <FmModalFooter>

@@ -78,7 +78,8 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
       'gallery:write': 'Fotos hochladen, bearbeiten, bewerten und kommentieren',
       'maps:read': 'Meine Karten ansehen',
       'maps:write': 'Meine Karten erstellen, ändern und löschen',
-      'events:read': 'Veranstaltungen ansehen, auch meine nicht gelisteten',
+      'events:read':
+        'Veranstaltungen ansehen und ob ich interessiert bin oder teilnehme',
       'events:write':
         'Meine Veranstaltungen erstellen, ändern und löschen sowie Interesse und Teilnahme angeben',
       'tracking:read': 'Meine überwachten Geräte ansehen',

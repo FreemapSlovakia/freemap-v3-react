@@ -77,9 +77,6 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     duration: 'Dauer',
     ascent: 'Anstieg',
     descent: 'Abstieg',
-    visibility: 'Sichtbarkeit',
-    public: 'Öffentlich',
-    unlisted: 'Nicht gelistet (nur über den Link)',
   },
   filter: {
     title: 'Veranstaltungsfilter',
@@ -105,7 +102,6 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     imported: 'Übernommen',
   },
   card: {
-    unlisted: 'Nicht gelistet',
     dogsWelcome: 'Hunde willkommen',
     noDogs: 'Keine Hunde',
     children: 'Für Kinder geeignet',

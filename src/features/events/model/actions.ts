@@ -15,10 +15,6 @@ export const EventPointSchema = z.object({
 
 export type EventPoint = z.infer<typeof EventPointSchema>;
 
-export const EventVisibilitySchema = z.enum(['public', 'unlisted']);
-
-export type EventVisibility = z.infer<typeof EventVisibilitySchema>;
-
 /** A trip's stats; meters and seconds. */
 export const TripStatsShape = {
   /** Kinds the trip suits (see `transports.ts`); empty where unsaid. */
@@ -79,7 +75,6 @@ export const EventSchema = z.object({
    */
   dateOnly: z.boolean().default(false),
   startPoint: EventPointSchema,
-  visibility: EventVisibilitySchema,
   /** Harvested from a calendar and on the source's account: no organizer here
    * reads its discussion or sees who comes. Defaulted, as the web may deploy
    * before the API sends it. */
@@ -141,7 +136,6 @@ export type EventBody = TripStats &
     endAt: string | null;
     dateOnly: boolean;
     startPoint: EventPoint;
-    visibility: EventVisibility;
   };
 
 export const eventsSetList = createAction<EventSummary[]>('EVENTS_SET_LIST');

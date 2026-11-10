@@ -79,7 +79,7 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
       'maps:read': 'Saját térképek megtekintése',
       'maps:write': 'Saját térképek létrehozása, módosítása és törlése',
       'events:read':
-        'Események megtekintése, a saját nem listázott eseményeké is',
+        'Események megtekintése, és hogy érdekelnek-e vagy részt veszek-e',
       'events:write':
         'Saját események létrehozása, módosítása és törlése, valamint az érdeklődés és a részvétel jelzése',
       'tracking:read': 'Saját követett eszközök megtekintése',

@@ -3,7 +3,6 @@ import {
   minQueryLength,
   suggestDelayMs,
 } from '@features/search/components/searchInput.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffect, useState } from 'react';
 import { useStore } from 'react-redux';
 import z from 'zod';
@@ -24,19 +23,15 @@ export function useEventMatches(query: string): EventSummary[] {
 
   const worthAsking = trimmed.length >= minQueryLength;
 
-  // Whose unlisted events are found with it.
-  const authToken = useAppSelector((state) => state.auth.user?.authToken);
-
   const store = useStore<RootState>();
 
-  // The last answer stays up until the next replaces it, as the places do;
-  // tagged with the user, so another's unlisted events never show.
-  const [found, setFound] = useState({ authToken, events: NONE });
+  // The last answer stays up until the next replaces it, as the places do.
+  const [events, setEvents] = useState(NONE);
 
   useEffect(() => {
     // Gone with the query, as the places are.
     if (!worthAsking) {
-      setFound({ authToken, events: NONE });
+      setEvents(NONE);
 
       return;
     }
@@ -60,19 +55,18 @@ export function useEventMatches(query: string): EventSummary[] {
         summary: '1',
       });
 
-      let events = NONE;
+      let found = NONE;
 
       try {
         const res = await fetch(`${process.env['API_URL']}/events?${params}`, {
           signal: ac.signal,
-          headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
         });
 
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
         }
 
-        events = z
+        found = z
           .array(EventSummarySchema)
           .parse(await res.json())
           .slice(0, LIMIT);
@@ -85,7 +79,7 @@ export function useEventMatches(query: string): EventSummary[] {
         console.warn('Event search failed', err);
       }
 
-      setFound({ authToken, events });
+      setEvents(found);
     }, suggestDelayMs);
 
     return () => {
@@ -93,7 +87,7 @@ export function useEventMatches(query: string): EventSummary[] {
 
       ac.abort();
     };
-  }, [trimmed, authToken, worthAsking, store]);
+  }, [trimmed, worthAsking, store]);
 
-  return worthAsking && found.authToken === authToken ? found.events : NONE;
+  return worthAsking ? events : NONE;
 }

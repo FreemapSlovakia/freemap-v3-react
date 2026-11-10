@@ -79,7 +79,8 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
         'Nalaganje, urejanje, ocenjevanje in komentiranje fotografij',
       'maps:read': 'Ogled mojih zemljevidov',
       'maps:write': 'Ustvarjanje, spreminjanje in brisanje mojih zemljevidov',
-      'events:read': 'Ogled dogodkov, tudi mojih neobjavljenih',
+      'events:read':
+        'Ogled dogodkov in tega, ali me zanimajo ali se jih udeležim',
       'events:write':
         'Ustvarjanje, spreminjanje in brisanje mojih dogodkov ter sporočanje zanimanja in udeležbe',
       'tracking:read': 'Ogled mojih sledenih naprav',

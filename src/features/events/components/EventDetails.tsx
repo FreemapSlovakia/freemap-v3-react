@@ -8,7 +8,6 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useRelativeTimeFormat } from '@shared/hooks/useRelativeTimeFormat.js';
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
 import type { ReactElement, ReactNode } from 'react';
-import { Badge } from 'react-bootstrap';
 import {
   FaChild,
   FaDog,
@@ -145,15 +144,7 @@ export function EventDetails({
   return (
     <div className="d-flex flex-column gap-1">
       {/* The panel's header names the kind, as for an object. */}
-      <p className="lead d-flex flex-wrap gap-2 align-items-baseline mb-2">
-        <span className="fw-semibold">{event.title}</span>
-
-        {event.visibility === 'unlisted' && (
-          <Badge bg="secondary" className="fs-6 fw-normal">
-            {em?.card.unlisted}
-          </Badge>
-        )}
-      </p>
+      <p className="lead fw-semibold mb-2">{event.title}</p>
 
       {event.cover && (
         <a

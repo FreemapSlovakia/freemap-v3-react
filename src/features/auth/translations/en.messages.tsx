@@ -96,7 +96,7 @@ const en: AuthMessages = {
       'gallery:write': 'Upload, edit, rate and comment on photos',
       'maps:read': 'View my maps',
       'maps:write': 'Create, change and delete my maps',
-      'events:read': 'View events, including unlisted ones of mine',
+      'events:read': 'View events and whether I am interested or going',
       'events:write':
         'Create, change and delete my events, and say I am interested or going',
       'tracking:read': 'View my tracked devices',

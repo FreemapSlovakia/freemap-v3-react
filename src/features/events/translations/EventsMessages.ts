@@ -56,9 +56,6 @@ export type EventsMessages = {
     duration: string;
     ascent: string;
     descent: string;
-    visibility: string;
-    public: string;
-    unlisted: string;
   };
   filter: {
     title: string;
@@ -83,7 +80,6 @@ export type EventsMessages = {
   };
   /** What the details show. */
   card: {
-    unlisted: string;
     dogsWelcome: string;
     noDogs: string;
     children: string;

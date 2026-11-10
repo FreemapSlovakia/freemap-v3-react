@@ -57,9 +57,6 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     duration: 'Időtartam',
     ascent: 'Emelkedés',
     descent: 'Ereszkedés',
-    visibility: 'Láthatóság',
-    public: 'Nyilvános',
-    unlisted: 'Nem listázott (csak a hivatkozásával)',
   },
   filter: {
     title: 'Eseményszűrő',
@@ -85,7 +82,6 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     imported: 'Átvett',
   },
   card: {
-    unlisted: 'Nem listázott',
     dogsWelcome: 'Kutyával is',
     noDogs: 'Kutya nélkül',
     children: 'Gyerekeknek is alkalmas',

@@ -78,7 +78,8 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
       'gallery:write': 'Przesyłanie, edycja, ocenianie i komentowanie zdjęć',
       'maps:read': 'Przeglądanie moich map',
       'maps:write': 'Tworzenie, zmiana i usuwanie moich map',
-      'events:read': 'Przeglądanie wydarzeń, także moich niepublicznych',
+      'events:read':
+        'Przeglądanie wydarzeń oraz własnego zainteresowania i udziału',
       'events:write':
         'Tworzenie, zmiana i usuwanie moich wydarzeń oraz zgłaszanie zainteresowania i udziału',
       'tracking:read': 'Przeglądanie moich śledzonych urządzeń',

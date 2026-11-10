@@ -79,7 +79,7 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
       'gallery:write': 'Nahrávat, upravovat, hodnotit a komentovat fotografie',
       'maps:read': 'Prohlížet moje mapy',
       'maps:write': 'Vytvářet, měnit a mazat moje mapy',
-      'events:read': 'Prohlížet akce, i moje nezveřejněné',
+      'events:read': 'Prohlížet akce a to, zda o ně mám zájem nebo přijdu',
       'events:write':
         'Vytvářet, měnit a mazat moje akce a dávat vědět o zájmu a účasti',
       'tracking:read': 'Prohlížet moje sledovaná zařízení',

@@ -79,9 +79,6 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     duration: 'Trvanie',
     ascent: 'Stúpanie',
     descent: 'Klesanie',
-    visibility: 'Viditeľnosť',
-    public: 'Verejná',
-    unlisted: 'Nezverejnená (iba cez odkaz)',
   },
   filter: {
     title: 'Filter akcií',
@@ -107,7 +104,6 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     imported: 'Prevzaté',
   },
   card: {
-    unlisted: 'Nezverejnená',
     dogsWelcome: 'Psy vítané',
     noDogs: 'Bez psov',
     children: 'Vhodné pre deti',

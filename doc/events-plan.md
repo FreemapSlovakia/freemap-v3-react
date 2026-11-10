@@ -7,8 +7,8 @@ now lives in `src/static/llms-photos-maps.md`.
 ## Model
 
 An event stands on its own: an id, an owner, a title, a description, a start
-and optional end time, a start point (required — it places and filters the
-event) and a visibility (public, or unlisted: reachable by link, not listed).
+and optional end time and a start point (required — it places and filters the
+event). Every event is public.
 
 - **Linked map, optional.** An event may link one of its owner's own maps (not
   one they merely write). A map can be linked by any number of events — the
@@ -64,7 +64,7 @@ An event form (dialog): title, description, start and end; the linked map (one
 of the owner's maps), whose choosing fills the title, start, transports and
 stats that are still empty; the start point — one coordinate field as the gallery's, with
 **Set the location** picking it on the map while the dialog hides; the trip
-stats; visibility. Reached from the events toolbar (**New event**), from a map's
+stats. Reached from the events toolbar (**New event**), from a map's
 menu in My maps (**New event**, the map linked and its stats filled), and
 from the selection toolbar (**Edit**).
 
@@ -80,7 +80,7 @@ from the selection toolbar (**Edit**).
   about what concerns them; opted out of in the account like the photo emails.
   The organizer may show their email on the event.
 - Later: one-way follows, no approval; **Follow** on the organizer; the _People
-  I follow_ filter; a _Followers only_ visibility.
+  I follow_ filter.
 
 ## Steps
 
@@ -172,11 +172,11 @@ from the selection toolbar (**Edit**).
   by hand carry `manual:<event id>`, so they count as imported, and the
   duplicate check takes them as hand-entered. The source is
   the master, so a re-harvest overwrites hand edits of what it supplies,
-  keeping the owner, linked map, visibility and cover, and brings back
+  keeping the owner, linked map and cover, and brings back
   one deleted here while the source still lists it. Every run posts
   every event; a complete one deletes the source's not yet started
-  events (`GET /events/sources/{source}`, an eventManager's: any
-  visibility, no cap) it no longer lists, unless a quarter of them would
+  events (`GET /events/sources/{source}`, an eventManager's, no cap) it
+  no longer lists, unless a quarter of them would
   go at once. An eventManager's app token with `events:write` posts each
   for the source's organizer account (`--create-organizer`, once).
   A parser reads every source; an LLM (Claude Haiku, `ANTHROPIC_API_KEY`)

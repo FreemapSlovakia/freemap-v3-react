@@ -72,9 +72,6 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     duration: 'Trvání',
     ascent: 'Stoupání',
     descent: 'Klesání',
-    visibility: 'Viditelnost',
-    public: 'Veřejná',
-    unlisted: 'Nezveřejněná (pouze přes odkaz)',
   },
   filter: {
     title: 'Filtr akcí',
@@ -99,7 +96,6 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     imported: 'Převzaté',
   },
   card: {
-    unlisted: 'Nezveřejněná',
     dogsWelcome: 'Psi vítáni',
     noDogs: 'Bez psů',
     children: 'Vhodné pro děti',

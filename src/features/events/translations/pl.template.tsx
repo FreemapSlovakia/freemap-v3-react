@@ -57,9 +57,6 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     duration: 'Czas trwania',
     ascent: 'Podejście',
     descent: 'Zejście',
-    visibility: 'Widoczność',
-    public: 'Publiczne',
-    unlisted: 'Niepubliczne (tylko przez link)',
   },
   filter: {
     title: 'Filtr wydarzeń',
@@ -85,7 +82,6 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     imported: 'Zaimportowane',
   },
   card: {
-    unlisted: 'Niepubliczne',
     dogsWelcome: 'Psy mile widziane',
     noDogs: 'Bez psów',
     children: 'Odpowiednie dla dzieci',

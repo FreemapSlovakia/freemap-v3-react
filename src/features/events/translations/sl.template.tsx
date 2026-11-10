@@ -76,9 +76,6 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     duration: 'Trajanje',
     ascent: 'Vzpon',
     descent: 'Spust',
-    visibility: 'Vidnost',
-    public: 'Javen',
-    unlisted: 'Neobjavljen (le prek povezave)',
   },
   filter: {
     title: 'Filter dogodkov',
@@ -104,7 +101,6 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     imported: 'Prevzeti',
   },
   card: {
-    unlisted: 'Neobjavljen',
     dogsWelcome: 'Psi dobrodošli',
     noDogs: 'Brez psov',
     children: 'Primerno za otroke',
