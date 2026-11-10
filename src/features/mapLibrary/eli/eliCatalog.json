@@ -421,6 +421,26 @@
       }
     },
     {
+      "type": "0EX6R",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2021_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "0EY3P",
       "layer": "base",
       "name": "imagico.de: Kirwan Escarpment evening",
@@ -811,7 +831,6 @@
         "url": "https://orto1.tile.openstreetmap.hu/fomi_2016_lombtalan_20cm/{z}/{x}/{y}.webp",
         "minZoom": 8,
         "maxNativeZoom": 19,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -1439,7 +1458,6 @@
         "url": "https://tms.cadastre.openstreetmap.fr/*/tout/{z}/{x}/{y}.png",
         "minZoom": 2,
         "maxNativeZoom": 22,
-        "cors": false,
         "attribution": [
           {
             "type": "map",
@@ -1675,7 +1693,6 @@
         "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
         "layers": ["TER_AMB:CTRN5KColore"],
         "minZoom": 14,
-        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -1733,7 +1750,7 @@
       "name": "Kanton Aargau 25cm (AGIS 2014)",
       "countries": ["ch"],
       "bbox": [7.7055, 47.132, 8.4628, 47.6233],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://mapproxy.osm.ch/tiles/AGIS2014/EPSG900913/{z}/{x}/{y}.png?origin=nw",
         "minZoom": 8,
@@ -1743,6 +1760,26 @@
           {
             "type": "map",
             "name": "AGIS OF2014"
+          }
+        ]
+      }
+    },
+    {
+      "type": "1Q57I",
+      "layer": "base",
+      "name": "Kanton Zug Menzingen 2021 6.5 cm",
+      "countries": ["ch"],
+      "bbox": [8.5537, 47.147, 8.6669, 47.2058],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2021_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -1820,7 +1857,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2021"],
         "attribution": [
           {
@@ -1880,19 +1917,19 @@
     {
       "type": "1YRAD",
       "layer": "base",
-      "name": "Kanton Zurich, Orthofoto ZH Sommer 2024 RGB 5cm",
+      "name": "Kanton Zurich, Orthofoto ZH Sommer 2024/25 RGB 5cm",
       "countries": ["ch"],
       "bbox": [8.351, 47.1549, 8.9916, 47.6988],
       "category": "photo",
       "technology": "wms",
       "body": {
-        "url": "https://wms.zh.ch/OrthoZHWMS",
+        "url": "https://wms.zh.ch/OrthoSommer24ZH",
         "layers": ["ortho_s_2024"],
         "minZoom": 10,
         "attribution": [
           {
             "type": "map",
-            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Orthofoto ZH Sommer 2024 RGB 5cm"
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Orthofoto ZH Sommer 2024/25 RGB 5cm"
           }
         ]
       }
@@ -2440,6 +2477,28 @@
       }
     },
     {
+      "type": "2GUK7",
+      "layer": "base",
+      "name": "Ukraine - Vinnytsia TG 2021",
+      "countries": ["ua"],
+      "bbox": [28.3615, 49.1769, 28.7567, 49.319],
+      "category": "photo",
+      "body": {
+        "url": "https://maps2.vmr.gov.ua/OpenData/ofp/2021-03/GoogleMapsCompatible/{z}/{y}/{x}.png?ver=03082021",
+        "minZoom": 14,
+        "maxNativeZoom": 19,
+        "cors": false,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Вінницька міська рада",
+            "url": "https://www.vmr.gov.ua/"
+          }
+        ]
+      }
+    },
+    {
       "type": "2HA98",
       "layer": "base",
       "name": "imagico.de: Fogo, Cape Verde",
@@ -2971,6 +3030,27 @@
       }
     },
     {
+      "type": "2VGPK",
+      "layer": "base",
+      "name": "Szeged orthophoto 2011",
+      "countries": ["hu"],
+      "bbox": [20.1111, 46.2281, 20.1948, 46.2785],
+      "category": "photo",
+      "body": {
+        "url": "https://e.tile.openstreetmap.hu/szeged-2011-10cm/{z}/{x}/{y}.png",
+        "minZoom": 10,
+        "maxNativeZoom": 22,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "SZTE TFGT - University of Szeged",
+            "url": "http://www.geo.u-szeged.hu"
+          }
+        ]
+      }
+    },
+    {
       "type": "2WQ5U",
       "layer": "base",
       "name": "Mecklenburg-Vorpommern DGM1 Schummerung",
@@ -3185,6 +3265,26 @@
       }
     },
     {
+      "type": "37QHG",
+      "layer": "base",
+      "name": "Kanton Zug 2011",
+      "countries": ["ch"],
+      "bbox": [8.3872, 47.0801, 8.7049, 47.2531],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2011_kt_zg"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "3AL97",
       "layer": "base",
       "name": "GeoSN TK25 DDR Ausgabe Staat (Sachsen)",
@@ -3324,7 +3424,7 @@
           {
             "type": "map",
             "name": "Vermessung und Geoinformation Mainz",
-            "url": "https://www.mainz.de/vv/oe/100140100000035141.php#tab-infos"
+            "url": "https://www.mainz.de/vv/oe/sachgebiet-geographisches-informationssystem-und-kartographie"
           }
         ]
       }
@@ -4059,6 +4159,25 @@
       }
     },
     {
+      "type": "4D2Q6",
+      "layer": "base",
+      "name": "Saint Johns County Basemap",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "map",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Basemap/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 23,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "4DA04",
       "layer": "base",
       "name": "South Tyrol Orthofoto 2011 (highres)",
@@ -4636,7 +4755,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Eusko Jaurlaritza / Gobierno Vasco. geoEuskadi"
+            "name": "Eusko Jaurlaritza / Gobierno Vasco. geoEuskadi",
+            "url": "https://www.geo.euskadi.eus/normativa-sobre-informacion-geografica/webgeo00-content/eu/"
           }
         ]
       }
@@ -4712,13 +4832,13 @@
       "category": "elevation",
       "technology": "wms",
       "body": {
-        "url": "https://wms.zh.ch/LidarZHWMS",
+        "url": "https://wms.zh.ch/Lidar2017ZH",
         "layers": ["dom2017_relief"],
         "minZoom": 9,
         "attribution": [
           {
             "type": "map",
-            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Oberflächenschummerung"
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Digitales Höhenmodell"
           }
         ]
       }
@@ -5734,7 +5854,6 @@
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1980/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 1,
         "maxNativeZoom": 21,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -5920,27 +6039,6 @@
       }
     },
     {
-      "type": "64H9H",
-      "layer": "base",
-      "name": "DVRPC Orthoimagery 2020 - Camden County (1ft)",
-      "countries": ["us"],
-      "bbox": [-75.1359, 39.6083, -74.7361, 39.9964],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2020/MapServer/WMSServer",
-        "layers": ["6"],
-        "maxNativeZoom": 19,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Delaware Valley Regional Planning Commission",
-            "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
-          }
-        ]
-      }
-    },
-    {
       "type": "64O4Y",
       "layer": "base",
       "name": "ČÚZK ZM250 topographic map 1:250 000",
@@ -6017,7 +6115,7 @@
       "name": "Kanton Aargau 25cm (AGIS 2017)",
       "countries": ["ch"],
       "bbox": [7.7043, 47.1267, 8.4656, 47.6235],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://mapproxy.osm.ch/tiles/AGIS2017/EPSG900913/{z}/{x}/{y}.png?origin=nw",
         "minZoom": 2,
@@ -6711,6 +6809,7 @@
       "body": {
         "url": "https://gisportal.calaverascounty.gov/image/rest/services/CC_Aug2022_Cache/ImageServer/tile/{z}/{y}/{x}",
         "maxNativeZoom": 23,
+        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -7588,7 +7687,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Système d'information du territoire à Genève (SITG)"
+            "name": "Système d'information du territoire à Genève (SITG)",
+            "url": "https://sitg.ge.ch/donnees/image-aerienne-ortho-2021-08"
           }
         ]
       }
@@ -8294,7 +8394,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Instituto Geográfico de Aragón - Gobierno de Aragón"
+            "name": "Instituto Geográfico de Aragón - Gobierno de Aragón",
+            "url": "https://idearagon.aragon.es/portal/"
           }
         ]
       }
@@ -8422,6 +8523,26 @@
       }
     },
     {
+      "type": "973V5",
+      "layer": "base",
+      "name": "Kanton Zurich, Terrainschummerung 2014",
+      "countries": ["ch"],
+      "bbox": [8.351, 47.1549, 8.9916, 47.6988],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://wms.zh.ch/Lidar2014ZH",
+        "layers": ["dtm2014_relief"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Digitales Höhenmodell"
+          }
+        ]
+      }
+    },
+    {
       "type": "99BAM",
       "layer": "base",
       "name": "Thüringen DOP20",
@@ -8507,7 +8628,6 @@
         "url": "https://imagery.geographic.texas.gov/server/services/StratMap/StratMap19_NCCIR_6in_Brazos/ImageServer/WMSServer",
         "layers": ["0"],
         "minZoom": 3,
-        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -8566,7 +8686,7 @@
       "category": "elevation",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/shade1m.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/shade1m.fcgi",
         "layers": ["rp_shade1m"],
         "attribution": [
           {
@@ -8753,7 +8873,7 @@
       "name": "Kanton Solothurn, Orthofoto 2017 RGB",
       "countries": ["ch"],
       "bbox": [7.68, 47.24, 8.04, 47.48],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://geo.so.ch/api/wms",
@@ -8888,7 +9008,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Système d'information du territoire à Genève (SITG)"
+            "name": "Système d'information du territoire à Genève (SITG)",
+            "url": "https://sitg.ge.ch/donnees/image-aerienne-ortho-2019-05"
           }
         ]
       }
@@ -9500,6 +9621,26 @@
       }
     },
     {
+      "type": "A6MWN",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2026)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "photo",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2026_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "A6W49",
       "layer": "overlay",
       "name": "Bayern Orthophotos 2015-2019",
@@ -9725,6 +9866,27 @@
       }
     },
     {
+      "type": "ADHDK",
+      "layer": "base",
+      "name": "Danube flood orthophoto 2013",
+      "countries": ["hu"],
+      "bbox": [19.0577, 47.572, 19.0947, 47.696],
+      "category": "photo",
+      "body": {
+        "url": "https://e.tile.openstreetmap.hu/dunai-arviz-2013/{z}/{x}/{y}.jpg",
+        "minZoom": 10,
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Fotótérkép.hu",
+            "url": "http://fototerkep.hu"
+          }
+        ]
+      }
+    },
+    {
       "type": "AEWRX",
       "layer": "base",
       "name": "Maa-amet Forestry",
@@ -9750,19 +9912,19 @@
     {
       "type": "AF4TS",
       "layer": "base",
-      "name": "Kanton Zurich, Orthofoto ZH Frühjahr 2021 RGB 5cm",
+      "name": "Kanton Zurich, Orthofoto ZH Frühjahr 2021/22 RGB 5cm",
       "countries": ["ch"],
       "bbox": [8.351, 47.1549, 8.9916, 47.6988],
       "category": "photo",
       "technology": "wms",
       "body": {
-        "url": "https://wms.zh.ch/OrthoZHWMS",
+        "url": "https://wms.zh.ch/OrthoWinter21ZH",
         "layers": ["ortho_w_2021"],
         "minZoom": 10,
         "attribution": [
           {
             "type": "map",
-            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Orthofoto ZH Frühjahr 2021 RGB 5cm"
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Orthofoto ZH Frühjahr 2021/22 RGB 5cm"
           }
         ]
       }
@@ -9773,12 +9935,13 @@
       "name": "Loire-Atlantique - Orthophotos 2016 - 10 cm",
       "countries": ["fr"],
       "bbox": [-2.6392, 46.8487, -0.9009, 47.8442],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://wms-vuduciel2.makina-corpus.net/geoserver/wms",
         "layers": ["cg44:ortho44-2016"],
         "maxNativeZoom": 20,
+        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -10334,6 +10497,7 @@
       "body": {
         "url": "https://paags.property-appraiser.org/server/rest/services/AGS_AERIALS_2025_WM/MapServer/tile/{z}/{y}/{x}",
         "maxNativeZoom": 20,
+        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -10360,6 +10524,26 @@
             "type": "map",
             "name": "© Landesamt GeoInformation Bremen, CC BY",
             "url": "https://www.geo.bremen.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "B6CJZ",
+      "layer": "base",
+      "name": "Kanton Zug Gemeinde Zug Süd 2018",
+      "countries": ["ch"],
+      "bbox": [8.4945, 47.1129, 8.5653, 47.1592],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2018_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -11300,7 +11484,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2019"],
         "attribution": [
           {
@@ -11642,26 +11826,6 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "CVMDU",
-      "layer": "base",
-      "name": "Kanton Zurich, Terrainschummerung 2014 50cm",
-      "countries": ["ch"],
-      "bbox": [8.351, 47.1549, 8.9916, 47.6988],
-      "category": "elevation",
-      "technology": "wms",
-      "body": {
-        "url": "https://wms.zh.ch/LidarZHWMS",
-        "layers": ["dtm2014_relief"],
-        "minZoom": 9,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Terrainschummerung"
           }
         ]
       }
@@ -12908,7 +13072,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2024"],
         "attribution": [
           {
@@ -13031,6 +13195,7 @@
       "body": {
         "url": "https://gisportal.calaverascounty.gov/image/rest/services/Orthos_2024/ImageServer/tile/{z}/{y}/{x}",
         "maxNativeZoom": 23,
+        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -13474,7 +13639,7 @@
       "name": "Canton de Génève, Orthophoto 2023 (10cm) (SITG)",
       "countries": ["ch"],
       "bbox": [5.6894, 45.9473, 6.5554, 46.5491],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://raster.sitg.ge.ch/arcgis/rest/services/ORTHOPHOTOS_2023_EPSG3857/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 2,
@@ -13482,7 +13647,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Système d'information du territoire à Genève (SITG)"
+            "name": "Système d'information du territoire à Genève (SITG)",
+            "url": "https://sitg.ge.ch/donnees/image-aerienne-ortho-2023-06"
           }
         ]
       }
@@ -13882,7 +14048,7 @@
       "name": "Kanton Solothurn, Orthofoto 2016 RGB",
       "countries": ["ch"],
       "bbox": [7.32, 47.06, 7.8, 47.38],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://geo.so.ch/api/wms",
@@ -13902,7 +14068,7 @@
       "name": "Kanton Solothurn, Orthofoto 2015 RGB",
       "countries": ["ch"],
       "bbox": [7.68, 47.24, 8.04, 47.48],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://geo.so.ch/api/wms",
@@ -13922,7 +14088,7 @@
       "name": "Budapest district XI orthophoto 2023",
       "countries": ["hu"],
       "bbox": [18.9686, 47.4281, 19.0685, 47.4899],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://terinfo.ujbuda.hu/mapproxy/service",
@@ -14475,7 +14641,6 @@
           "SITI_PROT:PARCHI_NATURALI_REG",
           "SITI_PROT:RISERVE_NATURALI_REG"
         ],
-        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -14964,6 +15129,26 @@
       }
     },
     {
+      "type": "GPHKO",
+      "layer": "base",
+      "name": "Kanton Zurich, Oberflächenschummerung 2014",
+      "countries": ["ch"],
+      "bbox": [8.351, 47.1549, 8.9916, 47.6988],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://wms.zh.ch/Lidar2014ZH",
+        "layers": ["dom2014_relief"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Digitales Höhenmodell"
+          }
+        ]
+      }
+    },
+    {
       "type": "GPMH1",
       "layer": "overlay",
       "name": "DCS NSW Administrative Boundaries State Forest",
@@ -15125,7 +15310,6 @@
         "url": "https://orto1.tile.openstreetmap.hu/fomi_2015-2020_lombtalan_20cm/{z}/{x}/{y}.webp",
         "minZoom": 8,
         "maxNativeZoom": 19,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -15190,7 +15374,6 @@
           "ZONE_RISC:CV_VALANGHE_FOTOINT",
           "ZONE_RISC:CV_VALANGHE_RILEVATE"
         ],
-        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -15575,7 +15758,7 @@
       "name": "Mulhouse - 2018",
       "countries": ["fr"],
       "bbox": [7.1678, 47.6538, 7.5744, 47.9109],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://wms.openstreetmap.fr/tms/1.0.0/mulhouse_2018/{z}/{x}/{y}",
         "maxNativeZoom": 22,
@@ -15627,6 +15810,37 @@
             "type": "map",
             "name": "Informação geográfica cedida pela Direção-Geral do Território",
             "url": "https://snig.dgterritorio.gov.pt/rndg/srv/por/catalog.search#/metadata/5fd2c1e18f5f4c3f814a3e7212937ce7"
+          }
+        ]
+      }
+    },
+    {
+      "type": "HCK4N",
+      "layer": "overlay",
+      "name": "BD Topo",
+      "countries": ["fr"],
+      "bbox": [-6.3, 41.2768, 9.8, 51.3294],
+      "bboxes": [
+        [-6.3, 41.2768, 9.8, 51.3294],
+        [-54.8053, 2.032, -51.5203, 6.004],
+        [-61.9281, 15.7394, -60.8812, 16.5875],
+        [55.0881, -21.4966, 55.9658, -20.7728],
+        [-61.2763, 14.3668, -60.7236, 14.9022],
+        [44.9205, -13.1197, 45.3528, -12.5702],
+        [-56.4588, 46.7022, -55.9671, 47.1786],
+        [-63.189, 17.8121, -62.7182, 18.1339]
+      ],
+      "category": "map",
+      "body": {
+        "url": "https://{s}.tile.openstreetmap.fr/bdtopo/{z}/{x}/{y}.png",
+        "subdomains": "abc",
+        "minZoom": 3,
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Tiles © cquest@Openstreetmap France, data © IGN BD Topo, LO/OL",
+            "url": "https://geoservices.ign.fr/documentation/diffusion/telechargement-donnees-libres.html"
           }
         ]
       }
@@ -15773,7 +15987,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2016"],
         "attribution": [
           {
@@ -15929,6 +16143,26 @@
       }
     },
     {
+      "type": "HV4QD",
+      "layer": "base",
+      "name": "Moldova Satellite Orthophoto (2025-2026)",
+      "countries": ["md"],
+      "bbox": [26.6078, 45.4656, 30.1822, 48.4609],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://maps2.ingeocad.md/geoserver/orthophoto/wms",
+        "layers": ["orthophoto:sat_ortho_2026"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Agenţia Geodezie, Cartografie şi Cadastru / Geoportal INDS / Moldova Satellite Orthophoto (2025-2026)",
+            "url": "https://geoportalinds.gov.md/geonetwork/srv/eng/catalog.search#/metadata/646c6c0a-a39d-44cc-8cba-72781971925a"
+          }
+        ]
+      }
+    },
+    {
       "type": "HVBYN",
       "layer": "base",
       "name": "Philadelphia Orthoimagery 2020 (3in)",
@@ -16050,6 +16284,27 @@
             "type": "map",
             "name": "Hexagon, FirstMap",
             "url": "https://firstmap.delaware.gov"
+          }
+        ]
+      }
+    },
+    {
+      "type": "I1A4W",
+      "layer": "base",
+      "name": "Rio Mosaico 2022",
+      "countries": ["br"],
+      "bbox": [-43.8121, -23.0917, -43.0856, -22.7216],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://pgeo3.rio.rj.gov.br/arcgis/services/Imagens/Mosaico_2022/ImageServer/WMSServer",
+        "layers": ["Mosaico_2022"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Instituto Pereira Passos - Prefeitura da Cidade do Rio de Janeiro",
+            "url": "https://www.rio.rj.gov.br/web/ipp"
           }
         ]
       }
@@ -16398,6 +16653,26 @@
       }
     },
     {
+      "type": "IKI5T",
+      "layer": "base",
+      "name": "Ludwigshafen 2019",
+      "countries": ["de"],
+      "bbox": [8.2967, 49.4056, 8.4785, 49.5679],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodaten.ludwigshafen.de/wms/luftbild_historisch",
+        "layers": ["C7F0E141BD264811A166B9D478C0E20F"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Stadt Ludwigshafen am Rhein",
+            "url": "https://ludwigshafen.de/impressum/ludwigshafende"
+          }
+        ]
+      }
+    },
+    {
       "type": "IKSVR",
       "layer": "overlay",
       "name": "VoGIS BWV flood hazard zones",
@@ -16435,6 +16710,27 @@
             "type": "map",
             "name": "Agencija Republike Slovenije za okolje (ARSO)",
             "url": "https://www.arso.gov.si/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "IMOTK",
+      "layer": "base",
+      "name": "Ireland British War Office One-Inch 1941-43 GSGS 4136",
+      "countries": ["ie"],
+      "bbox": [-10.5006, 51.4147, -5.3618, 55.3875],
+      "category": "historicmap",
+      "body": {
+        "url": "https://geo.nls.uk/maps/ireland/gsgs4136/{z}/{x}/{y}.png",
+        "tms": true,
+        "minZoom": 5,
+        "maxNativeZoom": 15,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "National Library of Scotland Historic Maps",
+            "url": "https://geo.nls.uk/maps"
           }
         ]
       }
@@ -17305,7 +17601,6 @@
         "url": "https://imagery.geographic.texas.gov/server/services/Smith_County/SmithCo_2020_NCCIR_6in/ImageServer/WMSServer",
         "layers": ["0"],
         "minZoom": 3,
-        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -17479,6 +17774,26 @@
       }
     },
     {
+      "type": "JS2ZD",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2025)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2025_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "JT049",
       "layer": "base",
       "name": "NSW DCS SS HAPE Imagery 1990",
@@ -17493,7 +17808,6 @@
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1990/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 1,
         "maxNativeZoom": 21,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -18088,7 +18402,7 @@
       "name": "Lyon Orthophoto 2022 (5cm)",
       "countries": ["fr"],
       "bbox": [4.6654, 45.554, 5.1584, 45.9607],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://imagerie.data.grandlyon.com/geoserver/grandlyon/ows",
@@ -18100,6 +18414,26 @@
             "type": "map",
             "name": "CRAIG - Métropole du Grand Lyon 2022",
             "url": "https://data.grandlyon.com/portail/fr/jeux-de-donnees/orthophotographie-2022-de-la-metropole-de-lyon--format-ecw/info"
+          }
+        ]
+      }
+    },
+    {
+      "type": "KK670",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2025)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2025_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -18272,6 +18606,26 @@
             "type": "map",
             "name": "© Staatsbibliothek zu Berlin – Preußischer Kulturbesitz, dl-de/by-2-0",
             "url": "https://geobasis-bb.de/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "KU4UN",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2026)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "photo",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Hosted/Imagery_2026_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -19004,7 +19358,6 @@
       "body": {
         "url": "https://serviziogc.regione.fvg.it/geoserver/wms",
         "layers": ["SITI_PROT:SIC", "SITI_PROT:ZPS"],
-        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -19366,7 +19719,7 @@
       "name": "Kanton Solothurn, Orthofoto 2014 RGB",
       "countries": ["ch"],
       "bbox": [7.32, 47.06, 7.72, 47.3],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://geo.so.ch/api/wms",
@@ -19538,6 +19891,26 @@
             "type": "map",
             "name": "© swisstopo",
             "url": "https://www.swisstopo.admin.ch"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ME0CB",
+      "layer": "base",
+      "name": "Ludwigshafen 2022",
+      "countries": ["de"],
+      "bbox": [8.2974, 49.4007, 8.4778, 49.576],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://geodaten.ludwigshafen.de/wms/luftbild_2022",
+        "layers": ["4B1281A1EBD54D74897B3DDA16F00006"],
+        "attribution": [
+          {
+            "type": "map",
+            "name": "© Stadt Ludwigshafen am Rhein",
+            "url": "https://ludwigshafen.de/impressum/ludwigshafende"
           }
         ]
       }
@@ -19917,7 +20290,7 @@
       "name": "Ortho HR 2020",
       "countries": ["fr"],
       "bbox": [-2.6436, 42.9674, 7.7289, 49.4515],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2020/{z}/{x}/{y}.jpeg",
         "minZoom": 6,
@@ -20177,13 +20550,13 @@
       "category": "elevation",
       "technology": "wms",
       "body": {
-        "url": "https://wms.zh.ch/LidarZHWMS",
+        "url": "https://wms.zh.ch/Lidar2017ZH",
         "layers": ["dtm2017_relief"],
         "minZoom": 9,
         "attribution": [
           {
             "type": "map",
-            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Terrainschummerung"
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Digitales Höhenmodell"
           }
         ]
       }
@@ -20228,26 +20601,6 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "NBK3H",
-      "layer": "base",
-      "name": "Kanton Zurich, Oberflächenschummerung 2014 50cm",
-      "countries": ["ch"],
-      "bbox": [8.351, 47.1549, 8.9916, 47.6988],
-      "category": "elevation",
-      "technology": "wms",
-      "body": {
-        "url": "https://wms.zh.ch/LidarZHWMS",
-        "layers": ["dom2014_relief"],
-        "minZoom": 9,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Oberflächenschummerung"
           }
         ]
       }
@@ -20319,7 +20672,7 @@
       "category": "photo",
       "technology": "wms",
       "body": {
-        "url": "https://wms.zh.ch/OrthoZHWMS",
+        "url": "https://wms.zh.ch/OrthoWinter15ZH",
         "layers": ["ortho_w_2015"],
         "minZoom": 9,
         "attribution": [
@@ -20446,6 +20799,7 @@
       "body": {
         "url": "https://paags.property-appraiser.org/server/rest/services/AGS_AERIALS_2026_WM/MapServer/tile/{z}/{y}/{x}",
         "maxNativeZoom": 20,
+        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -20631,7 +20985,7 @@
       "name": "CRAIG - 2019",
       "countries": ["fr"],
       "bbox": [2.2702, 44.7405, 4.7663, 46.8062],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://wms.openstreetmap.fr/tms/1.0.0/craig_2019/{z}/{x}/{y}",
         "maxNativeZoom": 20,
@@ -21018,7 +21372,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2022"],
         "attribution": [
           {
@@ -21212,6 +21566,27 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/products_and_services/web_services/access_web_services"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ODPQA",
+      "layer": "base",
+      "name": "Rio Mosaico 2019",
+      "countries": ["br"],
+      "bbox": [-43.8121, -23.0917, -43.0856, -22.7216],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://pgeo3.rio.rj.gov.br/arcgis/services/Imagens/Mosaico_2019/ImageServer/WMSServer",
+        "layers": ["Mosaico_2019"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Instituto Pereira Passos - Prefeitura da Cidade do Rio de Janeiro",
+            "url": "https://www.rio.rj.gov.br/web/ipp"
           }
         ]
       }
@@ -21471,6 +21846,26 @@
       }
     },
     {
+      "type": "OSGM2",
+      "layer": "base",
+      "name": "Saint Johns County Natural Color Orthoimagery (2024)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2024_color/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "OSSE7",
       "layer": "base",
       "name": "UrbIS-Ortho 2018",
@@ -21526,7 +21921,7 @@
         [8.5184, 41.3188, 9.5726, 43.0331],
         [-63.1617, 17.8614, -62.7809, 18.135]
       ],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://data.geopf.fr/tms/1.0.0/ORTHOIMAGERY.ORTHOPHOTOS2021/{z}/{x}/{y}.jpeg",
         "minZoom": 6,
@@ -22050,7 +22445,6 @@
         "url": "https://portal.spatial.nsw.gov.au/tileservices/Hosted/HistoricalImagery1998/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 1,
         "maxNativeZoom": 21,
-        "cors": false,
         "scaleWithDpi": true,
         "attribution": [
           {
@@ -22180,7 +22574,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2018"],
         "attribution": [
           {
@@ -22246,7 +22640,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2023"],
         "attribution": [
           {
@@ -22440,12 +22834,32 @@
       }
     },
     {
+      "type": "PVD8E",
+      "layer": "base",
+      "name": "Kanton Zurich, Orthofoto ZH Sommer 2018 RGB 10cm",
+      "countries": ["ch"],
+      "bbox": [8.351, 47.1549, 8.9916, 47.6988],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://wms.zh.ch/OrthoSommer18ZH",
+        "layers": ["ortho_s_2018"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Orthofoto ZH Sommer 2018 RGB"
+          }
+        ]
+      }
+    },
+    {
       "type": "PWFXW",
       "layer": "base",
       "name": "Toulouse - Orthophotoplan 2019",
       "countries": ["fr"],
       "bbox": [1.1942, 43.503, 1.6428, 43.7772],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://wms.openstreetmap.fr/tms/1.0.0/toulouse_2019/{z}/{x}/{y}",
         "minZoom": 3,
@@ -22490,7 +22904,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2020"],
         "attribution": [
           {
@@ -22921,7 +23335,7 @@
       "category": "photo",
       "technology": "wms",
       "body": {
-        "url": "https://wms.zh.ch/OrthoZHWMS",
+        "url": "https://wms.zh.ch/OrthoSommer14ZH",
         "layers": ["ortho_s_2014"],
         "minZoom": 9,
         "attribution": [
@@ -22938,7 +23352,7 @@
       "name": "Kanton Aargau 25cm (AGIS 2016)",
       "countries": ["ch"],
       "bbox": [7.7043, 47.1267, 8.4656, 47.6235],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://mapproxy.osm.ch/tiles/AGIS2016/EPSG900913/{z}/{x}/{y}.png?origin=nw",
         "minZoom": 8,
@@ -23447,7 +23861,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Système d'information du territoire à Genève (SITG)"
+            "name": "Système d'information du territoire à Genève (SITG)",
+            "url": "https://sitg.ge.ch/donnees/image-aerienne-ortho-2020-03"
           }
         ]
       }
@@ -23510,6 +23925,26 @@
             "type": "map",
             "name": "© Riksantikvarieämbetet, CC0",
             "url": "https://www.raa.se/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "R3NRY",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2021)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2021_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
           }
         ]
       }
@@ -23715,6 +24150,47 @@
       }
     },
     {
+      "type": "RHRLR",
+      "layer": "base",
+      "name": "Ireland Bartholomew Quarter-Inch 1940",
+      "countries": ["ie"],
+      "bbox": [-10.6703, 51.3091, -5.3614, 55.4531],
+      "category": "historicmap",
+      "body": {
+        "url": "https://geo.nls.uk/maps/ireland/bartholomew/{z}/{x}/{y}.png",
+        "tms": true,
+        "minZoom": 5,
+        "maxNativeZoom": 13,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "National Library of Scotland Historic Maps",
+            "url": "https://geo.nls.uk/maps"
+          }
+        ]
+      }
+    },
+    {
+      "type": "RINFG",
+      "layer": "base",
+      "name": "Kanton Zurich, Terrainschummerung 2021/22",
+      "countries": ["ch"],
+      "bbox": [8.351, 47.1549, 8.9916, 47.6988],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://wms.zh.ch/Lidar2022ZH",
+        "layers": ["dtm2022_relief"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Digitales Höhenmodell"
+          }
+        ]
+      }
+    },
+    {
       "type": "RIO8B",
       "layer": "base",
       "name": "OS 1st Ed. 6-inch. Limerick, Ireland (1840s-1880s) (NLS)",
@@ -23878,6 +24354,20 @@
             "url": "https://maps.nls.uk/"
           }
         ]
+      }
+    },
+    {
+      "type": "RUYVC",
+      "layer": "base",
+      "name": "Moldova Composite Orthophoto (2016+2020+2021)",
+      "countries": ["md"],
+      "bbox": [26.6011, 45.4571, 30.179, 48.502],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://maps2.ingeocad.md/geoserver/orthophoto/ows",
+        "layers": ["orthophoto:md_2016-21_tr_ratio5_new2"],
+        "attribution": []
       }
     },
     {
@@ -24144,6 +24634,26 @@
             "type": "map",
             "name": "Pennsylvania Emergency Management Agency",
             "url": "https://www.pema.pa.gov/911-Program/Partners/NG911-GIS/Aerial-Imagery/Pages/default.aspx"
+          }
+        ]
+      }
+    },
+    {
+      "type": "S4EEB",
+      "layer": "base",
+      "name": "Kanton Basel-Stadt 2015",
+      "countries": ["ch"],
+      "bbox": [7.492, 47.4816, 7.784, 47.6342],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://mapproxy.osm.ch/tiles/KTBASELSTADT2015/EPSG900913/{z}/{x}/{y}.png?origin=nw",
+        "minZoom": 8,
+        "maxNativeZoom": 21,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Kanton Basel-Stadt OF 2015"
           }
         ]
       }
@@ -25243,7 +25753,7 @@
       "name": "Bayonne 2016",
       "countries": ["fr"],
       "bbox": [-1.512, 43.4399, -1.4035, 43.5496],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://wms.openstreetmap.fr/tms/1.0.0/bayonne_2016/{z}/{x}/{y}",
         "maxNativeZoom": 22,
@@ -25492,7 +26002,7 @@
       "technology": "wms",
       "body": {
         "url": "https://geoservices.buergernetz.bz.it/mapproxy/p_bz-Orthoimagery/wms",
-        "layers": ["Aerial-2015-RGB", "Aerial-2014-RGB"],
+        "layers": ["Aerial-2014-RGB"],
         "maxNativeZoom": 18,
         "attribution": [
           {
@@ -25622,6 +26132,27 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
+          }
+        ]
+      }
+    },
+    {
+      "type": "U3E51",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2023",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2023/ImageServer/WMSServer",
+        "layers": ["Ortho_2023"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2023/about"
           }
         ]
       }
@@ -26517,6 +27048,27 @@
       }
     },
     {
+      "type": "V70WH",
+      "layer": "base",
+      "name": "ETCOG Imagery (2024)",
+      "countries": ["us"],
+      "bbox": [-96.0801, 31.4204, -94.0137, 33.0793],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.geographic.texas.gov/server/services/ETCOG/ETCOG24_NC_6in/ImageServer/WMSServer",
+        "layers": ["0"],
+        "maxNativeZoom": 20,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "East Texas Council of Governments (ETCOG)",
+            "url": "https://www.etcog.org/"
+          }
+        ]
+      }
+    },
+    {
       "type": "V79EF",
       "layer": "base",
       "name": "GeoPortal DF 2016",
@@ -26602,6 +27154,26 @@
             "type": "map",
             "name": "Wildbach- und Lawinenverbauung (WLV / BMLUK)",
             "url": "https://www.die-wildbach.at/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "VBZVJ",
+      "layer": "base",
+      "name": "Łódź: Orthophotomap 2017 (aerial image)",
+      "countries": ["pl"],
+      "bbox": [19.3105, 51.6775, 19.6576, 51.8661],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapa.lodz.pl/3/services/OGC/Ortofotomapa/MapServer/WmsServer",
+        "layers": ["0"],
+        "maxNativeZoom": 22,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Urząd Miasta Łodzi"
           }
         ]
       }
@@ -27257,7 +27829,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Système d'information du territoire à Genève (SITG)"
+            "name": "Système d'information du territoire à Genève (SITG)",
+            "url": "https://sitg.ge.ch/donnees/image-aerienne-ortho-2024-03"
           }
         ]
       }
@@ -27482,6 +28055,26 @@
             "type": "map",
             "name": "©GeoBasis-DE / LVermGeoRP (2026), dl-de/by-2-0, http://www.lvermgeo.rlp.de [Daten bearbeitet]",
             "url": "https://lvermgeo.rlp.de"
+          }
+        ]
+      }
+    },
+    {
+      "type": "WG455",
+      "layer": "base",
+      "name": "Kanton Zug (Walchwil und Zug (Alpli)) 2019",
+      "countries": ["ch"],
+      "bbox": [8.4938, 47.0763, 8.5866, 47.1338],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2019_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -27896,6 +28489,26 @@
       }
     },
     {
+      "type": "WRA6D",
+      "layer": "base",
+      "name": "Kanton Zug Nord 2016",
+      "countries": ["ch"],
+      "bbox": [8.4075, 47.1492, 8.5796, 47.2373],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2016_kt_zg"],
+        "minZoom": 4,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
+          }
+        ]
+      }
+    },
+    {
       "type": "WRXLD",
       "layer": "base",
       "name": "GURS national topographic map 1:50 000",
@@ -28184,7 +28797,7 @@
       "category": "historicphoto",
       "technology": "wms",
       "body": {
-        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi?DPI=192&MAP_RESOLUTION=192&FORMAT_OPTIONS=dpi%3A192",
+        "url": "https://geo4.service24.rlp.de/wms/rp_hkdop20.fcgi",
         "layers": ["rp_dop20_rgb_2017"],
         "attribution": [
           {
@@ -28445,6 +29058,29 @@
       }
     },
     {
+      "type": "X8QRH",
+      "layer": "overlay",
+      "name": "Itu - Eixos",
+      "countries": ["br"],
+      "bbox": [-47.4394, -23.44, -47.116, -23.1546],
+      "category": "map",
+      "technology": "wms",
+      "body": {
+        "url": "https://urbigis.com/geoproxy/4ac1cd2049d8857b21d9ff38339f7c1",
+        "layers": ["6139ca97-1bc9-4952-a441-b68957ab222c"],
+        "minZoom": 10,
+        "maxNativeZoom": 22,
+        "proxy": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Prefeitura da Estância Turística de Itu, SP",
+            "url": "https://itu.sp.gov.br/planejamento/"
+          }
+        ]
+      }
+    },
+    {
       "type": "X9CM9",
       "layer": "base",
       "name": "Kanton Aargau 20cm (AGIS 2022)",
@@ -28479,6 +29115,26 @@
           {
             "type": "map",
             "name": "Institut Cartogràfic i Geològic de Catalunya"
+          }
+        ]
+      }
+    },
+    {
+      "type": "XBYGE",
+      "layer": "base",
+      "name": "Kanton Zurich, Oberflächenschummerung 2021/22",
+      "countries": ["ch"],
+      "bbox": [8.351, 47.1549, 8.9916, 47.6988],
+      "category": "elevation",
+      "technology": "wms",
+      "body": {
+        "url": "https://wms.zh.ch/Lidar2022ZH",
+        "layers": ["dom2022_relief"],
+        "minZoom": 9,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Geographisches Informationssystem des Kantons Zürich (GIS-ZH), Digitales Höhenmodell"
           }
         ]
       }
@@ -28804,6 +29460,26 @@
       }
     },
     {
+      "type": "XRG1Z",
+      "layer": "base",
+      "name": "Saint Johns County Infrared Orthoimagery (2024)",
+      "countries": ["us"],
+      "bbox": [-81.6859, 29.6138, -81.2085, 30.2611],
+      "category": "historicphoto",
+      "body": {
+        "url": "https://www.gis.sjcfl.us/portal_sjcgis/rest/services/Imagery_2024_cir/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 20,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Saint Johns County GIS",
+            "url": "https://www.sjcfl.us/GIS/index.aspx"
+          }
+        ]
+      }
+    },
+    {
       "type": "XS5UR",
       "layer": "base",
       "name": "Lorain County Orthoimagery (2024)",
@@ -28968,6 +29644,27 @@
             "type": "map",
             "name": "© Agentschap Natuur en Bos",
             "url": "https://www.natuurenbos.be/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Y0NP1",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2025",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2025/ImageServer/WMSServer",
+        "layers": ["Ortho_2025"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2025/about"
           }
         ]
       }
@@ -29255,7 +29952,8 @@
         "attribution": [
           {
             "type": "map",
-            "name": "Système d'information du territoire à Genève (SITG)"
+            "name": "Système d'information du territoire à Genève (SITG)",
+            "url": "https://sitg.ge.ch/donnees/image-aerienne-ortho-2018-07"
           }
         ]
       }
@@ -29392,7 +30090,7 @@
       "category": "photo",
       "technology": "wms",
       "body": {
-        "url": "https://wms.zh.ch/OrthoZHWMS",
+        "url": "https://wms.zh.ch/OrthoSommer20ZH",
         "layers": ["ortho_s_2020"],
         "minZoom": 9,
         "attribution": [
@@ -29490,7 +30188,7 @@
       "name": "ACTmapi Imagery Feb 2024",
       "countries": ["au"],
       "bbox": [148.9544, -35.5149, 149.4208, -35.115],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/E5n4f1VY84i0xSjy/arcgis/rest/services/ACT_Aerial_Imagery_202402_AGOL_Compatible/MapServer/tile/{z}/{y}/{x}",
         "minZoom": 10,
@@ -29509,7 +30207,7 @@
       "type": "YNTZ2",
       "layer": "base",
       "name": "imagico.de: Rila and Pirin Mountains",
-      "countries": ["by"],
+      "countries": ["bg"],
       "bbox": [22.9924, 41.5849, 23.994, 42.2998],
       "category": "historicphoto",
       "body": {
@@ -29788,6 +30486,26 @@
       }
     },
     {
+      "type": "YYH33",
+      "layer": "base",
+      "name": "Łódź: Orthophotomap 2015 (aerial image)",
+      "countries": ["pl"],
+      "bbox": [19.3105, 51.6775, 19.6576, 51.8661],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://mapa.lodz.pl/3/services/OGC/ortofotomapy/MapServer/WMSServer",
+        "layers": ["6"],
+        "maxNativeZoom": 22,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Urząd Miasta Łodzi"
+          }
+        ]
+      }
+    },
+    {
       "type": "YZXAX",
       "layer": "base",
       "name": "imagico.de: Northern Ellesmere Island",
@@ -29830,7 +30548,7 @@
     },
     {
       "type": "Z4GYV",
-      "layer": "base",
+      "layer": "overlay",
       "name": "Address System Albania (ASIG)",
       "countries": ["al"],
       "bbox": [19.2834, 39.6584, 21.0521, 42.6566],
@@ -29880,6 +30598,26 @@
             "type": "map",
             "name": "Geodetska uprava Republike Slovenije",
             "url": "https://www.e-prostor.gov.si/"
+          }
+        ]
+      }
+    },
+    {
+      "type": "Z5MWQ",
+      "layer": "base",
+      "name": "Kanton Zug Neuheim 2020 3.5 cm",
+      "countries": ["ch"],
+      "bbox": [8.5574, 47.1848, 8.6119, 47.219],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://services.geo.zg.ch/ows/Orthofotos",
+        "layers": ["zg.orthofoto_2020_kt_zg"],
+        "minZoom": 6,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "GIS Kanton Zug"
           }
         ]
       }
@@ -30093,6 +30831,27 @@
             "type": "map",
             "name": "Delaware Valley Regional Planning Commission",
             "url": "https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=3214"
+          }
+        ]
+      }
+    },
+    {
+      "type": "ZM06L",
+      "layer": "base",
+      "name": "DC From Above Orthophoto 2021",
+      "countries": ["us"],
+      "bbox": [-77.1198, 38.7971, -76.9092, 38.996],
+      "category": "historicphoto",
+      "technology": "wms",
+      "body": {
+        "url": "https://imagery.dcgis.dc.gov/dcgis/services/Ortho/Ortho_2021/ImageServer/WMSServer",
+        "layers": ["Ortho_2021"],
+        "maxNativeZoom": 21,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "OCTO, DCGIS",
+            "url": "https://opendata.dc.gov/datasets/DCGIS::aerial-photography-orthophoto-2021/about"
           }
         ]
       }
