@@ -149,7 +149,11 @@ export const osmTagToIconMapping: IconNode = {
     courthouse: 'courthouse',
     dentist: 'dentist',
     doctors: 'doctors',
-    drinking_water: 'drinking_water',
+    // As in the outdoor map, a dot marks only what the glyph does not say.
+    drinking_water: {
+      '*': 'drinking_water',
+      drinking_water: { no: 'drinking_water_not_drinkable' },
+    },
     embassy: 'embassy',
     emergency_phone: 'phone',
     excrement_bags: 'excrement_bags',
@@ -158,7 +162,10 @@ export const osmTagToIconMapping: IconNode = {
     game_feeding: 'manger',
     ferry: 'ferry_terminal',
     fire_station: 'fire_station',
-    fountain: 'fountain',
+    fountain: {
+      '*': 'fountain',
+      drinking_water: { yes: 'fountain_drinkable' },
+    },
     fuel: 'fuel',
     grave_yard: 'cemetery',
     hospital: 'hospital',
@@ -222,7 +229,10 @@ export const osmTagToIconMapping: IconNode = {
     veterinary: 'veterinary',
     waste_basket: 'waste_basket',
     waste_disposal: 'waste_disposal',
-    watering_place: 'watering_place',
+    watering_place: {
+      '*': 'watering_place',
+      drinking_water: { yes: 'watering_place_drinkable' },
+    },
     animal_breeding: 'veterinary',
     clock: 'temaki:clock',
     device_charging_station: 'temaki:electronic',
@@ -240,7 +250,13 @@ export const osmTagToIconMapping: IconNode = {
     planetarium: 'maki:globe',
     traffic_park: 'bicycle',
     vacuum_cleaner: 'temaki:vacuum_station',
-    water_point: 'drinking_water',
+    water_point: {
+      '*': 'drinking_water',
+      drinking_water: {
+        yes: 'drinking_water_drinkable',
+        no: 'drinking_water_not_drinkable',
+      },
+    },
     brothel: 'nightclub',
     childcare: 'kindergarten',
     compressed_air: 'temaki:gas',
@@ -481,6 +497,7 @@ export const osmTagToIconMapping: IconNode = {
       memorial: {
         bust: 'bust',
         plaque: 'plaque',
+        blue_plaque: 'plaque',
         statue: 'statue',
         stone: 'memorial_stone',
       },
@@ -689,7 +706,13 @@ export const osmTagToIconMapping: IconNode = {
       'tower:construction': towerByConstruction,
     },
     water_tower: 'water_tower',
-    water_well: 'water_well',
+    water_well: {
+      '*': 'water_well',
+      drinking_water: {
+        yes: 'water_well_drinkable',
+        no: 'water_well_not_drinkable',
+      },
+    },
     water_works: 'water_works',
     watermill: 'watermill',
     windmill: 'windmill',
@@ -805,7 +828,7 @@ export const osmTagToIconMapping: IconNode = {
     earth_bank: 'earth_bank',
     gully: 'gully',
     hot_spring: 'hot_spring',
-    peak: 'peak',
+    peak: { '*': 'peak', 'summit:cross': { yes: 'peak_cross' } },
     rock: 'rock',
     saddle: 'saddle',
     sinkhole: 'sinkhole',

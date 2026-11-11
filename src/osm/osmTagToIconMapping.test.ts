@@ -123,3 +123,45 @@ describe('shops', () => {
     expect(icon({ shop: 'diy' })[0]).toBe('doityourself');
   });
 });
+
+describe('drinkable marks', () => {
+  it('marks a well both ways', () => {
+    expect(icon({ man_made: 'water_well', drinking_water: 'yes' })[0]).toBe(
+      'water_well_drinkable',
+    );
+
+    expect(icon({ man_made: 'water_well', drinking_water: 'no' })[0]).toBe(
+      'water_well_not_drinkable',
+    );
+
+    expect(icon({ man_made: 'water_well' })[0]).toBe('water_well');
+  });
+
+  it('marks only what the glyph does not say', () => {
+    expect(icon({ amenity: 'fountain', drinking_water: 'no' })[0]).toBe(
+      'fountain',
+    );
+
+    expect(icon({ amenity: 'drinking_water', drinking_water: 'yes' })[0]).toBe(
+      'drinking_water',
+    );
+
+    expect(icon({ amenity: 'drinking_water', drinking_water: 'no' })[0]).toBe(
+      'drinking_water_not_drinkable',
+    );
+  });
+});
+
+describe('peaks and memorials', () => {
+  it('draws a summit cross', () => {
+    expect(icon({ natural: 'peak', 'summit:cross': 'yes' })[0]).toBe(
+      'peak_cross',
+    );
+  });
+
+  it('draws a blue plaque as a plaque', () => {
+    expect(icon({ historic: 'memorial', memorial: 'blue_plaque' })[0]).toBe(
+      'plaque',
+    );
+  });
+});

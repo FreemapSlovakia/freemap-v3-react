@@ -79,7 +79,10 @@ export type OsmTagToNameMapping = {
     device_charging_station: string;
     doctors: string;
     dressing_room: string;
-    drinking_water: string;
+    drinking_water: {
+      '*': string;
+      drinking_water: { no: string };
+    };
     driving_school: string;
     embassy: string;
     events_venue: string;
@@ -89,7 +92,10 @@ export type OsmTagToNameMapping = {
     ferry_terminal: string;
     fire_station: string;
     food_court: string;
-    fountain: string;
+    fountain: {
+      '*': string;
+      drinking_water: { yes: string; no: string };
+    };
     fuel: string;
     funeral_hall: string;
     gambling: string;
@@ -220,8 +226,14 @@ export type OsmTagToNameMapping = {
     veterinary: string;
     waste_basket: string;
     waste_disposal: string;
-    water_point: string;
-    watering_place: string;
+    water_point: {
+      '*': string;
+      drinking_water: { yes: string; no: string };
+    };
+    watering_place: {
+      '*': string;
+      drinking_water: { yes: string; no: string };
+    };
   };
   attraction: {
     animal: string;
@@ -976,6 +988,24 @@ export type OsmTagToNameMapping = {
     boundary_stone: string;
     building: string;
     cannon: string;
+    aircraft_wreck: string;
+    boat: string;
+    bus: string;
+    car: string;
+    carriage: string;
+    helicopter: string;
+    locomotive: string;
+    minecart: string;
+    railway_car: string;
+    ship: string;
+    submarine: string;
+    tank: string;
+    tractor: string;
+    train: string;
+    tram: string;
+    truck: string;
+    vehicle: string;
+    wagon: string;
     castle: string;
     charcoal_pile: string;
     church: string;
@@ -986,7 +1016,16 @@ export type OsmTagToNameMapping = {
     house: string;
     hollow_way: string;
     manor: string;
-    memorial: string;
+    memorial: {
+      '*': string;
+      memorial: {
+        plaque: string;
+        blue_plaque: string;
+        statue: string;
+        bust: string;
+        stone: string;
+      };
+    };
     milestone: string;
     mine: string;
     mine_adit: string;
@@ -1289,7 +1328,10 @@ export type OsmTagToNameMapping = {
     wastewater_plant: string;
     water_tap: string;
     water_tower: string;
-    water_well: string;
+    water_well: {
+      '*': string;
+      drinking_water: { yes: string; no: string };
+    };
     water_works: string;
     watermill: string;
     windmill: string;
@@ -1349,7 +1391,10 @@ export type OsmTagToNameMapping = {
     landslide: string;
     mountain_range: string;
     mud: string;
-    peak: string;
+    peak: {
+      '*': string;
+      'summit:cross': { yes: string };
+    };
     peninsula: string;
     plain: string;
     plateau: string;

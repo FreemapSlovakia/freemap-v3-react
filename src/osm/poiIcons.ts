@@ -91,6 +91,8 @@ export type PoiIconName =
   | 'dog_park'
   | 'drinking_spring'
   | 'drinking_water'
+  | 'drinking_water_drinkable'
+  | 'drinking_water_not_drinkable'
   | 'dyke'
   | 'earth_bank'
   | 'college'
@@ -115,6 +117,7 @@ export type PoiIconName =
   | 'fort'
   | 'fortress'
   | 'fountain'
+  | 'fountain_drinkable'
   | 'free_flying'
   | 'fuel'
   | 'gallery'
@@ -175,6 +178,7 @@ export type PoiIconName =
   | 'parking'
   | 'parking_tickets'
   | 'peak'
+  | 'peak_cross'
   | 'pharmacy'
   | 'phone'
   | 'picnic_shelter'
@@ -351,9 +355,12 @@ export type PoiIconName =
   | 'water_park'
   | 'water_tower'
   | 'water_well'
+  | 'water_well_drinkable'
+  | 'water_well_not_drinkable'
   | 'water_works'
   | 'waterfall'
   | 'watering_place'
+  | 'watering_place_drinkable'
   | 'watermill'
   | 'wayside_shrine'
   | 'weather_shelter'
@@ -959,6 +966,18 @@ export const poiIcons: Record<string, PoiIcon> = {
     mono: false,
     body: '<path fill="#0064ff" d="m 0 6 1.5 8 h 5 L 8 6 Z m 1.18 1 h 5.63 l-0.37 2 H 1.55 M 3 5 q 0-3 3-3 h 1 V 1 H 6 C 5 1 5 0 6 0 h 3 c 1 0 1 1 0 1 H 8 v 1 h 4 v 1.5 H 6 c-1.085-0.009-1.5 0.482-1.5 1.5 Z"/>',
   },
+  drinking_water_drinkable: {
+    vb: [-1.12, -1.12, 16.24, 16.24],
+    bbox: [1.12, 1.12, 14, 14],
+    mono: false,
+    body: '<circle cx="11.5" cy="11.5" r="2.5" fill="#00ff00"/><path fill="#0064ff" d="m 0 6 1.5 8 h 5 L 8 6 Z m 1.18 1 h 5.63 l-0.37 2 H 1.55 M 3 5 q 0-3 3-3 h 1 V 1 H 6 C 5 1 5 0 6 0 h 3 c 1 0 1 1 0 1 H 8 v 1 h 4 v 1.5 H 6 c-1.085-0.009-1.5 0.482-1.5 1.5 Z"/>',
+  },
+  drinking_water_not_drinkable: {
+    vb: [-1.12, -1.12, 16.24, 16.24],
+    bbox: [1.12, 1.12, 14, 14],
+    mono: false,
+    body: '<circle cx="11.5" cy="11.5" r="2.5" fill="red"/><path fill="#0064ff" d="m 0 6 1.5 8 h 5 L 8 6 Z m 1.18 1 h 5.63 l-0.37 2 H 1.55 M 3 5 q 0-3 3-3 h 1 V 1 H 6 C 5 1 5 0 6 0 h 3 c 1 0 1 1 0 1 H 8 v 1 h 4 v 1.5 H 6 c-1.085-0.009-1.5 0.482-1.5 1.5 Z"/>',
+  },
   dyke: {
     vb: [-1.2, -1.2, 14.4, 17.4],
     bbox: [0.95, 0.95, 12.5, 15.5],
@@ -1102,6 +1121,12 @@ export const poiIcons: Record<string, PoiIcon> = {
     bbox: [1.12, 1.12, 14, 13.985],
     mono: false,
     body: '<path fill="#0064ff" fill-rule="evenodd" d="M 0 10.985 h 14 c-1 2-5 3-7 3 s-5.699-1-7-3 M 9 0.045 c-1 0-1.675 1.036-2.012 1.815 C 6.651 1.043 6 0 5 0 3.5 0 3 1.925 3 2.925 s 1 0.675 1 0.03 c 1-2 2-1.613 2.242 1.548 v 0.35 A 2.8 2.8 0 0 0 5 4.543 c-1.467 0-2.75 1.033-2.75 3 v 1 c 0 1 1.5 1 1.5 0 v-1 c 0-0.966 0.683-1.5 1.25-1.5 0.55 0 1.202 0.536 1.242 1.418 v 2.524 c 0.758-0.578 0.758-0.594 1.485 0 l 0.023-2.442 v-0.125 c 0.041-0.88 0.693-1.416 1.242-1.416 0.567 0 1.25 0.534 1.25 1.5 v 1 c 0 1 1.5 1 1.5 0 v-1 c 0-1.967-1.283-3-2.75-3-0.43 0-0.859 0.121-1.242 0.31 0-0.09-0.017-0.18 0-0.269 C 8 1.799 9 0.985 10 2.985 c 0 0.528 1 0.924 1-0.076 S 10.5 0.045 9 0.045"/>',
+  },
+  fountain_drinkable: {
+    vb: [-1.36, -1.36, 19.72, 16.705],
+    bbox: [1.36, 1.36, 17, 14],
+    mono: false,
+    body: '<circle cx="14.5" cy="11.5" r="2.5" fill="#00ff00"/><path fill="#0064ff" fill-rule="evenodd" d="M 0 10.985 h 14 c-1 2-5 3-7 3 s-5.699-1-7-3 M 9 0.045 c-1 0-1.675 1.036-2.012 1.815 C 6.651 1.043 6 0 5 0 3.5 0 3 1.925 3 2.925 s 1 0.675 1 0.03 c 1-2 2-1.613 2.242 1.548 v 0.35 A 2.8 2.8 0 0 0 5 4.543 c-1.467 0-2.75 1.033-2.75 3 v 1 c 0 1 1.5 1 1.5 0 v-1 c 0-0.966 0.683-1.5 1.25-1.5 0.55 0 1.202 0.536 1.242 1.418 v 2.524 c 0.758-0.578 0.758-0.594 1.485 0 l 0.023-2.442 v-0.125 c 0.041-0.88 0.693-1.416 1.242-1.416 0.567 0 1.25 0.534 1.25 1.5 v 1 c 0 1 1.5 1 1.5 0 v-1 c 0-1.967-1.283-3-2.75-3-0.43 0-0.859 0.121-1.242 0.31 0-0.09-0.017-0.18 0-0.269 C 8 1.799 9 0.985 10 2.985 c 0 0.528 1 0.924 1-0.076 S 10.5 0.045 9 0.045"/>',
   },
   free_flying: {
     vb: [-0.96, -0.96, 13.917, 13.859],
@@ -1462,6 +1487,12 @@ export const poiIcons: Record<string, PoiIcon> = {
     bbox: [0.64, 1.14, 8, 6],
     mono: true,
     body: '<path d="m 4 0.5 4 6 H 0 Z"/>',
+  },
+  peak_cross: {
+    vb: [-0.96, -0.96, 13.92, 8.42],
+    bbox: [0.96, 1.46, 12, 6],
+    mono: true,
+    body: '<path d="m 4 0.5 4 6 H 0 Z m 6 0 h 1 v 2 h 1 v 1 h-1 v 3 h-1 v-3 H 9 v-1 h 1 z"/>',
   },
   pharmacy: {
     vb: [-1.12, -1.12, 12.24, 16.24],
@@ -2519,6 +2550,18 @@ export const poiIcons: Record<string, PoiIcon> = {
     mono: false,
     body: '<path fill="#0064ff" d="M 5.518 0 0 4 h 2 v 8 h 7 V 6 h 1 v 3 h 3 V 8 h-2 V 5 H 9 V 4 h 2 Z M 3 4 h 5 v 1 H 3 Z m 0 2 h 2 v 2 H 3 Z m 3 0 h 2 v 2 H 6 Z"/>',
   },
+  water_well_drinkable: {
+    vb: [-1.28, -1.28, 18.56, 14.56],
+    bbox: [1.28, 1.28, 16, 12],
+    mono: false,
+    body: '<circle cx="13.5" cy="9.5" r="2.5" fill="#00ff00"/><path fill="#0064ff" d="M 5.518 0 0 4 h 2 v 8 h 7 V 6 h 1 v 3 h 3 V 8 h-2 V 5 H 9 V 4 h 2 Z M 3 4 h 5 v 1 H 3 Z m 0 2 h 2 v 2 H 3 Z m 3 0 h 2 v 2 H 6 Z"/>',
+  },
+  water_well_not_drinkable: {
+    vb: [-1.28, -1.28, 18.56, 14.56],
+    bbox: [1.28, 1.28, 16, 12],
+    mono: false,
+    body: '<circle cx="13.5" cy="9.5" r="2.5" fill="red"/><path fill="#0064ff" d="M 5.518 0 0 4 h 2 v 8 h 7 V 6 h 1 v 3 h 3 V 8 h-2 V 5 H 9 V 4 h 2 Z M 3 4 h 5 v 1 H 3 Z m 0 2 h 2 v 2 H 3 Z m 3 0 h 2 v 2 H 6 Z"/>',
+  },
   water_works: {
     vb: [-1.28, -1.28, 18.56, 17.285],
     bbox: [1.28, 1.28, 16, 14.724],
@@ -2536,6 +2579,12 @@ export const poiIcons: Record<string, PoiIcon> = {
     bbox: [1.077, 1.077, 13.458, 8.007],
     mono: false,
     body: '<path fill="#0064ff" d="M 7.599 0 0 3.244 l 2.373 4.763 2.41-0.002 6.269-3.138 L 13.458 0.004 Z m 0.177 1.004 h 2.779 l-4 2 H 3.108 Z m 3.779 0.617-1.256 2.51-4.51 2.256 1.256-2.51 z M 1.481 4.004 h 4.381 l-1.5 3 h-1.38 z"/>',
+  },
+  watering_place_drinkable: {
+    vb: [-1.317, -1.317, 19.091, 10.64],
+    bbox: [1.317, 1.317, 16.458, 8.007],
+    mono: false,
+    body: '<circle cx="13.958" cy="5.5" r="2.5" fill="#00ff00"/><path fill="#0064ff" d="M 7.599 0 0 3.244 l 2.373 4.763 2.41-0.002 6.269-3.138 L 13.458 0.004 Z m 0.177 1.004 h 2.779 l-4 2 H 3.108 Z m 3.779 0.617-1.256 2.51-4.51 2.256 1.256-2.51 z M 1.481 4.004 h 4.381 l-1.5 3 h-1.38 z"/>',
   },
   watermill: {
     vb: [-1.2, -1.2, 17.4, 17.4],
