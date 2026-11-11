@@ -8,7 +8,8 @@ import { DomEvent, Layer } from 'leaflet';
  *    `focus`/`blur` listeners on the layer's element and `unbindTooltip` never
  *    takes them off, so the handler fires against a tooltip no longer there
  *    ("Cannot set properties of null (setting '_source')"), as on a drawing
- *    point whose label is cleared. Guarded below.
+ *    point whose label is cleared, and the blur closes a permanent tooltip
+ *    bound in its place (a mouse pan focuses the map). Guarded below.
  * 2. Focus opening the tooltip, unfixed even in 2.0 (Leaflet#9150): a clicked
  *    marker keeps focus, and the page regaining it reopens its tooltip with no
  *    hover. Opened here for keyboard focus only.
@@ -16,7 +17,7 @@ import { DomEvent, Layer } from 'leaflet';
  *    is (Leaflet#9059), fixed in 2.0 by #9154, whose logic `_openTooltip` takes.
  */
 type TooltipLayer = Layer & {
-  _tooltip?: { _source?: unknown } | null;
+  _tooltip?: { _source?: unknown; options: { permanent?: boolean } } | null;
   getElement?: () => HTMLElement | undefined;
   openTooltip: () => unknown;
   closeTooltip: () => unknown;
@@ -66,8 +67,15 @@ patched._addFocusListenersOnLayer = function (this: TooltipLayer, layer) {
     this,
   );
 
-  DomEvent.on(el, 'blur', this.closeTooltip, this);
+  // Shared, so DomEvent dedupes it across rebinds.
+  DomEvent.on(el, 'blur', closeUnlessPermanent, this);
 };
+
+function closeUnlessPermanent(this: TooltipLayer) {
+  if (this._tooltip && !this._tooltip.options.permanent) {
+    this.closeTooltip();
+  }
+}
 
 type OpeningLayer = TooltipLayer & {
   _map?: {
