@@ -14,6 +14,7 @@ import {
 } from '@shared/components/RichMarker.js';
 import { HALO_PANE, HALO_WIDTH, SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useLabelsZoomedIn } from '@shared/hooks/useLabelsZoomedIn.js';
 import {
   type LabelTooltipMode,
   labelTooltipMode,
@@ -103,6 +104,10 @@ export function SearchResults(): ReactElement | null {
     (state) => state.searchSettings.labelVisibility,
   );
 
+  const labelsZoomedIn = useLabelsZoomedIn(
+    useAppSelector((state) => state.searchSettings.labelMinZoom),
+  );
+
   return (
     <>
       {shown.map((result) => {
@@ -116,7 +121,11 @@ export function SearchResults(): ReactElement | null {
             !(previewId && featureIdsEqual(result.id, previewId)),
         );
 
-        const labelMode = labelTooltipMode(labelVisibility, selected);
+        const labelMode = labelTooltipMode(
+          labelVisibility,
+          selected,
+          labelsZoomedIn,
+        );
 
         return (
           <ResultGeometry

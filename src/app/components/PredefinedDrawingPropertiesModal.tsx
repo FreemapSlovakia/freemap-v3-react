@@ -1,16 +1,16 @@
 import {
-  dataViewerSetLabelVisibility,
+  dataViewerSetLabelSettings,
   dataViewerSetStyle,
 } from '@features/dataViewer/model/actions.js';
+import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import { DrawingStyleSettingsModal } from '@features/drawing/components/DrawingStyleSettingsModal.js';
-import { drawingSetLabelVisibility } from '@features/drawing/model/actions/drawingPointActions.js';
 import {
   type DrawingStyle,
   drawingSettingsInitialState,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { useDrawingMessages } from '@features/drawing/translations/useDrawingMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import type { LabelVisibility } from '@shared/labelVisibility.js';
+import type { LabelSettings } from '@shared/labelVisibility.js';
 import type { ReactElement } from 'react';
 import { FaFill } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -25,8 +25,13 @@ export default function PredefinedDrawingPropertiesModal({
 
   const style = useAppSelector((state) => state.drawingSettings.style);
 
-  const labelVisibility = useAppSelector(
-    (state) => state.drawingSettings.labelVisibility,
+  // The map's own: drawn features render through the data viewer.
+  const visibility = useAppSelector(
+    (state) => state.trackViewerSettings.labelVisibility,
+  );
+
+  const minZoom = useAppSelector(
+    (state) => state.trackViewerSettings.labelMinZoom,
   );
 
   const dispatch = useDispatch();
@@ -35,16 +40,14 @@ export default function PredefinedDrawingPropertiesModal({
   // features follow one style whichever way they came.
   const save = (
     drawing: DrawingStyle,
-    labelVisibility: LabelVisibility,
+    labels: LabelSettings,
     drawingApplyAll: boolean,
   ) => {
     dispatch(applySettings({ drawing, drawingApplyAll }));
 
-    dispatch(drawingSetLabelVisibility(labelVisibility));
-
     dispatch(dataViewerSetStyle(drawing));
 
-    dispatch(dataViewerSetLabelVisibility(labelVisibility));
+    dispatch(dataViewerSetLabelSettings(labels));
   };
 
   return (
@@ -54,8 +57,11 @@ export default function PredefinedDrawingPropertiesModal({
       documentTitle={dm?.defProps.menuItem}
       current={style}
       defaults={drawingSettingsInitialState.style}
-      currentLabelVisibility={labelVisibility}
-      defaultLabelVisibility={drawingSettingsInitialState.labelVisibility}
+      currentLabels={{ visibility, minZoom }}
+      defaultLabels={{
+        visibility: dataViewerSettingsInitialState.labelVisibility,
+        minZoom: dataViewerSettingsInitialState.labelMinZoom,
+      }}
       onSave={(drawing, lv) => save(drawing, lv, false)}
       extraActions={[
         {

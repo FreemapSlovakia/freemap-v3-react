@@ -96,7 +96,10 @@ import {
   STEEPNESS_DEFAULT_SCALE,
   STEEPNESS_SCALES,
 } from '@shared/colorizers/modes/steepness.js';
-import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
+import {
+  LabelMinZoomSchema,
+  LabelVisibilitySchema,
+} from '@shared/labelVisibility.js';
 import { LanguageSchema } from '@shared/langUtils.js';
 import {
   CustomLayerDefArrayCompatSchema,
@@ -238,6 +241,7 @@ export const PersistedObjectsSettingsSchema = z
     selectedIcon: MarkerTypeSchema,
     color: z.string(),
     labelVisibility: LabelVisibilitySchema,
+    labelMinZoom: LabelMinZoomSchema,
   })
   .partial();
 
@@ -391,6 +395,7 @@ export const PersistedSearchSettingsSchema = z
   .object({
     resultStyle: SearchResultStyleSchema.partial(),
     labelVisibility: LabelVisibilitySchema,
+    labelMinZoom: LabelMinZoomSchema,
     // An unreadable entry is dropped alone, not the whole list.
     recent: RecentSearchSchema.nullable()
       .catch(null)
@@ -403,6 +408,7 @@ export const PersistedDataViewerSettingsSchema = z
   .object({
     style: DrawingStyleSchema.partial(),
     labelVisibility: LabelVisibilitySchema,
+    labelMinZoom: LabelMinZoomSchema,
     colorizeTrackBy: ColorizingModeSchema.nullable(),
     colorizeLegend: z.boolean(),
     traceOutput: TraceOutputSchema.nullable(),
@@ -680,6 +686,7 @@ const PERSIST: PersistEntry[] = [
       selectedIcon: o.selectedIcon,
       color: o.color,
       labelVisibility: o.labelVisibility,
+      labelMinZoom: o.labelMinZoom,
     }),
   }),
   defineEntry({
@@ -719,6 +726,7 @@ const PERSIST: PersistEntry[] = [
     persist: (s) => ({
       resultStyle: s.resultStyle,
       labelVisibility: s.labelVisibility,
+      labelMinZoom: s.labelMinZoom,
       recent: s.recent,
     }),
   }),
@@ -758,6 +766,7 @@ const PERSIST: PersistEntry[] = [
     persist: (t) => ({
       style: t.style,
       labelVisibility: t.labelVisibility,
+      labelMinZoom: t.labelMinZoom,
       colorizeTrackBy: t.colorizeTrackBy,
       colorizeLegend: t.colorizeLegend,
       traceOutput: t.traceOutput,

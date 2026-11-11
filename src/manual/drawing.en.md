@@ -43,7 +43,7 @@ A selected point can be dragged to a new place. Pointing at a vertex shows the d
 
 :FaTag: **Properties** on the selection toolbar opens a dialog where you set the **Label** shown on the map, the **Color**, and for a line or polygon also the **Width**, **Dash style** and **Fill color**; a point has a **Shape** and an icon or short **Text** inside its marker. A label can also show measured values: write `{length}` into a line's label, or `{area}` into a polygon's.
 
-The style of new drawings is set by :FaPaintBrush: **Set default style** in the tool's :FaEllipsisV: menu (<kbd>e</kbd> <kbd>d</kbd>). There, with **Show label** you also choose whether labels are shown always or only on hover or when selected.
+The style of new drawings is set by :FaPaintBrush: **Set default style** in the tool's :FaEllipsisV: menu (<kbd>e</kbd> <kbd>d</kbd>). There, with **Show label** you also choose whether labels are shown always or only on hover or when selected, and with **Show label always from zoom** from which zoom they are all shown.
 
 ## Deleting
 

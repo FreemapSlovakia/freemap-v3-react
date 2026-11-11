@@ -16,14 +16,15 @@ import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.
 import { RgbaColorPicker } from '@shared/components/RgbaColorPicker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
+import {
+  type LabelSettings,
+  labelSettingsEqual,
+} from '@shared/labelVisibility.js';
 import { type ReactElement, type SubmitEvent, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { FaCheck, FaPaintBrush } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import {
-  objectsSetLabelVisibility,
-  objectsSetStyle,
-} from '../model/actions.js';
+import { objectsSetLabelSettings, objectsSetStyle } from '../model/actions.js';
 import { objectsSettingsInitialState } from '../model/settingsReducer.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 
@@ -46,12 +47,23 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
     (state) => state.objectsSettings.labelVisibility,
   );
 
+  const labelMinZoom = useAppSelector(
+    (state) => state.objectsSettings.labelMinZoom,
+  );
+
   const [editedMarkerType, setEditedMarkerType] = useState(markerType);
 
   const [editedColor, setEditedColor] = useState(color);
 
-  const [editedLabelVisibility, setEditedLabelVisibility] =
-    useState(labelVisibility);
+  const [editedLabels, setEditedLabels] = useState<LabelSettings>({
+    visibility: labelVisibility,
+    minZoom: labelMinZoom,
+  });
+
+  const defaultLabels: LabelSettings = {
+    visibility: objectsSettingsInitialState.labelVisibility,
+    minZoom: objectsSettingsInitialState.labelMinZoom,
+  };
 
   const dispatch = useDispatch();
 
@@ -66,7 +78,7 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
       objectsSetStyle({ selectedIcon: editedMarkerType, color: editedColor }),
     );
 
-    dispatch(objectsSetLabelVisibility(editedLabelVisibility));
+    dispatch(objectsSetLabelSettings(editedLabels));
 
     close();
   };
@@ -76,13 +88,16 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
 
     setEditedColor(objectsSettingsInitialState.color);
 
-    setEditedLabelVisibility(objectsSettingsInitialState.labelVisibility);
+    setEditedLabels(defaultLabels);
   };
 
   const dirty =
     editedMarkerType !== markerType ||
     editedColor !== color ||
-    editedLabelVisibility !== labelVisibility;
+    !labelSettingsEqual(editedLabels, {
+      visibility: labelVisibility,
+      minZoom: labelMinZoom,
+    });
 
   useDirtyForm(dirty);
 
@@ -128,8 +143,8 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
           </Form.Group>
 
           <LabelVisibilityField
-            value={editedLabelVisibility}
-            onChange={setEditedLabelVisibility}
+            value={editedLabels}
+            onChange={setEditedLabels}
           />
         </Modal.Body>
 
@@ -146,8 +161,7 @@ export default function ObjectsStyleModal({ show }: Props): ReactElement {
             disabled={
               editedMarkerType === objectsSettingsInitialState.selectedIcon &&
               editedColor === objectsSettingsInitialState.color &&
-              editedLabelVisibility ===
-                objectsSettingsInitialState.labelVisibility
+              labelSettingsEqual(editedLabels, defaultLabels)
             }
           />
 

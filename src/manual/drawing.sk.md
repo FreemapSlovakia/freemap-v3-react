@@ -43,7 +43,7 @@ Vybraný bod môžete presunúť ťahaním. Ukázaním na vrchol sa zobrazí vzd
 
 :FaTag: **Vlastnosti** na lište výberu otvorí dialóg, kde nastavíte **Popis** zobrazený na mape, **Farbu** a pri čiare či polygóne aj **Šírku**, **Štýl prerušovania** a **Farbu výplne**; bod má **Tvar** a v značke ikonu alebo krátky **Text**. Popis môže ukazovať aj namerané hodnoty: do popisu čiary napíšte `{length}`, do popisu polygónu `{area}`.
 
-Štýl nových kresieb nastavíte cez :FaPaintBrush: **Nastaviť predvolený štýl** v menu :FaEllipsisV: nástroja (<kbd>e</kbd> <kbd>d</kbd>). Voľbou **Zobraziť popis** tam tiež určíte, či sa popisy zobrazujú vždy, alebo len pri prejdení myšou či keď je prvok vybraný.
+Štýl nových kresieb nastavíte cez :FaPaintBrush: **Nastaviť predvolený štýl** v menu :FaEllipsisV: nástroja (<kbd>e</kbd> <kbd>d</kbd>). Voľbou **Zobraziť popis** tam tiež určíte, či sa popisy zobrazujú vždy, alebo len pri prejdení myšou či keď je prvok vybraný, a voľbou **Zobraziť popis vždy od priblíženia** od akého priblíženia sa zobrazia všetky.
 
 ## Mazanie
 

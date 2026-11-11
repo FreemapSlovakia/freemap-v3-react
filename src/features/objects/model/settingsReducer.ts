@@ -3,7 +3,7 @@ import { COLORS } from '@shared/colors.js';
 import type { LabelVisibility } from '@shared/labelVisibility.js';
 import {
   type MarkerType,
-  objectsSetLabelVisibility,
+  objectsSetLabelSettings,
   objectsSetStyle,
 } from './actions.js';
 
@@ -14,12 +14,14 @@ export interface ObjectsSettingsState {
   selectedIcon: MarkerType;
   color: string;
   labelVisibility: LabelVisibility;
+  labelMinZoom: number | null;
 }
 
 export const objectsSettingsInitialState: ObjectsSettingsState = {
   selectedIcon: 'pin',
   color: COLORS.normal,
   labelVisibility: 'hover',
+  labelMinZoom: null,
 };
 
 export const objectsSettingsReducer = createReducer(
@@ -30,7 +32,8 @@ export const objectsSettingsReducer = createReducer(
         state.selectedIcon = action.payload.selectedIcon;
         state.color = action.payload.color;
       })
-      .addCase(objectsSetLabelVisibility, (state, action) => {
-        state.labelVisibility = action.payload;
+      .addCase(objectsSetLabelSettings, (state, { payload }) => {
+        state.labelVisibility = payload.visibility;
+        state.labelMinZoom = payload.minZoom;
       }),
 );

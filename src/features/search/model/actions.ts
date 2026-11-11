@@ -3,7 +3,7 @@ import {
   DrawingStyleSchema,
 } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { LabelVisibility } from '@shared/labelVisibility.js';
+import type { LabelSettings } from '@shared/labelVisibility.js';
 import { type FeatureId, FeatureIdSchema } from '@shared/types/featureId.js';
 import type { Feature, FeatureCollection, GeoJsonProperties } from 'geojson';
 import z from 'zod';
@@ -30,8 +30,8 @@ export const searchSetResultStyle = createAction<SearchResultStyle>(
   'SEARCH_SET_RESULT_STYLE',
 );
 
-export const searchSetLabelVisibility = createAction<LabelVisibility>(
-  'SEARCH_SET_LABEL_VISIBILITY',
+export const searchSetLabelSettings = createAction<LabelSettings>(
+  'SEARCH_SET_LABEL_SETTINGS',
 );
 
 export const SearchSourceSchema = z.union([

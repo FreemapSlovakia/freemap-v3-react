@@ -30,6 +30,7 @@ import {
 } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useLabelsZoomedIn } from '@shared/hooks/useLabelsZoomedIn.js';
 import {
   type LabelTooltipMode,
   labelTooltipMode,
@@ -234,8 +235,16 @@ export default function DataViewerResult({
     (state) => state.trackViewerSettings.labelVisibility,
   );
 
+  const labelsZoomedIn = useLabelsZoomedIn(
+    useAppSelector((state) => state.trackViewerSettings.labelMinZoom),
+  );
+
   const labelModeOf = (featureIndex: number) =>
-    labelTooltipMode(labelVisibility, featureIndex === selectedIndex);
+    labelTooltipMode(
+      labelVisibility,
+      featureIndex === selectedIndex,
+      labelsZoomedIn,
+    );
 
   // Per source feature, as a template's `{length}` measures the whole of it.
   const labels = useMemo(
