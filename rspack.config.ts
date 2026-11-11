@@ -762,7 +762,12 @@ const config: Configuration = {
         {
           from: 'static/**/*',
           to: '[name][ext]',
-          globOptions: { dot: true },
+          globOptions: { dot: true, ignore: ['**/.well-known/**'] },
+        },
+        {
+          // The flattening pattern above would drop its directory.
+          from: 'static/.well-known',
+          to: '.well-known',
         },
         {
           // The pre-JS bootstrap and the service worker fetch the logos by fixed

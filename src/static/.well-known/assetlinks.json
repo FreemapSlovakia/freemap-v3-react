@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "sk.freemap.www.twa",
+      "sha256_cert_fingerprints": [
+        "10:67:C0:D0:E2:7C:E2:32:1D:7A:49:98:4C:0B:87:5F:EB:89:4D:3A:B5:82:9D:49:9E:AF:1E:6B:00:6F:4F:69",
+        "EE:D0:73:4A:80:57:B1:05:10:3E:0C:BB:49:63:61:F7:84:CF:72:A6:68:50:36:90:1D:90:73:FF:DD:98:FA:44"
+      ]
+    }
+  }
+]
