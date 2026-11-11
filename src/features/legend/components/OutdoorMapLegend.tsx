@@ -260,7 +260,9 @@ function LegendItems({
             />
           </div>
 
-          <div className="d-flex flex-wrap gap-2">
+          {/* The padding is absorbed by a taller icon, so it only separates
+              chip blocks that outgrow their icon from their neighbours. */}
+          <div className="d-flex flex-wrap gap-2 py-2">
             {[
               // Tag sets of one item that read the same make one chip.
               ...Map.groupBy(
