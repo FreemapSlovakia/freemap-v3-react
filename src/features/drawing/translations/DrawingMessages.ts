@@ -82,6 +82,10 @@ export type DrawingMessages = {
     removeProperty: string;
     showLabel: string;
     labelVisibility: Record<LabelVisibility, string>;
+    /** The zoom from which every label shows. */
+    labelMinZoom: string;
+    labelMinZoomNever: string;
+    currentZoom: (props: { zoom: number }) => string;
     /** Marks a field whose value differs between features edited together. */
     different: string;
     /** Brings up such a field's control, to set it on all of them. */

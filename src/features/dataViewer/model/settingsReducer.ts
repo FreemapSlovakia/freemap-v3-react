@@ -17,7 +17,7 @@ import {
   dataViewerColorizeTrackBy,
   dataViewerSetColorizeLegend,
   dataViewerSetData,
-  dataViewerSetLabelVisibility,
+  dataViewerSetLabelSettings,
   dataViewerSetListSort,
   dataViewerSetStyle,
   dataViewerSetTraceOutput,
@@ -31,6 +31,7 @@ export interface DataViewerSettingsState {
   // their own.
   style: DrawingStyle;
   labelVisibility: LabelVisibility;
+  labelMinZoom: number | null;
   colorizeTrackBy: ColorizingMode | null;
   // Whether the colorize legend is shown; independent of the other tools.
   colorizeLegend: boolean;
@@ -43,6 +44,7 @@ export interface DataViewerSettingsState {
 export const dataViewerSettingsInitialState: DataViewerSettingsState = {
   style: makeDrawingStyle('#0000ff', 4),
   labelVisibility: 'always',
+  labelMinZoom: null,
   colorizeTrackBy: null,
   colorizeLegend: true,
   traceOutput: null,
@@ -56,8 +58,9 @@ export const dataViewerSettingsReducer = createReducer(
       .addCase(dataViewerSetStyle, (state, action) => {
         state.style = action.payload;
       })
-      .addCase(dataViewerSetLabelVisibility, (state, action) => {
-        state.labelVisibility = action.payload;
+      .addCase(dataViewerSetLabelSettings, (state, { payload }) => {
+        state.labelVisibility = payload.visibility;
+        state.labelMinZoom = payload.minZoom;
       })
       .addCase(dataViewerColorizeTrackBy, (state, action) => {
         state.colorizeTrackBy = action.payload;

@@ -1,6 +1,6 @@
 import type { ElevationReading } from '@features/elevationChart/components/ElevationValue.js';
 import { createAction } from '@reduxjs/toolkit';
-import type { LabelVisibility } from '@shared/labelVisibility.js';
+import type { LabelSettings } from '@shared/labelVisibility.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import z from 'zod';
@@ -35,8 +35,8 @@ export const objectsSetStyle = createAction<{
   color: string;
 }>('OBJECTS_SET_STYLE');
 
-export const objectsSetLabelVisibility = createAction<LabelVisibility>(
-  'OBJECTS_SET_LABEL_VISIBILITY',
+export const objectsSetLabelSettings = createAction<LabelSettings>(
+  'OBJECTS_SET_LABEL_SETTINGS',
 );
 
 /**

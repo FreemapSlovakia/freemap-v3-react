@@ -10,7 +10,10 @@ import {
 import { Modal } from '@shared/components/Modal.js';
 import { ResetToDefaultsButton } from '@shared/components/ResetToDefaultsButton.js';
 import { useDirtyForm } from '@shared/hooks/useDirtyForm.js';
-import type { LabelVisibility } from '@shared/labelVisibility.js';
+import {
+  type LabelSettings,
+  labelSettingsEqual,
+} from '@shared/labelVisibility.js';
 import {
   type ReactElement,
   type ReactNode,
@@ -34,7 +37,7 @@ type ExtraAction = {
   icon: ReactNode;
   variant?: string;
   /** Receives the edited values; the modal closes afterwards. */
-  onClick: (style: DrawingStyle, labelVisibility: LabelVisibility) => void;
+  onClick: (style: DrawingStyle, labels: LabelSettings) => void;
 };
 
 type Props = {
@@ -49,11 +52,11 @@ type Props = {
   current: DrawingStyle;
   /** Style the "Reset to default" button refills the form with. */
   defaults: DrawingStyle;
-  currentLabelVisibility: LabelVisibility;
-  defaultLabelVisibility: LabelVisibility;
+  currentLabels: LabelSettings;
+  defaultLabels: LabelSettings;
   widthStep?: number;
   /** Receives the edited values on Save; the modal closes afterwards. */
-  onSave: (style: DrawingStyle, labelVisibility: LabelVisibility) => void;
+  onSave: (style: DrawingStyle, labels: LabelSettings) => void;
   extraActions?: ExtraAction[];
 };
 
@@ -70,8 +73,8 @@ export function DrawingStyleSettingsModal({
   icon = <FaPaintBrush />,
   current,
   defaults,
-  currentLabelVisibility,
-  defaultLabelVisibility,
+  currentLabels,
+  defaultLabels,
   widthStep = 0.1,
   onSave,
   extraActions,
@@ -82,20 +85,20 @@ export function DrawingStyleSettingsModal({
 
   const editor = useDrawingStyleEditor(current, { widthStep });
 
-  const [labelVisibility, setLabelVisibility] = useState(
-    currentLabelVisibility,
-  );
+  const [labels, setLabels] = useState(currentLabels);
+
+  const labelsDirty = !labelSettingsEqual(labels, currentLabels);
 
   const close = useCallback(() => {
     dispatch(setActiveModal(null));
   }, [dispatch]);
 
-  useDirtyForm(editor.dirty || labelVisibility !== currentLabelVisibility);
+  useDirtyForm(editor.dirty || labelsDirty);
 
   const handleSubmit = (e: SubmitEvent) => {
     e.preventDefault();
 
-    onSave(editor.style, labelVisibility);
+    onSave(editor.style, labels);
 
     close();
   };
@@ -128,19 +131,13 @@ export function DrawingStyleSettingsModal({
         <Modal.Body>
           {editor.element}
 
-          <LabelVisibilityField
-            value={labelVisibility}
-            onChange={setLabelVisibility}
-          />
+          <LabelVisibilityField value={labels} onChange={setLabels} />
         </Modal.Body>
 
         <FmModalFooter>
           <FmFooterButton
             type="submit"
-            disabled={
-              editor.invalid ||
-              (!editor.dirty && labelVisibility === currentLabelVisibility)
-            }
+            disabled={editor.invalid || (!editor.dirty && !labelsDirty)}
             icon={<FaCheck />}
             label={m?.general.save}
           />
@@ -151,7 +148,7 @@ export function DrawingStyleSettingsModal({
               variant={action.variant ?? 'secondary'}
               disabled={editor.invalid}
               onClick={() => {
-                action.onClick(editor.style, labelVisibility);
+                action.onClick(editor.style, labels);
 
                 close();
               }}
@@ -164,13 +161,13 @@ export function DrawingStyleSettingsModal({
             onClick={() => {
               editor.reset(defaults);
 
-              setLabelVisibility(defaultLabelVisibility);
+              setLabels(defaultLabels);
             }}
             // Enabled while invalid so reset can recover a broken field.
             disabled={
               !editor.invalid &&
               drawingStyleEquals(editor.style, defaults) &&
-              labelVisibility === defaultLabelVisibility
+              labelSettingsEqual(labels, defaultLabels)
             }
           />
 

@@ -9,6 +9,29 @@ export const LabelVisibilitySchema = z.enum([
 
 export type LabelVisibility = z.infer<typeof LabelVisibilitySchema>;
 
+/** The lowest zoom offered; the highest is the map's own `maxZoom`. */
+export const LABEL_MIN_ZOOM_FLOOR = 8;
+
+/**
+ * The zoom from which every label shows, whatever the visibility; `null` for
+ * never. A bad stored value is dropped rather than failing its slice.
+ */
+export const LabelMinZoomSchema = z
+  .number()
+  .int()
+  .min(LABEL_MIN_ZOOM_FLOOR)
+  .nullable()
+  .catch(null);
+
+export type LabelSettings = {
+  visibility: LabelVisibility;
+  minZoom: number | null;
+};
+
+export function labelSettingsEqual(a: LabelSettings, b: LabelSettings) {
+  return a.visibility === b.visibility && a.minZoom === b.minZoom;
+}
+
 export type LabelTooltipMode = 'permanent' | 'hover';
 
 /**
@@ -18,8 +41,13 @@ export type LabelTooltipMode = 'permanent' | 'hover';
 export function labelTooltipMode(
   visibility: LabelVisibility,
   selected: boolean,
+  zoomedIn: boolean,
 ): LabelTooltipMode | undefined {
-  if (visibility === 'always' || (selected && visibility !== 'hover')) {
+  if (
+    zoomedIn ||
+    visibility === 'always' ||
+    (selected && visibility !== 'hover')
+  ) {
     return 'permanent';
   }
 

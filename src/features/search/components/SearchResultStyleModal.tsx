@@ -4,7 +4,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  searchSetLabelVisibility,
+  searchSetLabelSettings,
   searchSetResultStyle,
 } from '../model/actions.js';
 import { searchSettingsInitialState } from '../model/settingsReducer.js';
@@ -16,9 +16,11 @@ export default function SearchResultStyleModal({ show }: Props): ReactElement {
 
   const style = useAppSelector((state) => state.searchSettings.resultStyle);
 
-  const labelVisibility = useAppSelector(
+  const visibility = useAppSelector(
     (state) => state.searchSettings.labelVisibility,
   );
+
+  const minZoom = useAppSelector((state) => state.searchSettings.labelMinZoom);
 
   const dispatch = useDispatch();
 
@@ -28,12 +30,15 @@ export default function SearchResultStyleModal({ show }: Props): ReactElement {
       title={m?.mapLayers.lookupStyle}
       current={style}
       defaults={searchSettingsInitialState.resultStyle}
-      currentLabelVisibility={labelVisibility}
-      defaultLabelVisibility={searchSettingsInitialState.labelVisibility}
-      onSave={(s, lv) => {
+      currentLabels={{ visibility, minZoom }}
+      defaultLabels={{
+        visibility: searchSettingsInitialState.labelVisibility,
+        minZoom: searchSettingsInitialState.labelMinZoom,
+      }}
+      onSave={(s, labels) => {
         dispatch(searchSetResultStyle(s));
 
-        dispatch(searchSetLabelVisibility(lv));
+        dispatch(searchSetLabelSettings(labels));
       }}
     />
   );

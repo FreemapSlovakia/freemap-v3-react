@@ -24,7 +24,7 @@ V ponuke :FaEllipsisV: na lište nájdete:
 
 - :FaPencilAlt: **Skonvertovať všetko na kreslenie** – z objektov na mape urobí body, ktoré môžete upravovať, pozrite [Kreslenie](#show=manual/drawing). Typy sa vypnú.
 - :FaSearch: **Zobraziť všetko ako Nález** – ponechá objekty na mape ako nálezy, rovnaké značky, aké zostávajú po vyhľadávaní, najviac 500 naraz. Typy sa vypnú.
-- :FaPaintBrush: **Štýl značky** – **Tvar značky** (**Špendlík**, **Okrúhla** alebo **Štvorcová**) a **Farba** všetkých objektov a **Zobraziť popis** – kedy sa zobrazujú názvy objektov: **Vždy**, **Pri prejdení myšou**, **Keď je vybraný** alebo **Pri prejdení myšou alebo keď je vybraný**.
+- :FaPaintBrush: **Štýl značky** – **Tvar značky** (**Špendlík**, **Okrúhla** alebo **Štvorcová**) a **Farba** všetkých objektov a **Zobraziť popis** – kedy sa zobrazujú názvy objektov: **Vždy**, **Pri prejdení myšou**, **Keď je vybraný** alebo **Pri prejdení myšou alebo keď je vybraný**; **Zobraziť popis vždy od priblíženia** ich od zvoleného priblíženia zobrazí všetky.
 
 ## Podrobnosti o objekte
 

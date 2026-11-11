@@ -1,7 +1,6 @@
 import { applySettings } from '@app/store/actions.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import { LabelVisibilitySchema } from '@shared/labelVisibility.js';
 import z from 'zod';
 import {
   drawingPreventCutHoleHint,
@@ -10,7 +9,6 @@ import {
 } from '../actions/drawingLineActions.js';
 import {
   drawingAddRecentColors,
-  drawingSetLabelVisibility,
   drawingSetSectionOpen,
 } from '../actions/drawingPointActions.js';
 
@@ -66,8 +64,6 @@ export function drawingStyleEquals(a: DrawingStyle, b: DrawingStyle): boolean {
 
 export const DrawingSettingsSchema = z.object({
   style: DrawingStyleSchema,
-  // Not part of `style`, which is copied onto every drawn feature.
-  labelVisibility: LabelVisibilitySchema,
   recentColors: z.array(z.string()),
   preventCutHoleHint: z.boolean(),
   /** The properties dialog's panels left open or closed, by `PropertiesSection`. */
@@ -122,7 +118,6 @@ export const DrawingSettingsCompatSchema = z.preprocess(
   },
   z.object({
     style: DrawingStyleSchema.partial(),
-    labelVisibility: LabelVisibilitySchema.optional(),
     recentColors: z.array(z.string()).optional(),
     preventCutHoleHint: z.boolean().optional(),
     openSections: z.record(z.string(), z.boolean()).optional(),
@@ -131,7 +126,6 @@ export const DrawingSettingsCompatSchema = z.preprocess(
 
 export const drawingSettingsInitialState: DrawingSettings = {
   style: makeDrawingStyle('#0000ff', 4),
-  labelVisibility: 'always',
   recentColors: [],
   preventCutHoleHint: false,
   openSections: {},
@@ -189,9 +183,6 @@ export const drawingSettingsReducer = createReducer(
       })
       .addCase(drawingSetSectionOpen, (state, { payload }) => {
         state.openSections[payload.section] = payload.open;
-      })
-      .addCase(drawingSetLabelVisibility, (state, { payload }) => {
-        state.labelVisibility = payload;
       })
       .addCase(drawingAddRecentColors, (state, { payload }) => {
         for (const color of payload) {

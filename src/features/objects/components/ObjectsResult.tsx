@@ -8,6 +8,7 @@ import { RichMarker } from '@shared/components/RichMarker.js';
 import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
+import { useLabelsZoomedIn } from '@shared/hooks/useLabelsZoomedIn.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { labelTooltipMode } from '@shared/labelVisibility.js';
 import {
@@ -57,6 +58,10 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
     (state) => state.objectsSettings.labelVisibility,
   );
 
+  const labelsZoomedIn = useLabelsZoomedIn(
+    useAppSelector((state) => state.objectsSettings.labelMinZoom),
+  );
+
   return !osmMapping
     ? null
     : objects.map(({ id, coords, tags }) => {
@@ -76,7 +81,11 @@ export function ObjectsResult(): ReactElement | ReactElement[] | null {
 
         const selected = Boolean(activeId && featureIdsEqual(activeId, id));
 
-        const labelMode = labelTooltipMode(labelVisibility, selected);
+        const labelMode = labelTooltipMode(
+          labelVisibility,
+          selected,
+          labelsZoomedIn,
+        );
 
         return (
           <RichMarker

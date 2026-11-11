@@ -10,7 +10,7 @@ import {
   type SearchSource,
   searchRecentAdd,
   searchRecentRemove,
-  searchSetLabelVisibility,
+  searchSetLabelSettings,
   searchSetResultStyle,
 } from './actions.js';
 
@@ -21,6 +21,7 @@ import {
 export interface SearchSettingsState {
   resultStyle: DrawingStyle;
   labelVisibility: LabelVisibility;
+  labelMinZoom: number | null;
   /** Results picked from the box, newest first. */
   recent: RecentSearch[];
 }
@@ -28,6 +29,7 @@ export interface SearchSettingsState {
 export const searchSettingsInitialState: SearchSettingsState = {
   resultStyle: makeDrawingStyle('#3388ff', 5),
   labelVisibility: 'hover',
+  labelMinZoom: null,
   recent: [],
 };
 
@@ -58,8 +60,9 @@ export const searchSettingsReducer = createReducer(
       .addCase(searchSetResultStyle, (state, action) => {
         state.resultStyle = action.payload;
       })
-      .addCase(searchSetLabelVisibility, (state, action) => {
-        state.labelVisibility = action.payload;
+      .addCase(searchSetLabelSettings, (state, { payload }) => {
+        state.labelVisibility = payload.visibility;
+        state.labelMinZoom = payload.minZoom;
       })
       .addCase(searchRecentAdd, (state, { payload }) => {
         if (!recentSources.has(payload.source)) {

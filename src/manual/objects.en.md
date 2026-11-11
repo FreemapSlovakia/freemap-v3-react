@@ -24,7 +24,7 @@ Its :FaEllipsisV: menu holds:
 
 - :FaPencilAlt: **Convert all to drawing** – turns the objects on the map into points you can edit, see [Drawing](#show=manual/drawing). The types are switched off.
 - :FaSearch: **Show all as Lookup** – keeps the objects on the map as lookups, the marks the search box leaves, up to 500 at once. The types are switched off.
-- :FaPaintBrush: **Marker style** – the **Marker shape** (**Pin**, **Ring** or **Square**) and **Color** of all objects, and **Show label** – when their names appear: **Always**, **On hover**, **When selected** or **On hover or selected**.
+- :FaPaintBrush: **Marker style** – the **Marker shape** (**Pin**, **Ring** or **Square**) and **Color** of all objects, and **Show label** – when their names appear: **Always**, **On hover**, **When selected** or **On hover or selected**; **Show label always from zoom** shows them all from the chosen zoom on.
 
 ## Object details
 
