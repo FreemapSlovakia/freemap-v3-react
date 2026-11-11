@@ -4,6 +4,7 @@ import type { EventsMessages } from './EventsMessages.js';
 
 const en: EventsMessages = {
   noEvents: 'No events found',
+  mapEvents: 'Events with this map',
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Error loading events', err),
   saveError: ({ err }) => addError(getMessages()!, 'Error saving event', err),
@@ -11,6 +12,12 @@ const en: EventsMessages = {
     addError(
       getMessages()!,
       'The event is saved, but not its cover image',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Error replacing the event’s map, so the event is not saved either',
       err,
     ),
   newMapError: ({ err }) =>
@@ -55,6 +62,7 @@ const en: EventsMessages = {
     linkedMap: 'Linked map',
     noMap: 'None',
     newMapFromContent: 'New map from the current content',
+    replaceMapFromContent: 'Replace the map with the current content',
     noTripStats: 'The map has no route or lines to take trip stats from.',
     unsavedTitle: 'Unsaved changes',
     unsavedMessage: ({ name }) =>

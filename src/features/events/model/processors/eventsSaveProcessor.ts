@@ -5,7 +5,6 @@ import type { RootState } from '@app/store/store.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import {
   MapMetaSchema,
-  mapsLoadList,
   mapsSetMeta,
   mapsSetSavedFingerprint,
 } from '@features/myMaps/model/actions.js';
@@ -53,7 +52,10 @@ async function saveCover(
   return EventSchema.parse(await res.json());
 }
 
-/** Saves what is on the map as a new map, which becomes the open one. */
+/**
+ * Saves what is on the map as the event's own map, kept out of My maps, which
+ * becomes the open one: its edits are saved to the event's map.
+ */
 async function createMap(
   getState: () => RootState,
   dispatch: Dispatch,
@@ -68,14 +70,12 @@ async function createMap(
     method: 'POST',
     url: '/maps/',
     expectedStatus: 200,
-    data: { name, data },
+    data: { name, data, forEvent: true },
   });
 
   const meta = MapMetaSchema.parse(await res.json());
 
-  trackMatomo(['trackEvent', 'MyMaps', 'create']);
-
-  dispatch(mapsLoadList());
+  trackMatomo(['trackEvent', 'Events', 'createMap']);
 
   dispatch(mapsSetMeta(meta));
 
@@ -86,10 +86,27 @@ async function createMap(
   return meta.id;
 }
 
+/**
+ * Overwrites the event's own map with what is on the map, whatever was saved
+ * to it meanwhile: replacing is asked for. Never the open map, which its own
+ * Save writes.
+ */
+async function replaceMap(getState: () => RootState, id: string) {
+  await httpRequest({
+    getState,
+    method: 'PATCH',
+    url: `/maps/${encodeURIComponent(id)}`,
+    expectedStatus: 200,
+    data: { data: getMapDataFromState(getState()) },
+  });
+
+  trackMatomo(['trackEvent', 'Events', 'replaceMap']);
+}
+
 export const eventsSaveProcessor: Processor<typeof eventsSave> = {
   actionCreator: eventsSave,
   async handle({ getState, dispatch, action, toastError }) {
-    const { id, body, cover, newMap } = action.payload;
+    const { id, body, cover, newMap, replaceMap: replaced } = action.payload;
 
     let ok = false;
 
@@ -103,6 +120,16 @@ export const eventsSaveProcessor: Processor<typeof eventsSave> = {
           mapId = await createMap(getState, dispatch, newMap);
         } catch (err) {
           await toastError(err, loadEventsMessages, 'newMapError');
+
+          return;
+        }
+      }
+
+      if (replaced !== undefined) {
+        try {
+          await replaceMap(getState, replaced);
+        } catch (err) {
+          await toastError(err, loadEventsMessages, 'replaceMapError');
 
           return;
         }
@@ -133,6 +160,20 @@ export const eventsSaveProcessor: Processor<typeof eventsSave> = {
       }
 
       let event = EventSchema.parse(await res.json());
+
+      // The open map, now this event's own, knows it is: no other event may
+      // take it, and it carries the event's name.
+      const open = getState().myMaps.activeMap;
+
+      if (open?.forEvent && open.id === event.mapId) {
+        dispatch(
+          mapsSetMeta({
+            ...open,
+            eventId: event.id,
+            name: event.mapName ?? open.name,
+          }),
+        );
+      }
 
       if (cover !== undefined) {
         try {

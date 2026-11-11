@@ -65,6 +65,9 @@ export const EventSchema = z.object({
   }),
   mapId: z.string().nullable(),
   mapName: z.string().nullable(),
+  /** The linked map is the event's own, kept out of My maps. Defaulted, as the
+   * web may deploy before the API sends it. */
+  mapForEvent: z.boolean().default(false),
   title: z.string(),
   description: z.string().nullable(),
   startAt: IsoDateSchema,
@@ -146,14 +149,16 @@ export const eventsSetFilter = createAction<EventsFilter>('EVENTS_SET_FILTER');
 
 /**
  * Creates an event, or with `id` updates it; `cover` replaces its cover image,
- * or `null` removes it. `newMap` first saves what is on the map as a new map,
- * named `newMap`, and links that.
+ * or `null` removes it. `newMap` first saves what is on the map as the event's
+ * own map, named `newMap`, and links that; `replaceMap` overwrites the event's
+ * own map of that id with what is on the map.
  */
 export const eventsSave = createAction<{
   id?: string;
   body: EventBody;
   cover?: File | null;
   newMap?: string;
+  replaceMap?: string;
 }>('EVENTS_SAVE');
 
 /** The save request settled; the form is released either way. */

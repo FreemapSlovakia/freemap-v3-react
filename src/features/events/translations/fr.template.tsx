@@ -45,6 +45,7 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Carte associée',
     noMap: 'Aucune',
     newMapFromContent: 'Nouvelle carte à partir du contenu actuel',
+    replaceMapFromContent: 'Remplacer la carte par le contenu actuel',
     noTripStats:
       'La carte ne contient ni itinéraire ni lignes dont tirer les données de la sortie.',
     unsavedTitle: 'Modifications non enregistrées',
@@ -177,10 +178,17 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
     no: 'Non',
   },
   noEvents: 'Aucun événement trouvé',
+  mapEvents: 'Événements avec cette carte',
   coverError: ({ err }) =>
     addError(
       getMessages()!,
       'L’événement est enregistré, mais pas son image de couverture',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Erreur lors du remplacement de la carte de l’événement, l’événement n’est donc pas enregistré non plus',
       err,
     ),
   newMapError: ({ err }) =>

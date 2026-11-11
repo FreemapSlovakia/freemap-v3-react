@@ -14,6 +14,12 @@ event). Every event is public.
   one they merely write). A map can be linked by any number of events — the
   same route on several dates. Deleting the map unlinks it and keeps the event.
   Maps are readable by their link as they always are; an event grants nothing.
+- **Or a map of its own** (`map.forEvent`, the API's `routers/maps/eventMap.ts`):
+  saved from the event form's current content by whoever enters or edits the
+  event, an eventManager for an organizer included. It is not in My maps, is
+  written by whoever may write the event (content only: it carries the event's
+  title), is linked by that one event, and goes with it or when it links another
+  map; deleting it directly is refused.
 - **Trip stats, a snapshot.** The transport kinds it suits (any number), length,
   duration, ascent and descent are the event's own fields, for showing and for
   filtering on the server. Choosing the linked map computes them in the browser

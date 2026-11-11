@@ -5,10 +5,13 @@ import type { EventsListSort, EventsNearSort } from '../model/listSort.js';
 
 export type EventsMessages = {
   noEvents: string;
+  /** The open map's toolbar: the events linking it. */
+  mapEvents: string;
   fetchListError: (props: { err: unknown }) => string;
   saveError: (props: { err: unknown }) => string;
   coverError: (props: { err: unknown }) => string;
   newMapError: (props: { err: unknown }) => string;
+  replaceMapError: (props: { err: unknown }) => string;
   deleteError: (props: { err: unknown }) => string;
   participationError: (props: { err: unknown }) => string;
   loginToParticipate: string;
@@ -37,6 +40,8 @@ export type EventsMessages = {
     linkedMap: string;
     noMap: string;
     newMapFromContent: string;
+    /** Overwrites the event's own map with what is on the map. */
+    replaceMapFromContent: string;
     noTripStats: string;
     unsavedTitle: string;
     unsavedMessage: (props: { name: string }) => string;

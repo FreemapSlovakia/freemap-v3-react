@@ -36,6 +36,7 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Powiązana mapa',
     noMap: 'Brak',
     newMapFromContent: 'Nowa mapa z bieżącej zawartości',
+    replaceMapFromContent: 'Zastąpienie mapy bieżącą zawartością',
     noTripStats:
       'Mapa nie zawiera trasy ani linii, z których można by pobrać dane o wycieczce.',
     unsavedTitle: 'Niezapisane zmiany',
@@ -168,10 +169,17 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     no: 'Nie',
   },
   noEvents: 'Nie znaleziono wydarzeń',
+  mapEvents: 'Wydarzenia z tą mapą',
   coverError: ({ err }) =>
     addError(
       getMessages()!,
       'Wydarzenie zostało zapisane, ale jego obraz tytułowy nie',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Błąd podczas zastępowania mapy wydarzenia, dlatego wydarzenie nie zostało zapisane',
       err,
     ),
   newMapError: ({ err }) =>

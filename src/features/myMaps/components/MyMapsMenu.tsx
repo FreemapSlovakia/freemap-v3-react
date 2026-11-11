@@ -1,5 +1,6 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useManualAction } from '@features/documents/hooks/useManualAction.js';
+import { MapEventsButton } from '@features/events/components/MapEventsButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -191,6 +192,10 @@ export function MyMapsMenu(): ReactElement {
           )}
 
           {activeMap && <MapSyncStatus mapId={activeMap.id} as="icon" />}
+
+          {activeMap && !window.fmEmbedded && (
+            <MapEventsButton mapId={activeMap.id} />
+          )}
 
           {!hidden && (
             <LongPressTooltip breakpoint="xl" label={mm?.save}>

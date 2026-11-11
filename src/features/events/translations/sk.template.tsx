@@ -5,6 +5,7 @@ import type { EventsMessages } from './EventsMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
   noEvents: 'Nenašli sa žiadne akcie',
+  mapEvents: 'Akcie s touto mapou',
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri načítavaní akcií', err),
   saveError: ({ err }) =>
@@ -13,6 +14,12 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(
       getMessages()!,
       'Akcia je uložená, ale jej titulný obrázok nie',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Chyba pri nahrádzaní mapy akcie, akcia preto nie je uložená',
       err,
     ),
   newMapError: ({ err }) =>
@@ -58,6 +65,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Prepojená mapa',
     noMap: 'Žiadna',
     newMapFromContent: 'Nová mapa z aktuálneho obsahu',
+    replaceMapFromContent: 'Nahradiť mapu aktuálnym obsahom',
     noTripStats:
       'Mapa nemá trasu ani čiary, z ktorých by sa dali vziať údaje o túre.',
     unsavedTitle: 'Neuložené zmeny',

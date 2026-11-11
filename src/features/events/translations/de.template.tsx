@@ -5,6 +5,7 @@ import type { EventsMessages } from './EventsMessages.js';
 
 const de: DeepPartialWithRequiredObjects<EventsMessages> = {
   noEvents: 'Keine Veranstaltungen gefunden',
+  mapEvents: 'Veranstaltungen mit dieser Karte',
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Laden der Veranstaltungen', err),
   saveError: ({ err }) =>
@@ -13,6 +14,12 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(
       getMessages()!,
       'Die Veranstaltung ist gespeichert, ihr Titelbild jedoch nicht',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Fehler beim Ersetzen der Karte der Veranstaltung, daher ist auch die Veranstaltung nicht gespeichert',
       err,
     ),
   newMapError: ({ err }) =>
@@ -56,6 +63,7 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Verknüpfte Karte',
     noMap: 'Keine',
     newMapFromContent: 'Neue Karte aus dem aktuellen Inhalt',
+    replaceMapFromContent: 'Karte durch den aktuellen Inhalt ersetzen',
     noTripStats:
       'Die Karte enthält keine Route und keine Linien, aus denen sich Tourdaten ermitteln lassen.',
     unsavedTitle: 'Nicht gespeicherte Änderungen',

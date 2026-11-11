@@ -242,6 +242,9 @@ function parsePosition(s: string): EventPoint | null {
 /** The Linked map choice that saves what is on the map as a new map. */
 const NEW_MAP = '@new';
 
+// The event's own map, its content replaced with what is on the map.
+const REPLACE_MAP = '@replace';
+
 const OrganizerSchema = z.object({ id: z.number(), name: z.string() });
 
 const OrganizersSchema = z.array(OrganizerSchema);
@@ -410,8 +413,32 @@ export default function EventFormModal({ show }: Props): ReactElement {
       setOrganizer({ id: Number(tag.value), name: tag.label });
     }
 
-    // Only the organizer's own maps can be linked, and these are the user's.
-    set({ mapId: '' });
+    keepEventsOwnMap();
+  };
+
+  // On another organizer a map of My maps is no longer linkable, as only the
+  // owner's are; a map of the event's own stays, whoever owns the event.
+  const keepEventsOwnMap = () => {
+    const open = store.getState().myMaps.activeMap;
+
+    const kept = [
+      NEW_MAP,
+      REPLACE_MAP,
+      editing?.mapForEvent && editing.mapId,
+      open?.forEvent && open.id,
+    ];
+
+    // The draft as it is now: a new organizer is picked after a request.
+    setDraft((draft) => {
+      if (kept.includes(draft.mapId)) {
+        return draft;
+      }
+
+      // What the dropped map was still filling in is not this event's now.
+      fillingFor.current = null;
+
+      return { ...draft, mapId: '' };
+    });
   };
 
   // What the last map filled in: a field still holding it is the map's, not
@@ -430,10 +457,12 @@ export default function EventFormModal({ show }: Props): ReactElement {
         const { activeMap } = store.getState().myMaps;
 
         // The open map as on screen, unsaved changes included.
+        const fromContent = mapId === NEW_MAP || mapId === REPLACE_MAP;
+
         const { meta, data } =
-          mapId === NEW_MAP || mapId === activeMap?.id
+          fromContent || mapId === activeMap?.id
             ? {
-                meta: mapId === NEW_MAP ? undefined : activeMap,
+                meta: fromContent ? undefined : activeMap,
                 data: getMapDataFromState(store.getState()),
               }
             : await loadMapDocument(mapId, store.getState, []);
@@ -675,10 +704,6 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
   const close = () => dispatch(setActiveModal(null));
 
-  // What the server accepts: the user's own maps. A moderator editing
-  // someone else's event can't relink it — these aren't the owner's maps.
-  const myMaps = ownMaps.filter((map) => map.userId === myUserId);
-
   // The owner it is saved with; the user unless an eventManager picked another.
   const owner =
     organizer ??
@@ -686,12 +711,38 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
   const othersEvent = owner !== undefined && owner.id !== myUserId;
 
-  const ownOpenMap = activeMap?.userId === myUserId ? activeMap : undefined;
+  // What the server accepts of My maps: the owner's, so none for someone
+  // else's event, which takes a map of its own instead.
+  const myMaps = othersEvent
+    ? []
+    : ownMaps.filter((map) => map.userId === myUserId);
+
+  // The edited event's own map, its content replaceable from the screen.
+  const eventsOwnMap =
+    editing?.mapForEvent && editing.mapId ? editing.mapId : undefined;
+
+  // The open map, when this event may link it: an event's own map no event
+  // links yet (a save that failed after making it) or this one does, else one
+  // of the user's when the event is theirs.
+  // An event's own map is the user's to link by being theirs to write.
+  const ownOpenMap =
+    activeMap &&
+    (activeMap.forEvent
+      ? activeMap.canWrite &&
+        (activeMap.eventId === null || activeMap.eventId === editing?.id)
+      : activeMap.userId === myUserId && !othersEvent)
+      ? activeMap
+      : undefined;
+
+  // The event's own map can be replaced from the screen when it isn't on it:
+  // open, the map's own Save writes it.
+  const canReplaceMap =
+    eventsOwnMap !== undefined && hasContent && activeMap?.id !== eventsOwnMap;
 
   // The open map, when what is on screen is already one of those.
   const savedOpenMap = mapDirty ? undefined : ownOpenMap;
 
-  const canCreateMap = hasContent && !savedOpenMap && !othersEvent;
+  const canCreateMap = hasContent && !savedOpenMap && !eventsOwnMap;
 
   const unsavedOpenMap = mapDirty ? ownOpenMap : undefined;
 
@@ -700,7 +751,9 @@ export default function EventFormModal({ show }: Props): ReactElement {
   const mapId =
     draft.mapId === NEW_MAP && !canCreateMap
       ? (savedOpenMap?.id ?? '')
-      : draft.mapId;
+      : draft.mapId === REPLACE_MAP && !canReplaceMap
+        ? (eventsOwnMap ?? '')
+        : draft.mapId;
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -719,7 +772,12 @@ export default function EventFormModal({ show }: Props): ReactElement {
       eventsSave({
         id: editing?.id,
         body: {
-          mapId: mapId === NEW_MAP ? null : mapId || null,
+          mapId:
+            mapId === NEW_MAP
+              ? null
+              : mapId === REPLACE_MAP
+                ? (eventsOwnMap ?? null)
+                : mapId || null,
           title: draft.title.trim(),
           description: draft.description.trim() || null,
           startAt: fromDraftTime(draft.startAt, draft.dateOnly),
@@ -749,6 +807,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
         },
         cover: cover === null && !editing?.cover ? undefined : cover,
         newMap: mapId === NEW_MAP ? draft.title.trim() : undefined,
+        replaceMap: mapId === REPLACE_MAP ? eventsOwnMap : undefined,
       }),
     );
   };
@@ -797,8 +856,7 @@ export default function EventFormModal({ show }: Props): ReactElement {
                       if (myUserId !== undefined) {
                         setOrganizer({ id: myUserId, name: '' });
 
-                        // The map linked was the other owner's.
-                        set({ mapId: '' });
+                        keepEventsOwnMap();
                       }
                     }}
                   >
@@ -954,7 +1012,6 @@ export default function EventFormModal({ show }: Props): ReactElement {
 
             <Form.Select
               value={mapId}
-              disabled={othersEvent}
               onChange={async (e) => {
                 let mapId = e.currentTarget.value;
 
@@ -999,9 +1056,23 @@ export default function EventFormModal({ show }: Props): ReactElement {
                 <option value={NEW_MAP}>{em?.form.newMapFromContent}</option>
               )}
 
+              {canReplaceMap && (
+                <option value={REPLACE_MAP}>
+                  {em?.form.replaceMapFromContent}
+                </option>
+              )}
+
+              {/* The event's own, picked again after another was tried. */}
+              {eventsOwnMap && mapId !== eventsOwnMap && (
+                <option value={eventsOwnMap}>
+                  {editing?.mapName ?? eventsOwnMap}
+                </option>
+              )}
+
               {/* Kept while not among the listed ones, e.g. still loading. */}
               {mapId &&
                 mapId !== NEW_MAP &&
+                mapId !== REPLACE_MAP &&
                 !myMaps.some((map) => map.id === mapId) && (
                   <option value={mapId}>
                     {mapId === activeMap?.id

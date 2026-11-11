@@ -5,6 +5,7 @@ import type { EventsMessages } from './EventsMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
   noEvents: 'Ni najdenih dogodkov',
+  mapEvents: 'Dogodki s tem zemljevidom',
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri nalaganju dogodkov', err),
   saveError: ({ err }) =>
@@ -13,6 +14,12 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(
       getMessages()!,
       'Dogodek je shranjen, njegova naslovna slika pa ne',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Napaka pri zamenjavi zemljevida dogodka, zato tudi dogodek ni shranjen',
       err,
     ),
   newMapError: ({ err }) =>
@@ -55,6 +62,7 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Povezan zemljevid',
     noMap: 'Brez',
     newMapFromContent: 'Nov zemljevid iz trenutne vsebine',
+    replaceMapFromContent: 'Zamenjava zemljevida s trenutno vsebino',
     noTripStats:
       'Zemljevid nima poti ali črt, iz katerih bi bilo mogoče vzeti podatke o izletu.',
     unsavedTitle: 'Neshranjene spremembe',

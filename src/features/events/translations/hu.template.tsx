@@ -36,6 +36,7 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Kapcsolt térkép',
     noMap: 'Nincs',
     newMapFromContent: 'Új térkép a jelenlegi tartalomból',
+    replaceMapFromContent: 'A térkép cseréje a jelenlegi tartalomra',
     noTripStats:
       'A térképen nincs útvonal vagy vonal, amelyből a túra adatai kinyerhetők lennének.',
     unsavedTitle: 'Nem mentett változtatások',
@@ -168,10 +169,17 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     no: 'Nem',
   },
   noEvents: 'Nincsenek események',
+  mapEvents: 'Események ezzel a térképpel',
   coverError: ({ err }) =>
     addError(
       getMessages()!,
       'Az esemény mentése sikerült, a borítóképé azonban nem',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Hiba az esemény térképének cseréjekor, ezért az esemény sincs mentve',
       err,
     ),
   newMapError: ({ err }) =>

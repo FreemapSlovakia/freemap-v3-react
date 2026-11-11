@@ -17,6 +17,7 @@ Keď sú trasy alebo kresba príliš veľké pre adresu stránky, na lište kres
 Kým je otvorená uložená mapa, hore na obrazovke je lišta s nápisom **Moja mapa** a názvom mapy:
 
 - :FaRegMap: otvorí dialóg **Moje mapy**.
+- :FaCalendarAlt: sa zobrazí, keď mapu používajú akcie. Otvorí akciu, alebo ich pri viacerých vypíše: najprv nadchádzajúce, potom minulé.
 - :FaExclamationTriangle.text-warning: sa zobrazí, keď na mape niečo zmeníte – zmeny ešte nie sú uložené.
 - :FaSave: **Uložiť** uloží zmeny do mapy. Na cudzej mape, ktorú upravovať nemôžete, otvorí formulár novej mapy a obsah uložíte ako novú vlastnú mapu.
 - :FaSync: **Znovu načítať mapu** zahodí neuložené zmeny a otvorí mapu tak, ako bola naposledy uložená.

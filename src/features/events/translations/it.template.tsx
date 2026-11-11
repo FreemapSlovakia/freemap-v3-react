@@ -37,6 +37,7 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Mappa collegata',
     noMap: 'Nessuna',
     newMapFromContent: 'Nuova mappa dal contenuto attuale',
+    replaceMapFromContent: 'Sostituire la mappa con il contenuto attuale',
     noTripStats:
       'La mappa non ha un percorso né linee da cui ricavare i dati dell’escursione.',
     unsavedTitle: 'Modifiche non salvate',
@@ -169,10 +170,17 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     no: 'No',
   },
   noEvents: 'Nessun evento trovato',
+  mapEvents: 'Eventi con questa mappa',
   coverError: ({ err }) =>
     addError(
       getMessages()!,
       'L’evento è stato salvato, ma non la sua immagine di copertina',
+      err,
+    ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Errore durante la sostituzione della mappa dell’evento, quindi neanche l’evento è stato salvato',
       err,
     ),
   newMapError: ({ err }) =>

@@ -14,6 +14,12 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
       'Akce je uložena, ale její titulní obrázek ne',
       err,
     ),
+  replaceMapError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Chyba při nahrazování mapy akce, akce proto není uložena',
+      err,
+    ),
   newMapError: ({ err }) =>
     addError(
       getMessages()!,
@@ -51,6 +57,7 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     linkedMap: 'Propojená mapa',
     noMap: 'Žádná',
     newMapFromContent: 'Nová mapa z aktuálního obsahu',
+    replaceMapFromContent: 'Nahradit mapu aktuálním obsahem',
     noTripStats:
       'Mapa nemá trasu ani čáry, ze kterých by se daly vzít údaje o túře.',
     unsavedTitle: 'Neuložené změny',
@@ -182,6 +189,7 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     no: 'Ne',
   },
   noEvents: 'Nenašly se žádné akce',
+  mapEvents: 'Akce s touto mapou',
   participationError: ({ err }) =>
     addError(getMessages()!, 'Chyba při ukládání vaší účasti', err),
   loginToParticipate:
