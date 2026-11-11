@@ -18,6 +18,9 @@ export const MapMetaSchema = z.object({
   modifiedAt: IsoDateSchema,
   userId: z.number(),
   writers: z.array(z.number()).optional(),
+  /** An event's own map, kept out of My maps; `eventId` the event linking it. */
+  forEvent: z.boolean().default(false),
+  eventId: z.string().nullable().default(null),
 });
 
 export type MapMeta = z.infer<typeof MapMetaSchema>;

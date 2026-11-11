@@ -17,6 +17,7 @@ When tracks or drawings are too large for the page address, the drawing toolbar 
 While a saved map is open, a toolbar at the top of the screen shows **My map** with its name:
 
 - :FaRegMap: opens the **My maps** dialog.
+- :FaCalendarAlt: appears when events link the map. It opens the event, or, with several, lists them: the upcoming ones first, then the past ones.
 - :FaExclamationTriangle.text-warning: appears once you change something on the map – the changes are not saved yet.
 - :FaSave: **Save** stores the changes in the map. On a map that is not yours and that you may not edit, it opens **Add new map** to save the contents as a new map of your own.
 - :FaSync: **Reload map** discards the unsaved changes and opens the map as last saved.
