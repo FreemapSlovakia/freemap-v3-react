@@ -175,7 +175,6 @@ import { routePlannerMidpointHintProcessor } from '@features/routePlanner/model/
 import { routePlannerOptimizeOrderProcessor } from '@features/routePlanner/model/processors/optimizeOrderProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
-import * as rpcProcessors from '@features/rpc/model/processors.js';
 import {
   searchHighlightProcessor,
   searchHighlightTrafo,
@@ -192,6 +191,7 @@ import * as trackingAccessTokenProcessors from '@features/tracking/model/process
 import { trackingCopyToDataViewerProcessor } from '@features/tracking/model/processors/trackingCopyProcessor.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
 import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
+import { trackingStreamProcessor } from '@features/tracking/model/processors/trackingStreamProcessor.js';
 import {
   viewshedCancelProcessor,
   viewshedFixProcessor,
@@ -326,6 +326,7 @@ export const processors = [
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
+  trackingStreamProcessor,
   trackingCopyToDataViewerProcessor,
   gpsRecorderStartProcessor,
   gpsRecorderPauseProcessor,
@@ -379,7 +380,6 @@ export const processors = [
   viewshedLayerProcessor,
   viewshedFixProcessor,
   toposcopeFixProcessor,
-  ...Object.values(rpcProcessors),
   exportMapFeaturesProcessor,
   ...authProcessors,
   downloadMapProcessor,

@@ -5,7 +5,7 @@ let cache: TrackingMessages | undefined;
 let cacheLang: string | undefined;
 
 // Loads the tracking messages for a language for use outside React (the
-// websocket middleware's subscribe-error toasts). React components should use
+// tracking stream processor's subscribe-error toasts). React components should use
 // `useLocalMessages` instead. Results are cached per language; the chunk is
 // shared with the components' dynamic import.
 export async function loadTrackingMessages(

@@ -142,8 +142,8 @@ Conventions:
 
 ### Other middleware (order, from `store.ts`)
 
-`errorHandlingMiddleware` → `statePersistingMiddleware` → websocket middleware →
-**processorMiddleware** → tracking middleware. RTK's `serializableCheck` is
+`errorHandlingMiddleware` → `statePersistingMiddleware` →
+**processorMiddleware**. RTK's `serializableCheck` is
 customized to allow `Date`, `File`, and `Error` in actions/state.
 
 ## State persistence

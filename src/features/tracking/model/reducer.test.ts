@@ -1,28 +1,19 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { rpcEvent, rpcResponse } from '@features/rpc/model/actions.js';
-import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import { trackingActions } from './actions.js';
 import { trackingReducer } from './reducer.js';
-import type { Track, TrackedDevice } from './types.js';
-
-/**
- * Pure reducer tests for the tracking slice. The RPC paths validate their
- * params with zod before touching state, so the tests pass well-formed
- * payloads (ISO `ts`, string `token`).
- */
+import type { Track, TrackedDevice, TrackPoint } from './types.js';
 
 const td = (token: string, extra?: Partial<TrackedDevice>): TrackedDevice => ({
   token,
   ...extra,
 });
 
-// A websocket track-point param as it arrives over RPC (ISO date string).
-const rpcPoint = (id: number) => ({
+const point = (id: number): TrackPoint => ({
   id,
   lat: 1,
   lon: 2,
-  ts: '2024-01-01T00:00:00.000Z',
+  ts: new Date('2024-01-01T00:00:00.000Z'),
 });
 
 const withTracks = (tracks: Track[]) => ({
@@ -141,52 +132,34 @@ describe('trackingReducer — device editor state', () => {
   });
 });
 
-describe('trackingReducer — websocket lifecycle', () => {
-  it('keeps tracks while the socket is open (state 1)', () => {
-    const state = withTracks([{ token: 'a', trackPoints: [] }]);
+describe('trackingReducer — stream history', () => {
+  it('replaces the track for that token', () => {
+    const state = withTracks([{ token: 'a', trackPoints: [point(9)] }]);
 
     const next = trackingReducer(
       state,
-      wsStateChanged({ state: 1, timestamp: 0 }),
-    );
-
-    expect(next.tracks).toHaveLength(1);
-  });
-
-  it('clears tracks when the socket is not open', () => {
-    const state = withTracks([{ token: 'a', trackPoints: [] }]);
-
-    const next = trackingReducer(
-      state,
-      wsStateChanged({ state: 3, timestamp: 0 }),
-    );
-
-    expect(next.tracks).toEqual([]);
-  });
-});
-
-describe('trackingReducer — rpc subscribe/unsubscribe results', () => {
-  it('subscribe result replaces the track for that token', () => {
-    const state = withTracks([{ token: 'a', trackPoints: [] }]);
-
-    const next = trackingReducer(
-      state,
-      rpcResponse({
-        method: 'tracking.subscribe',
-        type: 'result',
-        params: { token: 'a' },
-        result: [rpcPoint(1), rpcPoint(2)],
+      trackingActions.trackHistory({
+        token: 'a',
+        trackPoints: [point(1), point(2)],
       }),
     );
 
     expect(next.tracks).toHaveLength(1);
-    expect(next.tracks[0].token).toBe('a');
     expect(next.tracks[0].trackPoints.map((p) => p.id)).toEqual([1, 2]);
-    // ISO string parsed into a Date by the schema.
-    expect(next.tracks[0].trackPoints[0].ts).toBeInstanceOf(Date);
   });
 
-  it('unsubscribe result removes the track for that token', () => {
+  it('an empty history empties the track', () => {
+    const state = withTracks([{ token: 'a', trackPoints: [point(9)] }]);
+
+    const next = trackingReducer(
+      state,
+      trackingActions.trackHistory({ token: 'a', trackPoints: [] }),
+    );
+
+    expect(next.tracks[0].trackPoints).toEqual([]);
+  });
+
+  it('keeps the track in its place', () => {
     const state = withTracks([
       { token: 'a', trackPoints: [] },
       { token: 'b', trackPoints: [] },
@@ -194,71 +167,94 @@ describe('trackingReducer — rpc subscribe/unsubscribe results', () => {
 
     const next = trackingReducer(
       state,
-      rpcResponse({
-        method: 'tracking.unsubscribe',
-        type: 'result',
-        params: { token: 'a' },
-        result: null,
+      trackingActions.trackHistory({ token: 'a', trackPoints: [point(1)] }),
+    );
+
+    expect(next.tracks.map((t) => t.token)).toEqual(['a', 'b']);
+  });
+});
+
+describe('trackingReducer — stream points', () => {
+  it('appends to an existing track in arrival order', () => {
+    const state = withTracks([{ token: 'a', trackPoints: [point(5)] }]);
+
+    const next = trackingReducer(
+      state,
+      trackingActions.trackPoints({
+        token: 'a',
+        trackPoints: [point(3), point(7)],
       }),
+    );
+
+    expect(next.tracks[0].trackPoints.map((p) => p.id)).toEqual([5, 3, 7]);
+  });
+
+  it('creates a track when none exists for the token', () => {
+    const next = trackingReducer(
+      withTracks([]),
+      trackingActions.trackPoints({ token: 'z', trackPoints: [point(5)] }),
+    );
+
+    expect(next.tracks).toHaveLength(1);
+    expect(next.tracks[0].token).toBe('z');
+  });
+
+  it('ignores points it already holds', () => {
+    const state = withTracks([{ token: 'a', trackPoints: [point(1)] }]);
+
+    const next = trackingReducer(
+      state,
+      trackingActions.trackPoints({
+        token: 'a',
+        trackPoints: [point(1), point(2)],
+      }),
+    );
+
+    expect(next.tracks[0].trackPoints.map((p) => p.id)).toEqual([1, 2]);
+  });
+
+  it('dropTrack removes the track', () => {
+    const state = withTracks([
+      { token: 'a', trackPoints: [] },
+      { token: 'b', trackPoints: [] },
+    ]);
+
+    const next = trackingReducer(state, trackingActions.dropTrack('a'));
+
+    expect(next.tracks.map((t) => t.token)).toEqual(['b']);
+  });
+});
+
+describe('trackingReducer — tracks follow the tracked devices', () => {
+  it('deleteTrackedDevice drops its track', () => {
+    const state = {
+      ...withTracks([
+        { token: 'a', trackPoints: [] },
+        { token: 'b', trackPoints: [] },
+      ]),
+      trackedDevices: [td('a'), td('b')],
+    };
+
+    const next = trackingReducer(
+      state,
+      trackingActions.deleteTrackedDevice('a'),
     );
 
     expect(next.tracks.map((t) => t.token)).toEqual(['b']);
   });
 
-  it('ignores a response whose params lack a token', () => {
-    const state = withTracks([{ token: 'a', trackPoints: [] }]);
+  it('a renamed token drops the old track', () => {
+    const state = {
+      ...withTracks([{ token: 'a', trackPoints: [] }]),
+      trackedDevices: [td('a')],
+    };
 
     const next = trackingReducer(
       state,
-      rpcResponse({
-        method: 'tracking.subscribe',
-        type: 'result',
-        params: {},
-        result: [rpcPoint(1)],
+      trackingActions.saveTrackedDevice({
+        device: td('b'),
+        previousToken: 'a',
       }),
-    );
-
-    expect(next).toBe(state); // unchanged reference
-  });
-});
-
-describe('trackingReducer — rpc addPoint event', () => {
-  it('appends a point to an existing track', () => {
-    const state = withTracks([{ token: 'a', trackPoints: [] }]);
-
-    const next = trackingReducer(
-      state,
-      rpcEvent({
-        method: 'tracking.addPoint',
-        params: { token: 'a', ...rpcPoint(1) },
-      }),
-    );
-
-    expect(next.tracks[0].trackPoints.map((p) => p.id)).toEqual([1]);
-  });
-
-  it('creates a track when none exists for the token', () => {
-    const state = withTracks([]);
-
-    const next = trackingReducer(
-      state,
-      rpcEvent({
-        method: 'tracking.addPoint',
-        params: { token: 'z', ...rpcPoint(5) },
-      }),
-    );
-
-    expect(next.tracks).toHaveLength(1);
-    expect(next.tracks[0].token).toBe('z');
-    expect(next.tracks[0].trackPoints[0].id).toBe(5);
-  });
-
-  it('ignores a malformed addPoint event', () => {
-    const state = withTracks([]);
-
-    const next = trackingReducer(
-      state,
-      rpcEvent({ method: 'tracking.addPoint', params: { token: 'z' } }),
     );
 
     expect(next.tracks).toEqual([]);

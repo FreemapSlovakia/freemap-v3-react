@@ -45,7 +45,6 @@ import { viewshedReducer } from '@features/viewshed/model/reducer.js';
 import { viewshedSettingsReducer } from '@features/viewshed/model/settingsReducer.js';
 import { weatherRadarReducer } from '@features/weatherRadar/model/reducer.js';
 import { weatherRadarSettingsReducer } from '@features/weatherRadar/model/settingsReducer.js';
-import { websocketReducer } from '@features/websocket/model/reducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
 import { mainReducer } from './reducer.js';
 
@@ -97,7 +96,6 @@ export const reducers = {
   viewshedSettings: viewshedSettingsReducer,
   weatherRadar: weatherRadarReducer,
   weatherRadarSettings: weatherRadarSettingsReducer,
-  websocket: websocketReducer,
   myMaps: mapsReducer,
   wiki: wikiReducer,
   osmNotes: osmNotesReducer,

@@ -1,24 +1,8 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
-import { rpcEvent, rpcResponse } from '@features/rpc/model/actions.js';
-import { wsStateChanged } from '@features/websocket/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
-import z from 'zod';
 import { trackingActions } from './actions.js';
-import {
-  type AccessToken,
-  type Device,
-  type Track,
-  type TrackedDevice,
-  TrackPointSchema,
-} from './types.js';
-
-const TrackPointsSchema = z.array(TrackPointSchema);
-
-const TrackPointWithTokenSchema = z.object({
-  ...TrackPointSchema.shape,
-  token: z.string(),
-});
+import type { AccessToken, Device, Track, TrackedDevice } from './types.js';
 
 export interface TrackingState {
   devices: Device[];
@@ -40,15 +24,29 @@ export const trackingInitialState: TrackingState = {
   tracks: [],
 };
 
+/** Sets the tracked devices, dropping the tracks of devices no longer among them. */
+function withTrackedDevices(
+  state: TrackingState,
+  trackedDevices: TrackedDevice[],
+): TrackingState {
+  const tokens = new Set(trackedDevices.map((td) => td.token));
+
+  return {
+    ...state,
+    trackedDevices,
+    tracks: state.tracks.filter((t) => tokens.has(t.token)),
+  };
+}
+
 export const trackingReducer = createReducer(trackingInitialState, (builder) =>
   builder
     .addCase(clearMapFeatures, () => trackingInitialState)
-    .addCase(trackingActions.delete, (state, { payload }) => ({
-      ...state,
-      trackedDevices: state.trackedDevices.filter(
-        (td) => td.token !== payload.token,
+    .addCase(trackingActions.delete, (state, { payload }) =>
+      withTrackedDevices(
+        state,
+        state.trackedDevices.filter((td) => td.token !== payload.token),
       ),
-    }))
+    )
     .addCase(setActiveModal, (state) => ({
       ...state,
       devices: [],
@@ -78,96 +76,64 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
       ...state,
       accessTokensDeviceId: payload,
     }))
-    .addCase(trackingActions.setTrackedDevices, (state, { payload }) => ({
-      ...state,
-      trackedDevices: payload,
-    }))
+    .addCase(trackingActions.setTrackedDevices, (state, { payload }) =>
+      withTrackedDevices(state, payload),
+    )
     .addCase(
       trackingActions.saveTrackedDevice,
-      (state, { payload: { device, previousToken } }) => ({
-        ...state,
-        trackedDevices: [
+      (state, { payload: { device, previousToken } }) =>
+        withTrackedDevices(state, [
           ...state.trackedDevices.filter(
             (d) => d.token !== previousToken && d.token !== device.token,
           ),
           device,
-        ],
-      }),
+        ]),
     )
-    .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) => ({
+    .addCase(trackingActions.deleteTrackedDevice, (state, { payload }) =>
+      withTrackedDevices(
+        state,
+        state.trackedDevices.filter((d) => d.token !== payload),
+      ),
+    )
+    .addCase(
+      trackingActions.trackHistory,
+      (state, { payload: { token, trackPoints } }) => {
+        const track = { token, trackPoints };
+
+        const index = state.tracks.findIndex((t) => t.token === token);
+
+        return {
+          ...state,
+          tracks:
+            index === -1
+              ? [...state.tracks, track]
+              : state.tracks.with(index, track),
+        };
+      },
+    )
+    .addCase(
+      trackingActions.trackPoints,
+      (state, { payload: { token, trackPoints } }) => {
+        let track = state.tracks.find((t) => t.token === token);
+
+        if (!track) {
+          track = { token, trackPoints: [] };
+
+          state.tracks.push(track);
+        }
+
+        // A resume before the stream caught up replays points already held.
+        const ids = new Set(track.trackPoints.map((p) => p.id));
+
+        track.trackPoints.push(...trackPoints.filter((p) => !ids.has(p.id)));
+
+        // TODO apply limits from trackedDevices
+      },
+    )
+    .addCase(trackingActions.dropTrack, (state, { payload }) => ({
       ...state,
-      trackedDevices: state.trackedDevices.filter((d) => d.token !== payload),
+      tracks: state.tracks.filter((t) => t.token !== payload),
     }))
-    .addCase(wsStateChanged, (state, { payload }) =>
-      payload.state === 1 ? state : { ...state, tracks: [] },
-    )
-    .addCase(rpcResponse, (state, action) => {
-      const { payload } = action;
-
-      const { params } = payload;
-
-      const parsedParams = z.object({ token: z.string() }).safeParse(params);
-
-      if (!parsedParams.success) {
-        return state;
-      }
-
-      if (
-        payload.method === 'tracking.subscribe' &&
-        payload.type === 'result'
-      ) {
-        const parsedTrackPoint = TrackPointsSchema.safeParse(payload.result);
-
-        if (parsedTrackPoint.success) {
-          const { token } = parsedParams.data;
-
-          if (token === undefined) {
-            throw new Error();
-          }
-
-          return {
-            ...state,
-            tracks: [
-              ...state.tracks.filter(({ token: id }) => id !== token),
-              { token, trackPoints: parsedTrackPoint.data },
-            ],
-          };
-        }
-      }
-
-      return payload.method === 'tracking.unsubscribe' &&
-        payload.type === 'result'
-        ? {
-            ...state,
-            tracks: state.tracks.filter(
-              (track) => track.token !== parsedParams.data.token,
-            ),
-          }
-        : state;
-    })
-    .addCase(rpcEvent, (state, { payload: { method, params } }) => {
-      if (method === 'tracking.addPoint') {
-        const parsed = TrackPointWithTokenSchema.safeParse(params);
-
-        if (parsed.success) {
-          const { token, ...rest } = parsed.data;
-
-          let track = state.tracks.find((t) => t.token === token);
-
-          if (!track) {
-            track = { token, trackPoints: [] };
-
-            state.tracks.push(track);
-          }
-
-          track.trackPoints.push(rest);
-
-          // TODO apply limits from trackedDevices
-        }
-      }
-
-      return state;
-    })
     .addCase(
       mapsLoaded,
       (
@@ -178,15 +144,10 @@ export const trackingReducer = createReducer(trackingInitialState, (builder) =>
             merge,
           },
         },
-      ) => {
-        return {
-          ...state,
-          trackedDevices: [
-            ...(merge ? state.trackedDevices : []),
-            ...(tracking?.trackedDevices ??
-              trackingInitialState.trackedDevices),
-          ],
-        };
-      },
+      ) =>
+        withTrackedDevices(state, [
+          ...(merge ? state.trackedDevices : []),
+          ...(tracking?.trackedDevices ?? trackingInitialState.trackedDevices),
+        ]),
     ),
 );

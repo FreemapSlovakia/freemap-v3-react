@@ -1,7 +1,5 @@
 ///<reference types="webpack-env" />
 
-import { createTrackingMiddleware } from '@features/tracking/model/trackingMiddleware.js';
-import { createWebsocketMiddleware } from '@features/websocket/model/webSocketMiddleware.js';
 import { combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
 import { errorHandlingMiddleware } from '../store/middleware/errorHandlingMiddleware.js';
 import { perfWatchdogMiddleware } from '../store/middleware/perfWatchdog.js';
@@ -43,9 +41,7 @@ export function createReduxStore() {
         perfWatchdogMiddleware,
         errorHandlingMiddleware,
         statePersistingMiddleware,
-        createWebsocketMiddleware(),
         processorMiddleware,
-        createTrackingMiddleware(),
       ),
     preloadedState: getInitialState(),
   });

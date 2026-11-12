@@ -6,6 +6,7 @@ import type {
   Device,
   EditedDevice,
   TrackedDevice,
+  TrackPoint,
 } from './types.js';
 
 export const trackingActions = {
@@ -63,6 +64,15 @@ export const trackingActions = {
 
   delete: createAction<{ token: string }>('TRACKING_DELETE'),
 
+  trackHistory: createAction<{ token: string; trackPoints: TrackPoint[] }>(
+    'TRACKING_TRACK_HISTORY',
+  ),
+
+  trackPoints: createAction<{ token: string; trackPoints: TrackPoint[] }>(
+    'TRACKING_TRACK_POINTS',
+  ),
+
+  dropTrack: createAction<string>('TRACKING_DROP_TRACK'),
   /**
    * Copies what a watched device has travelled so far into the track viewer,
    * where it becomes an ordinary loaded track. The live feed keeps running, so
