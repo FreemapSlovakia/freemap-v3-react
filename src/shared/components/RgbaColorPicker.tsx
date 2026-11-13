@@ -1,9 +1,9 @@
-import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { rgbaStringToHexa, toRgbaString } from '@shared/colorAlpha.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDragCommit } from '@shared/hooks/useDragCommit.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
-import { type CSSProperties, type ReactElement, useRef, useState } from 'react';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import type { CSSProperties, ReactElement } from 'react';
+import { ColorPickerPopover } from './ColorPickerPopover.js';
 
 type Props = {
   value: string;
@@ -14,13 +14,6 @@ type Props = {
   alpha?: boolean;
   /** Offered ahead of the recently used colours. */
   presets?: string[];
-};
-
-const checkerBg: CSSProperties = {
-  backgroundImage:
-    'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
-  backgroundSize: '10px 10px',
-  backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0',
 };
 
 export function RgbaColorPicker({
@@ -35,86 +28,37 @@ export function RgbaColorPicker({
     (state) => state.drawingSettings.recentColors,
   );
 
-  const [show, setShow] = useState(false);
-
-  // Holds the last forwarded color so the drag-end handler can commit it as a
-  // single history entry (see onDragStart/onDragEnd below).
-  const latestColorRef = useRef<string | null>(null);
+  const { change, onDragStart, onDragEnd } = useDragCommit(onChange);
 
   return (
-    <OverlayTrigger
-      trigger="click"
-      placement="bottom"
-      rootClose
-      show={show}
-      onToggle={setShow}
-      // render into <body> so the popover isn't clipped by a scrollable modal
-      // body and can flip above the swatch when there's no room below
-      container={() => document.body}
-      flip
-      overlay={
-        <Popover style={{ maxWidth: 'none' }}>
-          <Popover.Body className="p-2">
-            <ColorPicker
-              value={toRgbaString(value)}
-              onChange={(c) => {
-                const hexa = rgbaStringToHexa(c);
-
-                const result = alpha ? hexa : hexa.slice(0, 7);
-
-                latestColorRef.current = result;
-
-                onChange(result);
-              }}
-              // Suspend history writes for the whole pointer drag so the stream
-              // of intermediate colors collapses into one entry instead of
-              // flooding pushState (Safari caps it at 100/10s).
-              onDragStart={() => {
-                setUrlUpdatingEnabled(false);
-              }}
-              onDragEnd={() => {
-                // Re-enable first so the flush commits one history entry.
-                setUrlUpdatingEnabled(true);
-
-                if (latestColorRef.current !== null) {
-                  onChange(latestColorRef.current);
-                }
-              }}
-              width={236}
-              height={120}
-              // The picker shows only the first 18.
-              presets={presets ? [...presets, ...recentColors] : recentColors}
-              hideOpacity={!alpha}
-              hideControls
-              hideColorTypeBtns
-              hideEyeDrop
-              hideAdvancedSliders
-              hideColorGuide
-              hideInputType
-            />
-          </Popover.Body>
-        </Popover>
-      }
+    <ColorPickerPopover
+      swatch={value}
+      checker
+      className={className}
+      style={style}
+      onHide={onDragEnd}
     >
-      {/* Framed like Bootstrap's own colour input, so a pale colour still
-          stands apart from the field. */}
-      <button
-        type="button"
-        className={`form-control${className ? ` ${className}` : ''}`}
-        style={{
-          cursor: 'pointer',
-          height: 'calc(1.5em + 0.75rem + 2px)',
-          padding: '0.375rem',
-          ...style,
+      <ColorPicker
+        value={toRgbaString(value)}
+        onChange={(c) => {
+          const hexa = rgbaStringToHexa(c);
+
+          change(alpha ? hexa : hexa.slice(0, 7));
         }}
-      >
-        <div
-          className="w-100 h-100 overflow-hidden"
-          style={{ ...checkerBg, borderRadius: 'var(--bs-border-radius-sm)' }}
-        >
-          <div className="w-100 h-100" style={{ background: value }} />
-        </div>
-      </button>
-    </OverlayTrigger>
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        width={236}
+        height={120}
+        // The picker shows only the first 18.
+        presets={presets ? [...presets, ...recentColors] : recentColors}
+        hideOpacity={!alpha}
+        hideControls
+        hideColorTypeBtns
+        hideEyeDrop
+        hideAdvancedSliders
+        hideColorGuide
+        hideInputType
+      />
+    </ColorPickerPopover>
   );
 }

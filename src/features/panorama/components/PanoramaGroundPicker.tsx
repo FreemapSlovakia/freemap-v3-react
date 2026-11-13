@@ -1,16 +1,10 @@
-import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { toRgbaString } from '@shared/colorAlpha.js';
+import { ColorPickerPopover } from '@shared/components/ColorPickerPopover.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDragCommit } from '@shared/hooks/useDragCommit.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
-import {
-  type ReactElement,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { type ReactElement, useMemo, useState } from 'react';
 import {
   cssToStops,
   GRADIENT_PRESETS,
@@ -46,19 +40,10 @@ export function PanoramaGroundPicker({
     (state) => state.panoramaSettings.recentGradients,
   );
 
-  const [show, setShow] = useState(false);
-
   /** Which stop the picker has selected, so handing the value back keeps it. */
   const [active, setActive] = useState<number>();
 
-  // Holds the last forwarded value so the drag-end handler can commit it as a
-  // single history entry (see onDragStart/onDragEnd below). `onChange` rides a
-  // ref for the same reason the handlers are stable: see there.
-  const latestRef = useRef<Ground | null>(null);
-
-  const onChangeRef = useRef(onChange);
-
-  onChangeRef.current = onChange;
+  const { change, onDragStart, onDragEnd } = useDragCommit(onChange);
 
   // The picker wants a colour it can parse back out of its own inputs, which is
   // what every other picker here hands it too.
@@ -83,26 +68,8 @@ export function PanoramaGroundPicker({
         }
       : { color: Color(picked).hex().toLowerCase(), gradient: null };
 
-    latestRef.current = next;
-
-    onChange(next);
+    change(next);
   };
-
-  // Stable, because the picker holds them in the deps of the effect that
-  // attaches its window `pointerup` listener: fresh ones each render would
-  // detach and reattach it on every frame of a stop being dragged.
-  const suspendHistory = useCallback(() => {
-    setUrlUpdatingEnabled(false);
-  }, []);
-
-  const resumeHistory = useCallback(() => {
-    // Re-enabled first so the flush commits one history entry.
-    setUrlUpdatingEnabled(true);
-
-    if (latestRef.current) {
-      onChangeRef.current(latestRef.current);
-    }
-  }, []);
 
   const presets = useMemo(
     () => [...GRADIENT_PRESETS, ...recent.map((stops) => gradientToCss(stops))],
@@ -110,73 +77,38 @@ export function PanoramaGroundPicker({
   );
 
   return (
-    <OverlayTrigger
-      trigger="click"
-      placement="bottom"
-      rootClose
-      show={show}
-      onToggle={setShow}
-      container={() => document.body}
-      flip
-      overlay={
-        <Popover style={{ maxWidth: 'none' }}>
-          <Popover.Body className="p-2">
-            <ColorPicker
-              value={css}
-              onChange={emit}
-              width={236}
-              height={120}
-              presets={presets}
-              // What the gradient tab switches to where there is no ramp yet.
-              config={{ defaultGradient: GRADIENT_PRESETS[0] }}
-              locales={{
-                CONTROLS: {
-                  SOLID: m?.settings.groundSolid ?? '',
-                  GRADIENT: m?.settings.groundGradient ?? '',
-                },
-              }}
-              // One linear ramp, angle and all: the service maps distance to a
-              // position along it and knows nothing of directions or shapes.
-              hideGradientType
-              hideGradientAngle
-              stopUnit="%"
-              hideOpacity
-              hideEyeDrop
-              hideAdvancedSliders
-              hideColorGuide
-              // The hex/RGB fields stay, as the ridge colour's picker has them;
-              // only the model dropdown goes, the same as there.
-              hideInputType
-              // Suspend history writes for the whole pointer drag so the stream
-              // of intermediate colours collapses into one entry instead of
-              // flooding pushState (Safari caps it at 100/10s).
-              onDragStart={suspendHistory}
-              onDragEnd={resumeHistory}
-            />
-          </Popover.Body>
-        </Popover>
-      }
-    >
-      <button
-        type="button"
-        className="form-control"
-        style={{
-          cursor: 'pointer',
-          height: 'calc(1.5em + 0.75rem + 2px)',
-          padding: '0.375rem',
+    // The picker's own value doubles as the swatch: CSS colour functions are
+    // case-insensitive, so the selected stop's `RGBA` draws like the rest.
+    <ColorPickerPopover swatch={css} onHide={onDragEnd}>
+      <ColorPicker
+        value={css}
+        onChange={emit}
+        width={236}
+        height={120}
+        presets={presets}
+        // What the gradient tab switches to where there is no ramp yet.
+        config={{ defaultGradient: GRADIENT_PRESETS[0] }}
+        locales={{
+          CONTROLS: {
+            SOLID: m?.settings.groundSolid ?? '',
+            GRADIENT: m?.settings.groundGradient ?? '',
+          },
         }}
-      >
-        {/* The picker's own value doubles as the swatch: CSS reads the active
-            stop's upper-cased `RGBA` the same as any other. Framed as
-            `RgbaColorPicker` is. */}
-        <div
-          className="w-100 h-100"
-          style={{
-            background: css,
-            borderRadius: 'var(--bs-border-radius-sm)',
-          }}
-        />
-      </button>
-    </OverlayTrigger>
+        // One linear ramp, angle and all: the service maps distance to a
+        // position along it and knows nothing of directions or shapes.
+        hideGradientType
+        hideGradientAngle
+        stopUnit="%"
+        hideOpacity
+        hideEyeDrop
+        hideAdvancedSliders
+        hideColorGuide
+        // The hex/RGB fields stay, as the ridge colour's picker has them;
+        // only the model dropdown goes, the same as there.
+        hideInputType
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+      />
+    </ColorPickerPopover>
   );
 }

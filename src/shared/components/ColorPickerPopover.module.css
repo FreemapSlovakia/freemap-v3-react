@@ -1,0 +1,9 @@
+/* The swatch the popover opens from shows the value already, translucent too;
+   the picker's own preview can't be given a checkerboard, so it goes. */
+.body [id^="rbgcp-preview"] {
+  display: none;
+}
+
+.body [id^="rbgcp-presets-wrapper"] {
+  width: 100% !important;
+}

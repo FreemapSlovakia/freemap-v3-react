@@ -1,10 +1,10 @@
-import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
 import { gradientCss, parseGradientCss } from '@shared/gradientCss.js';
 import { useBsTheme } from '@shared/hooks/useBsTheme.js';
+import { useDragCommit } from '@shared/hooks/useDragCommit.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
 import { produce } from 'immer';
-import { type ReactElement, useLayoutEffect, useRef, useState } from 'react';
+import { type ReactElement, useLayoutEffect, useState } from 'react';
 import { MdGradient, MdPalette } from 'react-icons/md';
 import {
   type ColorStop,
@@ -51,9 +51,7 @@ export function ShadingColorPicker({
 
   const [activeStopIndex, setActiveStopIndex] = useState<number>();
 
-  // Holds the shading produced by the most recent color-picker onChange so the
-  // drag-end handler can commit it as a single history entry.
-  const latestShadingRef = useRef(shading);
+  const { change, onDragStart, onDragEnd } = useDragCommit(onChange);
 
   // Hillshade and slope take one colour or, switched in the picker, a gradient.
   const switchable =
@@ -190,19 +188,8 @@ export function ShadingColorPicker({
         })()}
         hideInputs
         hideInputType
-        // Suspend history writes for the whole pointer drag so the stream of
-        // intermediate colors collapses into one entry instead of flooding
-        // pushState (Safari caps it at 100/10s). The live map keeps updating
-        // because onChange still dispatches on every frame.
-        onDragStart={() => {
-          setUrlUpdatingEnabled(false);
-        }}
-        onDragEnd={() => {
-          // Re-enable first so the flush dispatch commits one history entry.
-          setUrlUpdatingEnabled(true);
-
-          onChange(latestShadingRef.current);
-        }}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         value={(() => {
           let v: string;
 
@@ -272,9 +259,7 @@ export function ShadingColorPicker({
             }
           });
 
-          latestShadingRef.current = next;
-
-          onChange(next);
+          change(next);
         }}
       />
     </div>

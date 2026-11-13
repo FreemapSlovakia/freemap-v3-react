@@ -613,14 +613,6 @@ distance probe, a premium quality tier. What it does not do yet is issues under
   so a user with the extension installed pays the same on the live site;
   gating it on the dev build would take that away, at the cost of not being
   able to inspect a production session.
-- [ ] **Extract a `ColorPickerPopover` shell.** `PanoramaGroundPicker` and
-  `RgbaColorPicker` now carry the same ~60 lines: the `OverlayTrigger` /
-  `Popover` / body-portal, the swatch button, and the `setUrlUpdatingEnabled`
-  drag suspension that keeps Safari's 100-writes-per-10s pushState cap out
-  of a colour drag. That workaround exists in three places counting
-  `ShadingColorPicker`, and will be fixed in one of them. Do _not_ bolt a
-  gradient mode onto `RgbaColorPicker` — its value is a string and this
-  one's is `{color, gradient}`; the shell is the shared part.
 - [ ] **`fadeToSky` could live on the stop.** The wire takes `'sky'` as any
   stop's colour; the client models it as a gradient-level boolean meaning
   "and the last one", which `previewStops`, `storedStops` and
