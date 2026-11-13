@@ -154,7 +154,7 @@ export function getExportables(): Partial<
         return null;
       }
 
-      let track;
+      let track: RootState['tracking']['tracks'][number] | undefined;
 
       if (selection?.type === 'tracking') {
         const { id } = selection;
@@ -171,8 +171,8 @@ export function getExportables(): Partial<
 
       if (track) {
         // nothing
-      } else if (tracking.tracks.length === 1) {
-        track = tracking.tracks[0];
+      } else if (tracks.length === 1) {
+        track = tracks[0];
       } else {
         return 'garmin.multipleTracks';
       }
