@@ -25,13 +25,13 @@ Wherever the map is asked for a place — the home position, a photo's location,
 
 - Access: Main menu > Account
 - Keyboard shortcut: <kbd>e</kbd> <kbd>a</kbd>
-- URL path: `/#show=account`; `/#show=account/<section>` opens one of its sections: `payments` (Purchases), `personal` (Personal information), `providers` (Login providers), `app-tokens` or `roles`
+- URL path: `/#show=account`; `/#show=account/<section>` opens one of its sections: `payments` (Premium and purchases), `personal` (Personal information), `providers` (Login providers), `app-tokens` or `roles`
 
 Available only to logged-in users. Logged-out users instead see a **Log in** item in the same place, which opens the login provider chooser (see Login providers below).
 
 The Account modal has four collapsible sections (below); from the buttons at the bottom the user can also log out or delete their account.
 
-#### Purchases
+#### Premium and purchases
 
 - Shows current premium status (e.g. "premium access until <date>", or "premium access, your subscription renews automatically" while an auto-renewing subscription is running) and the credit balance, with a **Buy credits** button
 - History of purchases (date and item)

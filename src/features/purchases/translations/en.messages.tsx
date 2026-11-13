@@ -1,7 +1,7 @@
 import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const en: PurchasesMessages = {
-  purchases: 'Purchases',
+  purchases: 'Premium and purchases',
   premiumExpired: (at) => <>Your premium access expired at {at}</>,
   date: 'Date',
   item: 'Item',

@@ -2,7 +2,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<PurchasesMessages> = {
-  purchases: 'Vásárlások',
+  purchases: 'Prémium és vásárlások',
   premiumExpired: (at) => <>A prémium hozzáférése lejárt ekkor: {at}</>,
   date: 'Dátum',
   item: 'Tétel',

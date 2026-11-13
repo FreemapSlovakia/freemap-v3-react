@@ -32,7 +32,7 @@ The first login with a provider creates a new Freemap account. To log in to the 
 
 Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</kbd> <kbd>a</kbd>) in place of **Log in**. The dialog has four sections:
 
-- :FaShoppingBasket: **Purchases** – premium access, credits and **Manage payments**, described in [Premium and credits](#show=manual/premium).
+- :FaShoppingBasket: **Premium and purchases** – premium access, credits and **Manage payments**, described in [Premium and credits](#show=manual/premium).
 - :FaAddressCard: **Personal information**
 - :FaUserCircle: **Login providers**
 - :FaKey: **App tokens**

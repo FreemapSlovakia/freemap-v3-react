@@ -2,7 +2,7 @@ import type { DeepPartialWithRequiredObjects } from '@shared/types/deepPartial.j
 import type { PurchasesMessages } from './PurchasesMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<PurchasesMessages> = {
-  purchases: 'Nakupi',
+  purchases: 'Premium in nakupi',
   premiumExpired: (at) => <>Vaš dostop premium je potekel {at}</>,
   date: 'Datum',
   item: 'Postavka',

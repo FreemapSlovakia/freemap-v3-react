@@ -32,7 +32,7 @@ Prvé prihlásenie cez poskytovateľa vytvorí nový účet Freemap. Ak sa chcet
 
 Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :FaUser: [Účet](#show=account) (<kbd>e</kbd> <kbd>a</kbd>). Dialóg má štyri časti:
 
-- :FaShoppingBasket: **Nákupy** – prémiový prístup, kredity a **Spravovať platby**, opísané v kapitole [Prémiový prístup a kredity](#show=manual/premium).
+- :FaShoppingBasket: **Prémium a nákupy** – prémiový prístup, kredity a **Spravovať platby**, opísané v kapitole [Prémiový prístup a kredity](#show=manual/premium).
 - :FaAddressCard: **Osobné údaje**
 - :FaUserCircle: **Poskytovatelia prihlásenia**
 - :FaKey: **Aplikačné tokeny**

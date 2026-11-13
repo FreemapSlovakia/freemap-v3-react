@@ -17,7 +17,7 @@ const fr: DeepPartialWithRequiredObjects<PurchasesMessages> = {
     unknown: 'État du virement bancaire signalé par le fournisseur : {}.',
   },
   credits: (amount) => <>Crédits ({amount})</>,
-  purchases: 'Achats',
+  purchases: 'Premium et achats',
   date: 'Date',
   item: 'Article',
   notPremiumYet: 'Vous n’avez pas encore l’accès premium.',
