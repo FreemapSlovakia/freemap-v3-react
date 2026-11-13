@@ -59,9 +59,7 @@
         "useAsConstAssertion": "error"
       },
       "suspicious": {
-        "noArrayIndexKey": "off",
-        "noConfusingLabels": "off",
-        "noImplicitAnyLet": "off"
+        "noArrayIndexKey": "off"
       }
     }
   },

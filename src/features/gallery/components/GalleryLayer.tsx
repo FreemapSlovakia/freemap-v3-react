@@ -179,7 +179,7 @@ class LGalleryLayer extends LGridLayer {
 
       this._acm.set(key, controller);
 
-      let response;
+      let response: Response;
 
       try {
         response = await fetch(

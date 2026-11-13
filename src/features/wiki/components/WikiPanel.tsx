@@ -47,7 +47,7 @@ export default function WikiPanel(): ReactElement {
       onClose={() => dispatch(selectFeature(null))}
     >
       {(item) => {
-        let lang, title, label;
+        let lang: string, title: string, label: string;
 
         if (typeof item === 'string') {
           [lang = '', title = ''] = item.split(/:(.*)/);

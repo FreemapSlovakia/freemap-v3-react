@@ -20,7 +20,7 @@ export const objectsRouteProcessor: Processor<typeof objectsRouteRequest> = {
     // tens of thousands of points.
     const simplifyM = Math.max(5, Math.round(metersPerPixel(zoom, lat)));
 
-    let coordinates;
+    let coordinates: [number, number][];
 
     try {
       coordinates = await fetchProminenceRoute(osmId, simplifyM, getState, {

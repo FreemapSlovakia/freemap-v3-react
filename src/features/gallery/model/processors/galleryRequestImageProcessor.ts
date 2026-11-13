@@ -6,6 +6,7 @@ import {
   galleryRequestImage,
   gallerySetImage,
   gallerySetImageFetchFailed,
+  type Picture,
   PictureSchema,
 } from '../actions.js';
 
@@ -15,7 +16,7 @@ export const galleryRequestImageProcessor: Processor = {
   async handle({ getState, dispatch, toastError }) {
     const activeImageId = getState().gallery.activeImageId;
 
-    let image;
+    let image: Picture;
 
     try {
       const res = await httpRequest({

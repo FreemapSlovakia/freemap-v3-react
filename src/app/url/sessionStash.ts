@@ -104,7 +104,7 @@ export function restoreStashedUrl(): void {
     return;
   }
 
-  let stashed;
+  let stashed: ReturnType<typeof StashSchema.safeParse>;
 
   try {
     const raw = storage.getItem(STORAGE_KEY);

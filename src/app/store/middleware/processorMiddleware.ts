@@ -175,7 +175,7 @@ export function createProcessorMiddleware() {
               }
             };
 
-            let promise;
+            let promise: void | Promise<void> | undefined;
 
             const toastError: ToastError = async (
               err,

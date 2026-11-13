@@ -16,7 +16,7 @@ export const dataViewerSetTrackDataProcessor: Processor<
     const { focus, trackGeojson } = action.payload;
 
     if (focus && trackGeojson) {
-      let bounds;
+      let bounds: ReturnType<typeof bbox> | undefined;
 
       try {
         bounds = bbox(trackGeojson);

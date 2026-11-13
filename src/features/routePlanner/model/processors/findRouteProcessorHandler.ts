@@ -342,15 +342,7 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
   const multiModal =
     new Set(segments.map((segment) => segment.transport)).size > 1;
 
-  let datas;
-
-  try {
-    datas = await Promise.allSettled(segments.map(fetchService));
-  } catch (err) {
-    dispatch(clearResultAction);
-
-    throw err;
-  }
+  const datas = await Promise.allSettled(segments.map(fetchService));
 
   const failure = datas.find((data) => data.status === 'rejected')?.reason;
 

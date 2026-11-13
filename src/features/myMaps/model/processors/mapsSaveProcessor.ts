@@ -168,7 +168,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         return;
       }
 
-      let res;
+      let res: Response;
 
       try {
         res = await httpRequest({

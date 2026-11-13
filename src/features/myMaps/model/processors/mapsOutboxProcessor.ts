@@ -179,7 +179,7 @@ async function push(
 ): Promise<PushResult> {
   const mapId = pending.meta.id;
 
-  let res;
+  let res: Response;
 
   try {
     res = await httpRequest({

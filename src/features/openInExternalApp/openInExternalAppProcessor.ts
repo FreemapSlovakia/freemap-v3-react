@@ -128,13 +128,13 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
           break;
         }
 
-        let left;
+        let left: number;
 
-        let right;
+        let right: number;
 
-        let top;
+        let top: number;
 
-        let bottom;
+        let bottom: number;
 
         if (includePoint) {
           const buffered = buffer(point([lon, lat]), 100, {

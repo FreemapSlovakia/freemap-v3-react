@@ -6,7 +6,10 @@ import {
   searchUnselectResult,
 } from '@features/search/model/actions.js';
 import { isResultLoadingSelector } from '@features/search/model/selectors.js';
-import { fetchOsmFeaturesById } from '@shared/osmApi.js';
+import {
+  fetchOsmFeaturesById,
+  type OsmApiFullFeature,
+} from '@shared/osmApi.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   featureIdsEqual,
@@ -93,7 +96,7 @@ export const osmLoadProcessor: Processor<typeof osmLoad> = {
       }
     }
 
-    let byId;
+    let byId: Map<string, OsmApiFullFeature>;
 
     try {
       byId = await fetchOsmFeaturesById(ids, {

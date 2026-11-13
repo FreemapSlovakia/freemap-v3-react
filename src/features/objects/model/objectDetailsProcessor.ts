@@ -107,7 +107,7 @@ async function readFacts(
   // Alongside the facts, and only to name the credits: missing, codes stand in.
   const licenses = loadTerrainLicenses().catch(() => null);
 
-  let facts;
+  let facts: TerrainFacts | null;
 
   try {
     facts = await fetchTerrainFacts(kind, id, getState, {

@@ -95,7 +95,7 @@ async function fetchCatalogMaps(
       throw new HttpError(res.status, (await res.text()).slice(0, 200));
     }
 
-    let body;
+    let body: unknown;
 
     // A page that isn't JSON is someone else's (a captive portal); malformed
     // JSON is the API's own error, to be shown.

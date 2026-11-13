@@ -73,7 +73,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
       // context-menu position), not to any drawing tool, so it carries no
       // statePredicate — cancelType dismisses it when the selection changes.
       async function measurePoint(point: LatLon) {
-        let elevation;
+        let elevation: number | null | undefined;
 
         const credits = newElevationCredits();
 

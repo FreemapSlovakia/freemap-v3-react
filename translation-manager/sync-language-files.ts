@@ -19,6 +19,7 @@ import {
   type ObjectExpression,
   type ObjectProperty,
   objectProperty,
+  type VariableDeclarator,
 } from '@babel/types';
 import { parse, print, types } from 'recast';
 import templatesConfig from './templates.json' with { type: 'json' };
@@ -65,7 +66,7 @@ function findRoot(file: File) {
       continue;
     }
 
-    let declaration;
+    let declaration: VariableDeclarator;
 
     if (isExportNamedDeclaration(statement)) {
       if (!isVariableDeclaration(statement.declaration)) {
@@ -201,7 +202,7 @@ function mergeIntoLocale(
       continue;
     }
 
-    let keyName;
+    let keyName: string;
 
     if (isIdentifier(prop.key)) {
       keyName = prop.key.name;

@@ -175,7 +175,7 @@ class LShadingLayer extends LGridLayer {
     const initGpuObjects = async () => {
       const initPromise = init();
 
-      let adapter;
+      let adapter: GPUAdapter | null;
 
       try {
         adapter = await navigator.gpu.requestAdapter();
@@ -338,7 +338,7 @@ class LShadingLayer extends LGridLayer {
 
     const { signal } = controller;
 
-    let res;
+    let res: Response;
 
     try {
       const { tileAuth } = this._options;

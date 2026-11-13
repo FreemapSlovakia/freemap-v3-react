@@ -139,7 +139,7 @@ export const mapsRestoreProcessor: Processor = {
         return;
       }
 
-      let stored;
+      let stored: Awaited<ReturnType<typeof getMapRecord>> | undefined;
 
       try {
         stored = await getMapRecord(mapId);
@@ -186,7 +186,7 @@ export const mapsRestoreProcessor: Processor = {
       // plain load would silently discard that content, so read the stored
       // document only to learn what the map holds and let the comparison decide
       // whether what's on screen differs from it.
-      let document;
+      let document: Awaited<ReturnType<typeof readMapDocument>> | undefined;
 
       try {
         document = await readMapDocument(mapId, getState, [

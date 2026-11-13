@@ -22,17 +22,10 @@ the surrounding context.
   but the array/coordinate-heavy hotspots are now cleaned up against it (error
   count 348 → ~180).
 
-## Lint: re-enable Biome rules disabled during `recommended` adoption
+## Lint: Biome rules kept off
 
-`biome.json` now uses `"preset": "recommended"` with `--error-on-warnings`
-(`lint`, `lint:fix`, lint-staged). Adopting the full recommended set lit up
-rules the curated config never ran; the safely-autofixable ones were applied,
-and the rest were switched `"off"` to keep the tree green. Re-enable and fix
-these one at a time (counts measured 2026-09-02):
-
-- [ ] `suspicious/noImplicitAnyLet` (25) — annotate bare `let x;` with a real type.
-- [ ] `a11y/noSvgWithoutTitle` (12) — `<title>`/`aria-label` for meaningful, `aria-hidden` for decorative.
-- [ ] `a11y/noStaticElementInteractions` (4), `suspicious/noConfusingLabels` (1).
+`biome.json` uses `"preset": "recommended"` with `--error-on-warnings`
+(`lint`, `lint:fix`, lint-staged).
 
 Permanently off by decision (convention / tsconfig clash, **not** backlog):
 `style/noNonNullAssertion`, `suspicious/noArrayIndexKey`,
@@ -40,10 +33,9 @@ Permanently off by decision (convention / tsconfig clash, **not** backlog):
 `complexity/useLiteralKeys` (fights `noPropertyAccessFromIndexSignature`),
 `a11y/useValidAnchor` (flags any `<a>` with an `onClick`, which is the SPA-link
 pattern: a real `href` plus `preventDefault` to route in-page — a `<button>`
-would lose new-tab, copy-link and the status-bar preview).
-
-Still emitting at info level (non-blocking, optional cleanup):
-`style/useTemplate` (145), `complexity/useIndexOf` (4), `correctness/useParseIntRadix` (1).
+would lose new-tab, copy-link and the status-bar preview),
+`a11y/noSvgWithoutTitle` and `a11y/noStaticElementInteractions` (they ask for
+accessibility-only labels, which this app doesn't add — see `CLAUDE.md`).
 
 ## Cleanups
 

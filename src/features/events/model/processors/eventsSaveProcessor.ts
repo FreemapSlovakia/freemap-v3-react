@@ -34,7 +34,7 @@ async function saveCover(
   id: string,
   cover: File | null,
 ) {
-  let body;
+  let body: FormData | undefined;
 
   if (cover) {
     body = new FormData();
