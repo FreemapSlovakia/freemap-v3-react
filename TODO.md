@@ -547,11 +547,11 @@ Bugs and feature requests are issues under `area: maps-layers`.
     only the standard WMS parameters, so one in another parameter
     (`TIME={time}`, `DPI={dpi}`) stays in the base URL as `x`; `toLeaflet`
     refuses unknown placeholders, `toWms` doesn't.
-- [ ] **Helpers for a map's effective settings.** `effectiveShortcut` in
-  `installed.ts` serves `keyboardHandler` and `MapSwitchButton`; `YourMapsList`, `CustomMapEditor`, `commandDefinitions` and
-  `CacheTilesForm` still resolve the shortcut inline, and the menu/toolbar
-  defaults are recomputed everywhere: helpers beside it, the default passed
-  in. Likewise `layerName(def, m) ?? def.type`, hand-written at six sites.
+- [ ] **A `layerLabel(def, m)` helper** for `layerName(def, m) ?? def.type`,
+  hand-written at five sites — when one of them is next touched. The shortcut
+  and menu/toolbar defaults stay inline: `effectiveShortcut` holds the part
+  with logic, and the rest differ on purpose (`undefined` is "the default",
+  `null` "none", and a new offline map starts with none).
 
 ## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
 
