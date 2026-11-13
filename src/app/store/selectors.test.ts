@@ -70,59 +70,70 @@ afterEach(() => {
 });
 
 describe('pickingModeSelector', () => {
-  it('is false by default', () => {
-    expect(pickingModeSelector(makeState())).toBe(false);
+  it('is none by default', () => {
+    expect(pickingModeSelector(makeState())).toBeNull();
   });
 
-  it('is true while selecting a home location', () => {
-    const state = makeState({ homeLocation: { selectingHomeLocation: true } });
-
-    expect(pickingModeSelector(state)).toBe(true);
+  it.each([
+    [
+      'selecting a home location',
+      { homeLocation: { selectingHomeLocation: true } },
+      'home-location',
+    ],
+    [
+      'picking a gallery photo position',
+      { gallery: { pickingPositionForId: 5 } },
+      'gallery-position',
+    ],
+    [
+      'showing a gallery photo position',
+      { gallery: { showPosition: true } },
+      'gallery-show-position',
+    ],
+    ['selecting a map area', { mapArea: { selecting: 'export' } }, 'map-area'],
+    [
+      'previewing a library map',
+      { mapLibrary: { preview: { type: 'Z0003', restore: ['X'] } } },
+      'map-library-preview',
+    ],
+    [
+      'placing the toposcope centre',
+      { toposcope: { pickingCenter: true } },
+      'toposcope-center',
+    ],
+    [
+      'placing the panorama viewpoint',
+      { panorama: { picking: 'viewpoint' } },
+      'panorama',
+    ],
+    [
+      'placing the viewshed viewpoint',
+      { viewshed: { pickingViewpoint: true } },
+      'viewshed-viewpoint',
+    ],
+    [
+      'picking an event start',
+      { events: { pickingStart: true } },
+      'event-start',
+    ],
+  ] as const)('names %s', (_, overrides, mode) => {
+    expect(pickingModeSelector(makeState(overrides))).toBe(mode);
   });
 
-  it('is true while picking a gallery photo position', () => {
-    const state = makeState({ gallery: { pickingPositionForId: 5 } });
-
-    expect(pickingModeSelector(state)).toBe(true);
-  });
-
-  it('is true while showing a gallery photo position', () => {
-    const state = makeState({ gallery: { showPosition: true } });
-
-    expect(pickingModeSelector(state)).toBe(true);
-  });
-
-  it('is true while selecting a map area', () => {
-    const state = makeState({ mapArea: { selecting: 'export' } });
-
-    expect(pickingModeSelector(state)).toBe(true);
-  });
-
-  it('is true while previewing a library map', () => {
+  // Escape, the menu and the cursor all follow the one this returns.
+  it('names the first listed should two be on', () => {
     const state = makeState({
-      mapLibrary: { preview: { type: 'Z0003', restore: ['X'] } },
+      homeLocation: { selectingHomeLocation: true },
+      gallery: { pickingPositionForId: 5 },
     });
 
-    expect(pickingModeSelector(state)).toBe(true);
+    expect(pickingModeSelector(state)).toBe('gallery-position');
   });
 
-  it('is true while placing the toposcope centre', () => {
-    const state = makeState({ toposcope: { pickingCenter: true } });
-
-    expect(pickingModeSelector(state)).toBe(true);
-  });
-
-  it('is true while placing the panorama viewpoint', () => {
-    const state = makeState({ panorama: { picking: 'viewpoint' } });
-
-    expect(pickingModeSelector(state)).toBe(true);
-  });
-
-  // An armed mode waits on a click on a feature, so the features stay live.
-  it('is false while a mode is armed on a feature', () => {
+  it('is none while a mode is armed on a feature', () => {
     const state = makeState({ trackViewer: { splitting: true } });
 
-    expect(pickingModeSelector(state)).toBe(false);
+    expect(pickingModeSelector(state)).toBeNull();
     expect(selectingModeSelector(state)).toBe(true);
   });
 });
@@ -246,6 +257,20 @@ describe('showGalleryViewerSelector', () => {
 describe('mouseCursorSelector', () => {
   it('returns auto while showing a gallery position', () => {
     const state = makeState({ gallery: { showPosition: true } });
+
+    expect(mouseCursorSelector(state)).toBe('auto');
+  });
+
+  it('returns crosshair while selecting a map area', () => {
+    const state = makeState({ mapArea: { selecting: 'export' } });
+
+    expect(mouseCursorSelector(state)).toBe('crosshair');
+  });
+
+  it('returns auto while previewing a library map, which picks nothing', () => {
+    const state = makeState({
+      mapLibrary: { preview: { type: 'Z0003', restore: ['X'] } },
+    });
 
     expect(mouseCursorSelector(state)).toBe('auto');
   });

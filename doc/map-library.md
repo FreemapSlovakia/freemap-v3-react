@@ -308,7 +308,7 @@ the older ids are renamed to
   with `keep: false`, whose processor puts `restore` back. Another modal ends it
   the same way. The browser's Back, which takes the previewed map off itself,
   ends it with the library shown again. A reload doesn't restore. It is
-  a picking mode (`mapLibraryPreviewingSelector` in `pickingModeSelector`), and
+  a picking mode (`'map-library-preview'` in `pickingModeSelector`), and
   unlike the others it also hides the map switcher and the manage button and
   turns off the layer shortcuts: a switch would be undone by `restore`.
 - Both buttons hand a catalog map to the store first

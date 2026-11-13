@@ -36,59 +36,56 @@ export const openDrawToolSelector = (state: RootState): Tool | null =>
 export const mapLayersSelector = (state: RootState): string[] =>
   state.map.layers;
 
-export const selectingHomeLocationSelector = (state: RootState): boolean =>
-  state.homeLocation.selectingHomeLocation !== false;
-
 export const routePlannerPickModeSelector = (
   state: RootState,
 ): PickMode | null => state.routePlanner.pickMode;
 
-export const galleryPickingPositionForIdSelector = (
-  state: RootState,
-): number | null => state.gallery.pickingPositionForId;
-
-export const galleryShowPositionSelector = (state: RootState): boolean =>
-  state.gallery.showPosition;
-
 export const drawingLineSelector = (state: RootState): boolean =>
   state.trackViewer.drawing !== null;
-
-export const mapAreaSelectingSelector = (state: RootState): boolean =>
-  state.mapArea.selecting !== null;
-
-export const toposcopePickingCenterSelector = (state: RootState): boolean =>
-  state.toposcope.pickingCenter;
-
-/** A library map is previewed; unlike the picks, it switches no other map. */
-export const mapLibraryPreviewingSelector = (state: RootState): boolean =>
-  state.mapLibrary.preview !== null;
 
 /** The layers the user has on: during a library preview, those it puts back. */
 export const userLayersSelector = (state: RootState): string[] =>
   state.mapLibrary.preview?.restore ?? state.map.layers;
 
-export const panoramaPickingSelector = (state: RootState): boolean =>
-  state.panorama.picking !== null;
-
-export const viewshedPickingViewpointSelector = (state: RootState): boolean =>
-  state.viewshed.pickingViewpoint;
-
 /**
- * True while the map is given over to a click that says where. Features stay
- * visible but non-interactive, the tools go inert, and `Main` puts the toolbars
- * and the floating panels away. Every such mode belongs here rather than in a
- * list of its own.
+ * The modes the map waits in for a click that says where: features go inert
+ * and `Main` puts the chrome away. Every such mode belongs here; the UI turns
+ * on one at a time, and should two be on, the first listed wins.
  */
-export const pickingModeSelector = (state: RootState): boolean =>
-  state.events.pickingStart ||
-  selectingHomeLocationSelector(state) ||
-  toposcopePickingCenterSelector(state) ||
-  panoramaPickingSelector(state) ||
-  viewshedPickingViewpointSelector(state) ||
-  galleryPickingPositionForIdSelector(state) !== null ||
-  galleryShowPositionSelector(state) ||
-  mapAreaSelectingSelector(state) ||
-  mapLibraryPreviewingSelector(state);
+const PICKING_MODES = [
+  ['gallery-position', (s) => s.gallery.pickingPositionForId !== null],
+  ['event-start', (s) => s.events.pickingStart],
+  ['toposcope-center', (s) => s.toposcope.pickingCenter],
+  ['panorama', (s) => s.panorama.picking !== null],
+  ['viewshed-viewpoint', (s) => s.viewshed.pickingViewpoint],
+  ['map-area', (s) => s.mapArea.selecting !== null],
+  ['map-library-preview', (s) => s.mapLibrary.preview !== null],
+  ['home-location', (s) => s.homeLocation.selectingHomeLocation !== false],
+  ['gallery-show-position', (s) => s.gallery.showPosition],
+] as const satisfies readonly (readonly [string, (s: RootState) => boolean])[];
+
+export type PickingMode = (typeof PICKING_MODES)[number][0];
+
+export const pickingModeSelector = (state: RootState): PickingMode | null =>
+  PICKING_MODES.find(([, on]) => on(state))?.[0] ?? null;
+
+/** Whether any picking mode is on. */
+export const inPickingModeSelector = (state: RootState): boolean =>
+  pickingModeSelector(state) !== null;
+
+/** The cursor over the map in each: a crosshair where a place is picked. */
+const PICKING_CURSOR: Record<PickingMode, string> = {
+  'gallery-position': 'crosshair',
+  'event-start': 'crosshair',
+  'toposcope-center': 'crosshair',
+  panorama: 'crosshair',
+  'viewshed-viewpoint': 'crosshair',
+  'map-area': 'crosshair',
+  'home-location': 'crosshair',
+  // These pick nothing: the map is only being looked at.
+  'map-library-preview': 'auto',
+  'gallery-show-position': 'auto',
+};
 
 /**
  * True while the map is given over to a click on a *feature* — joining two
@@ -104,19 +101,19 @@ export const armedModeSelector = (state: RootState): boolean =>
 
 /** Whether the map is in a mode of its own, whichever kind. */
 export const mapModeSelector = (state: RootState): boolean =>
-  pickingModeSelector(state) || armedModeSelector(state);
+  inPickingModeSelector(state) || armedModeSelector(state);
 
 // The active tool as far as map interaction is concerned: the open map-click
 // tool, but masked to null while a picking mode owns the map so it goes inert.
 // Map-interaction code should read this; menus/processors that want to know
 // whether a toolbar is up should use isToolOpen.
 export const activeMapToolSelector = (state: RootState): Tool | null =>
-  pickingModeSelector(state) ? null : activeModeSelector(state);
+  inPickingModeSelector(state) ? null : activeModeSelector(state);
 
 export const showGalleryPickerSelector = createSelector(
   activeMapToolSelector,
   mapLayersSelector,
-  pickingModeSelector,
+  inPickingModeSelector,
   drawingLineSelector,
   (state: RootState) => areFeaturesHidden(state.map.featuresOpacity),
   (tool, layers, picking, drawingLine, hidden) =>
@@ -135,42 +132,17 @@ const pencilCursor = `url(${pencil}) 1.5 20, crosshair`;
 const markerCursor = `url(${marker}) 13.5 26, crosshair`;
 
 export const mouseCursorSelector = createSelector(
-  selectingHomeLocationSelector,
+  pickingModeSelector,
   activeMapToolSelector,
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
-  galleryShowPositionSelector,
   drawingLineSelector,
-  toposcopePickingCenterSelector,
-  panoramaPickingSelector,
-  viewshedPickingViewpointSelector,
-  (state: RootState) =>
-    galleryPickingPositionForIdSelector(state) !== null ||
-    state.events.pickingStart,
-  (
-    selectingHomeLocation,
-    tool,
-    routePlannerPickMode,
-    showGalleryPicker,
-    galleryShowPosition,
-    drawing,
-    toposcopePickingCenter,
-    panoramaPicking,
-    viewshedPickingViewpoint,
-    pickingPosition,
-  ) => {
-    if (galleryShowPosition) {
-      return 'auto';
+  (picking, tool, routePlannerPickMode, showGalleryPicker, drawing) => {
+    if (picking) {
+      return PICKING_CURSOR[picking];
     }
 
-    if (
-      selectingHomeLocation ||
-      showGalleryPicker ||
-      toposcopePickingCenter ||
-      panoramaPicking ||
-      viewshedPickingViewpoint ||
-      pickingPosition
-    ) {
+    if (showGalleryPicker) {
       return 'crosshair';
     }
 
@@ -226,7 +198,7 @@ export const selectingModeSelector = (state: RootState): boolean => {
 
   return (
     !window.fmEmbedded &&
-    !pickingModeSelector(state) &&
+    !inPickingModeSelector(state) &&
     state.trackViewer.drawing === null &&
     // selection works when no map-click tool captures the click, except a
     // route-planner that is actively picking points
@@ -246,7 +218,7 @@ export const drawingLinePolys = (state: RootState): boolean => {
     tool === 'draw-polygons' ||
     // A picking mode owns the map, so an in-progress drawing must go inert there
     // too — mirror the masking `activeMapToolSelector` already applies.
-    (state.trackViewer.drawing !== null && !pickingModeSelector(state))
+    (state.trackViewer.drawing !== null && !inPickingModeSelector(state))
   );
 };
 

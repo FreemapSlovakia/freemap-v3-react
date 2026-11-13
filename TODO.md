@@ -82,22 +82,6 @@ accessibility-only labels, which this app doesn't add — see `CLAUDE.md`).
   byte-identically). Prefer doing it opportunistically while editing a file
   rather than as a sweep; the 26 handlers used more than once stay named.
 
-- [ ] **Make `pickingModeSelector` answer _which_ mode, not just whether.**
-  It returns a boolean, so `mouseCursorSelector` re-enumerates four of the
-  six modes, `keyboardHandler` handles them at three different priorities
-  (with nothing saying that ordering was intended), and `Main` mounts each
-  mode's component and menu behind its own flag. A `PickingMode | null`
-  string union turns the cursor into one `Record` lookup and the Escape
-  chain into one block at one priority. A `toolDefinitions`-style registry
-  that also owns the lazy factories would be too far: the modes aren't
-  uniform (map-area is a drag, gallery-show-position picks nothing,
-  home-location has a Save).
-- [ ] **The crosshair list and `pickingModeSelector` have drifted.**
-  `mouseCursorSelector` gives a crosshair for four picking modes but not for
-  gallery position picking or map-area selection. Collapsing it to
-  `showGalleryPicker || picking` is a behaviour change for those two —
-  decide it deliberately rather than letting the two lists keep diverging.
-  Folds into the item above.
 - [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
   abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
 split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary

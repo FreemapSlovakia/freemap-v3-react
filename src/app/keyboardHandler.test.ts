@@ -3,6 +3,11 @@ import {
   changesetsShowHistory,
 } from '@features/changesets/model/actions.js';
 import { elevationChartClose } from '@features/elevationChart/model/actions.js';
+import { eventsSetPickingStart } from '@features/events/model/actions.js';
+import {
+  galleryCancelShowOnTheMap,
+  gallerySetItemForPositionPicking,
+} from '@features/gallery/model/actions.js';
 import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
 import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.js';
 import { mapRefocus } from '@features/map/model/actions.js';
@@ -229,6 +234,17 @@ describe('handleMapKey — when the keys are not the map’s', () => {
     );
   });
 
+  it('moves the map under toposcope centre picking, whose modal is hidden', () => {
+    const state = makeState({
+      main: { activeModal: 'toposcope' },
+      toposcope: { pickingCenter: true },
+    });
+
+    expect(handleMapKey(press('+'), state)).toEqual(
+      mapRefocus({ zoom: ZOOM + 1 }),
+    );
+  });
+
   // The handler is attached in the capture phase, so without this an open
   // dropdown never receives the arrow keys it navigates itself with.
   it('leaves the keys to an open dropdown', () => {
@@ -354,6 +370,90 @@ describe('handleEvent — Escape', () => {
         makeState({
           main: { activeModal: { type: 'map-preferences' } },
           elevationChart: { target: {} },
+        }),
+      ),
+    ).toBeUndefined();
+  });
+
+  it('leaves showing a photo position before closing the chart', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          gallery: {
+            activeImageId: 1,
+            pickingPositionForId: null,
+            showPosition: true,
+          },
+          elevationChart: { target: {} },
+        }),
+      ),
+    ).toEqual(galleryCancelShowOnTheMap());
+  });
+
+  // Started from a modal, which stays open but hidden while the map is picked.
+  it.each([
+    [
+      'picking a photo position',
+      {
+        gallery: {
+          activeImageId: null,
+          pickingPositionForId: 5,
+          showPosition: false,
+        },
+      },
+      gallerySetItemForPositionPicking(null),
+    ],
+    [
+      'picking an event start',
+      { events: { pickingStart: true } },
+      eventsSetPickingStart(false),
+    ],
+    [
+      'selecting a home location',
+      { homeLocation: { selectingHomeLocation: true } },
+      setSelectingHomeLocation(false),
+    ],
+    [
+      'previewing a library map',
+      { mapLibrary: { preview: { type: 'Z0003', restore: ['X'] } } },
+      mapLibraryPreviewEnd({ keep: false }),
+    ],
+  ])('leaves %s over its hidden modal', (_, overrides, action) => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          ...overrides,
+          main: { activeModal: { type: 'map-preferences' } },
+        }),
+      ),
+    ).toEqual(action);
+  });
+
+  it('leaves picking an event start before closing a photo behind it', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          events: { pickingStart: true },
+          gallery: {
+            activeImageId: 1,
+            pickingPositionForId: null,
+            showPosition: false,
+          },
+        }),
+      ),
+    ).toEqual(eventsSetPickingStart(false));
+  });
+
+  it('leaves the key to a modal in front of a pick started on the map', () => {
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          panorama: { picking: 'viewpoint' },
+          main: { activeModal: { type: 'map-preferences' } },
         }),
       ),
     ).toBeUndefined();

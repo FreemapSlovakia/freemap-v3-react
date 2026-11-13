@@ -1,4 +1,4 @@
-import { pickingModeSelector } from '@app/store/selectors.js';
+import { inPickingModeSelector } from '@app/store/selectors.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -219,7 +219,7 @@ export function DockPanel<T>({
   // Kept past closing, for the panel to slide out with its content.
   const [kept, setKept] = useState(item);
 
-  const picking = useAppSelector(pickingModeSelector);
+  const picking = useAppSelector(inPickingModeSelector);
 
   if (item !== null && item !== kept) {
     setKept(item);

@@ -18,7 +18,7 @@ import { FaLayerGroup, FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { toggleLocate } from '../store/actions.js';
-import { mapLibraryPreviewingSelector } from '../store/selectors.js';
+import { pickingModeSelector } from '../store/selectors.js';
 import classes from './MapControls.module.css';
 import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
@@ -49,17 +49,16 @@ export function MapControls(): ReactElement | null {
 
   const location = useAppSelector((state) => state.location.location);
 
+  const pickingMode = useAppSelector(pickingModeSelector);
+
   // while picking a photo position or drawing a map-area rectangle, the map
   // switcher is restricted to plain layer switching — managing maps is out of
   // the way of the pick
-  const restrictToMapSwitching = useAppSelector(
-    (state) =>
-      state.gallery.pickingPositionForId !== null ||
-      state.mapArea.selecting !== null,
-  );
+  const restrictToMapSwitching =
+    pickingMode === 'gallery-position' || pickingMode === 'map-area';
 
   // A preview puts the earlier layers back when it ends, so it allows no switch.
-  const previewing = useAppSelector(mapLibraryPreviewingSelector);
+  const previewing = pickingMode === 'map-library-preview';
 
   const handleLocateClick = useCallback(() => {
     // Locating on but not following — the user panned away from the position.

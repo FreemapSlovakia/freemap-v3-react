@@ -66,7 +66,12 @@ import {
   type Tool,
 } from './store/actions.js';
 import { modalOf } from './store/activeModal.js';
-import { isToolOpen, showGalleryViewerSelector } from './store/selectors.js';
+import {
+  isToolOpen,
+  type PickingMode,
+  pickingModeSelector,
+  showGalleryViewerSelector,
+} from './store/selectors.js';
 import type { MyStore, RootState } from './store/store.js';
 
 let keyTimer: number | null = null;
@@ -74,14 +79,48 @@ let keyTimer: number | null = null;
 /** The key that started a chord, while the next one is awaited. */
 let initCode: string | null = null;
 
-const isSuspendedModal = (state: RootState) =>
-  state.homeLocation.selectingHomeLocation !== false ||
-  Boolean(state.gallery.pickingPositionForId) ||
-  state.gallery.showPosition ||
-  Boolean(state.mapArea.selecting) ||
-  Boolean(state.mapLibrary.preview) ||
-  state.toposcope.pickingCenter ||
-  state.events.pickingStart;
+/**
+ * Per picking mode: what Escape dispatches to leave it, and whether it was
+ * started from a modal, which stays open but hidden while the map is picked.
+ */
+const PICKING: Record<
+  PickingMode,
+  { leave: () => UnknownAction; fromModal: boolean }
+> = {
+  'gallery-position': {
+    leave: () => gallerySetItemForPositionPicking(null),
+    fromModal: true,
+  },
+  'event-start': { leave: () => eventsSetPickingStart(false), fromModal: true },
+  'toposcope-center': {
+    leave: () => toposcopeSetPickingCenter(false),
+    fromModal: true,
+  },
+  panorama: { leave: () => panoramaSetPicking(null), fromModal: false },
+  'viewshed-viewpoint': {
+    leave: () => viewshedSetPickingViewpoint(false),
+    fromModal: false,
+  },
+  'map-area': { leave: () => mapAreaSelectCancel(), fromModal: true },
+  'map-library-preview': {
+    leave: () => mapLibraryPreviewEnd({ keep: false }),
+    fromModal: true,
+  },
+  'home-location': {
+    leave: () => setSelectingHomeLocation(false),
+    fromModal: true,
+  },
+  'gallery-show-position': {
+    leave: () => galleryCancelShowOnTheMap(),
+    fromModal: true,
+  },
+};
+
+const isSuspendedModal = (state: RootState) => {
+  const mode = pickingModeSelector(state);
+
+  return mode !== null && PICKING[mode].fromModal;
+};
 
 /** A selected vertex goes only while its line or ring keeps enough of them. */
 function vertexDeletable(state: RootState): boolean {
@@ -112,16 +151,14 @@ const isShowingModal = (state: RootState) =>
  * out, that it dispatches — and so the one control to show it on.
  */
 export function escapeAction(state: RootState): UnknownAction | undefined {
-  const suspendedModal = isSuspendedModal(state);
-
   const showingModal = isShowingModal(state);
 
-  if (state.gallery.pickingPositionForId) {
-    return gallerySetItemForPositionPicking(null);
-  }
+  // Before anything else: the map is in a mode of its own, and leaving it is
+  // what Escape is for. Only a mode started from the map yields to a modal.
+  const picking = pickingModeSelector(state);
 
-  if (state.events.pickingStart) {
-    return eventsSetPickingStart(false);
+  if (picking && (PICKING[picking].fromModal || !showingModal)) {
+    return PICKING[picking].leave();
   }
 
   if (showGalleryViewerSelector(state)) {
@@ -129,24 +166,9 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
   }
 
   // A modal in the foreground closes itself on its own listener, which fires
-  // only while this handler (registered first) leaves the key unclaimed. The
-  // picking overlays hide theirs and leave the map live, so they go on.
-  if (showingModal && !suspendedModal) {
+  // only while this handler (registered first) leaves the key unclaimed.
+  if (showingModal) {
     return undefined;
-  }
-
-  // Before the panels and the selection: the map is in a mode of its own,
-  // and leaving it is what Escape is for here.
-  if (state.toposcope.pickingCenter) {
-    return toposcopeSetPickingCenter(false);
-  }
-
-  if (state.panorama.picking) {
-    return panoramaSetPicking(null);
-  }
-
-  if (state.viewshed.pickingViewpoint) {
-    return viewshedSetPickingViewpoint(false);
   }
 
   // Before the chart and the panels below it: a mode waiting on a click has
@@ -157,18 +179,6 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
 
   if (state.trackViewer.splitting) {
     return dataViewerSetSplitting(false);
-  }
-
-  if (state.mapArea.selecting) {
-    return mapAreaSelectCancel();
-  }
-
-  if (state.mapLibrary.preview) {
-    return mapLibraryPreviewEnd({ keep: false });
-  }
-
-  if (state.homeLocation.selectingHomeLocation !== false) {
-    return setSelectingHomeLocation(false);
   }
 
   if (state.elevationChart.target) {
@@ -186,30 +196,26 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
     return dataViewerCutHole(null);
   }
 
-  if (state.gallery.showPosition) {
-    return galleryCancelShowOnTheMap();
-  }
-
   const { inspected } = state.changesetInspector;
 
   // Listed in its element's details, a history closes before they do; not one
   // they no longer show, their object reloaded out of the layer.
-  if (!showingModal && !suspendedModal && !inspected && historyHosted(state)) {
+  if (!inspected && historyHosted(state)) {
     return changesetsShowHistory(null);
   }
 
-  if (!showingModal && !suspendedModal && state.main.selection) {
+  if (state.main.selection) {
     return selectFeature(null);
   }
 
   // Only the tool that owns map clicks, the one holding the map in a mode; the
   // toolbar-only tools close by their own button.
-  if (!showingModal && !suspendedModal && state.main.mapTool) {
+  if (state.main.mapTool) {
     return closeTool(state.main.mapTool);
   }
 
   // An inspection, after its selected element and the map-click tool beside it.
-  if (!showingModal && !suspendedModal && inspected) {
+  if (inspected) {
     return changesetsInspect(null);
   }
 
@@ -383,7 +389,7 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     !keyTimer &&
     (!showingModal || suspendedModal) &&
     // A preview puts the earlier layers back, so it takes no map switch.
-    !state.mapLibrary.preview &&
+    pickingModeSelector(state) !== 'map-library-preview' &&
     (!window.fmEmbedded || !state.main.embedFeatures.includes('noMapSwitch'))
   ) {
     const pressed = (shortcut: Shortcut | null | undefined) =>
@@ -596,15 +602,7 @@ export function handleMapKey(event: KeyboardEvent, state: RootState) {
   // The picking/selecting overlays leave the map live underneath, so moving it
   // stays available there; a real modal takes the keys — which is also what
   // leaves the gallery viewer its own arrow-key handling.
-  const suspendedModal =
-    state.homeLocation.selectingHomeLocation !== false ||
-    state.gallery.pickingPositionForId ||
-    state.gallery.showPosition ||
-    state.mapArea.selecting ||
-    state.mapLibrary.preview ||
-    state.events.pickingStart;
-
-  if (isShowingModal(state) && !suspendedModal) {
+  if (isShowingModal(state) && !isSuspendedModal(state)) {
     return undefined;
   }
 

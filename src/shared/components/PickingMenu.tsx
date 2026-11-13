@@ -27,7 +27,7 @@ type Props = {
 
 /**
  * The only toolbar up while the map waits for a click that says where — the
- * rest of the chrome is hidden; see `pickingModeSelector`.
+ * rest of the chrome is hidden; see `inPickingModeSelector`.
  */
 export function PickingMenu({
   prompt,

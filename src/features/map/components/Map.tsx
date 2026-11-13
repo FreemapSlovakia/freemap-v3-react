@@ -1,5 +1,5 @@
 import { useMouseCursor } from '@app/hooks/useMouseCursor.js';
-import { pickingModeSelector } from '@app/store/selectors.js';
+import { inPickingModeSelector } from '@app/store/selectors.js';
 import { brightnessFilter } from '@features/map/brightness.js';
 import { areFeaturesHidden } from '@features/map/featuresOpacity.js';
 import {
@@ -50,7 +50,7 @@ export function TheMap({ children }: Props): ReactElement {
   // a photo location, or drawing an export/cache rectangle), all other map
   // features stay visible but become non-interactive (see leaflet.css) so clicks
   // reach the map and don't hijack the mode.
-  const featuresNonInteractive = useAppSelector(pickingModeSelector);
+  const featuresNonInteractive = useAppSelector(inPickingModeSelector);
 
   useEffect(() => {
     map

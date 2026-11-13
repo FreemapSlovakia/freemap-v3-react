@@ -1,4 +1,4 @@
-import { pickingModeSelector } from '@app/store/selectors.js';
+import { inPickingModeSelector } from '@app/store/selectors.js';
 import { Text } from '@features/l10n/Text.js';
 import { useColorizeScale } from '@shared/colorizers/colorizeScale.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
@@ -61,7 +61,7 @@ function useProfileHover() {
 
   // While a picking mode owns the map (choosing a home/photo location, dragging
   // an export area) the features go inert, this readout with them.
-  const picking = useAppSelector(pickingModeSelector);
+  const picking = useAppSelector(inPickingModeSelector);
 
   const clear = () => {
     if (activeDistance !== undefined) {

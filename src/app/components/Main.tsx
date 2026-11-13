@@ -57,6 +57,7 @@ import fmLogoSk from '@/images/freemap-logo-sk.svg';
 import 'leaflet/dist/leaflet.css';
 import {
   Fragment,
+  type FunctionComponent,
   type MouseEvent,
   type ReactElement,
   type ReactNode,
@@ -79,6 +80,7 @@ import {
   isToolOpen,
   mapModeSelector,
   openToolsSelector,
+  type PickingMode,
   pickingModeSelector,
   showGalleryPickerSelector,
   trackGeojsonIsSuitableForElevationChart,
@@ -665,6 +667,22 @@ function toolMenu(tool: Tool): ReactNode {
   }
 }
 
+/** The menu each picking mode brings, which says what it waits for. */
+const PICKING_MENU: Record<
+  PickingMode,
+  () => Promise<{ default: FunctionComponent }>
+> = {
+  'gallery-position': galleryPositionPickingMenuFactory,
+  'event-start': eventStartPickingMenuFactory,
+  'toposcope-center': toposcopeCenterPickingMenuFactory,
+  panorama: panoramaPickingMenuFactory,
+  'viewshed-viewpoint': viewshedViewpointPickingMenuFactory,
+  'map-area': mapAreaSelectionMenuFactory,
+  'map-library-preview': mapLibraryPreviewMenuFactory,
+  'home-location': homeLocationPickingMenuFactory,
+  'gallery-show-position': galleryShowPositionMenuFactory,
+};
+
 export function Main(): ReactElement {
   const m = useMessages();
 
@@ -764,22 +782,12 @@ export function Main(): ReactElement {
 
   const showPanorama = useAppSelector((state) => isToolOpen(state, 'panorama'));
 
-  const pickingToposcopeCenter = useAppSelector(
-    (state) => state.toposcope.pickingCenter,
-  );
-
-  const pickingPanorama = useAppSelector(
-    (state) => state.panorama.picking !== null,
-  );
-
-  const pickingViewshedViewpoint = useAppSelector(
-    (state) => state.viewshed.pickingViewpoint,
-  );
-
   const showGalleryPicker = useAppSelector(showGalleryPickerSelector);
 
   // The toolbars and the floating panels go while a place is being picked.
-  const picking = useAppSelector(pickingModeSelector);
+  const pickingMode = useAppSelector(pickingModeSelector);
+
+  const picking = pickingMode !== null;
 
   // A mode waiting on a click clears the screen for it — but where a picking
   // mode brings its own menu, an armed one keeps the selection toolbar, which
@@ -804,14 +812,6 @@ export function Main(): ReactElement {
     Boolean(state.tracking.tracks.length),
   );
 
-  const previewingLibraryMap = useAppSelector(
-    (state) => state.mapLibrary.preview !== null,
-  );
-
-  const selectingMapArea = useAppSelector(
-    (state) => state.mapArea.selecting !== null,
-  );
-
   const showResults = useAppSelector((state) => state.map.featuresOpacity > 0);
 
   const showPictures = useAppSelector((state) =>
@@ -832,10 +832,6 @@ export function Main(): ReactElement {
       eventsLayerOnSelector(state) &&
       (!state.events.selected?.mapId ||
         state.events.selected.mapId !== state.myMaps.activeMap?.id),
-  );
-
-  const pickingEventStart = useAppSelector(
-    (state) => state.events.pickingStart,
   );
 
   // Mounted with the layer, not the selection, so the panel can slide out.
@@ -967,16 +963,6 @@ export function Main(): ReactElement {
       document.body.click();
     }
   };
-
-  const selectingHomeLocation = useAppSelector(
-    (state) => state.homeLocation.selectingHomeLocation,
-  );
-
-  const showPosition = useAppSelector((state) => state.gallery.showPosition);
-
-  const pickingPosition = useAppSelector(
-    (state) => state.gallery.pickingPositionForId !== null,
-  );
 
   const askingCookieConsent = useAppSelector(askingCookieConsentSelector);
 
@@ -1224,40 +1210,11 @@ export function Main(): ReactElement {
                   <Fragment key={id}>{node}</Fragment>
                 ))}
 
-              {pickingPosition && (
-                <AsyncComponent factory={galleryPositionPickingMenuFactory} />
-              )}
-
-              {showPosition && (
-                <AsyncComponent factory={galleryShowPositionMenuFactory} />
-              )}
-
-              {selectingHomeLocation !== false && (
-                <AsyncComponent factory={homeLocationPickingMenuFactory} />
-              )}
-
-              {pickingToposcopeCenter && (
-                <AsyncComponent factory={toposcopeCenterPickingMenuFactory} />
-              )}
-
-              {pickingPanorama && (
-                <AsyncComponent factory={panoramaPickingMenuFactory} />
-              )}
-
-              {pickingViewshedViewpoint && (
-                <AsyncComponent factory={viewshedViewpointPickingMenuFactory} />
-              )}
-
-              {pickingEventStart && (
-                <AsyncComponent factory={eventStartPickingMenuFactory} />
-              )}
-
-              {selectingMapArea && (
-                <AsyncComponent factory={mapAreaSelectionMenuFactory} />
-              )}
-
-              {previewingLibraryMap && (
-                <AsyncComponent factory={mapLibraryPreviewMenuFactory} />
+              {pickingMode && (
+                <AsyncComponent
+                  key={pickingMode}
+                  factory={PICKING_MENU[pickingMode]}
+                />
               )}
 
               {/* Hidden, not unmounted, as the floating panels below. */}
@@ -1348,7 +1305,7 @@ export function Main(): ReactElement {
             <Tools />
 
             {/* Faded to nothing, not rendered; in a picking mode visible but
-                non-interactive (pickingModeSelector, Map.tsx, leaflet.css). */}
+                non-interactive (inPickingModeSelector, Map.tsx, leaflet.css). */}
             {showResults && <Results />}
 
             <LocationResult />
@@ -1359,27 +1316,27 @@ export function Main(): ReactElement {
 
             {showGalleryPicker && <GalleryPicker />}
 
-            {selectingHomeLocation !== false && <HomeLocationPickingResult />}
+            {pickingMode === 'home-location' && <HomeLocationPickingResult />}
 
-            {pickingToposcopeCenter && (
+            {pickingMode === 'toposcope-center' && (
               <AsyncComponent factory={toposcopeCenterPickingFactory} />
             )}
 
-            {pickingPanorama && (
+            {pickingMode === 'panorama' && (
               <AsyncComponent factory={panoramaPickingFactory} />
             )}
 
-            {pickingViewshedViewpoint && (
+            {pickingMode === 'viewshed-viewpoint' && (
               <AsyncComponent factory={viewshedViewpointPickingFactory} />
             )}
 
-            {pickingEventStart && (
+            {pickingMode === 'event-start' && (
               <AsyncComponent factory={eventStartPickingFactory} />
             )}
 
-            {selectingMapArea && <MapAreaSelectionResult />}
+            {pickingMode === 'map-area' && <MapAreaSelectionResult />}
 
-            {pickingPosition && <GalleryPositionPicking />}
+            {pickingMode === 'gallery-position' && <GalleryPositionPicking />}
 
             <GalleryResult />
           </TheMap>
