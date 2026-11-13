@@ -26,6 +26,7 @@ import { Dropdown } from 'react-bootstrap';
 import {
   FaChevronRight,
   FaCode,
+  FaCube,
   FaDatabase,
   FaEraser,
   FaExternalLinkAlt,
@@ -190,6 +191,17 @@ export function MainMenu(): ReactElement {
         </MenuLabel>
         <MenuGutter>
           <Chord modal="map-to-document-export" />
+        </MenuGutter>
+      </OnlineOnlyItem>
+
+      <OnlineOnlyItem {...modalMenuItemProps('terrain-model')}>
+        <FaCube />
+        <MenuLabel>
+          <Text k="mainMenu.terrainModel" />
+        </MenuLabel>
+        <MenuGutter>
+          <ExperimentalFunction />
+          <Chord modal="terrain-model" />
         </MenuGutter>
       </OnlineOnlyItem>
 

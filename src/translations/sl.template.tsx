@@ -271,6 +271,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     appStore: 'Freemap na App Store',
     automaticLanguage: 'Samodejno',
     mapToDocumentExport: 'Izvoz zemljevida v sliko/dokument',
+    terrainModel: '3D model terena',
     osmWiki: 'Dokumentacija OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Stanje storitev',
@@ -376,6 +377,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-features-export': 'izvoz, gpx, geojson, prenos podatkov',
         'modal-map-to-document-export':
           'izvoz, tiskanje, pdf, png, jpeg, webp, svg, slika, plakat',
+        'modal-terrain-model':
+          '3d tisk, stl, tiskalnik, relief, maketa, višina, gore',
         'modal-offline-map-export':
           'izvoz, brez povezave, prenos ploščic, mbtiles, sd kartica',
         'modal-embed': 'iframe, vgradnja, spletna stran, html koda',

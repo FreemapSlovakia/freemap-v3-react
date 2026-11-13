@@ -1,4 +1,5 @@
 import { decompress, init } from '@bokuweb/zstd-wasm';
+import { decodeSteps } from '@shared/elevationTile.js';
 import * as Lerc from 'lerc';
 import lercWasm from 'lerc/lerc-wasm.wasm';
 
@@ -21,36 +22,6 @@ function isLerc(data: Uint8Array) {
   return true;
 }
 
-/**
- * The terrain-tiles format: `f32` step in metres, `u32` side, then side² `i32`
- * heights in steps, each row delta-coded from 0; `i32::MIN` is no data.
- */
-function decodeSteps(data: Uint8Array) {
-  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-
-  const step = view.getFloat32(0, true);
-
-  const side = view.getUint32(4, true);
-
-  const out = new Float32Array(side * side);
-
-  let off = 8;
-
-  for (let y = 0; y < side; y++) {
-    let q = 0;
-
-    for (let x = 0; x < side; x++) {
-      q = (q + view.getInt32(off, true)) | 0;
-
-      off += 4;
-
-      out[y * side + x] = q === -0x80000000 ? NaN : q * step;
-    }
-  }
-
-  return out;
-}
-
 self.onmessage = async (evt) => {
   const id = evt.data.id;
 
@@ -60,7 +31,7 @@ self.onmessage = async (evt) => {
     const data = decompress(evt.data.payload);
 
     if (!isLerc(data)) {
-      const payload = decodeSteps(data);
+      const payload = decodeSteps(data).heights;
 
       self.postMessage({ id, payload }, [payload.buffer]);
 

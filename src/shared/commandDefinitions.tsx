@@ -32,6 +32,7 @@ import {
   FaBook,
   FaChartArea,
   FaCode,
+  FaCube,
   FaDatabase,
   FaEraser,
   FaFileExport,
@@ -144,6 +145,12 @@ const modalCommands: ModalCommand[] = [
     id: 'map-to-document-export',
     icon: <FaPrint />,
     label: (m) => m.mainMenu.mapToDocumentExport,
+    requiresOnline: true,
+  },
+  {
+    id: 'terrain-model',
+    icon: <FaCube />,
+    label: (m) => m.mainMenu.terrainModel,
     requiresOnline: true,
   },
   {

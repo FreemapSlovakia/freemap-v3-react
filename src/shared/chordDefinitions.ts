@@ -34,6 +34,7 @@ export const chordDefinitions: ChordDefinition[] = [
   { codes: ['KeyE', 'KeyE'], modal: 'embed' },
   { codes: ['KeyE', 'KeyD'], modal: 'drawing-properties' },
   { codes: ['KeyE', 'KeyM'], modal: 'offline-map-export' },
+  { codes: ['KeyE', 'Digit3'], modal: 'terrain-model' },
 
   { codes: ['KeyM', 'KeyP'], modal: 'map-preferences' },
   { codes: ['KeyM', 'KeyO'], modal: 'offline-maps' },

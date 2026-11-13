@@ -78,6 +78,22 @@ While the export runs the modal stays open with its controls disabled and a spin
 
 When the export finishes the modal switches to a result view in place of the options, naming the file and its size and listing the credits it must be shown with: Freemap, then whatever the exported features earn (the routers, when a planned route is included), then OpenStreetMap and the datasets the render reports having actually drawn from, the global fallback models last (codes the licence catalog cannot name are listed as they stand). A route routed by OSRM adds FOSSGIS' "report a map error" link, which is shown but not copied — it is a link or it is nothing. The attribution burnt into the image is composed by the renderer from the same list, in the same order, so the two agree. The file is not downloaded by itself: a **Save** split button saves it, with **Open in a new tab** (not for SVG) and **Copy attribution** behind its caret. Saving closes the modal and leaves a toast repeating the credits, so they survive the window they were read in. Closing the result without saving it — Close, <kbd>Esc</kbd> or the backdrop — asks for confirmation first, since the render would be lost; having opened it in a tab counts as having it and skips the question.
 
+### 3D terrain model
+
+- Access: Main menu > 3D terrain model (marked experimental)
+- Keyboard shortcut: <kbd>e</kbd> <kbd>3</kbd>
+- URL path: `/#show=terrain-model`
+
+Generates a 3D-printable model of the terrain of an area as a binary STL file — a closed solid with flat walls and a flat bottom, in millimetres. Options:
+
+- Area: visible area, or a rectangle drawn on the map
+- **Model width** (mm, east–west); the depth follows the area. It starts at the widest model that fits the printer's build volume. Below it the modal shows the scale (1 : N), the model's width × depth, the grid step and point count, and the spacing the elevation data is read at. The step is one pixel of the finest elevation data the account may read (about 3 m without premium; premium goes down to the source's own resolution, sub-metre where it is lidar), but no finer than 0.05 mm and within a point limit (1 000 000 without premium, 4 000 000 with); a note says which of the data or the limit held it coarser. The data is read at least twice as dense as the grid and averaged into each cell
+- **Vertical exaggeration** (1–5×, default 1.5×) and **Base thickness** (mm under the lowest point, default 3)
+- **Printer**: build volume (width, depth, height in mm, default 256 × 256 × 256) and layer height (default 0.2 mm). Remembered, like the exaggeration and base
+- A warning when the model is larger than the build volume. Download is refused, with a message, for an area that would take more than 1200 elevation tiles (zoom in or select a smaller one) or that crosses the 180th meridian. A new area or bed size resets a typed width to the widest that fits
+
+**Download STL** reads the heights from the same elevation tiles as the parametric shading layer and builds the model in the browser on every grid point, then saves `terrain.stl`; a **Mesh simplification: maximum deviation** slider (Off, 0.005, 0.01, 0.02, 0.04, 0.08 mm; remembered, Off by default) merges triangles while the surface stays within that height of the data, for a smaller file at the cost of faceted slopes (offered up to 2 000 000 grid points; a larger model is built in full, and says so); progress is shown and Cancel stops it. The modal then states the model's height (and in layers), its triangle count and file size, warns when it is taller than the build volume, when the premium elevation tiles were refused (the model is then built from the finest free data, about 3 m, rather than failing), or when part of the area has no elevation data (flattened to the lowest point), and credits the elevation datasets used.
+
 ### Map data export
 
 - Access: Main menu > Map data export

@@ -266,6 +266,7 @@ const messages: Messages = {
     appStore: 'Freemap on App Store',
     automaticLanguage: 'Automatic',
     mapToDocumentExport: 'Map export to image/document',
+    terrainModel: '3D terrain model',
     osmWiki: 'OpenStreetMap documentation',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Services status',
@@ -373,6 +374,8 @@ const messages: Messages = {
           'export, gpx, geojson, download data, save features',
         'modal-map-to-document-export':
           'export, print, pdf, png, jpeg, webp, svg, image, poster',
+        'modal-terrain-model':
+          '3d print, stl, printer, relief, terrain, elevation, mountains',
         'modal-offline-map-export':
           'export, offline, download tiles, mbtiles, sd card',
         'modal-embed': 'iframe, website, html code',

@@ -1,0 +1,37 @@
+export type TerrainModelMessages = {
+  area: string;
+  width: string;
+  size: (p: { scale: string; width: string; depth: string }) => string;
+  grid: (p: { step: string; cols: string; rows: string }) => string;
+  elevation: (p: { m: string }) => string;
+  limitedBySamples: string;
+  limitedByZoom: string;
+  limitedByData: string;
+  progressTiles: (p: { done: string; total: string }) => string;
+  progressMesh: string;
+  exaggeration: string;
+  base: string;
+  simplification: string;
+  simplificationOff: string;
+  simplificationHint: string;
+  simplificationTooLarge: string;
+  printer: string;
+  bed: string;
+  layerHeight: string;
+  tooLarge: string;
+  areaTooLarge: string;
+  acrossAntimeridian: string;
+  download: string;
+  result: (p: {
+    height: string;
+    layers: string;
+    triangles: string;
+    size: string;
+  }) => string;
+  tooTall: string;
+  premiumRefused: (p: { m: string }) => string;
+  partialData: (p: { percent: string }) => string;
+  noData: string;
+  error: (p: { err: string }) => string;
+  credits: string;
+};

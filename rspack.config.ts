@@ -697,10 +697,13 @@ const config: Configuration = {
         {
           www: 'https://www.freemap.sk',
         }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:9000',
+      // Overridable by a dev build only, to sign in against production, whose
+      // tokens production tile hosts accept.
       API_URL:
         {
           www: 'https://backend.freemap.sk',
-        }[process.env['DEPLOYMENT']!] ?? 'https://local.freemap.sk:3000',
+        }[process.env['DEPLOYMENT']!] ??
+        (process.env['API_URL'] || 'https://local.freemap.sk:3000'),
       MATOMO_SITE_ID: { www: '1' }[process.env['DEPLOYMENT']!] ?? null,
       SENTRY_DSN:
         {

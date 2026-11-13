@@ -280,6 +280,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     appStore: 'Freemap su App Store',
     automaticLanguage: 'Automatico',
     mapToDocumentExport: 'Esportazione della mappa in immagine/documento',
+    terrainModel: 'Modello 3D del terreno',
     osmWiki: 'Documentazione su OpenStreetMap',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Main_Page',
     status: 'Stato dei servizi',
@@ -386,6 +387,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-features-export': 'esporta, gpx, geojson, scarica dati',
         'modal-map-to-document-export':
           'esporta, stampa, pdf, png, jpeg, webp, svg, immagine, poster',
+        'modal-terrain-model':
+          'stampa 3d, stl, stampante, rilievo, plastico, quota, montagne',
         'modal-offline-map-export':
           'esporta, offline, scarica tasselli, mbtiles, scheda sd',
         'modal-embed': 'iframe, incorpora, sito web, codice html',

@@ -37,6 +37,7 @@ const URL_MODAL_IDS = [
   'route-planner-style',
   'search-result-style',
   'support-us',
+  'terrain-model',
   'toposcope-settings',
   'track-viewer-match',
   'track-viewer-osm-upload',

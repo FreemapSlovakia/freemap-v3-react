@@ -83,6 +83,11 @@ import {
   SearchResultStyleSchema,
 } from '@features/search/model/actions.js';
 import { searchSettingsInitialState } from '@features/search/model/settingsReducer.js';
+import {
+  MAX_DEVIATION_STOPS,
+  LIMITS as TERRAIN_MODEL_LIMITS,
+  terrainModelSettingsInitialState,
+} from '@features/terrainModel/model/settingsReducer.js';
 import { trackingSettingsInitialState } from '@features/tracking/model/settingsReducer.js';
 import {
   nearestRadiusKm,
@@ -107,6 +112,7 @@ import {
   resolveLayersSettingsAliases,
   SHADING_SOURCE,
 } from '@shared/mapDefinitions.js';
+import { nearestStep } from '@shared/mathUtils.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
 import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
@@ -388,6 +394,38 @@ const PersistedViewshedSettingsSchema = z
     // The service's own bounds, which it answers 400 to rather than clamping.
     gamma: z.number().min(0.1).max(10),
     alphaFloor: z.number().min(0).max(1),
+  })
+  .partial();
+
+const inRange = ({ min, max }: { min: number; max: number }) =>
+  z.number().min(min).max(max);
+
+// Each field falls back alone, so one bad value doesn't reset the rest.
+const PersistedTerrainModelSettingsSchema = z
+  .object({
+    bed: z
+      .tuple([
+        inRange(TERRAIN_MODEL_LIMITS.bed),
+        inRange(TERRAIN_MODEL_LIMITS.bed),
+        inRange(TERRAIN_MODEL_LIMITS.bed),
+      ])
+      .catch(terrainModelSettingsInitialState.bed),
+    layerHeight: inRange(TERRAIN_MODEL_LIMITS.layerHeight).catch(
+      terrainModelSettingsInitialState.layerHeight,
+    ),
+    exaggeration: inRange(TERRAIN_MODEL_LIMITS.exaggeration).catch(
+      terrainModelSettingsInitialState.exaggeration,
+    ),
+    base: inRange(TERRAIN_MODEL_LIMITS.base).catch(
+      terrainModelSettingsInitialState.base,
+    ),
+    maxDeviation: z
+      .number()
+      .min(0)
+      .transform(
+        (v) => MAX_DEVIATION_STOPS[nearestStep(MAX_DEVIATION_STOPS, v)]!,
+      )
+      .catch(terrainModelSettingsInitialState.maxDeviation),
   })
   .partial();
 
@@ -852,6 +890,12 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedViewshedSettingsSchema,
     initial: viewshedSettingsInitialState,
     persist: (v) => v,
+  }),
+  defineEntry({
+    key: 'terrainModelSettings',
+    schema: PersistedTerrainModelSettingsSchema,
+    initial: terrainModelSettingsInitialState,
+    persist: (t) => t,
   }),
 ];
 

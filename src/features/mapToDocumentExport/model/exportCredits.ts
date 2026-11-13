@@ -1,6 +1,6 @@
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import { expandCode, splitAttributionHeader } from '@shared/tileAttribution.js';
-import { loadTileLicenses } from '@shared/tileLicenses.js';
+import { type LicenseDict, loadTileLicenses } from '@shared/tileLicenses.js';
 
 export type ExportCredits = {
   /** The datasets the render drew from. The caller puts its own around these. */
@@ -40,19 +40,26 @@ function rank(code: string): number {
  */
 export async function resolveExportCredits(
   header: string | null,
+  // terrain-tiles keeps a dictionary of its own.
+  loadLicenses: () => Promise<LicenseDict | null> = loadTileLicenses,
 ): Promise<ExportCredits> {
   const reported = header !== null;
 
-  const codes = splitAttributionHeader(header ?? '')
-    .map((code) => expandCode(code) ?? code)
-    // Credited by the caller instead, in the app's own words.
-    .filter((code) => code !== 'osm');
+  // Once each: a header joined from several tiles repeats them.
+  const codes = [
+    ...new Set(
+      splitAttributionHeader(header ?? '')
+        .map((code) => expandCode(code) ?? code)
+        // Credited by the caller instead, in the app's own words.
+        .filter((code) => code !== 'osm'),
+    ),
+  ];
 
   if (codes.length === 0) {
     return { datasets: [], unresolved: [], reported };
   }
 
-  const licenses = await withinTimeout(loadTileLicenses());
+  const licenses = await withinTimeout(loadLicenses());
 
   if (!licenses) {
     return { datasets: [], unresolved: codes, reported };

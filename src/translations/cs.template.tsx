@@ -272,6 +272,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     appStore: 'Freemap na App Store',
     automaticLanguage: 'Automaticky',
     mapToDocumentExport: 'Export mapy do obrázku/dokumentu',
+    terrainModel: '3D model terénu',
     osmWiki: 'Dokumentační projekt OpenStreetMap ',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Cs:Main_Page',
     status: 'Stav služeb',
@@ -383,6 +384,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'export, gpx, geojson, stáhnout data, uložit objekty',
         'modal-map-to-document-export':
           'export, tisk, pdf, png, jpeg, webp, svg, obrázek, plakát',
+        'modal-terrain-model':
+          '3d tisk, stl, tiskárna, reliéf, terén, výška, hory, plastický',
         'modal-offline-map-export':
           'export, offline, stáhnout dlaždice, mbtiles, sd karta',
         'modal-embed': 'iframe, embed, web, html kód, vložení',

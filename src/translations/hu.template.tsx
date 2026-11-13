@@ -274,6 +274,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     appStore: 'Freemap az App Store-ban',
     automaticLanguage: 'Automatikus',
     mapToDocumentExport: 'Térkép exportja képként/dokumentumként',
+    terrainModel: '3D terepmodell',
     wikiLink: 'https://wiki.openstreetmap.org/wiki/Hu:Main_Page',
     status: 'Szolgáltatások állapota',
     language: 'Nyelv',
@@ -386,6 +387,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-features-export': 'export, gpx, geojson, adatok letöltése',
         'modal-map-to-document-export':
           'export, nyomtatás, pdf, png, jpeg, webp, svg, kép, poszter',
+        'modal-terrain-model':
+          '3d nyomtatás, stl, nyomtató, dombormű, domborzat, terep, magasság, hegyek',
         'modal-offline-map-export':
           'export, offline, csempék letöltése, mbtiles, sd kártya',
         'modal-embed': 'iframe, beágyazás, weboldal, html kód',

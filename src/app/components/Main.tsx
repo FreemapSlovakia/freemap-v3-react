@@ -451,6 +451,12 @@ const exportMapModalFactory = () =>
     '@features/mapToDocumentExport/components/MapToDocumentExportModal.js'
   );
 
+const terrainModelModalFactory = () =>
+  import(
+    /* webpackChunkName: "terrain-model-modal" */
+    '@features/terrainModel/components/TerrainModelModal.js'
+  );
+
 const documentModalFactory = () =>
   import(
     /* webpackChunkName: "document-modal" */
@@ -1402,6 +1408,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'map-to-document-export'}
         factory={exportMapModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'terrain-model'}
+        factory={terrainModelModalFactory}
       />
 
       <AsyncModal

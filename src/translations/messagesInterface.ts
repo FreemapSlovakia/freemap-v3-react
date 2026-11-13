@@ -232,6 +232,7 @@ export type Messages = {
     appStore: string;
     automaticLanguage: string;
     mapToDocumentExport: string;
+    terrainModel: string;
     osmWiki: string;
     wikiLink: string;
     status: string;
