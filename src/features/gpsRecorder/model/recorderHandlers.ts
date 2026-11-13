@@ -18,7 +18,6 @@ import {
   whileCatchingUp,
 } from '../connection.js';
 import type { SyncOutcome } from '../connectionCore.js';
-import { startRecorderSpan, watchRecorderFrame } from '../perfProbe.js';
 import {
   isHopelessFailure,
   isSilentFailure,
@@ -173,16 +172,7 @@ async function applyStatus(
       getTrackSince(fromZero ? 0 : held.cursor, signal),
     );
 
-    // The catch-up is the biggest single batch this feature ever merges — a page
-    // that has been away for an hour comes back to every fix at once — so it is
-    // measured apart from the stream's own.
-    const merged = startRecorderSpan('catchup-dispatch');
-
     dispatch(gpsRecorderAddPoints(page.points));
-
-    merged(page.points.length);
-
-    watchRecorderFrame('catchup-frame', page.points.length);
   }
 }
 
@@ -211,11 +201,6 @@ async function runSync(
   // one this page's points were fetched under.
   const held = heldTrack(getState);
 
-  // How long the live view takes to come back, which is the other half of what
-  // is being chased here. Mostly a wait rather than work, so the bar is high:
-  // only a sync that took long enough for the user to notice is worth a line.
-  const synced = startRecorderSpan('sync', 4000);
-
   // Whether the recorder answered, which decides whether a failure below counts
   // against it: everything after the status — the catch-up transfer, the page
   // this app could not read — failed with the recorder demonstrably there.
@@ -228,8 +213,6 @@ async function runSync(
 
     await applyStatus(dispatch, status, held, signal);
   } catch (err) {
-    synced();
-
     // Abandoned by a teardown or a restart — the page went away, or a newer
     // caller took over. Nothing is reported and nothing is retried: whatever
     // abandoned this run owns what happens next.
@@ -261,8 +244,6 @@ async function runSync(
 
     return;
   }
-
-  synced(getState().gpsRecorder.points.length);
 
   // Cleared whatever became of this run: the recorder answered, so a failure
   // still on screen is describing something that is no longer true. A run can

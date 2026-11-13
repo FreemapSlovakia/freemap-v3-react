@@ -1,5 +1,4 @@
 import type { Middleware, UnknownAction } from '@reduxjs/toolkit';
-import { perfSpans } from '@shared/perfProbe.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { RootState } from '../store.js';
 
@@ -121,9 +120,6 @@ function report(
     // passing through was enough to lose the entire trace as `[Filtered]`. Per
     // element, at worst the offending one goes and the rest still read.
     recentActions: recentActions.map((a) => a.type),
-    // Which pass of whichever feature was slow, where one was — see
-    // `@shared/perfProbe.js`. Temporary, with it.
-    spans: perfSpans(),
     jsHeapMB: jsHeapMB(),
   };
 

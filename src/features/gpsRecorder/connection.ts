@@ -13,7 +13,6 @@ import {
   gpsRecorderSetConnection,
   gpsRecorderSync,
 } from './model/actions.js';
-import { startRecorderSpan, watchRecorderFrame } from './perfProbe.js';
 import {
   decodePoints,
   parseFrameJson,
@@ -136,16 +135,7 @@ function queuePoints(points: RecorderPoint[]): void {
 
       batch = [];
 
-      // The merge and every subscriber that runs inside the dispatch; the frame
-      // probe then covers what it scheduled — the React render, and the polyline
-      // Leaflet reprojects and redraws.
-      const dispatched = startRecorderSpan('points-dispatch');
-
       store?.dispatch(gpsRecorderAddPoints(flushed));
-
-      dispatched(flushed.length);
-
-      watchRecorderFrame('points-frame', flushed.length);
     }, BATCH_MS);
   }
 }

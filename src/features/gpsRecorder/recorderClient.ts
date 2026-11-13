@@ -1,6 +1,5 @@
 import { isAbortError } from '@shared/isAbortError.js';
 import { z } from 'zod';
-import { startRecorderSpan } from './perfProbe.js';
 import {
   decodePoints,
   MIN_RECORDER_VERSION_CODE,
@@ -473,17 +472,9 @@ export async function getTrackSince(
   since: number,
   signal?: AbortSignal,
 ): Promise<{ points: RecorderPoint[]; fields: string[] }> {
-  // Timed apart, because they fail differently: the transfer is a wait, while
-  // the parse below is a pass over every cell of every row and blocks.
-  const fetched = startRecorderSpan('track-fetch', 1000);
-
   const body = await recorderJson(`/track?since=${since}`, TRACK_TIMEOUT_MS, {
     signal,
   });
-
-  fetched();
-
-  const parsed = startRecorderSpan('track-parse');
 
   const result = RecorderTrackPageSchema.safeParse(body);
 
@@ -497,8 +488,6 @@ export async function getTrackSince(
   const { fields, points } = result.data;
 
   const decoded = decodePoints(fields, points);
-
-  parsed(decoded.length);
 
   return { points: decoded, fields };
 }
