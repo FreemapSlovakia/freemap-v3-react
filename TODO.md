@@ -315,13 +315,6 @@ can't be made exclusive + optics). Keep the free/open core intact.
 
 Bugs and feature requests are issues under `area: drawing`.
 
-- [ ] **No coverage for holes in the file formats.** The link's `H` field ↔
-  polygon rings is pinned (`drawingWire.test.ts`); nothing exercises the GPX
-  `fm:polygonId` / `fm:holeOf` pairing, KML `innerBoundaryIs`, or a saved
-  map's `holeOf` agreeing with its fingerprint. Pure functions over small
-  fixtures — cheap to pin, and where a regression would go unnoticed
-  longest.
-
 ## Track viewer: generic geodata vs. recorded tracks
 
 The track viewer began as a GPX recording viewer and grew into a general geodata

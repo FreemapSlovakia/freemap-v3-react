@@ -365,6 +365,64 @@ describe('fingerprintDocument — a saved map matches its own document', () => {
     matchesItsDocument({ routePlanner: routed.routePlanner });
   });
 
+  describe('for a polygon with holes', () => {
+    const lake = {
+      type: 'polygon',
+      points: [
+        { lat: 48, lon: 17, id: 0 },
+        { lat: 48, lon: 18, id: 1 },
+        { lat: 49, lon: 18, id: 2 },
+        { lat: 49, lon: 17, id: 3 },
+      ],
+    };
+
+    const holeAt = (lat: number) => ({
+      type: 'polygon',
+      points: [
+        { lat, lon: 17.2, id: 0 },
+        { lat, lon: 17.4, id: 1 },
+        { lat: lat + 0.2, lon: 17.4, id: 2 },
+      ],
+      holeOf: 0,
+    });
+
+    const holedOver = (...holes: unknown[]) => ({
+      routePlanner: routePlanner({}),
+      drawingLines: { lines: [lake, ...holes] },
+    });
+
+    const holed = (...holes: unknown[]) => state(holedOver(...holes));
+
+    it('stores each hole tied to its polygon', () => {
+      expect(
+        getMapDataFromState(holed(holeAt(48.2), holeAt(48.6))).lines?.map(
+          (line) => line.holeOf,
+        ),
+      ).toEqual([undefined, 0, 0]);
+    });
+
+    it('matches its own document', () => {
+      matchesItsDocument(holedOver(holeAt(48.2), holeAt(48.6)));
+    });
+
+    it('notices a hole cut or filled', () => {
+      const saved = holed(holeAt(48.2));
+
+      // Detached: the same ring, now a polygon of its own.
+      const { holeOf: _, ...detached } = holeAt(48.2);
+
+      for (const edited of [
+        holed(),
+        holed(holeAt(48.2), holeAt(48.6)),
+        holed(detached),
+      ]) {
+        expect(
+          fingerprintDocument(getMapDataFromState(saved), edited),
+        ).not.toBe(fingerprintState(edited));
+      }
+    });
+  });
+
   it('notices a roundtrip parameter that really did change', () => {
     const saved = state({
       routePlanner: routePlanner({

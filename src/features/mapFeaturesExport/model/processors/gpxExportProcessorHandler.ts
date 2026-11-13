@@ -213,12 +213,16 @@ export async function buildGpx(
     );
   }
 
+  // Per export, so files merged into one keep their polygon ids apart.
+  // Not `crypto.randomUUID`, which an insecure context (a LAN dev server) lacks.
+  const idPrefix = Math.random().toString(36).slice(2, 10);
+
   if (set.has('drawingLines')) {
-    addDrawingLines(doc, features, 'line', keep);
+    addDrawingLines(doc, features, 'line', keep, idPrefix);
   }
 
   if (set.has('drawingAreas')) {
-    addDrawingLines(doc, features, 'polygon', keep);
+    addDrawingLines(doc, features, 'polygon', keep, idPrefix);
   }
 
   if (set.has('drawingPoints')) {
@@ -503,6 +507,7 @@ function addDrawingLines(
   features: readonly Feature[],
   type: DrawingLineType,
   keep: (index: number) => boolean,
+  idPrefix: string,
 ) {
   for (const { index, line, holes } of partitionFeatures(features).lines) {
     if (line.type !== type || !keep(index)) {
@@ -511,19 +516,19 @@ function addDrawingLines(
 
     const label = featureLabel(features[index]!) ?? '';
 
-    // GPX has no polygon type and so no interior rings either: a hole goes out
-    // as its own track, tied to its parent by a shared id. Positional would be
-    // fragile — tracks are written in several passes, and other producers'
-    // files interleave their own.
+    // GPX has no interior rings: a hole goes out as its own track, tied to its
+    // parent by id, since other passes and producers interleave tracks.
+    const id = `${idPrefix}-${index}`;
+
     addStyledTrk(
       doc,
       line,
-      holes.length ? { polygonId: String(index) } : undefined,
+      holes.length ? { polygonId: id } : undefined,
       label,
     );
 
     for (const hole of holes) {
-      addStyledTrk(doc, hole, { holeOf: String(index), style: line }, label);
+      addStyledTrk(doc, hole, { holeOf: id, style: line }, label);
     }
   }
 }

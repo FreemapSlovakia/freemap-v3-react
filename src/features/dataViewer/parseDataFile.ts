@@ -1,6 +1,7 @@
 import { KML_IMPORT_KEYS, withoutKeys } from '@shared/featureProperties.js';
 import * as toGeoJSON from '@tmcw/togeojson';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { withGpxHoles } from './gpxHoles.js';
 import { extractKmlFromKmz } from './kmz.js';
 import { parseGeojsonFile } from './parseGeojsonFile.js';
 import { parseGpx } from './parseGpx.js';
@@ -246,7 +247,7 @@ export function parseDataFile(
     return toGeojson(normalizeTcx(toGeoJSON.tcx(doc)), 'tcx');
   }
 
-  return toGeojson(parseGpx(doc), 'gpx');
+  return toGeojson(withGpxHoles(parseGpx(doc)), 'gpx');
 }
 
 // A ZIP archive (and therefore a KMZ) opens with the local-file-header magic

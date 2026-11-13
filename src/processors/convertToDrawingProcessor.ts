@@ -170,10 +170,6 @@ function featuresToLines(
 ): Line[] {
   const lines: Line[] = [];
 
-  const polygonAt = new Map<string, number>();
-
-  const holeRefs: { at: number; of: string }[] = [];
-
   for (const feature of features) {
     const { geometry } = feature;
 
@@ -214,26 +210,6 @@ function featuresToLines(
         points: ringToPoints(ring, isGeoJsonPolygon || (isPolygon && closed)),
         holeOf: isGeoJsonPolygon && i > 0 ? start : undefined,
       });
-    }
-
-    const polygonId = feature.properties?.['freemap:polygonId'];
-
-    if (typeof polygonId === 'string' && !polygonAt.has(polygonId)) {
-      polygonAt.set(polygonId, start);
-    }
-
-    const holeOf = feature.properties?.['freemap:holeOf'];
-
-    if (typeof holeOf === 'string') {
-      holeRefs.push({ at: start, of: holeOf });
-    }
-  }
-
-  for (const { at, of } of holeRefs) {
-    const parent = polygonAt.get(of);
-
-    if (parent !== undefined && parent !== at) {
-      lines[at] = { ...lines[at]!, holeOf: parent };
     }
   }
 
