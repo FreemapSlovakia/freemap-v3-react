@@ -44,6 +44,7 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>panoráma vo vyššom rozlíšení</li>
         <li>analýza viditeľnosti vo vyššom rozlíšení</li>
+        <li>jemnejšie 3D modely terénu na tlač</li>
         <li>dlhšia história meteoradaru a jeho predpoveď</li>
         <li>vyfarbenie trás a záznamov (niektoré režimy sú len prémiové)</li>
       </ul>

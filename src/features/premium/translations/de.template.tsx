@@ -46,6 +46,7 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>Panorama in höherer Auflösung</li>
         <li>Sichtbarkeitsanalyse in höherer Auflösung</li>
+        <li>feinere 3D-Geländemodelle für den Druck</li>
         <li>längerer Wetterradar-Verlauf und dessen Vorhersage</li>
         <li>
           Einfärben von Routen und Tracks (einige Modi sind nur mit Premium

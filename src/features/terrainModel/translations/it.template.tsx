@@ -10,7 +10,13 @@ const it: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Griglia ${step} mm (${cols} × ${rows} punti)`,
   elevation: ({ m }) => `Dati altimetrici letti ogni ${m} m`,
   limitedBySamples: 'Il dettaglio è limitato dalle dimensioni del modello.',
-  limitedByZoom: 'Dati altimetrici più fini sono disponibili con Premium.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      Con {premiumLink("l'accesso Premium")} la griglia arriva a {premiumStep}{' '}
+      mm, da dati ogni {premiumData} m dove i modelli nazionali del terreno sono
+      così fini, invece di {step} mm da dati ogni {data} m.
+    </>
+  ),
   progressTiles: ({ done, total }) =>
     `Download dei dati altimetrici (${done} / ${total})`,
   progressMesh: 'Creazione del modello',
@@ -36,7 +42,7 @@ const it: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Altezza del modello ${height} mm (${layers} strati), ${triangles} triangoli, ${size}.`,
   tooTall: 'Il modello è più alto del volume di stampa.',
   premiumRefused: ({ m }) =>
-    `I dati altimetrici Premium sono stati rifiutati, quindi il modello usa dati ogni ${m} m. Per un dettaglio più fine, acceda di nuovo con un account Premium.`,
+    `I dati altimetrici Premium sono stati rifiutati, quindi il modello è creato da dati ogni ${m} m. Per un dettaglio più fine, acceda di nuovo con un account Premium.`,
   partialData: ({ percent }) =>
     `Il ${percent} dell'area non ha dati altimetrici; lì è appiattita al punto più basso.`,
   noData: 'In questa area non ci sono dati altimetrici.',

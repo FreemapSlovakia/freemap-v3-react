@@ -10,7 +10,13 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Siatka ${step} mm (${cols} × ${rows} punktów)`,
   elevation: ({ m }) => `Dane wysokościowe odczytywane co ${m} m`,
   limitedBySamples: 'Szczegółowość jest ograniczona rozmiarem modelu.',
-  limitedByZoom: 'Dokładniejsze dane wysokościowe są dostępne w Premium.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      Z {premiumLink('dostępem Premium')} siatka ma do {premiumStep} mm, z
+      danych co {premiumData} m tam, gdzie krajowe modele terenu są tak
+      dokładne, zamiast {step} mm z danych co {data} m.
+    </>
+  ),
   progressTiles: ({ done, total }) =>
     `Pobieranie danych wysokościowych (${done} / ${total})`,
   progressMesh: 'Tworzenie modelu',
@@ -36,7 +42,7 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Wysokość modelu ${height} mm (warstwy: ${layers}), trójkąty: ${triangles}, ${size}.`,
   tooTall: 'Model jest wyższy niż obszar roboczy.',
   premiumRefused: ({ m }) =>
-    `Dane wysokościowe Premium zostały odrzucone, więc model korzysta z danych co ${m} m. Aby uzyskać większą szczegółowość, należy zalogować się ponownie kontem Premium.`,
+    `Dane wysokościowe Premium zostały odrzucone, więc model jest tworzony z danych co ${m} m. Aby uzyskać większą szczegółowość, należy zalogować się ponownie kontem Premium.`,
   partialData: ({ percent }) =>
     `${percent} obszaru nie ma danych wysokościowych; jest tam spłaszczony do najniższego punktu.`,
   noData: 'Na tym obszarze nie ma danych wysokościowych.',

@@ -16,6 +16,7 @@ Freemap je bezplatný a takým aj zostane – prehliadanie máp, vyhľadávanie,
 - **Všetky režimy vyfarbenia** trás a záznamov – nadmorská výška, rýchlosť a čas sú zadarmo pre každého.
 - **Meteoradar** – až 6 hodín histórie zrážok namiesto 2 a hodinová predpoveď.
 - **Panoráma a viditeľnosť** – vyššie rozlíšenie a väčší dohľad.
+- **3D model terénu** – najjemnejšie výškové dáta (tam, kde sú z lidaru, s rozlíšením pod meter) a až štvornásobok bodov mriežky pre jemnejšie tlačené modely.
 
 Prémiové funkcie sú v aplikácii označené :FaGem.text-warning:. Stlačením tejto značky sa otvorí ponuka prémiového prístupu.
 

@@ -9,7 +9,13 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   grid: ({ step, cols, rows }) => `Mreža ${step} mm (${cols} × ${rows} točk)`,
   elevation: ({ m }) => `Višinski podatki, brani na ${m} m`,
   limitedBySamples: 'Podrobnost je omejena z velikostjo modela.',
-  limitedByZoom: 'Podrobnejši višinski podatki so na voljo s Premium.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      S {premiumLink('dostopom Premium')} je mreža do {premiumStep} mm, iz
+      podatkov na {premiumData} m, kjer so nacionalni modeli terena tako
+      podrobni, namesto {step} mm iz podatkov na {data} m.
+    </>
+  ),
   progressTiles: ({ done, total }) =>
     `Prenašanje višinskih podatkov (${done} / ${total})`,
   progressMesh: 'Izdelava modela',
@@ -35,7 +41,7 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Višina modela ${height} mm (slojev: ${layers}), trikotnikov: ${triangles}, ${size}.`,
   tooTall: 'Model je višji od tiskalnega prostora.',
   premiumRefused: ({ m }) =>
-    `Višinski podatki Premium so bili zavrnjeni, zato model uporablja podatke na ${m} m. Za podrobnejši model se znova prijavite z računom Premium.`,
+    `Višinski podatki Premium so bili zavrnjeni, zato je model izdelan iz podatkov na ${m} m. Za podrobnejši model se znova prijavite z računom Premium.`,
   partialData: ({ percent }) =>
     `${percent} območja nima višinskih podatkov; tam je poravnano na najnižjo točko.`,
   noData: 'Na tem območju ni višinskih podatkov.',

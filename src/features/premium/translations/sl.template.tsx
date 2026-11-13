@@ -46,6 +46,7 @@ const sl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>panorama v višji ločljivosti</li>
         <li>analiza vidnosti v višji ločljivosti</li>
+        <li>podrobnejši 3D modeli terena za tisk</li>
         <li>daljša zgodovina vremenskega radarja in njegova napoved</li>
         <li>
           obarvanje poti in sledi (nekateri načini so na voljo le s premiumom)

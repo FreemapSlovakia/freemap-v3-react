@@ -45,6 +45,7 @@ const fr: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>un panorama en plus haute résolution</li>
         <li>une analyse de visibilité en plus haute résolution</li>
+        <li>des modèles 3D du terrain plus fins à imprimer</li>
         <li>un historique plus long du radar météo et sa prévision</li>
         <li>
           la coloration des itinéraires et des traces (certains modes sont

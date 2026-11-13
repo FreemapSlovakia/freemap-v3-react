@@ -45,6 +45,7 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>panorama w wyższej rozdzielczości</li>
         <li>analiza widoczności w wyższej rozdzielczości</li>
+        <li>dokładniejsze modele 3D terenu do druku</li>
         <li>dłuższa historia radaru opadów i jego prognoza</li>
         <li>
           kolorowanie tras i śladów (niektóre tryby są tylko w wersji premium)

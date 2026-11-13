@@ -45,6 +45,7 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
         </li>
         <li>nagyobb felbontású panoráma</li>
         <li>nagyobb felbontású láthatósági elemzés</li>
+        <li>finomabb 3D terepmodellek nyomtatáshoz</li>
         <li>hosszabb csapadékradar-előzmény és annak előrejelzése</li>
         <li>
           útvonalak és nyomvonalak színezése (egyes módok csak prémiummal

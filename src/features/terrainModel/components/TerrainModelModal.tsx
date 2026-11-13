@@ -9,6 +9,7 @@ import {
   type ExportCredits,
   resolveExportCredits,
 } from '@features/mapToDocumentExport/model/exportCredits.js';
+import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium, premiumTileAuth } from '@features/premium/premium.js';
 import {
   FmDismissButton,
@@ -307,6 +308,27 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
     bbox !== undefined &&
     tileCount(bbox, plan.cols, plan.rows, plan.zoom) > MAX_TILES;
 
+  // The same model under premium's limits, for a free account — offered only
+  // where it would come out noticeably finer and could still be downloaded.
+  const premiumCandidate =
+    !premium && plan && bbox && plan.limitedBy !== 'floor' && !areaTooLarge
+      ? planModel(bbox, widthMm, MAX_ZOOM, PREMIUM_MAX_SAMPLES)
+      : undefined;
+
+  const premiumPlan =
+    premiumCandidate &&
+    plan &&
+    bbox &&
+    premiumCandidate.stepMm < plan.stepMm * 0.9 &&
+    tileCount(
+      bbox,
+      premiumCandidate.cols,
+      premiumCandidate.rows,
+      premiumCandidate.zoom,
+    ) <= MAX_TILES
+      ? premiumCandidate
+      : undefined;
+
   const canSimplify =
     plan !== undefined && plan.cols * plan.rows <= SIMPLIFY_MAX_SAMPLES;
 
@@ -486,15 +508,36 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
               {tm.elevation({
                 m: nf1.format(tilePixelM(plan.zoom, bbox!)),
               })}
-              {plan.limitedBy !== 'floor' && (
+              {/* Not mid-run: following the offer would cancel it. */}
+              {premiumPlan && !busy ? (
                 <>
                   <br />
-                  {plan.limitedBy === 'samples'
-                    ? tm.limitedBySamples
-                    : premium
-                      ? tm.limitedByData
-                      : tm.limitedByZoom}
+                  {tm.premiumFiner(
+                    (label) => (
+                      <PremiumGem label={label} onBeforeNavigate={close} />
+                    ),
+                    {
+                      step: nf2.format(plan.stepMm),
+                      data: nf1.format(tilePixelM(plan.zoom, bbox!)),
+                      premiumStep: nf2.format(premiumPlan.stepMm),
+                      premiumData: nf1.format(
+                        tilePixelM(premiumPlan.zoom, bbox!),
+                      ),
+                    },
+                  )}
                 </>
+              ) : (
+                // "No finer" is true only at premium's zoom; a free account
+                // capped below it has finer data it could buy.
+                (plan.limitedBy === 'samples' ||
+                  (plan.limitedBy === 'zoom' && premium)) && (
+                  <>
+                    <br />
+                    {plan.limitedBy === 'samples'
+                      ? tm.limitedBySamples
+                      : tm.limitedByData}
+                  </>
+                )
               )}
             </p>
           )}

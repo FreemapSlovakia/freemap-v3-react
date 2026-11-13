@@ -8,7 +8,13 @@ const en: TerrainModelMessages = {
   grid: ({ step, cols, rows }) => `Grid ${step} mm (${cols} × ${rows} points)`,
   elevation: ({ m }) => `Elevation data read at ${m} m`,
   limitedBySamples: 'Detail is limited by the size of the model.',
-  limitedByZoom: 'Finer elevation data is available with premium.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      With {premiumLink('premium access')}, the grid goes down to {premiumStep}{' '}
+      mm, from data at {premiumData} m where national terrain models are that
+      fine, instead of {step} mm from data at {data} m.
+    </>
+  ),
   limitedByData: 'The elevation data is no finer than this.',
   progressTiles: ({ done, total }) =>
     `Downloading elevation data (${done} / ${total})`,
@@ -34,7 +40,7 @@ const en: TerrainModelMessages = {
     `Model height ${height} mm (${layers} layers), ${triangles} triangles, ${size}.`,
   tooTall: 'The model is taller than the build volume.',
   premiumRefused: ({ m }) =>
-    `The premium elevation data was refused, so the model uses data at ${m} m. Sign in again with a premium account for finer detail.`,
+    `The premium elevation data was refused, so the model is built from data at ${m} m. Sign in again with a premium account for finer detail.`,
   partialData: ({ percent }) =>
     `${percent} of the area has no elevation data; it is flattened to the lowest point.`,
   noData: 'There is no elevation data in this area.',

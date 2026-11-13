@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export type TerrainModelMessages = {
   area: string;
   width: string;
@@ -5,7 +7,11 @@ export type TerrainModelMessages = {
   grid: (p: { step: string; cols: string; rows: string }) => string;
   elevation: (p: { m: string }) => string;
   limitedBySamples: string;
-  limitedByZoom: string;
+  /** For a free account, where premium's limits would make this model finer. */
+  premiumFiner: (
+    premiumLink: (label: ReactNode) => ReactNode,
+    p: { step: string; data: string; premiumStep: string; premiumData: string },
+  ) => ReactNode;
   limitedByData: string;
   progressTiles: (p: { done: string; total: string }) => string;
   progressMesh: string;

@@ -10,8 +10,14 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Grille ${step} mm (${cols} × ${rows} points)`,
   elevation: ({ m }) => `Données d’altitude lues tous les ${m} m`,
   limitedBySamples: 'Le niveau de détail est limité par la taille du modèle.',
-  limitedByZoom:
-    'Des données d’altitude plus fines sont disponibles avec Premium.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      Avec {premiumLink('l’accès Premium')}, la grille descend jusqu’à{' '}
+      {premiumStep} mm, à partir de données tous les {premiumData} m là où les
+      modèles nationaux du terrain sont aussi fins, au lieu de {step} mm à
+      partir de données tous les {data} m.
+    </>
+  ),
   progressTiles: ({ done, total }) =>
     `Téléchargement des données d’altitude (${done} / ${total})`,
   progressMesh: 'Création du modèle',
@@ -37,7 +43,7 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Hauteur du modèle ${height} mm (${layers} couches), ${triangles} triangles, ${size}.`,
   tooTall: 'Le modèle est plus haut que le volume d’impression.',
   premiumRefused: ({ m }) =>
-    `Les données d’altitude Premium ont été refusées ; le modèle utilise donc des données tous les ${m} m. Pour plus de détail, reconnectez-vous avec un compte Premium.`,
+    `Les données d’altitude Premium ont été refusées ; le modèle est donc créé à partir de données tous les ${m} m. Pour plus de détail, reconnectez-vous avec un compte Premium.`,
   partialData: ({ percent }) =>
     `${percent} de la zone n’a pas de données d’altitude ; elle y est aplatie au point le plus bas.`,
   noData: 'Il n’y a pas de données d’altitude dans cette zone.',

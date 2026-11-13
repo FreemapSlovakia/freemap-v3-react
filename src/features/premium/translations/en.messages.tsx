@@ -40,6 +40,7 @@ const en: PremiumMessages = {
         </li>
         <li>higher panorama resolution</li>
         <li>higher viewshed resolution</li>
+        <li>finer 3D terrain models for printing</li>
         <li>longer weather radar history and its forecast</li>
         <li>colorizing routes and tracks (some modes are premium only)</li>
       </ul>

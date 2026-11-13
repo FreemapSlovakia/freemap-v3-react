@@ -9,7 +9,13 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   grid: ({ step, cols, rows }) => `Rács ${step} mm (${cols} × ${rows} pont)`,
   elevation: ({ m }) => `Magassági adatok ${m} m-es felbontásban`,
   limitedBySamples: 'A részletességet a modell mérete korlátozza.',
-  limitedByZoom: 'Finomabb magassági adatok prémiummal érhetők el.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      {premiumLink('Prémium hozzáféréssel')} a rács akár {premiumStep} mm-es,{' '}
+      {premiumData} m-es adatokból ott, ahol a nemzeti terepmodellek ilyen
+      finomak, {step} mm és {data} m helyett.
+    </>
+  ),
   progressTiles: ({ done, total }) =>
     `Magassági adatok letöltése (${done} / ${total})`,
   progressMesh: 'A modell elkészítése',
@@ -35,7 +41,7 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Modellmagasság ${height} mm (${layers} réteg), ${triangles} háromszög, ${size}.`,
   tooTall: 'A modell magasabb a nyomtatási térnél.',
   premiumRefused: ({ m }) =>
-    `A prémium magassági adatokat elutasították, ezért a modell ${m} m-es adatokat használ. Finomabb részletekhez jelentkezzen be újra prémium fiókkal.`,
+    `A prémium magassági adatokat elutasították, ezért a modell ${m} m-es adatokból készül. Finomabb részletekhez jelentkezzen be újra prémium fiókkal.`,
   partialData: ({ percent }) =>
     `A terület ${percent}-ához nincs magassági adat; ott a legalacsonyabb pont szintjén van.`,
   noData: 'Ezen a területen nincsenek magassági adatok.',

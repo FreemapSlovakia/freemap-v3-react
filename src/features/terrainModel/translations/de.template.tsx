@@ -10,7 +10,13 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Raster ${step} mm (${cols} × ${rows} Punkte)`,
   elevation: ({ m }) => `Höhendaten im Abstand von ${m} m gelesen`,
   limitedBySamples: 'Der Detailgrad ist durch die Modellgröße begrenzt.',
-  limitedByZoom: 'Feinere Höhendaten sind mit Premium verfügbar.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      Mit {premiumLink('Premium-Zugang')} ist das Raster bis zu {premiumStep} mm
+      fein, aus Daten im Abstand von {premiumData} m, wo nationale
+      Geländemodelle so fein sind, statt {step} mm aus {data} m.
+    </>
+  ),
   progressTiles: ({ done, total }) =>
     `Höhendaten werden geladen (${done} / ${total})`,
   progressMesh: 'Das Modell wird erstellt',
@@ -36,7 +42,7 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Modellhöhe ${height} mm (${layers} Schichten), ${triangles} Dreiecke, ${size}.`,
   tooTall: 'Das Modell ist höher als der Bauraum.',
   premiumRefused: ({ m }) =>
-    `Die Premium-Höhendaten wurden abgelehnt, daher verwendet das Modell Daten im Abstand von ${m} m. Für feinere Details melden Sie sich erneut mit einem Premium-Konto an.`,
+    `Die Premium-Höhendaten wurden abgelehnt, daher wird das Modell aus Daten im Abstand von ${m} m erstellt. Für feinere Details melden Sie sich erneut mit einem Premium-Konto an.`,
   partialData: ({ percent }) =>
     `${percent} des Gebiets hat keine Höhendaten; dort liegt es auf dem tiefsten Punkt.`,
   noData: 'In diesem Gebiet gibt es keine Höhendaten.',

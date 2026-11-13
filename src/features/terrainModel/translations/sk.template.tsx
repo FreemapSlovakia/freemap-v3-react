@@ -10,7 +10,13 @@ const sk: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Mriežka ${step} mm (${cols} × ${rows} bodov)`,
   elevation: ({ m }) => `Výškové dáta čítané po ${m} m`,
   limitedBySamples: 'Detail je obmedzený veľkosťou modelu.',
-  limitedByZoom: 'Jemnejšie výškové dáta sú dostupné s prémiom.',
+  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+    <>
+      S {premiumLink('prémiovým prístupom')} je mriežka až {premiumStep} mm z
+      dát po {premiumData} m tam, kde sú národné modely terénu také jemné,
+      namiesto {step} mm z dát po {data} m.
+    </>
+  ),
   progressTiles: ({ done, total }) =>
     `Sťahujú sa výškové dáta (${done} / ${total})`,
   progressMesh: 'Vytvára sa model',
@@ -36,7 +42,7 @@ const sk: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Výška modelu ${height} mm (${layers} vrstiev), ${triangles} trojuholníkov, ${size}.`,
   tooTall: 'Model je vyšší ako tlačový priestor.',
   premiumRefused: ({ m }) =>
-    `Prémiové výškové dáta boli odmietnuté, model preto používa dáta po ${m} m. Pre jemnejší detail sa znova prihláste prémiovým účtom.`,
+    `Prémiové výškové dáta boli odmietnuté, model je preto vytvorený z dát po ${m} m. Pre jemnejší detail sa znova prihláste prémiovým účtom.`,
   partialData: ({ percent }) =>
     `${percent} oblasti nemá výškové dáta; je zarovnaná na najnižší bod.`,
   noData: 'V tejto oblasti nie sú výškové dáta.',

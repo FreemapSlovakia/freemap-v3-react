@@ -16,6 +16,7 @@ Freemap is free and will stay so – browsing the maps, search, route planning, 
 - **All colorizing modes** for routes and tracks – elevation, speed and time are free for everyone.
 - **Weather radar** – up to 6 hours of precipitation history instead of 2, plus a one-hour forecast.
 - **Panorama and viewshed** – higher resolution and a longer reach.
+- **3D terrain model** – the finest elevation data (sub-metre where it is lidar) and up to four times as many grid points, for finer printed models.
 
 Premium functions are marked :FaGem.text-warning: in the app. Pressing the mark opens the premium offer.
 
