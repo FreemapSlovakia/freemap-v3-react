@@ -34,6 +34,16 @@ export const GPXPX_NS = 'http://www.garmin.com/xmlschemas/PowerExtension/v1';
 
 export const WPTX1_NS = 'http://www.garmin.com/xmlschemas/WaypointExtension/v1';
 
+/**
+ * A fresh prefix for `fm:polygonId`s, so files merged into one keep them apart.
+ * `getRandomValues`, unlike `randomUUID`, works in an insecure context.
+ */
+export function polygonIdPrefix(): string {
+  return Array.from(crypto.getRandomValues(new Uint8Array(6)), (byte) =>
+    byte.toString(16).padStart(2, '0'),
+  ).join('');
+}
+
 /** The `fm:*` fields a file of ours carries, whatever element holds them. */
 export const FM_TAGS = [
   'label',

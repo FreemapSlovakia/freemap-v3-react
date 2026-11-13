@@ -1,11 +1,11 @@
-import { splitColorAlpha } from '@shared/colorAlpha.js';
-import { featureExportTable } from '@shared/featureProperties.js';
+import { joinColorAlpha, splitColorAlpha } from '@shared/colorAlpha.js';
+import { featureExportTable, withoutKeys } from '@shared/featureProperties.js';
 import { isClosedGeometry } from '@shared/geoutils.js';
 import {
   lineStyleFromProperties,
   pointStyleFromProperties,
 } from '@shared/styleFromProperties.js';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature, FeatureCollection, Position } from 'geojson';
 import {
   appendProps,
   createElement,
@@ -18,6 +18,7 @@ import {
   KNOWN_NS_PREFIXES,
   OSMAND_NS,
   POINT_CHANNELS,
+  polygonIdPrefix,
   toLatLon,
   WPTX1_NS,
   XMLNS_NS,
@@ -195,15 +196,12 @@ function fmFields(feature: Feature): Record<string, string> {
     );
 
     // GPX has no polygon, so a GeoJSON one says what it is here or comes back
-    // as a closed line. Not one with holes: every ring is written as its own
-    // `<trkseg>` and nothing tells them apart afterwards, so calling that a
-    // polygon paints the holes in.
-    const solid =
-      (type === 'Polygon' && feature.geometry.coordinates.length === 1) ||
-      (type === 'MultiPolygon' &&
-        feature.geometry.coordinates.every((rings) => rings.length === 1));
-
-    fallback('type', style.type ?? (solid ? 'polygon' : undefined));
+    // as a closed line. Holes reach here as rings of their own (`addHoled`).
+    fallback(
+      'type',
+      style.type ??
+        (type === 'Polygon' || type === 'MultiPolygon' ? 'polygon' : undefined),
+    );
     fallback('color', style.color);
     fallback('fillColor', style.fillColor);
     fallback('width', style.width);
@@ -421,6 +419,99 @@ function addTrackPoint(
   }
 }
 
+/**
+ * One `<trk>` of the given rings, a `<trkseg>` each, their per-point series read
+ * from `points` at the segment `seg` gives.
+ */
+function addRingsTrk(
+  doc: Document,
+  feature: Feature,
+  rings: Position[][],
+  seg: (ring: number) => number | null,
+  meta = true,
+  points = feature.properties,
+): void {
+  const trkEle = createElement(doc.documentElement, 'trk');
+
+  if (meta) {
+    addLineMeta(trkEle, feature);
+  }
+
+  addExtensions(trkEle, feature);
+
+  rings.forEach((ring, r) => {
+    const trksegEle = createElement(trkEle, 'trkseg');
+
+    ring.forEach((pt, i) => {
+      addTrackPoint(trksegEle, 'trkpt', pt, points, seg(r), i);
+    });
+  });
+}
+
+const HOLE_STYLE = [
+  'type',
+  'color',
+  'width',
+  'lineCap',
+  'lineJoin',
+  'dashArray',
+];
+
+/**
+ * A polygon with holes, which GPX cannot nest: the outer ring as a polygon
+ * `<trk>`, each hole as its own tied to it by id, as the drawing writer does.
+ */
+function addHoled(
+  doc: Document,
+  feature: Feature,
+  [outer, ...holes]: Position[][],
+  seg: (ring: number) => number | null,
+  id: string,
+): void {
+  const parent: Feature = {
+    ...feature,
+    properties: {
+      ...withoutKeys(feature.properties, ['freemap:holeOf']),
+      'freemap:polygonId': id,
+    },
+    geometry: { type: 'Polygon', coordinates: [outer!] },
+  };
+
+  addRingsTrk(doc, parent, [outer!], seg);
+
+  const style = fmFields(parent);
+
+  const fill =
+    splitColorAlpha(style['fillColor'] ?? style['color']).color || '#000000';
+
+  // The parent's outline, unfilled, so a reader that ignores `fm:holeOf`
+  // outlines the hole rather than painting over the shape.
+  const properties = {
+    ...Object.fromEntries(
+      HOLE_STYLE.flatMap((tag) =>
+        style[tag] ? [[`freemap:${tag}`, style[tag]]] : [],
+      ),
+    ),
+    'freemap:fillColor': joinColorAlpha(fill, 0),
+    'freemap:holeOf': id,
+  };
+
+  holes.forEach((ring, h) => {
+    addRingsTrk(
+      doc,
+      {
+        type: 'Feature',
+        properties,
+        geometry: { type: 'Polygon', coordinates: [ring] },
+      },
+      [ring],
+      () => seg(h + 1),
+      false,
+      feature.properties,
+    );
+  });
+}
+
 // Appends a GeoJSON feature/collection to an existing `<gpx>` document as
 // waypoints, routes and tracks, reconstructing per-point elevation/time/sensor
 // data from `coordinateProperties` (see {@link addTrackPoint}). togeojson tags
@@ -429,6 +520,12 @@ export function addGeojson(
   doc: Document,
   geojson: Feature | FeatureCollection,
 ): void {
+  const idPrefix = polygonIdPrefix();
+
+  let polygons = 0;
+
+  const nextId = () => `${idPrefix}-${polygons++}`;
+
   for (const pass of ['wpt', 'rte', 'trk'] as const) {
     for (const feature of geojson.type === 'FeatureCollection'
       ? geojson.features
@@ -484,49 +581,46 @@ export function addGeojson(
 
           break;
 
-        case 'Polygon':
-
         case 'MultiLineString':
           if (pass === 'trk') {
-            const trkEle = createElement(doc.documentElement, 'trk');
+            addRingsTrk(doc, feature, g.coordinates, (s) => s);
+          }
 
-            addLineMeta(trkEle, feature);
+          break;
 
-            addExtensions(trkEle, feature);
-
-            g.coordinates.forEach((seg, s) => {
-              const trksegEle = createElement(trkEle, 'trkseg');
-
-              seg.forEach((pt, i) => {
-                addTrackPoint(trksegEle, 'trkpt', pt, feature.properties, s, i);
-              });
-            });
+        case 'Polygon':
+          if (pass === 'trk') {
+            if (g.coordinates.length > 1) {
+              addHoled(doc, feature, g.coordinates, (s) => s, nextId());
+            } else {
+              addRingsTrk(doc, feature, g.coordinates, (s) => s);
+            }
           }
 
           break;
 
         case 'MultiPolygon':
-          if (pass === 'trk') {
-            const trkEle = createElement(doc.documentElement, 'trk');
+          if (pass !== 'trk') {
+            break;
+          }
 
-            addLineMeta(trkEle, feature);
-
-            addExtensions(trkEle, feature);
-
-            for (const seg0 of g.coordinates) {
-              for (const seg of seg0) {
-                const trksegEle = createElement(trkEle, 'trkseg');
-
-                seg.forEach((pt, i) => {
-                  addTrackPoint(
-                    trksegEle,
-                    'trkpt',
-                    pt,
-                    feature.properties,
-                    null,
-                    i,
-                  );
-                });
+          if (g.coordinates.every((rings) => rings.length === 1)) {
+            addRingsTrk(doc, feature, g.coordinates.flat(), () => null);
+          } else {
+            // Each member on its own: a hole's id has to name one ring.
+            for (const rings of g.coordinates) {
+              if (rings.length > 1) {
+                addHoled(doc, feature, rings, () => null, nextId());
+              } else {
+                addRingsTrk(
+                  doc,
+                  {
+                    ...feature,
+                    geometry: { type: 'Polygon', coordinates: rings },
+                  },
+                  rings,
+                  () => null,
+                );
               }
             }
           }

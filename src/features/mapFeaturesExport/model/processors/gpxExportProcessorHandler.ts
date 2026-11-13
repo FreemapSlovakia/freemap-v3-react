@@ -77,6 +77,7 @@ import {
   GPXTPX_NS,
   LOCUS_NS,
   OSMAND_NS,
+  polygonIdPrefix,
   toLatLon,
   XMLNS_NS,
 } from './gpxExporter.js';
@@ -213,9 +214,7 @@ export async function buildGpx(
     );
   }
 
-  // Per export, so files merged into one keep their polygon ids apart.
-  // Not `crypto.randomUUID`, which an insecure context (a LAN dev server) lacks.
-  const idPrefix = Math.random().toString(36).slice(2, 10);
+  const idPrefix = polygonIdPrefix();
 
   if (set.has('drawingLines')) {
     addDrawingLines(doc, features, 'line', keep, idPrefix);

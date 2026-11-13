@@ -334,12 +334,12 @@ describe('geojsonToGpxDoc round-trip', () => {
     });
   });
 
-  it('does not paint the holes of a polygon that has them', () => {
-    const [f] = roundTrip(
+  it('ties the holes of a polygon to it by id', () => {
+    const [outer, hole] = roundTrip(
       fc([
         {
           type: 'Feature',
-          properties: {},
+          properties: { name: 'Lake', fill: '#0000ff' },
           geometry: {
             type: 'Polygon',
             coordinates: [
@@ -361,10 +361,72 @@ describe('geojsonToGpxDoc round-trip', () => {
       ]),
     );
 
-    // Both rings come back as segments of one line, and nothing tells them
-    // apart — so the ring that is a hole must not be painted as a polygon.
-    expect(f!.geometry.type).toBe('MultiLineString');
-    expect(f!.properties?.['freemap:type']).toBeUndefined();
+    const id = outer!.properties?.['freemap:polygonId'];
+
+    expect(id).toEqual(expect.any(String));
+    expect(outer!.properties?.['freemap:type']).toBe('polygon');
+    expect(outer!.properties?.['name']).toBe('Lake');
+
+    expect(hole!.properties).toMatchObject({
+      'freemap:holeOf': id,
+      'freemap:type': 'polygon',
+    });
+
+    // Unfilled, so a reader that ignores `fm:holeOf` does not paint it in.
+    expect(hole!.properties?.['freemap:fillColor']).toMatch(/00$/);
+    expect(hole!.properties?.['name']).toBeUndefined();
+  });
+
+  describe('a polygon with holes', () => {
+    const lake = (properties: Feature['properties']): Feature => ({
+      type: 'Feature',
+      properties,
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [17.0, 48.0],
+            [17.01, 48.0],
+            [17.01, 48.01],
+            [17.0, 48.0],
+          ],
+          [
+            [17.002, 48.002],
+            [17.004, 48.002],
+            [17.004, 48.004],
+            [17.002, 48.002],
+          ],
+        ],
+      },
+    });
+
+    it('leaves a hole unfilled though its polygon has no style', () => {
+      const [, hole] = roundTrip(fc([lake({})]));
+
+      expect(hole!.properties?.['freemap:fillColor']).toMatch(/00$/);
+    });
+
+    it('writes each hole’s own per-point series', () => {
+      const times = (minute: number) =>
+        [0, 1, 2, 3].map((i) => `2020-01-01T00:0${minute}:0${i}.000Z`);
+
+      const [, hole] = roundTrip(
+        fc([lake({ coordinateProperties: { times: [times(0), times(1)] } })]),
+      );
+
+      expect(hole!.properties?.['coordinateProperties']).toMatchObject({
+        times: times(1),
+      });
+    });
+
+    it('drops a stray hole id from the polygon itself', () => {
+      const [outer] = roundTrip(fc([lake({ 'freemap:holeOf': 'x' })]));
+
+      expect(outer!.properties?.['freemap:holeOf']).toBeUndefined();
+      expect(outer!.properties?.['freemap:polygonId']).toEqual(
+        expect.any(String),
+      );
+    });
   });
 
   it('keeps a GeoJSON polygon a polygon', () => {

@@ -137,7 +137,9 @@ rather than a position — tracks are written in several passes, and other
 producers' files interleave their own. A hole borrows its parent's
 styling, since that is what it is drawn with, but with a fully
 transparent fill so consumers that ignore `fm:holeOf` outline it instead
-of painting over the shape.
+of painting over the shape. Any other polygon with holes — an imported one, a
+search result — goes out the same way from `gpxFromGeojson.ts`; a multipolygon
+is split into its members only when one of them has holes.
 
 ### GPX export (per `<trk>`)
 

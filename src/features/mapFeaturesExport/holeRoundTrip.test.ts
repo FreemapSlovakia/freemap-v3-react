@@ -4,11 +4,18 @@ import { withGpxHoles } from '@features/dataViewer/gpxHoles.js';
 import { parseDataFile } from '@features/dataViewer/parseDataFile.js';
 import { parseGpx } from '@features/dataViewer/parseGpx.js';
 import type { Line } from '@features/drawing/model/actions/drawingLineActions.js';
-import type { Feature, FeatureCollection, Polygon } from 'geojson';
+import type {
+  Feature,
+  FeatureCollection,
+  Geometry,
+  Polygon,
+  Position,
+} from 'geojson';
 import { describe, expect, it } from 'vitest';
 import { geojsonToKml } from './model/processors/geojsonToKml.js';
 import { FM_NS, GPX_STYLE_NS } from './model/processors/gpxExporter.js';
 import { buildGpx } from './model/processors/gpxExportProcessorHandler.js';
+import { geojsonToGpxDoc } from './model/processors/gpxFromGeojson.js';
 
 const at = (lat: number, lon: number, id: number) => ({ lat, lon, id });
 
@@ -228,6 +235,45 @@ describe('pairing GPX holes', () => {
     const [orphan] = withGpxHoles(collection([child!])).features;
 
     expect(orphan!.properties).not.toHaveProperty('freemap:holeOf');
+  });
+});
+
+describe('a GeoJSON polygon with holes in GPX', () => {
+  const ring = (x: number, y: number, d: number): Position[] => [
+    [x, y],
+    [x + d, y],
+    [x + d, y + d],
+    [x, y],
+  ];
+
+  const opened = (geometry: Geometry) =>
+    parseDataFile(
+      new XMLSerializer().serializeToString(
+        geojsonToGpxDoc(
+          collection([{ type: 'Feature', properties: {}, geometry }]),
+        ),
+      ),
+      'x.gpx',
+    )!.features.map((feature) => feature.geometry);
+
+  it('opens as one polygon with the same rings', () => {
+    const rings = [ring(0, 0, 1), ring(0.2, 0.2, 0.2), ring(0.6, 0.6, 0.2)];
+
+    expect(opened({ type: 'Polygon', coordinates: rings })).toEqual([
+      { type: 'Polygon', coordinates: rings },
+    ]);
+  });
+
+  it('opens a multipolygon with a holed member as one polygon each', () => {
+    const holed = [ring(0, 0, 1), ring(0.2, 0.2, 0.2)];
+
+    const solid = [ring(5, 5, 1)];
+
+    expect(
+      opened({ type: 'MultiPolygon', coordinates: [holed, solid] }).map(
+        (geometry) => geometry?.type === 'Polygon' && geometry.coordinates,
+      ),
+    ).toEqual([holed, false]);
   });
 });
 
