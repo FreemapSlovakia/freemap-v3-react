@@ -491,13 +491,8 @@ externalizes rich EXIF out of reach, which is why `capturedAt`/`azimuth` from it
 are sparse (~36% / ~8%) and SDC `P571` backfills the date; azimuth has no SDC
 source and stays best-effort EXIF.
 
-Remaining work is issues under `area: gallery`, plus two backend-repo items:
+Remaining work is issues under `area: gallery`, plus a backend-repo item:
 
-- [ ] **Reject `w<pageId>` explicitly** in the `PUT`/`DELETE`/`/image` handlers.
-  They route on `/pictures/:id` and interpolate `ctx.params.id` straight into
-  SQL, so `w123` coerces to `0` in MySQL and 404s — the right answer for the
-  wrong reason. `parsePictureId` (`src/routers/gallery/pictureId.ts`) already
-  parses the ref; use it.
 - [ ] **Mid-download resume in the importer.** `got` won't resume a stream once
   bytes have started, so `loadPass` retries a transient drop by restarting the
   whole pass — up to 75 GB re-downloaded because a connection blinked.
