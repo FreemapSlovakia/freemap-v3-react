@@ -40,6 +40,36 @@ describe('gradientToCss / cssToStops', () => {
     expect(cssToStops(gradientToCss(gradient.stops, 1))?.active).toBe(1);
   });
 
+  it('keeps a stop dragged past either end, at that end', () => {
+    expect(
+      cssToStops(
+        'linear-gradient(90deg, rgba(10,20,30,1) -5%, RGBA(40,50,60,1) 50%, rgba(70,80,90,1) 105%)',
+      ),
+    ).toEqual({
+      stops: [
+        { pos: 0, color: '#0a141e' },
+        { pos: 0.5, color: '#28323c' },
+        { pos: 1, color: '#46505a' },
+      ],
+      active: 1,
+    });
+  });
+
+  it('keeps the selection on the stop it was, once a drag passes another', () => {
+    expect(
+      cssToStops(
+        'linear-gradient(90deg, rgba(10,20,30,1) 0%, RGBA(40,50,60,1) 80%, rgba(70,80,90,1) 60%)',
+      ),
+    ).toEqual({
+      stops: [
+        { pos: 0, color: '#0a141e' },
+        { pos: 0.6, color: '#46505a' },
+        { pos: 0.8, color: '#28323c' },
+      ],
+      active: 2,
+    });
+  });
+
   it('answers nothing for a plain colour, which is how the solid tab reads', () => {
     expect(cssToStops('rgba(58,74,52,1)')).toBeNull();
   });

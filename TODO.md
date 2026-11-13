@@ -621,12 +621,6 @@ distance probe, a premium quality tier. What it does not do yet is issues under
   `ShadingColorPicker`, and will be fixed in one of them. Do _not_ bolt a
   gradient mode onto `RgbaColorPicker` — its value is a string and this
   one's is `{color, gradient}`; the shell is the shared part.
-- [ ] **Share the `linear-gradient` codec with `ShadingColorPicker`.** Both
-  hand-roll `@zdila/react-gradient-color-picker`'s wire format, including
-  the upper-cased `RGBA(` that marks the selected stop, and their regexes
-  have already drifted (`\s+` vs a literal space). The stop _models_ differ
-  legitimately; only the CSS format is shared. `gradient.test.ts` covers
-  this side, the shading side has no tests at all.
 - [ ] **`fadeToSky` could live on the stop.** The wire takes `'sky'` as any
   stop's colour; the client models it as a gradient-level boolean meaning
   "and the last one", which `previewStops`, `storedStops` and

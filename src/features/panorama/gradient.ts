@@ -1,5 +1,6 @@
-import { rgbaStringToHexa, toRgbaString } from '@shared/colorAlpha.js';
+import { gradientCss, parseGradientCss } from '@shared/gradientCss.js';
 import { nearestStep } from '@shared/mathUtils.js';
+import Color from 'color';
 import z from 'zod';
 
 /**
@@ -241,22 +242,19 @@ export function storedStops(
   );
 }
 
-/**
- * The ramp as CSS, which is what the picker speaks. `active` marks the stop it
- * has selected — the picker says so by upper-casing that stop's `RGBA`, and
- * loses the selection unless it is handed back the same way.
- */
+/** The ramp as the picker's CSS, `active` the stop it has selected. */
 export function gradientToCss(
   stops: PanoramaGradientStop[],
   active?: number,
 ): string {
-  return `linear-gradient(90deg, ${stops
-    .map(({ pos, color }, i) => {
-      const rgba = toRgbaString(color);
+  return gradientCss(
+    stops.map(({ pos, color }) => {
+      const [r = 0, g = 0, b = 0] = Color(color).rgb().array();
 
-      return `${i === active ? rgba.replace('rgba', 'RGBA') : rgba} ${Math.round(pos * 100)}%`;
-    })
-    .join(', ')})`;
+      return { rgba: [r, g, b, 1], pct: Math.round(pos * 100) };
+    }),
+    active,
+  );
 }
 
 export const GRADIENT_PRESETS = GRADIENT_PRESET_STOPS.map((stops) =>
@@ -313,35 +311,36 @@ export function gradientFarStepIndex(
     : nearestStep(steps.slice(1) as number[], farKm) + 1;
 }
 
-const STOP_RE = /((r)gba?\([^)]+\))\s+(\d+(?:\.\d+)?)%/gi;
-
 /**
- * The stops of a CSS ramp, and which one the picker has selected. `null` where
- * the value is a plain colour, which is how the solid tab answers.
+ * The stops of a CSS ramp in order, and which one the picker has selected.
+ * `null` for a plain colour, which is how the solid tab answers.
  */
 export function cssToStops(
   css: string,
 ): { stops: PanoramaGradientStop[]; active?: number } | null {
-  if (!css.startsWith('linear-gradient(')) {
+  const parsed = parseGradientCss(css);
+
+  if (!parsed || parsed.stops.length < 2) {
     return null;
   }
 
-  let active: number | undefined;
+  const stops = parsed.stops.map(({ rgba: [r, g, b], pct }) => ({
+    // Clamped: the service takes 0–1. Alpha dropped: the wire takes #rrggbb.
+    pos: Math.min(Math.max(pct / 100, 0), 1),
+    color: Color.rgb(r, g, b).hex().toLowerCase(),
+  }));
 
-  const stops = [...css.matchAll(STOP_RE)].map(([, rgba, r, pct], i) => {
-    if (r === 'R') {
-      active = i;
-    }
+  // Sorted here, as stored: the selection must name the same stop after.
+  const order = stops
+    .keys()
+    .toArray()
+    .toSorted((a, b) => stops[a]!.pos - stops[b]!.pos);
 
-    // Sliced, not trusted: the opacity slider is hidden, but a hand-made value
-    // carrying alpha would otherwise reach the wire as an eight-digit colour.
-    return {
-      pos: Number(pct) / 100,
-      color: rgbaStringToHexa(rgba).slice(0, 7),
-    };
-  });
-
-  return stops.length < 2 ? null : { stops, active };
+  return {
+    stops: order.map((i) => stops[i]!),
+    active:
+      parsed.active === undefined ? undefined : order.indexOf(parsed.active),
+  };
 }
 
 /** What the wire calls it; see the service's `docs/API.md`. */

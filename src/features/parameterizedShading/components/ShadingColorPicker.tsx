@@ -1,4 +1,5 @@
 import { setUrlUpdatingEnabled } from '@app/url/urlUpdating.js';
+import { gradientCss, parseGradientCss } from '@shared/gradientCss.js';
 import { useBsTheme } from '@shared/hooks/useBsTheme.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
@@ -208,16 +209,13 @@ export function ShadingColorPicker({
           if (!component) {
             v = Color.rgb(shading.backgroundColor).string();
           } else if (isGradientComponent) {
-            v =
-              'linear-gradient(90deg, ' +
-              component.colorStops
-                .map(
-                  (colorStop, i) =>
-                    (activeStopIndex === i ? 'RGBA' : 'rgba') +
-                    `(${colorStop.color.join(',')}) ${toPercent(colorStop.value)}%`,
-                )
-                .join(', ') +
-              ')';
+            v = gradientCss(
+              component.colorStops.map((colorStop) => ({
+                rgba: colorStop.color,
+                pct: toPercent(colorStop.value),
+              })),
+              activeStopIndex,
+            );
           } else {
             const c = component.colorStops[0].color ?? shading.backgroundColor;
 
@@ -231,37 +229,27 @@ export function ShadingColorPicker({
 
           let colorStops: ColorStop[];
 
-          let activeIndex: number | undefined;
+          const gradient = parseGradientCss(picked);
 
-          if (picked.startsWith('linear-gradient(')) {
-            colorStops = [
-              // Stops outside the picker's range come back below 0 or above 100%.
-              ...picked.matchAll(/(r)gba?\(([^)]+)\) (-?\d+(?:\.\d+)?%)/gi),
-            ].map(([, r, rgba, stop], i) => {
-              if (r === 'R') {
-                activeIndex = i;
-              }
+          if (picked.startsWith('linear-gradient(') && !gradient) {
+            // Nothing in it this can read: kept as it was rather than emptied.
+            return;
+          }
 
-              const c = rgba.split(',').map(Number) as ColorType;
-
-              if (c.length < 4) {
-                c.push(1);
-              }
-
-              return {
-                value:
-                  stopScale.min +
-                  (parseFloat(stop) / 100) * (stopScale.max - stopScale.min),
-                color: c,
-              };
-            });
+          if (gradient) {
+            // A stop dragged past an end lands beyond the scale, as dragged.
+            colorStops = gradient.stops.map(({ rgba, pct }) => ({
+              value:
+                stopScale.min + (pct / 100) * (stopScale.max - stopScale.min),
+              color: rgba,
+            }));
 
             // One stop too many is not added.
             if (colorStops.length > MAX_COLOR_STOPS) {
               return;
             }
 
-            setActiveStopIndex(activeIndex);
+            setActiveStopIndex(gradient.active);
           } else {
             const c = Color(picked).rgb().array() as ColorType;
 
