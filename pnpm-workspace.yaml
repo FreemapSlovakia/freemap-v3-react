@@ -50,6 +50,7 @@ minimumReleaseAgeExclude:
   - "@rspack/binding@2.2.9"
   - "@rspack/cli@2.2.9"
   - "@rspack/core@2.2.9"
+  - "@zdila/react-gradient-color-picker@3.3.1"
   - ts-proto@2.15.3
   - react-dom@19.3.1
   - react@19.3.1
