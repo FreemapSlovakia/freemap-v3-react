@@ -33,7 +33,7 @@ import {
   OsmFeatureIdSchema,
 } from '@shared/types/featureId.js';
 import { afterPrefix } from '@shared/types/typeUtils.js';
-import { type ReactNode, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
@@ -81,12 +81,9 @@ export function useObjectActions({ result, bindKeys = true }: Props): {
 
   const parsedId = result ? OsmFeatureIdSchema.safeParse(result.id) : null;
 
-  // Walking the geometry of a whole boundary relation is not something to do on
-  // every zoom step.
-  const coords = useMemo(
-    () => (result ? resultCoords(result) : null),
-    [result],
-  );
+  // Cached by the compiler: walking a whole boundary relation's geometry is not
+  // something to do on every zoom step.
+  const coords = result ? resultCoords(result) : null;
 
   // The kind of thing it is names the layer, and is resolved on the click: an
   // objects refresh replaces the result on every pan, so resolving it with the

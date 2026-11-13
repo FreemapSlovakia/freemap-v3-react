@@ -78,10 +78,9 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
 
   // Checkbox reflects the current batch: all-premium when items exist (the
   // `indeterminate` ref handles the mixed case), else the persisted default.
-  const premium = useMemo(
-    () => (items.length ? items.every((item) => item.premium) : defaultPremium),
-    [items, defaultPremium],
-  );
+  const premium = items.length
+    ? items.every((item) => item.premium)
+    : defaultPremium;
 
   const defaultLicense = useAppSelector(
     (state) => state.gallerySettings.license,

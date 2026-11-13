@@ -193,10 +193,7 @@ export default function Toposcope(): ReactElement {
 
   // The middle of the dial says whatever the centre point is labelled with —
   // `{location}` by default, which the picker writes when it creates the point.
-  const centerLines = useMemo(
-    () => (center ? toLines(featureLabel(center.feature) ?? '') : []),
-    [center],
-  );
+  const centerLines = center ? toLines(featureLabel(center.feature) ?? '') : [];
 
   const {
     boxProps,

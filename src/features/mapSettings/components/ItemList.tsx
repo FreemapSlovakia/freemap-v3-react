@@ -246,18 +246,14 @@ export function ItemList({
 
   const sortedBy = sort && effectiveSort(sort);
 
-  // Not again on every selection, which this reads.
-  const sorted = useMemo(
-    () =>
-      sortedBy
-        ? sortItems(
-            matching,
-            sortedBy,
-            new Intl.Collator(language, { numeric: true }),
-          )
-        : matching,
-    [matching, sortedBy, language],
-  );
+  // Cached by the compiler on its inputs: not re-sorted on every selection.
+  const sorted = sortedBy
+    ? sortItems(
+        matching,
+        sortedBy,
+        new Intl.Collator(language, { numeric: true }),
+      )
+    : matching;
 
   // Rendered rows are costly (a tooltip and an observer each), so they come a
   // page at a time as the list scrolls.

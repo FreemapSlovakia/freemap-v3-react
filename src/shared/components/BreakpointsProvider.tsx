@@ -2,7 +2,7 @@ import {
   BreakpointMatchesContext,
   matchesForWidth,
 } from '@shared/breakpoints.js';
-import { type ReactElement, type ReactNode, useMemo } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 type Props = {
   /** The box's own width in pixels; `null` measures against the viewport. */
@@ -17,10 +17,7 @@ type Props = {
  * screen says nothing about the room a toolbar has.
  */
 export function BreakpointsProvider({ width, children }: Props): ReactElement {
-  const matches = useMemo(
-    () => (width === null ? null : matchesForWidth(width)),
-    [width],
-  );
+  const matches = width === null ? null : matchesForWidth(width);
 
   return (
     <BreakpointMatchesContext value={matches}>

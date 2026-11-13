@@ -17,7 +17,7 @@ import {
   verticesAt,
 } from '@shared/simplifyTolerance.js';
 import type { Position } from 'geojson';
-import { type ReactNode, useCallback, useDeferredValue, useMemo } from 'react';
+import { type ReactNode, useCallback, useDeferredValue } from 'react';
 import { Form } from 'react-bootstrap';
 import { FaCompressAlt } from 'react-icons/fa';
 import type { Messages } from '@/translations/messagesInterface.js';
@@ -107,14 +107,11 @@ export function SimplifyFields({
   });
 
   // The count trails the slider: it walks every vertex of the lines, and an OSM
-  // relation can be tens of thousands. Memoized on the deferred value, or every
-  // urgent render would walk them anyway and the thumb would stall.
+  // relation can be tens of thousands. The compiler caches it on the deferred
+  // value, or every urgent render would walk them anyway and the thumb stalls.
   const deferred = useDeferredValue(value);
 
-  const after = useMemo(
-    () => verticesAt(lines, positionToMeters(deferred), rings),
-    [lines, deferred, rings],
-  );
+  const after = verticesAt(lines, positionToMeters(deferred), rings);
 
   const meters = positionToMeters(value);
 

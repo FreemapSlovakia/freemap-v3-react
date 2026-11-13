@@ -1,5 +1,5 @@
 import { SelectDropdown } from '@shared/components/SelectDropdown.js';
-import { type ReactElement, type ReactNode, useMemo } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import {
   type GalleryLicense,
   LicenseBadge,
@@ -30,16 +30,12 @@ export function GalleryLicenseSelect({
 }: Props): ReactElement {
   const gm = useGalleryMessages();
 
-  const options = useMemo(
-    () =>
-      PHOTO_LICENSES.map(({ id }) => ({
-        value: id,
-        label: gm?.license.names[id] ?? id,
-        icon: <LicenseBadge licenseId={id} />,
-        title: gm?.license.descriptions[id],
-      })),
-    [gm],
-  );
+  const options = PHOTO_LICENSES.map(({ id }) => ({
+    value: id,
+    label: gm?.license.names[id] ?? id,
+    icon: <LicenseBadge licenseId={id} />,
+    title: gm?.license.descriptions[id],
+  }));
 
   return (
     <SelectDropdown

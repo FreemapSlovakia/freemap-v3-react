@@ -64,18 +64,15 @@ accessibility-only labels, which this app doesn't add — see `CLAUDE.md`).
   whenever no fetch follows or the fetch fails: only an area fetch can bring
   it. With the POI fetched by id, the way `osmLoad` fetches an element, it
   could be selected at once and `awaitedSelection` dropped.
-- [ ] **Remove redundant `useMemo` now the React Compiler memoizes.** The
-  `useCallback` pass is done (108 removed across 52 files, `b8b74f36`);
-  `useMemo` is left. Same method — see
-  [`doc/react-compiler.md`](./doc/react-compiler.md): take only files whose
-  emitted output contains `react/compiler-runtime`, skip anything named in a
-  dependency array, returned as a value from a hook, or reaching
-  react-leaflet, then prove the result with
-  `node scripts/react-compiler-check.mjs unchanged`. `useMemo` needs more
-  judgement than `useCallback` did: some instances exist to hold an identity
-  for a consumer rather than to save work, and a few key deliberately on a
-  content hash instead of the value (`useNumberFormat`, `useZoomColorize`) —
-  those must stay.
+- [x] **Remove redundant `useMemo` now the React Compiler memoizes.** Done as
+  far as it is a provable no-op: 13 removed, every file byte-identical under
+  `node scripts/react-compiler-check.mjs unchanged`. Of the ~170 left, don't
+  retry the 50-odd single-expression ones in compiled files: in 17 files the
+  removal let the compiler merge the work into a wider memo block (e.g.
+  `ManualModal`'s chapters recomputed on every chapter switch), a real change
+  in when values are recomputed and replaced. The rest are block bodies,
+  identity-bearing (dependency arrays, hook returns, react-leaflet props,
+  comments saying a consumer compares it) or in functions the compiler skips.
 - [ ] **Optional: inline single-use one-line handlers.** After the `useCallback`
   removal, ~85 handlers across those files are a single expression used
   exactly once, so the named const buys nothing. Purely cosmetic: named and

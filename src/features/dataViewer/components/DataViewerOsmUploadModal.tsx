@@ -24,7 +24,6 @@ import {
   type ReactElement,
   type SubmitEvent,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -68,7 +67,7 @@ export default function DataViewerOsmUploadModal({
   );
 
   // The modal has a URL id of its own, so it can open with nothing to upload.
-  const hasTrace = useMemo(() => hasOsmTraceLine(trackGeojson), [trackGeojson]);
+  const hasTrace = hasOsmTraceLine(trackGeojson);
 
   const user = useAppSelector((state) => state.auth.user);
 

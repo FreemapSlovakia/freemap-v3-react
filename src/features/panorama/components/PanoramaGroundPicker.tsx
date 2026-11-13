@@ -4,7 +4,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDragCommit } from '@shared/hooks/useDragCommit.js';
 import ColorPicker from '@zdila/react-gradient-color-picker';
 import Color from 'color';
-import { type ReactElement, useMemo, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import {
   cssToStops,
   GRADIENT_PRESETS,
@@ -71,10 +71,10 @@ export function PanoramaGroundPicker({
     change(next);
   };
 
-  const presets = useMemo(
-    () => [...GRADIENT_PRESETS, ...recent.map((stops) => gradientToCss(stops))],
-    [recent],
-  );
+  const presets = [
+    ...GRADIENT_PRESETS,
+    ...recent.map((stops) => gradientToCss(stops)),
+  ];
 
   return (
     // The picker's own value doubles as the swatch: CSS colour functions are

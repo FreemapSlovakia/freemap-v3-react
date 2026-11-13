@@ -85,10 +85,7 @@ export default function ViewshedLayer({
 
   // Where the overlay was drawn from — not the pin, which may since have been
   // dragged somewhere nothing has been computed for.
-  const renderedAt = useMemo(
-    () => render && toLatLng(render.viewpoint),
-    [render],
-  );
+  const renderedAt = render && toLatLng(render.viewpoint);
 
   const atRenderedViewpoint = useAppSelector(
     viewshedAtRenderedViewpointSelector,

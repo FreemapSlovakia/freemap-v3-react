@@ -7,7 +7,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { type ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaEye } from 'react-icons/fa';
 import { FaPencil } from 'react-icons/fa6';
@@ -29,12 +29,9 @@ export function TrackingSelection(): ReactElement {
     (state) => state.tracking.trackedDevices,
   );
 
-  const convertible = useMemo(
-    () =>
-      track !== undefined &&
-      hasDrawableSegment(tracks, trackedDevices, track.token),
-    [track, tracks, trackedDevices],
-  );
+  const convertible =
+    track !== undefined &&
+    hasDrawableSegment(tracks, trackedDevices, track.token);
 
   const dispatch = useDispatch();
 

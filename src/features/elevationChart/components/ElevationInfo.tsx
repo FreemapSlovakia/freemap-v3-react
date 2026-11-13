@@ -15,7 +15,7 @@ import { type IsTileLayerDef, isTileLayerDef } from '@shared/mapDefinitions.js';
 import { useTileCoverages } from '@shared/tileCoverage.js';
 import { buildTileUrl, pickSubdomain } from '@shared/tileUrl.js';
 import type { LatLon } from '@shared/types/common.js';
-import { Fragment, useMemo } from 'react';
+import { Fragment } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { TbDecimal } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
@@ -131,13 +131,10 @@ export function ElevationInfo({
     toFormat,
   );
 
-  const coordinates = useMemo(
-    () =>
-      format === 0
-        ? `${point.lat.toFixed(6)}, ${point.lon.toFixed(6)}`
-        : latLonToString(point, lang, FORMATS[format - 1]),
-    [format, lang, point],
-  );
+  const coordinates =
+    format === 0
+      ? `${point.lat.toFixed(6)}, ${point.lon.toFixed(6)}`
+      : latLonToString(point, lang, FORMATS[format - 1]);
 
   const handleNextFormatClick = () => {
     setFormat((f) => (f + 1) % FORMATS.length);

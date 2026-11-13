@@ -11,7 +11,6 @@ import {
   type ReactElement,
   type SubmitEvent,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
@@ -37,13 +36,10 @@ export default function DataViewerVertexModal({
     address ? state.trackViewer.trackGeojson?.features[address.id] : undefined,
   );
 
-  const vertex = useMemo(
-    () =>
-      feature && address
-        ? vertexFields(feature, address.part, address.vertex)
-        : undefined,
-    [feature, address],
-  );
+  const vertex =
+    feature && address
+      ? vertexFields(feature, address.part, address.vertex)
+      : undefined;
 
   const gone = !vertex?.fields.length;
 
