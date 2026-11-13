@@ -39,14 +39,24 @@ accessibility-only labels, which this app doesn't add — see `CLAUDE.md`).
 
 ## Cleanups
 
-- [ ] **Back re-pushes an app-driven map fit.** After a fit (an inspected
-  changeset's, `fitLoadedMap` from `changesetsInspectProcessor`) the view
-  change pushes its own entry. Going Back to the entry before it restores
-  the old view, but `mapStateHandler`'s `moveend` then reports the fitted
-  view again and `urlProcessor` pushes it anew, wiping Forward. Repro: open
-  an element's History, a version, then Back. Likely a race between
-  `mapRefocusProcessor`'s awaited `setView` and a `moveend` with the old
-  center; probably not specific to changesets.
+- [ ] **Back re-pushes an app-driven map fit.** Reproduced (2026-11-13), and
+  not one race: the store and the Leaflet map drift apart on several async
+  paths, and `mapStateHandler`'s `moveend` later writes the map's real view
+  back as a new entry, wiping Forward. Repro: open
+  `#map=16/48.915/21.2&panel=osm-node/4637444503/history`, pick v2, Back.
+  - Picking a version pushes **two** entries — the changeset panel at the old
+    view, then `inspectProcessor`'s `fitLoadedMap` view — so the first Back
+    lands on an in-between state.
+  - After that Back a third push follows (fitted lat, restored lon/zoom), a
+    new entry: Forward is gone.
+  - Opening the history panel already moves the store and URL towards the
+    element while the map stays put; whether the later `moveend` re-syncs
+    them depends on timing, so runs differ.
+  Stacks come back empty (the moves start after an `await`): instrument the
+  processors to see which dispatch moves the store. The likely fix is that
+  every app-driven move (fits, bring-into-view) keeps store and map in step
+  and rides the entry that caused it; retest GPS following, which shares
+  `moveOrigin`.
 - [ ] **Load a link's POI by its id.** A `panel=object/…` POI the objects layer
   hasn't loaded waits in `objects.awaitedSelection`, beside the one
   selection, and every selecting must let go of it. Selecting it at once
