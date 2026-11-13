@@ -417,17 +417,13 @@ export function PanoramaView({
 
     const head = Math.min(sw, bitmap.width - sx);
 
-    ctx.drawImage(
-      bitmap,
-      sx,
-      clampedOffsetY,
-      head,
-      sh,
-      0,
-      0,
-      head * scale * dpr,
-      dh,
-    );
+    const dw = sw * scale * dpr;
+
+    // The join is snapped to a device pixel: two antialiased edges meeting
+    // mid-pixel each cover it only partly, and the panel shows through as a seam.
+    const seamX = head < sw ? Math.round(head * scale * dpr) : dw;
+
+    ctx.drawImage(bitmap, sx, clampedOffsetY, head, sh, 0, 0, seamX, dh);
 
     if (head < sw) {
       ctx.drawImage(
@@ -436,9 +432,9 @@ export function PanoramaView({
         clampedOffsetY,
         sw - head,
         sh,
-        head * scale * dpr,
+        seamX,
         0,
-        (sw - head) * scale * dpr,
+        dw - seamX,
         dh,
       );
     }
