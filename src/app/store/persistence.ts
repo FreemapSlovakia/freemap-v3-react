@@ -515,8 +515,6 @@ type PersistEntry<K extends keyof RootState = keyof RootState> = {
   initial: RootState[K];
   /** Another slice this data may also live under (e.g. `main`); read if the primary is absent/empty. */
   fallbackKey?: keyof RootState;
-  /** Merge the `fallbackKey` data under the primary (fill gaps) instead of letting a non-empty primary win — needed only when the primary key predates a migrated field (currently just `trackViewerSettings`, whose key already held `style`). */
-  mergeFallback?: boolean;
   /** Merge parsed data over `initial`. Default: `{ ...initial, ...data }`. */
   rehydrate?: (initial: RootState[K], data: any) => RootState[K];
   /** What to write to localStorage on save; omit to make the slice rehydrate-only. */
@@ -702,8 +700,6 @@ const PERSIST: PersistEntry[] = [
     key: 'routePlannerSettings',
     schema: PersistedRoutePlannerSettingsSchema,
     initial: routePlannerSettingsInitialState,
-    // Also read these prefs from the `routePlanner` blob, which can carry them.
-    fallbackKey: 'routePlanner',
     persist: (s) => ({
       colorizeBy: s.colorizeBy,
       colorizeLegend: s.colorizeLegend,
@@ -752,12 +748,6 @@ const PERSIST: PersistEntry[] = [
     key: 'trackViewerSettings',
     schema: PersistedDataViewerSettingsSchema,
     initial: dataViewerSettingsInitialState,
-    // Also read the colorize prefs from the legacy `trackViewer` blob. This
-    // slice's key predates the colorize move (it persisted `style`), so the
-    // fallback must fill colorize per key rather than be shadowed by the
-    // already-present primary.
-    fallbackKey: 'trackViewer',
-    mergeFallback: true,
     rehydrate: (initial, data) => ({
       ...initial,
       ...data,
@@ -798,8 +788,6 @@ const PERSIST: PersistEntry[] = [
     key: 'trackingSettings',
     schema: PersistedTrackingSettingsSchema,
     initial: trackingSettingsInitialState,
-    // Also read these prefs from the `tracking` blob, which can carry them.
-    fallbackKey: 'tracking',
     persist: (t) => ({
       colorizeBy: t.colorizeBy,
       colorizeLegend: t.colorizeLegend,
@@ -826,8 +814,6 @@ const PERSIST: PersistEntry[] = [
     key: 'gallerySettings',
     schema: PersistedGallerySettingsSchema,
     initial: gallerySettingsInitialState,
-    // Also read these prefs from the `gallery` blob, which can carry them.
-    fallbackKey: 'gallery',
     persist: (g) => ({
       colorizeBy: g.colorizeBy,
       recentTags: g.recentTags,
@@ -886,12 +872,7 @@ export function getInitialState(): Partial<RootState> {
     let data: unknown;
 
     if (entry.fallbackKey) {
-      data = parseWithFallback(
-        entry.schema,
-        raw,
-        persisted[entry.fallbackKey],
-        entry.mergeFallback,
-      );
+      data = parseWithFallback(entry.schema, raw, persisted[entry.fallbackKey]);
     } else {
       const result = entry.schema.safeParse(raw);
 
@@ -933,31 +914,14 @@ function parseWithFallback<T>(
   schema: z.ZodType<T>,
   primary: unknown,
   fallback: unknown,
-  merge = false,
 ): T | undefined {
-  const a = schema.safeParse(primary);
+  for (const raw of [primary, fallback]) {
+    const result = schema.safeParse(raw);
 
-  const primaryData =
-    a.success && Object.keys(a.data as object).length > 0 ? a.data : undefined;
-
-  if (primaryData && !merge) {
-    return primaryData;
+    if (result.success && Object.keys(result.data as object).length > 0) {
+      return result.data;
+    }
   }
 
-  const b = schema.safeParse(fallback);
-
-  const fallbackData =
-    b.success && Object.keys(b.data as object).length > 0 ? b.data : undefined;
-
-  // With `merge`, the fallback supplies the base and the primary overrides per
-  // key, so a value left behind in the legacy slice fills a key the primary
-  // lacks (needed when the primary key predates the migrated field). Otherwise
-  // a non-empty primary wins outright.
-  if (merge) {
-    return primaryData || fallbackData
-      ? ({ ...(fallbackData as object), ...(primaryData as object) } as T)
-      : undefined;
-  }
-
-  return fallbackData;
+  return undefined;
 }

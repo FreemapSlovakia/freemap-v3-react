@@ -136,16 +136,6 @@ split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
   on `show || wasShown` instead of `labelHidden`. Measure before and after —
   it is milliseconds on mount-once UI, so this is only worth doing if it
   stays a small change.
-- [ ] **Remove the `*Settings` localStorage migration code (after ~2026-09).**
-  The one-time migration from the old transient-slice keys can be dropped
-  once active users have re-saved under the new keys (a couple of months
-  from 2026-06; users who haven't opened the app by then aren't worth keeping
-  it for). Delete `fallbackKey` (and `mergeFallback`) from the
-  `routePlannerSettings`/`trackingSettings`/`gallerySettings`/
-  `trackViewerSettings` PERSIST entries in `persistence.ts`; once nothing
-  sets `mergeFallback`, simplify `parseWithFallback` back to primary-wins.
-  The `fallbackKey: 'main'` migrations
-  (`drawingSettings`/`homeLocation`/`cookieConsent`) are unrelated and stay.
 - [ ] **Derive `Messages` from `en.tsx`.** `src/translations/messagesInterface.ts`
   is hand-maintained against the master and can drift. Explore deriving the
   type from `typeof en` (or a codegen step) so `en.tsx` is the single source.
@@ -364,8 +354,7 @@ ids and the `tools.dataViewer` message key.
 somewhere and renaming it would strand existing data:**
 
 - the redux slice keys `trackViewer` / `trackViewerSettings` — they double
-  as the localStorage keys (`PersistEntry.key` is `keyof RootState`), and
-  `fallbackKey: 'trackViewer'` reads the pre-settings-split blob;
+  as the localStorage keys (`PersistEntry.key` is `keyof RootState`);
 - the my-maps map-document fields `trackViewer: { trackGeojson, trackUID,
 gpxUrl }`, which are in every saved map on the server;
 - the idb database name `fm-trackViewer` in `trackStore.ts`;
