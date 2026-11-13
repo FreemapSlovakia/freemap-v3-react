@@ -80,9 +80,10 @@ const PICKING_CURSOR: Record<PickingMode, string> = {
   'toposcope-center': 'crosshair',
   panorama: 'crosshair',
   'viewshed-viewpoint': 'crosshair',
-  'map-area': 'crosshair',
   'home-location': 'crosshair',
-  // These pick nothing: the map is only being looked at.
+  // A click on the map does nothing in these: the area is set by its handles,
+  // and the other two only show something.
+  'map-area': 'auto',
   'map-library-preview': 'auto',
   'gallery-show-position': 'auto',
 };

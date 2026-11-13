@@ -261,10 +261,10 @@ describe('mouseCursorSelector', () => {
     expect(mouseCursorSelector(state)).toBe('auto');
   });
 
-  it('returns crosshair while selecting a map area', () => {
+  it('returns auto while selecting a map area, set by its handles', () => {
     const state = makeState({ mapArea: { selecting: 'export' } });
 
-    expect(mouseCursorSelector(state)).toBe('crosshair');
+    expect(mouseCursorSelector(state)).toBe('auto');
   });
 
   it('returns auto while previewing a library map, which picks nothing', () => {
