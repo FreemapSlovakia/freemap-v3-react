@@ -1,10 +1,5 @@
 import type { RootState } from '@app/store/store.js';
 import { drawnEnvelope } from '@features/cachedMaps/sourceLayer.js';
-import {
-  type Document,
-  DocumentSchema,
-  documentShow,
-} from '@features/documents/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -27,7 +22,6 @@ import {
 import { useTerrainLicenses, useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
 import { useTileZoom } from '../hooks/useTileZoom.js';
 import {
   type AttributionDef,
@@ -42,15 +36,6 @@ import {
 import { coversInBounds, useTileCoverages } from '../tileCoverage.js';
 
 type Props = { unknown: string };
-
-const PREFIX = '?document=';
-
-/** The in-app document a credit links to; anything else opens in a new tab. */
-function documentOf(url: string | undefined): Document | undefined {
-  return url?.startsWith(PREFIX)
-    ? DocumentSchema.safeParse(url.slice(PREFIX.length)).data
-    : undefined;
-}
 
 // The no-break space keeps the dot on the credit it follows.
 const SEPARATOR = '\u00a0· ';
@@ -444,8 +429,6 @@ export function useResolvedAttribution(
     fromPaintedTiles,
   );
 
-  const dispatch = useDispatch();
-
   return categorized.length === 0
     ? null
     : categorized.map(
@@ -458,22 +441,7 @@ export function useResolvedAttribution(
                 <Fragment key={j}>
                   {j > 0 && SEPARATOR}
                   {a.url ? (
-                    <a
-                      href={a.url}
-                      {...(documentOf(a.url) === undefined && {
-                        target: '_blank',
-                        rel: 'noopener noreferrer',
-                      })}
-                      onClick={(e) => {
-                        const doc = documentOf(a.url);
-
-                        if (doc !== undefined) {
-                          e.preventDefault();
-
-                          dispatch(documentShow(doc));
-                        }
-                      }}
-                    >
+                    <a href={a.url} target="_blank" rel="noopener noreferrer">
                       {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
                     </a>
                   ) : (

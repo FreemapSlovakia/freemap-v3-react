@@ -99,12 +99,6 @@ Still emitting at info level (non-blocking, optional cleanup):
   `showGalleryPicker || picking` is a behaviour change for those two —
   decide it deliberately rather than letting the two lists keep diverging.
   Folds into the item above.
-- [ ] **`Attribution`'s document-link branch is unreachable.** `PREFIX =
-'?document='` (`src/shared/components/Attribution.tsx`) matches no
-  `AttributionDef.url` anywhere, so the `documentShow` interception has
-  never fired. Either something should produce such a URL — and then it
-  wants the hash form the rest of the app uses, not a query — or the branch
-  and the prefix should go.
 - [ ] **`MyMapsMenu` hand-builds the split button** `SplitButton` now
   abstracts (`Dropdown as={ButtonGroup}` + `Button` + `Dropdown.Toggle
 split` + `FmDropdownMenu`). It needs a `breakpoint` label on the primary
