@@ -11,7 +11,7 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Un aperçu lissé de la zone. Une fois créé, le modèle s’affiche tel que le fichier le contient, simplification comprise.',
   viewModel: 'Aperçu fidèle du modèle créé.',
   modelTooLargeToShow:
-    'Le modèle créé est trop volumineux pour être affiché ; l’aperçu montre donc la zone. Il reste téléchargeable.',
+    'Le modèle est trop détaillé pour un aperçu fidèle ; un aperçu lissé de la zone est donc affiché.',
   build: 'Créer le modèle',
   dimensions: 'Dimensions du modèle',
   scale: 'Échelle',

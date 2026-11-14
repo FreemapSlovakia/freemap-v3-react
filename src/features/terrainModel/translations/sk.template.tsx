@@ -11,7 +11,7 @@ const sk: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Vyhladený náhľad územia. Po vytvorení sa model zobrazí tak, ako bude vo výslednom súbore, aj so zjednodušením.',
   viewModel: 'Verný náhľad vytvoreného modelu.',
   modelTooLargeToShow:
-    'Vytvorený model je na zobrazenie príliš veľký, preto náhľad ukazuje územie. Stiahnuť ho možno aj tak.',
+    'Model je na verný náhľad príliš podrobný, preto je zobrazený vyhladený náhľad územia.',
   build: 'Vytvoriť model',
   dimensions: 'Rozmery modelu',
   scale: 'Mierka',

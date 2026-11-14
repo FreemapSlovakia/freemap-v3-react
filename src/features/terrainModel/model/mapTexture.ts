@@ -14,6 +14,10 @@ const MIN_ZOOM = 0;
 
 const CONCURRENCY = 6;
 
+// As the map's tile layers: the app is served `no-referrer`, and providers
+// such as OSM refuse a tile asked for without a Referer.
+const REFERRER_POLICY = 'strict-origin-when-cross-origin';
+
 /** One layer of image tiles, as a library map defines it. */
 interface TileLayer {
   url: string;
@@ -94,6 +98,8 @@ function loadImage(
   const img = new Image();
 
   img.crossOrigin = 'anonymous';
+
+  img.referrerPolicy = REFERRER_POLICY;
 
   const abort = () => {
     img.src = '';
@@ -216,7 +222,10 @@ export async function mapTexture(
       const url = fill(layer, zoom, tx, ty);
 
       if (layer.reportsCodes) {
-        const res = await fetch(markDrawnTile(url), { signal });
+        const res = await fetch(markDrawnTile(url), {
+          signal,
+          referrerPolicy: REFERRER_POLICY,
+        });
 
         if (!res.ok) {
           return;

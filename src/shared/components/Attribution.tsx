@@ -61,7 +61,7 @@ export function toAttributionCountries(
  * country-specific source needs its country in the list, a global one always
  * applies. An `undefined` country list means "unknown", so everything shows.
  */
-function coversCountries(
+export function coversCountries(
   def: AttributionDef,
   countries: string[] | undefined,
 ): boolean {
@@ -419,8 +419,6 @@ export function useResolvedAttribution(
   creditRouting = true,
   fromPaintedTiles = false,
 ): [string, ReactElement][] | null {
-  const m = useMessages();
-
   const { categorized, esriAttribution } = useCategorizedAttribution(
     layers,
     countries,
@@ -437,25 +435,46 @@ export function useResolvedAttribution(
             type,
             <>
               <Text k={`mapLayers.type.${type}`} />{' '}
-              {attributions.map((a, j) => (
-                <Fragment key={j}>
-                  {j > 0 && SEPARATOR}
-                  {a.url ? (
-                    <a href={a.url} target="_blank" rel="noopener noreferrer">
-                      {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
-                    </a>
-                  ) : (
-                    a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])
-                  )}
-                </Fragment>
-              ))}
+              <CreditNames attributions={attributions} />
               {esriAttribution?.map((a) => SEPARATOR + a).join('') ?? ''}
             </>,
           ] as const,
       );
 }
 
-function categorize(
+/** One category's credits, linked where they have a URL; a nameless one is left out. */
+export function CreditNames({
+  attributions,
+}: {
+  attributions: AttributionDef[];
+}): ReactElement {
+  const m = useMessages();
+
+  return (
+    <>
+      {attributions
+        .map((a) => ({
+          a,
+          name: a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey]),
+        }))
+        .filter(({ name }) => name)
+        .map(({ a, name }, j) => (
+          <Fragment key={j}>
+            {j > 0 && SEPARATOR}
+            {a.url ? (
+              <a href={a.url} target="_blank" rel="noopener noreferrer">
+                {name}
+              </a>
+            ) : (
+              name
+            )}
+          </Fragment>
+        ))}
+    </>
+  );
+}
+
+export function categorize(
   attributions: AttributionDef[],
 ): { type: AttributionDef['type']; attributions: AttributionDef[] }[] {
   const res: Partial<Record<AttributionDef['type'], AttributionDef[]>> = {};

@@ -13,6 +13,12 @@ import {
 } from '@features/mapToDocumentExport/model/exportCredits.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium, premiumTileAuth } from '@features/premium/premium.js';
+import {
+  CreditNames,
+  categorize,
+  coversCountries,
+  toAttributionCountries,
+} from '@shared/components/Attribution.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmDismissButton,
@@ -391,6 +397,12 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
   const libraryDefs = useAppSelector(integratedLayerDefsSelector);
 
   const textureMaps = libraryDefs.filter(isTextureMap);
+
+  // The countries in view, which hold the area: a country's own sources are
+  // credited only there, as on the map.
+  const attributionCountries = toAttributionCountries(
+    useAppSelector((state) => state.map.countries),
+  );
 
   // Chosen explicitly: the map on screen may be WMS, vector or an overlay,
   // none of which a texture can draw. One uninstalled since leaves it plain.
@@ -906,22 +918,19 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
                 )}
 
                 {preview.texture && preview.texture.credits.length > 0 && (
+                  // As the map's own attribution: by type, deduplicated, linked.
                   <Form.Text>
-                    {preview.texture.credits
-                      .map(
-                        (credit) =>
-                          credit.name ??
-                          (credit.nameKey
-                            ? m?.mapLayers.attr[credit.nameKey]
-                            : undefined),
-                      )
-                      .filter(Boolean)
-                      .map((credit, i) => (
-                        <Fragment key={i}>
-                          {i > 0 && ', '}
-                          {credit}
-                        </Fragment>
-                      ))}
+                    {categorize(
+                      preview.texture.credits.filter((credit) =>
+                        coversCountries(credit, attributionCountries),
+                      ),
+                    ).map(({ type, attributions }, i) => (
+                      <Fragment key={type}>
+                        {i > 0 && ' · '}
+                        <Text k={`mapLayers.type.${type}`} />{' '}
+                        <CreditNames attributions={attributions} />
+                      </Fragment>
+                    ))}
                   </Form.Text>
                 )}
               </Form.Group>
