@@ -45,7 +45,11 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `${percent} de la zone n’a pas de données d’altitude ; elle y est aplatie au point le plus bas.`,
   noData: 'Il n’y a pas de données d’altitude dans cette zone.',
   error: ({ err }) => `Erreur lors de la création du modèle : ${err}`,
-  credits: 'Données d’altitude',
+  shareCredits:
+    'Lors de la publication ou du partage du modèle, indiquez ces sources :',
+  creditsNone:
+    'Les données d’altitude n’ont pas indiqué de quelles sources elles proviennent.',
+  unknownSources: 'Sources qui n’ont pas pu être nommées :',
 };
 
 export default fr;

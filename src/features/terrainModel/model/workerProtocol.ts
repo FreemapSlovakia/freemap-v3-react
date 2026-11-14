@@ -42,5 +42,7 @@ export type WorkerResponse =
       type: 'heights';
       /** Metres, row-major from the north; `NaN` where there is no data. */
       heights: Float32Array;
+      /** The tiles' distinct `X-Attribution` values, unparsed. */
+      attributions: string[];
     }
   | { type: 'error'; message: string };

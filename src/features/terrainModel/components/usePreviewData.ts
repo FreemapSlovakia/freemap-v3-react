@@ -1,8 +1,11 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
-import { resolveExportCredits } from '@features/mapToDocumentExport/model/exportCredits.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import parametricShading from '@shared/mapLibrary/defs/parametricShading.js';
 import { useEffect, useState } from 'react';
+import {
+  type DatasetCredits,
+  resolveDatasetCredits,
+} from '../model/credits.js';
 import { NoElevationDataError } from '../model/errors.js';
 import { fetchHeights } from '../model/generate.js';
 import { mapTexture, type TextureMap } from '../model/mapTexture.js';
@@ -52,6 +55,12 @@ export function usePreviewData(
 ) {
   const [heights, setHeights] = useState<Keyed<PreviewHeights> | null>(null);
 
+  // By the grid they were read for.
+  const [terrainCredits, setTerrainCredits] = useState<{
+    heights: Float32Array;
+    credits: DatasetCredits;
+  } | null>(null);
+
   const [textureData, setTextureData] =
     useState<Keyed<PreviewTextureData> | null>(null);
 
@@ -91,11 +100,18 @@ export function usePreviewData(
       cancel = run.cancel;
 
       run.promise.then(
-        ({ heights }) =>
+        ({ heights, attributions }) => {
           setHeights({
             key,
             value: { bbox, heights, cols: plan.cols, rows: plan.rows },
-          }),
+          });
+
+          // Beside the grid, not in it: the view is memoized on the grid.
+          resolveDatasetCredits(attributions, 'terrain').then(
+            (credits) => setTerrainCredits({ heights, credits }),
+            () => {},
+          );
+        },
         (err: unknown) => {
           if (!(err instanceof DOMException && err.name === 'AbortError')) {
             setHeights({
@@ -132,13 +148,14 @@ export function usePreviewData(
         );
 
         // Renderer tiles name their datasets; the map's own credits don't. A
-        // dictionary that fails leaves the map's own.
-        const datasets = attributions.length
-          ? await resolveExportCredits(attributions.join(',')).then(
-              (c) => c.datasets,
-              () => [],
-            )
-          : [];
+        // lookup that fails leaves the map's own rather than the texture.
+        const datasets = await resolveDatasetCredits(
+          attributions,
+          'tiles',
+        ).then(
+          (c) => c.credits,
+          () => [],
+        );
 
         if (!ac.signal.aborted) {
           setTextureData({
@@ -162,6 +179,9 @@ export function usePreviewData(
 
   const current = heights?.key === key ? heights.value : null;
 
+  const last =
+    heights && typeof heights.value !== 'string' ? heights.value : null;
+
   const currentTexture =
     textureData?.key === textureKey && typeof textureData.value !== 'string'
       ? textureData.value
@@ -172,7 +192,12 @@ export function usePreviewData(
     heights: typeof current === 'string' ? null : current,
     problem: typeof current === 'string' ? current : null,
     /** The newest grid of any area. */
-    last: heights && typeof heights.value !== 'string' ? heights.value : null,
+    last,
+    /** The elevation datasets of `last`; `null` while resolving. */
+    lastCredits:
+      last && terrainCredits?.heights === last.heights
+        ? terrainCredits.credits
+        : null,
     /** The texture for the current area and map only. */
     texture: currentTexture,
     textureFailed:

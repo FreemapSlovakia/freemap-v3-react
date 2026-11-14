@@ -45,7 +45,10 @@ const it: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `Il ${percent} dell'area non ha dati altimetrici; lì è appiattita al punto più basso.`,
   noData: 'In questa area non ci sono dati altimetrici.',
   error: ({ err }) => `Errore nella creazione del modello: ${err}`,
-  credits: 'Dati altimetrici',
+  shareCredits: 'Quando pubblica o condivide il modello, indichi queste fonti:',
+  creditsNone:
+    'I dati altimetrici non hanno indicato da quali fonti provengono.',
+  unknownSources: 'Fonti che non è stato possibile identificare:',
 };
 
 export default it;

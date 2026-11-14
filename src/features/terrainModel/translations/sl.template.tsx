@@ -45,7 +45,9 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `${percent} območja nima višinskih podatkov; tam je poravnano na najnižjo točko.`,
   noData: 'Na tem območju ni višinskih podatkov.',
   error: ({ err }) => `Napaka pri izdelavi modela: ${err}`,
-  credits: 'Višinski podatki',
+  shareCredits: 'Pri objavi ali deljenju modela navedite te vire:',
+  creditsNone: 'Višinski podatki niso sporočili, iz katerih virov izvirajo.',
+  unknownSources: 'Viri, ki jih ni bilo mogoče poimenovati:',
 };
 
 export default sl;

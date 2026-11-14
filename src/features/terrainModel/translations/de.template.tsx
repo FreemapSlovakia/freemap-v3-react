@@ -45,7 +45,11 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `${percent} des Gebiets hat keine Höhendaten; dort liegt es auf dem tiefsten Punkt.`,
   noData: 'In diesem Gebiet gibt es keine Höhendaten.',
   error: ({ err }) => `Fehler beim Erstellen des Modells: ${err}`,
-  credits: 'Höhendaten',
+  shareCredits:
+    'Geben Sie beim Veröffentlichen oder Teilen des Modells diese Quellen an:',
+  creditsNone:
+    'Die Höhendaten haben nicht gemeldet, aus welchen Quellen sie stammen.',
+  unknownSources: 'Quellen, die nicht benannt werden konnten:',
 };
 
 export default de;

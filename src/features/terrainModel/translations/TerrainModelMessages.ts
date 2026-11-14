@@ -37,5 +37,9 @@ export type TerrainModelMessages = {
   partialData: (p: { percent: string }) => string;
   noData: string;
   error: (p: { err: string }) => string;
-  credits: string;
+  /** Above the elevation sources of a built model, as the map export puts it. */
+  shareCredits: string;
+  /** The elevation tiles named no datasets at all. */
+  creditsNone: string;
+  unknownSources: string;
 };

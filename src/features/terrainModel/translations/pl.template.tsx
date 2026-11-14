@@ -45,7 +45,10 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `${percent} obszaru nie ma danych wysokościowych; jest tam spłaszczony do najniższego punktu.`,
   noData: 'Na tym obszarze nie ma danych wysokościowych.',
   error: ({ err }) => `Błąd podczas tworzenia modelu: ${err}`,
-  credits: 'Dane wysokościowe',
+  shareCredits:
+    'Przy publikowaniu lub udostępnianiu modelu należy podać następujące źródła:',
+  creditsNone: 'Dane wysokościowe nie podały, z jakich źródeł pochodzą.',
+  unknownSources: 'Źródła, których nie udało się nazwać:',
 };
 
 export default pl;

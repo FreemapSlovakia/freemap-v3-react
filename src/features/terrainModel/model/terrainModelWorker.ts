@@ -162,7 +162,9 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
         throw new NoElevationDataError();
       }
 
-      post({ type: 'heights', heights }, [heights.buffer]);
+      post({ type: 'heights', heights, attributions: [...attributions] }, [
+        heights.buffer,
+      ]);
 
       return;
     }

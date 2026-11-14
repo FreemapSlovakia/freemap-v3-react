@@ -45,7 +45,9 @@ const sk: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `${percent} oblasti nemá výškové dáta; je zarovnaná na najnižší bod.`,
   noData: 'V tejto oblasti nie sú výškové dáta.',
   error: ({ err }) => `Chyba pri tvorbe modelu: ${err}`,
-  credits: 'Výškové dáta',
+  shareCredits: 'Pri publikovaní alebo zdieľaní modelu uveďte tieto zdroje:',
+  creditsNone: 'Výškové dáta neoznámili, z ktorých zdrojov pochádzajú.',
+  unknownSources: 'Zdroje, ktoré sa nepodarilo pomenovať:',
 };
 
 export default sk;

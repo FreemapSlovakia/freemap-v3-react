@@ -45,7 +45,10 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     `A terület ${percent}-ához nincs magassági adat; ott a legalacsonyabb pont szintjén van.`,
   noData: 'Ezen a területen nincsenek magassági adatok.',
   error: ({ err }) => `Hiba a modell létrehozásakor: ${err}`,
-  credits: 'Magassági adatok',
+  shareCredits:
+    'A modell közzétételekor vagy megosztásakor tüntesse fel ezeket a forrásokat:',
+  creditsNone: 'A magassági adatok nem jelezték, mely forrásokból származnak.',
+  unknownSources: 'Nem azonosítható források:',
 };
 
 export default hu;

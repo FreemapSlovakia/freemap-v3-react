@@ -3,21 +3,17 @@ import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { useAreaCountries } from '@features/map/useAreaCountries.js';
 import { MapAreaToggle } from '@features/mapArea/components/MapAreaToggle.js';
 import type { Bbox } from '@features/mapArea/model/actions.js';
 import { useMapAreaSelection } from '@features/mapArea/useMapAreaSelection.js';
 import { integratedLayerDefsSelector } from '@features/mapLibrary/model/selectors.js';
-import {
-  type ExportCredits,
-  resolveExportCredits,
-} from '@features/mapToDocumentExport/model/exportCredits.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium, premiumTileAuth } from '@features/premium/premium.js';
 import {
   CreditNames,
   categorize,
   coversCountries,
-  toAttributionCountries,
 } from '@shared/components/Attribution.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
@@ -30,6 +26,7 @@ import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { ShareCreditsAlert } from '@shared/components/ShareCreditsAlert.js';
 import { sameMinWidthPopperConfig } from '@shared/fixedPopperConfig.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -37,7 +34,6 @@ import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import parametricShading from '@shared/mapLibrary/defs/parametricShading.js';
 import { nearestStep } from '@shared/mathUtils.js';
 import { saveBlob } from '@shared/saveBlob.js';
-import { loadTerrainLicenses } from '@shared/tileLicenses.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   Component,
@@ -55,6 +51,10 @@ import { Alert, Dropdown, Form, InputGroup, Spinner } from 'react-bootstrap';
 import { FaCube, FaDownload } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { terrainModelSetSettings } from '../model/actions.js';
+import {
+  type DatasetCredits,
+  resolveDatasetCredits,
+} from '../model/credits.js';
 import { NoElevationDataError } from '../model/errors.js';
 import {
   type GenerateProgress,
@@ -169,8 +169,8 @@ type Result = {
   bytes: number;
   /** Share of the grid without elevation data. */
   nodata: number;
-  /** Arrives after the model; see `resolveExportCredits`. */
-  credits?: ExportCredits;
+  /** The elevation datasets read; arrives after the model. */
+  credits?: DatasetCredits;
   /** Data spacing read instead, where premium tiles were refused. */
   refusedAtM?: number;
 };
@@ -398,10 +398,10 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
   const textureMaps = libraryDefs.filter(isTextureMap);
 
-  // The countries in view, which hold the area: a country's own sources are
-  // credited only there, as on the map.
-  const attributionCountries = toAttributionCountries(
-    useAppSelector((state) => state.map.countries),
+  // A country's own sources are credited only where the area lies in it.
+  const attributionCountries = useAreaCountries(
+    bbox,
+    area === 'visible' && !pinnedBbox,
   );
 
   // Chosen explicitly: the map on screen may be WMS, vector or an overlay,
@@ -591,6 +591,13 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
           }
         : undefined;
 
+  // Credits for what is drawn: the map only while it is draped, and the model's
+  // datasets in its view, else the grid's on screen (maybe the previous area's).
+  const previewCredits = [
+    ...(shown?.texture ? (preview.texture?.credits ?? []) : []),
+    ...((modelView ? built?.credits : preview.lastCredits)?.credits ?? []),
+  ].filter((credit) => coversCountries(credit, attributionCountries));
+
   // A built model stays for as long as `modelKey` matches; the map draped on
   // it doesn't touch the file.
   const set = (values: Parameters<typeof terrainModelSetSettings>[0]) => {
@@ -698,10 +705,7 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
           out.zoom < plan.zoom ? tilePixelM(out.zoom, bbox) : undefined,
       });
 
-      // A dictionary that fails to load leaves the codes named as they stand.
-      resolveExportCredits(out.attributions.join(','), () =>
-        loadTerrainLicenses().catch(() => null),
-      ).then((credits) => {
+      resolveDatasetCredits(out.attributions, 'terrain').then((credits) => {
         if (!cancelled) {
           setResult((r) => (r?.key === key ? { ...r, credits } : r));
         }
@@ -809,14 +813,6 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
               {built && tm && (
                 <>
-                  <Alert variant="success">
-                    {tm.result({
-                      height: nf1.format(built.heightMm),
-                      triangles: nf0.format(built.triangles),
-                      size: formatSize(built.bytes),
-                    })}
-                  </Alert>
-
                   {built.refusedAtM !== undefined && (
                     <Alert variant="warning">
                       {tm.premiumRefused({ m: nf1.format(built.refusedAtM) })}
@@ -831,33 +827,26 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
                     </Alert>
                   )}
 
-                  {built.credits &&
-                    (built.credits.datasets.length > 0 ||
-                      built.credits.unresolved.length > 0) && (
-                      <p className="small">
-                        {tm.credits}:{' '}
-                        {[
-                          ...built.credits.datasets.map((credit) =>
-                            credit.url ? (
-                              <a
-                                key={credit.name}
-                                href={credit.url}
-                                target="_blank"
-                                rel="noopener"
-                              >
-                                {credit.name}
-                              </a>
-                            ) : (
-                              <span key={credit.name}>{credit.name}</span>
-                            ),
-                          ),
-                          // Named as they stand rather than dropped.
-                          ...built.credits.unresolved.map((code) => (
-                            <span key={code}>{code}</span>
-                          )),
-                        ].flatMap((node, i) => (i > 0 ? [', ', node] : [node]))}
-                      </p>
-                    )}
+                  {/* As the map export says it: what the file is made of. */}
+                  {built.credits && (
+                    <ShareCreditsAlert
+                      prompt={<Text m={tm} k="shareCredits" />}
+                      credits={built.credits.credits.flatMap((credit) =>
+                        credit.name
+                          ? [{ name: credit.name, url: credit.url }]
+                          : [],
+                      )}
+                      noneReported={
+                        !built.credits.reported && (
+                          <Text m={tm} k="creditsNone" />
+                        )
+                      }
+                      unknown={{
+                        label: <Text m={tm} k="unknownSources" />,
+                        codes: built.credits.unresolved,
+                      }}
+                    />
+                  )}
                 </>
               )}
 
@@ -917,20 +906,18 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
                   </Form.Text>
                 )}
 
-                {preview.texture && preview.texture.credits.length > 0 && (
+                {previewCredits.length > 0 && (
                   // As the map's own attribution: by type, deduplicated, linked.
                   <Form.Text>
-                    {categorize(
-                      preview.texture.credits.filter((credit) =>
-                        coversCountries(credit, attributionCountries),
+                    {categorize(previewCredits).map(
+                      ({ type, attributions }, i) => (
+                        <Fragment key={type}>
+                          {i > 0 && ' · '}
+                          <Text k={`mapLayers.type.${type}`} />{' '}
+                          <CreditNames attributions={attributions} />
+                        </Fragment>
                       ),
-                    ).map(({ type, attributions }, i) => (
-                      <Fragment key={type}>
-                        {i > 0 && ' · '}
-                        <Text k={`mapLayers.type.${type}`} />{' '}
-                        <CreditNames attributions={attributions} />
-                      </Fragment>
-                    ))}
+                    )}
                   </Form.Text>
                 )}
               </Form.Group>
@@ -1029,13 +1016,20 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
       </Modal.Body>
 
       <FmModalFooter className="flex-wrap">
-        {progress && tm && (
+        {tm && (progress || built) && (
           <div className="w-100 text-end small">
-            {progress.phase === 'mesh'
-              ? tm.progressMesh
-              : tm.progressTiles({
-                  done: nf0.format(progress.done),
-                  total: nf0.format(progress.total),
+            {progress
+              ? progress.phase === 'mesh'
+                ? tm.progressMesh
+                : tm.progressTiles({
+                    done: nf0.format(progress.done),
+                    total: nf0.format(progress.total),
+                  })
+              : built &&
+                tm.result({
+                  height: nf1.format(built.heightMm),
+                  triangles: nf0.format(built.triangles),
+                  size: formatSize(built.bytes),
                 })}
           </div>
         )}

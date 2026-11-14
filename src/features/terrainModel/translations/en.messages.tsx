@@ -44,7 +44,10 @@ const en: TerrainModelMessages = {
     `${percent} of the area has no elevation data; it is flattened to the lowest point.`,
   noData: 'There is no elevation data in this area.',
   error: ({ err }) => `Error generating the model: ${err}`,
-  credits: 'Elevation data',
+  shareCredits:
+    'When you publish or share this model, accompany it with the following attribution:',
+  creditsNone: 'The elevation data did not report which sources it comes from.',
+  unknownSources: 'Sources that could not be named:',
 };
 
 export default en;

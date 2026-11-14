@@ -26,6 +26,7 @@ import {
   useConfirmCancel,
 } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
+import { ShareCreditsAlert } from '@shared/components/ShareCreditsAlert.js';
 import { SplitButton } from '@shared/components/SplitButton.js';
 import { formatSize } from '@shared/formatSize.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -42,7 +43,6 @@ import { saveBlob } from '@shared/saveBlob.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
   type ChangeEvent,
-  Fragment,
   type ReactElement,
   useCallback,
   useEffect,
@@ -759,43 +759,17 @@ export default function MapToDocumentExportModal({
               {formatSize(result.file.blob.size)})
             </p>
 
-            <Alert variant="warning">
-              <p>
-                <Text m={mtde} k="readyCredits" />
-              </p>
-
-              <p className="user-select-all mb-0">
-                {credits.map(({ def, name }, i) => (
-                  <Fragment key={name}>
-                    {i > 0 && ', '}
-                    {def.url ? (
-                      <a
-                        href={def.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {name}
-                      </a>
-                    ) : (
-                      name
-                    )}
-                  </Fragment>
-                ))}
-              </p>
-
-              {!result.file.reported && (
-                <p className="mb-0 mt-2 small">
-                  <Text m={mtde} k="readyCreditsNone" />
-                </p>
-              )}
-
-              {result.file.unresolved.length > 0 && (
-                <p className="mb-0 mt-2 small">
-                  <Text m={mtde} k="readyUnknownSources" />{' '}
-                  {result.file.unresolved.join(', ')}
-                </p>
-              )}
-            </Alert>
+            <ShareCreditsAlert
+              prompt={<Text m={mtde} k="readyCredits" />}
+              credits={credits.map(({ def, name }) => ({ name, url: def.url }))}
+              noneReported={
+                !result.file.reported && <Text m={mtde} k="readyCreditsNone" />
+              }
+              unknown={{
+                label: <Text m={mtde} k="readyUnknownSources" />,
+                codes: result.file.unresolved,
+              }}
+            />
           </>
         ) : (
           <>
