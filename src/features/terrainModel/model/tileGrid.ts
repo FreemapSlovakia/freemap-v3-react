@@ -1,6 +1,20 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
 
-const TILE = 256;
+export const TILE = 256;
+
+/** Web Mercator world pixels of 256 px tiles at `zoom`. */
+export function worldPixels(zoom: number) {
+  const world = TILE * 2 ** zoom;
+
+  return {
+    px: (lon: number) => ((lon + 180) / 360) * world,
+    py: (lat: number) => {
+      const s = Math.sin((lat * Math.PI) / 180);
+
+      return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * world;
+    },
+  };
+}
 
 /** A decoded terrain-tiles `/elevation` tile: heights in metres, `NaN` for no data. */
 export interface ElevationTile {
@@ -18,15 +32,7 @@ export interface ElevationTile {
 function gridPixels(bbox: Bbox, cols: number, rows: number, zoom: number) {
   const [west, south, east, north] = bbox;
 
-  const world = TILE * 2 ** zoom;
-
-  const px = (lon: number) => ((lon + 180) / 360) * world;
-
-  const py = (lat: number) => {
-    const s = Math.sin((lat * Math.PI) / 180);
-
-    return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * world;
-  };
+  const { px, py } = worldPixels(zoom);
 
   const x0 = px(west);
 

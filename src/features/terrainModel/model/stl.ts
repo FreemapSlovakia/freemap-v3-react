@@ -35,8 +35,42 @@ function simplified(
   return tin;
 }
 
+/**
+ * A triangulation's boundary vertices, counter-clockwise seen from above with
+ * row 0 the north edge: south edge west to east, east edge south to north,
+ * north edge east to west, west edge north to south.
+ */
+export function perimeterRing(
+  coords: ArrayLike<number>,
+  cols: number,
+  rows: number,
+): number[] {
+  const vertices = coords.length / 2;
+
+  const side = (pick: (col: number, row: number) => number | undefined) => {
+    const found: [number, number][] = [];
+
+    for (let v = 0; v < vertices; v++) {
+      const key = pick(coords[2 * v]!, coords[2 * v + 1]!);
+
+      if (key !== undefined) {
+        found.push([key, v]);
+      }
+    }
+
+    return found.sort((a, b) => a[0] - b[0]).map(([, v]) => v);
+  };
+
+  return [
+    ...side((c, r) => (r === rows - 1 && c < cols - 1 ? c : undefined)),
+    ...side((c, r) => (c === cols - 1 && r > 0 ? rows - r : undefined)),
+    ...side((c, r) => (r === 0 && c > 0 ? cols - c : undefined)),
+    ...side((c, r) => (c === 0 && r < rows - 1 ? r : undefined)),
+  ];
+}
+
 /** Two triangles per grid cell; vertex `row * cols + col`. */
-function fullGrid(cols: number, rows: number): Triangulation {
+export function fullGrid(cols: number, rows: number): Triangulation {
   const coords = new Uint32Array(cols * rows * 2);
 
   for (let row = 0; row < rows; row++) {
@@ -69,6 +103,8 @@ function fullGrid(cols: number, rows: number): Triangulation {
 export interface Stl {
   data: ArrayBuffer;
   triangles: number;
+  /** The first this many triangles are the top surface; walls and bottom follow. */
+  topTriangles: number;
   /** Top of the model above the bed, millimetres. */
   heightMm: number;
 }
@@ -127,28 +163,7 @@ export function buildStl(heights: Float32Array, o: StlOptions): Stl {
     vz[v] = o.baseMm + (filled[row * cols + col]! - min) * zScale;
   }
 
-  // The perimeter counter-clockwise seen from above: south edge west to east,
-  // east edge south to north, north edge east to west, west edge north to south.
-  const side = (pick: (col: number, row: number) => number | undefined) => {
-    const found: [number, number][] = [];
-
-    for (let v = 0; v < vertices; v++) {
-      const key = pick(coords[2 * v]!, coords[2 * v + 1]!);
-
-      if (key !== undefined) {
-        found.push([key, v]);
-      }
-    }
-
-    return found.sort((a, b) => a[0] - b[0]).map(([, v]) => v);
-  };
-
-  const ring = [
-    ...side((c, r) => (r === rows - 1 && c < cols - 1 ? c : undefined)),
-    ...side((c, r) => (c === cols - 1 && r > 0 ? rows - r : undefined)),
-    ...side((c, r) => (r === 0 && c > 0 ? cols - c : undefined)),
-    ...side((c, r) => (c === 0 && r < rows - 1 ? r : undefined)),
-  ];
+  const ring = perimeterRing(coords, cols, rows);
 
   const triangles = top.length / 3 + 3 * ring.length;
 
@@ -232,6 +247,7 @@ export function buildStl(heights: Float32Array, o: StlOptions): Stl {
   return {
     data,
     triangles,
+    topTriangles: top.length / 3,
     heightMm: o.baseMm + (max - min) * zScale,
   };
 }

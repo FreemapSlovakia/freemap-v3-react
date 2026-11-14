@@ -3,45 +3,42 @@ import type { TerrainModelMessages } from './TerrainModelMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   area: 'Zone',
-  width: 'Largeur du modèle',
-  size: ({ scale, width, depth }) =>
-    `Échelle 1 : ${scale}, ${width} × ${depth} mm`,
-  grid: ({ step, cols, rows }) =>
-    `Grille ${step} mm (${cols} × ${rows} points)`,
-  elevation: ({ m }) => `Données d’altitude lues tous les ${m} m`,
-  limitedBySamples: 'Le niveau de détail est limité par la taille du modèle.',
-  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+  texture: 'Carte sur l’aperçu',
+  texturePlain: 'Sans carte',
+  textureFailed: 'La carte n’a pas pu être chargée pour cette zone.',
+  previewUnavailable: 'L’aperçu 3D n’est pas disponible ici.',
+  viewArea:
+    'Un aperçu lissé de la zone. Une fois créé, le modèle s’affiche tel que le fichier le contient, simplification comprise.',
+  viewModel: 'Aperçu fidèle du modèle créé.',
+  modelTooLargeToShow:
+    'Le modèle créé est trop volumineux pour être affiché ; l’aperçu montre donc la zone. Il reste téléchargeable.',
+  build: 'Créer le modèle',
+  dimensions: 'Dimensions du modèle',
+  scale: 'Échelle',
+  detail: ({ detail }) => `Résolution horizontale : ${detail} m`,
+  premiumFiner: (premiumLink, { detail, premiumDetail }) => (
     <>
-      Avec {premiumLink('l’accès Premium')}, la grille descend jusqu’à{' '}
-      {premiumStep} mm, à partir de données tous les {premiumData} m là où les
-      modèles nationaux du terrain sont aussi fins, au lieu de {step} mm à
-      partir de données tous les {data} m.
+      Avec {premiumLink('l’accès Premium')}, la résolution horizontale descend
+      jusqu’à {premiumDetail} m là où les modèles nationaux du terrain sont
+      aussi fins, au lieu de {detail} m.
     </>
   ),
   progressTiles: ({ done, total }) =>
     `Téléchargement des données d’altitude (${done} / ${total})`,
   progressMesh: 'Création du modèle',
-  limitedByData: 'Les données d’altitude ne sont pas plus fines.',
-  exaggeration: 'Exagération verticale',
+  exaggeration: 'Exagération',
+  exaggerationHint:
+    'Les altitudes sont multipliées par cette valeur : au-dessus de 1, le relief est plus raide qu’en réalité.',
   base: 'Épaisseur du socle',
-  simplification: 'Simplification du maillage : écart maximal',
+  simplification: 'Simplification du modèle – écart vertical maximal',
   simplificationOff: 'Désactivée',
-  simplificationTooLarge:
-    'Ce modèle a trop de points pour être simplifié dans le navigateur ; il est créé en entier.',
-  simplificationHint:
-    'Fusionne les triangles tant que la surface reste à cette hauteur des données, pour un fichier plus petit. Sur une pente douce, les contours imprimés se décalent latéralement de plusieurs fois plus — 0,02 mm font environ 0,1 mm sur une pente de 10° — et les triangles fusionnés apparaissent comme des facettes planes.',
-  printer: 'Imprimante',
-  bed: 'Volume d’impression',
-  layerHeight: 'Hauteur de couche',
-  tooLarge: 'Le modèle dépasse le volume d’impression.',
   areaTooLarge:
     'La zone est trop grande pour un modèle. Zoomez ou sélectionnez une zone plus petite.',
   acrossAntimeridian:
     'La zone traverse le 180e méridien. Sélectionnez une zone d’un seul côté.',
   download: 'Télécharger le STL',
-  result: ({ height, layers, triangles, size }) =>
-    `Hauteur du modèle ${height} mm (${layers} couches), ${triangles} triangles, ${size}.`,
-  tooTall: 'Le modèle est plus haut que le volume d’impression.',
+  result: ({ height, triangles, size }) =>
+    `Hauteur du modèle ${height} mm, ${triangles} triangles, ${size}.`,
   premiumRefused: ({ m }) =>
     `Les données d’altitude Premium ont été refusées ; le modèle est donc créé à partir de données tous les ${m} m. Pour plus de détail, reconnectez-vous avec un compte Premium.`,
   partialData: ({ percent }) =>

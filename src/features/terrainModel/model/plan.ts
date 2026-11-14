@@ -16,14 +16,20 @@ export const FREE_MAX_SAMPLES = 1_000_000;
 export const PREMIUM_MAX_SAMPLES = 4_000_000;
 
 /**
- * Grid points the mesh simplification is offered up to. Delatin keeps its
- * mesh in plain JS arrays, several times the full grid's memory; past this a
- * small tolerance would exhaust the tab.
+ * Grid points of a model to be simplified, whatever the account allows.
+ * Delatin keeps its mesh in plain JS arrays, several times the full grid's
+ * memory; past this a small tolerance would exhaust the tab.
  */
 export const SIMPLIFY_MAX_SAMPLES = 2_000_000;
 
 /** Narrowest model width the form accepts, millimetres. */
 export const MIN_WIDTH_MM = 10;
+
+/** Longest model side the form accepts, millimetres. */
+export const MAX_SIDE_MM = 2000;
+
+/** A new area's model: its longer side, millimetres. */
+export const DEFAULT_SIDE_MM = 200;
 
 /**
  * Elevation tiles a model may read. The worker holds them all decoded, about
@@ -70,19 +76,15 @@ export function groundSize(bbox: Bbox): { width: number; depth: number } {
 }
 
 /**
- * Widest model of this area that fits the bed, millimetres; never below
- * {@link MIN_WIDTH_MM}, so a thin strip still gets a model — and the
- * too-large warning — rather than a dead form.
+ * Width of the model whose longer side is `side`, millimetres; never below
+ * {@link MIN_WIDTH_MM}, so a thin strip still gets a model.
  */
-export function fittingWidth(
-  bbox: Bbox,
-  bed: readonly [number, number, number],
-): number {
+export function fittingWidth(bbox: Bbox, side: number): number {
   const { width, depth } = groundSize(bbox);
 
   return Math.max(
     MIN_WIDTH_MM,
-    Math.floor(Math.min(bed[0], (bed[1] * width) / depth)),
+    Math.floor(Math.min(side, (side * width) / depth)),
   );
 }
 

@@ -3,43 +3,42 @@ import type { TerrainModelMessages } from './TerrainModelMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   area: 'Območje',
-  width: 'Širina modela',
-  size: ({ scale, width, depth }) =>
-    `Merilo 1 : ${scale}, ${width} × ${depth} mm`,
-  grid: ({ step, cols, rows }) => `Mreža ${step} mm (${cols} × ${rows} točk)`,
-  elevation: ({ m }) => `Višinski podatki, brani na ${m} m`,
-  limitedBySamples: 'Podrobnost je omejena z velikostjo modela.',
-  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+  texture: 'Zemljevid na predogledu',
+  texturePlain: 'Brez zemljevida',
+  textureFailed: 'Zemljevida za to območje ni bilo mogoče naložiti.',
+  previewUnavailable: '3D predogled tukaj ni na voljo.',
+  viewArea:
+    'Zglajen predogled območja. Po ustvarjanju je model prikazan tako, kot je v datoteki, skupaj s poenostavitvijo.',
+  viewModel: 'Zvest predogled ustvarjenega modela.',
+  modelTooLargeToShow:
+    'Ustvarjeni model je prevelik za prikaz, zato predogled kaže območje. Prenesti ga je vseeno mogoče.',
+  build: 'Ustvari model',
+  dimensions: 'Mere modela',
+  scale: 'Merilo',
+  detail: ({ detail }) => `Vodoravna ločljivost: ${detail} m`,
+  premiumFiner: (premiumLink, { detail, premiumDetail }) => (
     <>
-      S {premiumLink('dostopom Premium')} je mreža do {premiumStep} mm, iz
-      podatkov na {premiumData} m, kjer so nacionalni modeli terena tako
-      podrobni, namesto {step} mm iz podatkov na {data} m.
+      S {premiumLink('dostopom Premium')} je vodoravna ločljivost do{' '}
+      {premiumDetail} m, kjer so nacionalni modeli terena tako podrobni, namesto{' '}
+      {detail} m.
     </>
   ),
   progressTiles: ({ done, total }) =>
     `Prenašanje višinskih podatkov (${done} / ${total})`,
   progressMesh: 'Izdelava modela',
-  limitedByData: 'Višinski podatki niso podrobnejši.',
-  exaggeration: 'Višinsko pretiravanje',
+  exaggeration: 'Povečanje višin',
+  exaggerationHint:
+    'Višine se pomnožijo s tem številom: nad 1 je relief strmejši kot v resnici.',
   base: 'Debelina podstavka',
-  simplification: 'Poenostavitev mreže: največje odstopanje',
+  simplification: 'Poenostavitev modela – največje navpično odstopanje',
   simplificationOff: 'Izklopljeno',
-  simplificationTooLarge:
-    'Ta model ima preveč točk za poenostavitev v brskalniku; izdela se v celoti.',
-  simplificationHint:
-    'Združuje trikotnike, dokler površina ostaja znotraj te višine od podatkov, za manjšo datoteko. Na položnem pobočju se natisnjeni obrisi premaknejo vstran za večkratnik tega — 0,02 mm je na 10° pobočju približno 0,1 mm — združeni trikotniki pa se pokažejo kot ravne ploskve.',
-  printer: 'Tiskalnik',
-  bed: 'Tiskalni prostor',
-  layerHeight: 'Višina sloja',
-  tooLarge: 'Model je večji od tiskalnega prostora.',
   areaTooLarge:
     'Območje je za model preveliko. Povečajte zemljevid ali izberite manjše območje.',
   acrossAntimeridian:
     'Območje seka 180. poldnevnik. Izberite območje na eni njegovi strani.',
   download: 'Prenesi STL',
-  result: ({ height, layers, triangles, size }) =>
-    `Višina modela ${height} mm (slojev: ${layers}), trikotnikov: ${triangles}, ${size}.`,
-  tooTall: 'Model je višji od tiskalnega prostora.',
+  result: ({ height, triangles, size }) =>
+    `Višina modela ${height} mm, trikotnikov: ${triangles}, ${size}.`,
   premiumRefused: ({ m }) =>
     `Višinski podatki Premium so bili zavrnjeni, zato je model izdelan iz podatkov na ${m} m. Za podrobnejši model se znova prijavite z računom Premium.`,
   partialData: ({ percent }) =>

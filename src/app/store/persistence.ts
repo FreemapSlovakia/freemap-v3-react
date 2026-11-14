@@ -403,16 +403,6 @@ const inRange = ({ min, max }: { min: number; max: number }) =>
 // Each field falls back alone, so one bad value doesn't reset the rest.
 const PersistedTerrainModelSettingsSchema = z
   .object({
-    bed: z
-      .tuple([
-        inRange(TERRAIN_MODEL_LIMITS.bed),
-        inRange(TERRAIN_MODEL_LIMITS.bed),
-        inRange(TERRAIN_MODEL_LIMITS.bed),
-      ])
-      .catch(terrainModelSettingsInitialState.bed),
-    layerHeight: inRange(TERRAIN_MODEL_LIMITS.layerHeight).catch(
-      terrainModelSettingsInitialState.layerHeight,
-    ),
     exaggeration: inRange(TERRAIN_MODEL_LIMITS.exaggeration).catch(
       terrainModelSettingsInitialState.exaggeration,
     ),
@@ -426,6 +416,8 @@ const PersistedTerrainModelSettingsSchema = z
         (v) => MAX_DEVIATION_STOPS[nearestStep(MAX_DEVIATION_STOPS, v)]!,
       )
       .catch(terrainModelSettingsInitialState.maxDeviation),
+    // A map uninstalled since falls back to the base map when shown.
+    texture: z.string().catch(terrainModelSettingsInitialState.texture),
   })
   .partial();
 

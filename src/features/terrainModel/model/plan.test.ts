@@ -22,9 +22,10 @@ describe('planModel', () => {
     expect(depth / width).toBeCloseTo(0.61, 2);
   });
 
-  it('fits the bed by its tighter side', () => {
-    expect(fittingWidth(tatras, [256, 256, 256])).toBe(256);
-    expect(fittingWidth(tatras, [256, 100, 256])).toBe(163);
+  it('gives the longer side the size asked for', () => {
+    expect(fittingWidth(tatras, 200)).toBe(200);
+    // 3.6 × 22.2 km: the depth gets the 200 mm.
+    expect(fittingWidth([20.15, 49.0, 20.2, 49.2], 200)).toBe(32);
   });
 
   it('brings a world copy back to −180…180, and refuses the antimeridian', () => {
@@ -44,7 +45,7 @@ describe('planModel', () => {
     // A strip 30 times deeper than wide.
     const strip: Bbox = [20.1, 49.0, 20.105, 49.1];
 
-    expect(fittingWidth(strip, [256, 256, 256])).toBe(MIN_WIDTH_MM);
+    expect(fittingWidth(strip, 200)).toBe(MIN_WIDTH_MM);
   });
 
   it('steps at the floor where the data is finer, read at two pixels per step', () => {

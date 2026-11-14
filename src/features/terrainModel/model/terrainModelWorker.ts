@@ -3,7 +3,11 @@ import { decodeSteps } from '@shared/elevationTile.js';
 import { NoElevationDataError } from './errors.js';
 import { buildStl } from './stl.js';
 import { type ElevationTile, neededTiles, sampleGrid } from './tileGrid.js';
-import type { WorkerRequest, WorkerResponse } from './workerProtocol.js';
+import type {
+  GridRequest,
+  WorkerRequest,
+  WorkerResponse,
+} from './workerProtocol.js';
 
 const initPromise = init();
 
@@ -17,7 +21,7 @@ function post(message: WorkerResponse, transfer: Transferable[] = []) {
 class RefusedError extends Error {}
 
 async function fetchTile(
-  r: WorkerRequest,
+  r: GridRequest,
   zoom: number,
   token: string | undefined,
   x: number,
@@ -66,7 +70,7 @@ async function fetchTile(
 }
 
 async function fetchTiles(
-  r: WorkerRequest,
+  r: GridRequest,
   zoom: number,
   token: string | undefined,
   attributions: Set<string>,
@@ -153,6 +157,16 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
 
     tiles.clear();
 
+    if (r.kind === 'heights') {
+      if (heights.every(Number.isNaN)) {
+        throw new NoElevationDataError();
+      }
+
+      post({ type: 'heights', heights }, [heights.buffer]);
+
+      return;
+    }
+
     let nodata = 0;
 
     for (const h of heights) {
@@ -170,6 +184,7 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
         type: 'done',
         stl: stl.data,
         triangles: stl.triangles,
+        topTriangles: stl.topTriangles,
         heightMm: stl.heightMm,
         nodata: nodata / heights.length,
         attributions: [...attributions],

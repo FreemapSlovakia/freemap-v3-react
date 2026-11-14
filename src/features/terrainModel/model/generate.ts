@@ -1,17 +1,27 @@
 import { WorkerUnavailableError } from '@shared/workerPool.js';
 import { NoElevationDataError } from './errors.js';
-import type { WorkerRequest, WorkerResponse } from './workerProtocol.js';
+import type {
+  GridRequest,
+  WorkerRequest,
+  WorkerResponse,
+} from './workerProtocol.js';
 
 export type GenerateProgress = Extract<WorkerResponse, { type: 'progress' }>;
 
 export type GenerateResult = Extract<WorkerResponse, { type: 'done' }>;
 
-/** Builds the model in a worker; `cancel` terminates it and rejects with `AbortError`. */
-export function generateTerrainModel(
+export type HeightsResult = Extract<WorkerResponse, { type: 'heights' }>;
+
+type Run<T> = { promise: Promise<T>; cancel: () => void };
+
+/** One job in a worker of its own; `cancel` terminates it and rejects with `AbortError`. */
+function run<T extends WorkerResponse>(
   request: WorkerRequest,
+  /** The answer this request expects; any other is a protocol error. */
+  expected: T['type'],
   onProgress: (progress: GenerateProgress) => void,
-): { promise: Promise<GenerateResult>; cancel: () => void } {
-  const { promise, resolve, reject } = Promise.withResolvers<GenerateResult>();
+): Run<T> {
+  const { promise, resolve, reject } = Promise.withResolvers<T>();
 
   let worker: Worker;
 
@@ -32,10 +42,6 @@ export function generateTerrainModel(
         onProgress(data);
 
         return;
-      case 'done':
-        resolve(data);
-
-        break;
       case 'noData':
         reject(new NoElevationDataError());
 
@@ -44,6 +50,12 @@ export function generateTerrainModel(
         reject(new Error(data.message));
 
         break;
+      default:
+        if (data.type === expected) {
+          resolve(data as T);
+        } else {
+          reject(new Error(`unexpected worker response: ${data.type}`));
+        }
     }
 
     worker.terminate();
@@ -70,4 +82,17 @@ export function generateTerrainModel(
       reject(new DOMException('cancelled', 'AbortError'));
     },
   };
+}
+
+/** Builds the model in a worker. */
+export function generateTerrainModel(
+  request: Omit<Extract<WorkerRequest, { kind: 'stl' }>, 'kind'>,
+  onProgress: (progress: GenerateProgress) => void,
+): Run<GenerateResult> {
+  return run({ kind: 'stl', ...request }, 'done', onProgress);
+}
+
+/** Only the sampled heights, for the preview. */
+export function fetchHeights(request: GridRequest): Run<HeightsResult> {
+  return run({ kind: 'heights', ...request }, 'heights', () => {});
 }

@@ -3,44 +3,42 @@ import type { TerrainModelMessages } from './TerrainModelMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   area: 'Oblasť',
-  width: 'Šírka modelu',
-  size: ({ scale, width, depth }) =>
-    `Mierka 1 : ${scale}, ${width} × ${depth} mm`,
-  grid: ({ step, cols, rows }) =>
-    `Mriežka ${step} mm (${cols} × ${rows} bodov)`,
-  elevation: ({ m }) => `Výškové dáta čítané po ${m} m`,
-  limitedBySamples: 'Detail je obmedzený veľkosťou modelu.',
-  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+  texture: 'Mapa na náhľade',
+  texturePlain: 'Bez mapy',
+  textureFailed: 'Mapu sa pre toto územie nepodarilo načítať.',
+  previewUnavailable: '3D náhľad tu nie je dostupný.',
+  viewArea:
+    'Vyhladený náhľad územia. Po vytvorení sa model zobrazí tak, ako bude vo výslednom súbore, aj so zjednodušením.',
+  viewModel: 'Verný náhľad vytvoreného modelu.',
+  modelTooLargeToShow:
+    'Vytvorený model je na zobrazenie príliš veľký, preto náhľad ukazuje územie. Stiahnuť ho možno aj tak.',
+  build: 'Vytvoriť model',
+  dimensions: 'Rozmery modelu',
+  scale: 'Mierka',
+  detail: ({ detail }) => `Horizontálne rozlíšenie: ${detail} m`,
+  premiumFiner: (premiumLink, { detail, premiumDetail }) => (
     <>
-      S {premiumLink('prémiovým prístupom')} je mriežka až {premiumStep} mm z
-      dát po {premiumData} m tam, kde sú národné modely terénu také jemné,
-      namiesto {step} mm z dát po {data} m.
+      S {premiumLink('prémiovým prístupom')} je horizontálne rozlíšenie až{' '}
+      {premiumDetail} m tam, kde sú národné modely terénu také jemné, namiesto{' '}
+      {detail} m.
     </>
   ),
   progressTiles: ({ done, total }) =>
     `Sťahujú sa výškové dáta (${done} / ${total})`,
   progressMesh: 'Vytvára sa model',
-  limitedByData: 'Výškové dáta nie sú jemnejšie.',
-  exaggeration: 'Prevýšenie',
+  exaggeration: 'Zvýraznenie výšok',
+  exaggerationHint:
+    'Výšky sa ním násobia: nad 1 vyjde reliéf strmší, než v skutočnosti je.',
   base: 'Hrúbka podstavy',
-  simplification: 'Zjednodušenie siete: najväčšia odchýlka',
+  simplification: 'Zjednodušenie modelu – maximálna vertikálna odchýlka',
   simplificationOff: 'Vypnuté',
-  simplificationTooLarge:
-    'Tento model má priveľa bodov na zjednodušenie v prehliadači; vytvorí sa celý.',
-  simplificationHint:
-    'Spája trojuholníky, kým povrch zostáva v tejto výške od dát, pre menší súbor. Na miernom svahu sa tlačené obrysy posunú do strany niekoľkonásobne viac — 0,02 mm je na 10° svahu asi 0,1 mm — a spojené trojuholníky sa prejavia ako ploché fazety.',
-  printer: 'Tlačiareň',
-  bed: 'Tlačový priestor',
-  layerHeight: 'Výška vrstvy',
-  tooLarge: 'Model je väčší ako tlačový priestor.',
   areaTooLarge:
     'Oblasť je na model príliš veľká. Priblížte mapu alebo označte menšiu oblasť.',
   acrossAntimeridian:
     'Oblasť pretína 180. poludník. Označte oblasť na jednej jeho strane.',
   download: 'Stiahnuť STL',
-  result: ({ height, layers, triangles, size }) =>
-    `Výška modelu ${height} mm (${layers} vrstiev), ${triangles} trojuholníkov, ${size}.`,
-  tooTall: 'Model je vyšší ako tlačový priestor.',
+  result: ({ height, triangles, size }) =>
+    `Výška modelu ${height} mm, ${triangles} trojuholníkov, ${size}.`,
   premiumRefused: ({ m }) =>
     `Prémiové výškové dáta boli odmietnuté, model je preto vytvorený z dát po ${m} m. Pre jemnejší detail sa znova prihláste prémiovým účtom.`,
   partialData: ({ percent }) =>

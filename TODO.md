@@ -39,6 +39,10 @@ accessibility-only labels, which this app doesn't add — see `CLAUDE.md`).
 
 ## Cleanups
 
+- [ ] **The dev service worker can pin a stale build.** After a dev-server
+  restart the page may keep loading the previous main bundle and fail with
+  "Chunk is from another build" until a hard reload. Skip the service
+  worker under `pnpm start`, or make it never cache the entry in dev.
 - [ ] **Back re-pushes an app-driven map fit.** Reproduced (2026-11-13), and
   not one race: the store and the Leaflet map drift apart on several async
   paths, and `mapStateHandler`'s `moveend` later writes the map's real view
@@ -611,6 +615,46 @@ distance probe, a premium quality tier. What it does not do yet is issues under
   UX exactly as it is — the retained colour is what unticking restores — and
   makes a mid-ramp sky representable. It does not remove the picker
   round-trip: `SKY_COLOR` still goes out and comes back as a real colour.
+
+## 3D terrain model (`src/features/terrainModel/`)
+
+- [ ] **Area shapes as one polygon mask.** Rectangle, rotated rectangle,
+  circle and a drawn polygon are all ways to draw the same mask: the grid
+  stays north-up over the shape's envelope, cells outside it are dropped and
+  the walls follow the mask's edge (`perimeterRing` over the kept cells
+  instead of the grid border). Steps:
+  - the mask in `buildStl` and the preview's area geometry; the worker and
+    sampling stay as they are;
+  - count only the cells inside against the point limit, or a 45° square
+    loses √2 of its resolution to the envelope;
+  - rotate the finished STL (and the preview) by a rotated rectangle's
+    angle, so it lands square on the slicer's bed; mark north on the base
+    then, as the back edge no longer is;
+  - selection: a rectangle with a rotation handle and a typed angle, a
+    circle by centre and radius, a polygon from the drawing tools;
+  - the edge is stair-stepped by one grid step (0.05–0.3 mm, under a
+    nozzle width); clip the edge cells exactly against the shape only if
+    prints show it.
+- [ ] **Colour: 3MF with landcover.** STL carries no colour. A 3MF can,
+  per triangle; landcover classes (forest, water, rock, built-up) suit a
+  multi-material print far better than a map image. Needs a landcover
+  source by tiles — a renderer style with flat class colours and no shading
+  would do — and a palette mapped to filament slots.
+- [ ] **Simplification without the 2M point cap.** Delatin holds its mesh in
+  plain JS arrays, so `SIMPLIFY_MAX_SAMPLES` halves a premium grid as soon as
+  simplification is on (4.3 m becomes 6 m). Simplify in blocks instead, each
+  with its edge vertices fixed so neighbours stitch, bounding memory per
+  block and keeping the full grid.
+- [ ] **The texture's detail layer ignores its coverage.** `mapTexture` asks
+  for every detail tile after the base layer has finished, so outside
+  Slovakia and Czechia each one fails and the texture takes twice as long.
+  Skip tiles outside the detail's `coverageUrl` and its zooms, and fetch the
+  layers together, compositing them in order.
+- [ ] **Hand the model view its vertices from the worker.** `modelGeometry`
+  re-parses the STL on the main thread into unindexed arrays, stalling the
+  page for seconds near `MODEL_VIEW_MAX_TRIANGLES`. The worker has the
+  positions and indices already; posting them beside the STL would lift the
+  cap and the stall.
 
 ## Terrain shading (`terrain.tiles.freemap.sk`)
 

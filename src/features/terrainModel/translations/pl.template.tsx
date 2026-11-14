@@ -3,44 +3,42 @@ import type { TerrainModelMessages } from './TerrainModelMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   area: 'Obszar',
-  width: 'Szerokość modelu',
-  size: ({ scale, width, depth }) =>
-    `Skala 1 : ${scale}, ${width} × ${depth} mm`,
-  grid: ({ step, cols, rows }) =>
-    `Siatka ${step} mm (${cols} × ${rows} punktów)`,
-  elevation: ({ m }) => `Dane wysokościowe odczytywane co ${m} m`,
-  limitedBySamples: 'Szczegółowość jest ograniczona rozmiarem modelu.',
-  premiumFiner: (premiumLink, { step, data, premiumStep, premiumData }) => (
+  texture: 'Mapa na podglądzie',
+  texturePlain: 'Bez mapy',
+  textureFailed: 'Nie udało się wczytać mapy dla tego obszaru.',
+  previewUnavailable: 'Podgląd 3D nie jest tu dostępny.',
+  viewArea:
+    'Wygładzony podgląd obszaru. Po utworzeniu model jest wyświetlany tak, jak jest w pliku, wraz z uproszczeniem.',
+  viewModel: 'Wierny podgląd utworzonego modelu.',
+  modelTooLargeToShow:
+    'Utworzony model jest zbyt duży, by go wyświetlić, dlatego podgląd pokazuje obszar. Można go jednak pobrać.',
+  build: 'Utwórz model',
+  dimensions: 'Wymiary modelu',
+  scale: 'Skala',
+  detail: ({ detail }) => `Rozdzielczość pozioma: ${detail} m`,
+  premiumFiner: (premiumLink, { detail, premiumDetail }) => (
     <>
-      Z {premiumLink('dostępem Premium')} siatka ma do {premiumStep} mm, z
-      danych co {premiumData} m tam, gdzie krajowe modele terenu są tak
-      dokładne, zamiast {step} mm z danych co {data} m.
+      Z {premiumLink('dostępem Premium')} rozdzielczość pozioma sięga{' '}
+      {premiumDetail} m tam, gdzie krajowe modele terenu są tak dokładne,
+      zamiast {detail} m.
     </>
   ),
   progressTiles: ({ done, total }) =>
     `Pobieranie danych wysokościowych (${done} / ${total})`,
   progressMesh: 'Tworzenie modelu',
-  limitedByData: 'Dane wysokościowe nie są dokładniejsze.',
   exaggeration: 'Przewyższenie',
+  exaggerationHint:
+    'Wysokości są przez nie mnożone: powyżej 1 rzeźba wychodzi bardziej stroma niż w rzeczywistości.',
   base: 'Grubość podstawy',
-  simplification: 'Uproszczenie siatki: największe odchylenie',
+  simplification: 'Uproszczenie modelu – maksymalne odchylenie pionowe',
   simplificationOff: 'Wyłączone',
-  simplificationTooLarge:
-    'Ten model ma zbyt wiele punktów, by uprościć go w przeglądarce; zostanie utworzony w całości.',
-  simplificationHint:
-    'Łączy trójkąty, dopóki powierzchnia mieści się w tej wysokości od danych, dla mniejszego pliku. Na łagodnym stoku drukowane kontury przesuwają się na boki kilkakrotnie bardziej — 0,02 mm to na stoku 10° ok. 0,1 mm — a połączone trójkąty widać jako płaskie fasetki.',
-  printer: 'Drukarka',
-  bed: 'Obszar roboczy',
-  layerHeight: 'Wysokość warstwy',
-  tooLarge: 'Model jest większy niż obszar roboczy.',
   areaTooLarge:
     'Obszar jest zbyt duży na model. Należy przybliżyć mapę lub zaznaczyć mniejszy obszar.',
   acrossAntimeridian:
     'Obszar przecina 180. południk. Należy zaznaczyć obszar po jednej jego stronie.',
   download: 'Pobierz STL',
-  result: ({ height, layers, triangles, size }) =>
-    `Wysokość modelu ${height} mm (warstwy: ${layers}), trójkąty: ${triangles}, ${size}.`,
-  tooTall: 'Model jest wyższy niż obszar roboczy.',
+  result: ({ height, triangles, size }) =>
+    `Wysokość modelu ${height} mm, trójkąty: ${triangles}, ${size}.`,
   premiumRefused: ({ m }) =>
     `Dane wysokościowe Premium zostały odrzucone, więc model jest tworzony z danych co ${m} m. Aby uzyskać większą szczegółowość, należy zalogować się ponownie kontem Premium.`,
   partialData: ({ percent }) =>
