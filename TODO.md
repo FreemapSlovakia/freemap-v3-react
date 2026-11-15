@@ -39,12 +39,13 @@ accessibility-only labels, which this app doesn't add — see `CLAUDE.md`).
 
 ## Cleanups
 
-- [ ] **The dev server can serve chunks of another build.** Since rspack 2.3
-  a lazy chunk newer than the page's main bundle fails with "Chunk is from
-  another build, and no update leads to it" — seen after a hot update was
-  held back while a type error showed. `liveReload: true` should reload the
-  page instead. If it still happens, reload included, only restarting
-  `pnpm start` has helped: report it to rspack with a reproduction.
+- [ ] **rspack is pinned to 2.3.0 for the dev server.** 2.3.1 added a chunk
+  version check to HMR, and on 2.3.2 the dev server still ends up failing
+  every lazy chunk with "Chunk is from another build, and no update leads to
+  it" until `pnpm start` restarts — reload or `liveReload` don't help. The
+  case fixed in rspack#16542 isn't ours; cross-build version consistency is
+  still open in the tracking issue rspack#16315. Move past 2.3.0 once that
+  closes, and smoke-test a production build after the bump.
 - [ ] **Back re-pushes an app-driven map fit.** Reproduced (2026-11-13), and
   not one race: the store and the Leaflet map drift apart on several async
   paths, and `mapStateHandler`'s `moveend` later writes the map's real view

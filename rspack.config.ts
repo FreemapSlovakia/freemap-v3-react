@@ -465,9 +465,7 @@ const config: Configuration = {
   },
   devServer: {
     hot: true,
-    // An update held back while type errors show leaves the page on an old
-    // main bundle that rspack 2.3's chunk versions then refuse; reload instead.
-    liveReload: true,
+    liveReload: false,
     server: {
       type: 'https',
       options: {
