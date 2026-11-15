@@ -48,6 +48,8 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   shareCredits: 'Pri objavi ali deljenju modela navedite te vire:',
   creditsNone: 'Višinski podatki niso sporočili, iz katerih virov izvirajo.',
   unknownSources: 'Viri, ki jih ni bilo mogoče poimenovati:',
+  discardModelTitle: 'Zavrzi model',
+  discardModelQuestion: 'Model še ni bil prenesen. Ga želite zavreči?',
 };
 
 export default sl;

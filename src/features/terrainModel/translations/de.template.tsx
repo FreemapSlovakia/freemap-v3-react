@@ -50,6 +50,9 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   creditsNone:
     'Die Höhendaten haben nicht gemeldet, aus welchen Quellen sie stammen.',
   unknownSources: 'Quellen, die nicht benannt werden konnten:',
+  discardModelTitle: 'Modell verwerfen',
+  discardModelQuestion:
+    'Das Modell wurde noch nicht heruntergeladen. Möchten Sie es verwerfen?',
 };
 
 export default de;

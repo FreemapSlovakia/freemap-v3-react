@@ -49,6 +49,9 @@ const it: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   creditsNone:
     'I dati altimetrici non hanno indicato da quali fonti provengono.',
   unknownSources: 'Fonti che non è stato possibile identificare:',
+  discardModelTitle: 'Scartare il modello',
+  discardModelQuestion:
+    'Il modello non è ancora stato scaricato. Vuole scartarlo?',
 };
 
 export default it;

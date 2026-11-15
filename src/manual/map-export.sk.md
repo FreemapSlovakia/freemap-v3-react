@@ -47,6 +47,6 @@ Stlačte :FaDownload: **Exportovať**. Počas exportu funguje len :FaTimes: **Zr
 
 ![Hotový export so zdrojmi, ktoré treba uviesť](./images/map-export-ready.sk.webp)
 
-:FaDownload: **Uložiť** uloží súbor a zatvorí dialóg; zdroje zostanú v hlásení na obrazovke. Pod šípkou vedľa tlačidla sú :FaExternalLinkAlt: **Otvoriť na novej karte** (nie pre SVG) a :FaCopy: **Kopírovať zdroje**. Pri zatvorení dialógu bez uloženia sa zobrazí otázka, lebo mapa by sa stratila.
+:FaDownload: **Uložiť** uloží súbor a zatvorí dialóg; zdroje zostanú v hlásení na obrazovke. Pod šípkou vedľa tlačidla sú :FaExternalLinkAlt: **Otvoriť na novej karte** (nie pre SVG) a :FaCopy: **Kopírovať zdroje**. :FaChevronLeft: **Späť** vráti dialóg k nastaveniam exportu, ako boli, napríklad na ďalší export s inými. Pri zatvorení dialógu alebo návrate späť bez uloženia sa zobrazí otázka, lebo mapa by sa stratila.
 
 Čo vyžadujú licencie máp, sa dočítate v kapitole [O Freemape a OpenStreetMap](#show=manual/about). Interaktívnu mapu na webstránku vložíte podľa kapitoly [Mapy v iných aplikáciách a zariadeniach](#show=manual/devices).

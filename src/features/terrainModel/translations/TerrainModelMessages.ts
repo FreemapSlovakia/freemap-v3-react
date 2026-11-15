@@ -42,4 +42,6 @@ export type TerrainModelMessages = {
   /** The elevation tiles named no datasets at all. */
   creditsNone: string;
   unknownSources: string;
+  discardModelTitle: string;
+  discardModelQuestion: string;
 };

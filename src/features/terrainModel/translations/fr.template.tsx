@@ -50,6 +50,9 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   creditsNone:
     'Les données d’altitude n’ont pas indiqué de quelles sources elles proviennent.',
   unknownSources: 'Sources qui n’ont pas pu être nommées :',
+  discardModelTitle: 'Abandonner le modèle',
+  discardModelQuestion:
+    'Le modèle n’a pas encore été téléchargé. Voulez-vous l’abandonner ?',
 };
 
 export default fr;

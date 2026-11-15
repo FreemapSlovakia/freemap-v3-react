@@ -24,6 +24,7 @@ import {
 import { LabeledSlider } from '@shared/components/LabeledSlider.js';
 import { MapLayerItem } from '@shared/components/MapLayerItem.js';
 import { Modal } from '@shared/components/Modal.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
 import { ShareCreditsAlert } from '@shared/components/ShareCreditsAlert.js';
@@ -48,7 +49,7 @@ import {
   useState,
 } from 'react';
 import { Alert, Dropdown, Form, InputGroup, Spinner } from 'react-bootstrap';
-import { FaCube, FaDownload } from 'react-icons/fa';
+import { FaChevronLeft, FaCube, FaDownload } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { terrainModelSetSettings } from '../model/actions.js';
 import {
@@ -173,6 +174,8 @@ type Result = {
   credits?: DatasetCredits;
   /** Data spacing read instead, where premium tiles were refused. */
   refusedAtM?: number;
+  /** Downloaded: dropping it then asks nothing. */
+  saved?: boolean;
 };
 
 type NumberFieldProps = {
@@ -435,6 +438,11 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
   const viewRef = useRef<HTMLDivElement>(null);
 
+  // Switching between the form and a built model starts the body at its top.
+  const topRef = useRef<HTMLDivElement>(null);
+
+  const confirm = useConfirm();
+
   // Closing the modal any other way unmounts it; the worker must not outlive it.
   useEffect(() => () => cancelRef.current?.(), []);
 
@@ -618,13 +626,54 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
     trackMatomo(['trackEvent', 'TerrainModel', 'stl']);
 
+    const { key } = built;
+
     saveBlob(new Blob([built.stl], { type: 'model/stl' }), 'terrain.stl', {
       'model/stl': ['.stl'],
-    }).catch((err: unknown) => {
-      if (!(err instanceof DOMException && err.name === 'AbortError')) {
-        setError(tm?.error({ err: String(err) }) ?? String(err));
-      }
-    });
+    }).then(
+      () => setResult((r) => (r?.key === key ? { ...r, saved: true } : r)),
+      (err: unknown) => {
+        if (!(err instanceof DOMException && err.name === 'AbortError')) {
+          setError(tm?.error({ err: String(err) }) ?? String(err));
+        }
+      },
+    );
+  };
+
+  // Close and Back both lose a model not yet downloaded; rebuilding can be slow.
+  const mayDiscard = async () =>
+    !built ||
+    built.saved ||
+    (await confirm({
+      title: tm?.discardModelTitle,
+      message: tm?.discardModelQuestion,
+      confirmLabel: m?.general.yes,
+      cancelLabel: m?.general.no,
+      confirmStyle: 'danger',
+    }));
+
+  const handleClose = async () => {
+    if (await mayDiscard()) {
+      close();
+    }
+  };
+
+  // To the settings as they were, for another build.
+  const handleBack = async () => {
+    if (!(await mayDiscard())) {
+      return;
+    }
+
+    trackMatomo(['trackEvent', 'TerrainModel', 'back']);
+
+    setResult(null);
+
+    // A visible area follows the viewport again, as its toggle says.
+    if (area === 'visible') {
+      setPinnedBbox(null);
+    }
+
+    topRef.current?.scrollIntoView({ block: 'start' });
   };
 
   const handleBuild = async () => {
@@ -705,6 +754,9 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
           out.zoom < plan.zoom ? tilePixelM(out.zoom, bbox) : undefined,
       });
 
+      // The form above the preview is gone; the built model starts at the top.
+      topRef.current?.scrollIntoView({ block: 'start' });
+
       resolveDatasetCredits(out.attributions, 'terrain').then((credits) => {
         if (!cancelled) {
           setResult((r) => (r?.key === key ? { ...r, credits } : r));
@@ -728,7 +780,7 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
   return (
     <Modal
       show={show}
-      onHide={close}
+      onHide={handleClose}
       className={selecting ? 'd-none' : undefined}
       backdropClassName={selecting ? 'd-none' : undefined}
       scrollable
@@ -740,29 +792,34 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
       </Modal.Header>
 
       <Modal.Body>
+        <div ref={topRef} />
+
         <OfflineAlert />
 
         <fieldset disabled={busy}>
-          <Form.Group className="mb-3">
-            <Form.Label className="d-block">
-              <Text m={tm} k="area" />
-            </Form.Label>
+          {/* A built model hides the settings that made it; Back leads out. */}
+          {!built && (
+            <Form.Group className="mb-3">
+              <Form.Label className="d-block">
+                <Text m={tm} k="area" />
+              </Form.Label>
 
-            <MapAreaToggle
-              area={area}
-              // The area changes, and with it any model built for the old one.
-              onSelectVisible={() => {
-                setPinnedBbox(null);
+              <MapAreaToggle
+                area={area}
+                // The area changes, and with it any model built for the old one.
+                onSelectVisible={() => {
+                  setPinnedBbox(null);
 
-                setArea('visible');
-              }}
-              onSelectArea={() => {
-                setPinnedBbox(null);
+                  setArea('visible');
+                }}
+                onSelectArea={() => {
+                  setPinnedBbox(null);
 
-                startSelecting();
-              }}
-            />
-          </Form.Group>
+                  startSelecting();
+                }}
+              />
+            </Form.Group>
+          )}
 
           {plan && bbox && (
             <>
@@ -813,6 +870,14 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
               {built && tm && (
                 <>
+                  <p>
+                    {tm.result({
+                      height: nf1.format(built.heightMm),
+                      triangles: nf0.format(built.triangles),
+                      size: formatSize(built.bytes),
+                    })}
+                  </p>
+
                   {built.refusedAtM !== undefined && (
                     <Alert variant="warning">
                       {tm.premiumRefused({ m: nf1.format(built.refusedAtM) })}
@@ -924,112 +989,109 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
             </>
           )}
 
-          <SizeFields
-            dimensionsLabel={tm?.dimensions}
-            scaleLabel={tm?.scale}
-            ground={bbox ? groundSize(bbox) : undefined}
-            widthMm={widthMm}
-            onChange={setWidth}
-          />
+          {!built && (
+            <>
+              <SizeFields
+                dimensionsLabel={tm?.dimensions}
+                scaleLabel={tm?.scale}
+                ground={bbox ? groundSize(bbox) : undefined}
+                widthMm={widthMm}
+                onChange={setWidth}
+              />
 
-          {plan && tm && (
-            <p className="small">
-              {tm.detail({
-                detail: nfDetail.format(plan.stepMm / plan.mmPerM),
-              })}
-              {/* Not mid-run: following the offer would cancel it. Nor where
-                  there is no data to read finer. */}
-              {premiumPlan && !busy && preview.problem !== 'noData' && (
-                <>
-                  <br />
-                  {tm.premiumFiner(
-                    (label) => (
-                      <PremiumGem label={label} onBeforeNavigate={close} />
-                    ),
-                    {
-                      detail: nfDetail.format(plan.stepMm / plan.mmPerM),
-                      premiumDetail: nfDetail.format(
-                        premiumPlan.stepMm / premiumPlan.mmPerM,
-                      ),
-                    },
+              {plan && tm && (
+                <p className="small">
+                  {tm.detail({
+                    detail: nfDetail.format(plan.stepMm / plan.mmPerM),
+                  })}
+                  {/* Not mid-run: following the offer would cancel it. Nor
+                      where there is no data to read finer. */}
+                  {premiumPlan && !busy && preview.problem !== 'noData' && (
+                    <>
+                      <br />
+                      {tm.premiumFiner(
+                        (label) => (
+                          <PremiumGem label={label} onBeforeNavigate={close} />
+                        ),
+                        {
+                          detail: nfDetail.format(plan.stepMm / plan.mmPerM),
+                          premiumDetail: nfDetail.format(
+                            premiumPlan.stepMm / premiumPlan.mmPerM,
+                          ),
+                        },
+                      )}
+                    </>
                   )}
-                </>
+                </p>
               )}
-            </p>
+
+              {areaTooLarge && (
+                <Alert variant="warning">
+                  <Text m={tm} k="areaTooLarge" />
+                </Alert>
+              )}
+
+              {acrossAntimeridian && (
+                <Alert variant="warning">
+                  <Text m={tm} k="acrossAntimeridian" />
+                </Alert>
+              )}
+
+              <Form.Group className="mb-3">
+                <LabeledSlider
+                  id="fm-terrain-model-exaggeration"
+                  label={tm?.exaggeration}
+                  hint={tm?.exaggerationHint}
+                  valueLabel={`${nf1.format(exaggeration)}×`}
+                  min={LIMITS.exaggeration.min}
+                  max={LIMITS.exaggeration.max}
+                  step={0.1}
+                  value={exaggeration}
+                  onChange={(v) => set({ exaggeration: v })}
+                />
+              </Form.Group>
+
+              <MmField
+                id="fm-terrain-model-base"
+                label={tm?.base}
+                value={base}
+                min={LIMITS.base.min}
+                max={LIMITS.base.max}
+                step={0.5}
+                onChange={(v) => set({ base: v })}
+              />
+
+              <Form.Group className="mb-3">
+                <LabeledSlider
+                  id="fm-terrain-model-simplification"
+                  label={tm?.simplification}
+                  valueLabel={
+                    maxDeviation === 0
+                      ? tm?.simplificationOff
+                      : `${nf3.format(maxDeviation)} mm`
+                  }
+                  min={0}
+                  max={MAX_DEVIATION_STOPS.length - 1}
+                  step={1}
+                  value={deviationStop}
+                  onChange={(i) =>
+                    set({ maxDeviation: MAX_DEVIATION_STOPS[i] ?? 0 })
+                  }
+                />
+              </Form.Group>
+            </>
           )}
-
-          {areaTooLarge && (
-            <Alert variant="warning">
-              <Text m={tm} k="areaTooLarge" />
-            </Alert>
-          )}
-
-          {acrossAntimeridian && (
-            <Alert variant="warning">
-              <Text m={tm} k="acrossAntimeridian" />
-            </Alert>
-          )}
-
-          <Form.Group className="mb-3">
-            <LabeledSlider
-              id="fm-terrain-model-exaggeration"
-              label={tm?.exaggeration}
-              hint={tm?.exaggerationHint}
-              valueLabel={`${nf1.format(exaggeration)}×`}
-              min={LIMITS.exaggeration.min}
-              max={LIMITS.exaggeration.max}
-              step={0.1}
-              value={exaggeration}
-              onChange={(v) => set({ exaggeration: v })}
-            />
-          </Form.Group>
-
-          <MmField
-            id="fm-terrain-model-base"
-            label={tm?.base}
-            value={base}
-            min={LIMITS.base.min}
-            max={LIMITS.base.max}
-            step={0.5}
-            onChange={(v) => set({ base: v })}
-          />
-
-          <Form.Group className="mb-3">
-            <LabeledSlider
-              id="fm-terrain-model-simplification"
-              label={tm?.simplification}
-              valueLabel={
-                maxDeviation === 0
-                  ? tm?.simplificationOff
-                  : `${nf3.format(maxDeviation)} mm`
-              }
-              min={0}
-              max={MAX_DEVIATION_STOPS.length - 1}
-              step={1}
-              value={deviationStop}
-              onChange={(i) =>
-                set({ maxDeviation: MAX_DEVIATION_STOPS[i] ?? 0 })
-              }
-            />
-          </Form.Group>
         </fieldset>
       </Modal.Body>
 
       <FmModalFooter className="flex-wrap">
-        {tm && (progress || built) && (
+        {tm && progress && (
           <div className="w-100 text-end small">
-            {progress
-              ? progress.phase === 'mesh'
-                ? tm.progressMesh
-                : tm.progressTiles({
-                    done: nf0.format(progress.done),
-                    total: nf0.format(progress.total),
-                  })
-              : built &&
-                tm.result({
-                  height: nf1.format(built.heightMm),
-                  triangles: nf0.format(built.triangles),
-                  size: formatSize(built.bytes),
+            {progress.phase === 'mesh'
+              ? tm.progressMesh
+              : tm.progressTiles({
+                  done: nf0.format(progress.done),
+                  total: nf0.format(progress.total),
                 })}
           </div>
         )}
@@ -1051,13 +1113,22 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
           />
         )}
 
+        {built && (
+          <FmFooterButton
+            variant="dark"
+            onClick={handleBack}
+            icon={<FaChevronLeft />}
+            label={m?.general.back}
+          />
+        )}
+
         {busy ? (
           <FmDismissButton
             label={m?.general.cancel}
             onClick={() => cancelRef.current?.()}
           />
         ) : (
-          <FmDismissButton label={m?.general.close} onClick={close} />
+          <FmDismissButton label={m?.general.close} onClick={handleClose} />
         )}
       </FmModalFooter>
     </Modal>

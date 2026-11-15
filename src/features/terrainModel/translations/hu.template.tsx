@@ -49,6 +49,8 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'A modell közzétételekor vagy megosztásakor tüntesse fel ezeket a forrásokat:',
   creditsNone: 'A magassági adatok nem jelezték, mely forrásokból származnak.',
   unknownSources: 'Nem azonosítható források:',
+  discardModelTitle: 'A modell elvetése',
+  discardModelQuestion: 'A modellt még nem töltötte le. Elveti?',
 };
 
 export default hu;

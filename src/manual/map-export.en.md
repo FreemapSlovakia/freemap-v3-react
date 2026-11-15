@@ -47,6 +47,6 @@ Press :FaDownload: **Export**. While it runs, only :FaTimes: **Cancel** works. T
 
 ![The finished export with the sources to credit](./images/map-export-ready.en.webp)
 
-:FaDownload: **Save** saves the file and closes the dialog; the sources stay in a message on the screen. Behind the arrow beside it are :FaExternalLinkAlt: **Open in a new tab** (not for SVG) and :FaCopy: **Copy attribution**. Closing the dialog without saving asks first, as the map would be lost.
+:FaDownload: **Save** saves the file and closes the dialog; the sources stay in a message on the screen. Behind the arrow beside it are :FaExternalLinkAlt: **Open in a new tab** (not for SVG) and :FaCopy: **Copy attribution**. :FaChevronLeft: **Back** returns the dialog to the export settings as they were, for instance for another export with other ones. Closing the dialog or going back without saving asks first, as the map would be lost.
 
 What the licences of the maps require is in [About Freemap and OpenStreetMap](#show=manual/about). To put an interactive map on a web page, see [Maps in other apps and devices](#show=manual/devices).

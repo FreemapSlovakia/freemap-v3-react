@@ -49,6 +49,8 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Przy publikowaniu lub udostępnianiu modelu należy podać następujące źródła:',
   creditsNone: 'Dane wysokościowe nie podały, z jakich źródeł pochodzą.',
   unknownSources: 'Źródła, których nie udało się nazwać:',
+  discardModelTitle: 'Odrzucenie modelu',
+  discardModelQuestion: 'Model nie został jeszcze pobrany. Odrzucić go?',
 };
 
 export default pl;

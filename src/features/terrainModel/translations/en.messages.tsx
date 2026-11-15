@@ -48,6 +48,9 @@ const en: TerrainModelMessages = {
     'When you publish or share this model, accompany it with the following attribution:',
   creditsNone: 'The elevation data did not report which sources it comes from.',
   unknownSources: 'Sources that could not be named:',
+  discardModelTitle: 'Discard the model',
+  discardModelQuestion:
+    'The model has not been downloaded yet. Do you want to discard it?',
 };
 
 export default en;

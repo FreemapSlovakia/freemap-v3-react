@@ -59,6 +59,7 @@ import {
   ToggleButton,
 } from 'react-bootstrap';
 import {
+  FaChevronLeft,
   FaCopy,
   FaDownload,
   FaExternalLinkAlt,
@@ -703,12 +704,10 @@ export default function MapToDocumentExportModal({
     setOpened(true);
   }, [result]);
 
-  /**
-   * Asks before throwing away a render the user has nothing else to reach it
-   * by. Saving closes the modal itself, so only the preview tab clears this.
-   */
-  const handleClose = useCallback(async () => {
-    if (
+  // Close and Back ask before losing a render nothing else reaches. Saving
+  // closes the modal itself, so only the preview tab clears this.
+  const mayDiscard = useCallback(
+    async () =>
       !result ||
       opened ||
       (await confirm({
@@ -717,11 +716,26 @@ export default function MapToDocumentExportModal({
         confirmLabel: m?.general.yes,
         cancelLabel: m?.general.no,
         confirmStyle: 'danger',
-      }))
-    ) {
+      })),
+    [confirm, result, opened, m, mtde],
+  );
+
+  const handleClose = useCallback(async () => {
+    if (await mayDiscard()) {
       close();
     }
-  }, [confirm, close, result, opened, m, mtde]);
+  }, [mayDiscard, close]);
+
+  // To the form, its settings kept, for another export.
+  const handleBack = useCallback(async () => {
+    if (await mayDiscard()) {
+      trackMatomo(['trackEvent', 'DocumentExport', 'back']);
+
+      setResult(null);
+
+      setOpened(false);
+    }
+  }, [mayDiscard]);
 
   const handleCopyCredits = useCallback(() => {
     void copyToClipboard(dispatch, creditsText);
@@ -1002,6 +1016,15 @@ export default function MapToDocumentExportModal({
               )
             }
             label={m?.general.export}
+          />
+        )}
+
+        {result && (
+          <FmFooterButton
+            variant="dark"
+            onClick={handleBack}
+            icon={<FaChevronLeft />}
+            label={m?.general.back}
           />
         )}
 

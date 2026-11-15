@@ -48,6 +48,8 @@ const sk: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   shareCredits: 'Pri publikovaní alebo zdieľaní modelu uveďte tieto zdroje:',
   creditsNone: 'Výškové dáta neoznámili, z ktorých zdrojov pochádzajú.',
   unknownSources: 'Zdroje, ktoré sa nepodarilo pomenovať:',
+  discardModelTitle: 'Zahodiť model',
+  discardModelQuestion: 'Model ešte nebol stiahnutý. Chcete ho zahodiť?',
 };
 
 export default sk;
