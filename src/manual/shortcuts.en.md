@@ -19,6 +19,7 @@ Many actions are faster from the keyboard. The keys work anywhere on the page, e
 - <kbd>Shift</kbd>+<kbd>D</kbd> hides and shows what is drawn on the map (:MdOpacity: **Data layer opacity**)
 - <kbd>Del</kbd> deletes the selected item or point
 - <kbd>Esc</kbd> closes a dialog, ends picking a point, deselects the selected item, or closes the route finder, drawing or map details – one step per press
+- <kbd>f</kbd> puts the window in front – panorama, toposcope or elevation profile – full screen and back
 - a map with a shortcut switches on and off with it; the shortcut is shown next to the map in the map menus and can be set in **Map manager**
 
 ## Two-key shortcuts

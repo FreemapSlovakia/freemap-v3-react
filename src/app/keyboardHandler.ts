@@ -49,6 +49,7 @@ import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { isDropdownOpen } from '@shared/dropdownOpen.js';
+import { toggleFrontWindowFullscreen } from '@shared/hooks/useFloatingWindow.js';
 import {
   effectiveShortcut,
   isLayerInstalled,
@@ -477,6 +478,28 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     trackMatomo(['trackEvent', 'Manual', 'key', 'shortcuts']);
 
     return setActiveModal({ type: 'manual', chapter: 'shortcuts' });
+  }
+
+  // A map mode only hides the panels, so they would still toggle unseen.
+  if (
+    !keyTimer &&
+    !event.shiftKey &&
+    !event.repeat &&
+    event.code === 'KeyF' &&
+    !mapModeSelector(state)
+  ) {
+    const entered = toggleFrontWindowFullscreen();
+
+    if (entered !== undefined) {
+      // No action comes back for the listener to claim the key with.
+      event.preventDefault();
+    }
+
+    if (entered) {
+      trackMatomo(['trackEvent', 'FloatingWindow', 'fullscreen', 'key']);
+    }
+
+    return undefined;
   }
 
   // Chords are plain keys: Shift+E is a layer's, and two of them aren't E E.

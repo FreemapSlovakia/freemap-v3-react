@@ -33,8 +33,34 @@ const BOX_PADDING = 8;
 
 // Every open window, so raising one can put the rest back down. Two levels
 // rather than an ever-climbing counter, which one long session of panning a
-// panorama would have carried past the full-screen z-index.
-const windows = new Set<HTMLElement>();
+// panorama would have carried past the full-screen z-index. Each maps to its
+// full-screen toggle, for the keyboard shortcut.
+const windows = new Map<HTMLElement, () => void>();
+
+/**
+ * Toggles full screen of the window in front: a full-screen one, else the one
+ * raised last, else the newest. Returns whether it entered full screen, or
+ * `undefined` with no window open.
+ */
+export function toggleFrontWindowFullscreen(): boolean | undefined {
+  // TODO two presses within one render read the class before React commits it.
+  const all = [...windows.keys()];
+
+  const fullscreen = all.find((el) =>
+    el.classList.contains(windowClasses.fullscreen),
+  );
+
+  const front =
+    fullscreen ?? all.find((el) => el.style.zIndex === '2') ?? all.at(-1);
+
+  if (!front) {
+    return undefined;
+  }
+
+  windows.get(front)?.();
+
+  return !fullscreen;
+}
 
 // A mouse held down keeps reporting its position after it leaves the browser
 // window, and is released there too. Kept to the viewport, the drag stops at
@@ -422,7 +448,7 @@ export function useFloatingWindow({
       return;
     }
 
-    for (const other of windows) {
+    for (const other of windows.keys()) {
       // Never demote a full-screen panel: its z-index comes from a class, which
       // any inline value beats, so this would put a half-viewport window over
       // one covering the screen.
@@ -437,6 +463,20 @@ export function useFloatingWindow({
     ref.style.zIndex = '2';
   }, [ref, fullscreen]);
 
+  // Apart from the raising below, which reruns on every toggle and would move
+  // the window to the end of the open order.
+  useEffect(() => {
+    if (!ref) {
+      return;
+    }
+
+    windows.set(ref, toggleFullscreen);
+
+    return () => {
+      windows.delete(ref);
+    };
+  }, [ref, toggleFullscreen]);
+
   // Capture phase, so a control that stops the event still raises its window;
   // `pointerdown`, so a drag or resize raises it as it starts.
   useEffect(() => {
@@ -444,15 +484,11 @@ export function useFloatingWindow({
       return;
     }
 
-    windows.add(ref);
-
     raise();
 
     ref.addEventListener('pointerdown', raise, true);
 
     return () => {
-      windows.delete(ref);
-
       ref.removeEventListener('pointerdown', raise, true);
     };
   }, [ref, raise]);

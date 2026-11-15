@@ -19,6 +19,7 @@ Mnohé úkony sú rýchlejšie z klávesnice. Klávesy fungujú kdekoľvek na st
 - <kbd>Shift</kbd>+<kbd>D</kbd> skryje a znova zobrazí, čo je na mape nakreslené (:MdOpacity: **Viditeľnosť dátovej vrstvy**)
 - <kbd>Del</kbd> zmaže vybraný objekt alebo bod
 - <kbd>Esc</kbd> zatvorí dialóg, ukončí vyberanie bodu, zruší výber alebo zatvorí vyhľadávač trás, kreslenie či detaily v mape – pri každom stlačení jeden krok
+- <kbd>f</kbd> prepne okno vpredu – panorámu, orientačnú ružicu alebo výškový profil – na celú obrazovku a späť
 - mapa so skratkou sa touto skratkou zapína a vypína; skratka je uvedená pri názve mapy v ponukách máp a nastavíte ju v **Správcovi máp**
 
 ## Dvojklávesové skratky
