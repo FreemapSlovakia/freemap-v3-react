@@ -83,7 +83,7 @@ Minden eszköz a saját színével jelenik meg; utolsó helyzetét egy emberalak
 
 Egy nyomvonalra kattintva kijelöli azt. Eszköztárán a :FaChartArea: **Magassági profil** (ha a nyomvonal magassági adatokat is tartalmaz), a :FaPencil: **Módosítás**, a figyelés megszüntetésére szolgáló :FaTrash: **Törlés** és a :FaEllipsisV: gomb található. Ez utóbbival csak ezt a nyomvonalat másolhatja a Nyomvonalak és adatok eszközbe, és az eszköz legutóbbi pozíciójára ugyanazt kínálja, mint a térkép helyi menüje, a **Megnyitás itt…** pontot is beleértve. Jelölője fölött a legutóbbi pozíció adatai láthatók.
 
-Ha egy eszközt folyamatosan a térképen szeretne tartani, nyomja meg a :FaCrosshairs: **Követés** gombot az eszköztárán vagy a sorában a :FaRegEye: **Figyelt** listában. A kijelölés bezárul, a térkép együtt mozog az eszközzel, és semmi sem takarja; jelölője a figura helyett célkeresztet mutat. <kbd>Shift</kbd>+kattintás egy nyomvonalra kijelölés nélkül azonnal elindítja a követést. A térkép elhúzása vagy a :FaRegDotCircle: **Saját pozícióm** gomb megszünteti a követést.
+Ha egy eszközt folyamatosan a térképen szeretne tartani, nyomja meg a :FaCrosshairs: **Követés** gombot az eszköztárán vagy a sorában a :FaRegEye: **Figyelt** listában. A térkép ezután együtt mozog az eszközzel, jelölője pedig a figura helyett célkeresztet mutat. <kbd>Shift</kbd>+kattintás egy nyomvonalra kijelölés nélkül azonnal elindítja a követést. A térkép elhúzása vagy a :FaRegDotCircle: **Saját pozícióm** gomb megszünteti a követést.
 
 ## GPS-rögzítő
 

@@ -83,7 +83,7 @@ Jedes Gerät wird in seiner Farbe dargestellt; seine letzte Position markiert ei
 
 Ein Klick auf einen Track wählt ihn aus. Seine Werkzeugleiste bietet :FaChartArea: **Höhenprofil** (wenn der Track Höhenangaben enthält), :FaPencil: **Bearbeiten**, :FaTrash: **Löschen**, um die Beobachtung zu beenden, und :FaEllipsisV:, das nur diesen Track nach Tracks und Daten kopiert und für die letzte Position des Geräts dasselbe anbietet wie das Kontextmenü der Karte, **Öffnen in…** eingeschlossen. Über seiner Markierung stehen die Angaben zur letzten Position.
 
-Um ein Gerät auf der Karte zu behalten, drücken Sie :FaCrosshairs: **Folgen** in seiner Werkzeugleiste oder in seiner Zeile der Liste :FaRegEye: **Beobachtet**. Die Auswahl schließt sich, und die Karte bewegt sich mit dem Gerät, ohne dass etwas sie verdeckt; seine Markierung zeigt statt der Figur ein Fadenkreuz. <kbd>Shift</kbd>+Klick auf einen Track folgt ihm sofort, ohne ihn auszuwählen. Ein Verschieben der Karte oder :FaRegDotCircle: **Standort ermitteln** beendet das Folgen.
+Um ein Gerät auf der Karte zu behalten, drücken Sie :FaCrosshairs: **Folgen** in seiner Werkzeugleiste oder in seiner Zeile der Liste :FaRegEye: **Beobachtet**. Die Karte bewegt sich dann mit dem Gerät, und seine Markierung zeigt statt der Figur ein Fadenkreuz. <kbd>Shift</kbd>+Klick auf einen Track folgt ihm sofort, ohne ihn auszuwählen. Ein Verschieben der Karte oder :FaRegDotCircle: **Standort ermitteln** beendet das Folgen.
 
 ## GPS-Recorder
 

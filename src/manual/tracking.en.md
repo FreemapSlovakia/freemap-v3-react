@@ -83,7 +83,7 @@ Each device is drawn in its colour, its latest position marked with a figure of 
 
 Clicking a track selects it. Its toolbar has :FaChartArea: **Elevation profile** (when the track includes altitude), :FaPencil: **Modify**, :FaTrash: **Delete** to stop watching it, and :FaEllipsisV:, which copies just this track to Drawing and data and offers for the device's latest position what the map's context menu does, **Open in…** included. Its latest position's details are shown above its marker.
 
-To keep the map on a device, press :FaCrosshairs: **Follow** in its toolbar or in its row of the :FaRegEye: **Watched** list. The selection closes and the map moves with the device, with nothing else in the way; its marker shows crosshairs instead of the figure. <kbd>Shift</kbd>+click on a track follows it straight away, without selecting it. Dragging the map or pressing :FaRegDotCircle: **Locate me** stops following.
+To keep the map on a device, press :FaCrosshairs: **Follow** in its toolbar or in its row of the :FaRegEye: **Watched** list. The map then moves with the device and its marker shows crosshairs instead of the figure. <kbd>Shift</kbd>+click on a track follows it straight away, without selecting it. Dragging the map or pressing :FaRegDotCircle: **Locate me** stops following.
 
 ## GPS recorder
 

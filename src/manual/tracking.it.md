@@ -83,7 +83,7 @@ Ogni dispositivo è disegnato nel proprio colore; la sua ultima posizione è seg
 
 Un clic su una traccia la seleziona. La sua barra degli strumenti contiene :FaChartArea: **Profilo altimetrico** (quando la traccia contiene l'altitudine), :FaPencil: **Modifica**, :FaTrash: **Elimina** per smettere di seguirla e :FaEllipsisV:, che copia solo questa traccia in Tracce e dati e offre per l'ultima posizione del dispositivo ciò che offre il menu contestuale della mappa, **Apri in…** compreso. Sopra il suo segnaposto compaiono i dati dell'ultima posizione.
 
-Per tenere un dispositivo sulla mappa, prema :FaCrosshairs: **Centra** nella sua barra degli strumenti o nella sua riga dell'elenco :FaRegEye: **Seguiti**. La selezione si chiude e la mappa si sposta con il dispositivo, senza niente a coprirla; il suo segnaposto mostra un mirino al posto della figura. <kbd>Shift</kbd>+clic su una traccia la centra subito, senza selezionarla. Trascinare la mappa o premere :FaRegDotCircle: **Localizzami** interrompe il centramento.
+Per tenere un dispositivo sulla mappa, prema :FaCrosshairs: **Centra** nella sua barra degli strumenti o nella sua riga dell'elenco :FaRegEye: **Seguiti**. La mappa si sposta allora con il dispositivo e il suo segnaposto mostra un mirino al posto della figura. <kbd>Shift</kbd>+clic su una traccia la centra subito, senza selezionarla. Trascinare la mappa o premere :FaRegDotCircle: **Localizzami** interrompe il centramento.
 
 ## Registratore GPS
 

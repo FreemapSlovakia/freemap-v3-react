@@ -1,4 +1,4 @@
-import { selectFeature, setActiveModal } from '@app/store/actions.js';
+import { setActiveModal } from '@app/store/actions.js';
 import {
   trackingActiveTrackIdSelector,
   trackingTrackSelector,
@@ -92,10 +92,6 @@ export function TrackingSelection(): ReactElement {
               trackMatomo(['trackEvent', 'Tracking', 'follow']);
 
               dispatch(trackingActions.follow(selectedToken));
-
-              // Following needs nothing of the selection, which would only
-              // cover the map.
-              dispatch(selectFeature(null));
             }}
           >
             <FaCrosshairs />

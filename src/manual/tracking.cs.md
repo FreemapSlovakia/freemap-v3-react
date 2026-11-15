@@ -83,7 +83,7 @@ Každé zařízení se kreslí svou barvou, jeho poslední poloha je označena p
 
 Kliknutím na trasu ji vyberete a na liště výběru najdete :FaChartArea: **Výškový profil** (pokud trasa obsahuje nadmořskou výšku), :FaPencil: **Upravit**, :FaTrash: **Smazat**, kterým sledování ukončíte, a :FaEllipsisV:, kterým zkopírujete jen tuto trasu do nástroje Kreslení a data a který pro poslední polohu zařízení nabízí totéž co kontextová nabídka mapy, včetně **Otevřít v…**. Nad její značkou se zobrazí údaje o poslední poloze.
 
-Chcete-li mít zařízení stále na mapě, stiskněte :FaCrosshairs: **Centrovat** na jeho liště výběru nebo v jeho řádku v seznamu :FaRegEye: **Sledované**. Výběr se zavře a mapa se posouvá se zařízením, aniž by ji něco zakrývalo; jeho značka místo postavy ukazuje zaměřovací kříž. Kliknutím se stisknutým <kbd>Shift</kbd> na trasu ji začnete centrovat hned, bez výběru. Posunutím mapy nebo tlačítkem :FaRegDotCircle: **Kde jsem?** centrování ukončíte.
+Chcete-li mít zařízení stále na mapě, stiskněte :FaCrosshairs: **Centrovat** na jeho liště výběru nebo v jeho řádku v seznamu :FaRegEye: **Sledované**. Mapa se pak posouvá se zařízením a jeho značka místo postavy ukazuje zaměřovací kříž. Kliknutím se stisknutým <kbd>Shift</kbd> na trasu ji začnete centrovat hned, bez výběru. Posunutím mapy nebo tlačítkem :FaRegDotCircle: **Kde jsem?** centrování ukončíte.
 
 ## GPS záznamník
 

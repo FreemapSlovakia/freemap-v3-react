@@ -83,7 +83,7 @@ Każde urządzenie jest rysowane w swoim kolorze, a jego ostatnią pozycję ozna
 
 Kliknięcie trasy ją zaznacza. Jej pasek narzędzi zawiera :FaChartArea: **Profil wysokościowy** (gdy trasa zawiera wysokość), :FaPencil: **Edytuj**, :FaTrash: **Usuń**, które kończy obserwowanie, oraz :FaEllipsisV:, który kopiuje tylko tę trasę do narzędzia Trasy i dane i dla ostatniej pozycji urządzenia oferuje to samo co menu kontekstowe mapy, łącznie z **Otwórz w…**. Nad jej znacznikiem widać dane ostatniej pozycji.
 
-Aby mapa stale pokazywała urządzenie, wystarczy nacisnąć :FaCrosshairs: **Śledź** na jego pasku narzędzi lub w jego wierszu na liście :FaRegEye: **Obserwowane**. Zaznaczenie się zamyka, a mapa przesuwa się razem z urządzeniem i nic jej nie zasłania; jego znacznik pokazuje celownik zamiast postaci. <kbd>Shift</kbd>+kliknięcie trasy od razu zaczyna ją śledzić, bez zaznaczania. Przesunięcie mapy lub przycisk :FaRegDotCircle: **Pokaż moją pozycję** kończy śledzenie.
+Aby mapa stale pokazywała urządzenie, wystarczy nacisnąć :FaCrosshairs: **Śledź** na jego pasku narzędzi lub w jego wierszu na liście :FaRegEye: **Obserwowane**. Mapa przesuwa się wtedy razem z urządzeniem, a jego znacznik pokazuje celownik zamiast postaci. <kbd>Shift</kbd>+kliknięcie trasy od razu zaczyna ją śledzić, bez zaznaczania. Przesunięcie mapy lub przycisk :FaRegDotCircle: **Pokaż moją pozycję** kończy śledzenie.
 
 ## Rejestrator GPS
 
