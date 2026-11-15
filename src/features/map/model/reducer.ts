@@ -76,7 +76,10 @@ import { allLayerEntries } from './selectors.js';
 
 export interface MapState extends MapStateBase {
   removeGalleryOverlayOnGalleryToolQuit: boolean;
+  /** The map follows a position: the user's own, or `followedDevice`'s. */
   gpsTracked: boolean;
+  /** A watched device's token while `gpsTracked` follows it. */
+  followedDevice: string | null;
   legacyMapWarningSuppressions: string[];
   tempLegacyMapWarningSuppressions: string[];
   esriAttribution: string[];
@@ -132,6 +135,7 @@ export const mapInitialState: MapState = {
   layerSetups: {},
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
+  followedDevice: null,
   customLayers: [],
   cachedMaps: [],
   legacyMapWarningSuppressions: [],
@@ -889,7 +893,16 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
       (
         state,
         {
-          payload: { zoom, lat, lon, layers, gpsTracked, setups, linkPresets },
+          payload: {
+            zoom,
+            lat,
+            lon,
+            layers,
+            gpsTracked,
+            followedDevice,
+            setups,
+            linkPresets,
+          },
         },
       ) => {
         if (linkPresets) {
@@ -925,6 +938,12 @@ export const mapReducer = createReducer(mapInitialState, (builder) =>
           (lat !== undefined && lon !== undefined)
         ) {
           state.gpsTracked = Boolean(gpsTracked);
+        }
+
+        if (!state.gpsTracked) {
+          state.followedDevice = null;
+        } else if (followedDevice !== undefined) {
+          state.followedDevice = followedDevice;
         }
       },
     )

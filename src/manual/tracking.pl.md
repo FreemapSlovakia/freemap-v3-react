@@ -16,7 +16,6 @@ Otwiera się je w :FaBars: menu głównym jako :FaBullseye: **Śledzenie na żyw
 - :FaMobileAlt: **Moje urządzenia** – własne urządzenia wysyłające swoją pozycję (<kbd>g</kbd> <kbd>d</kbd>). Wymaga zalogowania.
 - :FaRegEye: **Widok** – rysowanie tras jako **Punkty**, **Linia** lub **Linia + Punkty**.
 - :FaPalette: **Koloruj według** – kolorowanie tras według zarejestrowanej wartości, np. wysokości, prędkości lub czasu. Dostępne są tylko wartości zawarte w trasach; niektóre tryby wymagają dostępu premium.
-- :FaChartArea: **Profil wysokościowy** – wyświetlany, gdy trasa zawiera wysokość.
 - :FaEllipsisV: – :MdShapeLine: **Kopiuj do narzędzia Trasy i dane** tworzy edytowalną kopię tras, którą można następnie wyeksportować. Śledzenie trwa dalej.
 
 ## Udostępnianie własnej pozycji
@@ -82,7 +81,9 @@ Lista obserwowanych urządzeń jest zapisana tylko w adresie strony. Aby ją zac
 
 Każde urządzenie jest rysowane w swoim kolorze, a jego ostatnią pozycję oznacza sylwetka człowieka oraz – jeśli urządzenie ją podaje – okrąg pokazujący dokładność. Pozycje pojawiają się w miarę, jak urządzenie je wysyła. Po wskazaniu pozycji wyświetla się jej czas oraz – jeśli urządzenie je wysyła – wysokość, prędkość, sygnał, poziom baterii i wiadomość.
 
-Kliknięcie trasy ją zaznacza. Jej pasek narzędzi zawiera :FaPencil: **Edytuj**, :FaTrash: **Usuń**, które kończy obserwowanie, oraz :FaEllipsisV: do skopiowania tylko tej trasy do narzędzia Trasy i dane.
+Kliknięcie trasy ją zaznacza. Jej pasek narzędzi zawiera :FaChartArea: **Profil wysokościowy** (gdy trasa zawiera wysokość), :FaPencil: **Edytuj**, :FaTrash: **Usuń**, które kończy obserwowanie, oraz :FaEllipsisV:, który kopiuje tylko tę trasę do narzędzia Trasy i dane i dla ostatniej pozycji urządzenia oferuje to samo co menu kontekstowe mapy, łącznie z **Otwórz w…**. Nad jej znacznikiem widać dane ostatniej pozycji.
+
+Aby mapa stale pokazywała urządzenie, wystarczy nacisnąć :FaCrosshairs: **Śledź** na jego pasku narzędzi lub w jego wierszu na liście :FaRegEye: **Obserwowane**. Zaznaczenie się zamyka, a mapa przesuwa się razem z urządzeniem i nic jej nie zasłania; jego znacznik pokazuje celownik zamiast postaci. <kbd>Shift</kbd>+kliknięcie trasy od razu zaczyna ją śledzić, bez zaznaczania. Przesunięcie mapy lub przycisk :FaRegDotCircle: **Pokaż moją pozycję** kończy śledzenie.
 
 ## Rejestrator GPS
 

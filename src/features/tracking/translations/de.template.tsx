@@ -14,6 +14,7 @@ const de: DeepPartialWithRequiredObjects<TrackingMessages> = {
       Fehler beim Beobachten mit Token <i>{id}</i>.
     </>
   ),
+  follow: 'Folgen',
   trackedDevices: {
     button: 'Beobachtet',
     modalTitle: 'Beobachtete Geräte',

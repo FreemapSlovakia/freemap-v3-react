@@ -1013,3 +1013,43 @@ describe('mapReducer — named maps', () => {
     expect(next.presets[0]?.layers).toEqual([{ type: 'n1', setup: {} }]);
   });
 });
+
+describe('mapReducer — followedDevice', () => {
+  const following = mapReducer(
+    mapInitialState,
+    mapRefocus({ gpsTracked: true, followedDevice: 'tok' }),
+  );
+
+  it('survives the follower’s own moves and a kept-center zoom', () => {
+    const moved = mapReducer(
+      following,
+      mapRefocus({ lat: 48, lon: 19, gpsTracked: true }),
+    );
+
+    const zoomed = mapReducer(
+      moved,
+      mapRefocus({ zoom: 12, gpsTracked: true }),
+    );
+
+    expect(zoomed.followedDevice).toBe('tok');
+  });
+
+  it('ends with any move that ends following', () => {
+    expect(
+      mapReducer(following, mapRefocus({ lat: 48, lon: 19 })).followedDevice,
+    ).toBeNull();
+
+    expect(
+      mapReducer(following, mapRefocus({ gpsTracked: false })).followedDevice,
+    ).toBeNull();
+  });
+
+  it('gives way to following the user’s own position', () => {
+    expect(
+      mapReducer(
+        following,
+        mapRefocus({ gpsTracked: true, followedDevice: null }),
+      ),
+    ).toMatchObject({ gpsTracked: true, followedDevice: null });
+  });
+});

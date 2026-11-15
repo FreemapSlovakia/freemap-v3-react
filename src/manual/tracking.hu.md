@@ -16,7 +16,6 @@ A :FaBars: főmenüben a :FaBullseye: **Élő követés** pontban vagy a <kbd>g<
 - :FaMobileAlt: **Készülékeim** – a saját eszközei, amelyek a helyzetüket küldik (<kbd>g</kbd> <kbd>d</kbd>). Ehhez be kell jelentkeznie.
 - :FaRegEye: **Megjelenítés** – a nyomvonalak megjelenítése **Pontok**, **Vonal** vagy **Vonal + pontok** formájában.
 - :FaPalette: **Színezés szerint** – a nyomvonalak színezése egy rögzített érték, például a magasság, a sebesség vagy az idő szerint. Csak azok az értékek választhatók, amelyeket a nyomvonalak tartalmaznak; egyes módokhoz prémium hozzáférés szükséges.
-- :FaChartArea: **Magassági profil** – akkor jelenik meg, ha a nyomvonal magassági adatokat is tartalmaz.
 - :FaEllipsisV: – a :MdShapeLine: **Másolás ide: Nyomvonalak és adatok** szerkeszthető másolatot készít a nyomvonalakról, amelyet aztán exportálhat. A követés eközben folytatódik.
 
 ## Saját helyzet megosztása
@@ -82,7 +81,9 @@ A figyelt eszközök listája csak az oldal címében tárolódik. Ha meg szeret
 
 Minden eszköz a saját színével jelenik meg; utolsó helyzetét egy emberalak jelöli, és ha az eszköz küld ilyen adatot, egy kör a pontosságát mutatja. A helyzetek akkor érkeznek, amikor az eszköz elküldi őket. Ha egy helyzetre mutat, megjelenik az időpontja, és ha az eszköz küldi őket, a magasság, a sebesség, a jelerősség, az akkumulátorszint és az üzenet is.
 
-Egy nyomvonalra kattintva kijelöli azt. Eszköztárán a :FaPencil: **Módosítás**, a figyelés megszüntetésére szolgáló :FaTrash: **Törlés** és a :FaEllipsisV: gomb található, amellyel csak ezt a nyomvonalat másolhatja a Nyomvonalak és adatok eszközbe.
+Egy nyomvonalra kattintva kijelöli azt. Eszköztárán a :FaChartArea: **Magassági profil** (ha a nyomvonal magassági adatokat is tartalmaz), a :FaPencil: **Módosítás**, a figyelés megszüntetésére szolgáló :FaTrash: **Törlés** és a :FaEllipsisV: gomb található. Ez utóbbival csak ezt a nyomvonalat másolhatja a Nyomvonalak és adatok eszközbe, és az eszköz legutóbbi pozíciójára ugyanazt kínálja, mint a térkép helyi menüje, a **Megnyitás itt…** pontot is beleértve. Jelölője fölött a legutóbbi pozíció adatai láthatók.
+
+Ha egy eszközt folyamatosan a térképen szeretne tartani, nyomja meg a :FaCrosshairs: **Követés** gombot az eszköztárán vagy a sorában a :FaRegEye: **Figyelt** listában. A kijelölés bezárul, a térkép együtt mozog az eszközzel, és semmi sem takarja; jelölője a figura helyett célkeresztet mutat. <kbd>Shift</kbd>+kattintás egy nyomvonalra kijelölés nélkül azonnal elindítja a követést. A térkép elhúzása vagy a :FaRegDotCircle: **Saját pozícióm** gomb megszünteti a követést.
 
 ## GPS-rögzítő
 

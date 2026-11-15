@@ -14,6 +14,7 @@ const pl: DeepPartialWithRequiredObjects<TrackingMessages> = {
       Błąd podczas śledzenia przy użyciu tokenu <i>{id}</i>.
     </>
   ),
+  follow: 'Śledź',
   trackedDevices: {
     button: 'Obserwowane',
     modalTitle: 'Obserwowane urządzenia',

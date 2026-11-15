@@ -14,6 +14,7 @@ const it: DeepPartialWithRequiredObjects<TrackingMessages> = {
       Errore nell'utilizzo del token <i>{id}</i>.
     </>
   ),
+  follow: 'Centra',
   trackedDevices: {
     button: 'Seguiti',
     modalTitle: 'Dispositivi seguiti',

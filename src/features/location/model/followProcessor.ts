@@ -15,7 +15,8 @@ import { setLocation } from './actions.js';
  */
 export const followLocationProcessor: Processor<typeof setLocation> = {
   actionCreator: setLocation,
-  statePredicate: (state) => state.map.gpsTracked,
+  statePredicate: (state) =>
+    state.map.gpsTracked && state.map.followedDevice === null,
   handle: async ({ getState, dispatch, action }) => {
     const map = await mapPromise;
 

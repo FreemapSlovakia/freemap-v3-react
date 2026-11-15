@@ -18,9 +18,9 @@ type Props = {
 
 /**
  * Copies a live track into the map's drawing and data, where it can be edited
- * and exported; the feed goes on. Kept behind the ⋮ toggle as occasional.
+ * and exported; the feed goes on. An `Action` for a ⋮ menu, as occasional.
  */
-export function TrackingConvertMenu({ token, children }: Props): ReactElement {
+export function useTrackingCopyAction(token?: string): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -36,15 +36,23 @@ export function TrackingConvertMenu({ token, children }: Props): ReactElement {
   }
 
   return (
+    <Action
+      icon={<MdShapeLine />}
+      label={m?.general.copyTo({ tool: m?.tools.dataViewer })}
+      onClick={() => {
+        void copyToDataViewer();
+      }}
+      showFrom="never"
+    />
+  );
+}
+
+export function TrackingConvertMenu({ token, children }: Props): ReactElement {
+  const copyAction = useTrackingCopyAction(token);
+
+  return (
     <ResponsiveActions>
-      <Action
-        icon={<MdShapeLine />}
-        label={m?.general.copyTo({ tool: m?.tools.dataViewer })}
-        onClick={() => {
-          void copyToDataViewer();
-        }}
-        showFrom="never"
-      />
+      {copyAction}
 
       {children}
     </ResponsiveActions>

@@ -16,7 +16,6 @@ Open it from the :FaBars: main menu as :FaBullseye: **Live tracking**, or with t
 - :FaMobileAlt: **My Devices** – your own devices that send their position (<kbd>g</kbd> <kbd>d</kbd>). You need to be logged in.
 - :FaRegEye: **Display** – draw the tracks as **Points**, a **Line**, or **Line + Points**.
 - :FaPalette: **Colorize by** – colour the tracks by a recorded value, such as elevation, speed or time. Only the values the tracks carry are offered; some modes need premium access.
-- :FaChartArea: **Elevation profile** – shown when a track includes altitude.
 - :FaEllipsisV: – :MdShapeLine: **Copy to Drawing and data** makes an editable copy of the tracks, which you can then export. Tracking goes on.
 
 ## Sharing your position
@@ -82,7 +81,9 @@ The list of watched devices is kept only in the page address. To keep it, save t
 
 Each device is drawn in its colour, its latest position marked with a figure of a person and, where the device reports it, a circle showing its accuracy. Positions arrive as the device sends them. Pointing at a position shows its time and, where the device sends them, the altitude, speed, signal, battery and message.
 
-Clicking a track selects it. Its toolbar has :FaPencil: **Modify**, :FaTrash: **Delete** to stop watching it, and :FaEllipsisV: to copy just this track to Drawing and data.
+Clicking a track selects it. Its toolbar has :FaChartArea: **Elevation profile** (when the track includes altitude), :FaPencil: **Modify**, :FaTrash: **Delete** to stop watching it, and :FaEllipsisV:, which copies just this track to Drawing and data and offers for the device's latest position what the map's context menu does, **Open in…** included. Its latest position's details are shown above its marker.
+
+To keep the map on a device, press :FaCrosshairs: **Follow** in its toolbar or in its row of the :FaRegEye: **Watched** list. The selection closes and the map moves with the device, with nothing else in the way; its marker shows crosshairs instead of the figure. <kbd>Shift</kbd>+click on a track follows it straight away, without selecting it. Dragging the map or pressing :FaRegDotCircle: **Locate me** stops following.
 
 ## GPS recorder
 

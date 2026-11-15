@@ -16,7 +16,6 @@ Lo apra dal :FaBars: menu principale con :FaBullseye: **Tracciamento in tempo re
 - :FaMobileAlt: **I miei dispositivi** – i suoi dispositivi che inviano la propria posizione (<kbd>g</kbd> <kbd>d</kbd>). È necessario aver effettuato l'accesso.
 - :FaRegEye: **Visualizza** – mostra le tracce come **Punti**, **Linea** oppure **Linea + Punti**.
 - :FaPalette: **Colora per** – colora le tracce in base a un valore registrato, come altitudine, velocità o tempo. Vengono proposti solo i valori presenti nelle tracce; alcune modalità richiedono l'accesso premium.
-- :FaChartArea: **Profilo altimetrico** – disponibile quando una traccia contiene l'altitudine.
 - :FaEllipsisV: – :MdShapeLine: **Copia in Tracce e dati** crea una copia modificabile delle tracce, che poi è possibile esportare. Il tracciamento prosegue.
 
 ## Condividere la propria posizione
@@ -82,7 +81,9 @@ L'elenco dei dispositivi seguiti è conservato solo nell'indirizzo della pagina.
 
 Ogni dispositivo è disegnato nel proprio colore; la sua ultima posizione è segnata dalla figura di una persona e, se il dispositivo la comunica, da un cerchio che ne indica la precisione. Le posizioni compaiono man mano che il dispositivo le invia. Puntando su una posizione se ne vedono l'ora e, se il dispositivo li invia, l'altitudine, la velocità, il segnale, la batteria e il messaggio.
 
-Un clic su una traccia la seleziona. La sua barra degli strumenti contiene :FaPencil: **Modifica**, :FaTrash: **Elimina** per smettere di seguirla e :FaEllipsisV: per copiare solo questa traccia in Tracce e dati.
+Un clic su una traccia la seleziona. La sua barra degli strumenti contiene :FaChartArea: **Profilo altimetrico** (quando la traccia contiene l'altitudine), :FaPencil: **Modifica**, :FaTrash: **Elimina** per smettere di seguirla e :FaEllipsisV:, che copia solo questa traccia in Tracce e dati e offre per l'ultima posizione del dispositivo ciò che offre il menu contestuale della mappa, **Apri in…** compreso. Sopra il suo segnaposto compaiono i dati dell'ultima posizione.
+
+Per tenere un dispositivo sulla mappa, prema :FaCrosshairs: **Centra** nella sua barra degli strumenti o nella sua riga dell'elenco :FaRegEye: **Seguiti**. La selezione si chiude e la mappa si sposta con il dispositivo, senza niente a coprirla; il suo segnaposto mostra un mirino al posto della figura. <kbd>Shift</kbd>+clic su una traccia la centra subito, senza selezionarla. Trascinare la mappa o premere :FaRegDotCircle: **Localizzami** interrompe il centramento.
 
 ## Registratore GPS
 

@@ -16,7 +16,6 @@ Otvoríte ho v :FaBars: hlavnom menu ako :FaBullseye: **Sledovanie** alebo kláv
 - :FaMobileAlt: **Moje zariadenia** – vaše vlastné zariadenia, ktoré odosielajú svoju polohu (<kbd>g</kbd> <kbd>d</kbd>). Vyžaduje prihlásenie.
 - :FaRegEye: **Zobrazenie** – trasy sa kreslia ako **Pozície**, **Spojnica** alebo **Spojnica + Pozície**.
 - :FaPalette: **Vyfarbiť podľa** – vyfarbí trasy podľa zaznamenanej hodnoty, napríklad nadmorskej výšky, rýchlosti alebo času. Ponúkajú sa len hodnoty, ktoré trasy obsahujú; niektoré režimy vyžadujú prémiový prístup.
-- :FaChartArea: **Výškový profil** – zobrazí sa, keď trasa obsahuje nadmorskú výšku.
 - :FaEllipsisV: – :MdShapeLine: **Kopírovať do nástroja Kreslenie a dáta** vytvorí upraviteľnú kópiu trás, ktorú potom môžete exportovať. Sledovanie pokračuje.
 
 ## Zdieľanie vlastnej polohy
@@ -82,7 +81,9 @@ Zoznam sledovaných zariadení je uložený len v adrese stránky. Ak si ho chce
 
 Každé zariadenie sa kreslí svojou farbou, posledná pozícia zariadenia je označená postavičkou a – ak zariadenie posiela presnosť – kruhom presnosti. Pozície pribúdajú tak, ako ich zariadenie odosiela. Ukázaním na pozíciu sa zobrazí čas pozície a – ak ich zariadenie posiela – nadmorská výška, rýchlosť, signál, batéria a správa.
 
-Kliknutím na trasu ju vyberiete a na lište výberu nájdete :FaPencil: **Upraviť**, :FaTrash: **Zmazať**, ktorým sledovanie ukončíte, a :FaEllipsisV: na skopírovanie len tejto trasy do Kreslenia a dát.
+Kliknutím na trasu ju vyberiete a na lište výberu nájdete :FaChartArea: **Výškový profil** (ak trasa obsahuje nadmorskú výšku), :FaPencil: **Upraviť**, :FaTrash: **Zmazať**, ktorým sledovanie ukončíte, a :FaEllipsisV:, ktorým skopírujete len túto trasu do Kreslenia a dát a ktorý pre poslednú polohu zariadenia ponúka to isté ako kontextová ponuka mapy, vrátane **Otvoriť v…**. Nad jej značkou sa zobrazia údaje o poslednej polohe.
+
+Ak chcete mať zariadenie stále na mape, stlačte :FaCrosshairs: **Centrovať** na jeho lište výberu alebo v jeho riadku v zozname :FaRegEye: **Sledované zariadenia**. Výber sa zavrie a mapa sa posúva so zariadením bez toho, aby ju niečo zakrývalo; jeho značka namiesto postavy ukazuje zameriavací kríž. Kliknutím so stlačeným <kbd>Shift</kbd> na trasu ju začnete centrovať hneď, bez výberu. Posunutím mapy alebo tlačidlom :FaRegDotCircle: **Kde som?** centrovanie ukončíte.
 
 ## GPS zaznamenávač
 

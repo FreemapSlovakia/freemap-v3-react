@@ -9,8 +9,7 @@ Live tracking lets a user register their own devices (so others can follow their
 - **Watched devices** and **My tracked devices** — open the two managers (also reachable directly via <kbd>g</kbd> <kbd>w</kbd> and <kbd>g</kbd> <kbd>d</kbd>)
 - **Visual** — what to draw for tracks: points, line, or line + points
 - **Colorize by** — color the watched tracks by a per-point value; modes are shown only when the tracks carry the data, in groups set off by dividers: Elevation, Steepness / Time, Speed, Heading / Heart rate, Cadence, Power, Temperature / Battery, GSM signal (Inactive = solid track color). Every mode except Elevation, Speed and Time is premium — badged with a gem and disabled without premium access. While a mode is active, the dropdown's first item is a **Show colorizing legend** checkbox (set off by a divider) that toggles a color-scale legend below the toolbar; hovering over its scale, or touching and dragging along it, reads out the exact value at that point
-- **Elevation profile** — a chart of the selected (or first) track that reports altitude; uses the recorded altitudes as-is
-- **⋮ menu** (shown once a watched track has more than one position) — **Copy to Drawing and data** takes a snapshot of the tracks into [Drawing and data](/llms-drawing.md), where they become ordinary editable tracks in the device's color and width, keeping their times and recorded values (asking first whether to append to or replace what is already there). It is a copy: the live feed goes on and the watched devices stay. A selected device's toolbar carries the same menu, acting on that device alone
+- **⋮ menu** (shown once a watched track has more than one position) — **Copy to Drawing and data** takes a snapshot of the tracks into [Drawing and data](/llms-drawing.md), where they become ordinary editable tracks in the device's color and width, keeping their times and recorded values (asking first whether to append to or replace what is already there). It is a copy: the live feed goes on and the watched devices stay
 
 #### My tracked devices
 
@@ -30,7 +29,9 @@ Each location sent by a device may carry properties such as altitude, speed, bea
 
 Manage devices you follow to see your friends' positions. Note: the watched-devices list is only reflected in the page URL — to persist it, save it via **My maps**.
 
-Each watched device is added with a **New watched device** form: Watch Token (required), Label, Color, line Width (px), Since (date/time), Max Age (minutes), Max Count, Split Distance (meters), and Split Duration (minutes). Watched tracks render on the map; selecting one shows a small toolbar to delete or close it.
+Each watched device is added with a **New watched device** form: Watch Token (required), Label, Color, line Width (px), Since (date/time), Max Age (minutes), Max Count, Split Distance (meters), and Split Duration (minutes). Watched tracks render on the map; selecting one shows its details above its marker and a toolbar with **Follow** (below), **Elevation profile** (when the track reports altitude; the recorded altitudes as-is), **Modify**, a **⋮ menu** and **Delete**. The ⋮ menu holds **Copy to Drawing and data** for that device alone (shown once its track has more than one position), then what the map's context menu offers for the device's latest position, **Open in…** included.
+
+**Follow** keeps the map on a watched device's latest position. It is in a selected device's toolbar, where it also ends the selection so nothing covers the map, and in each row of the watched-devices list, where it closes the list. <kbd>Shift</kbd>+click on a device's track or marker follows it without selecting it, or stops following it. The followed device's marker shows crosshairs instead of the person figure. Dragging the map, or **Locate me**, ends following; pressing **Follow** on the selected followed device does too. The link carries it as `follow=<token>`.
 
 ### GPS recorder
 

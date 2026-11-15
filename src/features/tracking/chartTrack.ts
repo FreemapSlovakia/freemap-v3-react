@@ -1,20 +1,6 @@
-import type { Track, TrackPoint } from './model/types.js';
+import type { TrackPoint } from './model/types.js';
 
-/**
- * The track the elevation chart shows: it needs one that actually carries
- * elevation, preferring the selected device, else the first that has it.
- */
-export function resolveChartTrack(
-  tracks: Track[],
-  selectedToken: string | number | undefined,
-): Track | undefined {
-  const withElevation = tracks.filter((t) => hasElevation(t.trackPoints));
-
-  return (
-    withElevation.find((t) => t.token === selectedToken) ?? withElevation[0]
-  );
-}
-
+/** Whether the elevation chart has something to plot. */
 export function hasElevation(points: TrackPoint[]): boolean {
   let n = 0;
 

@@ -1,5 +1,6 @@
 import { selectFeature } from '@app/store/actions.js';
 import { selectingModeSelector } from '@app/store/selectors.js';
+import type { RootState } from '@app/store/store.js';
 import { FEATURES_PANE_CLASS } from '@features/map/hooks/featuresPane.js';
 import {
   availableColorizer,
@@ -23,12 +24,15 @@ import {
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
+import type { LeafletMouseEvent } from 'leaflet';
 import { Fragment, type ReactElement, useMemo, useRef, useState } from 'react';
-import { FaRegUser, FaUser } from 'react-icons/fa';
+import { FaCrosshairs, FaUser } from 'react-icons/fa';
 import { Circle, Pane, Polyline, Tooltip } from 'react-leaflet';
 import { Hotline } from 'react-leaflet-hotline';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { hasElevation } from '../chartTrack.js';
+import { trackingActions } from '../model/actions.js';
 import type { TrackPoint } from '../model/types.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
 import {
@@ -63,7 +67,9 @@ type HotlineOpts = {
 
 // TODO hooks-based rewrite causes massive re-rendering; revisit
 export function TrackingResult(): ReactElement {
-  const clickHandlerMemo = useRef<Record<string, () => void>>({});
+  const clickHandlerMemo = useRef<
+    Record<string, (e: LeafletMouseEvent) => void>
+  >({});
 
   const dispatch = useDispatch();
 
@@ -127,6 +133,11 @@ export function TrackingResult(): ReactElement {
       ? state.main.selection?.id
       : undefined,
   );
+
+  const followedDevice = useAppSelector((state) => state.map.followedDevice);
+
+  // The click handlers are memoized per track, so they read the store itself.
+  const store = useStore<RootState>();
 
   const [activePoint, setActivePoint] = useState<TrackPoint | null>(null);
 
@@ -204,8 +215,16 @@ export function TrackingResult(): ReactElement {
         let handleClick = clickHandlerMemo.current[track.token];
 
         if (!handleClick) {
-          handleClick = () => {
-            dispatch(selectFeature({ type: 'tracking', id: track.token }));
+          handleClick = ({ originalEvent }) => {
+            if (!originalEvent.shiftKey) {
+              dispatch(selectFeature({ type: 'tracking', id: track.token }));
+            } else if (store.getState().map.followedDevice === track.token) {
+              dispatch(trackingActions.follow(null));
+            } else {
+              trackMatomo(['trackEvent', 'Tracking', 'follow']);
+
+              dispatch(trackingActions.follow(track.token));
+            }
           };
 
           clickHandlerMemo.current[track.token] = handleClick;
@@ -348,11 +367,14 @@ export function TrackingResult(): ReactElement {
                     click: handleClick,
                   }}
                   faIcon={
-                    track.token === activeTrackId ? (
-                      <FaUser color={color} />
+                    track.token === followedDevice ? (
+                      <FaCrosshairs color={color} />
                     ) : (
-                      <FaRegUser color={color} />
+                      <FaUser color={color} />
                     )
+                  }
+                  halo={
+                    track.token === activeTrackId ? SELECTION_COLOR : undefined
                   }
                 >
                   <Tooltip
@@ -364,9 +386,7 @@ export function TrackingResult(): ReactElement {
                 </RichMarker>
               ) : (
                 <TrackingPoint
-                  key={`tp-${tp.id}-${activeTrackId}-${
-                    interactive ? 'a' : 'b'
-                  }`}
+                  key={`tp-${tp.id}-${interactive ? 'a' : 'b'}`}
                   pane={POINTS_PANE}
                   interactive={interactive}
                   tp={tp}

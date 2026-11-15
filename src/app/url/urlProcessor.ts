@@ -751,8 +751,8 @@ function updateUrl(state: RootState, forced: boolean): void {
     queryParts.push(['embed', main.embedFeatures.join(',')]);
   }
 
-  if (main.selection?.type === 'tracking' && main.selection?.id !== undefined) {
-    queryParts.push(['follow', main.selection?.id]);
+  if (map.followedDevice !== null) {
+    queryParts.push(['follow', map.followedDevice]);
   }
 
   const panel = selectionPanel(state);

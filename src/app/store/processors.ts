@@ -190,7 +190,10 @@ import { toposcopeFixProcessor } from '@features/toposcope/model/toposcopeFixPro
 import * as trackingAccessTokenProcessors from '@features/tracking/model/processors/trackingAccessTokenProcessors.js';
 import { trackingCopyToDataViewerProcessor } from '@features/tracking/model/processors/trackingCopyProcessor.js';
 import * as trackingDeviceProcessors from '@features/tracking/model/processors/trackingDeviceProcessors.js';
-import { trackingFollowProcessor } from '@features/tracking/model/processors/trackingFollowProcessors.js';
+import {
+  trackingFollowProcessor,
+  trackingFollowStartProcessor,
+} from '@features/tracking/model/processors/trackingFollowProcessors.js';
 import { trackingStreamProcessor } from '@features/tracking/model/processors/trackingStreamProcessor.js';
 import {
   viewshedCancelProcessor,
@@ -325,6 +328,7 @@ export const processors = [
   routePlannerMidpointHintProcessor,
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
+  trackingFollowStartProcessor,
   trackingFollowProcessor,
   trackingStreamProcessor,
   trackingCopyToDataViewerProcessor,

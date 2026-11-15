@@ -16,7 +16,6 @@ Sie öffnen es im :FaBars: Hauptmenü als :FaBullseye: **Live-Tracking** oder mi
 - :FaMobileAlt: **Meine Geräte** – Ihre eigenen Geräte, die ihre Position senden (<kbd>g</kbd> <kbd>d</kbd>). Dafür ist eine Anmeldung nötig.
 - :FaRegEye: **Anzeige** – die Tracks als **Punkte**, als **Linie** oder als **Linie + Punkte** darstellen.
 - :FaPalette: **Einfärben nach** – die Tracks nach einem aufgezeichneten Wert einfärben, etwa nach Höhe, Geschwindigkeit oder Zeit. Angeboten werden nur die Werte, die die Tracks enthalten; manche Modi erfordern Premium-Zugang.
-- :FaChartArea: **Höhenprofil** – erscheint, wenn ein Track Höhenangaben enthält.
 - :FaEllipsisV: – :MdShapeLine: **Nach Tracks und Daten kopieren** erstellt eine bearbeitbare Kopie der Tracks, die Sie anschließend exportieren können. Das Tracking läuft weiter.
 
 ## Die eigene Position teilen
@@ -82,7 +81,9 @@ Die Liste der beobachteten Geräte steht nur in der Seitenadresse. Um sie zu beh
 
 Jedes Gerät wird in seiner Farbe dargestellt; seine letzte Position markiert eine Personenfigur und, sofern das Gerät sie meldet, ein Kreis, der die Genauigkeit anzeigt. Positionen erscheinen, sobald das Gerät sie sendet. Beim Zeigen auf eine Position sehen Sie deren Zeit und, sofern das Gerät sie sendet, Höhe, Geschwindigkeit, Signal, Akkustand und Nachricht.
 
-Ein Klick auf einen Track wählt ihn aus. Seine Werkzeugleiste bietet :FaPencil: **Bearbeiten**, :FaTrash: **Löschen**, um die Beobachtung zu beenden, und :FaEllipsisV:, um nur diesen Track nach Tracks und Daten zu kopieren.
+Ein Klick auf einen Track wählt ihn aus. Seine Werkzeugleiste bietet :FaChartArea: **Höhenprofil** (wenn der Track Höhenangaben enthält), :FaPencil: **Bearbeiten**, :FaTrash: **Löschen**, um die Beobachtung zu beenden, und :FaEllipsisV:, das nur diesen Track nach Tracks und Daten kopiert und für die letzte Position des Geräts dasselbe anbietet wie das Kontextmenü der Karte, **Öffnen in…** eingeschlossen. Über seiner Markierung stehen die Angaben zur letzten Position.
+
+Um ein Gerät auf der Karte zu behalten, drücken Sie :FaCrosshairs: **Folgen** in seiner Werkzeugleiste oder in seiner Zeile der Liste :FaRegEye: **Beobachtet**. Die Auswahl schließt sich, und die Karte bewegt sich mit dem Gerät, ohne dass etwas sie verdeckt; seine Markierung zeigt statt der Figur ein Fadenkreuz. <kbd>Shift</kbd>+Klick auf einen Track folgt ihm sofort, ohne ihn auszuwählen. Ein Verschieben der Karte oder :FaRegDotCircle: **Standort ermitteln** beendet das Folgen.
 
 ## GPS-Recorder
 

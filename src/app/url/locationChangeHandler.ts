@@ -995,12 +995,9 @@ export function handleLocationChange(store: MyStore): void {
   const fq = query['follow'];
 
   // A device's token, all digits or not: tokens are strings throughout.
-  if (typeof fq === 'string') {
-    const { selection } = getState().main;
-
-    if ((selection?.type === 'tracking' ? selection?.id : undefined) !== fq) {
-      dispatch(selectFeature({ type: 'tracking', id: fq }));
-    }
+  // TODO Back to an entry without `follow=` keeps following.
+  if (typeof fq === 'string' && getState().map.followedDevice !== fq) {
+    dispatch(trackingActions.follow(fq));
   }
 
   const noteId = panel?.type === 'osm-note' ? panel.id : null;

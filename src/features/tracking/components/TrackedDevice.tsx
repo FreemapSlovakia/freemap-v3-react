@@ -5,11 +5,13 @@ import {
   ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { Fragment, type ReactElement, type ReactNode } from 'react';
 import { ListGroup } from 'react-bootstrap';
-import { FaEdit, FaTimes } from 'react-icons/fa';
+import { FaCrosshairs, FaEdit, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { trackingActions } from '../model/actions.js';
 import type { TrackedDevice as TrackedDeviceType } from '../model/types.js';
@@ -38,6 +40,20 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   const handleModify = () => {
     dispatch(setActiveModal({ type: 'tracking-watched', token: device.token }));
+  };
+
+  const followed = useAppSelector(
+    (state) => state.map.followedDevice === device.token,
+  );
+
+  const handleFollow = () => {
+    dispatch(trackingActions.follow(followed ? null : device.token));
+
+    if (!followed) {
+      trackMatomo(['trackEvent', 'Tracking', 'follow']);
+
+      dispatch(setActiveModal(null));
+    }
   };
 
   const handleDelete = () => {
@@ -121,6 +137,14 @@ export function TrackedDevice({ device }: Props): ReactElement {
           align="end"
           toggleLabel={m?.general.actions}
         >
+          <Action
+            icon={<FaCrosshairs />}
+            label={tm?.follow}
+            active={followed}
+            onClick={handleFollow}
+            showFrom="sm"
+          />
+
           <Action
             icon={<FaEdit />}
             label={m?.general.modify}

@@ -14,6 +14,7 @@ const sk: DeepPartialWithRequiredObjects<TrackingMessages> = {
       Chyba sledovania pomocou sledovacieho tokenu <i>{id}</i>.
     </>
   ),
+  follow: 'Centrovať',
   trackedDevices: {
     button: 'Sledované zariadenia',
     modalTitle: 'Sledované zariadenia',

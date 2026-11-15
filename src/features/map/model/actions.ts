@@ -173,6 +173,8 @@ export interface MapStateBase extends MapViewState {
 export const mapRefocus = createAction<
   Partial<MapViewState> & {
     gpsTracked?: boolean;
+    /** Whose position `gpsTracked` follows: a watched device's token, `null` the user's own. */
+    followedDevice?: string | null;
     setups?: Record<string, LayerSetup>;
     linkPresets?: MapPreset[];
   }

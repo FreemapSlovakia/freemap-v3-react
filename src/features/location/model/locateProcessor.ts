@@ -38,8 +38,12 @@ export const locateProcessor: Processor<
       }
 
       // Following the position is the locate button's own business, whoever
-      // ends up supplying the fixes.
-      dispatch(mapRefocus({ gpsTracked: locate }));
+      // ends up supplying the fixes. Locating ending leaves a followed device be.
+      if (locate) {
+        dispatch(mapRefocus({ gpsTracked: true, followedDevice: null }));
+      } else if (getState().map.followedDevice === null) {
+        dispatch(mapRefocus({ gpsTracked: false }));
+      }
     }
 
     const wanted = locate && !externalSource;

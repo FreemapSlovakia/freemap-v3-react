@@ -3,6 +3,7 @@ import type { JSX, ReactNode } from 'react';
 export type TrackingMessages = {
   subscribeNotFound: (props: { id: string | number }) => JSX.Element;
   subscribeError: (props: { id: string | number }) => JSX.Element;
+  follow: string;
   trackedDevices: {
     button: string;
     modalTitle: string;

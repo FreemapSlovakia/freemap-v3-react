@@ -60,6 +60,7 @@ export const locateOnceProcessor: Processor<typeof requestFix> = {
       // the fix is wanted here. Left on, the next fix would pull the map off
       // whatever was just placed. Undone only where this turned locating on, so
       // a user already following stays following.
+      // TODO a followed device stops being followed here too.
       dispatch(mapRefocus({ gpsTracked: false }));
     }
 

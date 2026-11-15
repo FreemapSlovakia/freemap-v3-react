@@ -73,6 +73,10 @@ export const trackingActions = {
   ),
 
   dropTrack: createAction<string>('TRACKING_DROP_TRACK'),
+
+  /** Keeps the map on a watched device's position; `null` stops following it. */
+  follow: createAction<string | null>('TRACKING_FOLLOW'),
+
   /**
    * Copies what a watched device has travelled so far into the track viewer,
    * where it becomes an ordinary loaded track. The live feed keeps running, so

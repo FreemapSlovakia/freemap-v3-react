@@ -14,6 +14,7 @@ const sl: DeepPartialWithRequiredObjects<TrackingMessages> = {
       Napaka pri sledenju z žetonom <i>{id}</i>.
     </>
   ),
+  follow: 'Centriraj',
   trackedDevices: {
     button: 'Sledene naprave',
     modalTitle: 'Sledene naprave',

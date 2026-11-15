@@ -41,7 +41,9 @@ export function MapControls(): ReactElement | null {
 
   const locating = useAppSelector((state) => state.location.locating);
 
-  const gpsTracked = useAppSelector((state) => state.map.gpsTracked);
+  const followingMe = useAppSelector(
+    (state) => state.map.gpsTracked && state.map.followedDevice === null,
+  );
 
   const headingSource = useAppSelector(
     (state) => state.locationSettings.headingSource,
@@ -61,16 +63,16 @@ export function MapControls(): ReactElement | null {
   const previewing = pickingMode === 'map-library-preview';
 
   const handleLocateClick = useCallback(() => {
-    // Locating on but not following — the user panned away from the position.
-    // Pressing the button then means "take me back", not "stop locating"; only
-    // a press while following turns locating off.
-    if (locate && !gpsTracked) {
+    // Locating on but not following — the user panned away from the position,
+    // or the map follows a device. Pressing the button then means "take me
+    // back", not "stop locating"; only a press while following turns it off.
+    if (locate && !followingMe) {
       dispatch(
-        mapRefocus(
-          location
-            ? { lat: location.lat, lon: location.lon, gpsTracked: true }
-            : { gpsTracked: true },
-        ),
+        mapRefocus({
+          ...(location && { lat: location.lat, lon: location.lon }),
+          gpsTracked: true,
+          followedDevice: null,
+        }),
       );
 
       return;
@@ -84,7 +86,7 @@ export function MapControls(): ReactElement | null {
     }
 
     dispatch(toggleLocate(undefined));
-  }, [dispatch, gpsTracked, headingSource, locate, location]);
+  }, [dispatch, followingMe, headingSource, locate, location]);
 
   const onMapRefocus = useCallback(
     (changes: Partial<MapViewState>) => {
@@ -161,7 +163,7 @@ export function MapControls(): ReactElement | null {
             <Button
               onClick={handleLocateClick}
               active={locate}
-              variant={gpsTracked ? 'warning' : 'secondary'}
+              variant={followingMe ? 'warning' : 'secondary'}
               {...props}
             >
               {locating ? (

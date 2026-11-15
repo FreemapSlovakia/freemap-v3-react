@@ -1,4 +1,5 @@
 import { toLatLng } from '@shared/geoutils.js';
+import type { LeafletMouseEvent } from 'leaflet';
 import { Fragment, type JSX, memo, useCallback } from 'react';
 import type { IconType } from 'react-icons';
 import {
@@ -22,7 +23,7 @@ interface TrackingPointProps {
   color: string;
   language: string;
   onActivePointSet: (tp: TrackPoint | null) => void;
-  onClick: () => void;
+  onClick: (e: LeafletMouseEvent) => void;
   interactive?: boolean;
   pane?: string;
 }

@@ -13,6 +13,7 @@ const en: TrackingMessages = {
       Error watching using token <i>{id}</i>.
     </>
   ),
+  follow: 'Follow',
   trackedDevices: {
     button: 'Watched',
     modalTitle: 'Watched Devices',

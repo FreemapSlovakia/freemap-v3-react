@@ -1,9 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { useManualAction } from '@features/documents/hooks/useManualAction.js';
-import {
-  elevationChartClose,
-  elevationChartOpen,
-} from '@features/elevationChart/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import {
@@ -33,9 +29,9 @@ import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Feature, LineString } from 'geojson';
 import { type ReactElement, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
-import { FaChartArea, FaMobileAlt, FaPalette, FaRegEye } from 'react-icons/fa';
+import { FaMobileAlt, FaPalette, FaRegEye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { hasElevation, resolveChartTrack } from '../chartTrack.js';
+import { hasElevation } from '../chartTrack.js';
 import { trackingActions } from '../model/actions.js';
 import { trackPointsToFeature } from '../trackGeojson.js';
 import { hasDrawableSegment } from '../tracks.js';
@@ -79,16 +75,6 @@ export function TrackingMenu(): ReactElement {
     (state) => state.tracking.trackedDevices,
   );
 
-  const selectedToken = useAppSelector((state) =>
-    state.main.selection?.type === 'tracking'
-      ? state.main.selection.id
-      : undefined,
-  );
-
-  const elevationChartActive = useAppSelector(
-    (state) => state.elevationChart.target?.type === 'tracking',
-  );
-
   const display = (showPoints ? '1' : '0') + (showLine ? '1' : '0');
 
   const lineFeatures = useMemo<Feature<LineString>[]>(
@@ -102,9 +88,9 @@ export function TrackingMenu(): ReactElement {
   );
 
   const isModeAvailable = (mode: (typeof colorizingModes)[number]) => {
-    // Nothing can add elevation to a live track — the same gate the chart
-    // button uses — so elevation-derived modes stay off until a device reports
-    // some, rather than painting the line no-data grey.
+    // Nothing can add elevation to a live track, so elevation-derived modes
+    // stay off until a device reports some, rather than painting the line
+    // no-data grey.
     if (colorizerNeedsElevation(mode) && !anyElevation) {
       return false;
     }
@@ -113,12 +99,6 @@ export function TrackingMenu(): ReactElement {
 
     return !isAvailable || isAvailable(lineFeatures);
   };
-
-  // The button only shows when there's a track the chart can actually plot.
-  const chartTrack = useMemo(
-    () => resolveChartTrack(tracks, selectedToken),
-    [tracks, selectedToken],
-  );
 
   const convertible = useMemo(
     () => hasDrawableSegment(tracks, trackedDevices),
@@ -229,31 +209,6 @@ export function TrackingMenu(): ReactElement {
           }),
         ]}
       />
-
-      {chartTrack && (
-        <LongPressTooltip breakpoint="sm" label={m?.general.elevationProfile}>
-          {({ label, labelClassName, props }) => (
-            <Button
-              variant="secondary"
-              active={elevationChartActive}
-              onClick={() =>
-                dispatch(
-                  elevationChartActive
-                    ? elevationChartClose()
-                    : elevationChartOpen({
-                        type: 'tracking',
-                        token: chartTrack.token,
-                      }),
-                )
-              }
-              {...props}
-            >
-              <FaChartArea />
-              <span className={labelClassName}> {label}</span>
-            </Button>
-          )}
-        </LongPressTooltip>
-      )}
 
       {convertible ? (
         <TrackingConvertMenu>{manual}</TrackingConvertMenu>

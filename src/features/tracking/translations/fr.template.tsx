@@ -14,6 +14,7 @@ const fr: DeepPartialWithRequiredObjects<TrackingMessages> = {
       Erreur de suivi avec le jeton <i>{id}</i>.
     </>
   ),
+  follow: 'Centrer',
   trackedDevices: {
     button: 'Suivis',
     modalTitle: 'Appareils suivis',

@@ -7,7 +7,7 @@ import type { OsmFeatureId } from '@shared/types/featureId.js';
 
 /**
  * The `panel=` parameter: what has a panel of its own, one at a time, an
- * inspection included. A tool's selection (`follow=`) stays out of it.
+ * inspection included.
  */
 export type PanelParam =
   | { type: 'event'; id: string }

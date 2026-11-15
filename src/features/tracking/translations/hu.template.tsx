@@ -14,6 +14,7 @@ const hu: DeepPartialWithRequiredObjects<TrackingMessages> = {
       Hiba történt a(z) <i>{id}</i> kód használatának követésekor.
     </>
   ),
+  follow: 'Követés',
   trackedDevices: {
     button: 'Figyelt',
     modalTitle: 'Figyelt eszközök',
