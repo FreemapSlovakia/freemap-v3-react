@@ -1165,7 +1165,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       icon={<FaEye />}
                       label={gm?.viewer.views}
                       hint={gm?.viewer.viewsSince(
-                        dayFormat.format(VIEW_COUNT_SINCE),
+                        dayFormat.format(
+                          createdAt && createdAt > VIEW_COUNT_SINCE
+                            ? createdAt
+                            : VIEW_COUNT_SINCE,
+                        ),
                       )}
                     />{' '}
                     {numberFormat.format(image.viewCount)}
