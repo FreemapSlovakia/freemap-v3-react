@@ -1,4 +1,9 @@
-import { captureException, captureMessage, init } from '@sentry/browser';
+import {
+  captureException,
+  captureMessage,
+  init,
+  lastEventId,
+} from '@sentry/browser';
 import { denyUrls, ignoreErrors } from './sentryFilters.js';
 
 // A separate entry loaded before `main`, so an error that keeps `main` from even
@@ -16,5 +21,5 @@ if (dsn && typeof Object.hasOwn !== 'undefined') {
   });
 
   // Only what the app calls; exposing the namespace defeats tree-shaking.
-  window.Sentry = { captureException, captureMessage };
+  window.Sentry = { captureException, captureMessage, lastEventId };
 }

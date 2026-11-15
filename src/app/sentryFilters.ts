@@ -5,6 +5,7 @@ export const ignoreErrors: (string | RegExp)[] = [
   /AbortError/,
   // injected crypto-wallet / browser-extension JSON-RPC providers
   /Internal JSON-RPC error/,
+  /window\.ethereum/,
   /promise rejection with keys: code, message/,
   // Background Sync API quirks across browsers
   /Attempted to register a sync event/,

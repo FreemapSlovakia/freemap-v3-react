@@ -72,11 +72,11 @@ export function reportError(errDetails: ErrorDetails): string | undefined {
 
   console.error('Application error', rest, error);
 
-  // Sentry's own global handler reports an error event without an error object
-  // from its message; capturing the missing object would add a bare "null" event.
+  // Sentry's own onerror hook, installed earlier, has already reported a global
+  // error; capturing it again would be dropped as a duplicate, leaving a dead id.
   const eventId =
-    errDetails.kind === 'global' && error == null
-      ? undefined
+    errDetails.kind === 'global'
+      ? window.Sentry?.lastEventId()
       : window.Sentry?.captureException(error);
 
   // Low-cardinality name (e.g. `TypeError`) makes the report diagnostic; the

@@ -27,7 +27,10 @@ declare global {
     fmHeadless?: {
       searchResultStyle?: PathOptions;
     };
-    Sentry?: Pick<typeof Sentry, 'captureException' | 'captureMessage'>;
+    Sentry?: Pick<
+      typeof Sentry,
+      'captureException' | 'captureMessage' | 'lastEventId'
+    >;
     fmStarted?: boolean;
     applyTheme: (theme?: 'dark' | 'light' | 'auto') => void;
     localStorageFallback?: StorageFallback;
