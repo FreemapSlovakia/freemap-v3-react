@@ -20,7 +20,7 @@ import {
 } from 'react';
 import { FaCrosshairs } from 'react-icons/fa';
 import { shallowEqual, useDispatch } from 'react-redux';
-import { distanceAt } from '../depth.js';
+import { distanceAt, skylineRow } from '../depth.js';
 import { candidateLabels, matchDoubted } from '../labels/fromPeaks.js';
 import {
   type LabelAnchor,
@@ -140,6 +140,9 @@ const PICK_MARK_PX = 17;
  */
 const PICK_MARK_HALO = 36;
 
+/** The same crosshair at the hovered place, before anything is pressed. */
+const HOVER_MARK_OPACITY = 0.5;
+
 /**
  * How far a summit the lift revealed is faded: it is drawn and named, but a
  * ridge stands between it and the eye. Matches `.revealed` in the stylesheet,
@@ -185,9 +188,9 @@ function measureText(text: string, font = LABEL_FONT): number {
 type HoverReading = { az: number; iy: number; distance: number };
 
 /**
- * The reading a sample carries, or `null` where it hit sky. Held as bearing and
- * row rather than as the pixel it was taken at, so it stays over its own
- * terrain while the view turns — which a press-set one has to survive.
+ * The reading a sample carries, or `null` where it found no terrain. Held as
+ * bearing and row rather than as the pixel it was taken at, so it stays over
+ * its own terrain while the view turns — which a press-set one has to survive.
  */
 function hoverReading(sample: {
   az: number;
@@ -202,6 +205,50 @@ function hoverReading(sample: {
     }
   );
 }
+
+/**
+ * The map's crosshair, centred on `x`/`y`. Haloed like a label's anchor, as it
+ * stands on rock and forest; `paintOrder` puts the halo behind the glyph.
+ */
+function PickMark({
+  x,
+  y,
+  opacity,
+}: {
+  x: number;
+  y: number;
+  opacity?: number;
+}): ReactElement {
+  return (
+    <FaCrosshairs
+      x={x - PICK_MARK_PX / 2}
+      y={y - PICK_MARK_PX / 2}
+      size={PICK_MARK_PX}
+      color={PICKED_INK}
+      stroke="rgba(0, 0, 0, 0.6)"
+      strokeWidth={PICK_MARK_HALO}
+      paintOrder="stroke"
+      opacity={opacity}
+    />
+  );
+}
+
+/** A pointer's place in the panel, in CSS pixels. */
+type PanelPoint = { px: number; py: number };
+
+function panelPoint(e: ReactPointerEvent): PanelPoint {
+  const rect = e.currentTarget.getBoundingClientRect();
+
+  return { px: e.clientX - rect.left, py: e.clientY - rect.top };
+}
+
+/**
+ * What the readouts answer to: a resting mouse, re-read as the view moves, or
+ * the last press of something that cannot hover.
+ */
+type Pointer =
+  | ({ kind: 'mouse'; width: number; height: number } & PanelPoint)
+  | { kind: 'press'; az: number; aimIy: number };
 
 type Props = {
   render: PanoramaRenderInfo;
@@ -252,16 +299,16 @@ export function PanoramaView({
 
   const [dragging, setDragging] = useState(false);
 
-  const [hover, setHover] = useState<HoverReading | null>(null);
+  /** A gesture past the click slop — a press alone hides nothing. */
+  const [panning, setPanning] = useState(false);
+
+  const [pointer, setPointer] = useState<Pointer | null>(null);
 
   /**
    * Where a press on the terrain landed, held as bearing and row like the
    * readout: the counterpart in the picture of the mark it leaves on the map.
    */
   const [picked, setPicked] = useState<{ az: number; iy: number } | null>(null);
-
-  /** Which point of the sky paths to read out: sky or terrain, hover or press. */
-  const [skyAim, setSkyAim] = useState<{ az: number; iy: number } | null>(null);
 
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -517,20 +564,14 @@ export function PanoramaView({
     }
   }, [storedAzimuth]);
 
-  // A reading belongs to the picture it was taken from. `iy` is an image row,
-  // and two renders of one viewpoint are not the same height — a detail or a
-  // band apart — so a reading carried across would be put back at the wrong
-  // altitude while still claiming the old distance. A new viewpoint is the same
-  // story, and the reducer already clears the map's mark for it.
+  // A press reading belongs to the picture it was taken from: `iy` is an image
+  // row, and renders differ in height. Declared before the effect below, which
+  // must run after it to put the mark back on the new picture.
   // biome-ignore lint/correctness/useExhaustiveDependencies: the render's identity is the point
   useEffect(() => {
-    setHover(null);
-
     setPicked(null);
 
-    setSkyAim(null);
-
-    setPanoramaHover(null);
+    setPointer((p) => (p?.kind === 'press' ? null : p));
   }, [render.id]);
 
   // A mark named on the map — a place to look at — carries no row of its own,
@@ -832,25 +873,24 @@ export function PanoramaView({
       pinchedRef.current = false;
     }
 
+    // A finger on a hybrid device speaks over a mouse left resting.
+    if (e.pointerType !== 'mouse') {
+      setPointer((p) => (p?.kind === 'mouse' ? null : p));
+    }
+
     setDragging(true);
   };
 
   /**
    * What a pointer is aimed at: where in the panel it is, and where its line of
-   * sight meets the terrain — `null` ground for sky, and no sample at all when
-   * the render came without a distance buffer.
+   * sight meets the terrain — `null` ground where none is read, and no sample
+   * at all when the render came without a distance buffer.
    */
-  const sampleGround = useCallback(
-    (e: ReactPointerEvent) => {
+  const sampleAt = useCallback(
+    ({ px, py }: PanelPoint) => {
       if (!data.depth) {
         return null;
       }
-
-      const rect = e.currentTarget.getBoundingClientRect();
-
-      const px = e.clientX - rect.left;
-
-      const py = e.clientY - rect.top;
 
       const az = azLeft + px * degPerPx;
 
@@ -864,7 +904,23 @@ export function PanoramaView({
 
       // Clamped off the last row: at the very bottom of the frame `py / scale`
       // lands exactly on the row past the end, which reads as no data at all.
-      const iy = Math.min(clampedOffsetY + py / scale, render.height - 0.001);
+      const aimIy = Math.min(
+        clampedOffsetY + py / scale,
+        render.height - 0.001,
+      );
+
+      const onSky = distanceAt(data.depth, ix, aimIy) === null;
+
+      const top = onSky ? skylineRow(data.depth, ix) : null;
+
+      // Sky above a skyline in view reads as that skyline, the farthest thing
+      // there and otherwise a hard target at the picture's top.
+      const snap =
+        top !== null &&
+        aimIy < top &&
+        (top + 0.5 - clampedOffsetY) * scale <= height;
+
+      const iy = snap ? top + 0.5 : aimIy;
 
       const distance = distanceAt(data.depth, ix, iy);
 
@@ -874,6 +930,9 @@ export function PanoramaView({
         // are what put it back over the terrain it measured.
         az,
         iy,
+        /** The row under the pointer itself, which the sky readout aims at. */
+        aimIy,
+        onSky,
         ground:
           distance === null
             ? null
@@ -884,8 +943,10 @@ export function PanoramaView({
               },
       };
     },
-    [azLeft, clampedOffsetY, data.depth, degPerPx, render, scale],
+    [azLeft, clampedOffsetY, data.depth, degPerPx, height, render, scale],
   );
+
+  useEffect(() => () => setPanoramaHover(null), []);
 
   const handlePointerMove = (e: ReactPointerEvent) => {
     const previous = pointers.current.get(e.pointerId);
@@ -917,6 +978,8 @@ export function PanoramaView({
         }
 
         pinchRef.current = distance;
+
+        setPanning(true);
       } else {
         const dx = e.clientX - previous.x;
 
@@ -924,23 +987,19 @@ export function PanoramaView({
 
         travelRef.current += Math.abs(dx) + Math.abs(dy);
 
-        // Turning it by hand is taking it over, and it stays taken over —
-        // the same thing the stop button does, said with the gesture that
-        // already means "I want to look at this". Only once it is a drag: a
-        // press that goes nowhere is asking a distance, not steering.
-        //
-        // Latched in a ref rather than tested against the setting, which is a
-        // render behind: pointer moves keep arriving before the store's
-        // `false` comes back, and every one of them would dispatch again —
-        // and every dispatch writes the whole persisted state to localStorage.
-        if (
-          travelRef.current > CLICK_SLOP_PX &&
-          !stoppedRef.current &&
-          settings.autoPan
-        ) {
-          stoppedRef.current = true;
+        // Only once it is a drag: a press that goes nowhere is asking a
+        // distance, not steering.
+        if (travelRef.current > CLICK_SLOP_PX) {
+          setPanning(true);
 
-          dispatch(panoramaSetSettings({ autoPan: false }));
+          // Turning it by hand stops auto-pan, as the stop button does. Latched
+          // in a ref: the setting is a render behind, and each extra dispatch
+          // writes the persisted state to localStorage.
+          if (!stoppedRef.current && settings.autoPan) {
+            stoppedRef.current = true;
+
+            dispatch(panoramaSetSettings({ autoPan: false }));
+          }
         }
 
         setAzimuth((a) =>
@@ -963,27 +1022,7 @@ export function PanoramaView({
       return;
     }
 
-    // A pointer hovering: say how far away whatever is under it stands.
-    const sample = sampleGround(e);
-
-    // Past the end of a slice: nothing under the pointer to read.
-    if (!sample) {
-      setHover(null);
-
-      setSkyAim(null);
-
-      setPanoramaHover(null);
-
-      return;
-    }
-
-    setHover(hoverReading(sample));
-
-    setSkyAim({ az: sample.az, iy: sample.iy });
-
-    // The map follows the pointer, so what is under it can be found without
-    // committing to it — the press is what leaves a mark behind.
-    setPanoramaHover(sample.ground);
+    setPointer({ kind: 'mouse', ...panelPoint(e), width, height });
   };
 
   const endPointer = (e: ReactPointerEvent) => {
@@ -1003,43 +1042,54 @@ export function PanoramaView({
 
     setDragging(false);
 
+    setPanning(false);
+
+    // A cancelled pointer — a system gesture, palm rejection — neither pressed
+    // nor rests anywhere.
+    if (e.type === 'pointercancel') {
+      return;
+    }
+
     // A press that went nowhere asks what is there, rather than turning the
     // view: the distance buffer says how far, which with the bearing is a
     // place on the map. A pinch is not that, however still the fingers were:
     // its own branch never counts travel, so without this the lift ending a
     // zoom would mark and measure wherever the last finger sat.
     if (travelRef.current <= CLICK_SLOP_PX && !pinchedRef.current) {
-      const sample = sampleGround(e);
+      const sample = sampleAt(panelPoint(e));
 
       if (sample) {
-        dispatch(
-          panoramaSetProbe(
-            sample.ground && {
-              ...sample.ground,
-              iy: sample.iy,
-              ele: groundElevation(render, sample.iy, sample.ground.distance),
-            },
-          ),
-        );
+        const mark = sample.ground && {
+          ...sample.ground,
+          iy: sample.iy,
+          ele: groundElevation(render, sample.iy, sample.ground.distance),
+        };
 
-        // A finger has no hover, so the press has to say the distance as well
-        // as mark it — otherwise the readout is a thing only a mouse ever
-        // sees. It stays until the next press, the way the mark does.
-        setHover(hoverReading(sample));
+        // Sky with no skyline in view to stand for it leaves the mark alone.
+        if (mark) {
+          dispatch(panoramaSetProbe(mark));
 
-        setSkyAim({ az: sample.az, iy: sample.iy });
+          setPicked({ az: sample.az, iy: sample.iy });
+        }
 
-        setPicked(sample.ground ? { az: sample.az, iy: sample.iy } : null);
+        // A finger, or a pen that cannot hover, has no hover to say the
+        // distance, so the press has to say it as well as mark it.
+        if (e.pointerType !== 'mouse') {
+          setPointer({ kind: 'press', az: sample.az, aimIy: sample.aimIy });
+        }
       }
     } else if (e.pointerType !== 'touch') {
-      // The picture moved under a still mouse: read what is under it now.
-      const sample = sampleGround(e);
+      // A drag can end outside, with no `pointerleave` guaranteed after it.
+      const point = panelPoint(e);
 
-      setHover(sample && hoverReading(sample));
-
-      setSkyAim(sample && { az: sample.az, iy: sample.iy });
-
-      setPanoramaHover(sample?.ground ?? null);
+      setPointer(
+        point.px >= 0 &&
+          point.py >= 0 &&
+          point.px <= width &&
+          point.py <= height
+          ? { kind: 'mouse', ...point, width, height }
+          : null,
+      );
     }
   };
 
@@ -1058,9 +1108,8 @@ export function PanoramaView({
     // crosshair a terrain press left would be a second mark for one place.
     setPicked(null);
 
-    // Pressing the picked one again lets it go. A highlighted name invites
-    // being pressed again, and the only other way out is pressing the sky,
-    // which nothing suggests.
+    // Pressing the picked one again lets it go, which a highlighted name
+    // invites.
     if (label.id === pickedId) {
       dispatch(panoramaSetProbe(null));
 
@@ -1099,18 +1148,6 @@ export function PanoramaView({
       return y < 0 || y > height ? null : { x: screenX(label.azimuth), y };
     },
     [clampedOffsetY, height, scale, screenX],
-  );
-
-  // The readout put back where its terrain now is, the same way a label is: a
-  // press-set one outlives the gesture, and the view keeps turning under it.
-  const hoverAt = useMemo(
-    () =>
-      hover && {
-        x: screenX(hover.az),
-        y: (hover.iy - clampedOffsetY) * scale,
-        distance: hover.distance,
-      },
-    [clampedOffsetY, hover, scale, screenX],
   );
 
   // The crosshair put back over its own terrain as the view turns, the same way
@@ -1275,6 +1312,62 @@ export function PanoramaView({
     [anchor, subTexts, labelHeight, limits, named, width],
   );
 
+  // Derived rather than stored, so it follows the view moving under a resting
+  // mouse. Nothing over a name, where a press picks the summit instead.
+  const mouse = pointer?.kind === 'mouse' ? pointer : null;
+
+  const mouseSample = useMemo(() => {
+    if (
+      !mouse ||
+      panning ||
+      mouse.width !== width ||
+      mouse.height !== height ||
+      placements.some(
+        (p) =>
+          mouse.px >= p.left &&
+          mouse.px <= p.left + p.width &&
+          mouse.py >= p.top &&
+          mouse.py <= p.top + labelHeight,
+      )
+    ) {
+      return null;
+    }
+
+    return sampleAt(mouse);
+  }, [height, labelHeight, mouse, panning, placements, sampleAt, width]);
+
+  // The map follows the pointer; the press is what leaves a mark behind.
+  useEffect(() => {
+    setPanoramaHover(mouseSample?.ground ?? null);
+  }, [mouseSample]);
+
+  const press = pointer?.kind === 'press' ? pointer : null;
+
+  // A press's distance is said at the mark itself, so it moves, goes and is
+  // replaced exactly as the mark is.
+  const hover = mouse
+    ? mouseSample && hoverReading(mouseSample)
+    : press && picked && probe && !aim?.mark
+      ? { az: picked.az, iy: picked.iy, distance: probe.distance }
+      : null;
+
+  /** Which point of the sky paths to read out. */
+  const skyAim = mouse
+    ? mouseSample && { az: mouseSample.az, iy: mouseSample.aimIy }
+    : press && { az: press.az, iy: press.aimIy };
+
+  /** Hidden over terrain, where the faint crosshair stands in for it. */
+  const cursorClass =
+    mouseSample && (mouseSample.onSky ? classes.overSky : classes.overTerrain);
+
+  // Put back where its terrain now is: a press-set one outlives the gesture,
+  // and the view keeps turning under it.
+  const hoverAt = hover && {
+    x: screenX(hover.az),
+    y: (hover.iy - clampedOffsetY) * scale,
+    distance: hover.distance,
+  };
+
   // Every label the strip can carry, worked out once per language: the eight
   // compass points and a degree figure at each of the other multiples of ten.
   // The strip is redrawn on every frame of a pan, and formatting a number is
@@ -1338,7 +1431,10 @@ export function PanoramaView({
 
   return (
     <div
-      className={clsx(classes.viewport, dragging && classes.grabbing)}
+      className={clsx(
+        classes.viewport,
+        panning ? classes.grabbing : cursorClass,
+      )}
       ref={viewportRef}
       style={{ width, height }}
       onPointerDown={handlePointerDown}
@@ -1350,11 +1446,7 @@ export function PanoramaView({
       // actually leave takes the readout with it.
       onPointerLeave={(e) => {
         if (e.pointerType !== 'touch') {
-          setHover(null);
-
-          setSkyAim(null);
-
-          setPanoramaHover(null);
+          setPointer((p) => (p?.kind === 'mouse' ? null : p));
         }
       }}
     >
@@ -1373,7 +1465,7 @@ export function PanoramaView({
             width={width}
             altMin={render.altMin}
             aim={
-              skyAim && !dragging
+              skyAim && !panning
                 ? {
                     azimuth: skyAim.az,
                     altitude: render.altMax - skyAim.iy * render.stepDeg,
@@ -1423,22 +1515,12 @@ export function PanoramaView({
           </g>
         ))}
 
-        {/* Where a press on the terrain landed: the same crosshair the map and
-            the readout wear, so the three read as one mark. Haloed like a
-            label's anchor, since it stands on rock and forest with no name
-            beside it to say what it is — `paintOrder` puts that halo behind
-            the glyph rather than over it. */}
-        {pickedAt && (
-          <FaCrosshairs
-            x={pickedAt.x - PICK_MARK_PX / 2}
-            y={pickedAt.y - PICK_MARK_PX / 2}
-            size={PICK_MARK_PX}
-            color={PICKED_INK}
-            stroke="rgba(0, 0, 0, 0.6)"
-            strokeWidth={PICK_MARK_HALO}
-            paintOrder="stroke"
-          />
+        {/* Faint where a mouse press would land, solid where one did. */}
+        {mouse && hoverAt && (
+          <PickMark x={hoverAt.x} y={hoverAt.y} opacity={HOVER_MARK_OPACITY} />
         )}
+
+        {pickedAt && <PickMark x={pickedAt.x} y={pickedAt.y} />}
       </svg>
 
       {placements.map((p) => (
@@ -1481,7 +1563,7 @@ export function PanoramaView({
         ))}
       </div>
 
-      {hoverAt && !dragging && (
+      {hoverAt && !panning && (
         // Flipped to the other side of the pointer near an edge: the viewport
         // clips what leaves it, so a readout sitting below the cursor simply
         // vanishes along the bottom of the picture.

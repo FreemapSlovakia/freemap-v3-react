@@ -1,4 +1,4 @@
-import { distanceAt, type PanoramaDepth } from '../depth.js';
+import { type PanoramaDepth, skylineRow } from '../depth.js';
 import type { PanoramaRenderInfo } from '../model/reducer.js';
 import { columnAt } from '../ray.js';
 
@@ -28,7 +28,7 @@ export function horizonProfile(
     return hit;
   }
 
-  const { width, height } = depth;
+  const { width } = depth;
 
   const altitudes = new Float32Array(width);
 
@@ -37,13 +37,9 @@ export function horizonProfile(
   const clippedBottom = new Uint8Array(width);
 
   for (let x = 0; x < width; x++) {
-    let top = 0;
+    const top = skylineRow(depth, x);
 
-    while (top < height && distanceAt(depth, x, top) === null) {
-      top++;
-    }
-
-    if (top === height) {
+    if (top === null) {
       altitudes[x] = render.altMin;
 
       clippedBottom[x] = 1;

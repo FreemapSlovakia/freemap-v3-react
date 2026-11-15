@@ -43,8 +43,8 @@ Nad najvýraznejšími viditeľnými vrchmi sú napísané názvy týchto vrchov
 ![Panoráma s vybraným vrchom označeným v mape](./images/panorama-panel.sk.webp)
 
 - Ukázaním na obrázok uvidíte, ako ďaleko je dané miesto, a miesto sa označí v mape.
-- Kliknutím na obrázok značku v mape ponecháte, spolu s prerušovanou čiarou výhľadu zo stanoviska. Kliknutím na názov vrchu označíte tento vrch; názov sa zafarbí načerveno.
-- Vybrané miesto – názov, nadmorská výška, vzdialenosť a azimut – sa zobrazí v rámčeku vpravo hore na obrázku; nadmorská výška stanoviska je vľavo hore. V ponuke :FaEllipsisV: pod každým rámčekom nájdete akcie pre dané miesto, rovnaké ako v kontextovej ponuke mapy.
+- Kliknutím na obrázok značku v mape ponecháte, spolu s prerušovanou čiarou výhľadu zo stanoviska. Kliknutím na oblohu označíte najvzdialenejší hrebeň pod ňou na obrázku. Kliknutím na názov vrchu označíte tento vrch; názov sa zafarbí načerveno.
+- Vybrané miesto – názov, nadmorská výška, vzdialenosť a azimut – sa zobrazí v rámčeku vpravo hore na obrázku; nadmorská výška stanoviska je vľavo hore. V ponuke :FaEllipsisV: pod každým rámčekom nájdete akcie pre dané miesto, rovnaké ako v kontextovej ponuke mapy. Značku zrušíte tlačidlom × v rámčeku vybraného miesta alebo klávesom <kbd>Esc</kbd>.
 
 Opačným smerom, z mapy do obrázka, slúži tlačidlo :FaCrosshairs: **Pozrieť sa na miesto v mape**, kliknutie do mapy a potvrdenie tlačidlom :FaCheck: **OK**, alebo položka :FaCrosshairs: **Pozrieť sa na to v panoráme** v kontextovej ponuke miesta. Obrázok sa otočí k miestu a označí ho; miesto skryté za hrebeňom sa označí na hrebeni, ktorý ho zakrýva.
 

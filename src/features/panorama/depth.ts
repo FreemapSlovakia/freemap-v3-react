@@ -169,16 +169,10 @@ export function visibleAtDistance(
   const at = (row: number) => depth.values[row * depth.width + col] ?? 0;
 
   // The sentinel is not on the distance scale, so the sky above the skyline
-  // has to be stepped over before anything can be compared. Linear, not
-  // halved: a column is terrain below and sky above, but nothing guarantees
-  // where the edge is if a render ever leaves a gap.
-  let top = 0;
+  // has to be stepped over before anything can be compared.
+  const top = skylineRow(depth, col);
 
-  while (top < depth.height && at(top) === depth.sky) {
-    top++;
-  }
-
-  if (top >= depth.height) {
+  if (top === null) {
     return null;
   }
 
@@ -245,6 +239,27 @@ export function visibleAtDistance(
     distance,
     visible: true,
   };
+}
+
+/**
+ * The topmost terrain row of the column at `x` — the farthest thing it sees —
+ * or `null` for a column of nothing but sky or off the image. Linear, not
+ * halved: nothing guarantees where the edge is if a render ever leaves a gap.
+ */
+export function skylineRow(depth: PanoramaDepth, x: number): number | null {
+  const col = Math.floor(x);
+
+  if (col < 0 || col >= depth.width) {
+    return null;
+  }
+
+  for (let row = 0; row < depth.height; row++) {
+    if (depth.values[row * depth.width + col] !== depth.sky) {
+      return row;
+    }
+  }
+
+  return null;
 }
 
 /** Distance in metres at an image pixel, or null for sky and off-image. */

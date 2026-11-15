@@ -86,13 +86,9 @@
   overflow: hidden;
 }
 
-/* What the picture is looked at through: it clips the panning image, and
-   swallows touch gestures so a drag turns the view instead of scrolling the
-   page or the map underneath. */
-/* Crosshair rather than an open hand: the readout says how far away whatever
-   sits under the pointer is, and a hand covers the very pixel being asked
-   about. The closed hand comes back while dragging, where there is nothing to
-   aim at and the grip is what wants saying. */
+/* Clips the panning image and swallows touch gestures, so a drag turns the
+   view instead of scrolling the page. `overTerrain` hides the cursor because
+   `PanoramaView` draws a crosshair in its place. */
 .viewport {
   position: relative;
   overflow: hidden;
@@ -100,6 +96,14 @@
   cursor: crosshair;
   user-select: none;
   background-color: var(--bs-secondary-bg);
+
+  &.overTerrain {
+    cursor: none;
+  }
+
+  &.overSky {
+    cursor: default;
+  }
 
   &.grabbing {
     cursor: grabbing;

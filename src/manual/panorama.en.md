@@ -43,8 +43,8 @@ The names of the most prominent peaks in view are written above them. Zooming in
 ![A panorama with a peak picked and marked on the map](./images/panorama-panel.en.webp)
 
 - Pointing at the picture shows how far away that place is and marks it on the map.
-- Clicking the picture leaves the mark on the map, with a dashed line of sight from the viewpoint. Click a peak name to mark that peak; the name turns red.
-- The picked place – its name, elevation, distance and azimuth – shows in a box at the top right of the picture; the viewpoint's elevation is at the top left. The :FaEllipsisV: menu under either box holds what you can do with that place, as in the map's context menu.
+- Clicking the picture leaves the mark on the map, with a dashed line of sight from the viewpoint. Clicking the sky marks the farthest ridge below it in the picture. Click a peak name to mark that peak; the name turns red.
+- The picked place – its name, elevation, distance and azimuth – shows in a box at the top right of the picture; the viewpoint's elevation is at the top left. The :FaEllipsisV: menu under either box holds what you can do with that place, as in the map's context menu. The × in the picked place's box, or <kbd>Esc</kbd>, clears the mark.
 
 To look the other way round, from the map into the picture, use :FaCrosshairs: **Look at a place on the map**, click the map and confirm with :FaCheck: **OK**, or right-click a place and choose :FaCrosshairs: **Look at this in the panorama**. The picture turns to the place and marks it; a place hidden behind a ridge is marked on the ridge that hides it.
 

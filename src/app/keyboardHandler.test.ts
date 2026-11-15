@@ -13,7 +13,10 @@ import { setMapLeafletElement } from '@features/map/hooks/leafletElementHolder.j
 import { mapRefocus } from '@features/map/model/actions.js';
 import { mapAreaSelectCancel } from '@features/mapArea/model/actions.js';
 import { mapLibraryPreviewEnd } from '@features/mapLibrary/model/actions.js';
-import { panoramaSetPicking } from '@features/panorama/model/actions.js';
+import {
+  panoramaSetPicking,
+  panoramaSetProbe,
+} from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import {
@@ -292,6 +295,44 @@ describe('handleEvent — Escape', () => {
     expect(
       handleEvent(esc(), makeState({ elevationChart: { target: {} } })),
     ).toEqual(elevationChartClose());
+  });
+
+  describe('with a panorama mark', () => {
+    const panorama = { picking: null, probe: { distance: 1000, azimuth: 90 } };
+
+    it('clears it before closing the map-click tool', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            panorama,
+            main: {
+              activeModal: null,
+              selection: null,
+              mapTool: 'draw-lines',
+              panelTools: ['panorama'],
+            },
+          }),
+        ),
+      ).toEqual(panoramaSetProbe(null));
+    });
+
+    it('leaves it alone while the panel is closed', () => {
+      expect(
+        handleEvent(
+          esc(),
+          makeState({
+            panorama,
+            main: {
+              activeModal: null,
+              selection: null,
+              mapTool: 'draw-lines',
+              panelTools: [],
+            },
+          }),
+        ),
+      ).toEqual(closeTool('draw-lines'));
+    });
   });
 
   it('leaves the toposcope centre picking before anything else', () => {

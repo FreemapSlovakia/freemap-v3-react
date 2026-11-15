@@ -133,8 +133,6 @@ export default function PanoramaResult(): ReactElement | null {
 
   const aim = usePanoramaAim();
 
-  const hover = usePanoramaHover();
-
   const map = useMap();
 
   const wedgeRef = useRef<LeafletMarker | null>(null);
@@ -512,13 +510,11 @@ export default function PanoramaResult(): ReactElement | null {
           Each carries a line back to where the picture was taken from — the
           line of sight the reading was taken along. To the render, not to the
           pin: a line from a dragged pin crosses country nobody measured. */}
-      {hover && sightFrom && (
-        <SightMark
+      {sightFrom && (
+        <HoverSightMark
           from={sightFrom}
-          at={hover}
           color={markColor}
           pathOptions={sightHover}
-          opacity={0.65}
         />
       )}
 
@@ -546,6 +542,34 @@ export default function PanoramaResult(): ReactElement | null {
         />
       )}
     </>
+  );
+}
+
+/**
+ * Its own component because it follows the view moving under a resting mouse
+ * every frame, which the rest of the overlay has no reason to re-render for.
+ */
+function HoverSightMark({
+  from,
+  color,
+  pathOptions,
+}: {
+  from: LatLngLiteral;
+  color: string;
+  pathOptions: PathOptions;
+}): ReactElement | null {
+  const hover = usePanoramaHover();
+
+  return (
+    hover && (
+      <SightMark
+        from={from}
+        at={hover}
+        color={color}
+        pathOptions={pathOptions}
+        opacity={0.65}
+      />
+    )
   );
 }
 

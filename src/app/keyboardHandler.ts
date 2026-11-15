@@ -40,7 +40,10 @@ import {
 } from '@features/mapLibrary/model/selectors.js';
 import { mapLayersPanelToggle } from '@features/mapSettings/model/actions.js';
 import { selectionOpener } from '@features/openInExternalApp/selectionOpener.js';
-import { panoramaSetPicking } from '@features/panorama/model/actions.js';
+import {
+  panoramaSetPicking,
+  panoramaSetProbe,
+} from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
@@ -206,6 +209,11 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
 
   if (state.main.selection) {
     return selectFeature(null);
+  }
+
+  // A closed panel keeps the mark but shows it nowhere.
+  if (state.panorama.probe && isToolOpen(state, 'panorama')) {
+    return panoramaSetProbe(null);
   }
 
   // Only the tool that owns map clicks, the one holding the map in a mode; the

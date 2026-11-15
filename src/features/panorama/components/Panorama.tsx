@@ -8,12 +8,13 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { PlaceActionsButton } from '@shared/components/PlaceActionsButton.js';
 import type { ViewFromHere } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useEscapeKbd } from '@shared/hooks/useEscapeKbd.js';
 import { useFloatingWindow } from '@shared/hooks/useFloatingWindow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useTerrainProgress } from '@shared/hooks/useTerrainProgress.js';
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useRef, useState } from 'react';
-import { Alert, Button, Spinner } from 'react-bootstrap';
+import { Alert, Button, CloseButton, Spinner } from 'react-bootstrap';
 import {
   FaCrosshairs,
   FaInfoCircle,
@@ -21,7 +22,11 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { type PanoramaProbe, panoramaCancel } from '../model/actions.js';
+import {
+  type PanoramaProbe,
+  panoramaCancel,
+  panoramaSetProbe,
+} from '../model/actions.js';
 import { usePanoramaRenderData } from '../renderHolder.js';
 import { useSkyTracks } from '../sky/useSky.js';
 import { usePanoramaMessages } from '../translations/usePanoramaMessages.js';
@@ -335,6 +340,15 @@ function MarkBox({ probe }: { probe: PanoramaProbe | null }): ReactElement {
 
   const readout = readoutOf(aim, probe);
 
+  const dispatch = useDispatch();
+
+  const gm = useMessages();
+
+  const clearKbd = useEscapeKbd(panoramaSetProbe(null));
+
+  // Settled marks only, as with the place actions below.
+  const settled = probe && !aim?.mark;
+
   return !readout ? (
     <div />
   ) : (
@@ -348,13 +362,26 @@ function MarkBox({ probe }: { probe: PanoramaProbe | null }): ReactElement {
         <div className="flex-grow-1">
           <PanoramaProbeReadout probe={readout} />
         </div>
+
+        {settled && (
+          <LongPressTooltip label={gm?.general.clear} kbd={clearKbd}>
+            {({ props }) => (
+              <CloseButton
+                variant="white"
+                className="align-self-start"
+                onClick={() => dispatch(panoramaSetProbe(null))}
+                {...props}
+              />
+            )}
+          </LongPressTooltip>
+        )}
       </div>
 
       {/* What was picked out of the picture is a place like any other: route to
           it, look from it, open it elsewhere. Not while the mark is being
           dragged: it is on its way somewhere, and the place under it is not
           settled yet. */}
-      {probe && !aim?.mark && (
+      {settled && (
         <PlaceActionsButton
           className="mt-1"
           size="sm"

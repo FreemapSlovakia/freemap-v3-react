@@ -846,20 +846,35 @@ touch starting on a peak label is never registered (the label stops the
 nothing could clear — its `pointerup` finds no gesture to end, and
 `pointerleave` is precisely what a finger lifting fires.
 
-The reading is held as a bearing and an image row, not as the pixel it was
-taken at, so it stays over its own terrain while the view turns — a press-set
-one has to survive the compass moving the picture under it. It is dropped when
-a new render lands: two renders of one viewpoint can be different heights, and
-the same row in each is then a different altitude. Each carries a dashed line back to the viewpoint — the
-line of sight the reading was taken along.
+A mouse's reading is derived on every render from where the mouse rests in the
+panel, so it follows the view turning or zooming under a still mouse and reads
+a new render afresh; it is hidden only once a gesture passes the click slop, so
+a click does not flicker it. After a press by anything but a mouse (a finger, a pen
+that cannot hover) the distance is said at the mark itself, so it moves, goes
+and is replaced exactly as the mark does (hidden while the mark is dragged on
+the map, which says its own figures); the sky readout stays where the press
+aimed until the next press, a mouse hover or a new render. One state,
+`Pointer`, holds either the resting mouse or that press, so the two cannot both
+speak. Each carries a dashed line back to the viewpoint — the line of sight the
+reading was taken along.
 
-The press also leaves a dot in the picture itself, in the picked names' ink,
+The press also leaves a crosshair in the picture itself, in the picked names' ink,
 which is the map crosshair's counterpart where the pressing happened. It is put
 back from the same bearing and row, so it stays on its terrain as the view
 turns, and it answers to the mark on the map rather than to itself: picking a
 name instead clears it, since a named summit already reddens its own anchor dot,
-and a new viewpoint drops both while this picture is still up. A press on the
-sky marks nothing, the way it already marks nothing on the map.
+and a new viewpoint drops both while this picture is still up. A press or hover
+on the sky above a skyline in view reads that skyline (`skylineRow`) — the
+farthest terrain the column sees, otherwise a row or two at the top of the
+picture that is hard to hit; any other sky leaves the mark as it is, and a
+pointer cancelled by the system presses nothing. A mouse hover shows
+the same crosshair at half opacity where a press would land, re-read whenever
+the view moves under a still mouse, and nothing over a name, where a press
+picks the summit instead; over terrain it replaces the cursor, over the sky the
+regular arrow stays. The mark is cleared by the × in the picked place's box, by
+Escape while the panel is open (`escapeAction`, after a selected feature and
+before the map-click tool), or by pressing a picked name again; a press's
+readout goes with it.
 
 A mark already on screen leaves the map alone: moving it under someone who can
 see what they asked for is the rudest thing this could do. One that isn't —
