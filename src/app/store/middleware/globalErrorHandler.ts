@@ -1,4 +1,5 @@
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { isIgnoredError } from '../../sentryFilters.js';
 import { setErrorTicketId } from '../actions.js';
 import type { MyStore } from '../store.js';
 
@@ -106,7 +107,11 @@ export function sendError(errDetails: ErrorDetails): void {
 
   const eventId = reportError(errDetails);
 
-  if (errDetails.message === 'Script error.' || errDetails.filename === '') {
+  if (
+    errDetails.message === 'Script error.' ||
+    errDetails.filename === '' ||
+    isIgnoredError(errDetails.error, errDetails.message, errDetails.filename)
+  ) {
     // don't show to user
   } else {
     handle(eventId);
