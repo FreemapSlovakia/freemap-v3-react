@@ -23,6 +23,7 @@ import {
 } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaChevronRight, FaExternalLinkAlt } from 'react-icons/fa';
+import { mapModeSelector } from '../store/selectors.js';
 import classes from './MapContextMenu.module.css';
 
 const initialState = {
@@ -117,6 +118,8 @@ export function MapContextMenu(): ReactElement {
 
   const map = useMap();
 
+  const inMode = useAppSelector(mapModeSelector);
+
   const { handleSelect, menuShown, handleMenuToggle, closeMenu, submenu } =
     useMenuHandler({
       at: { lat: contextMenu.lat, lon: contextMenu.lon },
@@ -129,7 +132,12 @@ export function MapContextMenu(): ReactElement {
     }
 
     function handlecontextMenu(e: LeafletMouseEvent) {
+      // Also in a map mode, or the browser's own menu shows.
       e.originalEvent.preventDefault();
+
+      if (inMode) {
+        return;
+      }
 
       // A right-click/long-press fires no click, so other open dropdowns never
       // see an outside click. Synthesize one on <html>: it reaches the root-close
@@ -160,7 +168,14 @@ export function MapContextMenu(): ReactElement {
     return () => {
       map.removeEventListener('contextmenu', handlecontextMenu);
     };
-  }, [closeMenu, handleMenuToggle, map]);
+  }, [closeMenu, handleMenuToggle, map, inMode]);
+
+  // Its items start tools and functions a map mode keeps away.
+  useEffect(() => {
+    if (inMode) {
+      closeMenu();
+    }
+  }, [inMode, closeMenu]);
 
   useEffect(() => {
     if (menuShown) {

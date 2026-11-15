@@ -25,6 +25,7 @@ import {
   FaMoneyBillWave,
   FaRegCopyright,
 } from 'react-icons/fa';
+import { mapModeSelector } from '../store/selectors.js';
 import { useAttributionInfo } from './useAttributionInfo.js';
 
 export function CopyrightButton(): ReactElement {
@@ -36,7 +37,11 @@ export function CopyrightButton(): ReactElement {
 
   const libraryIndex = useAppSelector(libraryIndexSelector);
 
-  const showLegendButton = hasLegend(layers, libraryIndex, customLayers);
+  // A map mode keeps modals away; only the credits, which open no modal, stay.
+  const inMode = useAppSelector(mapModeSelector);
+
+  const showLegendButton =
+    !inMode && hasLegend(layers, libraryIndex, customLayers);
 
   const modalLink = useModalLink();
 
@@ -82,31 +87,35 @@ export function CopyrightButton(): ReactElement {
             </OnlineOnlyItem>
           )}
 
-          <Dropdown.Item
-            key="privacyPolicy"
-            {...modalLink({ type: 'document', key: 'privacyPolicy' })}
-          >
-            <FaLock />
-            <MenuLabel>
-              <Text k="general.privacyPolicy" />
-            </MenuLabel>
-          </Dropdown.Item>
+          {!inMode && (
+            <>
+              <Dropdown.Item
+                key="privacyPolicy"
+                {...modalLink({ type: 'document', key: 'privacyPolicy' })}
+              >
+                <FaLock />
+                <MenuLabel>
+                  <Text k="general.privacyPolicy" />
+                </MenuLabel>
+              </Dropdown.Item>
 
-          <Dropdown.Item
-            key="termsOfService"
-            {...modalLink({ type: 'document', key: 'termsOfService' })}
-          >
-            <FaFileContract />
-            <MenuLabel>
-              <Text k="general.termsOfService" />
-            </MenuLabel>
-          </Dropdown.Item>
+              <Dropdown.Item
+                key="termsOfService"
+                {...modalLink({ type: 'document', key: 'termsOfService' })}
+              >
+                <FaFileContract />
+                <MenuLabel>
+                  <Text k="general.termsOfService" />
+                </MenuLabel>
+              </Dropdown.Item>
+            </>
+          )}
 
           {/* Terms of a purchase, and an embed sells nothing — its premium gem
               leaves for the portal, which states them where the money is
               actually taken. The two policies above stay: the embed does
               process the visitor's data, and they are using the service. */}
-          {!window.fmEmbedded && (
+          {!window.fmEmbedded && !inMode && (
             <Dropdown.Item
               key="refundPolicy"
               {...modalLink({ type: 'document', key: 'refundPolicy' })}

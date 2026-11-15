@@ -71,6 +71,7 @@ import {
 import { modalOf } from './store/activeModal.js';
 import {
   isToolOpen,
+  mapModeSelector,
   type PickingMode,
   pickingModeSelector,
   showGalleryViewerSelector,
@@ -467,8 +468,8 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
     return undefined;
   }
 
-  // By the character, wherever a layout puts it.
-  if (!keyTimer && event.key === '.') {
+  // By the character, wherever a layout puts it. A map mode hides the panel.
+  if (!keyTimer && event.key === '.' && !mapModeSelector(state)) {
     return mapLayersPanelToggle();
   }
 

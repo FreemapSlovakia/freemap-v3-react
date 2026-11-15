@@ -301,6 +301,14 @@ Optional deeper cleanup (not required; `show=` is already the single param):
   delete/stars/comment processors. Higher churn, no user-visible change — only
   do it if the dual state becomes a problem.
 
+- [ ] **One gate for modals and tools in a map mode.** `mapModeSelector` is
+  checked per entry point (context menu, info menu, layers button, `.` key),
+  but the map-manage/switch menus' modal items, the modal and tool key chords
+  (`?`, F1, legend, `G…`, clear-map-features — which in an armed join/split
+  wipes the very track aimed at) still open while a mode is on. Refuse
+  `setActiveModal`/`openTool` in a processor while a mode is on, or end the
+  mode on them, rather than adding a check to each new entry point.
+
 ## Premium / monetization
 
 Tracked as GitHub issues (label `area: premium`). The framing constraints still hold and gate what's

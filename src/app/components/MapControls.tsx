@@ -18,7 +18,7 @@ import { FaLayerGroup, FaMinus, FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { RiFullscreenExitLine, RiFullscreenLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { toggleLocate } from '../store/actions.js';
-import { pickingModeSelector } from '../store/selectors.js';
+import { mapModeSelector, pickingModeSelector } from '../store/selectors.js';
 import classes from './MapControls.module.css';
 import { MapManageButton } from './MapManageButton.js';
 import { MapSwitchButton } from './MapSwitchButton.js';
@@ -61,6 +61,9 @@ export function MapControls(): ReactElement | null {
 
   // A preview puts the earlier layers back when it ends, so it allows no switch.
   const previewing = pickingMode === 'map-library-preview';
+
+  // Main hides the layers panel in a map mode.
+  const inMode = useAppSelector(mapModeSelector);
 
   const handleLocateClick = useCallback(() => {
     // Locating on but not following — the user panned away from the position,
@@ -109,19 +112,21 @@ export function MapControls(): ReactElement | null {
           <>
             <MapSwitchButton />
 
-            <LongPressTooltip label={m?.mapLayers.layersPanel} kbd=".">
-              {({ props }) => (
-                <Button
-                  variant={layersPanel.attention ? 'primary' : 'secondary'}
-                  className={clsx(layersPanel.attention && classes.attention)}
-                  active={layersPanel.open}
-                  onClick={() => layersPanel.setOpen(!layersPanel.open)}
-                  {...props}
-                >
-                  <FaLayerGroup />
-                </Button>
-              )}
-            </LongPressTooltip>
+            {!inMode && (
+              <LongPressTooltip label={m?.mapLayers.layersPanel} kbd=".">
+                {({ props }) => (
+                  <Button
+                    variant={layersPanel.attention ? 'primary' : 'secondary'}
+                    className={clsx(layersPanel.attention && classes.attention)}
+                    active={layersPanel.open}
+                    onClick={() => layersPanel.setOpen(!layersPanel.open)}
+                    {...props}
+                  >
+                    <FaLayerGroup />
+                  </Button>
+                )}
+              </LongPressTooltip>
+            )}
           </>
         )}
 
