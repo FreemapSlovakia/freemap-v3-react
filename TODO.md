@@ -39,10 +39,12 @@ accessibility-only labels, which this app doesn't add — see `CLAUDE.md`).
 
 ## Cleanups
 
-- [ ] **The dev service worker can pin a stale build.** After a dev-server
-  restart the page may keep loading the previous main bundle and fail with
-  "Chunk is from another build" until a hard reload. Skip the service
-  worker under `pnpm start`, or make it never cache the entry in dev.
+- [ ] **The dev server can serve chunks of another build.** Since rspack 2.3
+  a lazy chunk newer than the page's main bundle fails with "Chunk is from
+  another build, and no update leads to it" — seen after a hot update was
+  held back while a type error showed. `liveReload: true` should reload the
+  page instead. If it still happens, reload included, only restarting
+  `pnpm start` has helped: report it to rspack with a reproduction.
 - [ ] **Back re-pushes an app-driven map fit.** Reproduced (2026-11-13), and
   not one race: the store and the Leaflet map drift apart on several async
   paths, and `mapStateHandler`'s `moveend` later writes the map's real view
