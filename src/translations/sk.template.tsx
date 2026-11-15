@@ -148,6 +148,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawingTool: 'Kresliaci nástroj',
     noDrawingTool: 'Výber',
     copyOk: 'Skopírované do schránky.',
+    inAppBrowser:
+      'Stránka je otvorená vo vstavanom prehliadači inej aplikácie, bez vášho prihlásenia a nastavení Freemapu. Otvorte ju mimo neho, alebo skopírujte odkaz a vložte ho do vyhľadávacieho poľa nainštalovaného Freemapu.',
+    openInApp: 'Otvoriť v aplikácii',
+    openInSafari: 'Otvoriť v Safari',
+    copyLink: 'Kopírovať odkaz',
     noCookies: () => (
       <>
         Táto funkcionalita vyžaduje prijatie{' '}

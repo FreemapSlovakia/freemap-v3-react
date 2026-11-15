@@ -155,6 +155,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     modifiedAt: 'Módosítva',
     operationError: ({ err }) => addError(messages, 'Műveleti hiba', err),
     copyOk: 'Vágólapra másolva.',
+    inAppBrowser:
+      'Ez az oldal egy másik alkalmazás beépített böngészőjében van megnyitva, a Freemap-bejelentkezése és -beállításai nélkül. Nyissa meg azon kívül, vagy másolja ki a hivatkozást, és illessze be a telepített Freemap keresőmezőjébe.',
+    openInApp: 'Megnyitás az alkalmazásban',
+    openInSafari: 'Megnyitás a Safariban',
+    copyLink: 'Hivatkozás másolása',
     noCookies: () => (
       <>
         Ez a funkció a{' '}

@@ -152,6 +152,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     drawingTool: 'Zeichenwerkzeug',
     noDrawingTool: 'Auswahl',
     copyOk: 'In Zwischenablage kopiert.',
+    inAppBrowser:
+      'Diese Seite ist im integrierten Browser einer anderen App geöffnet, ohne Ihre Freemap-Anmeldung und -Einstellungen. Öffnen Sie sie außerhalb, oder kopieren Sie den Link und fügen Sie ihn in das Suchfeld Ihrer installierten Freemap ein.',
+    openInApp: 'In App öffnen',
+    openInSafari: 'In Safari öffnen',
+    copyLink: 'Link kopieren',
     noCookies: () => (
       <>
         Diese Funktion erfordert die{' '}

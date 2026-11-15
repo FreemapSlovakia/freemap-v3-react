@@ -216,6 +216,7 @@ import { cancelProcessor } from '@/processors/cancelProcessor.js';
 import { convertToDrawingProcessor } from '@/processors/convertToDrawingProcessor.js';
 import { deleteProcessor } from '@/processors/deleteProcessor.js';
 import { errorProcessor } from '@/processors/errorProcessor.js';
+import { inAppBrowserProcessor } from '@/processors/inAppBrowserProcessor.js';
 import { legacyMapWarningProcessor } from '@/processors/legacyMapWarningProcessor.js';
 import { openToolProcessor } from '@/processors/openToolProcessor.js';
 import { resetAppProcessor } from '@/processors/resetAppProcessor.js';
@@ -372,6 +373,7 @@ export const processors = [
   weatherRadarRefreshProcessor,
   legendProcessor,
   legacyMapWarningProcessor,
+  inAppBrowserProcessor,
   openInExternalAppProcessor,
   panoramaRenderProcessor,
   panoramaReleaseProcessor,

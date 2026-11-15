@@ -123,6 +123,10 @@ export type Messages = {
     /** The drawing tool's choice that draws nothing: clicks select instead. */
     noDrawingTool: string;
     copyOk: string;
+    inAppBrowser: string;
+    openInApp: string;
+    openInSafari: string;
+    copyLink: string;
     noCookies: () => JSX.Element;
     name: string;
     icon: string;

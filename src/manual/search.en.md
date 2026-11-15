@@ -18,6 +18,8 @@ Besides names, the box understands:
 
 The results are grouped under where they come from. Pointing at a result, or moving onto it with the arrow keys, shows it on the map without moving the map, so you can compare results before picking one.
 
+Pasting a **Freemap link**, or a message containing one, opens it right away, as does sharing it to the installed Freemap on Android; **Back** returns to the previous view. This is how a link received in another app gets into an installed Freemap: a link tapped in an e-mail or chat often opens in that app's own browser, without your login and settings, and a notice there offers to open it in the app (Android) or in Safari (iOS), or to copy it for pasting here.
+
 Without an internet connection only coordinates, a bounding box, tile numbers and GeoJSON can be found.
 
 ## A picked result

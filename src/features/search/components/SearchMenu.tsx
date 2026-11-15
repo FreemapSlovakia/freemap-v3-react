@@ -57,6 +57,7 @@ import clsx from 'clsx';
 import type { Geometry } from 'geojson';
 import {
   type ChangeEvent,
+  type ClipboardEvent,
   Fragment,
   type ReactElement,
   type ReactNode,
@@ -85,6 +86,7 @@ import {
 import { GoDotFill } from 'react-icons/go';
 import { MdPolyline } from 'react-icons/md';
 import { useDispatch, useStore } from 'react-redux';
+import { freemapLinkTarget } from '../freemapLink.js';
 import {
   type CommandMatch,
   useCommandMatches,
@@ -391,6 +393,36 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
     setOpen(false);
   }, [dispatch, query, results.length]);
+
+  // A pasted Freemap link is followed: a hash-only change is a new history
+  // entry restored like Back/Forward, anything else loads the page.
+  const handlePaste = useCallback(
+    (e: ClipboardEvent<HTMLInputElement>) => {
+      const target = window.fmEmbedded
+        ? null
+        : freemapLinkTarget(e.clipboardData.getData('text'));
+
+      if (!target) {
+        return;
+      }
+
+      e.preventDefault();
+
+      spendQuery();
+
+      inputRef.current?.blur();
+
+      const { pathname, search, hash } = window.location;
+
+      // Assigning the very URL shown would navigate nowhere.
+      if (target !== pathname + search + hash) {
+        trackMatomo(['trackEvent', 'Search', 'pasteLink']);
+
+        window.location.assign(target);
+      }
+    },
+    [spendQuery],
+  );
 
   const handleSelect = useCallback(
     (eventKey: string | null) => {
@@ -703,6 +735,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               type="search"
               className={classes.searchInput}
               onChange={handleChange}
+              onPaste={handlePaste}
               value={value}
               placeholder={m?.search.placeholder}
               ref={inputRef}

@@ -149,6 +149,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     visual: 'Prikaz',
     drawingTool: 'Orodje za risanje',
     copyOk: 'Kopirano v odložišče.',
+    inAppBrowser:
+      'Ta stran je odprta v vgrajenem brskalniku druge aplikacije, brez vaše prijave in nastavitev Freemapa. Odprite jo zunaj njega ali kopirajte povezavo in jo prilepite v iskalno polje nameščenega Freemapa.',
+    openInApp: 'Odpri v aplikaciji',
+    openInSafari: 'Odpri v Safariju',
+    copyLink: 'Kopiraj povezavo',
     noCookies: () => (
       <>
         Ta funkcionalnost zahteva sprejem{' '}

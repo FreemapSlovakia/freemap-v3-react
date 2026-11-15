@@ -335,3 +335,8 @@ export const infoBarShown = createAction<{
 }>('INFO_BAR_SHOWN');
 
 export const init = createAction('INIT');
+
+/** A button of the notice shown in another app's built-in browser was tapped. */
+export const inAppBrowserLeave = createAction<'app' | 'safari' | 'copy'>(
+  'IN_APP_BROWSER_LEAVE',
+);

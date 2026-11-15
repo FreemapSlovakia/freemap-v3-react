@@ -18,6 +18,8 @@ Okrem názvov pole rozumie aj:
 
 Výsledky sú zoskupené podľa toho, odkiaľ pochádzajú. Ukázaním na výsledok alebo prechodom naň šípkami ho uvidíte na mape bez posunutia mapy, takže výsledky môžete porovnať skôr, než niektorý vyberiete.
 
+Vložený **odkaz na Freemap**, aj v texte správy, sa hneď otvorí, rovnako ako odkaz zdieľaný do nainštalovaného Freemapu v Androide; **Späť** vráti predchádzajúce zobrazenie. Takto sa do nainštalovaného Freemapu dostane odkaz prijatý v inej aplikácii: odkaz otvorený z e-mailu alebo chatu sa často otvorí vo vlastnom prehliadači tej aplikácie, bez vášho prihlásenia a nastavení, a upozornenie tam ponúkne otvoriť ho v aplikácii (Android) alebo v Safari (iOS), prípadne ho skopírovať a vložiť sem.
+
 Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, čísla dlaždíc a GeoJSON.
 
 ## Vybraný výsledok

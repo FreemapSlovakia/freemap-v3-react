@@ -1,5 +1,7 @@
 /// <reference lib="webworker" />
 
+import { freemapLinkTarget } from '@features/search/freemapLink.js';
+
 declare const self: ServiceWorkerGlobalScope;
 
 const SHARE_CACHE = 'pending-shares';
@@ -38,6 +40,13 @@ async function handleShareUpload(request: Request): Promise<Response> {
       const text = [data.get('text'), data.get('url'), data.get('title')]
         .filter((v): v is string => typeof v === 'string')
         .join(' ');
+
+      // A shared Freemap link opens where it points.
+      const target = freemapLinkTarget(text);
+
+      if (target) {
+        return Response.redirect(target, 303);
+      }
 
       const geo = text ? extractGeoFromText(text) : null;
 

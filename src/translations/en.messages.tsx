@@ -146,6 +146,11 @@ const messages: Messages = {
     drawingTool: 'Drawing tool',
     noDrawingTool: 'Select',
     copyOk: 'Copied to clipboard.',
+    inAppBrowser:
+      'This page is open in another app’s built-in browser, without your Freemap login and settings. Open it outside, or copy the link and paste it into the search box of your installed Freemap.',
+    openInApp: 'Open in app',
+    openInSafari: 'Open in Safari',
+    copyLink: 'Copy link',
     noCookies: () => (
       <>
         This functionality requires accepting the{' '}
