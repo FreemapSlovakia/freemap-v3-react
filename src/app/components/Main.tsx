@@ -89,21 +89,11 @@ import { AsyncComponent } from './AsyncComponent.js';
 import { CopyrightButton } from './CopyrightButton.js';
 import { InfoBar } from './InfoBar.js';
 import { Layers } from './Layers.js';
-// Imported for its stylesheet alone, and from here because this module is
-// eager. Its three users — the elevation chart, the toposcope and the panorama
-// — are each their own lazy chunk, and a stylesheet reached only from async
-// chunks is emitted into every one of them. Loading the second panel then
-// re-appends the shared rules *after* the first panel's own, and anything the
-// two disagree about at equal specificity flips: the panorama's white move grip
-// went back to Bootstrap's muted one the moment the toposcope opened. In the
-// initial bundle it is emitted once, and always before any feature's CSS —
-// which is the order a shared base wants anyway.
-//
-// Dev never showed it: one bundle, one copy, no second insertion.
-//
-// `SingleCopyCssPlugin` in `rspack.config.ts` fails the build for any shared
-// stylesheet that lacks an importer here.
+// Shared stylesheets used only by lazy chunks, imported eagerly so they land in
+// main.css once instead of a copy per chunk; `SingleCopyCssPlugin` warns when
+// one is missing here. See doc/build-and-deploy.md.
 import '@shared/components/FloatingWindow.module.css';
+import '@shared/components/PlaceholderHint.module.css';
 import { useStackedBar } from '../hooks/useStackedBar.js';
 import { LocationResult } from './LocationResult.js';
 import classes from './Main.module.css';
