@@ -14,14 +14,18 @@ import {
 export const galleryRequestImageProcessor: Processor = {
   actionCreator: galleryRequestImage,
   async handle({ getState, dispatch, toastError }) {
-    const activeImageId = getState().gallery.activeImageId;
+    const { activeImageId, image: shown } = getState().gallery;
 
     let image: Picture;
 
     try {
       const res = await httpRequest({
         getState,
-        url: `/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}`,
+        // A re-fetch of the shown photo (after a rating, a comment) keeps it, so
+        // only a newly opened photo counts as a view.
+        // TODO a retry after a failed fetch, or the return from the uploader's
+        // profile, counts again; an explicit flag on the action would fix it.
+        url: `/gallery/pictures/${pictureIdToPath(activeImageId ?? 0)}${shown ? '' : '?countView=1'}`,
         expectedStatus: 200,
       });
 

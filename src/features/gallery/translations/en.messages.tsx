@@ -59,13 +59,11 @@ const en: GalleryMessages = {
     addComment: 'Add',
     yourRating: 'Your rating:',
     showOnTheMap: 'Show on the map',
-    uploaded: ({ username, createdAt }) => (
-      <>
-        Uploaded by {username} on {createdAt}
-      </>
-    ),
+    uploadedBy: 'Uploaded by',
     uploadedOn: (createdAt) => <>Uploaded on {createdAt}</>,
-    captured: (takenAt) => <>Captured on {takenAt}</>,
+    capturedOn: 'Captured on',
+    views: 'Views',
+    viewsSince: (date) => `Views since ${date}`,
     deletePrompt: (title) =>
       title ? (
         <>

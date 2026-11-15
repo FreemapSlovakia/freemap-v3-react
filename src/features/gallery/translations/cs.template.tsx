@@ -62,13 +62,11 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Přidej',
     yourRating: 'Tvé hodnocení:',
     showOnTheMap: 'Ukázat na mapě',
-    uploaded: ({ username, createdAt }) => (
-      <>
-        Nahrál {username} dne {createdAt}
-      </>
-    ),
+    uploadedBy: 'Nahrál',
     uploadedOn: (createdAt) => <>Nahráno dne {createdAt}</>,
-    captured: (takenAt) => <>Vyfoceno dne {takenAt}</>,
+    capturedOn: 'Vyfoceno dne',
+    views: 'Zobrazení',
+    viewsSince: (date) => `Zobrazení od ${date}`,
     deletePrompt: (title) =>
       title ? (
         <>

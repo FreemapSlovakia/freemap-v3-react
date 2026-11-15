@@ -20,14 +20,9 @@
   }
 }
 
+/* A `.vr` in running text: centred on caps and digits, not on the baseline. */
 .divider {
-  display: inline-block;
-  width: 1px;
-  height: 1em;
-  margin-inline: 0.5em;
   vertical-align: -0.125em;
-  background-color: currentColor;
-  opacity: 0.3;
 }
 
 .stars {

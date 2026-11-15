@@ -115,6 +115,8 @@ export const PictureSchema = z.object({
   // Timestamp the current license took effect (latest license-history entry);
   // shown as "licensed under … since …" in the viewer.
   licenseSince: IsoDateSchema.nullish(),
+  // Absent for Wikimedia photos.
+  viewCount: z.number().optional(),
 });
 
 export type Picture = z.infer<typeof PictureSchema>;

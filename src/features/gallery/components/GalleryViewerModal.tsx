@@ -10,13 +10,17 @@ import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
-import { getMinWidthForBreakpoint } from '@shared/breakpoints.js';
+import {
+  getMinWidthForBreakpoint,
+  useBreakpointMatches,
+} from '@shared/breakpoints.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { askBeforeClosing } from '@shared/modalCloseGuard.js';
 import 'pannellum';
@@ -28,6 +32,7 @@ import {
   type ChangeEvent,
   Fragment,
   type ReactElement,
+  type ReactNode,
   type SubmitEvent,
   useCallback,
   useEffect,
@@ -48,6 +53,7 @@ import {
 import {
   FaCamera,
   FaEllipsisV,
+  FaEye,
   FaGem,
   FaImage,
   FaPencilAlt,
@@ -55,6 +61,7 @@ import {
   FaSave,
   FaTimes,
   FaTrash,
+  FaUpload,
   FaUser,
 } from 'react-icons/fa';
 import { RiFullscreenLine } from 'react-icons/ri';
@@ -160,10 +167,49 @@ const SHARED_IMAGE_WIDTH = 3840;
 const READOUT_STAR_SIZE = 20;
 const RATING_STAR_SIZE = 24;
 
-const divider = <span className={classes.divider} />;
+const divider = <span className={clsx('vr mx-2', classes.divider)} />;
+
+// When the API started counting picture views.
+const VIEW_COUNT_SINCE = new Date(2026, 10, 15);
 
 // The flex row's gap already supplies half the spacing.
-const rowDivider = <span className={clsx(classes.divider, 'mx-1')} />;
+const rowDivider = <span className="vr mx-1 align-self-center" />;
+
+// A detail's icon and label; below md the label moves into the tooltip. A hint
+// is a whole sentence naming the detail, so collapsed it stands in for the label.
+function DetailMark({
+  icon,
+  label,
+  hint,
+}: {
+  icon: ReactNode;
+  label: ReactNode;
+  hint?: ReactNode;
+}) {
+  const matches = useBreakpointMatches();
+
+  const hintOnly = hint != null && !matches.md;
+
+  return (
+    <LongPressTooltip
+      label={hintOnly ? hint : label}
+      hint={hintOnly ? undefined : hint}
+      breakpoint="md"
+      toggleOnClick
+    >
+      {({ props, labelClassName }) => (
+        <span {...props} className="py-2 text-nowrap">
+          {icon}
+          <span
+            className={clsx(labelClassName, 'ms-1', hint != null && 'fm-hint')}
+          >
+            {label}
+          </span>
+        </span>
+      )}
+    </LongPressTooltip>
+  );
+}
 
 // The photo whose details are on screen, with its Commons metadata if any.
 interface ShownDetails {
@@ -660,6 +706,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     minute: '2-digit',
   });
 
+  const dayFormat = useDateTimeFormat({ dateStyle: 'medium' });
+
+  const numberFormat = useNumberFormat();
+
   // Device-pixel width of the displayed image: the modal's CSS width by
   // breakpoint (or the full window in fullscreen) times the pixel ratio.
   // Recomputed per render, so toggling fullscreen (which also bumps `imgKey`)
@@ -1039,30 +1089,30 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   </a>
                 </>
               ) : image.user ? (
-                gm?.viewer.uploaded({
-                  username: <UserChip key={image.user.id} user={image.user} />,
-                  createdAt: createdAt ? (
-                    <b key={createdAt.getTime()}>
-                      {dateFormat.format(createdAt)}
-                    </b>
-                  ) : (
-                    '-'
-                  ),
-                })
+                // Each section is unbreakable, so the line wraps only at dividers.
+                <span className="text-nowrap">
+                  {/* The upload date hides in a tooltip; the capture date matters more. */}
+                  <DetailMark
+                    icon={<FaUpload />}
+                    label={gm?.viewer.uploadedBy}
+                    hint={
+                      createdAt &&
+                      gm?.viewer.uploadedOn(
+                        <b>{dateFormat.format(createdAt)}</b>,
+                      )
+                    }
+                  />{' '}
+                  <UserChip user={image.user} />
+                </span>
               ) : null}
 
               {isWikimedia && createdAt && (
                 <>
                   {divider}
-                  <Text m={gm}>
-                    {(gm) =>
-                      gm.viewer.uploadedOn(
-                        <b key={createdAt.getTime()}>
-                          {dateFormat.format(createdAt)}
-                        </b>,
-                      )
-                    }
-                  </Text>
+                  <DetailMark
+                    icon={<FaUpload />}
+                    label={gm?.viewer.uploadedOn(dateFormat.format(createdAt))}
+                  />
                 </>
               )}
 
@@ -1070,17 +1120,23 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>
                   {divider}
                   {capturedDate ? (
-                    gm?.viewer.captured(
-                      <b key={capturedDate.getTime()}>
-                        {dateFormat.format(capturedDate)}
-                      </b>,
-                    )
+                    <span className="text-nowrap">
+                      <DetailMark
+                        icon={<FaCamera />}
+                        label={gm?.viewer.capturedOn}
+                      />{' '}
+                      <b>{dateFormat.format(capturedDate)}</b>
+                    </span>
                   ) : (
                     // Commons gives an already-worded, localized phrase for
                     // dates we can't parse ("Taken on 17 May 2012", "Fotené:
                     // 17. mája 2012", "between 2024 and 2026"); show it verbatim
                     // rather than doubling our "Captured on" label onto it.
-                    <b key={capturedRaw}>{capturedRaw}</b>
+                    <>
+                      <FaCamera />
+                      {' '}
+                      <b>{capturedRaw}</b>
+                    </>
                   )}
                 </>
               )}
@@ -1100,6 +1156,22 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 initialValue={rating}
                 readonly
               />
+
+              {image.viewCount !== undefined && (
+                <>
+                  {divider}
+                  <span className="text-nowrap">
+                    <DetailMark
+                      icon={<FaEye />}
+                      label={gm?.viewer.views}
+                      hint={gm?.viewer.viewsSince(
+                        dayFormat.format(VIEW_COUNT_SINCE),
+                      )}
+                    />{' '}
+                    {numberFormat.format(image.viewCount)}
+                  </span>
+                </>
+              )}
 
               {tags && tags.length > 0 && divider}
 
@@ -1135,7 +1207,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     {({ props }) => (
                       // A mark's target; no margin to give back, since vertical
                       // padding on an inline box moves nothing.
-                      <span {...props} className="py-2">
+                      <span {...props} className="py-2 text-nowrap">
                         <LicenseBadge licenseId={badgeLicense} />{' '}
                         <a
                           href={licenseUrl}

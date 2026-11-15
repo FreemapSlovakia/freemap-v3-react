@@ -50,15 +50,12 @@ export type GalleryMessages = {
     addComment: string;
     yourRating: string;
     showOnTheMap: string;
-    uploaded: ({
-      username,
-      createdAt,
-    }: {
-      username: ReactNode;
-      createdAt: ReactNode;
-    }) => JSX.Element;
-    uploadedOn: (createdAt: JSX.Element) => JSX.Element;
-    captured: (takenAt: JSX.Element) => JSX.Element;
+    /** Labels set before their value: the uploader, the date, the count. */
+    uploadedBy: string;
+    uploadedOn: (createdAt: ReactNode) => JSX.Element;
+    capturedOn: string;
+    views: string;
+    viewsSince: (date: string) => string;
     deletePrompt: (title: string | null | undefined) => JSX.Element;
     deleteTitle: string;
     modify: string;

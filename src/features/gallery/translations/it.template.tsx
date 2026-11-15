@@ -65,13 +65,11 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Aggiungi',
     yourRating: 'La sua valutazione:',
     showOnTheMap: 'Mostra sulla mappa',
-    uploaded: ({ username, createdAt }) => (
-      <>
-        Caricato da {username} il {createdAt}
-      </>
-    ),
+    uploadedBy: 'Caricata da',
     uploadedOn: (createdAt) => <>Caricata il {createdAt}</>,
-    captured: (takenAt) => <>Scattata il {takenAt}</>,
+    capturedOn: 'Scattata il',
+    views: 'Visualizzazioni',
+    viewsSince: (date) => `Visualizzazioni dal ${date}`,
     deletePrompt: (title) =>
       title ? (
         <>

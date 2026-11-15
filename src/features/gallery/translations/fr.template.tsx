@@ -44,13 +44,11 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
   },
   viewer: {
     imageUnavailable: 'Image non disponible',
-    uploaded: ({ username, createdAt }) => (
-      <>
-        Importée par {username} le {createdAt}
-      </>
-    ),
+    uploadedBy: 'Importée par',
     uploadedOn: (createdAt) => <>Importée le {createdAt}</>,
-    captured: (takenAt) => <>Prise le {takenAt}</>,
+    capturedOn: 'Prise le',
+    views: 'Vues',
+    viewsSince: (date) => `Vues depuis le ${date}`,
     deletePrompt: (title) =>
       title ? (
         <>

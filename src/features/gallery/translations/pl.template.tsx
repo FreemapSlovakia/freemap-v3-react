@@ -54,13 +54,11 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     addComment: 'Dodaj',
     yourRating: 'Moja ocena:',
     showOnTheMap: 'Pokaż na mapie',
-    uploaded: ({ username, createdAt }) => (
-      <>
-        Przesłał {username} dnia {createdAt}
-      </>
-    ),
+    uploadedBy: 'Przesłał',
     uploadedOn: (createdAt) => <>Przesłano dnia {createdAt}</>,
-    captured: (takenAt) => <>Zrobione dnia {takenAt}</>,
+    capturedOn: 'Zrobione dnia',
+    views: 'Wyświetlenia',
+    viewsSince: (date) => `Wyświetlenia od ${date}`,
     deletePrompt: (title) =>
       title ? (
         <>
