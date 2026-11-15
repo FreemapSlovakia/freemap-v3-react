@@ -212,6 +212,7 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
   }
 
   // A closed panel keeps the mark but shows it nowhere.
+  // TODO: also clears a mark mid-drag on the map (`PanoramaAim.mark`).
   if (state.panorama.probe && isToolOpen(state, 'panorama')) {
     return panoramaSetProbe(null);
   }

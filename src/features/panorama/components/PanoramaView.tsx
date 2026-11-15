@@ -1320,6 +1320,7 @@ export function PanoramaView({
     if (
       !mouse ||
       panning ||
+      // TODO: a resize under a still mouse drops the hover until it moves.
       mouse.width !== width ||
       mouse.height !== height ||
       placements.some(
