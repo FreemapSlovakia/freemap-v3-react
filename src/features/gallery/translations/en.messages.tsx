@@ -62,7 +62,7 @@ const en: GalleryMessages = {
     uploadedBy: 'Uploaded by',
     uploadedOn: (createdAt) => <>Uploaded on {createdAt}</>,
     capturedOn: 'Captured on',
-    views: 'Views',
+    views: 'Views:',
     viewsSince: (date) => `Views since ${date}`,
     deletePrompt: (title) =>
       title ? (

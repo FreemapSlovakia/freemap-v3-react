@@ -64,7 +64,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     uploadedBy: 'Naložil',
     uploadedOn: (createdAt) => <>Naloženo dne {createdAt}</>,
     capturedOn: 'Posneto dne',
-    views: 'Ogledi',
+    views: 'Ogledi:',
     viewsSince: (date) => `Ogledi od ${date}`,
     deletePrompt: (title) =>
       title ? (
