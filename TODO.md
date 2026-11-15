@@ -618,28 +618,9 @@ distance probe, a premium quality tier. What it does not do yet is issues under
 
 ## 3D terrain model (`src/features/terrainModel/`)
 
-- [ ] **Area shapes as one polygon mask.** Rectangle, rotated rectangle,
-  circle and a drawn polygon are all ways to draw the same mask: the grid
-  stays north-up over the shape's envelope, cells outside it are dropped and
-  the walls follow the mask's edge (`perimeterRing` over the kept cells
-  instead of the grid border). Steps:
-  - the mask in `buildMesh` and the preview's area geometry; the worker and
-    sampling stay as they are;
-  - count only the cells inside against the point limit, or a 45° square
-    loses √2 of its resolution to the envelope;
-  - rotate the finished STL (and the preview) by a rotated rectangle's
-    angle, so it lands square on the slicer's bed; mark north on the base
-    then, as the back edge no longer is;
-  - selection: a rectangle with a rotation handle and a typed angle, a
-    circle by centre and radius, a polygon from the drawing tools;
-  - the edge is stair-stepped by one grid step (0.05–0.3 mm, under a
-    nozzle width); clip the edge cells exactly against the shape only if
-    prints show it.
-- [ ] **Colour: 3MF with landcover.** STL carries no colour. A 3MF can,
-  per triangle; landcover classes (forest, water, rock, built-up) suit a
-  multi-material print far better than a map image. Needs a landcover
-  source by tiles — a renderer style with flat class colours and no shading
-  would do — and a palette mapped to filament slots.
+Planned work is in issues under `area: terrain-model`; what stays here was
+weighed and set aside:
+
 - [ ] **Simplification without the 2M point cap.** Delatin holds its mesh in
   plain JS arrays, so `SIMPLIFY_MAX_SAMPLES` halves a premium grid as soon as
   simplification is on (4.3 m becomes 6 m). Simplify in blocks instead,
@@ -648,11 +629,6 @@ distance probe, a premium quality tier. What it does not do yet is issues under
   Delatin breaks ties, so a triangle side on a seam must be split at the
   points the neighbour kept, or the STL is not watertight. Only premium
   models with simplification on gain from it.
-- [ ] **The texture's detail layer ignores its coverage.** `mapTexture` asks
-  for every detail tile after the base layer has finished, so outside
-  Slovakia and Czechia each one fails and the texture takes twice as long.
-  Skip tiles outside the detail's `coverageUrl` and its zooms, and fetch the
-  layers together, compositing them in order.
 
 ## Terrain shading (`terrain.tiles.freemap.sk`)
 
