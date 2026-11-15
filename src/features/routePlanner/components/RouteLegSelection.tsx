@@ -3,7 +3,7 @@ import { Selection } from '@shared/components/Selection.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useMemo } from 'react';
-import { FaMapMarkerAlt } from 'react-icons/fa';
+import { TbLine } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { routePlannerChangeTransport } from '../model/actions.js';
 import {
@@ -86,7 +86,7 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
     transport && (
       <Selection
         control={<RoutePlannerToggleButton />}
-        icon={<FaMapMarkerAlt />}
+        icon={<TbLine />}
         label={rpm?.leg}
       >
         {canBeManual && (
