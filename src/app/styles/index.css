@@ -519,6 +519,12 @@ a[target]:not(
   }
 }
 
+/* iOS Safari: a long-press opens the map context menu, not the text-selection callout. */
+.leaflet-container {
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 /* Positioned, so the z-index `MaplibreLayer` sets applies. */
 .leaflet-gl-layer.maplibregl-map {
   position: relative;
