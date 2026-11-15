@@ -10,8 +10,6 @@ const it: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   viewArea:
     "Un'anteprima smussata dell'area. Una volta creato, il modello viene mostrato come è nel file, semplificazione compresa.",
   viewModel: 'Anteprima fedele del modello creato.',
-  modelTooLargeToShow:
-    "Il modello è troppo dettagliato per un'anteprima fedele, quindi viene mostrata un'anteprima smussata dell'area.",
   build: 'Crea modello',
   dimensions: 'Dimensioni del modello',
   scale: 'Scala',

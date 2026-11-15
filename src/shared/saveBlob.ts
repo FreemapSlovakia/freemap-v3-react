@@ -24,12 +24,17 @@ function isPlatformRefusal(err: unknown): boolean {
  * The picker rejects with an `AbortError` `DOMException` when the user cancels;
  * that rejection is propagated so callers can distinguish a cancel from a real
  * failure.
+ *
+ * A file costly to make can be given as a function: it runs after the picker
+ * has opened, as the click that allows the picker lapses after a few seconds.
  */
 export async function saveBlob(
-  blob: Blob,
+  blob: Blob | (() => Blob),
   suggestedName: string,
   accept?: Record<string, string[]>,
 ): Promise<void> {
+  const make = () => (typeof blob === 'function' ? blob() : blob);
+
   if (pickerSupported) {
     let handle: FileSystemFileHandle | undefined;
 
@@ -44,7 +49,7 @@ export async function saveBlob(
         types: accept
           ? [
               {
-                description: blob.type || 'File',
+                description: Object.keys(accept)[0] ?? 'File',
                 accept: accept as FilePickerAcceptType['accept'],
               },
             ]
@@ -75,7 +80,14 @@ export async function saveBlob(
       }
 
       if (writable) {
-        await writable.write(blob);
+        try {
+          await writable.write(make());
+        } catch (err) {
+          // Or the picked file stays behind, empty or cut short.
+          await writable.abort().catch(() => {});
+
+          throw err;
+        }
 
         await writable.close();
 
@@ -84,7 +96,7 @@ export async function saveBlob(
     }
   }
 
-  const url = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(make());
 
   const a = document.createElement('a');
   a.href = url;

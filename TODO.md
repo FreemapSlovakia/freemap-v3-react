@@ -623,7 +623,7 @@ distance probe, a premium quality tier. What it does not do yet is issues under
   stays north-up over the shape's envelope, cells outside it are dropped and
   the walls follow the mask's edge (`perimeterRing` over the kept cells
   instead of the grid border). Steps:
-  - the mask in `buildStl` and the preview's area geometry; the worker and
+  - the mask in `buildMesh` and the preview's area geometry; the worker and
     sampling stay as they are;
   - count only the cells inside against the point limit, or a 45° square
     loses √2 of its resolution to the envelope;
@@ -642,19 +642,17 @@ distance probe, a premium quality tier. What it does not do yet is issues under
   would do — and a palette mapped to filament slots.
 - [ ] **Simplification without the 2M point cap.** Delatin holds its mesh in
   plain JS arrays, so `SIMPLIFY_MAX_SAMPLES` halves a premium grid as soon as
-  simplification is on (4.3 m becomes 6 m). Simplify in blocks instead, each
-  with its edge vertices fixed so neighbours stitch, bounding memory per
-  block and keeping the full grid.
+  simplification is on (4.3 m becomes 6 m). Simplify in blocks instead,
+  bounding memory per block and keeping the full grid. The seams are the
+  trap: neighbouring blocks agree on their shared edge's points only by how
+  Delatin breaks ties, so a triangle side on a seam must be split at the
+  points the neighbour kept, or the STL is not watertight. Only premium
+  models with simplification on gain from it.
 - [ ] **The texture's detail layer ignores its coverage.** `mapTexture` asks
   for every detail tile after the base layer has finished, so outside
   Slovakia and Czechia each one fails and the texture takes twice as long.
   Skip tiles outside the detail's `coverageUrl` and its zooms, and fetch the
   layers together, compositing them in order.
-- [ ] **Hand the model view its vertices from the worker.** `modelGeometry`
-  re-parses the STL on the main thread into unindexed arrays, stalling the
-  page for seconds near `MODEL_VIEW_MAX_TRIANGLES`. The worker has the
-  positions and indices already; posting them beside the STL would lift the
-  cap and the stall.
 
 ## Terrain shading (`terrain.tiles.freemap.sk`)
 

@@ -9,8 +9,6 @@ const en: TerrainModelMessages = {
   viewArea:
     'A smoothed preview of the area. Once created, the model is shown as the file holds it, simplification included.',
   viewModel: 'A faithful preview of the created model.',
-  modelTooLargeToShow:
-    'The model is too detailed for a faithful preview, so a smoothed preview of the area is shown.',
   build: 'Create model',
   dimensions: 'Model dimensions',
   scale: 'Scale',

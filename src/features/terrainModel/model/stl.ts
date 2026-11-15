@@ -100,20 +100,30 @@ export function fullGrid(cols: number, rows: number): Triangulation {
   return { coords, triangles };
 }
 
-export interface Stl {
-  data: ArrayBuffer;
-  triangles: number;
-  /** The first this many triangles are the top surface; walls and bottom follow. */
+/** The model as an indexed mesh, in millimetres: x east, y north, z up. */
+export interface Mesh {
+  /** Three per vertex: the surface's first, then the bottom ring, then its centre. */
+  positions: Float32Array;
+  /** Three per triangle, counter-clockwise seen from outside. */
+  index: Uint32Array;
+  /** The first this many vertices are the surface's. */
+  topVertices: number;
+  /** The first this many triangles are the surface; walls and bottom follow. */
   topTriangles: number;
-  /** Top of the model above the bed, millimetres. */
+  /** Top of the model above the bed. */
   heightMm: number;
 }
 
+export const meshTriangles = (mesh: Mesh) => mesh.index.length / 3;
+
+/** Binary STL bytes of a mesh, 50 a triangle. */
+export const stlBytes = (mesh: Mesh) => 84 + meshTriangles(mesh) * 50;
+
 /**
- * A closed solid as binary STL: walls and bottom are built on the surface's own
- * boundary vertices, so every edge has exactly two faces. No data sits at the lowest sample.
+ * A closed solid: walls and bottom are built on the surface's own boundary
+ * vertices, so every edge has exactly two faces. No data sits at the lowest sample.
  */
-export function buildStl(heights: Float32Array, o: StlOptions): Stl {
+export function buildMesh(heights: Float32Array, o: StlOptions): Mesh {
   const { cols, rows } = o;
 
   let min = Number.POSITIVE_INFINITY;
@@ -147,107 +157,129 @@ export function buildStl(heights: Float32Array, o: StlOptions): Stl {
 
   const dy = o.depthMm / (rows - 1);
 
-  const vertices = coords.length / 2;
-
-  // Model coordinates; grid row 0 is the north edge, at the far side of the bed.
-  const vx = new Float32Array(vertices);
-  const vy = new Float32Array(vertices);
-  const vz = new Float32Array(vertices);
-
-  for (let v = 0; v < vertices; v++) {
-    const col = coords[2 * v]!;
-    const row = coords[2 * v + 1]!;
-
-    vx[v] = col * dx;
-    vy[v] = (rows - 1 - row) * dy;
-    vz[v] = o.baseMm + (filled[row * cols + col]! - min) * zScale;
-  }
+  const topVertices = coords.length / 2;
 
   const ring = perimeterRing(coords, cols, rows);
 
-  const triangles = top.length / 3 + 3 * ring.length;
+  // The surface, then the bottom ring under its boundary, then the bottom's centre.
+  const positions = new Float32Array((topVertices + ring.length + 1) * 3);
 
-  const data = new ArrayBuffer(84 + triangles * 50);
+  // Grid row 0 is the north edge, at the far side of the bed.
+  for (let v = 0; v < topVertices; v++) {
+    const col = coords[2 * v]!;
+    const row = coords[2 * v + 1]!;
+
+    positions[v * 3] = col * dx;
+    positions[v * 3 + 1] = (rows - 1 - row) * dy;
+    positions[v * 3 + 2] =
+      o.baseMm + (filled[row * cols + col]! - min) * zScale;
+  }
+
+  ring.forEach((p, i) => {
+    positions.set(
+      [positions[p * 3]!, positions[p * 3 + 1]!, 0],
+      (topVertices + i) * 3,
+    );
+  });
+
+  const centre = topVertices + ring.length;
+
+  positions.set([o.widthMm / 2, o.depthMm / 2, 0], centre * 3);
+
+  const topTriangles = top.length / 3;
+
+  const index = new Uint32Array((topTriangles + 3 * ring.length) * 3);
+
+  const x = (v: number) => positions[v * 3]!;
+
+  const y = (v: number) => positions[v * 3 + 1]!;
+
+  for (let t = 0; t < top.length; t += 3) {
+    const a = top[t]!;
+    const b = top[t + 1]!;
+    const c = top[t + 2]!;
+
+    // Counter-clockwise seen from above, whatever order Delatin gave.
+    const ccw = (x(b) - x(a)) * (y(c) - y(a)) >= (y(b) - y(a)) * (x(c) - x(a));
+
+    index.set(ccw ? [a, b, c] : [a, c, b], t);
+  }
+
+  let at = top.length;
+
+  ring.forEach((p, i) => {
+    const q = ring[(i + 1) % ring.length]!;
+
+    const pb = topVertices + i;
+
+    const qb = topVertices + ((i + 1) % ring.length);
+
+    // Wall facing out, then the bottom facing down.
+    index.set([pb, qb, q, pb, q, p, centre, qb, pb], at);
+
+    at += 9;
+  });
+
+  return {
+    positions,
+    index,
+    topVertices,
+    topTriangles,
+    heightMm: o.baseMm + (max - min) * zScale,
+  };
+}
+
+/** The mesh as binary STL, written when it is downloaded. */
+export function meshToStl(mesh: Mesh): ArrayBuffer {
+  const { positions: p, index } = mesh;
+
+  const data = new ArrayBuffer(stlBytes(mesh));
 
   const view = new DataView(data);
 
   new Uint8Array(data, 0, 80).set(new TextEncoder().encode('freemap terrain'));
 
-  view.setUint32(80, triangles, true);
+  view.setUint32(80, meshTriangles(mesh), true);
 
   let at = 84;
 
-  const put = (...v: number[]) => {
-    for (const n of v) {
-      view.setFloat32(at, n, true);
+  const put = (value: number) => {
+    view.setFloat32(at, value, true);
 
-      at += 4;
-    }
+    at += 4;
   };
 
-  const tri = (
-    ax: number,
-    ay: number,
-    az: number,
-    bx: number,
-    by: number,
-    bz: number,
-    cx: number,
-    cy: number,
-    cz: number,
-  ) => {
-    const ux = bx - ax;
-    const uy = by - ay;
-    const uz = bz - az;
-    const wx = cx - ax;
-    const wy = cy - ay;
-    const wz = cz - az;
+  const vertex = (v: number) => {
+    put(p[v]!);
+    put(p[v + 1]!);
+    put(p[v + 2]!);
+  };
+
+  for (let t = 0; t < index.length; t += 3) {
+    const a = index[t]! * 3;
+    const b = index[t + 1]! * 3;
+    const c = index[t + 2]! * 3;
+
+    const ux = p[b]! - p[a]!;
+    const uy = p[b + 1]! - p[a + 1]!;
+    const uz = p[b + 2]! - p[a + 2]!;
+    const wx = p[c]! - p[a]!;
+    const wy = p[c + 1]! - p[a + 1]!;
+    const wz = p[c + 2]! - p[a + 2]!;
     const nx = uy * wz - uz * wy;
     const ny = uz * wx - ux * wz;
     const nz = ux * wy - uy * wx;
     const len = Math.hypot(nx, ny, nz) || 1;
 
-    put(nx / len, ny / len, nz / len, ax, ay, az, bx, by, bz, cx, cy, cz);
+    put(nx / len);
+    put(ny / len);
+    put(nz / len);
+    vertex(a);
+    vertex(b);
+    vertex(c);
 
     at += 2;
-  };
-
-  for (let t = 0; t < top.length; t += 3) {
-    const a = top[t]!;
-    let b = top[t + 1]!;
-    let c = top[t + 2]!;
-
-    // Counter-clockwise seen from above, whatever order Delatin gave.
-    if (
-      (vx[b]! - vx[a]!) * (vy[c]! - vy[a]!) <
-      (vy[b]! - vy[a]!) * (vx[c]! - vx[a]!)
-    ) {
-      [b, c] = [c, b];
-    }
-
-    tri(vx[a]!, vy[a]!, vz[a]!, vx[b]!, vy[b]!, vz[b]!, vx[c]!, vy[c]!, vz[c]!);
   }
 
-  const cx = o.widthMm / 2;
-
-  const cy = o.depthMm / 2;
-
-  for (let i = 0; i < ring.length; i++) {
-    const p = ring[i]!;
-    const q = ring[(i + 1) % ring.length]!;
-
-    // Wall, facing out.
-    tri(vx[p]!, vy[p]!, 0, vx[q]!, vy[q]!, 0, vx[q]!, vy[q]!, vz[q]!);
-    tri(vx[p]!, vy[p]!, 0, vx[q]!, vy[q]!, vz[q]!, vx[p]!, vy[p]!, vz[p]!);
-
-    // Bottom, facing down.
-    tri(cx, cy, 0, vx[q]!, vy[q]!, 0, vx[p]!, vy[p]!, 0);
-  }
-
-  return {
-    data,
-    triangles,
-    topTriangles: top.length / 3,
-    heightMm: o.baseMm + (max - min) * zScale,
-  };
+  return data;
 }

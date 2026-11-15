@@ -10,8 +10,6 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   viewArea:
     'Eine geglättete Vorschau des Gebiets. Nach dem Erstellen wird das Modell so angezeigt, wie es in der Datei steht, samt Vereinfachung.',
   viewModel: 'Getreue Vorschau des erstellten Modells.',
-  modelTooLargeToShow:
-    'Das Modell ist für eine getreue Vorschau zu detailliert, daher wird eine geglättete Vorschau des Gebiets angezeigt.',
   build: 'Modell erstellen',
   dimensions: 'Modellmaße',
   scale: 'Maßstab',

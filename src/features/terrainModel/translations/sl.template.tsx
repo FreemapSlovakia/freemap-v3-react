@@ -10,8 +10,6 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   viewArea:
     'Zglajen predogled območja. Po ustvarjanju je model prikazan tako, kot je v datoteki, skupaj s poenostavitvijo.',
   viewModel: 'Zvest predogled ustvarjenega modela.',
-  modelTooLargeToShow:
-    'Model je za zvest predogled preveč podroben, zato je prikazan zglajen predogled območja.',
   build: 'Ustvari model',
   dimensions: 'Mere modela',
   scale: 'Merilo',

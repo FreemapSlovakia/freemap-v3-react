@@ -1,5 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { buildStl, type StlOptions } from './stl.js';
+import {
+  buildMesh,
+  meshToStl,
+  meshTriangles,
+  type StlOptions,
+  stlBytes,
+} from './stl.js';
+
+const buildStl = (heights: Float32Array, options: StlOptions) => {
+  const mesh = buildMesh(heights, options);
+
+  return {
+    data: meshToStl(mesh),
+    triangles: meshTriangles(mesh),
+    bytes: stlBytes(mesh),
+    heightMm: mesh.heightMm,
+  };
+};
 
 function triangles(data: ArrayBuffer): number[][][] {
   const view = new DataView(data);
@@ -90,6 +107,8 @@ describe('buildStl', () => {
         expect(tris).toHaveLength(stl.triangles);
 
         expect(stl.data.byteLength).toBe(84 + stl.triangles * 50);
+
+        expect(stl.bytes).toBe(stl.data.byteLength);
       });
 
       it('is closed: every edge shared by two faces, in opposite directions', () => {

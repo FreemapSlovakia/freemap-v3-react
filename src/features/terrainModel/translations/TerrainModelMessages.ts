@@ -11,7 +11,6 @@ export type TerrainModelMessages = {
   previewUnavailable: string;
   viewArea: string;
   viewModel: string;
-  modelTooLargeToShow: string;
   build: string;
   dimensions: string;
   scale: string;

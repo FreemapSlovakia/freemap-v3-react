@@ -10,8 +10,6 @@ const cs: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   viewArea:
     'Vyhlazený náhled území. Po vytvoření se model zobrazí tak, jak bude ve výsledném souboru, i se zjednodušením.',
   viewModel: 'Věrný náhled vytvořeného modelu.',
-  modelTooLargeToShow:
-    'Model je na věrný náhled příliš podrobný, proto je zobrazen vyhlazený náhled území.',
   build: 'Vytvořit model',
   dimensions: 'Rozměry modelu',
   scale: 'Měřítko',

@@ -1,5 +1,5 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
-import type { StlOptions } from './stl.js';
+import type { Mesh, StlOptions } from './stl.js';
 
 /** Which grid to sample, and from where. */
 export interface GridRequest {
@@ -15,7 +15,7 @@ export interface GridRequest {
   freeZoom: number;
 }
 
-/** The STL, or only the sampled heights (for the area view). */
+/** The model's mesh, or only the sampled heights (for the area view). */
 export type WorkerRequest =
   | ({ kind: 'stl' } & GridRequest & StlOptions)
   | ({ kind: 'heights' } & GridRequest);
@@ -26,11 +26,8 @@ export type WorkerResponse =
   | { type: 'noData' }
   | {
       type: 'done';
-      stl: ArrayBuffer;
-      triangles: number;
-      /** The first this many triangles are the top surface. */
-      topTriangles: number;
-      heightMm: number;
+      /** Shown as it is, and written as STL only when downloaded. */
+      mesh: Mesh;
       /** Share of the grid without elevation data. */
       nodata: number;
       /** The tiles' distinct `X-Attribution` values, unparsed. */

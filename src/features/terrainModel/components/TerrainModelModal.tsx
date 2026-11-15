@@ -78,6 +78,7 @@ import {
   tilePixelM,
 } from '../model/plan.js';
 import { LIMITS, MAX_DEVIATION_STOPS } from '../model/settingsReducer.js';
+import { type Mesh, meshToStl, meshTriangles, stlBytes } from '../model/stl.js';
 import { tileCount } from '../model/tileGrid.js';
 import { useTerrainModelMessages } from '../translations/useTerrainModelMessages.js';
 import type { AreaView, ModelView } from './TerrainPreview.js';
@@ -144,12 +145,6 @@ function PreviewPlaceholder(): ReactElement {
   );
 }
 
-/**
- * Larger models are shown as the area: decoding one stalls the page for
- * seconds. Above a free account's full grid, about 2M triangles.
- */
-const MODEL_VIEW_MAX_TRIANGLES = 2_500_000;
-
 /** The finest elevation tile zoom served without premium. */
 const FREE_ZOOM = (parametricShading.premiumFromZoom ?? 16) - 1;
 
@@ -163,11 +158,7 @@ type Result = {
   bbox: Bbox;
   widthMm: number;
   depthMm: number;
-  stl: ArrayBuffer;
-  topTriangles: number;
-  heightMm: number;
-  triangles: number;
-  bytes: number;
+  mesh: Mesh;
   /** Share of the grid without elevation data. */
   nodata: number;
   /** The elevation datasets read; arrives after the model. */
@@ -539,21 +530,12 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
   const built = result?.key === modelKey ? result : null;
 
-  // Above the cap the view's vertex arrays alone would take the tab's memory.
-  const shownStl =
-    built && built.triangles <= MODEL_VIEW_MAX_TRIANGLES
-      ? built.stl
-      : undefined;
-
-  const modelTop = built?.topTriangles;
+  const builtMesh = built?.mesh;
 
   // One object per model and per grid, so the view doesn't rebuild per render.
   const modelView = useMemo<ModelView | undefined>(
-    () =>
-      shownStl && modelTop !== undefined
-        ? { kind: 'model', stl: shownStl, topTriangles: modelTop }
-        : undefined,
-    [shownStl, modelTop],
+    () => (builtMesh ? { kind: 'model', mesh: builtMesh } : undefined),
+    [builtMesh],
   );
 
   const shownDims =
@@ -618,7 +600,8 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
     dispatch(setActiveModal(null));
   };
 
-  // The file is in hand once built; saving it is instant.
+  // The STL is written only now, from the mesh the view shows: half its size.
+  // Late, after the picker opened, and any failure of it reported below.
   const handleSave = () => {
     if (!built) {
       return;
@@ -626,11 +609,15 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
     trackMatomo(['trackEvent', 'TerrainModel', 'stl']);
 
-    const { key } = built;
+    const { key, mesh } = built;
 
-    saveBlob(new Blob([built.stl], { type: 'model/stl' }), 'terrain.stl', {
-      'model/stl': ['.stl'],
-    }).then(
+    saveBlob(
+      () => new Blob([meshToStl(mesh)], { type: 'model/stl' }),
+      'terrain.stl',
+      {
+        'model/stl': ['.stl'],
+      },
+    ).then(
       () => setResult((r) => (r?.key === key ? { ...r, saved: true } : r)),
       (err: unknown) => {
         if (!(err instanceof DOMException && err.name === 'AbortError')) {
@@ -744,11 +731,7 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
         bbox,
         widthMm: plan.widthMm,
         depthMm: plan.depthMm,
-        stl: out.stl,
-        topTriangles: out.topTriangles,
-        heightMm: out.heightMm,
-        triangles: out.triangles,
-        bytes: out.stl.byteLength,
+        mesh: out.mesh,
         nodata: out.nodata,
         refusedAtM:
           out.zoom < plan.zoom ? tilePixelM(out.zoom, bbox) : undefined,
@@ -835,20 +818,14 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
                   }
                 >
                   <Suspense fallback={<PreviewPlaceholder />}>
-                    <TerrainPreview {...shown} />
+                    <TerrainPreview
+                      {...shown}
+                      unavailable={<Text m={tm} k="previewUnavailable" />}
+                    />
                   </Suspense>
 
                   <Form.Text className="d-block mb-3 mt-n2">
-                    <Text
-                      m={tm}
-                      k={
-                        modelView
-                          ? 'viewModel'
-                          : built
-                            ? 'modelTooLargeToShow'
-                            : 'viewArea'
-                      }
-                    />
+                    <Text m={tm} k={modelView ? 'viewModel' : 'viewArea'} />
                   </Form.Text>
                 </PreviewBoundary>
               ) : preview.problem === 'noData' ? (
@@ -872,9 +849,9 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
                 <>
                   <p>
                     {tm.result({
-                      height: nf1.format(built.heightMm),
-                      triangles: nf0.format(built.triangles),
-                      size: formatSize(built.bytes),
+                      height: nf1.format(built.mesh.heightMm),
+                      triangles: nf0.format(meshTriangles(built.mesh)),
+                      size: formatSize(stlBytes(built.mesh)),
                     })}
                   </p>
 

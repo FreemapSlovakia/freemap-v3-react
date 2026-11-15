@@ -10,8 +10,6 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   viewArea:
     'A terület elsimított előnézete. A létrehozás után a modell úgy jelenik meg, ahogy a fájlban van, az egyszerűsítéssel együtt.',
   viewModel: 'A létrehozott modell hű előnézete.',
-  modelTooLargeToShow:
-    'A modell túl részletes a hű előnézethez, ezért a terület elsimított előnézete látható.',
   build: 'Modell létrehozása',
   dimensions: 'A modell méretei',
   scale: 'Méretarány',

@@ -10,8 +10,6 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   viewArea:
     'Wygładzony podgląd obszaru. Po utworzeniu model jest wyświetlany tak, jak jest w pliku, wraz z uproszczeniem.',
   viewModel: 'Wierny podgląd utworzonego modelu.',
-  modelTooLargeToShow:
-    'Model jest zbyt szczegółowy na wierny podgląd, dlatego wyświetlany jest wygładzony podgląd obszaru.',
   build: 'Utwórz model',
   dimensions: 'Wymiary modelu',
   scale: 'Skala',

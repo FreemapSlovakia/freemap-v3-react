@@ -1,7 +1,7 @@
 import { decompress, init } from '@bokuweb/zstd-wasm';
 import { decodeSteps } from '@shared/elevationTile.js';
 import { NoElevationDataError } from './errors.js';
-import { buildStl } from './stl.js';
+import { buildMesh } from './stl.js';
 import { type ElevationTile, neededTiles, sampleGrid } from './tileGrid.js';
 import type {
   GridRequest,
@@ -179,20 +179,17 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
 
     post({ type: 'progress', phase: 'mesh' });
 
-    const stl = buildStl(heights, r);
+    const mesh = buildMesh(heights, r);
 
     post(
       {
         type: 'done',
-        stl: stl.data,
-        triangles: stl.triangles,
-        topTriangles: stl.topTriangles,
-        heightMm: stl.heightMm,
+        mesh,
         nodata: nodata / heights.length,
         attributions: [...attributions],
         zoom,
       },
-      [stl.data],
+      [mesh.positions.buffer, mesh.index.buffer],
     );
   } catch (err) {
     if (err instanceof NoElevationDataError) {

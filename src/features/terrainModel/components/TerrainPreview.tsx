@@ -1,5 +1,11 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
-import { type ReactElement, useEffect, useRef } from 'react';
+import {
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Spinner } from 'react-bootstrap';
 import {
   AmbientLight,
@@ -18,7 +24,11 @@ import {
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mercatorV } from '../model/mapTexture.js';
-import { fullGrid, perimeterRing } from '../model/stl.js';
+import {
+  fullGrid,
+  type Mesh as ModelMesh,
+  perimeterRing,
+} from '../model/stl.js';
 
 /** The coarse grid of the area, smooth: for framing and judging the relief. */
 export type AreaView = {
@@ -33,13 +43,8 @@ export type AreaView = {
   stale?: boolean;
 };
 
-/** The built STL, triangle for triangle: what the file holds. */
-export type ModelView = {
-  kind: 'model';
-  stl: ArrayBuffer;
-  /** The first this many triangles are the top surface. */
-  topTriangles: number;
-};
+/** The built model, triangle for triangle: what the file holds. */
+export type ModelView = { kind: 'model'; mesh: ModelMesh };
 
 type Props = {
   view: AreaView | ModelView;
@@ -47,6 +52,8 @@ type Props = {
   widthMm: number;
   depthMm: number;
   texture: HTMLCanvasElement | null;
+  /** Shown while the GPU has dropped the view. */
+  unavailable: ReactNode;
 };
 
 const HEIGHT_PX = 300;
@@ -73,50 +80,47 @@ function uv(d: Dims, x: number, y: number): [number, number] {
 
 /** One geometry; group 0 the top surface, group 1 walls and bottom. */
 function modelGeometry(view: ModelView, d: Dims): BufferGeometry {
-  const data = new DataView(view.stl);
+  const { positions, index, topVertices, topTriangles } = view.mesh;
 
-  const n = data.getUint32(80, true);
+  const uvs = new Float32Array((positions.length / 3) * 2);
 
-  const positions = new Float32Array(n * 9);
-
-  const uvs = new Float32Array(n * 6);
-
-  for (let t = 0; t < n; t++) {
-    for (let k = 0; k < 3; k++) {
-      const at = 84 + t * 50 + 12 + k * 12;
-
-      const x = data.getFloat32(at, true);
-      const y = data.getFloat32(at + 4, true);
-      const z = data.getFloat32(at + 8, true);
-
-      // STL z up, y north into three's y up, z south — a rotation, so the
-      // winding stays outward.
-      const i = (t * 3 + k) * 3;
-
-      positions[i] = x - d.widthMm / 2;
-      positions[i + 1] = z;
-      positions[i + 2] = d.depthMm / 2 - y;
-
-      if (t < view.topTriangles) {
-        uvs.set(uv(d, x, y), (t * 3 + k) * 2);
-      }
-    }
+  for (let v = 0; v < topVertices; v++) {
+    uvs.set(uv(d, positions[v * 3]!, positions[v * 3 + 1]!), v * 2);
   }
 
   const geometry = new BufferGeometry();
 
+  // The worker's arrays as they are, never written: they become the STL on
+  // download. No normals: flat shading takes each facet's from the shader.
   geometry.setAttribute('position', new BufferAttribute(positions, 3));
 
   geometry.setAttribute('uv', new BufferAttribute(uvs, 2));
 
-  // Unshared vertices, so each triangle gets its own normal: the facets.
-  geometry.computeVertexNormals();
+  geometry.setIndex(new BufferAttribute(index, 1));
 
-  geometry.addGroup(0, view.topTriangles * 3, 0);
+  geometry.addGroup(0, topTriangles * 3, 0);
 
-  geometry.addGroup(view.topTriangles * 3, (n - view.topTriangles) * 3, 1);
+  geometry.addGroup(topTriangles * 3, index.length - topTriangles * 3, 1);
 
   return geometry;
+}
+
+/**
+ * The model's x east, y north, z up into three's y up and z south, centred:
+ * a rotation, so the winding stays outward.
+ */
+function modelMesh(
+  geometry: BufferGeometry,
+  materials: MeshLambertMaterial[],
+  d: Dims,
+): Mesh {
+  const mesh = new Mesh(geometry, materials);
+
+  mesh.rotation.x = -Math.PI / 2;
+
+  mesh.position.set(-d.widthMm / 2, 0, d.depthMm / 2);
+
+  return mesh;
 }
 
 /** What a grid's geometry keeps across exaggeration and base: all but heights. */
@@ -258,6 +262,7 @@ export default function TerrainPreview({
   widthMm,
   depthMm,
   texture,
+  unavailable,
 }: Props): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -269,10 +274,29 @@ export default function TerrainPreview({
 
   const wallRef = useRef<MeshLambertMaterial | null>(null);
 
+  // Lost to a model too large for the GPU, or for a while to a backgrounded
+  // tab; three restores it when the browser allows, and then it draws again.
+  const [contextLost, setContextLost] = useState(false);
+
   useEffect(() => {
     const container = containerRef.current!;
 
     const renderer = new WebGLRenderer({ antialias: true });
+
+    const onContextLost = () => setContextLost(true);
+
+    const onContextRestored = () => {
+      setContextLost(false);
+
+      stageRef.current?.render();
+    };
+
+    renderer.domElement.addEventListener('webglcontextlost', onContextLost);
+
+    renderer.domElement.addEventListener(
+      'webglcontextrestored',
+      onContextRestored,
+    );
 
     renderer.setPixelRatio(window.devicePixelRatio);
 
@@ -348,6 +372,17 @@ export default function TerrainPreview({
 
       renderer.dispose();
 
+      // Lost on purpose below.
+      renderer.domElement.removeEventListener(
+        'webglcontextlost',
+        onContextLost,
+      );
+
+      renderer.domElement.removeEventListener(
+        'webglcontextrestored',
+        onContextRestored,
+      );
+
       // Released at once rather than at GC; browsers allow ~16 live contexts.
       renderer.forceContextLoss();
 
@@ -399,15 +434,17 @@ export default function TerrainPreview({
 
     const dims = { bbox, widthMm, depthMm };
 
-    // The built model shows its facets, as a slicer does; the area view is
-    // too coarse for its facets to say anything about the file.
-    surface.flatShading = view.kind === 'model';
+    // The built model shows its facets, as a slicer does, and has no normals
+    // but those; the area view is too coarse for facets to say anything.
+    for (const material of [surface, wall]) {
+      material.flatShading = view.kind === 'model';
 
-    surface.needsUpdate = true;
+      material.needsUpdate = true;
+    }
 
     const meshes =
       view.kind === 'model'
-        ? [new Mesh(modelGeometry(view, dims), [surface, wall])]
+        ? [modelMesh(modelGeometry(view, dims), [surface, wall], dims)]
         : areaGeometry(view, dims).map(
             (geometry, i) => new Mesh(geometry, i === 0 ? surface : wall),
           );
@@ -464,6 +501,12 @@ export default function TerrainPreview({
       {view.kind === 'area' && view.stale && (
         <div className="position-absolute top-0 start-0 m-2">
           <Spinner size="sm" />
+        </div>
+      )}
+
+      {contextLost && (
+        <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center small text-body-secondary">
+          {unavailable}
         </div>
       )}
     </div>
