@@ -20,14 +20,18 @@ const hu: DeepPartialWithRequiredObjects<PremiumMessages> = {
           <HintTooltip
             hint={
               <ul className="mb-0 ps-3 text-start">
-                <li>az Outdoor Map túratérkép legnagyobb nagyítási szintjei</li>
                 <li>
-                  Szlovákia és Csehország ortofotóinak legnagyobb nagyítási
+                  az Outdoor térkép, a KST turistautak és az Outdoor térkép
+                  fedvényeinek (utak, szintvonalak, …) legnagyobb nagyítási
                   szintjei
                 </li>
                 <li>
-                  Szlovákia és Csehország nagy felbontású részletes
-                  domborzatárnyékolása
+                  Szlovákia és Csehország ortofotójának legnagyobb nagyítási
+                  szintje
+                </li>
+                <li>
+                  a paraméteres terepárnyékolás és Szlovákia részletes
+                  terepárnyékolásának részletes nagyítási szintjei
                 </li>
               </ul>
             }

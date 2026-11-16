@@ -20,13 +20,17 @@ const pl: DeepPartialWithRequiredObjects<PremiumMessages> = {
           <HintTooltip
             hint={
               <ul className="mb-0 ps-3 text-start">
-                <li>najwyższe poziomy powiększenia mapy Outdoor</li>
                 <li>
-                  najwyższe poziomy powiększenia map ortofoto Słowacji i Czech
+                  najwyższe poziomy powiększenia mapy Outdoor, szlaków
+                  turystycznych KST i nakładek mapy Outdoor (szlaki, poziomice,
+                  …)
                 </li>
                 <li>
-                  szczegółowe cieniowanie Słowacji i Czech w wysokiej
-                  rozdzielczości
+                  najwyższy poziom powiększenia ortofotomapy Słowacji i Czech
+                </li>
+                <li>
+                  szczegółowe poziomy powiększenia parametrycznego cieniowania
+                  terenu i szczegółowego cieniowania terenu Słowacji
                 </li>
               </ul>
             }

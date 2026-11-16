@@ -20,14 +20,18 @@ const it: DeepPartialWithRequiredObjects<PremiumMessages> = {
           <HintTooltip
             hint={
               <ul className="mb-0 ps-3 text-start">
-                <li>livelli di zoom più alti della mappa Outdoor</li>
                 <li>
-                  livelli di zoom più alti delle mappe ortofoto di Slovacchia e
-                  Cechia
+                  livelli di zoom più alti della mappa Outdoor, dei sentieri
+                  escursionistici KST e delle sovrapposizioni della mappa
+                  Outdoor (sentieri, curve di livello, …)
                 </li>
                 <li>
-                  ombreggiatura dettagliata ad alta risoluzione di Slovacchia e
-                  Cechia
+                  livello di zoom più alto dell'ortofoto di Slovacchia e Cechia
+                </li>
+                <li>
+                  livelli di zoom dettagliati dell'ombreggiatura parametrica del
+                  terreno e dell'ombreggiatura dettagliata del terreno della
+                  Slovacchia
                 </li>
               </ul>
             }

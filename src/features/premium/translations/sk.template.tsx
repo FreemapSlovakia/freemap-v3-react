@@ -20,13 +20,17 @@ const sk: DeepPartialWithRequiredObjects<PremiumMessages> = {
           <HintTooltip
             hint={
               <ul className="mb-0 ps-3 text-start">
-                <li>najvyššie úrovne priblíženia Outdoor mapy</li>
                 <li>
-                  najvyššie úrovne priblíženia ortofotomáp Slovenska a Česka
+                  najvyššie úrovne priblíženia Outdoorovej mapy, Turistických
+                  trás KST a prekryvných vrstiev Outdoorovej mapy (trasy,
+                  vrstevnice, …)
                 </li>
                 <li>
-                  detailné tieňovanie reliéfu Slovenska a Česka vo vysokom
-                  rozlíšení
+                  najvyššia úroveň priblíženia ortofotomapy Slovenska a Česka
+                </li>
+                <li>
+                  detailné úrovne priblíženia parametrického tieňovania terénu a
+                  detailného tieňovania terénu Slovenska
                 </li>
               </ul>
             }

@@ -21,14 +21,16 @@ const de: DeepPartialWithRequiredObjects<PremiumMessages> = {
           <HintTooltip
             hint={
               <ul className="mb-0 ps-3 text-start">
-                <li>höchste Zoomstufen der Outdoor-Karte</li>
                 <li>
-                  höchste Zoomstufen der Orthofotokarten der Slowakei und
-                  Tschechiens
+                  höchste Zoomstufen der Outdoor-Karte, der KST-Wanderwege und
+                  der Overlays der Outdoor-Karte (Wege, Höhenlinien, …)
                 </li>
                 <li>
-                  hochauflösende detaillierte Schummerung der Slowakei und
-                  Tschechiens
+                  höchste Zoomstufe des Luftbilds der Slowakei und Tschechiens
+                </li>
+                <li>
+                  detaillierte Zoomstufen der parametrischen Geländeschattierung
+                  und der detaillierten Geländeschattierung der Slowakei
                 </li>
               </ul>
             }

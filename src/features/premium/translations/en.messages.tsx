@@ -19,11 +19,17 @@ const en: PremiumMessages = {
           <HintTooltip
             hint={
               <ul className="mb-0 ps-3 text-start">
-                <li>highest zoom levels of Outdoor Map</li>
                 <li>
-                  highest zoom levels of ortophoto maps of Slovakia and Czechia
+                  highest zoom levels of the Outdoor map, KST Hiking Trails and
+                  the Outdoor map overlays (trails, contour lines, …)
                 </li>
-                <li>hi-res detailed shading of Slovakia and Czechia</li>
+                <li>
+                  highest zoom level of the aerial map of Slovakia and Czechia
+                </li>
+                <li>
+                  detailed zoom levels of parametric terrain shading and of the
+                  detailed terrain shading of Slovakia
+                </li>
               </ul>
             }
           >
