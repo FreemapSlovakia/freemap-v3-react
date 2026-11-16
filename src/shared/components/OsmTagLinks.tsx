@@ -9,16 +9,20 @@ type Props = {
 };
 
 /** An OSM tag's key, linked to the wiki page that documents it. */
-export function OsmTagKey({ tag, osm }: Props): ReactNode {
+export function OsmTagKey({
+  tag,
+  osm,
+  label = tag,
+}: Props & { label?: string }): ReactNode {
   return !osm ? (
-    tag
+    label
   ) : (
     <a
       target="_blank"
       rel="noopener noreferrer"
       href={`https://wiki.openstreetmap.org/wiki/Key:${encodeURIComponent(tag)}`}
     >
-      {tag}
+      {label}
     </a>
   );
 }
@@ -195,12 +199,22 @@ function splitValue(tag: string, value: string): string[] {
       );
 }
 
-/** An OSM tag's value, linked to whatever it names — a site, a phone, a wiki page. */
+/**
+ * An OSM tag's value, linked to whatever it names — a site, a phone, a wiki
+ * page. `label` names each `;`-separated part it knows; with `markRaw`, a
+ * part it doesn't is monospaced.
+ */
 export function OsmTagValue({
   tag,
   value,
   osm,
-}: Props & { value: string }): ReactNode {
+  label,
+  markRaw,
+}: Props & {
+  value: string;
+  label?: (part: string) => string | undefined;
+  markRaw?: boolean;
+}): ReactNode {
   if (!osm) {
     return breakable(value);
   }
@@ -211,17 +225,26 @@ export function OsmTagValue({
     i % 2 || !part ? undefined : hrefFor(tag, part),
   );
 
-  if (!hrefs.some(Boolean)) {
+  if (!label && !hrefs.some(Boolean)) {
     return breakable(value);
   }
 
   return parts.flatMap((part, i) => {
     const href = hrefs[i];
 
+    const named = i % 2 ? undefined : label?.(part);
+
+    const text =
+      named === undefined && markRaw && !(i % 2) ? (
+        <span className="font-monospace">{breakable(part)}</span>
+      ) : (
+        breakable(named ?? part)
+      );
+
     return href
-      ? [link(href, breakable(part), i)]
+      ? [link(href, text, i)]
       : i % 2
         ? [part, <wbr key={i} />]
-        : [<Fragment key={i}>{breakable(part)}</Fragment>];
+        : [<Fragment key={i}>{text}</Fragment>];
   });
 }

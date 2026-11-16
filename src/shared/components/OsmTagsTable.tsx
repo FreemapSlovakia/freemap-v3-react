@@ -1,15 +1,26 @@
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { OsmTagKey, OsmTagValue } from '@shared/components/OsmTagLinks.js';
+import clsx from 'clsx';
 import { type ReactElement, useState } from 'react';
 import { Table } from 'react-bootstrap';
+
+/** Readable names for keys and values; `undefined` leaves the raw one. */
+export type TagLabeler = {
+  key: (tag: string) => string | undefined;
+  value: (tag: string, value: string) => string | undefined;
+  /** Whether the key's values come from a fixed list, so an unnamed one is raw. */
+  isEnum: (tag: string) => boolean;
+};
 
 type Props = {
   tags: [string, string][];
   /** Whether the tags are OSM ones, linked to what documents them. */
   osm: boolean;
+  labels?: TagLabeler;
 };
 
 /** Key/value rows, each value under its key where the toast is too narrow. */
-export function OsmTagsTable({ tags, osm }: Props): ReactElement {
+export function OsmTagsTable({ tags, osm, labels }: Props): ReactElement {
   const [stacked, setStacked] = useState(false);
 
   // When the widest key leaves the values less than they need (up to 10rem),
@@ -81,20 +92,20 @@ export function OsmTagsTable({ tags, osm }: Props): ReactElement {
               <tr key={k}>
                 <td>
                   <div className="fw-bold">
-                    <TagKey tag={k} osm={osm} />
+                    <TagKey tag={k} osm={osm} labels={labels} />
                   </div>
 
-                  <TagValue tag={k} value={v} osm={osm} />
+                  <TagValue tag={k} value={v} osm={osm} labels={labels} />
                 </td>
               </tr>
             ) : (
               <tr key={k}>
                 <th>
-                  <TagKey tag={k} osm={osm} />
+                  <TagKey tag={k} osm={osm} labels={labels} />
                 </th>
 
                 <td>
-                  <TagValue tag={k} value={v} osm={osm} />
+                  <TagValue tag={k} value={v} osm={osm} labels={labels} />
                 </td>
               </tr>
             ),
@@ -105,28 +116,44 @@ export function OsmTagsTable({ tags, osm }: Props): ReactElement {
   );
 }
 
-/** A key at its unwrapped width, which the layout decision measures. */
-function TagKey({ tag, osm }: { tag: string; osm: boolean }) {
-  return (
-    <span data-key className="d-inline-block text-nowrap">
+type CellProps = { tag: string; osm: boolean; labels?: TagLabeler };
+
+/**
+ * A key at its unwrapped width, which the layout decision measures. A readable
+ * name tells its raw key in a tooltip; among names, a raw key is monospaced.
+ */
+function TagKey({ tag, osm, labels }: CellProps) {
+  const label = labels?.key(tag);
+
+  return label === undefined ? (
+    <span
+      data-key
+      className={clsx('d-inline-block text-nowrap', labels && 'font-monospace')}
+    >
       <OsmTagKey tag={tag} osm={osm} />
     </span>
+  ) : (
+    <LongPressTooltip label={tag}>
+      {({ props }) => (
+        <span data-key className="d-inline-block text-nowrap" {...props}>
+          <OsmTagKey tag={tag} osm={osm} label={label} />
+        </span>
+      )}
+    </LongPressTooltip>
   );
 }
 
 /** Mid-word breaks only for unbroken values. */
-function TagValue({
-  tag,
-  value,
-  osm,
-}: {
-  tag: string;
-  value: string;
-  osm: boolean;
-}) {
+function TagValue({ tag, value, osm, labels }: CellProps & { value: string }) {
   return (
     <div data-value className="text-break">
-      <OsmTagValue tag={tag} value={value} osm={osm} />
+      <OsmTagValue
+        tag={tag}
+        value={value}
+        osm={osm}
+        label={labels && ((part) => labels.value(tag, part))}
+        markRaw={labels?.isEnum(tag)}
+      />
     </div>
   );
 }

@@ -40,6 +40,7 @@ const pl: DeepPartialWithRequiredObjects<ObjectsMessages> = {
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (historia)',
   history: 'Historia',
+  rawTags: 'Surowe tagi OSM',
   tooManyPoints: ({ limit }) =>
     `Wynik został ograniczony do ${limit} obiektów.`,
   fetchingError: ({ err }) =>

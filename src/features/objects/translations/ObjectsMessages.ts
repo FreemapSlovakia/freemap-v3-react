@@ -26,6 +26,8 @@ export type ObjectsMessages = {
   openInOsm: string;
   osmHistory: string;
   history: string;
+  /** Shows tags as raw OSM keys and values instead of readable names. */
+  rawTags: string;
   lowZoomAlert: {
     message: (props: { minZoom: number }) => string;
     zoom: string;

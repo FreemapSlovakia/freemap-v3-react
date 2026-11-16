@@ -39,6 +39,9 @@ export const objectsSetLabelSettings = createAction<LabelSettings>(
   'OBJECTS_SET_LABEL_SETTINGS',
 );
 
+/** Whether an object's tags show raw rather than as readable names. */
+export const objectsSetRawTags = createAction<boolean>('OBJECTS_SET_RAW_TAGS');
+
 /**
  * Shows an object as a lookup result — or, with no `id`, every visible one at
  * once, which hands them over for good: they are taken off as objects, the way

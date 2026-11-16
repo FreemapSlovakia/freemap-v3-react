@@ -248,6 +248,7 @@ export const PersistedObjectsSettingsSchema = z
     color: z.string(),
     labelVisibility: LabelVisibilitySchema,
     labelMinZoom: LabelMinZoomSchema,
+    rawTags: z.boolean(),
   })
   .partial();
 
@@ -715,6 +716,7 @@ const PERSIST: PersistEntry[] = [
       color: o.color,
       labelVisibility: o.labelVisibility,
       labelMinZoom: o.labelMinZoom,
+      rawTags: o.rawTags,
     }),
   }),
   defineEntry({

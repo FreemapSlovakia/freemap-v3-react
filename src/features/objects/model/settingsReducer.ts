@@ -4,6 +4,7 @@ import type { LabelVisibility } from '@shared/labelVisibility.js';
 import {
   type MarkerType,
   objectsSetLabelSettings,
+  objectsSetRawTags,
   objectsSetStyle,
 } from './actions.js';
 
@@ -15,6 +16,7 @@ export interface ObjectsSettingsState {
   color: string;
   labelVisibility: LabelVisibility;
   labelMinZoom: number | null;
+  rawTags: boolean;
 }
 
 export const objectsSettingsInitialState: ObjectsSettingsState = {
@@ -22,6 +24,7 @@ export const objectsSettingsInitialState: ObjectsSettingsState = {
   color: COLORS.normal,
   labelVisibility: 'hover',
   labelMinZoom: null,
+  rawTags: false,
 };
 
 export const objectsSettingsReducer = createReducer(
@@ -35,5 +38,8 @@ export const objectsSettingsReducer = createReducer(
       .addCase(objectsSetLabelSettings, (state, { payload }) => {
         state.labelVisibility = payload.visibility;
         state.labelMinZoom = payload.minZoom;
+      })
+      .addCase(objectsSetRawTags, (state, { payload }) => {
+        state.rawTags = payload;
       }),
 );

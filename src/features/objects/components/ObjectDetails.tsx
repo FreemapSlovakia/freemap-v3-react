@@ -19,10 +19,18 @@ import {
   osmTypeAndId,
   resolveGenericName,
 } from '@osm/osmNameResolver.js';
+import {
+  osmTagKeyLabel,
+  osmTagValueLabel,
+  useOsmTagLabels,
+} from '@osm/osmTagLabels.js';
 import { osmTagToIconMapping } from '@osm/osmTagToIconMapping.js';
 import { useGenericNameParts } from '@osm/useGenericNameResolver.js';
 import { IconGlyph } from '@shared/components/IconGlyph.js';
-import { OsmTagsTable } from '@shared/components/OsmTagsTable.js';
+import {
+  OsmTagsTable,
+  type TagLabeler,
+} from '@shared/components/OsmTagsTable.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import {
@@ -30,11 +38,17 @@ import {
   OsmFeatureIdSchema,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
-import { Fragment, type ReactElement } from 'react';
-import { Button } from 'react-bootstrap';
+import {
+  Fragment,
+  type ReactElement,
+  type ReactNode,
+  useId,
+  useState,
+} from 'react';
+import { Button, Form } from 'react-bootstrap';
 import { FaHistory } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import type { ObjectDetailsData } from '../model/actions.js';
+import { type ObjectDetailsData, objectsSetRawTags } from '../model/actions.js';
 import { hasTerrainValues } from '../model/terrainFacts.js';
 import { useObjectsMessages } from '../translations/useObjectsMessages.js';
 import { GenericNameToggles } from './GenericNameToggles.js';
@@ -134,6 +148,115 @@ export function ResultSummary({
   );
 }
 
+/**
+ * The tags table, with the raw-tags switch for OSM ones; `actions` join its
+ * Show more in the row under it.
+ */
+function ObjectTags({
+  tags,
+  osm,
+  actions,
+}: {
+  tags: [string, string][];
+  osm: boolean;
+  actions?: ReactNode;
+}): ReactElement {
+  const raw = useAppSelector((state) => state.objectsSettings.rawTags);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  const labels = useOsmTagLabels(language, osm && !raw);
+
+  const m = useMessages();
+
+  const om = useObjectsMessages();
+
+  const dispatch = useDispatch();
+
+  const switchId = useId();
+
+  const [more, setMore] = useState(false);
+
+  const keyLabels = new Map(
+    labels ? tags.map(([k]) => [k, osmTagKeyLabel(labels, k, language)]) : [],
+  );
+
+  const labeler: TagLabeler | undefined = labels && {
+    key: (tag) => keyLabels.get(tag),
+    value: (tag, value) => osmTagValueLabel(labels, m?.general, tag, value),
+    isEnum: (tag) => labels.enums.has(tag),
+  };
+
+  // Named keys first by name, then raw ones by key; other sources keep theirs.
+  const collator = new Intl.Collator(language);
+
+  const sortedTags = !osm
+    ? tags
+    : tags.toSorted(([a], [b]) => {
+        const la = keyLabels.get(a);
+
+        const lb = keyLabels.get(b);
+
+        return (
+          Number(la === undefined) - Number(lb === undefined) ||
+          collator.compare(la ?? a, lb ?? b)
+        );
+      });
+
+  // Unnamed keys wait behind Show more, however few or many they are.
+  const shown =
+    more || !labels ? sortedTags : sortedTags.filter(([k]) => keyLabels.get(k));
+
+  const hasMore = shown.length < sortedTags.length;
+
+  return (
+    <>
+      {osm && tags.length > 0 && <hr />}
+
+      {osm && tags.length > 0 && (
+        <Form.Check
+          type="switch"
+          id={switchId}
+          className="small"
+          label={om?.rawTags}
+          checked={raw}
+          onChange={(e) => {
+            dispatch(objectsSetRawTags(e.currentTarget.checked));
+
+            if (e.currentTarget.checked) {
+              trackMatomo(['trackEvent', 'Objects', 'rawTags']);
+            }
+          }}
+        />
+      )}
+
+      {shown.length > 0 && (
+        <OsmTagsTable tags={shown} osm={osm} labels={labeler} />
+      )}
+
+      {(hasMore || actions) && (
+        <p className="mb-2 d-flex flex-wrap gap-2">
+          {hasMore && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setMore(true);
+
+                trackMatomo(['trackEvent', 'Objects', 'moreTags']);
+              }}
+            >
+              <Text k="general.showMore" />
+            </Button>
+          )}
+
+          {actions}
+        </p>
+      )}
+    </>
+  );
+}
+
 export function ObjectDetails({ result, details }: Props): ReactElement {
   const { elevation, terrain, atTerrainPoint } = details;
 
@@ -205,6 +328,25 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
       ? selection
       : undefined;
   });
+
+  const historyButton = parsedId.success && historySelection && (
+    <Button
+      size="sm"
+      variant="secondary"
+      onClick={() => {
+        dispatch(
+          changesetsShowHistory({
+            id: parsedId.data,
+            selection: historySelection,
+          }),
+        );
+
+        trackMatomo(['trackEvent', 'Objects', 'history']);
+      }}
+    >
+      <FaHistory /> <Text m={om} k="history" />
+    </Button>
+  );
 
   // Its history drills down in place of the details. Only the history: a
   // changeset of it is the inspection's own panel, which this one leaves to.
@@ -280,28 +422,17 @@ export function ObjectDetails({ result, details }: Props): ReactElement {
       <WikiObjectImages tags={tags} />
 
       {geojson.properties && (
-        <OsmTagsTable tags={properties} osm={parsedId.success} />
+        <ObjectTags
+          // Show more is per object.
+          key={stringifyFeatureId(id)}
+          tags={properties}
+          osm={parsedId.success}
+          actions={historyButton}
+        />
       )}
 
-      {parsedId.success && historySelection && (
-        <p className="mb-2">
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              dispatch(
-                changesetsShowHistory({
-                  id: parsedId.data,
-                  selection: historySelection,
-                }),
-              );
-
-              trackMatomo(['trackEvent', 'Objects', 'history']);
-            }}
-          >
-            <FaHistory /> <Text m={om} k="history" />
-          </Button>
-        </p>
+      {!geojson.properties && historyButton && (
+        <p className="mb-2">{historyButton}</p>
       )}
 
       <p className="mb-3">

@@ -25,6 +25,7 @@ const en: ObjectsMessages = {
   openInOsm: 'OpenStreetMap.org',
   osmHistory: 'OpenStreetMap.org (history)',
   history: 'History',
+  rawTags: 'Raw OSM tags',
   lowZoomAlert: {
     message: ({ minZoom }) =>
       `To see objects by their type, you need to zoom in to at least level ${minZoom}.`,
