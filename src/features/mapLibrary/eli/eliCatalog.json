@@ -1987,6 +1987,7 @@
         "layers": ["Raster"],
         "minZoom": 5,
         "maxNativeZoom": 19,
+        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -3405,26 +3406,6 @@
             "type": "map",
             "name": "National Library of Scotland Historic Maps",
             "url": "https://maps.nls.uk/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "3GZKV",
-      "layer": "base",
-      "name": "Mainz latest aerial imagery",
-      "countries": ["de"],
-      "bbox": [8.1257, 49.8843, 8.36, 50.047],
-      "category": "photo",
-      "technology": "wms",
-      "body": {
-        "url": "https://geodaten.mainz.de/map/service",
-        "layers": ["Orthophoto"],
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Vermessung und Geoinformation Mainz",
-            "url": "https://www.mainz.de/vv/oe/sachgebiet-geographisches-informationssystem-und-kartographie"
           }
         ]
       }
@@ -5462,26 +5443,6 @@
       }
     },
     {
-      "type": "5LAND",
-      "layer": "overlay",
-      "name": "Czech RUIAN budovy",
-      "countries": ["cz"],
-      "bbox": [12.0988, 48.561, 18.8765, 51.0672],
-      "category": "other",
-      "body": {
-        "url": "https://tile.poloha.net/budovy/{z}/{x}/{y}.png",
-        "minZoom": 12,
-        "maxNativeZoom": 20,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Czech RUIAN",
-            "url": "https://poloha.net/"
-          }
-        ]
-      }
-    },
-    {
       "type": "5LH8R",
       "layer": "base",
       "name": "IGN Carte d'état-major Paris 1:10 000",
@@ -6288,26 +6249,6 @@
             "type": "map",
             "name": "© swisstopo",
             "url": "https://www.swisstopo.admin.ch"
-          }
-        ]
-      }
-    },
-    {
-      "type": "6CDBQ",
-      "layer": "base",
-      "name": "VoGIS orthophoto 2006",
-      "countries": ["at"],
-      "bbox": [9.53, 46.83, 10.24, 47.55],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://vogis.cnv.at/cgi-bin/mapserv?map=i_luftbild_2006_r_wms.map",
-        "layers": ["ef2006_25cm"],
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Land Vorarlberg – data.vorarlberg.gv.at",
-            "url": "https://data.vorarlberg.gv.at/"
           }
         ]
       }
@@ -9991,6 +9932,27 @@
       }
     },
     {
+      "type": "AIM3E",
+      "layer": "base",
+      "name": "Hennepin County Orthoimagery (2026)",
+      "countries": ["us"],
+      "bbox": [-93.7709, 44.7852, -93.1724, 45.2487],
+      "category": "photo",
+      "technology": "wms",
+      "body": {
+        "url": "https://gis.hennepin.us/arcgis/services/Imagery/UTM_Aerial_2026/MapServer/WMSServer",
+        "layers": ["0"],
+        "maxNativeZoom": 19,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Hennepin County GIS",
+            "url": "https://gis-hennepin.hub.arcgis.com/"
+          }
+        ]
+      }
+    },
+    {
       "type": "AIOI9",
       "layer": "overlay",
       "name": "swisstopo geological atlas 1:25 000",
@@ -11181,28 +11143,6 @@
             "type": "map",
             "name": "Sourced from LINZ CC-BY 4.0",
             "url": "https://www.linz.govt.nz/data/licensing-and-using-data/attributing-elevation-or-aerial-imagery-data"
-          }
-        ]
-      }
-    },
-    {
-      "type": "C31SV",
-      "layer": "overlay",
-      "name": "ARSO annual precipitation 1981-2010",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:PAD_KOR_81_10_YR"],
-        "maxNativeZoom": 12,
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -12560,26 +12500,6 @@
       }
     },
     {
-      "type": "DQUWC",
-      "layer": "overlay",
-      "name": "Bioportal protected-area management zoning",
-      "countries": ["hr"],
-      "bbox": [13.49, 42.39, 19.45, 46.56],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://services.bioportal.hr/wms",
-        "layers": ["zonacije_poligoni_07052024"],
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© Ministarstvo zaštite okoliša i zelene tranzicije – Bioportal",
-            "url": "https://www.bioportal.hr/"
-          }
-        ]
-      }
-    },
-    {
       "type": "DRHGF",
       "layer": "base",
       "name": "Berlin/Geoportal DOP20RGB (2021)",
@@ -12879,28 +12799,6 @@
             "type": "map",
             "name": "imagico.de OSM images for mapping",
             "url": "https://imagico.de/maps/#osmim"
-          }
-        ]
-      }
-    },
-    {
-      "type": "E6J84",
-      "layer": "overlay",
-      "name": "ARSO brown bear habitat",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:ZIV_PROST_MEDVED"],
-        "maxNativeZoom": 12,
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -13736,28 +13634,6 @@
       }
     },
     {
-      "type": "F1SIX",
-      "layer": "overlay",
-      "name": "ARSO mean annual temperature 1981-2010",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:KLIMA_TEMP_81_10_YR"],
-        "maxNativeZoom": 12,
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
-          }
-        ]
-      }
-    },
-    {
       "type": "F2MV6",
       "layer": "overlay",
       "name": "LfU Bayern Protected Areas",
@@ -14497,27 +14373,6 @@
             "type": "map",
             "name": "© Administration du cadastre et de la topographie (ACT), geoportail.lu",
             "url": "https://www.geoportail.lu/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "FYQTE",
-      "layer": "overlay",
-      "name": "ARSO Natura 2000 areas",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:ZOS_N2K_PLG"],
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -15692,28 +15547,6 @@
       }
     },
     {
-      "type": "H7ZKT",
-      "layer": "overlay",
-      "name": "ARSO mean wind speed at 50 m",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:VETER_POVP_LET_HITR_50M_94_01"],
-        "maxNativeZoom": 12,
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
-          }
-        ]
-      }
-    },
-    {
       "type": "H80P8",
       "layer": "base",
       "name": "URBIS 2014 aerial imagery",
@@ -16419,27 +16252,6 @@
       }
     },
     {
-      "type": "IAYO2",
-      "layer": "overlay",
-      "name": "ARSO ecologically important areas",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:EPO_PLG"],
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
-          }
-        ]
-      }
-    },
-    {
       "type": "ID6XP",
       "layer": "overlay",
       "name": "Fiskeridirektoratet Aquaculture overlay",
@@ -16688,28 +16500,6 @@
             "type": "map",
             "name": "Land Vorarlberg – data.vorarlberg.gv.at",
             "url": "https://data.vorarlberg.gv.at/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "IMNG9",
-      "layer": "overlay",
-      "name": "ARSO days with snow cover 1971-2000",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:SNEG_O_POV_ST_D_71_00_YR"],
-        "maxNativeZoom": 12,
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -17399,27 +17189,6 @@
             "type": "map",
             "name": "Datenquelle: Bayerisches Landesamt für Umwelt, www.lfu.bayern.de",
             "url": "https://www.lfu.bayern.de/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "JGS3P",
-      "layer": "overlay",
-      "name": "ARSO natural values register",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:NV_PLG"],
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -20640,6 +20409,7 @@
       "body": {
         "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_2020/MapServer/WMSServer",
         "layers": ["0"],
+        "proxy": true,
         "attribution": []
       }
     },
@@ -21014,6 +20784,7 @@
       "body": {
         "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_2009_2010/MapServer/WMSServer",
         "layers": ["0"],
+        "proxy": true,
         "attribution": []
       }
     },
@@ -21255,27 +21026,6 @@
             "type": "map",
             "name": "Ortofotos © Fly North S.A.S. — flynorthgroup.com (2026)",
             "url": "https://flynorthgroup.com"
-          }
-        ]
-      }
-    },
-    {
-      "type": "O19KN",
-      "layer": "base",
-      "name": "Allen County Orthoimagery (2021)",
-      "countries": ["us"],
-      "bbox": [-84.4097, 40.6296, -83.8637, 40.9349],
-      "category": "photo",
-      "body": {
-        "url": "https://gis.allencountyohio.com/arcgis/rest/services/Imagery/2021Aerial_20X/MapServer/tile/{z}/{y}/{x}",
-        "minZoom": 12,
-        "maxNativeZoom": 21,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Allen County, State of Ohio",
-            "url": "https://www.allencountyohio.com/"
           }
         ]
       }
@@ -25968,6 +25718,7 @@
       "body": {
         "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_LAST/MapServer/WmsServer",
         "layers": ["0"],
+        "proxy": true,
         "attribution": []
       }
     },
@@ -26474,7 +26225,7 @@
       "name": "Hennepin County Orthoimagery (2025)",
       "countries": ["us"],
       "bbox": [-93.7709, 44.7852, -93.1724, 45.2487],
-      "category": "photo",
+      "category": "historicphoto",
       "technology": "wms",
       "body": {
         "url": "https://gis.hennepin.us/arcgis/services/Imagery/UTM_Aerial_2025/MapServer/WMSServer",
@@ -26485,28 +26236,6 @@
             "type": "map",
             "name": "Hennepin County GIS",
             "url": "https://gis-hennepin.hub.arcgis.com/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "UIJ1F",
-      "layer": "overlay",
-      "name": "ARSO seismic hazard map",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:POTRS_NEVAR_KRT_2021"],
-        "maxNativeZoom": 12,
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
           }
         ]
       }
@@ -28526,26 +28255,6 @@
             "type": "map",
             "name": "Geodetska uprava Republike Slovenije",
             "url": "https://www.e-prostor.gov.si/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "WT3XN",
-      "layer": "overlay",
-      "name": "Czech RUIAN parcely",
-      "countries": ["cz"],
-      "bbox": [12.0988, 48.561, 18.8765, 51.0672],
-      "category": "other",
-      "body": {
-        "url": "https://tile.poloha.net/parcely/{z}/{x}/{y}.png",
-        "minZoom": 12,
-        "maxNativeZoom": 20,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Czech RUIAN",
-            "url": "https://poloha.net/"
           }
         ]
       }
@@ -31086,27 +30795,6 @@
             "type": "map",
             "name": "© IGN",
             "url": "https://www.ign.fr/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "ZYY7S",
-      "layer": "overlay",
-      "name": "ARSO protected areas",
-      "countries": ["si"],
-      "bbox": [13.37, 45.42, 16.61, 46.88],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://gis.arso.gov.si/geoserver/wms",
-        "layers": ["ARSO:ZOS_ZO_PLG_DRZ"],
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Agencija Republike Slovenije za okolje (ARSO)",
-            "url": "https://www.arso.gov.si/"
           }
         ]
       }
