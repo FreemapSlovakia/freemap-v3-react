@@ -1192,10 +1192,10 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                   <LongPressTooltip
                     label={
                       <>
-                        <Text
-                          m={gm}
-                          k={`license.descriptions.${badgeLicense}`}
-                        />
+                        {/* Not a `k` path: the license ids contain dots. */}
+                        <Text m={gm}>
+                          {(m) => m.license.descriptions[badgeLicense]}
+                        </Text>
                         {!isWikimedia &&
                           image.licenseSince &&
                           gm?.license.since && (
