@@ -208,30 +208,30 @@ carried the ski/horse error for months and it propagated into two published post
 ## Phase 0 — Poland activation (hi-res shading + contours deployed 2026-07-09)
 
 - [x] Finish hi-res shading + contours coverage for Poland (deployed 2026-07-09;
-  announced on Mastodon — see Outreach log). The shading + contours are part of the
-  Outdoor map for everyone; premium only unlocks the higher zoom levels (19–20), the
-  same as everywhere else — nothing Poland-specific is gated.
+      announced on Mastodon — see Outreach log). The shading + contours are part of the
+      Outdoor map for everyone; premium only unlocks the higher zoom levels (19–20), the
+      same as everywhere else — nothing Poland-specific is gated.
 - [x] Polish-language launch post drafted and posted to the Polish OSM community
-  (2026-07-09, see Outreach log). The hook is the terrain, not the UI — Polish UI has
-  existed for years; engagement already high (11.6 actions, 209s).
+      (2026-07-09, see Outreach log). The hook is the terrain, not the UI — Polish UI has
+      existed for years; engagement already high (11.6 actions, 209s).
 - [x] Seed end-user channels — posted the terrain-led post to a Polish FB hiking group
-  (2026-07-09, see Outreach log).
+      (2026-07-09, see Outreach log).
 - [ ] Optional: more Polish FB hiking/MTB groups (Tatry/Beskidy/Sudety) and Fediverse
-  (pl hiking/OSM hashtags). Reddit is weak for PL outdoor; skip the dormant classic
-  hiking forums (szlaki.net.pl etc.).
+      (pl hiking/OSM hashtags). Reddit is weak for PL outdoor; skip the dormant classic
+      hiking forums (szlaki.net.pl etc.).
 
 ## Phase 1 — Localization expansion
 
 - [x] **Slovenian** UI added (highest fit-per-effort: Alpine, hi-res DEM exists, 378s
-  engagement) and announced (2026-07-09) to the Slovenian OSM community and the
-  hribi.net outdoor community (the latter auto-translates across the hike.uno network,
-  so it also reaches IT/DE — see Outreach log).
+      engagement) and announced (2026-07-09) to the Slovenian OSM community and the
+      hribi.net outdoor community (the latter auto-translates across the hike.uno network,
+      so it also reaches IT/DE — see Outreach log).
 - [x] **French** UI added (aggregates FR + Belgium + CH-Romandy + LU; Alps/Pyrenees)
-  and announced to the French community. Follow-up: broaden to French-speaking
-  outdoor communities (Belgium, CH-Romandy, Pyrenees).
+      and announced to the French community. Follow-up: broaden to French-speaking
+      outdoor communities (Belgium, CH-Romandy, Pyrenees).
 - [ ] (Optional) Ukrainian — Carpathians + diaspora.
 - [ ] Deferred: Spanish (Spain/LatAm only, peripheral — NOT a pan-Europe lever),
-  Dutch (speakers use English UI).
+      Dutch (speakers use English UI).
 - Note: adding a language is an ongoing cost (new `en.tsx` strings need translating);
   `translate-missing` skill fills `TODO translate` markers to keep the cost low.
 
@@ -247,12 +247,12 @@ touching Italy — it carries which venues already know Freemap (and so must nev
 "introduced" again) and which are cold.
 
 - [ ] Partnership/embed pitch (EN + IT) to the Italian trail sites already linking in;
-  offer the embed-map widget + attribution. (Draft 5 written.)
+      offer the embed-map widget + attribution. (Draft 5 written.)
 - [ ] Post in Italian hiking/MTB communities (CAI-adjacent forums, FB groups, subreddits). - avventurosamente.it — account registered, **awaiting admin approval**; Drafts 1–3. - mtb-forum.it — reachable, **not registered**; Drafts 6 (track-merge answer) and 4/7. - fuorivia.com, hikr.org (IT) — not started.
 - [ ] Lead with hi-res terrain (Dolomites) + offline maps + free/OSS.
-  Correction from the research: on avventurosamente the strongest hook is **CAI trail
+      Correction from the research: on avventurosamente the strongest hook is **CAI trail
       numbering** (`osmc:symbol` colours + `ref` labels), which their forum has asked for
-  repeatedly and never had answered. Terrain is the second punch there.
+      repeatedly and never had answered. Terrain is the second punch there.
 - Italy's national model is **HR-DTM 5 m (IRPI-CNR)** — 5 m, not the 1 m LiDAR wording
   used for PL/SK. Say 5 m.
 
@@ -262,30 +262,30 @@ touching Italy — it carries which venues already know Freemap (and so must nev
 [`promotion-austria.md`](./promotion-austria.md) for the venue research and drafts.
 
 - [ ] **Germany is POSTPONED (decided 2026-09-07)** until hi-res shading + contours cover
-  it. Martin's call, and the right one: entering the biggest market with the weakest
-  terrain spends the one first impression on a weaker product. **The German
+      it. Martin's call, and the right one: entering the biggest market with the weakest
+      terrain spends the one first impression on a weaker product. **The German
       high-resolution data shipped 2026-09-29 (all 16 states), so the revisit is due.**
-  German venues researched and parked meanwhile:
-  **mtb-news.de** (largest DE MTB forum, XenForo, registration has a question-captcha),
-  **wanderforum.de** (already has a thread "Online-Wanderkarten für Tschechien und die
-  Slowakei" mentioning Freemap — warm), **rennrad-news.de**, **trekkingguide.de**.
-  Also worth knowing when the time comes: **komoot was acquired by Bending Spoons in
+      German venues researched and parked meanwhile:
+      **mtb-news.de** (largest DE MTB forum, XenForo, registration has a question-captcha),
+      **rennrad-news.de**, **trekkingguide.de**. **Resumed 2026-11-16** with
+      outdoorseiten.net as the first venue — see [`promotion-germany.md`](./promotion-germany.md).
+      Also worth knowing when the time comes: **komoot was acquired by Bending Spoons in
       March 2025 with mass layoffs**, and German forums carry long-running threads
-  ("Komoot wird immer unbrauchbarer", "Navigation Apps - Alternativen zu Komoot").
-  Displaced-user moment in exactly this category — but it is a slow grumble, not a
-  stampede, so do not overestimate it.
+      ("Komoot wird immer unbrauchbarer", "Navigation Apps - Alternativen zu Komoot").
+      Displaced-user moment in exactly this category — but it is a slow grumble, not a
+      stampede, so do not overestimate it.
 - [ ] Germany — biggest untapped ceiling, and the terrain hook now works in **all 16
       states** (`shading:de_*`), each from its own DGM1. Bavaria remains the strongest
-  showcase, being the Alps and the Bavarian Forest.
-  German outdoor forums, Wander/MTB subreddits, Fediverse. (talk-de intro done once.)
+      showcase, being the Alps and the Bavarian Forest.
+      German outdoor forums, Wander/MTB subreddits, Fediverse. (talk-de intro done once.)
 - [ ] Austria — Alpine, ALS DTM (Geoland.at), 13 actions/visit; **warm channel found**:
-  gipfeltreffen.at (ÖAV-affiliated) already carries a 2023 organic mention from two
-  heavyweight posters, including an unanswered "I can't find aerial imagery"
-  objection. Registration there is healthy (no reCAPTCHA, no approval queue).
-  German copy written for Austria is reusable for DE and CH.
+      gipfeltreffen.at (ÖAV-affiliated) already carries a 2023 organic mention from two
+      heavyweight posters, including an unanswered "I can't find aerial imagery"
+      objection. Registration there is healthy (no reCAPTCHA, no approval queue).
+      German copy written for Austria is reusable for DE and CH.
 - [ ] Czechia + Hungary — reinforce (UI localized, very high engagement already).
 - [ ] Emphasize non-OSM channels: hiking/MTB forums, regional FB groups, subreddits,
-  Fediverse hashtags — the paying outdoor users, not just mappers.
+      Fediverse hashtags — the paying outdoor users, not just mappers.
 
 ## Phase 4 — Complete the OSM-community intro-post matrix
 
@@ -298,16 +298,39 @@ already posted under several local communities and observed exactly this.
 
 - [x] Slovenia — posted 2026-07-09 (see Outreach log).
 - [ ] ~~Italy, Poland, Hungary, Austria, Czechia OSM community intro posts.~~ Dropped.
-  Post there only when there is genuinely country-specific _news_ (e.g. a national
-  terrain model going live), not to introduce the project again.
+      Post there only when there is genuinely country-specific _news_ (e.g. a national
+      terrain model going live), not to introduce the project again.
 - Note: OSM forums reach mappers, not end-users anyway — the paying outdoor users are
   on the hiking/MTB forums and in regional FB groups (Phase 2/3).
+
+## Directory and roundup listings
+
+A web search on 2026-11-16 found almost no independent foreign coverage. Freemap
+outside Slovakia is visible only through our own intro posts and the replies to them.
+Curated lists are actively maintained and leave Freemap out, so a submission puts it in
+front of readers already comparing tools, with no forum to cultivate.
+
+- [x] **europeanpurpose.com — [Maps & Navigation](https://europeanpurpose.com/category/maps-navigation)**:
+      European alternatives to Google Maps, last reviewed 2026-11-14. Lists Mapy.com, not
+      Freemap. Pitch: European, open source, no user tracking. Free listing via
+      [/contact](https://europeanpurpose.com/contact), subject "Suggest a European tool";
+      they check that the operating company is registered in Europe. Suggested by email
+      to hello@ on 2026-11-16.
+- [x] **assortedexplorations.com — [Digital mapping tools compendium](https://www.assortedexplorations.com/outdoors/digital-mapping-tools-a-compendium-of-online-and-mobile-navigation-resources/)**:
+      online and mobile navigation resources, updated 2026-10-26. No Freemap. UK author
+      (hillwalking; Outdooractive is their pick). Only contact route is the
+      [message form](https://www.assortedexplorations.com/send-a-message/), or Mastodon
+      `@hill_wanderer@mstdn.social`. Suggested via the form on 2026-11-16.
+- [ ] **weeklyOSM** — no Freemap item found. Submit country-specific news (a national
+      terrain model going live, a new UI language) to the editors.
+- [ ] The Great Outdoors — ["best hiking apps 2026"](https://www.thegreatoutdoorsmag.com/gear-guides/best-hiking-apps/)
+      covers mobile apps only, so pitch the native app, not the web map.
 
 ## Phase 5 — Measure & iterate
 
 - [ ] Identify which Matomo goal IDs = real premium purchases (goal "revenue" in the
-  country report is goal-value, not currency). Then pull paying-users-by-country to
-  confirm where money — not just engagement — comes from.
+      country report is goal-value, not currency). Then pull paying-users-by-country to
+      confirm where money — not just engagement — comes from.
 - [ ] After each push, re-check that country's visits + actions/visit + conversions.
 - [ ] Feed learnings back into which market/language to do next.
 
@@ -347,3 +370,6 @@ Add a row per post; keep `—` where the date is unknown rather than guessing.
 | 2026-09-06 | 🇦🇹 Austria      | gipfeltreffen.at — pinned "Digitale Karten im Netz – Übersicht"              | DE   | posted | https://www.gipfeltreffen.at/forum/gipfeltreffen/literatur-navigation-und-technik/hard-software-mit-bergbezug/67800-digitale-karten-im-netz-%C3%BCbersicht/page6 |
 | 2026-09-06 | 🇮🇹🇨🇭 IT + CH    | hikr.org — "Hikr in italiano" community (419 members)                        | IT   | posted | https://www.hikr.org/post203897.html                                                                                                                             |
 | 2026-09-16 | 🇨🇿 Czechia      | nakole.cz — new topic, rubric Cestování na kole                              | CS   | posted | https://www.nakole.cz/diskuse/31509-outdoorova-mapa-a-planovac-teren-z-narodnich-vyskovych-modelu.html                                                           |
+| 2026-11-16 | 🇪🇺 Europe       | europeanpurpose.com — "Suggest a European tool" (Maps & Navigation)          | EN   | sent   | https://europeanpurpose.com/category/maps-navigation                                                                                                             |
+| 2026-11-16 | 🇬🇧 UK           | assortedexplorations.com — digital mapping tools compendium (message form)   | EN   | sent   | https://www.assortedexplorations.com/outdoors/digital-mapping-tools-a-compendium-of-online-and-mobile-navigation-resources/                                      |
+| 2026-11-16 | 🇩🇪 Germany      | outdoorseiten.net — Orientierung, Navigation & Geocaching (own thread)       | DE   | posted | https://www.outdoorseiten.net/forum/viewtopic.php?t=95821                                                                                                        |
