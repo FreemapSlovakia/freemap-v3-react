@@ -8,7 +8,7 @@ import { inAppLink } from '@shared/inAppLink.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 import type { ReactElement } from 'react';
-import { Spinner } from 'react-bootstrap';
+import { ListGroup, Spinner } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 import { changesetsInspect, type HistoryVersion } from '../model/actions.js';
 import { osmIdKey } from '../model/changesetDiff.js';
@@ -65,44 +65,48 @@ export function ElementHistory({ id, versions, error }: Props): ReactElement {
 
   return (
     <>
-      <ul className="list-unstyled mb-0">
+      <ListGroup variant="flush">
         {shown.map((version) => {
           const label = version.comment ?? `#${version.changeset}`;
 
           return (
-            <li key={version.version} className="mb-1">
-              <small>
-                v{version.version} ·{' '}
+            // An embed inspects nothing, so goes to osm.org.
+            <ListGroup.Item
+              key={version.version}
+              action
+              className="px-2 py-1"
+              {...(window.fmEmbedded
+                ? {
+                    href: getOsmChangesetUrl(version.changeset),
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                  }
+                : inAppLink(
+                    // As the click: the changeset, at this element.
+                    `#panel=${encodePanel({
+                      type: 'changeset',
+                      id: version.changeset,
+                      element: osmIdKey(id),
+                    })}`,
+                    () => inspect(version.changeset),
+                  ))}
+            >
+              <div className="d-flex justify-content-between gap-2">
+                <span className="text-break">{label}</span>
+
+                <small className="text-body-secondary text-nowrap">
+                  v{version.version}
+                </small>
+              </div>
+
+              <small className="text-body-secondary">
                 {dateFormat.format(new Date(version.timestamp))}
                 {version.user && ` · ${version.user}`}
               </small>
-
-              <br />
-
-              {/* An embed inspects nothing, so goes to osm.org. */}
-              <a
-                {...(window.fmEmbedded
-                  ? {
-                      href: getOsmChangesetUrl(version.changeset),
-                      target: '_blank',
-                      rel: 'noopener noreferrer',
-                    }
-                  : inAppLink(
-                      // As the click: the changeset, at this element.
-                      `#panel=${encodePanel({
-                        type: 'changeset',
-                        id: version.changeset,
-                        element: osmIdKey(id),
-                      })}`,
-                      () => inspect(version.changeset),
-                    ))}
-              >
-                {label}
-              </a>
-            </li>
+            </ListGroup.Item>
           );
         })}
-      </ul>
+      </ListGroup>
 
       {more}
     </>
