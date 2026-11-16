@@ -601,7 +601,6 @@ export default function MapFeaturesExportModal({ show }: Props): ReactElement {
                 <>
                   {selectedExportable && (
                     <Form.Check
-                      type="switch"
                       id="onlySelected"
                       className="mb-2"
                       label={em?.onlySelected}
