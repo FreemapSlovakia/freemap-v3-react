@@ -29,6 +29,15 @@ async function fetchJson(path) {
   return res.json();
 }
 
+// ISC asks for its notice in every copy, so it ships inside each file.
+const licenseRes = await fetch(`${BASE}/../LICENSE.md`);
+
+if (!licenseRes.ok) {
+  throw new Error(`LICENSE.md: HTTP ${licenseRes.status}`);
+}
+
+const license = (await licenseRes.text()).replace(/^#+\s*/gm, '').trim();
+
 const fields = await fetchJson('fields.min.json');
 
 const presets = await fetchJson('presets.min.json');
@@ -254,6 +263,11 @@ const en = extract(enStrings);
 
 await mkdir(OUT_DIR, { recursive: true });
 
+await writeFile(
+  new URL('LICENSE', OUT_DIR),
+  `The labels in this directory come from @openstreetmap/id-tagging-schema ${VERSION}.\n\n${license}\n`,
+);
+
 for (const lang of ['en', ...langs]) {
   const own =
     lang === 'en'
@@ -274,7 +288,8 @@ for (const lang of ['en', ...langs]) {
   }
 
   const out = {
-    source: `@openstreetmap/id-tagging-schema ${VERSION} (ISC)`,
+    source: `@openstreetmap/id-tagging-schema ${VERSION}`,
+    license,
     keys: sortObject(keys),
     values: sortObject(values),
     enums,

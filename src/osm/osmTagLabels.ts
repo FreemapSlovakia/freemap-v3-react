@@ -11,6 +11,8 @@ export type OsmTagLabels = {
   enums: Set<string>;
   /** Our own kind names, which win over iD's for type values. */
   nameMapping: Node;
+  /** iD's ISC notice; read so the bundler can't drop it from the chunk. */
+  license: string;
 };
 
 // Read synchronously on mount, so an object selected later never paints raw.
@@ -36,6 +38,7 @@ function loadOsmTagLabels(language: string): Promise<OsmTagLabels> {
         values: data.values,
         enums: new Set(data.enums),
         nameMapping: osmTagToNameMapping,
+        license: data.license,
       };
 
       loaded.set(lang, labels);
