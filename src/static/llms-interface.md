@@ -98,7 +98,7 @@ Shown only to an account holding special roles (user manager, photo moderator, m
 
 ### User profile
 
-Clicking a user's name — a photo's author or commenter, an event's organizer, a leaderboard row — opens their profile: picture, "About me" (Markdown), member-since date, roles, whatever of their email address and OpenStreetMap, GitHub and Strava profiles they chose to show, and counts of their photos, the photo comments they wrote and the public events they organize. **Photos on the map** filters the photo layer to that user's photos; on one's own profile **Edit profile** opens the account. URL path: `/#show=user/<id>`.
+Clicking a user's name — a photo's author or commenter, an event's organizer, a leaderboard row — opens their profile: picture, "About me" (Markdown), member-since date, roles, whatever of their email address and OpenStreetMap, GitHub and Strava profiles they chose to show, and the number of public events they organize (when any). A Photos section shows their photo count, how many countries their photos cover, photo views, the average rating others gave their photos, the photo comments they wrote and how many photos they rated; a Leaderboard section, with an All time / 90 days / 30 days toggle, shows the photos they uploaded in that period, their rank by that count (tied users share a place) and the countries where they rank 1st to 3rd. A shown OpenStreetMap profile adds an OpenStreetMap section: mapper since, changesets, last edit, GPS traces and a link to the "How did you contribute?" statistics. **Photos on the map** filters the photo layer to that user's photos; on one's own profile **Edit profile** opens the account. URL path: `/#show=user/<id>`.
 
 ### Fullscreen
 

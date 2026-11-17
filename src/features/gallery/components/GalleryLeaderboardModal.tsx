@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { useAppSelector } from '../../../shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '../../../shared/hooks/useNumberFormat.js';
+import { MEDALS } from '../medals.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import classes from './GalleryLeaderboardModal.module.css';
 
@@ -62,8 +63,6 @@ const StatsSchema = z.object({
 });
 
 type Stats = z.infer<typeof StatsSchema>;
-
-const MEDALS = ['🥇', '🥈', '🥉'];
 
 export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();

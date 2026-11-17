@@ -8,12 +8,14 @@ import {
 } from '@features/auth/model/types.js';
 import { namedRoles } from '@features/auth/translations/namedRoles.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
+import { MEDALS } from '@features/gallery/medals.js';
 import {
   galleryRequestImage,
   gallerySetFilter,
 } from '@features/gallery/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { CountryFlag } from '@shared/components/CountryFlag.js';
 import {
   FmDismissButton,
   FmFooterButton,
@@ -26,15 +28,41 @@ import { OfflineAlert } from '@shared/components/OfflineAlert.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import { usePersistentState } from '@shared/hooks/usePersistentState.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
-import { Alert, Badge, Image, Spinner, Table } from 'react-bootstrap';
-import { FaCamera, FaGem, FaUser, FaUserEdit } from 'react-icons/fa';
+import {
+  Fragment,
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useState,
+} from 'react';
+import {
+  Alert,
+  Badge,
+  Image,
+  Spinner,
+  Table,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-bootstrap';
+import {
+  FaCamera,
+  FaGem,
+  FaUser,
+  FaUserEdit,
+  FaUserShield,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import z from 'zod';
 import { useUserProfileMessages } from '../translations/useUserProfileMessages.js';
 
 type Props = { show: boolean };
+
+const PeriodSchema = z.enum(['all', 'last90days', 'last30days']);
+
+const deserializePeriod = (value: string | null) =>
+  PeriodSchema.catch('all').parse(value);
 
 const ProfileSchema = z.object({
   id: z.uint32(),
@@ -61,11 +89,42 @@ const ProfileSchema = z.object({
   gallery: z.object({
     pictureCount: z.uint32(),
     commentCount: z.uint32(),
+    // Optional: an API older than this build sends none of these.
+    ranking: z
+      .partialRecord(
+        PeriodSchema,
+        z.object({
+          pictureCount: z.uint32(),
+          rank: z.uint32().nullable(),
+          podiums: z.array(z.object({ country: z.string(), rank: z.uint32() })),
+        }),
+      )
+      .optional(),
+    countryCount: z.uint32().optional(),
+    viewCount: z.uint32().optional(),
+    receivedRating: z
+      .object({ count: z.uint32(), average: z.number().nullable() })
+      .optional(),
+    ratingsGiven: z.uint32().optional(),
   }),
   eventCount: z.uint32(),
+  osm: z
+    .object({
+      mapperSince: z.coerce.date(),
+      changesetCount: z.uint32(),
+      traceCount: z.uint32(),
+      lastEditAt: z.coerce.date().nullable(),
+    })
+    .nullable()
+    .default(null),
 });
 
 type Profile = z.infer<typeof ProfileSchema>;
+
+type Row = [ReactNode, ReactNode];
+
+/** `aside` sits right of the heading. */
+type Section = { heading?: ReactNode; aside?: ReactNode; rows: Row[] };
 export default function UserProfileModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
@@ -86,6 +145,12 @@ export default function UserProfileModal({ show }: Props): ReactElement {
   const myId = useAppSelector((state) => state.auth.user?.id);
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const [period, setPeriod] = usePersistentState(
+    'fm.userProfile.period',
+    String,
+    deserializePeriod,
+  );
 
   const [fetched, setFetched] = useState<
     | { userId: number; type: 'error'; error: unknown }
@@ -152,6 +217,11 @@ export default function UserProfileModal({ show }: Props): ReactElement {
 
   const nf = useNumberFormat();
 
+  const rf = useNumberFormat({
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+
   const df = useDateTimeFormat({ dateStyle: 'long' });
 
   const close = () => {
@@ -169,13 +239,11 @@ export default function UserProfileModal({ show }: Props): ReactElement {
 
   const profile = state.type === 'success' ? state.profile : undefined;
 
-  const rows = (p: Profile) => {
-    const rows: [ReactNode, ReactNode][] = [
-      [upm?.memberSince, df.format(p.createdAt)],
-    ];
+  const sections = (p: Profile) => {
+    const general: Row[] = [[upm?.memberSince, df.format(p.createdAt)]];
 
     if (p.email) {
-      rows.push([
+      general.push([
         upm?.email,
         <a key="email" href={`mailto:${p.email}`}>
           {p.email}
@@ -184,7 +252,7 @@ export default function UserProfileModal({ show }: Props): ReactElement {
     }
 
     for (const link of p.links) {
-      rows.push([
+      general.push([
         AUTH_PROVIDER_LABELS[link.provider],
         <a key={link.provider} href={link.url} {...linkTarget(link.url)}>
           {link.name}
@@ -192,13 +260,134 @@ export default function UserProfileModal({ show }: Props): ReactElement {
       ]);
     }
 
-    rows.push(
-      [upm?.photos, nf.format(p.gallery.pictureCount)],
-      [upm?.comments, nf.format(p.gallery.commentCount)],
-      [upm?.events, nf.format(p.eventCount)],
-    );
+    if (p.eventCount > 0) {
+      general.push([upm?.events, nf.format(p.eventCount)]);
+    }
 
-    return rows;
+    const g = p.gallery;
+
+    const photos: Row[] = [];
+
+    if (g.pictureCount > 0 && g.countryCount !== undefined) {
+      photos.push([upm?.countries, nf.format(g.countryCount)]);
+    }
+
+    if (g.pictureCount > 0 && g.viewCount !== undefined) {
+      photos.push([upm?.views, nf.format(g.viewCount)]);
+    }
+
+    if (g.receivedRating && g.receivedRating.average !== null) {
+      photos.push([
+        upm?.averageRating,
+        `${rf.format(g.receivedRating.average)} ★ (${nf.format(g.receivedRating.count)})`,
+      ]);
+    }
+
+    photos.push([upm?.comments, nf.format(g.commentCount)]);
+
+    if (g.ratingsGiven !== undefined) {
+      photos.push([upm?.ratingsGiven, nf.format(g.ratingsGiven)]);
+    }
+
+    const result: Section[] = [{ rows: general }];
+
+    const ranking = g.pictureCount > 0 ? g.ranking?.[period] : undefined;
+
+    photos.unshift([upm?.photos, nf.format(g.pictureCount)]);
+
+    result.push({ heading: upm?.photosHeading, rows: photos });
+
+    if (ranking) {
+      const rankingRows: Row[] = [
+        [upm?.periodPhotos, nf.format(ranking.pictureCount)],
+      ];
+
+      if (ranking.rank) {
+        rankingRows.push([
+          upm?.rank,
+          [MEDALS[ranking.rank - 1], nf.format(ranking.rank)]
+            .filter(Boolean)
+            .join(' '),
+        ]);
+      }
+
+      if (ranking.podiums.length > 0) {
+        rankingRows.push([
+          upm?.podiums,
+          <span key="podiums" className="d-inline-flex flex-wrap gap-2">
+            {ranking.podiums.map(({ country, rank }, i) => (
+              <Fragment key={country}>
+                {i > 0 && <span className="text-body-secondary">·</span>}
+                <span className="text-nowrap">
+                  <CountryFlag country={country} /> {MEDALS[rank - 1]}
+                </span>
+              </Fragment>
+            ))}
+          </span>,
+        ]);
+      }
+
+      result.push({
+        heading: upm?.rankingHeading,
+        aside: (
+          <ToggleButtonGroup
+            type="radio"
+            name="profilePeriod"
+            size="sm"
+            value={period}
+            onChange={(value: typeof period) => {
+              trackMatomo(['trackEvent', 'Gallery', 'profilePeriod', value]);
+
+              setPeriod(value);
+            }}
+          >
+            {(
+              [
+                ['all', upm?.periodAll],
+                ['last90days', upm?.period90],
+                ['last30days', upm?.period30],
+              ] as const
+            ).map(([value, label]) => (
+              <ToggleButton
+                key={value}
+                id={`profilePeriod-${value}`}
+                variant="outline-primary"
+                value={value}
+              >
+                {label}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        ),
+        rows: rankingRows,
+      });
+    }
+
+    const osmLink = p.links.find((link) => link.provider === 'osm');
+
+    if (p.osm && osmLink) {
+      const hdyc = `https://hdyc.neis-one.org/?${encodeURIComponent(osmLink.name)}`;
+
+      result.push({
+        heading: AUTH_PROVIDER_LABELS.osm,
+        rows: [
+          [upm?.osmMapperSince, df.format(p.osm.mapperSince)],
+          [upm?.osmChangesets, nf.format(p.osm.changesetCount)],
+          ...(p.osm.lastEditAt
+            ? [[upm?.osmLastEdit, df.format(p.osm.lastEditAt)] as Row]
+            : []),
+          [upm?.osmTraces, nf.format(p.osm.traceCount)],
+          [
+            upm?.osmMoreStats,
+            <a key="hdyc" href={hdyc} {...linkTarget(hdyc)}>
+              How did you contribute?
+            </a>,
+          ],
+        ],
+      });
+    }
+
+    return result;
   };
 
   return (
@@ -253,7 +442,11 @@ export default function UserProfileModal({ show }: Props): ReactElement {
 
             {/* Not a table row: a long list would squeeze every label. */}
             {state.profile.roles.length > 0 && (
-              <div className="d-flex flex-wrap gap-1 mb-3">
+              <div className="d-flex flex-wrap align-items-center gap-1 mb-3">
+                <GlyphMarker hint={upm?.roles} color={null} className="me-1">
+                  <FaUserShield />
+                </GlyphMarker>
+
                 {namedRoles(state.profile.roles, am, language).map(
                   ({ role, name }) => (
                     <Badge key={role} bg="secondary">
@@ -264,26 +457,43 @@ export default function UserProfileModal({ show }: Props): ReactElement {
               </div>
             )}
 
-            <Table size="sm" className="mb-0">
-              <tbody>
-                {rows(state.profile).map(([label, value], i, all) => {
-                  // Bootstrap borders the cells, not the row.
-                  const last = i === all.length - 1 ? 'border-bottom-0' : '';
+            {sections(state.profile).map(
+              ({ heading, aside, rows }, si, allSections) => (
+                <Fragment key={si}>
+                  {heading && (
+                    <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-2 mb-2">
+                      <h5 className="mb-0">{heading}</h5>
+                      {aside}
+                    </div>
+                  )}
 
-                  return (
-                    <tr key={i}>
-                      <th className={last}>{label}</th>
-                      <td
-                        className={`text-end ${last}`}
-                        style={{ overflowWrap: 'anywhere' }}
-                      >
-                        {value}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
+                  <Table
+                    size="sm"
+                    className={si === allSections.length - 1 ? 'mb-0' : ''}
+                  >
+                    <tbody>
+                      {rows.map(([label, value], i) => {
+                        // Bootstrap borders the cells, not the row.
+                        const last =
+                          i === rows.length - 1 ? 'border-bottom-0' : '';
+
+                        return (
+                          <tr key={i}>
+                            <th className={last}>{label}</th>
+                            <td
+                              className={`text-end ${last}`}
+                              style={{ overflowWrap: 'anywhere' }}
+                            >
+                              {value}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </Fragment>
+              ),
+            )}
           </>
         )}
       </Modal.Body>
