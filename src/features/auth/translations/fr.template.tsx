@@ -18,9 +18,9 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     notifications: 'Notifications par e-mail',
     notifyGallery: 'Commentaires sur les photos',
     notifyEvents:
-      'Événements : commentaires, modifications, suppression et participants',
+      'Événements : commentaires, modifications, suppression et participation',
     notificationsHint:
-      'Chaque événement et chaque photo a aussi une cloche pour suivre ou arrêter les e-mails qui le concernent.',
+      'Sur chaque événement et chaque photo, le bouton cloche active ou désactive les notifications par e-mail qui le concernent.',
     authProviders: 'Fournisseurs de connexion',
     picture: 'Photo de profil',
     choosePicture: 'Choisir une image',

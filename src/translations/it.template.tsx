@@ -232,8 +232,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mailWatch: {
-    unwatch: 'Riceve email su questo — interrompere',
-    watch: 'Ricevere email su questo',
+    unwatch: 'Notifiche email attive — disattiva',
+    watch: 'Notifiche email disattivate — attiva',
     disabled:
       'Queste email sono disattivate nelle impostazioni del Suo account',
     noEmail: 'Il Suo account non ha un indirizzo email confermato',
@@ -252,6 +252,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   comments: {
     none: 'Nessun commento',
+    login: 'Acceda per partecipare alla discussione.',
     placeholder: 'Nuovo commento',
     add: 'Aggiungi',
     edited: 'modificato',

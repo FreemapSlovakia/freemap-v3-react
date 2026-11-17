@@ -13,6 +13,7 @@ import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   CommentComposer,
   CommentThread,
+  commentLoginToast,
 } from '@shared/components/CommentThread.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
@@ -140,18 +141,34 @@ function EventComments({ event }: { event: EventItem }): ReactElement {
         onDelete={(id) => dispatch(eventsDeleteComment(id))}
       />
 
-      {user && (
-        <CommentComposer
-          value={draft?.eventId === event.id ? draft.text : ''}
-          onChange={(text) =>
-            dispatch(eventsSetCommentDraft({ eventId: event.id, text }))
-          }
-          onSubmit={() => dispatch(eventsPostComment())}
-          disabled={!online}
-        />
-      )}
+      <CommentComposer
+        value={draft?.eventId === event.id ? draft.text : ''}
+        onChange={(text) =>
+          dispatch(eventsSetCommentDraft({ eventId: event.id, text }))
+        }
+        onSubmit={() => dispatch(eventsPostComment())}
+        // Logged out, the field asks to log in, as Interested and Going do.
+        onRequireLogin={user ? undefined : () => dispatch(commentLoginToast())}
+        disabled={!online}
+      />
     </>
   );
+}
+
+function loginToast(messageKey: 'loginToParticipate') {
+  return toastsAdd({
+    id: `events.${messageKey}`,
+    messageKey,
+    messageLoader: loadEventsMessages,
+    style: 'warning',
+    actions: [
+      {
+        action: setActiveModal({ type: 'login' }),
+        nameKey: 'mainMenu.logIn',
+        variant: 'primary',
+      },
+    ],
+  });
 }
 
 /** Who is going and who is interested, each under the label of its button. */
@@ -289,21 +306,7 @@ function EventActions({ event }: { event: EventItem }): ReactElement {
   // Pressing the active one withdraws it.
   const participate = (status: 'interested' | 'going') => {
     if (!loggedIn) {
-      dispatch(
-        toastsAdd({
-          id: 'events.loginToParticipate',
-          messageKey: 'loginToParticipate',
-          messageLoader: loadEventsMessages,
-          style: 'warning',
-          actions: [
-            {
-              action: setActiveModal({ type: 'login' }),
-              nameKey: 'mainMenu.logIn',
-              variant: 'primary',
-            },
-          ],
-        }),
-      );
+      dispatch(loginToast('loginToParticipate'));
 
       return;
     }

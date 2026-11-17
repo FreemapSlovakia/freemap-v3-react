@@ -1,4 +1,6 @@
+import { setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
+import { toastsAdd } from '@features/toasts/model/actions.js';
 import { COMMENT_EDIT_WINDOW_MS, type Comment } from '@shared/comments.js';
 import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -7,7 +9,12 @@ import { useConfirm } from '@shared/components/ModalProvider.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { type ReactElement, type ReactNode, useState } from 'react';
+import {
+  type FocusEvent,
+  type ReactElement,
+  type ReactNode,
+  useState,
+} from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
@@ -199,6 +206,11 @@ type ComposerProps = {
   onChange: (value: string) => void;
   onSubmit: () => void;
   onFocus?: () => void;
+  /**
+   * Set for a logged-out user: the field stays empty and read-only, and both
+   * it and the button ask to log in instead.
+   */
+  onRequireLogin?: () => void;
   onCancel?: () => void;
   submitLabel?: ReactNode;
   disabled?: boolean;
@@ -207,12 +219,28 @@ type ComposerProps = {
   children?: ReactNode;
 };
 
+/** Asks a logged-out user to log in, for a comment field's `onRequireLogin`. */
+export const commentLoginToast = () =>
+  toastsAdd({
+    id: 'comments.login',
+    messageKey: 'comments.login',
+    style: 'warning',
+    actions: [
+      {
+        action: setActiveModal({ type: 'login' }),
+        nameKey: 'mainMenu.logIn',
+        variant: 'primary',
+      },
+    ],
+  });
+
 /** The field a comment is written or edited in; Ctrl+Enter submits it. */
 export function CommentComposer({
   value,
   onChange,
   onSubmit,
   onFocus,
+  onRequireLogin,
   onCancel,
   submitLabel,
   disabled,
@@ -220,6 +248,8 @@ export function CommentComposer({
   children,
 }: ComposerProps): ReactElement {
   const m = useMessages();
+
+  const loggedOut = onRequireLogin !== undefined;
 
   const empty = value.trim() === '';
 
@@ -229,7 +259,9 @@ export function CommentComposer({
       onSubmit={(e) => {
         e.preventDefault();
 
-        if (!empty) {
+        if (loggedOut) {
+          onRequireLogin();
+        } else if (!empty) {
           onSubmit();
         }
       }}
@@ -238,9 +270,18 @@ export function CommentComposer({
         as="textarea"
         rows={2}
         placeholder={m?.comments.placeholder}
-        value={value}
+        value={loggedOut ? '' : value}
+        readOnly={loggedOut}
         onChange={(e) => onChange(e.currentTarget.value)}
-        onFocus={onFocus}
+        onFocus={(e: FocusEvent<HTMLTextAreaElement>) => {
+          if (loggedOut) {
+            e.currentTarget.blur();
+
+            onRequireLogin();
+          } else {
+            onFocus?.();
+          }
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
             e.preventDefault();
@@ -268,7 +309,7 @@ export function CommentComposer({
           variant="secondary"
           size="sm"
           type="submit"
-          disabled={empty || disabled}
+          disabled={disabled || (empty && !loggedOut)}
         >
           {submitLabel ?? m?.comments.add}
         </Button>

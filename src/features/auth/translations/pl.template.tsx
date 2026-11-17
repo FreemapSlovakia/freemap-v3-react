@@ -13,9 +13,9 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
     personalInfo: 'Dane osobowe',
     notifications: 'Powiadomienia e-mail',
     notifyGallery: 'Komentarze do zdjęć',
-    notifyEvents: 'Wydarzenia: komentarze, zmiany, usunięcie i uczestnicy',
+    notifyEvents: 'Wydarzenia: komentarze, zmiany, usunięcie i udział',
     notificationsHint:
-      'Każde wydarzenie i zdjęcie ma też dzwonek do włączania i wyłączania e-maili na jego temat.',
+      'Przy każdym wydarzeniu i zdjęciu przycisk dzwonka włącza lub wyłącza powiadomienia e-mail na jego temat.',
     authProviders: 'Dostawcy logowania',
     picture: 'Zdjęcie profilowe',
     choosePicture: 'Wybierz zdjęcie',

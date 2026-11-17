@@ -224,11 +224,11 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mailWatch: {
-    unwatch: 'Dostávate o tom e-maily — vypnúť',
-    watch: 'Dostávať o tom e-maily',
+    unwatch: 'E-mailové notifikácie sú zapnuté — vypnúť',
+    watch: 'E-mailové notifikácie sú vypnuté — zapnúť',
     disabled: 'Tieto e-maily máte vypnuté v nastaveniach účtu',
     noEmail: 'Váš účet nemá potvrdenú e-mailovú adresu',
-    title: 'E-mailové upozornenia',
+    title: 'E-mailové notifikácie',
     stopped: ({ kind, title }) =>
       `E-maily o ${kind === 'event' ? 'akcii' : 'fotke'}${title ? ` „${title}“` : ''} už nebudete dostávať.`,
     resumed: ({ kind, title }) =>
@@ -243,6 +243,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   comments: {
     none: 'Žiadne komentáre',
+    login: 'Ak sa chcete zapojiť do diskusie, prihláste sa.',
     placeholder: 'Nový komentár',
     add: 'Pridať',
     edited: 'upravené',

@@ -213,6 +213,8 @@ export type Messages = {
   /** A comment thread, on a photo or an event. */
   comments: {
     none: string;
+    /** Toast for a logged-out user touching the comment field. */
+    login: string;
     placeholder: string;
     add: string;
     /** Beside an edited comment; its tooltip says when. */

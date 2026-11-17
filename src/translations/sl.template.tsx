@@ -223,8 +223,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mailWatch: {
-    unwatch: 'O tem prejemate e-pošto — izklopi',
-    watch: 'Prejemaj e-pošto o tem',
+    unwatch: 'E-poštna obvestila so vklopljena — izklopi',
+    watch: 'E-poštna obvestila so izklopljena — vklopi',
     disabled: 'Ta e-pošta je izklopljena v nastavitvah vašega računa',
     noEmail: 'Vaš račun nima potrjenega e-poštnega naslova',
     title: 'E-poštna obvestila',
@@ -242,6 +242,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   comments: {
     none: 'Ni komentarjev',
+    login: 'Če želite sodelovati v razpravi, se prijavite.',
     placeholder: 'Nov komentar',
     add: 'Dodaj',
     edited: 'urejeno',

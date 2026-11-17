@@ -228,8 +228,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mailWatch: {
-    unwatch: 'Sie erhalten E-Mails dazu — abbestellen',
-    watch: 'E-Mails dazu erhalten',
+    unwatch: 'E-Mail-Benachrichtigungen sind an — ausschalten',
+    watch: 'E-Mail-Benachrichtigungen sind aus — einschalten',
     disabled: 'Diese E-Mails sind in Ihren Kontoeinstellungen ausgeschaltet',
     noEmail: 'Ihr Konto hat keine bestätigte E-Mail-Adresse',
     title: 'E-Mail-Benachrichtigungen',
@@ -247,6 +247,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   comments: {
     none: 'Keine Kommentare',
+    login: 'Melden Sie sich an, um an der Diskussion teilzunehmen.',
     placeholder: 'Neuer Kommentar',
     add: 'Hinzufügen',
     edited: 'bearbeitet',

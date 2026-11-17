@@ -218,8 +218,8 @@ const messages: Messages = {
   },
 
   mailWatch: {
-    unwatch: 'You get emails about this — stop them',
-    watch: 'Get emails about this',
+    unwatch: 'Email notifications are on — turn off',
+    watch: 'Email notifications are off — turn on',
     disabled: 'These emails are off in your account settings',
     noEmail: 'Your account has no confirmed email address',
     title: 'Email notifications',
@@ -237,6 +237,7 @@ const messages: Messages = {
 
   comments: {
     none: 'No comments',
+    login: 'Log in to join the discussion.',
     placeholder: 'New comment',
     add: 'Add',
     edited: 'edited',

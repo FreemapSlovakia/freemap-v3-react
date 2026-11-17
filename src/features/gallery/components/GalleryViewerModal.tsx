@@ -18,6 +18,7 @@ import {
 import {
   CommentComposer,
   CommentThread,
+  commentLoginToast,
 } from '@shared/components/CommentThread.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
@@ -1291,7 +1292,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     onDelete={(id) => dispatch(galleryDeleteComment(id))}
                   />
 
-                  {user && (
+                  {
                     <CommentComposer
                       value={comment}
                       onChange={(text) => dispatch(gallerySetComment(text))}
@@ -1299,6 +1300,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       onFocus={() => {
                         setCommentFocused(true);
                       }}
+                      onRequireLogin={
+                        user ? undefined : () => dispatch(commentLoginToast())
+                      }
                       disabled={disabledPremium || !online}
                     >
                       {isWikimedia && commentFocused && (
@@ -1331,7 +1335,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                         </Alert>
                       )}
                     </CommentComposer>
-                  )}
+                  }
 
                   {user && (
                     <div className="d-flex flex-wrap gap-1 align-items-center mb-3">

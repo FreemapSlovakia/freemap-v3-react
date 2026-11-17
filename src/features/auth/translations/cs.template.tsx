@@ -13,9 +13,9 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     personalInfo: 'Osobní údaje',
     notifications: 'E-mailová upozornění',
     notifyGallery: 'Komentáře k fotkám',
-    notifyEvents: 'Akce: komentáře, změny, smazání a kdo přijde',
+    notifyEvents: 'Akce: komentáře, změny, smazání a účast',
     notificationsHint:
-      'Každá akce a fotka má také zvonek, kterým e-maily o ní začnete nebo přestanete dostávat.',
+      'U každé akce a fotky můžete tlačítkem zvonku zapnout nebo vypnout e-mailová upozornění o ní.',
     authProviders: 'Poskytovatelé přihlášení',
     picture: 'Profilový obrázek',
     choosePicture: 'Vybrat obrázek',

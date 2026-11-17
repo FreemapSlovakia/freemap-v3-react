@@ -13,9 +13,9 @@ const en: AuthMessages = {
     personalInfo: 'Personal information',
     notifications: 'Email notifications',
     notifyGallery: 'Comments on photos',
-    notifyEvents: 'Events: comments, changes, deletion and who is going',
+    notifyEvents: 'Events: comments, changes, deletion and attendance',
     notificationsHint:
-      'Each event and photo also has a bell to follow or stop the emails about it.',
+      'On each event and photo, the bell button turns email notifications about it on or off.',
     authProviders: 'Login providers',
     picture: 'Profile picture',
     choosePicture: 'Choose picture',

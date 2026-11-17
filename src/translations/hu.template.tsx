@@ -225,8 +225,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mailWatch: {
-    unwatch: 'E-maileket kap erről — leállítás',
-    watch: 'E-mailek kérése erről',
+    unwatch: 'Az e-mail-értesítések be vannak kapcsolva — kikapcsolás',
+    watch: 'Az e-mail-értesítések ki vannak kapcsolva — bekapcsolás',
     disabled: 'Ezek az e-mailek ki vannak kapcsolva a fiókbeállításokban',
     noEmail: 'A fiókjához nem tartozik megerősített e-mail-cím',
     title: 'E-mail-értesítések',
@@ -244,6 +244,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   comments: {
     none: 'Nincs hozzászólás',
+    login: 'Jelentkezzen be, ha hozzá szeretne szólni.',
     placeholder: 'Új hozzászólás',
     add: 'Hozzáadás',
     edited: 'szerkesztve',

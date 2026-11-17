@@ -12,11 +12,11 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     deleteWarning:
       'Naozaj si prajete zmazať svoj účet? Spolu s ním sa odstránia všetky vaše fotografie, komentáre a hodnotenia fotografií, vlastné mapy a sledované zariadenia.',
     personalInfo: 'Osobné údaje',
-    notifications: 'E-mailové upozornenia',
+    notifications: 'E-mailové notifikácie',
     notifyGallery: 'Komentáre k fotkám',
-    notifyEvents: 'Akcie: komentáre, zmeny, zmazanie a kto príde',
+    notifyEvents: 'Akcie: komentáre, zmeny, zmazanie a účasť',
     notificationsHint:
-      'Každá akcia a fotka má aj zvonček, ktorým e-maily o nej začnete alebo prestanete dostávať.',
+      'Pri každej akcii a fotke môžete tlačidlom zvončeka zapnúť alebo vypnúť e-mailové notifikácie o nej.',
     authProviders: 'Poskytovatelia prihlásenia',
     picture: 'Profilový obrázok',
     choosePicture: 'Vybrať obrázok',

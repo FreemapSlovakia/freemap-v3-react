@@ -224,8 +224,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   },
 
   mailWatch: {
-    unwatch: 'Dostáváte o tom e-maily — vypnout',
-    watch: 'Dostávat o tom e-maily',
+    unwatch: 'E-mailová upozornění jsou zapnutá — vypnout',
+    watch: 'E-mailová upozornění jsou vypnutá — zapnout',
     disabled: 'Tyto e-maily máte vypnuté v nastavení účtu',
     noEmail: 'Váš účet nemá potvrzenou e-mailovou adresu',
     title: 'E-mailová upozornění',
@@ -243,6 +243,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
 
   comments: {
     none: 'Bez komentářů',
+    login: 'Chcete-li se zapojit do diskuse, přihlaste se.',
     placeholder: 'Nový komentář',
     add: 'Přidat',
     edited: 'upraveno',

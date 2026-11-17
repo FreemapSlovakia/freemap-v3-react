@@ -14,9 +14,9 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     notifications: 'E-Mail-Benachrichtigungen',
     notifyGallery: 'Kommentare zu Fotos',
     notifyEvents:
-      'Veranstaltungen: Kommentare, Änderungen, Löschung und Zusagen',
+      'Veranstaltungen: Kommentare, Änderungen, Löschung und Teilnahme',
     notificationsHint:
-      'Jede Veranstaltung und jedes Foto hat außerdem eine Glocke, um E-Mails dazu zu abonnieren oder abzubestellen.',
+      'Bei jeder Veranstaltung und jedem Foto schaltet die Glocke die E-Mail-Benachrichtigungen dazu ein oder aus.',
     authProviders: 'Anmeldeanbieter',
     picture: 'Profilbild',
     choosePicture: 'Bild auswählen',
