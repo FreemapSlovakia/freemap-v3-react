@@ -81,11 +81,13 @@ export function CommentThread({
             <p key={c.id} className="small fst-italic text-body-secondary">
               {time} ·{' '}
               <HintTooltip hint={c.deletedAt && dateFormat.format(c.deletedAt)}>
-                {c.deletedBy === 'owner'
-                  ? m?.comments.removedByOwner[ownerKind]
-                  : c.deletedBy === 'moderator'
-                    ? m?.comments.removedByModerator
-                    : m?.comments.deleted}
+                {
+                  {
+                    author: m?.comments.deleted,
+                    owner: m?.comments.removedByOwner[ownerKind],
+                    moderator: m?.comments.removedByModerator,
+                  }[c.deletedBy ?? 'author']
+                }
               </HintTooltip>
             </p>
           );

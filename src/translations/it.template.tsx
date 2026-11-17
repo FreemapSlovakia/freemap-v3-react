@@ -239,9 +239,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noEmail: 'Il Suo account non ha un indirizzo email confermato',
     title: 'Notifiche email',
     stopped: ({ kind, title }) =>
-      `Non riceverà più email ${kind === 'event' ? 'sull’evento' : 'sulla foto'}${title ? ` «${title}»` : ''}.`,
+      `Non riceverà più email ${{ event: 'sull’evento', picture: 'sulla foto' }[kind]}${title ? ` «${title}»` : ''}.`,
     resumed: ({ kind, title }) =>
-      `Riceverà di nuovo email ${kind === 'event' ? 'sull’evento' : 'sulla foto'}${title ? ` «${title}»` : ''}.`,
+      `Riceverà di nuovo email ${{ event: 'sull’evento', picture: 'sulla foto' }[kind]}${title ? ` «${title}»` : ''}.`,
     undo: 'Annulla',
     stop: 'Interrompi le email',
     openEvent: 'Apri l’evento',
@@ -249,7 +249,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Impostazioni email',
     invalid: 'Questo link non è valido.',
     gone: (kind) =>
-      `${kind === 'event' ? 'Questo evento' : 'Questa foto'} non esiste più, quindi non arriveranno altre email al riguardo.`,
+      `${{ event: 'Questo evento', picture: 'Questa foto' }[kind]} non esiste più, quindi non arriveranno altre email al riguardo.`,
   },
 
   comments: {

@@ -224,9 +224,9 @@ const messages: Messages = {
     noEmail: 'Your account has no confirmed email address',
     title: 'Email notifications',
     stopped: ({ kind, title }) =>
-      `You will no longer get emails about the ${kind === 'event' ? 'event' : 'photo'}${title ? ` "${title}"` : ''}.`,
+      `You will no longer get emails about the ${{ event: 'event', picture: 'photo' }[kind]}${title ? ` "${title}"` : ''}.`,
     resumed: ({ kind, title }) =>
-      `You will get emails about the ${kind === 'event' ? 'event' : 'photo'}${title ? ` "${title}"` : ''} again.`,
+      `You will get emails about the ${{ event: 'event', picture: 'photo' }[kind]}${title ? ` "${title}"` : ''} again.`,
     undo: 'Undo',
     stop: 'Stop the emails',
     openEvent: 'Open the event',
@@ -234,7 +234,7 @@ const messages: Messages = {
     settings: 'Email settings',
     invalid: 'This link is not valid.',
     gone: (kind) =>
-      `This ${kind === 'event' ? 'event' : 'photo'} no longer exists, so no more emails come about it.`,
+      `This ${{ event: 'event', picture: 'photo' }[kind]} no longer exists, so no more emails come about it.`,
   },
 
   comments: {

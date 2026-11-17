@@ -231,9 +231,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noEmail: 'A fiókjához nem tartozik megerősített e-mail-cím',
     title: 'E-mail-értesítések',
     stopped: ({ kind, title }) =>
-      `Nem kap több e-mailt ${title ? `a(z) „${title}” ` : 'erről az '}${kind === 'event' ? 'eseményről' : 'fotóról'}.`,
+      `Nem kap több e-mailt ${title ? `a(z) „${title}” ` : 'erről az '}${{ event: 'eseményről', picture: 'fotóról' }[kind]}.`,
     resumed: ({ kind, title }) =>
-      `Ismét kap e-maileket ${title ? `a(z) „${title}” ` : 'erről az '}${kind === 'event' ? 'eseményről' : 'fotóról'}.`,
+      `Ismét kap e-maileket ${title ? `a(z) „${title}” ` : 'erről az '}${{ event: 'eseményről', picture: 'fotóról' }[kind]}.`,
     undo: 'Visszavonás',
     stop: 'E-mailek leállítása',
     openEvent: 'Esemény megnyitása',
@@ -241,7 +241,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'E-mail-beállítások',
     invalid: 'Ez a hivatkozás érvénytelen.',
     gone: (kind) =>
-      `${kind === 'event' ? 'Ez az esemény' : 'Ez a fotó'} már nem létezik, így több e-mail nem érkezik róla.`,
+      `${{ event: 'Ez az esemény', picture: 'Ez a fotó' }[kind]} már nem létezik, így több e-mail nem érkezik róla.`,
   },
 
   comments: {

@@ -226,9 +226,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noEmail: 'Konto nie ma potwierdzonego adresu e-mail',
     title: 'Powiadomienia e-mail',
     stopped: ({ kind, title }) =>
-      `E-maile o ${kind === 'event' ? 'wydarzeniu' : 'zdjęciu'}${title ? ` „${title}”` : ''} nie będą już wysyłane.`,
+      `E-maile o ${{ event: 'wydarzeniu', picture: 'zdjęciu' }[kind]}${title ? ` „${title}”` : ''} nie będą już wysyłane.`,
     resumed: ({ kind, title }) =>
-      `E-maile o ${kind === 'event' ? 'wydarzeniu' : 'zdjęciu'}${title ? ` „${title}”` : ''} będą znów wysyłane.`,
+      `E-maile o ${{ event: 'wydarzeniu', picture: 'zdjęciu' }[kind]}${title ? ` „${title}”` : ''} będą znów wysyłane.`,
     undo: 'Cofnij',
     stop: 'Wyłącz e-maile',
     openEvent: 'Otwórz wydarzenie',
@@ -236,7 +236,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Ustawienia e-maili',
     invalid: 'Ten link jest nieprawidłowy.',
     gone: (kind) =>
-      `${kind === 'event' ? 'To wydarzenie' : 'To zdjęcie'} już nie istnieje, więc e-maile na jego temat nie będą już wysyłane.`,
+      `${{ event: 'To wydarzenie', picture: 'To zdjęcie' }[kind]} już nie istnieje, więc e-maile na jego temat nie będą już wysyłane.`,
   },
 
   comments: {

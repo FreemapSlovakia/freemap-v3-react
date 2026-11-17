@@ -230,9 +230,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noEmail: 'Váš účet nemá potvrdenú e-mailovú adresu',
     title: 'E-mailové notifikácie',
     stopped: ({ kind, title }) =>
-      `E-maily o ${kind === 'event' ? 'akcii' : 'fotke'}${title ? ` „${title}“` : ''} už nebudete dostávať.`,
+      `E-maily o ${{ event: 'akcii', picture: 'fotke' }[kind]}${title ? ` „${title}“` : ''} už nebudete dostávať.`,
     resumed: ({ kind, title }) =>
-      `E-maily o ${kind === 'event' ? 'akcii' : 'fotke'}${title ? ` „${title}“` : ''} budete znova dostávať.`,
+      `E-maily o ${{ event: 'akcii', picture: 'fotke' }[kind]}${title ? ` „${title}“` : ''} budete znova dostávať.`,
     undo: 'Vrátiť späť',
     stop: 'Vypnúť e-maily',
     openEvent: 'Otvoriť akciu',
@@ -240,7 +240,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Nastavenia e-mailov',
     invalid: 'Tento odkaz nie je platný.',
     gone: (kind) =>
-      `${kind === 'event' ? 'Táto akcia' : 'Táto fotka'} už neexistuje, takže e-maily o nej už neprídu.`,
+      `${{ event: 'Táto akcia', picture: 'Táto fotka' }[kind]} už neexistuje, takže e-maily o nej už neprídu.`,
   },
 
   comments: {

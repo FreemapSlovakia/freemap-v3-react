@@ -234,9 +234,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noEmail: 'Ihr Konto hat keine bestätigte E-Mail-Adresse',
     title: 'E-Mail-Benachrichtigungen',
     stopped: ({ kind, title }) =>
-      `Sie erhalten keine E-Mails mehr zu ${kind === 'event' ? 'der Veranstaltung' : 'dem Foto'}${title ? ` „${title}“` : ''}.`,
+      `Sie erhalten keine E-Mails mehr zu ${{ event: 'der Veranstaltung', picture: 'dem Foto' }[kind]}${title ? ` „${title}“` : ''}.`,
     resumed: ({ kind, title }) =>
-      `Sie erhalten wieder E-Mails zu ${kind === 'event' ? 'der Veranstaltung' : 'dem Foto'}${title ? ` „${title}“` : ''}.`,
+      `Sie erhalten wieder E-Mails zu ${{ event: 'der Veranstaltung', picture: 'dem Foto' }[kind]}${title ? ` „${title}“` : ''}.`,
     undo: 'Rückgängig',
     stop: 'E-Mails abbestellen',
     openEvent: 'Veranstaltung öffnen',
@@ -244,7 +244,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'E-Mail-Einstellungen',
     invalid: 'Dieser Link ist ungültig.',
     gone: (kind) =>
-      `${kind === 'event' ? 'Diese Veranstaltung' : 'Dieses Foto'} gibt es nicht mehr, daher kommen dazu keine E-Mails mehr.`,
+      `${{ event: 'Diese Veranstaltung', picture: 'Dieses Foto' }[kind]} gibt es nicht mehr, daher kommen dazu keine E-Mails mehr.`,
   },
 
   comments: {

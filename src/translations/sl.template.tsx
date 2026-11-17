@@ -229,9 +229,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noEmail: 'Vaš račun nima potrjenega e-poštnega naslova',
     title: 'E-poštna obvestila',
     stopped: ({ kind, title }) =>
-      `E-pošte o ${kind === 'event' ? 'dogodku' : 'fotografiji'}${title ? ` »${title}«` : ''} ne boste več prejemali.`,
+      `E-pošte o ${{ event: 'dogodku', picture: 'fotografiji' }[kind]}${title ? ` »${title}«` : ''} ne boste več prejemali.`,
     resumed: ({ kind, title }) =>
-      `E-pošto o ${kind === 'event' ? 'dogodku' : 'fotografiji'}${title ? ` »${title}«` : ''} boste spet prejemali.`,
+      `E-pošto o ${{ event: 'dogodku', picture: 'fotografiji' }[kind]}${title ? ` »${title}«` : ''} boste spet prejemali.`,
     undo: 'Razveljavi',
     stop: 'Izklopi e-pošto',
     openEvent: 'Odpri dogodek',
@@ -239,9 +239,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Nastavitve e-pošte',
     invalid: 'Ta povezava ni veljavna.',
     gone: (kind) =>
-      kind === 'event'
-        ? 'Ta dogodek ne obstaja več, zato o njem ne boste več prejemali e-pošte.'
-        : 'Ta fotografija ne obstaja več, zato o njej ne boste več prejemali e-pošte.',
+      ({
+        event:
+          'Ta dogodek ne obstaja več, zato o njem ne boste več prejemali e-pošte.',
+        picture:
+          'Ta fotografija ne obstaja več, zato o njej ne boste več prejemali e-pošte.',
+      })[kind],
   },
 
   comments: {

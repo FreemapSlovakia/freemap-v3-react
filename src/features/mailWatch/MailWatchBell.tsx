@@ -17,6 +17,13 @@ export const MailTargetSchema = z.enum(['event', 'picture', 'wikimedia']);
 
 export type MailTarget = z.infer<typeof MailTargetSchema>;
 
+/** The account setting that turns a target's kind of email off; as the API's. */
+const FLAG = {
+  event: 'sendEventEmails',
+  picture: 'sendGalleryEmails',
+  wikimedia: 'sendGalleryEmails',
+} as const satisfies Record<MailTarget, string>;
+
 const StateSchema = z.object({ watching: z.boolean() });
 
 type State = z.infer<typeof StateSchema> & { key: string };
@@ -43,11 +50,7 @@ export function MailWatchBell({
   const userId = useAppSelector((state) => state.auth.user?.id);
 
   // From the account as it is now, so ticking the setting shows at once.
-  const enabled = useAppSelector((state) =>
-    target === 'event'
-      ? state.auth.user?.sendEventEmails
-      : state.auth.user?.sendGalleryEmails,
-  );
+  const enabled = useAppSelector((state) => state.auth.user?.[FLAG[target]]);
 
   const mailable = useAppSelector(
     (state) =>

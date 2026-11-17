@@ -23,7 +23,7 @@ import {
 } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import z from 'zod';
-import { MailTargetSchema } from './MailWatchBell.js';
+import { type MailTarget, MailTargetSchema } from './MailWatchBell.js';
 
 type Props = { show: boolean };
 
@@ -54,9 +54,18 @@ async function setByToken(
   return ResultSchema.parse(await res.json());
 }
 
+// How the texts name each target: a Commons photo is a photo too.
+const KIND = {
+  event: 'event',
+  picture: 'picture',
+  wikimedia: 'picture',
+} as const satisfies Record<MailTarget, 'event' | 'picture'>;
+
 /** What a token is about, read from it (`<user>.<target>.<id>.<signature>`). */
-function tokenKind(token: string | null): 'event' | 'picture' {
-  return token?.split('.')[1] === 'event' ? 'event' : 'picture';
+function tokenKind(token: string | null) {
+  const target = MailTargetSchema.safeParse(token?.split('.')[1]);
+
+  return target.success ? KIND[target.data] : null;
 }
 
 const HANDLED_KEY = 'fm.mailWatch.handled';
@@ -154,7 +163,7 @@ export default function MailWatchModal({ show }: Props): ReactElement {
   const result =
     state?.token === token && state.type === 'done' ? state.result : undefined;
 
-  const kind = result?.target === 'event' ? 'event' : 'picture';
+  const goneKind = tokenKind(token);
 
   const open = () => {
     if (!result) {
@@ -163,14 +172,17 @@ export default function MailWatchModal({ show }: Props): ReactElement {
 
     close();
 
-    if (result.target === 'event') {
-      // The deep link turns the events layer on, as a shared link does.
-      location.hash = `panel=event/${result.targetId}`;
-    } else {
-      const id = Number(result.targetId);
+    const id = result.targetId;
 
-      dispatch(galleryRequestImage(result.target === 'wikimedia' ? -id : id));
-    }
+    ({
+      // The deep link turns the events layer on, as a shared link does.
+      event: () => {
+        location.hash = `panel=event/${id}`;
+      },
+      picture: () => dispatch(galleryRequestImage(Number(id))),
+      // Commons photos are negative ids in the viewer.
+      wikimedia: () => dispatch(galleryRequestImage(-Number(id))),
+    })[result.target]();
   };
 
   return (
@@ -185,9 +197,9 @@ export default function MailWatchModal({ show }: Props): ReactElement {
         {state?.token !== token || state.type === 'busy' ? (
           <Spinner size="sm" />
         ) : state.type === 'error' ? (
-          state.gone ? (
+          state.gone && goneKind ? (
             <Alert variant="info" className="mb-0">
-              {m?.mailWatch.gone(tokenKind(token))}
+              {m?.mailWatch.gone(goneKind)}
             </Alert>
           ) : (
             <Alert variant="danger" className="mb-0">
@@ -196,9 +208,12 @@ export default function MailWatchModal({ show }: Props): ReactElement {
           )
         ) : (
           <p className="mb-0">
-            {(result?.watching ? m?.mailWatch.resumed : m?.mailWatch.stopped)?.(
-              { kind, title: result?.title ?? null },
-            )}
+            {(state.result.watching
+              ? m?.mailWatch.resumed
+              : m?.mailWatch.stopped)?.({
+              kind: KIND[state.result.target],
+              title: state.result.title,
+            })}
           </p>
         )}
       </Modal.Body>
@@ -247,7 +262,10 @@ export default function MailWatchModal({ show }: Props): ReactElement {
             variant="secondary"
             icon={<FaExternalLinkAlt />}
             label={
-              kind === 'event' ? m?.mailWatch.openEvent : m?.mailWatch.openPhoto
+              {
+                event: m?.mailWatch.openEvent,
+                picture: m?.mailWatch.openPhoto,
+              }[KIND[result.target]]
             }
             onClick={open}
           />

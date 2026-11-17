@@ -230,9 +230,9 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     noEmail: 'Votre compte n’a pas d’adresse e-mail confirmée',
     title: 'Notifications par e-mail',
     stopped: ({ kind, title }) =>
-      `Vous ne recevrez plus d’e-mails sur ${kind === 'event' ? 'l’événement' : 'la photo'}${title ? ` « ${title} »` : ''}.`,
+      `Vous ne recevrez plus d’e-mails sur ${{ event: 'l’événement', picture: 'la photo' }[kind]}${title ? ` « ${title} »` : ''}.`,
     resumed: ({ kind, title }) =>
-      `Vous recevrez de nouveau des e-mails sur ${kind === 'event' ? 'l’événement' : 'la photo'}${title ? ` « ${title} »` : ''}.`,
+      `Vous recevrez de nouveau des e-mails sur ${{ event: 'l’événement', picture: 'la photo' }[kind]}${title ? ` « ${title} »` : ''}.`,
     undo: 'Annuler',
     stop: 'Arrêter les e-mails',
     openEvent: 'Ouvrir l’événement',
@@ -240,7 +240,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     settings: 'Paramètres des e-mails',
     invalid: 'Ce lien n’est pas valide.',
     gone: (kind) =>
-      `${kind === 'event' ? 'Cet événement' : 'Cette photo'} n’existe plus : vous ne recevrez plus d’e-mails à son sujet.`,
+      `${{ event: 'Cet événement', picture: 'Cette photo' }[kind]} n’existe plus : vous ne recevrez plus d’e-mails à son sujet.`,
   },
 
   comments: {
