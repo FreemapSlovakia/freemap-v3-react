@@ -114,52 +114,55 @@ export function CommentThread({
                 </span>
               )}
 
-              {canEdit && editing?.id !== c.id && (
-                <LongPressTooltip label={m?.general.modify}>
-                  {({ props }) => (
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="p-0"
-                      disabled={disabled}
-                      onClick={() =>
-                        setEditing({ id: c.id, text: c.comment ?? '' })
-                      }
-                      {...props}
-                    >
-                      <FaEdit />
-                    </Button>
-                  )}
-                </LongPressTooltip>
-              )}
-
-              {canDelete && (
-                <LongPressTooltip label={m?.general.delete}>
-                  {({ props }) => (
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="p-0 link-danger"
-                      disabled={disabled}
-                      onClick={async () => {
-                        if (
-                          await confirm({
-                            title: m?.comments.deleteTitle,
-                            message: m?.comments.deleteMessage,
-                            confirmLabel: m?.general.delete,
-                            confirmStyle: 'danger',
-                          })
-                        ) {
-                          onDelete(c.id);
+              {/* The actions wrap together, never one apart. */}
+              <span className="d-inline-flex column-gap-2">
+                {canEdit && editing?.id !== c.id && (
+                  <LongPressTooltip label={m?.general.modify}>
+                    {({ props }) => (
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="p-0"
+                        disabled={disabled}
+                        onClick={() =>
+                          setEditing({ id: c.id, text: c.comment ?? '' })
                         }
-                      }}
-                      {...props}
-                    >
-                      <FaTrash />
-                    </Button>
-                  )}
-                </LongPressTooltip>
-              )}
+                        {...props}
+                      >
+                        <FaEdit />
+                      </Button>
+                    )}
+                  </LongPressTooltip>
+                )}
+
+                {canDelete && (
+                  <LongPressTooltip label={m?.general.delete}>
+                    {({ props }) => (
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="p-0 link-danger"
+                        disabled={disabled}
+                        onClick={async () => {
+                          if (
+                            await confirm({
+                              title: m?.comments.deleteTitle,
+                              message: m?.comments.deleteMessage,
+                              confirmLabel: m?.general.delete,
+                              confirmStyle: 'danger',
+                            })
+                          ) {
+                            onDelete(c.id);
+                          }
+                        }}
+                        {...props}
+                      >
+                        <FaTrash />
+                      </Button>
+                    )}
+                  </LongPressTooltip>
+                )}
+              </span>
             </div>
 
             {editing?.id === c.id ? (
