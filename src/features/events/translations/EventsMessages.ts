@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Difficulty } from '../model/actions.js';
 import type { EventsColorizeBy, MineCategory } from '../model/colorize.js';
+import type { Within } from '../model/filter.js';
 import type { EventsListSort, EventsNearSort } from '../model/listSort.js';
 
 export type EventsMessages = {
@@ -61,6 +62,8 @@ export type EventsMessages = {
     title: string;
     date: string;
     dateHint: string;
+    /** `dates` picks fixed dates; the rest are "within the next …". */
+    periods: Record<'dates' | Within, string>;
     near: string;
     anywhere: string;
     within: string;

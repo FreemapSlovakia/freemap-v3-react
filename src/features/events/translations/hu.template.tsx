@@ -63,6 +63,13 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     date: 'Dátum',
     dateHint:
       'Kezdő dátum nélkül csak a még be nem fejeződött események jelennek meg.',
+    periods: {
+      dates: 'Dátumok',
+      '1w': '1 hét',
+      '2w': '2 hét',
+      '1m': '1 hónap',
+      '3m': '3 hónap',
+    },
     near: 'A közelben',
     anywhere: 'Bárhol',
     within: 'legfeljebb',

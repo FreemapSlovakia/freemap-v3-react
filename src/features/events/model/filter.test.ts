@@ -8,6 +8,7 @@ import {
   nearestRadiusStop,
   RADIUS_STOPS,
   sameFilter,
+  withinEnd,
 } from './filter.js';
 
 // Node rereads TZ on assignment.
@@ -174,5 +175,51 @@ describe('events filter', () => {
       imported: '0',
       unsaid: '1',
     });
+  });
+
+  it('a period runs from now to the end of its last day, clamped by month', () => {
+    withTz('Europe/Bratislava', () => {
+      const now = new Date(2026, 0, 31, 15);
+
+      expect(withinEnd('1w', now).toISOString()).toBe(
+        '2026-02-06T00:00:00.000Z',
+      );
+
+      expect(withinEnd('1m', now).toISOString()).toBe(
+        '2026-02-28T00:00:00.000Z',
+      );
+
+      expect(withinEnd('1m', new Date(2026, 0, 28)).toISOString()).toBe(
+        '2026-02-27T00:00:00.000Z',
+      );
+
+      expect(withinEnd('1m', new Date(2026, 1, 1)).toISOString()).toBe(
+        '2026-02-28T00:00:00.000Z',
+      );
+
+      expect(withinEnd('1m', new Date(2026, 10, 17)).toISOString()).toBe(
+        '2026-12-16T00:00:00.000Z',
+      );
+
+      expect(filterToRequest({ within: '1m' }, now)).toMatchObject({
+        from: now.toISOString(),
+        to: '2026-02-28T23:59:59.999Z',
+      });
+    });
+  });
+
+  it('a period in the URL wins over dates', () => {
+    expect(
+      filterFromQuery({
+        'events-within': '2w',
+        'events-from': '2026-01-01',
+      }),
+    ).toEqual({ within: '2w' });
+
+    expect(filterFromQuery({ 'events-within': '5y' })).toEqual({});
+
+    expect(filterToQuery({ within: '3m', from: new Date() })).toEqual([
+      ['events-within', '3m'],
+    ]);
   });
 });

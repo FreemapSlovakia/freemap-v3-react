@@ -81,6 +81,13 @@ const en: EventsMessages = {
     date: 'Date',
     dateHint:
       'Without a start date, only events that haven’t ended yet are shown.',
+    periods: {
+      dates: 'Range',
+      '1w': '1 week',
+      '2w': '2 weeks',
+      '1m': '1 month',
+      '3m': '3 months',
+    },
     near: 'Near',
     anywhere: 'Anywhere',
     within: 'within',

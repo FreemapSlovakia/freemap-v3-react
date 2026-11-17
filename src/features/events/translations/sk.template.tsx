@@ -85,6 +85,13 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     date: 'Dátum',
     dateHint:
       'Bez dátumu začiatku sa zobrazia iba akcie, ktoré ešte neskončili.',
+    periods: {
+      dates: 'Rozsah',
+      '1w': '1 týždeň',
+      '2w': '2 týždne',
+      '1m': '1 mesiac',
+      '3m': '3 mesiace',
+    },
     near: 'V okolí',
     anywhere: 'Kdekoľvek',
     within: 'do',

@@ -77,6 +77,13 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Filtr akcí',
     date: 'Datum',
     dateHint: 'Bez data začátku se zobrazí pouze akce, které ještě neskončily.',
+    periods: {
+      dates: 'Rozsah',
+      '1w': '1 týden',
+      '2w': '2 týdny',
+      '1m': '1 měsíc',
+      '3m': '3 měsíce',
+    },
     near: 'V okolí',
     anywhere: 'Kdekoli',
     within: 'do',

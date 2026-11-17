@@ -83,6 +83,13 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     date: 'Datum',
     dateHint:
       'Ohne Startdatum werden nur Veranstaltungen angezeigt, die noch nicht zu Ende sind.',
+    periods: {
+      dates: 'Datumsbereich',
+      '1w': '1 Woche',
+      '2w': '2 Wochen',
+      '1m': '1 Monat',
+      '3m': '3 Monate',
+    },
     near: 'In der Nähe von',
     anywhere: 'Überall',
     within: 'im Umkreis von',

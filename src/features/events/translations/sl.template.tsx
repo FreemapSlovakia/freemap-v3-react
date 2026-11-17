@@ -82,6 +82,13 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     date: 'Datum',
     dateHint:
       'Brez datuma začetka so prikazani le dogodki, ki se še niso končali.',
+    periods: {
+      dates: 'Datumi',
+      '1w': '1 teden',
+      '2w': '2 tedna',
+      '1m': '1 mesec',
+      '3m': '3 meseci',
+    },
     near: 'V bližini',
     anywhere: 'Kjer koli',
     within: 'do',

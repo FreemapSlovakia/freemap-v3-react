@@ -64,6 +64,13 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     date: 'Data',
     dateHint:
       'Senza una data di inizio vengono mostrati solo gli eventi non ancora terminati.',
+    periods: {
+      dates: 'Intervallo',
+      '1w': '1 settimana',
+      '2w': '2 settimane',
+      '1m': '1 mese',
+      '3m': '3 mesi',
+    },
     near: 'Vicino a',
     anywhere: 'Ovunque',
     within: 'entro',

@@ -6,10 +6,17 @@ export type Range = { min?: number; max?: number };
 /** Within `radius` km of a place. */
 export type Near = { lat: number; lon: number; radius: number };
 
+/** Periods for "within the next …": weeks or months. */
+export const WITHIN = ['1w', '2w', '1m', '3m'] as const;
+
+export type Within = (typeof WITHIN)[number];
+
 /** The events layer's filter. Ranges are in km, hours and meters, as typed. */
 export interface EventsFilter {
   from?: Date;
   to?: Date;
+  /** From now to the end of the day this period ahead; excludes `from`/`to`. */
+  within?: Within;
   near?: Near;
   transport?: string[];
   distance?: Range;
@@ -32,6 +39,7 @@ const isEmptyRange = (r: Range | undefined) =>
 export const isFilterEmpty = (f: EventsFilter): boolean =>
   !f.from &&
   !f.to &&
+  !f.within &&
   !f.near &&
   !f.transport?.length &&
   isEmptyRange(f.distance) &&
@@ -133,12 +141,16 @@ export function filterToQuery(f: EventsFilter): [string, string][] {
 
   const to = validDate(f.to);
 
-  if (from) {
-    parts.push(['events-from', formatDate(from)]);
-  }
+  if (f.within) {
+    parts.push(['events-within', f.within]);
+  } else {
+    if (from) {
+      parts.push(['events-from', formatDate(from)]);
+    }
 
-  if (to) {
-    parts.push(['events-to', formatDate(to)]);
+    if (to) {
+      parts.push(['events-to', formatDate(to)]);
+    }
   }
 
   if (f.near) {
@@ -201,9 +213,12 @@ export function filterFromQuery(
     (DIFFICULTIES as readonly string[]).includes(d),
   );
 
+  const within = parseWithin(query['events-within']);
+
   const filter: EventsFilter = {
-    from: parseDate(query['events-from']),
-    to: parseDate(query['events-to']),
+    within,
+    from: within ? undefined : parseDate(query['events-from']),
+    to: within ? undefined : parseDate(query['events-to']),
     near: parseNear(query['events-near'], query['events-radius']),
     transport: transport.length ? transport : undefined,
     distance: parseRange(query['events-length']),
@@ -237,6 +252,33 @@ export function localDayStart(day: Date): Date {
   return start;
 }
 
+/** The last day of `within` from `now`, as the date picker names a day: UTC midnight. */
+// TODO the day's end is UTC's, as for picked dates; a local one would differ off UTC.
+export function withinEnd(within: Within, now: Date): Date {
+  const n = Number(within.slice(0, -1));
+
+  const y = now.getFullYear();
+
+  const m = now.getMonth();
+
+  const d = now.getDate();
+
+  // The day before the same date a period ahead, so a week is 7 days.
+  if (within.endsWith('w')) {
+    return new Date(Date.UTC(y, m, d + 7 * n - 1));
+  }
+
+  // Clamped, so a month from 31 January ends 28 February, not 2 March; day 0
+  // is the month before's last.
+  const lastDay = new Date(Date.UTC(y, m + n + 1, 0)).getUTCDate();
+
+  return new Date(Date.UTC(y, m + n, Math.min(d - 1, lastDay)));
+}
+
+/** A period by its code, if it is one. */
+export const parseWithin = (s: unknown): Within | undefined =>
+  WITHIN.find((w) => w === s);
+
 /**
  * The filter as `GET /events` parameters. Without a start date only what has
  * not ended yet — unless the end date asks for the past.
@@ -253,9 +295,9 @@ export function filterToRequest(
     params['radius'] = String(f.near.radius);
   }
 
-  const from = validDate(f.from);
+  const from = f.within ? undefined : validDate(f.from);
 
-  const to = validDate(f.to);
+  const to = f.within ? withinEnd(f.within, now) : validDate(f.to);
 
   // The picker yields UTC midnight naming a day. The end is that UTC day's
   // last instant, as a date-only event's dates are UTC midnights; the start

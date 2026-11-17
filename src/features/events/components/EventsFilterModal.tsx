@@ -5,6 +5,7 @@ import { useRoutePlannerMessages } from '@features/routePlanner/translations/use
 import { PlaceName } from '@features/search/components/PlaceName.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { ANY, fromAnyValue, withAnyValue } from '@shared/anyToggle.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmDismissButton,
@@ -18,6 +19,7 @@ import { Modal } from '@shared/components/Modal.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { getCurrentPosition, latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import {
   type ReactElement,
@@ -61,8 +63,11 @@ import {
   isFilterEmpty,
   MAX_RADIUS,
   MIN_RADIUS,
+  parseWithin,
   RADIUS_STOPS,
   type Range,
+  WITHIN,
+  type Within,
 } from '../model/filter.js';
 import { TRANSPORT_KINDS } from '../model/transports.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
@@ -216,6 +221,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
   const [to, setTo] = useState('');
 
+  const [within, setWithin] = useState<Within>();
+
   /** The place as typed, in any notation `parseCoordinates` reads. */
   const [place, setPlace] = useState('');
 
@@ -256,6 +263,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
       setFrom(toDateInput(filter.from));
 
       setTo(toDateInput(filter.to));
+
+      setWithin(filter.within);
 
       setPlace(filter.near ? latLonToString(filter.near, language) : '');
 
@@ -328,10 +337,15 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
       return;
     }
 
+    if (within) {
+      trackMatomo(['trackEvent', 'Events', 'filterWithin', within]);
+    }
+
     dispatch(
       eventsSetFilter({
-        from: fromDateInput(from),
-        to: fromDateInput(to),
+        within,
+        from: within ? undefined : fromDateInput(from),
+        to: within ? undefined : fromDateInput(to),
         near: point ? { ...point, radius: radiusKm } : undefined,
         transport: transport.length ? transport : undefined,
         difficulty: difficulty.length ? difficulty : undefined,
@@ -366,28 +380,57 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Body>
-          <Form.Group controlId="eventsDate" className="mb-3">
-            <Form.Label>{em?.filter.date}</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label className="d-block">{em?.filter.date}</Form.Label>
 
-            <InputGroup>
-              <Form.Control
-                type="date"
-                value={from}
-                max={to || undefined}
-                onChange={(e) => setFrom(e.currentTarget.value)}
-              />
+            <div className={within ? undefined : 'mb-2'}>
+              <FitToggleButtonGroup
+                type="radio"
+                name="eventsWithin"
+                value={within ?? ''}
+                onChange={(next: string) => setWithin(parseWithin(next))}
+              >
+                {(['', ...WITHIN] as const).map((w) => (
+                  <ToggleButton
+                    key={w}
+                    id={`events-within-${w || 'dates'}`}
+                    value={w}
+                    variant="outline-primary"
+                  >
+                    {em?.filter.periods[w || 'dates']}
+                  </ToggleButton>
+                ))}
+              </FitToggleButtonGroup>
+            </div>
 
-              <InputGroup.Text>–</InputGroup.Text>
+            {!within && (
+              <>
+                {/* Natural width, shrinking on a phone rather than wrapping. */}
+                <InputGroup className="d-inline-flex w-auto mw-100 flex-nowrap">
+                  <Form.Control
+                    id="eventsDateFrom"
+                    className="flex-grow-0 w-auto"
+                    type="date"
+                    value={from}
+                    max={to || undefined}
+                    onChange={(e) => setFrom(e.currentTarget.value)}
+                  />
 
-              <Form.Control
-                type="date"
-                value={to}
-                min={from || undefined}
-                onChange={(e) => setTo(e.currentTarget.value)}
-              />
-            </InputGroup>
+                  <InputGroup.Text>–</InputGroup.Text>
 
-            <Form.Text>{em?.filter.dateHint}</Form.Text>
+                  <Form.Control
+                    id="eventsDateTo"
+                    className="flex-grow-0 w-auto"
+                    type="date"
+                    value={to}
+                    min={from || undefined}
+                    onChange={(e) => setTo(e.currentTarget.value)}
+                  />
+                </InputGroup>
+
+                <Form.Text className="d-block">{em?.filter.dateHint}</Form.Text>
+              </>
+            )}
           </Form.Group>
 
           <Form.Group controlId="eventsNear" className="mb-3">
