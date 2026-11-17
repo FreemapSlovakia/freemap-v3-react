@@ -240,6 +240,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     openPhoto: 'Fotó megnyitása',
     settings: 'E-mail-beállítások',
     invalid: 'Ez a hivatkozás érvénytelen.',
+    gone: (kind) =>
+      `${kind === 'event' ? 'Ez az esemény' : 'Ez a fotó'} már nem létezik, így több e-mail nem érkezik róla.`,
   },
 
   comments: {

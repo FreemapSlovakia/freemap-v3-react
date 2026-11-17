@@ -235,6 +235,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     openPhoto: 'Otwórz zdjęcie',
     settings: 'Ustawienia e-maili',
     invalid: 'Ten link jest nieprawidłowy.',
+    gone: (kind) =>
+      `${kind === 'event' ? 'To wydarzenie' : 'To zdjęcie'} już nie istnieje, więc e-maile na jego temat nie będą już wysyłane.`,
   },
 
   comments: {

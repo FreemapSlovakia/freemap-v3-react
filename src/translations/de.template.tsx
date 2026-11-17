@@ -243,6 +243,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     openPhoto: 'Foto öffnen',
     settings: 'E-Mail-Einstellungen',
     invalid: 'Dieser Link ist ungültig.',
+    gone: (kind) =>
+      `${kind === 'event' ? 'Diese Veranstaltung' : 'Dieses Foto'} gibt es nicht mehr, daher kommen dazu keine E-Mails mehr.`,
   },
 
   comments: {

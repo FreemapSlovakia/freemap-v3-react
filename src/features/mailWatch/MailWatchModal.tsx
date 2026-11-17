@@ -1,4 +1,4 @@
-import { httpRequest } from '@app/httpRequest.js';
+import { HttpError, httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { galleryRequestImage } from '@features/gallery/model/actions.js';
@@ -54,6 +54,11 @@ async function setByToken(
   return ResultSchema.parse(await res.json());
 }
 
+/** What a token is about, read from it (`<user>.<target>.<id>.<signature>`). */
+function tokenKind(token: string | null): 'event' | 'picture' {
+  return token?.split('.')[1] === 'event' ? 'event' : 'picture';
+}
+
 const HANDLED_KEY = 'fm.mailWatch.handled';
 
 // Links already acted on here: a reload or Back only shows the state, so it
@@ -101,7 +106,7 @@ export default function MailWatchModal({ show }: Props): ReactElement {
     { token: string } & (
       | { type: 'busy' }
       | { type: 'done'; result: Result }
-      | { type: 'error' }
+      | { type: 'error'; gone: boolean }
     )
   >();
 
@@ -130,7 +135,13 @@ export default function MailWatchModal({ show }: Props): ReactElement {
           setState({ token, type: 'done', result });
         }
       },
-      () => current && setState({ token, type: 'error' }),
+      (err) =>
+        current &&
+        setState({
+          token,
+          type: 'error',
+          gone: err instanceof HttpError && err.status === 410,
+        }),
     );
 
     return () => {
@@ -174,9 +185,15 @@ export default function MailWatchModal({ show }: Props): ReactElement {
         {state?.token !== token || state.type === 'busy' ? (
           <Spinner size="sm" />
         ) : state.type === 'error' ? (
-          <Alert variant="danger" className="mb-0">
-            {m?.mailWatch.invalid}
-          </Alert>
+          state.gone ? (
+            <Alert variant="info" className="mb-0">
+              {m?.mailWatch.gone(tokenKind(token))}
+            </Alert>
+          ) : (
+            <Alert variant="danger" className="mb-0">
+              {m?.mailWatch.invalid}
+            </Alert>
+          )
         ) : (
           <p className="mb-0">
             {(result?.watching ? m?.mailWatch.resumed : m?.mailWatch.stopped)?.(
@@ -209,13 +226,16 @@ export default function MailWatchModal({ show }: Props): ReactElement {
                 .then(
                   (next) => setState({ token, type: 'done', result: next }),
                   (err) =>
-                    dispatch(
-                      toastsAdd({
-                        messageKey: 'general.operationError',
-                        messageParams: { err },
-                        style: 'danger',
-                      }),
-                    ),
+                    // Deleted while this was open.
+                    err instanceof HttpError && err.status === 410
+                      ? setState({ token, type: 'error', gone: true })
+                      : dispatch(
+                          toastsAdd({
+                            messageKey: 'general.operationError',
+                            messageParams: { err },
+                            style: 'danger',
+                          }),
+                        ),
                 )
                 .finally(() => setBusy(false));
             }}

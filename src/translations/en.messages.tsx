@@ -233,6 +233,8 @@ const messages: Messages = {
     openPhoto: 'Open the photo',
     settings: 'Email settings',
     invalid: 'This link is not valid.',
+    gone: (kind) =>
+      `This ${kind === 'event' ? 'event' : 'photo'} no longer exists, so no more emails come about it.`,
   },
 
   comments: {

@@ -239,6 +239,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     openPhoto: 'Otevřít fotku',
     settings: 'Nastavení e-mailů',
     invalid: 'Tento odkaz není platný.',
+    gone: (kind) =>
+      `${kind === 'event' ? 'Tato akce' : 'Tato fotka'} už neexistuje, takže e-maily o ní už nepřijdou.`,
   },
 
   comments: {

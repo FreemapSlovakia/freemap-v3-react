@@ -238,6 +238,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     openPhoto: 'Odpri fotografijo',
     settings: 'Nastavitve e-pošte',
     invalid: 'Ta povezava ni veljavna.',
+    gone: (kind) =>
+      kind === 'event'
+        ? 'Ta dogodek ne obstaja več, zato o njem ne boste več prejemali e-pošte.'
+        : 'Ta fotografija ne obstaja več, zato o njej ne boste več prejemali e-pošte.',
   },
 
   comments: {

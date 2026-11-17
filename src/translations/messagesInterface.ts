@@ -209,6 +209,8 @@ export type Messages = {
     openPhoto: string;
     settings: string;
     invalid: string;
+    /** The link's event or photo has been deleted since. */
+    gone: (kind: 'event' | 'picture') => string;
   };
   /** A comment thread, on a photo or an event. */
   comments: {
