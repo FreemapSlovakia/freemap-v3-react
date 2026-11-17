@@ -224,6 +224,24 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'ÉNy',
   },
 
+  mailWatch: {
+    unwatch: 'E-maileket kap erről — leállítás',
+    watch: 'E-mailek kérése erről',
+    disabled: 'Ezek az e-mailek ki vannak kapcsolva a fiókbeállításokban',
+    noEmail: 'A fiókjához nem tartozik megerősített e-mail-cím',
+    title: 'E-mail-értesítések',
+    stopped: ({ kind, title }) =>
+      `Nem kap több e-mailt ${title ? `a(z) „${title}” ` : 'erről az '}${kind === 'event' ? 'eseményről' : 'fotóról'}.`,
+    resumed: ({ kind, title }) =>
+      `Ismét kap e-maileket ${title ? `a(z) „${title}” ` : 'erről az '}${kind === 'event' ? 'eseményről' : 'fotóról'}.`,
+    undo: 'Visszavonás',
+    stop: 'E-mailek leállítása',
+    openEvent: 'Esemény megnyitása',
+    openPhoto: 'Fotó megnyitása',
+    settings: 'E-mail-beállítások',
+    invalid: 'Ez a hivatkozás érvénytelen.',
+  },
+
   comments: {
     none: 'Nincs hozzászólás',
     placeholder: 'Új hozzászólás',

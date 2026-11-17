@@ -223,6 +223,24 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'SZ',
   },
 
+  mailWatch: {
+    unwatch: 'Dostáváte o tom e-maily — vypnout',
+    watch: 'Dostávat o tom e-maily',
+    disabled: 'Tyto e-maily máte vypnuté v nastavení účtu',
+    noEmail: 'Váš účet nemá potvrzenou e-mailovou adresu',
+    title: 'E-mailová upozornění',
+    stopped: ({ kind, title }) =>
+      `E-maily o ${kind === 'event' ? 'akci' : 'fotce'}${title ? ` „${title}“` : ''} už nebudete dostávat.`,
+    resumed: ({ kind, title }) =>
+      `E-maily o ${kind === 'event' ? 'akci' : 'fotce'}${title ? ` „${title}“` : ''} budete znovu dostávat.`,
+    undo: 'Vrátit zpět',
+    stop: 'Vypnout e-maily',
+    openEvent: 'Otevřít akci',
+    openPhoto: 'Otevřít fotku',
+    settings: 'Nastavení e-mailů',
+    invalid: 'Tento odkaz není platný.',
+  },
+
   comments: {
     none: 'Bez komentářů',
     placeholder: 'Nový komentář',

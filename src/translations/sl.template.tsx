@@ -222,6 +222,24 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'SZ',
   },
 
+  mailWatch: {
+    unwatch: 'O tem prejemate e-pošto — izklopi',
+    watch: 'Prejemaj e-pošto o tem',
+    disabled: 'Ta e-pošta je izklopljena v nastavitvah vašega računa',
+    noEmail: 'Vaš račun nima potrjenega e-poštnega naslova',
+    title: 'E-poštna obvestila',
+    stopped: ({ kind, title }) =>
+      `E-pošte o ${kind === 'event' ? 'dogodku' : 'fotografiji'}${title ? ` »${title}«` : ''} ne boste več prejemali.`,
+    resumed: ({ kind, title }) =>
+      `E-pošto o ${kind === 'event' ? 'dogodku' : 'fotografiji'}${title ? ` »${title}«` : ''} boste spet prejemali.`,
+    undo: 'Razveljavi',
+    stop: 'Izklopi e-pošto',
+    openEvent: 'Odpri dogodek',
+    openPhoto: 'Odpri fotografijo',
+    settings: 'Nastavitve e-pošte',
+    invalid: 'Ta povezava ni veljavna.',
+  },
+
   comments: {
     none: 'Ni komentarjev',
     placeholder: 'Nov komentar',

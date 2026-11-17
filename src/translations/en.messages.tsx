@@ -217,6 +217,24 @@ const messages: Messages = {
     nw: 'NW',
   },
 
+  mailWatch: {
+    unwatch: 'You get emails about this — stop them',
+    watch: 'Get emails about this',
+    disabled: 'These emails are off in your account settings',
+    noEmail: 'Your account has no confirmed email address',
+    title: 'Email notifications',
+    stopped: ({ kind, title }) =>
+      `You will no longer get emails about the ${kind === 'event' ? 'event' : 'photo'}${title ? ` "${title}"` : ''}.`,
+    resumed: ({ kind, title }) =>
+      `You will get emails about the ${kind === 'event' ? 'event' : 'photo'}${title ? ` "${title}"` : ''} again.`,
+    undo: 'Undo',
+    stop: 'Stop the emails',
+    openEvent: 'Open the event',
+    openPhoto: 'Open the photo',
+    settings: 'Email settings',
+    invalid: 'This link is not valid.',
+  },
+
   comments: {
     none: 'No comments',
     placeholder: 'New comment',

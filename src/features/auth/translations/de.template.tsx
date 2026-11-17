@@ -11,6 +11,12 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     deleteWarning:
       'Möchten Sie Ihr Konto wirklich löschen? Dabei werden alle Ihre Fotos, Kommentare und Bewertungen, Ihre Karten und überwachten Geräte entfernt.',
     personalInfo: 'Persönliche Informationen',
+    notifications: 'E-Mail-Benachrichtigungen',
+    notifyGallery: 'Kommentare zu Fotos',
+    notifyEvents:
+      'Veranstaltungen: Kommentare, Änderungen, Löschung und Zusagen',
+    notificationsHint:
+      'Jede Veranstaltung und jedes Foto hat außerdem eine Glocke, um E-Mails dazu zu abonnieren oder abzubestellen.',
     authProviders: 'Anmeldeanbieter',
     picture: 'Profilbild',
     choosePicture: 'Bild auswählen',

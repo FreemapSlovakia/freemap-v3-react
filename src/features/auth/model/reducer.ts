@@ -28,6 +28,7 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         emailReminderOff: action.payload.emailReminderOff,
         description: action.payload.description,
         sendGalleryEmails: action.payload.sendGalleryEmails,
+        sendEventEmails: action.payload.sendEventEmails,
         id: action.payload.id,
         authToken: action.payload.authToken,
         roles: action.payload.roles,

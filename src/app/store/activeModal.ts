@@ -104,6 +104,7 @@ export type ModalId = z.infer<typeof ModalIdSchema>;
 export const AccountSectionSchema = z.enum([
   'payments',
   'personal',
+  'notifications',
   'providers',
   'app-tokens',
   'roles',
@@ -181,6 +182,8 @@ export type ActiveModal =
   | { type: 'data-viewer-trace'; kind: TraceKind; legacy?: boolean }
   | { type: 'document'; key: Document }
   | { type: 'gallery-viewer'; id: number }
+  /** An email's "stop emails about this" link, by its signed token. */
+  | { type: 'mail-watch'; token: string }
   /** `returnTo` is what Close goes back to; it is not in the URL. */
   | { type: 'user'; id: number; returnTo?: ActiveModal };
 
@@ -213,6 +216,8 @@ export function encodeActiveModal(modal: ActiveModal | null): string | null {
           : 'event-form';
     case 'gallery-viewer':
       return `gallery-viewer/${modal.id}`;
+    case 'mail-watch':
+      return `mail-watch/${modal.token}`;
     case 'user':
       return `user/${modal.id}`;
     default:
@@ -280,6 +285,8 @@ export function decodeActiveModal(raw: string): ActiveModal | null {
 
       return arg && Number.isFinite(id) ? { type: 'gallery-viewer', id } : null;
     }
+    case 'mail-watch':
+      return arg ? { type: 'mail-watch', token: arg } : null;
     case 'user': {
       const id = Number(arg);
 

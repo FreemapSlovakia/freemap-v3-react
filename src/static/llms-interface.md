@@ -27,7 +27,8 @@ Wherever the map is asked for a place — the home position, a photo's location,
 
 - Access: Main menu > Account
 - Keyboard shortcut: <kbd>e</kbd> <kbd>a</kbd>
-- URL path: `/#show=account`; `/#show=account/<section>` opens one of its sections: `payments` (Premium and purchases), `personal` (Personal information), `providers` (Login providers), `app-tokens` or `roles`
+- URL path: `/#show=account`; `/#show=account/<section>` opens one of its sections: `payments` (Premium and purchases), `personal` (Personal information), `notifications` (Email notifications: two checkboxes, Comments on photos and Events, turning those emails off altogether), `providers` (Login providers), `app-tokens` or `roles`
+- `/#show=mail-watch/<token>` is where a notification email's "stop emails about this" link lands: it stops the emails about that one event or photo without logging in, with **Undo**, a button opening the event or photo, and **Email settings**
 
 Available only to logged-in users. Logged-out users instead see a **Log in** item in the same place, which opens the login provider chooser (see Login providers below).
 

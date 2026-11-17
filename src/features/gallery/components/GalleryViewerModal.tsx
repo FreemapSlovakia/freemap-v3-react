@@ -4,6 +4,7 @@ import { dataViewerAddFeatures } from '@features/dataViewer/model/actions.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { MailWatchBell } from '@features/mailWatch/MailWatchBell.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { OpenInExternalAppMenuButton } from '@features/openInExternalApp/components/OpenInExternalAppMenuButton.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
@@ -1265,8 +1266,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                 <>
                   <hr />
 
-                  <h5>
+                  <h5 className="d-flex align-items-center gap-2">
                     <Text m={gm} k="viewer.comments" />
+
+                    {shownId !== null && (
+                      <MailWatchBell
+                        target={isWikimedia ? 'wikimedia' : 'picture'}
+                        targetId={Math.abs(shownId)}
+                      />
+                    )}
                   </h5>
 
                   <CommentThread

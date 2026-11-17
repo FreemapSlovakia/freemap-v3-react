@@ -225,6 +225,8 @@ export const UserSchema = z.object({
     .enum(['none', 'active', 'canceled'])
     .default('none'),
   sendGalleryEmails: z.boolean(),
+  // Defaulted for user data persisted before the field existed.
+  sendEventEmails: z.boolean().default(true),
   hasPicture: z.boolean(),
   // Whether the API holds an OSM token that may upload GPS traces.
   osmGpxAuthorized: z.boolean().default(false),

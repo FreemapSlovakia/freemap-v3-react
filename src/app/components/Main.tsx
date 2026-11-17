@@ -543,6 +543,12 @@ const userProfileModalFactory = () =>
     '@features/userProfile/components/UserProfileModal.js'
   );
 
+const mailWatchModalFactory = () =>
+  import(
+    /* webpackChunkName: "mail-watch-modal" */
+    '@features/mailWatch/MailWatchModal.js'
+  );
+
 const predefinedDrawingPropertiesModalFactory = () =>
   import(
     /* webpackChunkName: "predefined-drawing-properties-modal" */
@@ -1483,6 +1489,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'user'}
         factory={userProfileModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'mail-watch'}
+        factory={mailWatchModalFactory}
       />
 
       <AsyncModal

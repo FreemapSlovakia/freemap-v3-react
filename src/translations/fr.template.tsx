@@ -223,6 +223,24 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'NO',
   },
 
+  mailWatch: {
+    unwatch: 'Vous recevez des e-mails à ce sujet — les arrêter',
+    watch: 'Recevoir des e-mails à ce sujet',
+    disabled: 'Ces e-mails sont désactivés dans les paramètres de votre compte',
+    noEmail: 'Votre compte n’a pas d’adresse e-mail confirmée',
+    title: 'Notifications par e-mail',
+    stopped: ({ kind, title }) =>
+      `Vous ne recevrez plus d’e-mails sur ${kind === 'event' ? 'l’événement' : 'la photo'}${title ? ` « ${title} »` : ''}.`,
+    resumed: ({ kind, title }) =>
+      `Vous recevrez de nouveau des e-mails sur ${kind === 'event' ? 'l’événement' : 'la photo'}${title ? ` « ${title} »` : ''}.`,
+    undo: 'Annuler',
+    stop: 'Arrêter les e-mails',
+    openEvent: 'Ouvrir l’événement',
+    openPhoto: 'Ouvrir la photo',
+    settings: 'Paramètres des e-mails',
+    invalid: 'Ce lien n’est pas valide.',
+  },
+
   comments: {
     none: 'Aucun commentaire',
     placeholder: 'Nouveau commentaire',

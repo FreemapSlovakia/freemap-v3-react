@@ -11,6 +11,11 @@ const en: AuthMessages = {
     deleteWarning:
       'Are you sure to delete your account? It will remove all your photos, photo comments and ratings, your maps, and tracked devices.',
     personalInfo: 'Personal information',
+    notifications: 'Email notifications',
+    notifyGallery: 'Comments on photos',
+    notifyEvents: 'Events: comments, changes, deletion and who is going',
+    notificationsHint:
+      'Each event and photo also has a bell to follow or stop the emails about it.',
     authProviders: 'Login providers',
     picture: 'Profile picture',
     choosePicture: 'Choose picture',

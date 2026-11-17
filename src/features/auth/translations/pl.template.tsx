@@ -11,6 +11,11 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
     deleteWarning:
       'Czy na pewno usunąć konto? Zostaną usunięte wszystkie zdjęcia, komentarze i oceny, własne mapy i śledzone urządzenia.',
     personalInfo: 'Dane osobowe',
+    notifications: 'Powiadomienia e-mail',
+    notifyGallery: 'Komentarze do zdjęć',
+    notifyEvents: 'Wydarzenia: komentarze, zmiany, usunięcie i uczestnicy',
+    notificationsHint:
+      'Każde wydarzenie i zdjęcie ma też dzwonek do włączania i wyłączania e-maili na jego temat.',
     authProviders: 'Dostawcy logowania',
     picture: 'Zdjęcie profilowe',
     choosePicture: 'Wybierz zdjęcie',

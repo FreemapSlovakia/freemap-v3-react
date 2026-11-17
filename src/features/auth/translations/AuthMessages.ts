@@ -23,6 +23,11 @@ export type AuthMessages = {
     delete: string;
     deleteWarning: string;
     personalInfo: string;
+    /** The section turning the notification emails on and off. */
+    notifications: string;
+    notifyGallery: string;
+    notifyEvents: string;
+    notificationsHint: string;
     authProviders: string;
     picture: string;
     choosePicture: string;

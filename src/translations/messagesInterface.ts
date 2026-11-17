@@ -184,6 +184,32 @@ export type Messages = {
     w: string;
     nw: string;
   };
+  /** Following or muting the emails about one event or photo. */
+  mailWatch: {
+    /** The bell's tooltip while the user gets the emails. */
+    unwatch: string;
+    watch: string;
+    /** The account turns this kind of email off altogether. */
+    disabled: string;
+    /** The account has no confirmed address to send to. */
+    noEmail: string;
+    title: string;
+    stopped: (props: {
+      kind: 'event' | 'picture';
+      title: string | null;
+    }) => string;
+    resumed: (props: {
+      kind: 'event' | 'picture';
+      title: string | null;
+    }) => string;
+    undo: string;
+    /** Stops them again, from a link used before. */
+    stop: string;
+    openEvent: string;
+    openPhoto: string;
+    settings: string;
+    invalid: string;
+  };
   /** A comment thread, on a photo or an event. */
   comments: {
     none: string;

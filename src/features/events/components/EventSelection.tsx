@@ -6,6 +6,7 @@ import {
 import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { MailWatchBell } from '@features/mailWatch/MailWatchBell.js';
 import { useAskLoadMerge } from '@features/myMaps/hooks/useAskLoadMerge.js';
 import { mapsDisconnect } from '@features/myMaps/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -122,7 +123,11 @@ function EventComments({ event }: { event: EventItem }): ReactElement {
     <>
       <hr />
 
-      <h6 className="fw-semibold">{em?.selection.discussion}</h6>
+      <h6 className="fw-semibold d-flex align-items-center gap-2">
+        {em?.selection.discussion}
+
+        <MailWatchBell target="event" targetId={event.id} />
+      </h6>
 
       <CommentThread
         key={event.id}

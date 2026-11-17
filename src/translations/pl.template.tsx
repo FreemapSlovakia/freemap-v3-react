@@ -219,6 +219,24 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'NW',
   },
 
+  mailWatch: {
+    unwatch: 'E-maile w tej sprawie są włączone — wyłącz',
+    watch: 'Włącz e-maile w tej sprawie',
+    disabled: 'Te e-maile są wyłączone w ustawieniach konta',
+    noEmail: 'Konto nie ma potwierdzonego adresu e-mail',
+    title: 'Powiadomienia e-mail',
+    stopped: ({ kind, title }) =>
+      `E-maile o ${kind === 'event' ? 'wydarzeniu' : 'zdjęciu'}${title ? ` „${title}”` : ''} nie będą już wysyłane.`,
+    resumed: ({ kind, title }) =>
+      `E-maile o ${kind === 'event' ? 'wydarzeniu' : 'zdjęciu'}${title ? ` „${title}”` : ''} będą znów wysyłane.`,
+    undo: 'Cofnij',
+    stop: 'Wyłącz e-maile',
+    openEvent: 'Otwórz wydarzenie',
+    openPhoto: 'Otwórz zdjęcie',
+    settings: 'Ustawienia e-maili',
+    invalid: 'Ten link jest nieprawidłowy.',
+  },
+
   comments: {
     none: 'Brak komentarzy',
     placeholder: 'Nowy komentarz',

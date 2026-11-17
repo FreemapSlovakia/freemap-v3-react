@@ -15,6 +15,12 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     deleteWarning:
       'Voulez-vous vraiment supprimer votre compte ? Cela supprimera toutes vos photos, vos commentaires et évaluations de photos, vos cartes et vos appareils suivis.',
     personalInfo: 'Informations personnelles',
+    notifications: 'Notifications par e-mail',
+    notifyGallery: 'Commentaires sur les photos',
+    notifyEvents:
+      'Événements : commentaires, modifications, suppression et participants',
+    notificationsHint:
+      'Chaque événement et chaque photo a aussi une cloche pour suivre ou arrêter les e-mails qui le concernent.',
     authProviders: 'Fournisseurs de connexion',
     picture: 'Photo de profil',
     choosePicture: 'Choisir une image',

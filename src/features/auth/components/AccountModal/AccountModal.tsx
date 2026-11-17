@@ -34,6 +34,7 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { Accordion } from 'react-bootstrap';
 import {
   FaAddressCard,
+  FaBell,
   FaEraser,
   FaKey,
   FaShoppingBasket,
@@ -46,6 +47,7 @@ import { useDispatch } from 'react-redux';
 import { AppTokensSection } from './AppTokensSection.js';
 import { AuthProvidersSection } from './AuthProvidersSection.js';
 import { HomeLocationField } from './HomeLocationField.js';
+import { NotificationsSection } from './NotificationsSection.js';
 import { PersonalInfoSection } from './PersonalInfoSection.js';
 
 type Props = { show: boolean };
@@ -210,6 +212,18 @@ export default function AccountModal({ show }: Props): ReactElement | null {
               <PersonalInfoSection />
 
               <HomeLocationField />
+            </Accordion.Body>
+          </Accordion.Item>
+
+          <Accordion.Item eventKey={'notifications' satisfies AccountSection}>
+            <Accordion.Header>
+              <span>
+                <FaBell /> <Text m={am} k="account.notifications" />
+              </span>
+            </Accordion.Header>
+
+            <Accordion.Body>
+              <NotificationsSection />
             </Accordion.Body>
           </Accordion.Item>
 
