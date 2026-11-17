@@ -1,5 +1,6 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
+import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { PlaceName } from '@features/search/components/PlaceName.js';
@@ -16,6 +17,7 @@ import { HintMark } from '@shared/components/HintMark.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { Modal } from '@shared/components/Modal.js';
+import { useConfirm } from '@shared/components/ModalProvider.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { getCurrentPosition, latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -25,10 +27,12 @@ import {
   type ReactElement,
   type ReactNode,
   type SubmitEvent,
+  useCallback,
   useEffect,
   useState,
 } from 'react';
 import {
+  Alert,
   Button,
   Dropdown,
   Form,
@@ -48,9 +52,10 @@ import {
   FaRegDotCircle,
   FaRulerHorizontal,
   FaSearchLocation,
+  FaTrash,
 } from 'react-icons/fa';
 import { MdTrendingUp } from 'react-icons/md';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import {
   DIFFICULTIES,
   eventsSetFilter,
@@ -60,15 +65,32 @@ import {
   eventsStartPicked,
 } from '../model/actions.js';
 import {
+  type EventsFilter,
   isFilterEmpty,
   MAX_RADIUS,
   MIN_RADIUS,
   parseWithin,
   RADIUS_STOPS,
   type Range,
+  sameFilter,
   WITHIN,
   type Within,
 } from '../model/filter.js';
+import {
+  fromSavedFilter,
+  MAX_SAVED_FILTERS,
+  type SavedEventFilter,
+  toSavedFilter,
+} from '../model/savedFilters.js';
+import {
+  eventsSavedFilterCreate,
+  eventsSavedFilterDelete,
+  eventsSavedFilterPicked,
+  eventsSavedFiltersLoad,
+  eventsSavedFilterUpdate,
+  selectAppliedSavedFilter,
+  selectSavedFilters,
+} from '../model/savedFiltersSlice.js';
 import { TRANSPORT_KINDS } from '../model/transports.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICON, DIFFICULTY_ICONS } from './difficultyIcons.js';
@@ -109,6 +131,9 @@ const NARROW = { flex: '0 0 5.5em' };
 
 /** Km, what a place starts with. */
 const DEFAULT_RADIUS = 20;
+
+/** The saved-filter select's option that saves a new one; ids are numbers. */
+const NEW_SAVED = 'new';
 
 function parsePlace(s: string): LatLon | null {
   try {
@@ -257,38 +282,82 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
   const [ascent, setAscent] = useState(toRangeDraft(undefined));
 
+  const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
+
+  const store = useStore<RootState>();
+
+  const savedFilters = useAppSelector(selectSavedFilters);
+
+  const applied = useAppSelector(selectAppliedSavedFilter);
+
+  const confirm = useConfirm();
+
+  /** Whether Apply saves the filter too, under `saveName`. */
+  const [saving, setSaving] = useState(false);
+
+  const [saveName, setSaveName] = useState('');
+
+  const [saveNotify, setSaveNotify] = useState(false);
+
+  /** The saved filter that applied on opening, which Apply then changes. */
+  const [editing, setEditing] = useState<SavedEventFilter>();
+
+  /** Fills the fields with `f`, editing `saved` if given. */
+  const seed = useCallback(
+    (f: EventsFilter, saved: SavedEventFilter | undefined) => {
+      setEditing(saved);
+
+      setSaving(Boolean(saved));
+
+      setSaveName(saved?.name ?? '');
+
+      setSaveNotify(saved?.notify ?? false);
+
+      setFrom(toDateInput(f.from));
+
+      setTo(toDateInput(f.to));
+
+      setWithin(f.within);
+
+      setPlace(f.near ? latLonToString(f.near, language) : '');
+
+      setRadius(String(f.near?.radius ?? DEFAULT_RADIUS));
+
+      setTransport(f.transport ?? []);
+
+      setDifficulty(f.difficulty ?? []);
+
+      setDogs(f.dogs);
+
+      setChildren(f.children);
+
+      setImported(f.imported);
+
+      setUnsaid(Boolean(f.unsaid));
+
+      setDistance(toRangeDraft(f.distance));
+
+      setDuration(toRangeDraft(f.duration));
+
+      setAscent(toRangeDraft(f.ascent));
+    },
+    [language],
+  );
+
+  // A link may open this without the toolbar, which otherwise loads them.
+  useEffect(() => {
+    if (show && loggedIn) {
+      dispatch(eventsSavedFiltersLoad());
+    }
+  }, [show, loggedIn, dispatch]);
+
   // Seeded from what applies on each open; edits wait for Apply.
   useEffect(() => {
     if (show) {
-      setFrom(toDateInput(filter.from));
-
-      setTo(toDateInput(filter.to));
-
-      setWithin(filter.within);
-
-      setPlace(filter.near ? latLonToString(filter.near, language) : '');
-
-      setRadius(String(filter.near?.radius ?? DEFAULT_RADIUS));
-
-      setTransport(filter.transport ?? []);
-
-      setDifficulty(filter.difficulty ?? []);
-
-      setDogs(filter.dogs);
-
-      setChildren(filter.children);
-
-      setImported(filter.imported);
-
-      setUnsaid(Boolean(filter.unsaid));
-
-      setDistance(toRangeDraft(filter.distance));
-
-      setDuration(toRangeDraft(filter.duration));
-
-      setAscent(toRangeDraft(filter.ascent));
+      // Read, not selected: a list arriving later must not reset the fields.
+      seed(filter, selectAppliedSavedFilter(store.getState()));
     }
-  }, [show, filter, language]);
+  }, [show, filter, store, seed]);
 
   useEffect(() => {
     if (show && picked) {
@@ -313,7 +382,9 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
   const radiusValid =
     radius.trim() !== '' && radiusKm >= MIN_RADIUS && radiusKm <= MAX_RADIUS;
 
-  const valid = place.trim() === '' || (point !== null && radiusValid);
+  const valid =
+    (place.trim() === '' || (point !== null && radiusValid)) &&
+    (!saving || saveName.trim() !== '');
 
   const takeMyLocation = () => {
     getCurrentPosition().then(
@@ -341,25 +412,66 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
       trackMatomo(['trackEvent', 'Events', 'filterWithin', within]);
     }
 
-    dispatch(
-      eventsSetFilter({
-        within,
-        from: within ? undefined : fromDateInput(from),
-        to: within ? undefined : fromDateInput(to),
-        near: point ? { ...point, radius: radiusKm } : undefined,
-        transport: transport.length ? transport : undefined,
-        difficulty: difficulty.length ? difficulty : undefined,
-        dogs,
-        children,
-        imported,
-        unsaid: unsaid || undefined,
-        distance: fromRangeDraft(distance),
-        duration: fromRangeDraft(duration),
-        ascent: fromRangeDraft(ascent),
-      }),
-    );
+    const next = {
+      within,
+      from: within ? undefined : fromDateInput(from),
+      to: within ? undefined : fromDateInput(to),
+      near: point ? { ...point, radius: radiusKm } : undefined,
+      transport: transport.length ? transport : undefined,
+      difficulty: difficulty.length ? difficulty : undefined,
+      dogs,
+      children,
+      imported,
+      unsaid: unsaid || undefined,
+      distance: fromRangeDraft(distance),
+      duration: fromRangeDraft(duration),
+      ascent: fromRangeDraft(ascent),
+    };
+
+    dispatch(eventsSetFilter(next));
+
+    if (saving) {
+      const saved = { name: saveName.trim(), notify: saveNotify, filter: next };
+
+      if (editing) {
+        const unchanged =
+          saved.name === editing.name &&
+          saved.notify === editing.notify &&
+          sameFilter(
+            fromSavedFilter(toSavedFilter(next)),
+            fromSavedFilter(editing.filter),
+          );
+
+        if (!unchanged) {
+          dispatch(eventsSavedFilterUpdate({ id: editing.id, ...saved }));
+        }
+
+        dispatch(eventsSavedFilterPicked(editing.id));
+      } else {
+        dispatch(eventsSavedFilterCreate(saved));
+      }
+    }
 
     close();
+  };
+
+  const deleteSaved = async () => {
+    if (
+      editing &&
+      (await confirm({
+        title: em?.savedFilters.deleteTitle,
+        message: em?.savedFilters.deleteMessage({ name: editing.name }),
+        confirmLabel: m?.general.delete,
+        confirmStyle: 'danger',
+      }))
+    ) {
+      dispatch(eventsSavedFilterDelete(editing.id));
+
+      // The filter stays as it is, no longer saved.
+      setEditing(undefined);
+
+      setSaving(false);
+    }
   };
 
   return (
@@ -380,6 +492,87 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
       <form onSubmit={handleSubmit} className="d-contents">
         <Modal.Body>
+          {loggedIn && (
+            <div className="border-bottom mb-3 pb-3">
+              <Form.Group controlId="eventsSavedFilter">
+                <Form.Label>{em?.savedFilters.savedFilter}</Form.Label>
+
+                <Form.Select
+                  value={editing?.id ?? (saving ? NEW_SAVED : '')}
+                  onChange={(e) => {
+                    const { value } = e.currentTarget;
+
+                    const saved = savedFilters?.find(
+                      (s) => String(s.id) === value,
+                    );
+
+                    if (saved) {
+                      seed(fromSavedFilter(saved.filter), saved);
+
+                      return;
+                    }
+
+                    // Everything stays, the name too: a saved one edited is then
+                    // saved as a new one, or applied without saving.
+                    setEditing(undefined);
+
+                    setSaving(value === NEW_SAVED);
+                  }}
+                >
+                  <option value="">{em?.savedFilters.dontSave}</option>
+
+                  <option
+                    value={NEW_SAVED}
+                    disabled={(savedFilters?.length ?? 0) >= MAX_SAVED_FILTERS}
+                  >
+                    {em?.savedFilters.newFilter}
+                  </option>
+
+                  {savedFilters?.map((saved) => (
+                    <option key={saved.id} value={saved.id}>
+                      {saved.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+
+              {saving && (
+                <>
+                  <Form.Group controlId="eventsSaveName" className="my-3">
+                    <Form.Label className="required">
+                      {em?.savedFilters.name}
+                    </Form.Label>
+
+                    <Form.Control
+                      maxLength={100}
+                      value={saveName}
+                      onChange={(e) => setSaveName(e.currentTarget.value)}
+                    />
+                  </Form.Group>
+
+                  <Form.Check
+                    id="eventsSaveNotify"
+                    checked={saveNotify}
+                    onChange={(e) => setSaveNotify(e.currentTarget.checked)}
+                    label={em?.savedFilters.notify}
+                  />
+
+                  {within && saveNotify && (
+                    <Alert variant="warning" className="mt-3 mb-0">
+                      {em?.savedFilters.periodWarning}
+                    </Alert>
+                  )}
+
+                  {!within && (from || to) && (
+                    <Alert variant="warning" className="mt-3 mb-0">
+                      {em?.savedFilters.datesWarning}
+                    </Alert>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           <Form.Group className="mb-3">
             <Form.Label className="d-block">{em?.filter.date}</Form.Label>
 
@@ -722,16 +915,27 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
             type="submit"
             disabled={!valid}
             icon={<FaCheck />}
-            label={m?.general.apply}
+            label={saving ? em?.savedFilters.saveAndApply : m?.general.apply}
           />
+
+          {editing && (
+            <FmFooterButton
+              variant="danger"
+              icon={<FaTrash />}
+              label={em?.savedFilters.delete}
+              onClick={deleteSaved}
+            />
+          )}
 
           <FmFooterButton
             variant="secondary"
-            disabled={isFilterEmpty(filter)}
+            disabled={isFilterEmpty(filter) && !applied}
             icon={<FaEraser />}
             label={m?.general.clear}
             onClick={() => {
               dispatch(eventsSetFilter({}));
+
+              dispatch(eventsSavedFilterPicked(null));
 
               close();
             }}

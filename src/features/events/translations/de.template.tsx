@@ -25,6 +25,9 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, 'Fehler beim Löschen der Veranstaltung', err),
   participationError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern Ihrer Teilnahme', err),
+  savedFilterError: ({ err }) =>
+    addError(getMessages()!, 'Fehler beim Speichern des Filters', err),
+  savedFiltersFull: () => 'Es können höchstens 20 Filter gespeichert werden.',
   loginToParticipate:
     'Melden Sie sich an, um Interesse oder Ihre Teilnahme anzugeben.',
   difficulty: {
@@ -164,8 +167,24 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     startPoint: 'Startpunkt auswählen',
     place: 'Ort auswählen',
   },
+  savedFilters: {
+    savedFilter: 'Gespeicherter Filter',
+    dontSave: '— nicht speichern',
+    newFilter: 'Neuer gespeicherter Filter',
+    name: 'Name',
+    notify: 'Neue passende Veranstaltungen per E-Mail senden',
+    saveAndApply: 'Speichern und anwenden',
+    periodWarning:
+      'E-Mails umfassen nur Veranstaltungen, die beim Hinzufügen innerhalb des Zeitraums beginnen. Eine früher hinzugefügte Veranstaltung wird nicht gemeldet, wenn ihr Datum später in den Zeitraum fällt.',
+    datesWarning:
+      'Feste Daten werden nicht gespeichert: Der gespeicherte Filter umfasst alle kommenden Veranstaltungen. Um einen Bereich zu behalten, wählen Sie stattdessen einen Zeitraum.',
+    delete: 'Löschen',
+    deleteTitle: 'Gespeicherten Filter löschen',
+    deleteMessage: ({ name }) => `Den gespeicherten Filter „${name}“ löschen?`,
+  },
   menu: {
     filter: 'Filter',
+    clearFilter: 'Filter aufheben',
     newEvent: 'Neue Veranstaltung',
   },
   colorize: {

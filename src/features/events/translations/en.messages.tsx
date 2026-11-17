@@ -23,6 +23,9 @@ const en: EventsMessages = {
     addError(getMessages()!, 'Error deleting event', err),
   participationError: ({ err }) =>
     addError(getMessages()!, 'Error saving your participation', err),
+  savedFilterError: ({ err }) =>
+    addError(getMessages()!, 'Error saving the filter', err),
+  savedFiltersFull: () => 'At most 20 filters can be saved.',
   loginToParticipate: 'Log in to say you are interested or going.',
   difficulty: {
     easy: 'Easy',
@@ -162,8 +165,24 @@ const en: EventsMessages = {
     startPoint: 'Select start point',
     place: 'Select place',
   },
+  savedFilters: {
+    savedFilter: 'Saved filter',
+    dontSave: '— don’t save',
+    newFilter: 'New saved filter',
+    name: 'Name',
+    notify: 'Email me new events matching this filter',
+    saveAndApply: 'Save and apply',
+    periodWarning:
+      'Emails cover only events that start within the period when they are added. An event added earlier is not emailed when its date later comes within the period.',
+    datesWarning:
+      'Fixed dates are not saved: the saved filter covers all upcoming events. To keep a range, choose a period instead.',
+    delete: 'Delete',
+    deleteTitle: 'Delete saved filter',
+    deleteMessage: ({ name }) => `Delete the saved filter “${name}”?`,
+  },
   menu: {
     filter: 'Filter',
+    clearFilter: 'Clear filter',
     newEvent: 'New event',
   },
   colorize: {

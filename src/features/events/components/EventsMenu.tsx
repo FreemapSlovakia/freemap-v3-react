@@ -4,21 +4,24 @@ import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import type { ReactElement } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { Button, ButtonGroup, ButtonToolbar, Dropdown } from 'react-bootstrap';
 import {
   FaAngleLeft,
   FaAngleRight,
   FaBan,
+  FaBell,
   FaCalendarAlt,
   FaChild,
   FaDog,
+  FaEraser,
   FaFilter,
   FaHourglassHalf,
   FaMountain,
@@ -36,6 +39,7 @@ import { useDispatch } from 'react-redux';
 import {
   EVENTS_LAYER,
   eventsColorizeBy,
+  eventsSetFilter,
   eventsToggleLegend,
 } from '../model/actions.js';
 import {
@@ -43,9 +47,18 @@ import {
   EventsColorizeBySchema,
 } from '../model/colorize.js';
 import { isFilterEmpty } from '../model/filter.js';
+import { fromSavedFilter } from '../model/savedFilters.js';
+import {
+  eventsSavedFilterPicked,
+  eventsSavedFiltersLoad,
+  selectAppliedSavedFilter,
+  selectSavedFilters,
+} from '../model/savedFiltersSlice.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { DIFFICULTY_ICON } from './difficultyIcons.js';
 import { EventsLegend } from './EventsLegend.js';
+
+const CLEAR_ITEM = 'clear';
 
 const COLORIZE_ICONS: Record<EventsColorizeBy, ReactElement> = {
   when: <FaRegClock />,
@@ -73,7 +86,20 @@ export default function EventsMenu(): ReactElement {
     ({ events: { filter } }) => !isFilterEmpty(filter),
   );
 
-  const loggedIn = useAppSelector((state) => Boolean(state.auth.user));
+  const userId = useAppSelector((state) => state.auth.user?.id);
+
+  const loggedIn = userId !== undefined;
+
+  const savedFilters = useAppSelector(selectSavedFilters);
+
+  useEffect(() => {
+    if (userId !== undefined) {
+      dispatch(eventsSavedFiltersLoad());
+    }
+  }, [dispatch, userId]);
+
+  // The button is named after it.
+  const applied = useAppSelector(selectAppliedSavedFilter);
 
   const colorizeBy = useAppSelector((state) => state.eventsSettings.colorizeBy);
 
@@ -107,20 +133,85 @@ export default function EventsMenu(): ReactElement {
             </LongPressTooltip>
 
             {!hidden && (
-              <LongPressTooltip label={em?.menu.filter} breakpoint="lg">
-                {({ props, label, labelClassName }) => (
-                  <Button
-                    variant="secondary"
-                    active={filterActive}
-                    onClick={() =>
-                      dispatch(setActiveModal({ type: 'events-filter' }))
-                    }
-                    {...props}
+              <Dropdown
+                as={ButtonGroup}
+                onSelect={(key) => {
+                  if (key === CLEAR_ITEM) {
+                    trackMatomo(['trackEvent', 'Events', 'clearFilter']);
+
+                    dispatch(eventsSetFilter({}));
+
+                    // An empty saved filter is picked, not set.
+                    dispatch(eventsSavedFilterPicked(null));
+
+                    return;
+                  }
+
+                  const saved = savedFilters?.find((s) => String(s.id) === key);
+
+                  if (saved) {
+                    trackMatomo(['trackEvent', 'Events', 'applySavedFilter']);
+
+                    dispatch(eventsSetFilter(fromSavedFilter(saved.filter)));
+
+                    dispatch(eventsSavedFilterPicked(saved.id));
+                  }
+                }}
+              >
+                <LongPressTooltip
+                  label={applied?.name ?? em?.menu.filter}
+                  breakpoint="lg"
+                >
+                  {({ props, label, labelClassName }) => (
+                    <Button
+                      variant="secondary"
+                      active={filterActive}
+                      onClick={() =>
+                        dispatch(setActiveModal({ type: 'events-filter' }))
+                      }
+                      {...props}
+                    >
+                      <FaFilter />{' '}
+                      <span className={labelClassName}>{label}</span>
+                    </Button>
+                  )}
+                </LongPressTooltip>
+
+                <Dropdown.Toggle split variant="secondary" />
+
+                <FmDropdownMenu>
+                  {loggedIn &&
+                    savedFilters?.map((saved) => (
+                      <Dropdown.Item
+                        as="button"
+                        key={saved.id}
+                        eventKey={String(saved.id)}
+                        active={saved.id === applied?.id}
+                      >
+                        <MenuLabel>{saved.name}</MenuLabel>
+
+                        {saved.notify && (
+                          <MenuGutter>
+                            <FaBell />
+                          </MenuGutter>
+                        )}
+                      </Dropdown.Item>
+                    ))}
+
+                  {loggedIn && Boolean(savedFilters?.length) && (
+                    <Dropdown.Divider />
+                  )}
+
+                  <Dropdown.Item
+                    as="button"
+                    eventKey={CLEAR_ITEM}
+                    disabled={!filterActive && !applied}
                   >
-                    <FaFilter /> <span className={labelClassName}>{label}</span>
-                  </Button>
-                )}
-              </LongPressTooltip>
+                    <FaEraser />
+                    <MenuLabel>{em?.menu.clearFilter}</MenuLabel>
+                  </Dropdown.Item>
+                </FmDropdownMenu>
+              </Dropdown>
             )}
 
             {!hidden && (

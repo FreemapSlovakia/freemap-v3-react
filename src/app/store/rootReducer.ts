@@ -10,6 +10,7 @@ import { drawingSettingsReducer } from '@features/drawing/model/reducers/drawing
 import { elevationChartReducer } from '@features/elevationChart/model/reducer.js';
 import { elevationSettingsReducer } from '@features/elevationChart/model/settingsReducer.js';
 import { eventsReducer } from '@features/events/model/reducer.js';
+import { eventsSavedFiltersReducer } from '@features/events/model/savedFiltersSlice.js';
 import { eventsSettingsReducer } from '@features/events/model/settingsReducer.js';
 import { galleryReducer } from '@features/gallery/model/reducer.js';
 import { gallerySettingsReducer } from '@features/gallery/model/settingsReducer.js';
@@ -64,6 +65,7 @@ export const reducers = {
   elevationSettings: elevationSettingsReducer,
   events: eventsReducer,
   eventsSettings: eventsSettingsReducer,
+  eventsSavedFilters: eventsSavedFiltersReducer,
   geoip: geoIpReducer,
   gallery: galleryReducer,
   gallerySettings: gallerySettingsReducer,

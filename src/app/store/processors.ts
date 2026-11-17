@@ -78,6 +78,12 @@ import {
 } from '@features/events/model/processors/eventsLoadListProcessor.js';
 import { eventsParticipationProcessor } from '@features/events/model/processors/eventsParticipationProcessor.js';
 import { eventsSaveProcessor } from '@features/events/model/processors/eventsSaveProcessor.js';
+import {
+  eventsSavedFilterCreateProcessor,
+  eventsSavedFilterDeleteProcessor,
+  eventsSavedFiltersLoadProcessor,
+  eventsSavedFilterUpdateProcessor,
+} from '@features/events/model/processors/savedFiltersProcessors.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
 import { galleryCommentChangeProcessor } from '@features/gallery/model/processors/galleryCommentChangeProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
@@ -368,6 +374,10 @@ export const processors = [
   eventsSaveProcessor,
   eventsDeleteProcessor,
   eventsParticipationProcessor,
+  eventsSavedFiltersLoadProcessor,
+  eventsSavedFilterCreateProcessor,
+  eventsSavedFilterUpdateProcessor,
+  eventsSavedFilterDeleteProcessor,
   eventSelectionProcessor,
   eventsParticipantsProcessor,
   mailWatchLoadProcessor,

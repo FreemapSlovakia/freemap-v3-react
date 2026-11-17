@@ -157,8 +157,24 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     startPoint: 'Vyberte místo začátku',
     place: 'Vyberte místo',
   },
+  savedFilters: {
+    savedFilter: 'Uložený filtr',
+    dontSave: '— neukládat',
+    newFilter: 'Nový uložený filtr',
+    name: 'Název',
+    notify: 'Zasílat e-mailem nové akce odpovídající tomuto filtru',
+    saveAndApply: 'Uložit a použít',
+    periodWarning:
+      'E-maily zahrnují jen akce, které při přidání začínají v rámci období. Akce přidaná dříve se nepošle, když se její datum později dostane do období.',
+    datesWarning:
+      'Pevná data se neukládají: uložený filtr zahrnuje všechny nadcházející akce. Chcete-li rozsah zachovat, zvolte raději období.',
+    delete: 'Smazat',
+    deleteTitle: 'Smazat uložený filtr',
+    deleteMessage: ({ name }) => `Smazat uložený filtr „${name}“?`,
+  },
   menu: {
     filter: 'Filtr',
+    clearFilter: 'Zrušit filtr',
     newEvent: 'Nová akce',
   },
   colorize: {
@@ -192,6 +208,9 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
   noEvents: 'Nenašly se žádné akce',
   participationError: ({ err }) =>
     addError(getMessages()!, 'Chyba při ukládání vaší účasti', err),
+  savedFilterError: ({ err }) =>
+    addError(getMessages()!, 'Chyba při ukládání filtru', err),
+  savedFiltersFull: () => 'Uložit lze nejvýše 20 filtrů.',
   loginToParticipate:
     'Chcete-li dát vědět, že máte zájem nebo přijdete, přihlaste se.',
   notSaid: 'Neuvedeno',

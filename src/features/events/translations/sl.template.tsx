@@ -25,6 +25,9 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     addError(getMessages()!, 'Napaka pri brisanju dogodka', err),
   participationError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri shranjevanju vaše udeležbe', err),
+  savedFilterError: ({ err }) =>
+    addError(getMessages()!, 'Napaka pri shranjevanju filtra', err),
+  savedFiltersFull: () => 'Shranite lahko največ 20 filtrov.',
   loginToParticipate:
     'Če želite sporočiti, da vas dogodek zanima ali da se ga boste udeležili, se prijavite.',
   difficulty: {
@@ -162,8 +165,24 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     startPoint: 'Izberite mesto začetka',
     place: 'Izberite mesto',
   },
+  savedFilters: {
+    savedFilter: 'Shranjeni filter',
+    dontSave: '— ne shrani',
+    newFilter: 'Nov shranjeni filter',
+    name: 'Ime',
+    notify: 'Pošiljaj nove dogodke, ki ustrezajo temu filtru, po e-pošti',
+    saveAndApply: 'Shrani in uporabi',
+    periodWarning:
+      'E-poštna sporočila zajemajo le dogodke, ki se ob dodajanju začnejo v obdobju. Za dogodek, dodan prej, ne boste prejeli sporočila, ko njegov datum pozneje pride v obdobje.',
+    datesWarning:
+      'Fiksni datumi se ne shranijo: shranjeni filter zajema vse prihodnje dogodke. Če želite ohraniti razpon, izberite obdobje.',
+    delete: 'Izbriši',
+    deleteTitle: 'Izbriši shranjeni filter',
+    deleteMessage: ({ name }) => `Želite izbrisati shranjeni filter »${name}«?`,
+  },
   menu: {
     filter: 'Filter',
+    clearFilter: 'Počisti filter',
     newEvent: 'Nov dogodek',
   },
   colorize: {

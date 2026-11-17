@@ -145,8 +145,24 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     startPoint: 'Selezioni il punto di partenza',
     place: 'Selezioni il luogo',
   },
+  savedFilters: {
+    savedFilter: 'Filtro salvato',
+    dontSave: '— non salvare',
+    newFilter: 'Nuovo filtro salvato',
+    name: 'Nome',
+    notify: 'Invia via e-mail i nuovi eventi che corrispondono a questo filtro',
+    saveAndApply: 'Salva e applica',
+    periodWarning:
+      'Le e-mail includono solo gli eventi che, quando vengono aggiunti, iniziano entro il periodo. Un evento aggiunto prima non viene inviato quando la sua data rientra in seguito nel periodo.',
+    datesWarning:
+      'Le date fisse non vengono salvate: il filtro salvato comprende tutti gli eventi futuri. Per mantenere un intervallo, scelga invece un periodo.',
+    delete: 'Elimina',
+    deleteTitle: 'Elimina filtro salvato',
+    deleteMessage: ({ name }) => `Eliminare il filtro salvato «${name}»?`,
+  },
   menu: {
     filter: 'Filtro',
+    clearFilter: 'Rimuovi filtro',
     newEvent: 'Nuovo evento',
   },
   colorize: {
@@ -196,6 +212,9 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
       'Errore durante il salvataggio della sua partecipazione',
       err,
     ),
+  savedFilterError: ({ err }) =>
+    addError(getMessages()!, 'Errore durante il salvataggio del filtro', err),
+  savedFiltersFull: () => 'Si possono salvare al massimo 20 filtri.',
   loginToParticipate:
     'Acceda per indicare che è interessato o che parteciperà.',
   notSaid: 'Non indicato',

@@ -143,8 +143,24 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     startPoint: 'Válassza ki a kiindulópontot',
     place: 'Válassza ki a helyet',
   },
+  savedFilters: {
+    savedFilter: 'Mentett szűrő',
+    dontSave: '— nincs mentés',
+    newFilter: 'Új mentett szűrő',
+    name: 'Név',
+    notify: 'A szűrőnek megfelelő új események küldése e-mailben',
+    saveAndApply: 'Mentés és alkalmazás',
+    periodWarning:
+      'Az e-mailek csak azokat az eseményeket tartalmazzák, amelyek hozzáadásukkor az időszakon belül kezdődnek. Egy korábban hozzáadott eseményről nem kap e-mailt, amikor a dátuma később az időszakba kerül.',
+    datesWarning:
+      'A rögzített dátumok nem kerülnek mentésre: a mentett szűrő minden közelgő eseményre vonatkozik. A tartomány megtartásához válasszon inkább időszakot.',
+    delete: 'Törlés',
+    deleteTitle: 'Mentett szűrő törlése',
+    deleteMessage: ({ name }) => `Törli a(z) „${name}” mentett szűrőt?`,
+  },
   menu: {
     filter: 'Szűrő',
+    clearFilter: 'Szűrés megszüntetése',
     newEvent: 'Új esemény',
   },
   colorize: {
@@ -190,6 +206,9 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     ),
   participationError: ({ err }) =>
     addError(getMessages()!, 'Hiba a részvétel mentésekor', err),
+  savedFilterError: ({ err }) =>
+    addError(getMessages()!, 'Hiba a szűrő mentésekor', err),
+  savedFiltersFull: () => 'Legfeljebb 20 szűrő menthető.',
   loginToParticipate:
     'Jelentkezzen be, ha jelezni szeretné, hogy érdekli az esemény vagy részt vesz rajta.',
   notSaid: 'Nincs megadva',

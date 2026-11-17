@@ -12,6 +12,9 @@ export type EventsMessages = {
   newMapError: (props: { err: unknown }) => string;
   deleteError: (props: { err: unknown }) => string;
   participationError: (props: { err: unknown }) => string;
+  savedFilterError: (props: { err: unknown }) => string;
+  /** The API's limit on saved filters is reached. */
+  savedFiltersFull: (props: { err: unknown }) => string;
   loginToParticipate: string;
   difficulty: Record<Difficulty, string>;
   /** An optional choice left unanswered. */
@@ -81,6 +84,22 @@ export type EventsMessages = {
     own: string;
     imported: string;
   };
+  savedFilters: {
+    /** The select: don't save, save a new one, or edit one. */
+    savedFilter: string;
+    dontSave: string;
+    newFilter: string;
+    name: string;
+    notify: string;
+    saveAndApply: string;
+    /** With a period and emails: only events in it when added are mailed. */
+    periodWarning: string;
+    /** With fixed dates: those are not saved. */
+    datesWarning: string;
+    delete: string;
+    deleteTitle: string;
+    deleteMessage: (props: { name: string }) => string;
+  };
   /** What the details show. */
   card: {
     dogsWelcome: string;
@@ -121,6 +140,7 @@ export type EventsMessages = {
   };
   menu: {
     filter: string;
+    clearFilter: string;
     newEvent: string;
   };
   colorize: {
