@@ -5,7 +5,6 @@ import {
 import { Text } from '@features/l10n/Text.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { Chord } from '@shared/components/Chord.js';
-import { Emoji } from '@shared/components/Emoji.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
@@ -69,7 +68,7 @@ export function MainMenu(): ReactElement {
         <span className={classes.flags}>
           {flagItems.map(({ code, name, flag }) => (
             <span key={code} title={name}>
-              <Emoji>{flag}</Emoji>
+              {flag}
             </span>
           ))}
         </span>

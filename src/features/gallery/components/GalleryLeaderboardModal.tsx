@@ -319,7 +319,7 @@ export default function GalleryLeaderboardModal({ show }: Props): ReactElement {
                                     className="text-center"
                                   >
                                     <CountryFlag
-                                      className="w-6"
+                                      className={classes.flag}
                                       country={country}
                                     />
                                   </th>

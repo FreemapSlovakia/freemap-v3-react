@@ -30,6 +30,8 @@ import {
   syncStaticCache,
 } from '@shared/offlineStaticCache.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { polyfillCountryFlagEmojis } from 'country-flag-emoji-polyfill';
+import flagsFontUrl from 'country-flag-emoji-polyfill/dist/TwemojiCountryFlags.woff2';
 import storage from 'local-storage-fallback';
 import { createRoot } from 'react-dom/client';
 import { IconContext } from 'react-icons/lib';
@@ -60,6 +62,12 @@ import {
 } from './url/urlUpdating.js';
 
 window.localStorageFallback = storage;
+
+// Windows has no flag glyphs; the font is listed first in the font stacks
+// (index.scss, leaflet.css) and only loads where flags are missing.
+// TODO: a browser that perturbs canvas reads (Brave, anti-fingerprinting
+// extensions) can fail the polyfill's detection and keep letter pairs.
+polyfillCountryFlagEmojis('Twemoji Country Flags', flagsFontUrl);
 
 if (
   window.location.search === '?reset-local-storage' ||

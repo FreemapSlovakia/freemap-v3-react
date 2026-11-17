@@ -1,7 +1,25 @@
 @use "~bootstrap/scss/bootstrap" with (
   $enable-shadows: true,
   $enable-gradients: true,
-  $enable-negative-margins: true
+  $enable-negative-margins: true,
+  // Bootstrap's stack, with flag glyphs first where the system has none (see
+  // `polyfillCountryFlagEmojis` in `index.tsx`).
+  $font-family-sans-serif: (
+    "Twemoji Country Flags",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    "Noto Sans",
+    "Liberation Sans",
+    Arial,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji",
+  )
 );
 
 // The app's own tokens, all derived from Bootstrap's scales rather than typed as

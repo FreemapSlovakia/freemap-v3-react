@@ -1,3 +1,4 @@
+import { countryCodeToFlag } from '@shared/flags.js';
 import { type Language, languages } from '@shared/langUtils.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
 
@@ -21,13 +22,8 @@ const flagCountries: Partial<Record<Language, string>> = {
   sl: 'si',
 };
 
-function toFlag(language: Language): string {
-  const country = flagCountries[language] ?? language;
-
-  return String.fromCodePoint(
-    ...[...country.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 0x41),
-  );
-}
+const toFlag = (language: Language) =>
+  countryCodeToFlag(flagCountries[language] ?? language);
 
 // Menu order depends on the domain: freemap.sk leads with Slovak (home site)
 // then English; other domains (freemap.eu, …) lead with English. The remaining

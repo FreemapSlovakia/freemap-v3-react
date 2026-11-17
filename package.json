@@ -82,6 +82,7 @@
     "clsx": "^2.1.1",
     "color": "^5.0.3",
     "core-js": "^3.51.0",
+    "country-flag-emoji-polyfill": "^0.1.10",
     "delatin": "0.2.0",
     "exifreader": "^4.54.0",
     "fflate": "^0.8.3",

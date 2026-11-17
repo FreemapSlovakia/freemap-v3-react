@@ -1,4 +1,7 @@
 .leaflet-container {
+  /* Leaflet's own stack, with the flag font first (see `index.tsx`). */
+  font-family:
+    "Twemoji Country Flags", "Helvetica Neue", Arial, Helvetica, sans-serif;
   z-index: 1;
   position: absolute;
   left: 0;

@@ -24,4 +24,8 @@
   .separ {
     border-top-width: 2px;
   }
+
+  .flag {
+    font-size: 1.5rem;
+  }
 }

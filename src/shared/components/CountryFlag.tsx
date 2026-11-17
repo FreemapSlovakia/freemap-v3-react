@@ -1,12 +1,13 @@
-import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { GlyphMarker } from '@shared/components/GlyphMarker.js';
+import { countryCodeToFlag } from '@shared/flags.js';
 import { regionName, useRegionNames } from '@shared/hooks/useRegionNames.js';
+import clsx from 'clsx';
 import type { ReactElement } from 'react';
 
 type Props = {
   /** ISO 3166-1 alpha-2 code, in either case. */
   country: string;
-  /** Class for the flag image itself — its width comes from here. */
+  /** Class for the flag itself — a font-size class sizes it. */
   className?: string;
 };
 
@@ -20,7 +21,10 @@ export function CountryFlag({ country, className }: Props): ReactElement {
 
   return (
     <GlyphMarker hint={name} color={null}>
-      <Emoji className={className}>{countryCodeToFlag(country)}</Emoji>
+      {/* `.fm-glyph` zeroes the line height, which suits only an icon. */}
+      <span className={clsx('lh-1', className)}>
+        {countryCodeToFlag(country)}
+      </span>
     </GlyphMarker>
   );
 }

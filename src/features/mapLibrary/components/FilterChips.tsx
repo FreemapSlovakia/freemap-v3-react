@@ -1,12 +1,12 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useMapSettingsMessages } from '@features/mapSettings/translations/useMapSettingsMessages.js';
 import { CUSTOM_MAP_ICONS } from '@shared/components/CustomMapGlyph.js';
-import { countryCodeToFlag, Emoji } from '@shared/components/Emoji.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { LAYER_KIND_ICONS } from '@shared/components/MapLayerItem.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { SelectToggle } from '@shared/components/SelectToggle.js';
+import { countryCodeToFlag } from '@shared/flags.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { regionName, useRegionNames } from '@shared/hooks/useRegionNames.js';
 import { flaggedCountries } from '@shared/mapDefinitions.js';
@@ -300,15 +300,13 @@ export function FilterCountry({
     .map((code) => ({ code, name: nameOf(code) }))
     .sort((a, b) => a.name.localeCompare(b.name, language));
 
-  const flag = (code: string) => <Emoji>{countryCodeToFlag(code)}</Emoji>;
-
   return (
     <FilterRow label={label}>
       <Dropdown onSelect={(code) => onChange(code ?? '')}>
         <Dropdown.Toggle as={SelectToggle} className="form-select-sm w-auto">
           {value ? (
             <>
-              {flag(value)} {nameOf(value)}
+              {countryCodeToFlag(value)} {nameOf(value)}
             </>
           ) : (
             anyLabel
@@ -328,7 +326,7 @@ export function FilterCountry({
               eventKey={code}
               active={value === code}
             >
-              {flag(code)}
+              <span>{countryCodeToFlag(code)}</span>
               <MenuLabel>{nameOf(code)}</MenuLabel>
             </Dropdown.Item>
           ))}
