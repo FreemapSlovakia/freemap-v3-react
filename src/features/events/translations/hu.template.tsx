@@ -89,7 +89,8 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     importedNote: ({ source }) => (
       <>
         Ez az esemény a(z) {source} naptárából származik; sem a szervezője, sem
-        a résztvevők többsége nem követi itt.
+        a résztvevők többsége nem követi itt, és a hozzászólásokat sem olvassák.
+        Elérhetőséget a leírás végén hivatkozott forrásoldalon talál.
       </>
     ),
   },

@@ -20,29 +20,38 @@ export const gallerySubmitCommentProcessor: Processor = {
 
     const { id } = image;
 
+    const { comment } = getState().gallery;
+
+    if (!comment.trim()) {
+      return;
+    }
+
     trackMatomo(['trackEvent', 'Gallery', 'submitComment']);
+
+    // At once, so a second press finds nothing to post; back if it fails.
+    dispatch(gallerySetComment(''));
 
     try {
       await httpRequest({
         getState,
         method: 'POST',
         url: `/gallery/pictures/${pictureIdToPath(id)}/comments`,
-        data: {
-          comment: getState().gallery.comment,
-          webBaseUrl: location.origin,
-        },
+        data: { comment, webBaseUrl: location.origin },
         expectedStatus: 200,
       });
     } catch (err) {
+      const { gallery } = getState();
+
+      if (gallery.activeImageId === id && !gallery.comment) {
+        dispatch(gallerySetComment(comment));
+      }
+
       await toastError(err, loadGalleryMessages, 'commentAddingError');
 
       return;
     }
 
     if (getState().gallery.activeImageId === id) {
-      // Posted: the re-fetch of the same photo keeps what is typed.
-      dispatch(gallerySetComment(''));
-
       dispatch(galleryRequestImage(id));
     }
   },

@@ -103,6 +103,7 @@ export type EventsMessages = {
     goingCount: string;
   };
   selection: {
+    discussion: string;
     backToEvents: string;
     interested: string;
     going: string;

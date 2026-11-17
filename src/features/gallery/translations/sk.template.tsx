@@ -57,8 +57,6 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fotografia',
     imageUnavailable: 'Obrázok nie je dostupný',
     comments: 'Komentáre',
-    newComment: 'Nový komentár',
-    addComment: 'Pridať',
     yourRating: 'Vaše hodnotenie:',
     showOnTheMap: 'Ukázať na mape',
     uploadedBy: 'Nahral',
@@ -79,7 +77,6 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'Túto fotografiu sprístupnil jej autor len používateľom s prémiovým prístupom.',
     premiumPhoto: 'Táto fotografia je prémiový obsah.',
-    noComments: 'Bez komentára',
     commentsNotMailed:
       'O nových komentároch nebudete notifikovaní e-mailom: váš účet nemá potvrdenú e-mailovú adresu.',
     commentsNotMailedNoEmail:

@@ -108,7 +108,8 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     importedNote: ({ source }) => (
       <>
         Dogodek je prevzet iz koledarja {source}; niti njegov organizator niti
-        večina udeležencev ga tukaj ne spremlja.
+        večina udeležencev ga tukaj ne spremlja niti ne bere njegove razprave.
+        Kontakt najdete na izvorni strani, na katero se povezuje konec opisa.
       </>
     ),
   },

@@ -16,6 +16,9 @@ import { Overlay, Tooltip } from 'react-bootstrap';
 
 const InTooltip = createContext(false);
 
+// Targets whose block padding is an invisible hit area, not a drawn box.
+const HIT_AREA = '.fm-marker-target, .fm-hint-target';
+
 // Lets a nested tooltip's target (a badge on a button) hide the enclosing one.
 const SuppressParent = createContext<((active: boolean) => void) | null>(null);
 
@@ -126,6 +129,9 @@ export function LongPressTooltip({
   // The same, readable from a handler of the gesture that set it.
   const coarseRef = useRef(false);
 
+  // The target's padding where it is only a hit area, taken off a mouse's gap.
+  const [inset, setInset] = useState(0);
+
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const matches = useBreakpointMatches();
@@ -144,6 +150,14 @@ export function LongPressTooltip({
       coarseRef.current = isCoarse;
 
       setCoarse(isCoarse);
+
+      const el = e.currentTarget as HTMLElement;
+
+      setInset(
+        !isCoarse && el.matches(HIT_AREA)
+          ? Number.parseFloat(getComputedStyle(el).paddingTop) || 0
+          : 0,
+      );
 
       suppressParent?.(true);
 
@@ -221,10 +235,15 @@ export function LongPressTooltip({
       name
     );
 
-  // Undefined for a mouse, so the tooltip keeps Bootstrap's own offset.
+  // Undefined for a mouse on a plain control, so it keeps Bootstrap's own offset.
   const offset = useMemo(
-    () => (coarse ? ([0, 30] as [number, number]) : undefined),
-    [coarse],
+    (): [number, number] | undefined =>
+      coarse
+        ? [0, 30]
+        : inset
+          ? [0, (Tooltip.TOOLTIP_OFFSET[1] ?? 0) - inset]
+          : undefined,
+    [coarse, inset],
   );
 
   // Near the top edge the preferred `top` placement flips, and for a finger

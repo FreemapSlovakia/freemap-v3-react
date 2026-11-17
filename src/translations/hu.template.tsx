@@ -224,6 +224,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'ÉNy',
   },
 
+  comments: {
+    none: 'Nincs hozzászólás',
+    placeholder: 'Új hozzászólás',
+    add: 'Hozzáadás',
+    edited: 'szerkesztve',
+    deleted: 'A hozzászólás törölve',
+    removedByOwner: {
+      event: 'A szervező eltávolította',
+      picture: 'A fotó szerzője eltávolította',
+    },
+    removedByModerator: 'Egy moderátor eltávolította',
+    deleteTitle: 'Hozzászólás törlése',
+    deleteMessage: 'Törli ezt a hozzászólást? A szövege nem állítható vissza.',
+  },
+
   selections: {
     drawPoints: 'Pont',
     drawLines: 'Vonal',

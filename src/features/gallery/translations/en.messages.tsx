@@ -55,8 +55,6 @@ const en: GalleryMessages = {
     title: 'Photo',
     imageUnavailable: 'Image unavailable',
     comments: 'Comments',
-    newComment: 'New comment',
-    addComment: 'Add',
     yourRating: 'Your rating:',
     showOnTheMap: 'Show on the map',
     uploadedBy: 'Uploaded by',
@@ -77,7 +75,6 @@ const en: GalleryMessages = {
     premiumOnly:
       'This photo has been made available by its author only to users with premium access.',
     premiumPhoto: 'This photo is premium content.',
-    noComments: 'No comments',
     commentsNotMailed:
       'You will not get an email about new comments here: your account has no confirmed email address.',
     commentsNotMailedNoEmail:

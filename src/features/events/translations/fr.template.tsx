@@ -98,7 +98,9 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
     importedNote: ({ source }) => (
       <>
         Cet événement est importé du calendrier {source} ; ni son organisateur
-        ni la plupart de ses participants ne le suivent ici.
+        ni la plupart de ses participants ne le suivent ici ni ne lisent sa
+        discussion. Vous trouverez un contact sur la page source, liée à la fin
+        de la description.
       </>
     ),
   },

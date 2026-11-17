@@ -107,7 +107,8 @@ const en: EventsMessages = {
     importedNote: ({ source }) => (
       <>
         This event is imported from the {source} calendar; neither its organizer
-        nor most of its participants follow it here.
+        nor most of its participants follow it here or read its discussion. For
+        a contact, see the source page linked at the end of the description.
       </>
     ),
   },
@@ -140,6 +141,7 @@ const en: EventsMessages = {
     },
   },
   selection: {
+    discussion: 'Discussion',
     backToEvents: 'Back to events',
     interested: 'Interested',
     going: 'Going',

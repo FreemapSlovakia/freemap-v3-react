@@ -462,6 +462,11 @@ button#freemap-logo {
   text-underline-offset: 0.2em;
 }
 
+/* An inline target's hit area; `LongPressTooltip` takes it off a mouse's gap. */
+.fm-hint-target {
+  padding-block: var(--fm-space-2);
+}
+
 .fm-ellipsis {
   max-width: 100%;
   overflow: hidden;

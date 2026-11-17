@@ -150,6 +150,70 @@ function phones(text: string, link: LinkRenderer): ReactNode {
   return parts;
 }
 
+// A web address, with or without its scheme, or an email address; letters are
+// Unicode's, so `jána@kst.sk` is one address.
+const ADDRESS_RE =
+  /(?:https?:\/\/|\bwww\.)[^\s<>"]+|[\p{L}\p{N}._%+-]+@[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)+/giu;
+
+const count = (s: string, ch: string) => s.split(ch).length - 1;
+
+/** Drops punctuation that ends the sentence rather than the address. */
+function trimAddress(match: string): string {
+  let address = match;
+
+  for (;;) {
+    const ch = address.at(-1) ?? '';
+
+    // A `)` stays where it closes one opened inside, as in a Wikipedia URL.
+    const trailing =
+      ch === ')'
+        ? count(address, '(') < count(address, ')')
+        : '.,;:!?\'"»”’]}'.includes(ch);
+
+    if (!ch || !trailing) {
+      return address;
+    }
+
+    address = address.slice(0, -1);
+  }
+}
+
+function addressHref(address: string): string {
+  return /^https?:/i.test(address)
+    ? address
+    : /^www\./i.test(address)
+      ? `https://${address}`
+      : `mailto:${address}`;
+}
+
+/**
+ * Plain text, nothing interpreted but its web and email addresses and phone
+ * numbers, which become links. Line breaks are the container's to keep.
+ */
+export function LinkedText({ text, link = defaultLink }: Props): ReactElement {
+  const parts: ReactNode[] = [];
+
+  let last = 0;
+
+  for (const m of text.matchAll(ADDRESS_RE)) {
+    const address = trimAddress(m[0]);
+
+    parts.push(phones(text.slice(last, m.index), link));
+
+    parts.push(
+      <Fragment key={m.index}>
+        {link({ href: addressHref(address), children: address })}
+      </Fragment>,
+    );
+
+    last = m.index + address.length;
+  }
+
+  parts.push(phones(text.slice(last), link));
+
+  return <>{parts}</>;
+}
+
 function inline(tokens: Token[] | undefined, link: LinkRenderer): ReactNode {
   return tokens?.map((t, i) => {
     const token = t as MarkedToken;

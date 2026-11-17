@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { CommentSchema } from '@shared/comments.js';
 import { IsoDateSchema, type LatLon } from '@shared/types/common.js';
 import z from 'zod';
 import type { PictureModel } from '../components/GalleryEditForm.js';
@@ -77,15 +78,6 @@ const PictureUserSchema = z.object({
   premium: z.boolean(),
 });
 
-export const PictureCommentSchema = z.object({
-  id: z.number(),
-  createdAt: IsoDateSchema,
-  user: PictureUserSchema,
-  comment: z.string(),
-});
-
-export type PictureComment = z.infer<typeof PictureCommentSchema>;
-
 export const PictureSchema = z.object({
   id: z.number(),
   // 'gallery' (own photo) or 'wikimedia' (Commons). Absent → gallery.
@@ -96,7 +88,7 @@ export const PictureSchema = z.object({
   // Absent for Wikimedia photos (fetched from the Commons API instead).
   description: z.string().nullish(),
   tags: z.array(z.string()),
-  comments: z.array(PictureCommentSchema),
+  comments: z.array(CommentSchema),
   rating: z.number(),
   myStars: z.number().nullish(),
   // Absent for Wikimedia photos (no local uploader).
@@ -207,6 +199,15 @@ export const gallerySetUsers = createAction<GalleryUser[]>('GALLERY_SET_USERS');
 export const gallerySetComment = createAction<string>('GALLERY_SET_COMMENT');
 
 export const gallerySubmitComment = createAction('GALLERY_SUBMIT_COMMENT');
+
+export const galleryEditComment = createAction<{
+  id: number;
+  comment: string;
+}>('GALLERY_EDIT_COMMENT');
+
+export const galleryDeleteComment = createAction<number>(
+  'GALLERY_DELETE_COMMENT',
+);
 
 export const gallerySubmitStars = createAction<number>('GALLERY_SUBMIT_STARS');
 

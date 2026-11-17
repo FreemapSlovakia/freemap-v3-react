@@ -134,12 +134,17 @@ from the selection toolbar (**Edit**).
   `GET /events/{id}/participants`, going first, each by when they said so.
   Web: loaded whenever the selected event is set or refreshed; the going
   and the interested under the details, as user chips.
-- [ ] **Discussion.** API: an `eventComment` table, list and post (and the
-  author or a moderator deleting), as the photo comments. Web: the thread
-  in the panel, newest last, posting for logged-in users. On an imported
-  event (`imported`: harvested and still on the calendar's account) it
-  stays, for users among themselves, under a warning that the organizer
-  doesn't read it and is asked through the source.
+- [x] **Discussion**, shared with the photo comments. API: an
+  `eventComment` table; `src/comments.ts` lists, edits and deletes for it,
+  `pictureComment` and `wikimediaComment` alike. Its author edits a comment
+  within an hour (`editedAt`, shown as "edited"); its author, the owner
+  (organizer or uploader) or a moderator (`eventManager`,
+  `galleryModerator`) deletes it, leaving a placeholder with its time and
+  `deletedBy` but no text or author. No edit history. Web: one
+  `shared/components/CommentThread` in the gallery viewer and the event's
+  panel, oldest first, posting for logged-in users. On an imported event
+  it stays, for users among themselves; the event's one warning says the
+  organizer doesn't read it. Reloaded with the event, not live.
 - [x] **Imported events told apart**: `imported` on the event (a `sourceKey`,
   and an owner with no way to log in, so one handed to the club's real
   account is its own again); a warning under Interested/Going, and the
@@ -238,6 +243,12 @@ from the selection toolbar (**Edit**).
   day, whatever the filter, linked.
 - [ ] **Copy link** on the event.
 - [ ] Follows and the _Who_ filter.
+- [ ] **Blocking a user**: their comments hidden from the one who blocks
+  them, and no commenting on or joining that user's events and photos. A
+  `userBlock` table, checked in the comment and participation routes.
+- [ ] **Live threads**, if discussions get busy (on an event's day): a
+  "thread changed" message over SSE, the API's channel once the WebSocket
+  goes.
 - [ ] **Who sees the participants**: public to anyone who can open the event
   for now; once there are follows, narrow it to the people one follows,
   or as Facebook events do it.

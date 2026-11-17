@@ -111,7 +111,8 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     importedNote: ({ source }) => (
       <>
         Akcia je prevzatá z kalendára {source}; jej organizátor ani väčšina
-        účastníkov ju tu nesledujú.
+        účastníkov ju tu nesledujú ani nečítajú jej diskusiu. Kontakt nájdete na
+        zdrojovej stránke, na ktorú odkazuje koniec popisu.
       </>
     ),
   },
@@ -144,6 +145,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     },
   },
   selection: {
+    discussion: 'Diskusia',
     backToEvents: 'Späť na akcie',
     interested: 'Mám záujem',
     going: 'Prídem',

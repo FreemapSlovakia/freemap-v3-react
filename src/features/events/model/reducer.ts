@@ -1,15 +1,19 @@
 import { setActiveModal } from '@app/store/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
+import type { Comment } from '@shared/comments.js';
 import {
   type EventItem,
   type EventParticipant,
   type EventPoint,
   type EventSummary,
+  eventsCommentSaved,
   eventsConfirmPick,
   eventsOpen,
   eventsOpenDone,
   eventsSave,
   eventsSaveDone,
+  eventsSetCommentDraft,
+  eventsSetComments,
   eventsSetFilter,
   eventsSetList,
   eventsSetParticipants,
@@ -28,6 +32,9 @@ export interface EventsState {
   selected: EventItem | null;
   /** Who is going to the selected event and who is interested. */
   participants: { eventId: string; items: EventParticipant[] } | null;
+  /** The selected event's discussion, oldest first. */
+  comments: { eventId: string; items: Comment[] } | null;
+  commentDraft: { eventId: string; text: string } | null;
   /** The event whose map is loading, to select again once it has. */
   opening: { id: string; mapId: string } | null;
   pickingStart: boolean;
@@ -45,6 +52,8 @@ const initialState: EventsState = {
   filter: {},
   selected: null,
   participants: null,
+  comments: null,
+  commentDraft: null,
   opening: null,
   pickingStart: false,
   pickPosition: null,
@@ -66,6 +75,27 @@ export const eventsReducer = createReducer(initialState, (builder) => {
     })
     .addCase(eventsSetParticipants, (state, { payload }) => {
       state.participants = payload;
+    })
+    .addCase(eventsSetComments, (state, { payload }) => {
+      state.comments = payload;
+    })
+    .addCase(eventsCommentSaved, (state, { payload }) => {
+      if (state.comments?.eventId !== payload.eventId) {
+        return;
+      }
+
+      const { items } = state.comments;
+
+      const i = items.findIndex((c) => c.id === payload.comment.id);
+
+      if (i === -1) {
+        items.push(payload.comment);
+      } else {
+        items[i] = payload.comment;
+      }
+    })
+    .addCase(eventsSetCommentDraft, (state, { payload }) => {
+      state.commentDraft = payload;
     })
     .addCase(eventsOpen, (state, { payload }) => {
       state.opening = { id: payload.id, mapId: payload.mapId };

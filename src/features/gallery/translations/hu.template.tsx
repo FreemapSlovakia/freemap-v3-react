@@ -59,8 +59,6 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fénykép',
     imageUnavailable: 'A kép nem érhető el',
     comments: 'Hozzászólások',
-    newComment: 'Új hozzászólás',
-    addComment: 'Hozzáadás',
     yourRating: 'Az Ön értékelése:',
     showOnTheMap: 'Megjelenítés a térképen',
     uploadedBy: 'Feltöltötte:',
@@ -81,7 +79,6 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'Ezt a fényképet a szerzője csak prémium hozzáféréssel rendelkező felhasználók számára tette elérhetővé.',
     premiumPhoto: 'Ez a fénykép prémium tartalom.',
-    noComments: 'Nincs hozzászólás',
     commentsNotMailed:
       'Az itteni új hozzászólásokról nem kap e-mailt: fiókjában nincs megerősített e-mail-cím.',
     commentsNotMailedNoEmail:

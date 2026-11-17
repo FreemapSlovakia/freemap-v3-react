@@ -66,6 +66,11 @@ import {
   eventsOpenProcessor,
   eventsParticipantsProcessor,
 } from '@features/events/model/processors/eventSelectionProcessors.js';
+import {
+  eventsCommentChangeProcessor,
+  eventsCommentPostProcessor,
+  eventsCommentsLoadProcessor,
+} from '@features/events/model/processors/eventsCommentsProcessors.js';
 import { eventsDeleteProcessor } from '@features/events/model/processors/eventsDeleteProcessor.js';
 import {
   eventsLayerOnProcessor,
@@ -74,6 +79,7 @@ import {
 import { eventsParticipationProcessor } from '@features/events/model/processors/eventsParticipationProcessor.js';
 import { eventsSaveProcessor } from '@features/events/model/processors/eventsSaveProcessor.js';
 import { galleryAllOfLicenseProcessor } from '@features/gallery/model/processors/galleryAllOfLicenseProcessor.js';
+import { galleryCommentChangeProcessor } from '@features/gallery/model/processors/galleryCommentChangeProcessor.js';
 import { galleryDeletePictureProcessor } from '@features/gallery/model/processors/galleryDeletePictureProcessor.js';
 import { galleryFetchUsersProcessor } from '@features/gallery/model/processors/galleryFetchUsersProcessor.js';
 import { galleryItemUploadProcessor } from '@features/gallery/model/processors/galleryItemUploadProcessor.js';
@@ -317,6 +323,7 @@ export const processors = [
   galleryShowOnTheMapProcessor,
   gallerySetItemForPositionPickingProcessor,
   gallerySubmitCommentProcessor,
+  galleryCommentChangeProcessor,
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
   galleryQuickAddTagProcessor,
@@ -359,6 +366,9 @@ export const processors = [
   eventsParticipationProcessor,
   eventSelectionProcessor,
   eventsParticipantsProcessor,
+  eventsCommentsLoadProcessor,
+  eventsCommentPostProcessor,
+  eventsCommentChangeProcessor,
   eventsLayerOffProcessor,
   eventsOpenProcessor,
   eventsOpenedProcessor,

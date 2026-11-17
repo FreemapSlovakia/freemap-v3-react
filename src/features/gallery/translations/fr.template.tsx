@@ -59,8 +59,6 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
       ),
     title: 'Photo',
     comments: 'Commentaires',
-    newComment: 'Nouveau commentaire',
-    addComment: 'Ajouter',
     yourRating: 'Votre note :',
     showOnTheMap: 'Afficher sur la carte',
     deleteTitle: 'Suppression de la photo',
@@ -68,7 +66,6 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'Cette photo n’a été rendue disponible par son auteur qu’aux utilisateurs disposant d’un accès premium.',
     premiumPhoto: 'Cette photo est un contenu premium.',
-    noComments: 'Aucun commentaire',
     commentsNotMailed:
       'Vous ne recevrez pas d’e-mail pour les nouveaux commentaires ici : votre compte n’a pas d’adresse e-mail confirmée.',
     commentsNotMailedNoEmail:

@@ -51,8 +51,6 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Foto',
     imageUnavailable: 'Bild nicht verfügbar',
     comments: 'Kommentare',
-    newComment: 'Neuer Kommentar',
-    addComment: 'Hinzufügen',
     yourRating: 'Ihre Bewertung:',
     showOnTheMap: 'Auf der Karte anzeigen',
     uploadedBy: 'Hochgeladen von',
@@ -73,7 +71,6 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'Dieses Foto wurde vom Autor nur für Nutzer mit Premium-Zugang freigegeben.',
     premiumPhoto: 'Dieses Foto ist Premium-Inhalt.',
-    noComments: 'Keine Kommentare',
     commentsNotMailed:
       'Über neue Kommentare hier erhalten Sie keine E-Mail: Ihr Konto hat keine bestätigte E-Mail-Adresse.',
     commentsNotMailedNoEmail:

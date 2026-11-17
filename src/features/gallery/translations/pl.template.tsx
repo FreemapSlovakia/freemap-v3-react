@@ -50,8 +50,6 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Zdjęcie',
     imageUnavailable: 'Obraz niedostępny',
     comments: 'Komentarze',
-    newComment: 'Nowy komentarz',
-    addComment: 'Dodaj',
     yourRating: 'Moja ocena:',
     showOnTheMap: 'Pokaż na mapie',
     uploadedBy: 'Przesłał',
@@ -72,7 +70,6 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'To zdjęcie zostało udostępnione przez autora tylko użytkownikom z dostępem premium.',
     premiumPhoto: 'To zdjęcie to treść premium.',
-    noComments: 'Brak komentarzy',
     commentsNotMailed:
       'Powiadomienia o nowych komentarzach nie będą tu wysyłane: konto nie ma potwierdzonego adresu email.',
     commentsNotMailedNoEmail:

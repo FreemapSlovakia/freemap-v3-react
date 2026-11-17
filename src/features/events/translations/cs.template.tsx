@@ -103,7 +103,8 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     importedNote: ({ source }) => (
       <>
         Akce je převzatá z kalendáře {source}; její pořadatel ani většina
-        účastníků ji tu nesledují.
+        účastníků ji tu nesledují ani nečtou její diskusi. Kontakt najdete na
+        zdrojové stránce, na kterou odkazuje konec popisu.
       </>
     ),
   },

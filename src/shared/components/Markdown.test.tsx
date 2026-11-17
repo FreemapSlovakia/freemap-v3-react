@@ -1,8 +1,45 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { Markdown } from './Markdown.js';
+import { LinkedText, Markdown } from './Markdown.js';
 
 const html = (text: string) => renderToStaticMarkup(<Markdown text={text} />);
+
+const linked = (text: string) =>
+  renderToStaticMarkup(<LinkedText text={text} />);
+
+describe('LinkedText', () => {
+  it('links addresses and leaves Markdown as typed', () => {
+    expect(linked('**see** https://example.com/a.')).toBe(
+      '**see** <a href="https://example.com/a" target="_blank" rel="noopener noreferrer">https://example.com/a</a>.',
+    );
+  });
+
+  it('links www, email and phone numbers', () => {
+    const out = linked('www.kct.cz, info@kstdk.sk or 0908 479 116');
+
+    expect(out).toContain('<a href="https://www.kct.cz"');
+
+    expect(out).toContain('<a href="mailto:info@kstdk.sk">info@kstdk.sk</a>');
+
+    expect(linked('napíšte na jána@kst.sk')).toContain(
+      '<a href="mailto:jána@kst.sk">jána@kst.sk</a>',
+    );
+
+    expect(out).toContain('<a href="tel:+421908479116">');
+  });
+
+  it("keeps a URL's own closing parenthesis, not the sentence's", () => {
+    const out = linked(
+      '(https://en.wikipedia.org/wiki/Tatra_(mountains)) and (https://a.sk)',
+    );
+
+    expect(out).toContain(
+      'href="https://en.wikipedia.org/wiki/Tatra_(mountains)"',
+    );
+
+    expect(out).toContain('href="https://a.sk"');
+  });
+});
 
 describe('Markdown', () => {
   it('reads plain text as itself, line breaks kept', () => {

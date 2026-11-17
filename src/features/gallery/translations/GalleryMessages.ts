@@ -46,8 +46,6 @@ export type GalleryMessages = {
     title: string;
     imageUnavailable: string;
     comments: string;
-    newComment: string;
-    addComment: string;
     yourRating: string;
     showOnTheMap: string;
     /** Labels set before their value: the uploader, the date, the count. */
@@ -61,7 +59,6 @@ export type GalleryMessages = {
     modify: string;
     premiumOnly: string;
     premiumPhoto: string;
-    noComments: string;
     // Shown when commenting a Wikimedia photo: only own-gallery authors get
     // notified.
     wikimediaCommentNotNotified: string;

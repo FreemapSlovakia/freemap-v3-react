@@ -57,8 +57,6 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fotografija',
     imageUnavailable: 'Slika ni na voljo',
     comments: 'Komentarji',
-    newComment: 'Nov komentar',
-    addComment: 'Dodaj',
     yourRating: 'Vaša ocena:',
     showOnTheMap: 'Prikaži na zemljevidu',
     uploadedBy: 'Naložil',
@@ -79,7 +77,6 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'To fotografijo je avtor dal na voljo samo uporabnikom s premium dostopom.',
     premiumPhoto: 'Ta fotografija je vsebina premium.',
-    noComments: 'Ni komentarjev',
     commentsNotMailed:
       'O novih komentarjih tukaj ne boste prejeli e-pošte: vaš račun nima potrjenega e-poštnega naslova.',
     commentsNotMailedNoEmail:

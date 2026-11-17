@@ -217,6 +217,21 @@ const messages: Messages = {
     nw: 'NW',
   },
 
+  comments: {
+    none: 'No comments',
+    placeholder: 'New comment',
+    add: 'Add',
+    edited: 'edited',
+    deleted: 'Comment deleted',
+    removedByOwner: {
+      event: 'Removed by the organizer',
+      picture: "Removed by the photo's author",
+    },
+    removedByModerator: 'Removed by a moderator',
+    deleteTitle: 'Delete comment',
+    deleteMessage: 'Delete this comment? Its text cannot be restored.',
+  },
+
   selections: {
     drawPoints: 'Point',
     drawLines: 'Line',

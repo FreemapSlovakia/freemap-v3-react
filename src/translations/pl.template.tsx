@@ -219,6 +219,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'NW',
   },
 
+  comments: {
+    none: 'Brak komentarzy',
+    placeholder: 'Nowy komentarz',
+    add: 'Dodaj',
+    edited: 'edytowano',
+    deleted: 'Komentarz usunięty',
+    removedByOwner: {
+      event: 'Usunięty przez organizatora',
+      picture: 'Usunięty przez autora zdjęcia',
+    },
+    removedByModerator: 'Usunięty przez moderatora',
+    deleteTitle: 'Usuń komentarz',
+    deleteMessage: 'Usunąć ten komentarz? Jego treści nie da się przywrócić.',
+  },
+
   selections: {
     drawPoints: 'Punkt',
     drawLines: 'Linia',

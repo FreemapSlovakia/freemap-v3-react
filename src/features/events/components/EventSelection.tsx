@@ -3,11 +3,16 @@ import {
   selectFeature,
   setActiveModal,
 } from '@app/store/actions.js';
+import { hasRole } from '@features/auth/model/types.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { useAskLoadMerge } from '@features/myMaps/hooks/useAskLoadMerge.js';
 import { mapsDisconnect } from '@features/myMaps/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  CommentComposer,
+  CommentThread,
+} from '@shared/components/CommentThread.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
@@ -38,7 +43,11 @@ import { useDispatch } from 'react-redux';
 import {
   type EventItem,
   eventsDelete,
+  eventsDeleteComment,
+  eventsEditComment,
   eventsOpen,
+  eventsPostComment,
+  eventsSetCommentDraft,
   eventsSetParticipation,
 } from '../model/actions.js';
 import { EventsListTraitSchema } from '../model/listSort.js';
@@ -88,9 +97,55 @@ export default function EventSelection(): ReactElement | null {
           />
 
           <EventParticipants event={event} />
+
+          <EventComments event={event} />
         </>
       )}
     </DockPanel>
+  );
+}
+
+function EventComments({ event }: { event: EventItem }): ReactElement {
+  const dispatch = useDispatch();
+
+  const em = useEventsMessages();
+
+  const user = useAppSelector((state) => state.auth.user);
+
+  const comments = useAppSelector((state) => state.events.comments);
+
+  const draft = useAppSelector((state) => state.events.commentDraft);
+
+  const online = useOnline();
+
+  return (
+    <>
+      <hr />
+
+      <h6 className="fw-semibold">{em?.selection.discussion}</h6>
+
+      <CommentThread
+        key={event.id}
+        comments={comments?.eventId === event.id ? comments.items : undefined}
+        ownerKind="event"
+        ownerId={event.user.id}
+        moderator={hasRole(user, 'eventManager')}
+        disabled={!online}
+        onEdit={(id, comment) => dispatch(eventsEditComment({ id, comment }))}
+        onDelete={(id) => dispatch(eventsDeleteComment(id))}
+      />
+
+      {user && (
+        <CommentComposer
+          value={draft?.eventId === event.id ? draft.text : ''}
+          onChange={(text) =>
+            dispatch(eventsSetCommentDraft({ eventId: event.id, text }))
+          }
+          onSubmit={() => dispatch(eventsPostComment())}
+          disabled={!online}
+        />
+      )}
+    </>
   );
 }
 

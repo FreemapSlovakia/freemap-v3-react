@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import type { Comment } from '@shared/comments.js';
 import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
 import type { EventsColorizeBy } from './colorize.js';
@@ -187,6 +188,36 @@ export const eventsSetParticipants = createAction<{
   eventId: string;
   items: EventParticipant[];
 }>('EVENTS_SET_PARTICIPANTS');
+
+/** An event's discussion, as loaded for its panel. */
+export const eventsSetComments = createAction<{
+  eventId: string;
+  items: Comment[];
+}>('EVENTS_SET_COMMENTS');
+
+/** A comment posted, edited or deleted: put in place, or added to the end. */
+export const eventsCommentSaved = createAction<{
+  eventId: string;
+  comment: Comment;
+}>('EVENTS_COMMENT_SAVED');
+
+/** The comment being written on an event. */
+export const eventsSetCommentDraft = createAction<{
+  eventId: string;
+  text: string;
+} | null>('EVENTS_SET_COMMENT_DRAFT');
+
+/** Posts the draft to the selected event. */
+export const eventsPostComment = createAction('EVENTS_POST_COMMENT');
+
+export const eventsEditComment = createAction<{
+  id: number;
+  comment: string;
+}>('EVENTS_EDIT_COMMENT');
+
+export const eventsDeleteComment = createAction<number>(
+  'EVENTS_DELETE_COMMENT',
+);
 
 /** Loads an event's linked map into the user's own, appended or replacing it. */
 export const eventsOpen = createAction<{

@@ -58,8 +58,6 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     title: 'Fotografie',
     imageUnavailable: 'Obrázek není dostupný',
     comments: 'Komentáře',
-    newComment: 'Nový komentář',
-    addComment: 'Přidej',
     yourRating: 'Tvé hodnocení:',
     showOnTheMap: 'Ukázat na mapě',
     uploadedBy: 'Nahrál',
@@ -80,7 +78,6 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     premiumOnly:
       'Tuto fotografii zpřístupnil její autor pouze uživatelům s prémiovým přístupem.',
     premiumPhoto: 'Tato fotografie je prémiový obsah.',
-    noComments: 'Bez komentáře',
     commentsNotMailed:
       'O nových komentářích nebudete notifikováni e-mailem: váš účet nemá potvrzenou e-mailovou adresu.',
     commentsNotMailedNoEmail:

@@ -14,6 +14,10 @@ import {
   getMinWidthForBreakpoint,
   useBreakpointMatches,
 } from '@shared/breakpoints.js';
+import {
+  CommentComposer,
+  CommentThread,
+} from '@shared/components/CommentThread.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
@@ -41,15 +45,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  Alert,
-  Badge,
-  Button,
-  Dropdown,
-  Form,
-  InputGroup,
-  Spinner,
-} from 'react-bootstrap';
+import { Alert, Badge, Button, Dropdown, Form, Spinner } from 'react-bootstrap';
 import {
   FaCamera,
   FaEllipsisV,
@@ -71,7 +67,9 @@ import { Rating } from 'react-simple-star-rating';
 import { getPhotoLicense, LicenseBadge } from '../licenses.js';
 import {
   galleryClear,
+  galleryDeleteComment,
   galleryDeletePicture,
+  galleryEditComment,
   galleryEditPicture,
   galleryQuickAddTag,
   galleryQuickChangePremium,
@@ -198,7 +196,7 @@ function DetailMark({
       toggleOnClick
     >
       {({ props, labelClassName }) => (
-        <span {...props} className="py-2 text-nowrap">
+        <span {...props} className="fm-hint-target text-nowrap">
           {icon}
           <span
             className={clsx(labelClassName, 'ms-1', hint != null && 'fm-hint')}
@@ -441,15 +439,6 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     [dispatch, imageIds],
   );
 
-  const handleCommentFormSubmit = useCallback(
-    (e: SubmitEvent) => {
-      e.preventDefault();
-
-      dispatch(gallerySubmitComment());
-    },
-    [dispatch],
-  );
-
   const {
     title = '...',
     description,
@@ -470,7 +459,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     user?.sendGalleryEmails &&
     (!user.email || user.emailVerified === false) &&
     (image?.user?.id === user.id ||
-      comments?.some((c) => c.user.id === user.id) === true);
+      comments?.some((c) => c.user?.id === user.id) === true);
 
   // Wikimedia photos carry no server-side title/description; they come from the
   // Commons API fetch instead.
@@ -1211,7 +1200,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     {({ props }) => (
                       // A mark's target; no margin to give back, since vertical
                       // padding on an inline box moves nothing.
-                      <span {...props} className="py-2 text-nowrap">
+                      <span {...props} className="fm-hint-target text-nowrap">
                         <LicenseBadge licenseId={badgeLicense} />{' '}
                         <a
                           href={licenseUrl}
@@ -1280,86 +1269,60 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     <Text m={gm} k="viewer.comments" />
                   </h5>
 
-                  {!comments ? null : comments.length ? (
-                    comments.map((c) => (
-                      <p key={c.id}>
-                        {dateFormat.format(c.createdAt)}{' '}
-                        <UserChip user={c.user} />: {c.comment}
-                      </p>
-                    ))
-                  ) : (
-                    <p>
-                      <i>
-                        <Text m={gm} k="viewer.noComments" />
-                      </i>
-                    </p>
-                  )}
+                  <CommentThread
+                    // An open edit belongs to its photo.
+                    key={activeImageId}
+                    comments={comments}
+                    ownerKind="picture"
+                    ownerId={image?.user?.id ?? null}
+                    moderator={hasRole(user, 'galleryModerator')}
+                    disabled={disabledPremium || !online}
+                    onEdit={(id, comment) =>
+                      dispatch(galleryEditComment({ id, comment }))
+                    }
+                    onDelete={(id) => dispatch(galleryDeleteComment(id))}
+                  />
 
                   {user && (
-                    <Form onSubmit={handleCommentFormSubmit}>
-                      <Form.Group controlId="comment" className="mb-3">
-                        <InputGroup>
-                          <Form.Control
-                            type="text"
-                            placeholder={gm?.viewer.newComment}
-                            value={comment}
-                            onChange={(e) => {
-                              dispatch(
-                                gallerySetComment(e.currentTarget.value),
-                              );
-                            }}
-                            onFocus={() => {
-                              setCommentFocused(true);
-                            }}
-                            maxLength={4096}
-                            disabled={disabledPremium || !online}
-                          />
+                    <CommentComposer
+                      value={comment}
+                      onChange={(text) => dispatch(gallerySetComment(text))}
+                      onSubmit={() => dispatch(gallerySubmitComment())}
+                      onFocus={() => {
+                        setCommentFocused(true);
+                      }}
+                      disabled={disabledPremium || !online}
+                    >
+                      {isWikimedia && commentFocused && (
+                        <Alert variant="warning" className="mt-2 mb-0">
+                          <SiWikimediacommons />{' '}
+                          <Text m={gm} k="viewer.wikimediaCommentNotNotified" />
+                        </Alert>
+                      )}
 
-                          <Button
-                            variant="secondary"
-                            type="submit"
-                            disabled={
-                              comment.length < 1 || disabledPremium || !online
+                      {missesCommentMail && (
+                        <Alert variant="warning" className="mt-2 mb-0">
+                          <Text
+                            m={gm}
+                            k={
+                              user?.email
+                                ? 'viewer.commentsNotMailed'
+                                : 'viewer.commentsNotMailedNoEmail'
                             }
-                          >
-                            <Text m={gm} k="viewer.addComment" />
-                          </Button>
-                        </InputGroup>
-
-                        {isWikimedia && commentFocused && (
-                          <Alert variant="warning" className="mt-2 mb-0">
-                            <SiWikimediacommons />{' '}
-                            <Text
-                              m={gm}
-                              k="viewer.wikimediaCommentNotNotified"
-                            />
-                          </Alert>
-                        )}
-
-                        {missesCommentMail && (
-                          <Alert variant="warning" className="mt-2 mb-0">
+                          />{' '}
+                          <AccountEmailLink>
                             <Text
                               m={gm}
                               k={
                                 user?.email
-                                  ? 'viewer.commentsNotMailed'
-                                  : 'viewer.commentsNotMailedNoEmail'
+                                  ? 'viewer.commentsNotMailedConfirmLink'
+                                  : 'viewer.commentsNotMailedLink'
                               }
-                            />{' '}
-                            <AccountEmailLink>
-                              <Text
-                                m={gm}
-                                k={
-                                  user?.email
-                                    ? 'viewer.commentsNotMailedConfirmLink'
-                                    : 'viewer.commentsNotMailedLink'
-                                }
-                              />
-                            </AccountEmailLink>
-                          </Alert>
-                        )}
-                      </Form.Group>
-                    </Form>
+                            />
+                          </AccountEmailLink>
+                        </Alert>
+                      )}
+                    </CommentComposer>
                   )}
 
                   {user && (

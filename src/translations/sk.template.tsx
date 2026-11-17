@@ -223,6 +223,21 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'SZ',
   },
 
+  comments: {
+    none: 'Žiadne komentáre',
+    placeholder: 'Nový komentár',
+    add: 'Pridať',
+    edited: 'upravené',
+    deleted: 'Komentár bol zmazaný',
+    removedByOwner: {
+      event: 'Odstránené organizátorom',
+      picture: 'Odstránené autorom fotky',
+    },
+    removedByModerator: 'Odstránené moderátorom',
+    deleteTitle: 'Zmazať komentár',
+    deleteMessage: 'Zmazať tento komentár? Jeho text sa nedá obnoviť.',
+  },
+
   selections: {
     drawPoints: 'Bod',
     drawLines: 'Čiara',

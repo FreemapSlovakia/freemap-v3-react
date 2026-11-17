@@ -222,6 +222,22 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     nw: 'SZ',
   },
 
+  comments: {
+    none: 'Ni komentarjev',
+    placeholder: 'Nov komentar',
+    add: 'Dodaj',
+    edited: 'urejeno',
+    deleted: 'Komentar je izbrisan',
+    removedByOwner: {
+      event: 'Odstranjeno s strani organizatorja',
+      picture: 'Odstranjeno s strani avtorja fotografije',
+    },
+    removedByModerator: 'Odstranjeno s strani moderatorja',
+    deleteTitle: 'Izbriši komentar',
+    deleteMessage:
+      'Želite izbrisati ta komentar? Njegovega besedila ni mogoče obnoviti.',
+  },
+
   selections: {
     drawPoints: 'Točka',
     drawLines: 'Črta',

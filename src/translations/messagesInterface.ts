@@ -184,6 +184,20 @@ export type Messages = {
     w: string;
     nw: string;
   };
+  /** A comment thread, on a photo or an event. */
+  comments: {
+    none: string;
+    placeholder: string;
+    add: string;
+    /** Beside an edited comment; its tooltip says when. */
+    edited: string;
+    /** Placeholders of a deleted comment, by who deleted it. */
+    deleted: string;
+    removedByOwner: { event: string; picture: string };
+    removedByModerator: string;
+    deleteTitle: string;
+    deleteMessage: string;
+  };
   selections: {
     drawPoints: string;
     drawLines: string;
