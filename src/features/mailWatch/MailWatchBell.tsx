@@ -35,9 +35,15 @@ type State = z.infer<typeof StateSchema> & { key: string };
 export function MailWatchBell({
   target,
   targetId,
+  involvement,
 }: {
   target: MailTarget;
   targetId: string | number;
+  /**
+   * Changes when the user's own taking part does (a comment, Going): taking
+   * part turns the emails on, so the state is fetched again.
+   */
+  involvement?: string;
 }): ReactElement | null {
   const dispatch = useDispatch();
 
@@ -67,6 +73,7 @@ export function MailWatchBell({
 
   const [busy, setBusy] = useState(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: involvement refetches
   useEffect(() => {
     if (userId === undefined) {
       return;
@@ -94,7 +101,7 @@ export function MailWatchBell({
     return () => {
       current = false;
     };
-  }, [key, path, userId, store]);
+  }, [key, path, userId, store, involvement]);
 
   if (userId === undefined || state?.key !== key) {
     return null;

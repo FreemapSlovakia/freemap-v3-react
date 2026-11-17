@@ -1274,6 +1274,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       <MailWatchBell
                         target={isWikimedia ? 'wikimedia' : 'picture'}
                         targetId={Math.abs(shownId)}
+                        involvement={String(
+                          comments?.filter(
+                            (c) => user && c.user?.id === user.id,
+                          ).length ?? 0,
+                        )}
                       />
                     )}
                   </h5>

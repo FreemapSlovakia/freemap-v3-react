@@ -120,6 +120,11 @@ function EventComments({ event }: { event: EventItem }): ReactElement {
 
   const online = useOnline();
 
+  const items = comments?.eventId === event.id ? comments.items : undefined;
+
+  const ownComments =
+    items?.filter((c) => user && c.user?.id === user.id).length ?? 0;
+
   return (
     <>
       <hr />
@@ -127,12 +132,16 @@ function EventComments({ event }: { event: EventItem }): ReactElement {
       <h6 className="fw-semibold d-flex align-items-center gap-2">
         {em?.selection.discussion}
 
-        <MailWatchBell target="event" targetId={event.id} />
+        <MailWatchBell
+          target="event"
+          targetId={event.id}
+          involvement={`${event.myParticipation}/${ownComments}`}
+        />
       </h6>
 
       <CommentThread
         key={event.id}
-        comments={comments?.eventId === event.id ? comments.items : undefined}
+        comments={items}
         ownerKind="event"
         ownerId={event.user.id}
         moderator={hasRole(user, 'eventManager')}
