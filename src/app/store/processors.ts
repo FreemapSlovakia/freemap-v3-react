@@ -114,6 +114,10 @@ import {
   locateOnceProcessor,
 } from '@features/location/model/locateOnceProcessor.js';
 import { locateProcessor } from '@features/location/model/locateProcessor.js';
+import {
+  mailWatchLoadProcessor,
+  mailWatchToggleProcessor,
+} from '@features/mailWatch/model/processors.js';
 import { getCountriesProcessor } from '@features/map/model/processors/getCountriesProcessor.js';
 import { mapFitBboxProcessor } from '@features/map/model/processors/mapFitBboxProcessor.js';
 import { mapRefocusProcessor } from '@features/map/model/processors/mapRefocusProcessor.js';
@@ -366,6 +370,8 @@ export const processors = [
   eventsParticipationProcessor,
   eventSelectionProcessor,
   eventsParticipantsProcessor,
+  mailWatchLoadProcessor,
+  mailWatchToggleProcessor,
   eventsCommentsLoadProcessor,
   eventsCommentPostProcessor,
   eventsCommentChangeProcessor,

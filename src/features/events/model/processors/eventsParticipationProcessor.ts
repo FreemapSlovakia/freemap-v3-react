@@ -1,5 +1,6 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import { mailWatchLoad } from '@features/mailWatch/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { loadEventsMessages } from '../../translations/loadEventsMessages.js';
 import {
@@ -39,6 +40,9 @@ export const eventsParticipationProcessor: Processor<
       if (selectedEventId(getState()) === event.id) {
         dispatch(eventsSetSelected(event));
       }
+
+      // Taking part turns the emails about the event on; leaving may end it.
+      dispatch(mailWatchLoad({ target: 'event', targetId: event.id }));
     } catch (err) {
       await toastError(err, loadEventsMessages, 'participationError');
     }

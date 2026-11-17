@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import type { RootState } from '@app/store/store.js';
+import { mailWatchLoad } from '@features/mailWatch/model/actions.js';
 import { CommentSchema } from '@shared/comments.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { Dispatch } from 'redux';
@@ -102,6 +103,10 @@ export const eventsCommentPostProcessor: Processor<typeof eventsPostComment> = {
       throw err;
     }
 
+    // Commenting turns the emails about the event on; posted, whatever the
+    // answer's parse says.
+    dispatch(mailWatchLoad({ target: 'event', targetId: eventId }));
+
     await commentSaved(getState, dispatch, eventId, res);
   },
 };
@@ -135,6 +140,11 @@ export const eventsCommentChangeProcessor: Processor<
       data: edit ? { comment: action.payload.comment } : undefined,
       expectedStatus: 200,
     });
+
+    // Deleting a last own comment may end taking part.
+    if (!edit) {
+      dispatch(mailWatchLoad({ target: 'event', targetId: eventId }));
+    }
 
     await commentSaved(getState, dispatch, eventId, res);
   },

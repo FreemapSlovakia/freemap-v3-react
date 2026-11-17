@@ -1,21 +1,19 @@
-import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
-import type { RootState } from '@app/store/store.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaBell, FaBellSlash } from 'react-icons/fa';
-import { useDispatch, useStore } from 'react-redux';
-import z from 'zod';
-
-export const MailTargetSchema = z.enum(['event', 'picture', 'wikimedia']);
-
-export type MailTarget = z.infer<typeof MailTargetSchema>;
+import { useDispatch } from 'react-redux';
+import {
+  type MailTarget,
+  mailWatchKey,
+  mailWatchLoad,
+  mailWatchToggle,
+} from './model/actions.js';
 
 /** The account setting that turns a target's kind of email off; as the API's. */
 const FLAG = {
@@ -24,10 +22,6 @@ const FLAG = {
   wikimedia: 'sendGalleryEmails',
 } as const satisfies Record<MailTarget, string>;
 
-const StateSchema = z.object({ watching: z.boolean() });
-
-type State = z.infer<typeof StateSchema> & { key: string };
-
 /**
  * Follows or mutes the emails about one event or photo; for a logged-in user
  * only. Where the account turns that kind off, it leads to the settings.
@@ -35,19 +29,11 @@ type State = z.infer<typeof StateSchema> & { key: string };
 export function MailWatchBell({
   target,
   targetId,
-  involvement,
 }: {
   target: MailTarget;
   targetId: string | number;
-  /**
-   * Changes when the user's own taking part does (a comment, Going): taking
-   * part turns the emails on, so the state is fetched again.
-   */
-  involvement?: string;
 }): ReactElement | null {
   const dispatch = useDispatch();
-
-  const store = useStore<RootState>();
 
   const m = useMessages();
 
@@ -64,52 +50,27 @@ export function MailWatchBell({
       state.auth.user?.emailVerified !== false,
   );
 
-  const path = `${target}/${targetId}`;
+  const key = mailWatchKey({ target, targetId });
 
-  // The user too: another account's state must not show after a re-login.
-  const key = `${userId}/${path}`;
+  const stored = useAppSelector((state) => state.mailWatch.byKey[key]);
 
-  const [state, setState] = useState<State | null>(null);
+  // Another user's state stays unseen until this one's loads.
+  const entry = stored?.userId === userId ? stored : undefined;
 
-  const [busy, setBusy] = useState(false);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: involvement refetches
+  // Fresh on each showing; a stored state shows meanwhile.
   useEffect(() => {
-    if (userId === undefined) {
-      return;
+    if (userId !== undefined) {
+      dispatch(mailWatchLoad({ target, targetId }));
     }
+  }, [dispatch, target, targetId, userId]);
 
-    let current = true;
-
-    httpRequest({
-      getState: store.getState,
-      url: `/mail-watch/${path}`,
-      expectedStatus: 200,
-      cancelActions: [],
-    })
-      .then(async (res) => {
-        const parsed = StateSchema.parse(await res.json());
-
-        if (current) {
-          setState({ ...parsed, key });
-        }
-      })
-      .catch((err) => {
-        console.warn('Mail watch state not loaded', err);
-      });
-
-    return () => {
-      current = false;
-    };
-  }, [key, path, userId, store, involvement]);
-
-  if (userId === undefined || state?.key !== key) {
+  if (userId === undefined || entry?.watching == null) {
     return null;
   }
 
-  const { watching } = state;
+  const { watching, busy } = entry;
 
-  const toggle = async () => {
+  const toggle = () => {
     // TODO from the photo viewer this replaces the viewer, losing the photo.
     if (!mailable || !enabled) {
       dispatch(
@@ -129,30 +90,7 @@ export function MailWatchBell({
       target,
     ]);
 
-    setBusy(true);
-
-    try {
-      const res = await httpRequest({
-        getState: store.getState,
-        method: 'PUT',
-        url: `/mail-watch/${path}`,
-        data: { watching: !watching },
-        expectedStatus: 200,
-        cancelActions: [],
-      });
-
-      setState({ ...StateSchema.parse(await res.json()), key });
-    } catch (err) {
-      dispatch(
-        toastsAdd({
-          messageKey: 'general.operationError',
-          messageParams: { err },
-          style: 'danger',
-        }),
-      );
-    } finally {
-      setBusy(false);
-    }
+    dispatch(mailWatchToggle({ target, targetId, watching: !watching }));
   };
 
   const on = watching && enabled && mailable;

@@ -23,7 +23,11 @@ import {
 } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import z from 'zod';
-import { type MailTarget, MailTargetSchema } from './MailWatchBell.js';
+import {
+  type MailTarget,
+  MailTargetSchema,
+  mailWatchLoad,
+} from './model/actions.js';
 
 type Props = { show: boolean };
 
@@ -140,6 +144,9 @@ export default function MailWatchModal({ show }: Props): ReactElement {
       (result) => {
         markHandled(token);
 
+        // A bell showing it reloads, for whoever is logged in here.
+        dispatch(mailWatchLoad(result));
+
         if (current) {
           setState({ token, type: 'done', result });
         }
@@ -156,7 +163,7 @@ export default function MailWatchModal({ show }: Props): ReactElement {
     return () => {
       current = false;
     };
-  }, [token, getState]);
+  }, [token, getState, dispatch]);
 
   const close = () => dispatch(setActiveModal(null));
 
@@ -239,7 +246,11 @@ export default function MailWatchModal({ show }: Props): ReactElement {
 
               setByToken(getState, token, watching)
                 .then(
-                  (next) => setState({ token, type: 'done', result: next }),
+                  (next) => {
+                    dispatch(mailWatchLoad(next));
+
+                    setState({ token, type: 'done', result: next });
+                  },
                   (err) =>
                     // Deleted while this was open.
                     err instanceof HttpError && err.status === 410

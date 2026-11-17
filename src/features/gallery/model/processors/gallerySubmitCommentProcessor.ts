@@ -1,5 +1,9 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
+import {
+  mailWatchLoad,
+  pictureMailWatch,
+} from '@features/mailWatch/model/actions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { pictureIdToPath } from '../../pictureIdPath.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
@@ -50,6 +54,9 @@ export const gallerySubmitCommentProcessor: Processor = {
 
       return;
     }
+
+    // Commenting turns the emails about the photo on.
+    dispatch(mailWatchLoad(pictureMailWatch(id)));
 
     if (getState().gallery.activeImageId === id) {
       dispatch(galleryRequestImage(id));

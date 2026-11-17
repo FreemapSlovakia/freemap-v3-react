@@ -122,9 +122,6 @@ function EventComments({ event }: { event: EventItem }): ReactElement {
 
   const items = comments?.eventId === event.id ? comments.items : undefined;
 
-  const ownComments =
-    items?.filter((c) => user && c.user?.id === user.id).length ?? 0;
-
   return (
     <>
       <hr />
@@ -132,11 +129,7 @@ function EventComments({ event }: { event: EventItem }): ReactElement {
       <h6 className="fw-semibold d-flex align-items-center gap-2">
         {em?.selection.discussion}
 
-        <MailWatchBell
-          target="event"
-          targetId={event.id}
-          involvement={`${event.myParticipation}/${ownComments}`}
-        />
+        <MailWatchBell target="event" targetId={event.id} />
       </h6>
 
       <CommentThread
