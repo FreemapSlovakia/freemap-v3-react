@@ -1,8 +1,8 @@
 # Freemap Slovakia Web Application
 
-Source of [www.freemap.sk](https://www.freemap.sk), the web map portal maintained by [OZ Freemap Slovakia](https://oz.freemap.sk).
+Source of [www.freemap.sk](https://www.freemap.sk), the web map portal of [OZ Freemap Slovakia](https://oz.freemap.sk), a non-commercial civic association.
 
-Freemap is a free, non-commercial web map application built on OpenStreetMap data. Its focus is a detailed outdoor map for hiking, cycling, cross-country skiing and horse riding across Europe, complemented by many additional base and overlay layers and by tools for search, route planning, drawing and measurement, GPX viewing, live tracking, personal maps, map embedding, and export.
+Freemap is a free web map application built on OpenStreetMap data. Its focus is a detailed outdoor map for hiking, cycling, cross-country skiing and horse riding across Europe, complemented by many additional base and overlay layers and by tools for search, route planning, drawing and measurement, GPX viewing, live tracking, personal maps, map embedding, and export.
 
 This repository is the **frontend** — a React single-page application. It talks to:
 
