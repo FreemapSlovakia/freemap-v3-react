@@ -315,7 +315,10 @@ front of readers already comparing tools, with no forum to cultivate.
       Freemap. Pitch: European, open source, no user tracking. Free listing via
       [/contact](https://europeanpurpose.com/contact), subject "Suggest a European tool";
       they check that the operating company is registered in Europe. Suggested by email
-      to hello@ on 2026-11-16.
+      to hello@ on 2026-11-16. **Declined:** listed at #16 of 16, but the free tier
+      requires a dofollow link on freemap.eu endorsing the owner's SEO agency (2 Steps
+      Ahead) by 2026-11-23; positions #1–#10 cost €499–€129/yr. Left to lapse — not
+      worth an agency ad in the app. Do not resubmit.
 - [x] **assortedexplorations.com — [Digital mapping tools compendium](https://www.assortedexplorations.com/outdoors/digital-mapping-tools-a-compendium-of-online-and-mobile-navigation-resources/)**:
       online and mobile navigation resources, updated 2026-10-26. No Freemap. UK author
       (hillwalking; Outdooractive is their pick). Only contact route is the
