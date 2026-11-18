@@ -233,6 +233,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `E-maily o ${{ event: 'akcii', picture: 'fotke' }[kind]}${title ? ` „${title}“` : ''} už nebudete dostávať.`,
     resumed: ({ kind, title }) =>
       `E-maily o ${{ event: 'akcii', picture: 'fotke' }[kind]}${title ? ` „${title}“` : ''} budete znova dostávať.`,
+    filterStopped: ({ title }) =>
+      `E-maily o nových akciách pre uložený filter „${title}“ už nebudete dostávať.`,
+    filterResumed: ({ title }) =>
+      `E-maily o nových akciách pre uložený filter „${title}“ budete znova dostávať.`,
+    filterGone:
+      'Tento uložený filter už neexistuje, takže e-maily preň už neprídu.',
     undo: 'Vrátiť späť',
     stop: 'Vypnúť e-maily',
     openEvent: 'Otvoriť akciu',

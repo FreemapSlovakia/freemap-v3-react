@@ -227,6 +227,12 @@ const messages: Messages = {
       `You will no longer get emails about the ${{ event: 'event', picture: 'photo' }[kind]}${title ? ` "${title}"` : ''}.`,
     resumed: ({ kind, title }) =>
       `You will get emails about the ${{ event: 'event', picture: 'photo' }[kind]}${title ? ` "${title}"` : ''} again.`,
+    filterStopped: ({ title }) =>
+      `You will no longer get emails about new events for the saved filter "${title}".`,
+    filterResumed: ({ title }) =>
+      `You will get emails about new events for the saved filter "${title}" again.`,
+    filterGone:
+      'This saved filter no longer exists, so no more emails come for it.',
     undo: 'Undo',
     stop: 'Stop the emails',
     openEvent: 'Open the event',

@@ -163,6 +163,13 @@ from the selection toolbar (**Edit**).
       (`#show=mail-watch/<token>`, `MAIL_TOKEN_SECRET`) and its one-click
       `List-Unsubscribe`. Commenting or joining again undoes a mute. The photo
       comment email follows the same rules.
+- [x] **Saved filters and their emails**: a period from today
+      (`events-within`); up to 20 named filters in the account (API
+      `eventFilter`, `/event-filters`), picked in the Filter dialog and its
+      caret, never with fixed dates; with **Email me**, events others add that
+      match are mailed by `eventFilterMail.ts`, batched per filter (10 quiet
+      minutes, at most 2 hours), a period checked when the event is added, and
+      the email's link stops that filter (`<user>.filter.<id>` tokens).
 - [ ] **Organizer's email on the event**, where the organizer agrees to it in
       the form — a contact beside the thread.
 - [ ] Texts in the other languages (cs first).

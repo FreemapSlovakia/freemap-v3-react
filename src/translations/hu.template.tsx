@@ -234,6 +234,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `Nem kap több e-mailt ${title ? `a(z) „${title}” ` : 'erről az '}${{ event: 'eseményről', picture: 'fotóról' }[kind]}.`,
     resumed: ({ kind, title }) =>
       `Ismét kap e-maileket ${title ? `a(z) „${title}” ` : 'erről az '}${{ event: 'eseményről', picture: 'fotóról' }[kind]}.`,
+    filterStopped: ({ title }) =>
+      `Nem kap több e-mailt az új eseményekről a(z) „${title}” mentett szűrőhöz.`,
+    filterResumed: ({ title }) =>
+      `Ismét kap e-maileket az új eseményekről a(z) „${title}” mentett szűrőhöz.`,
+    filterGone:
+      'Ez a mentett szűrő már nem létezik, így több e-mail nem érkezik hozzá.',
     undo: 'Visszavonás',
     stop: 'E-mailek leállítása',
     openEvent: 'Esemény megnyitása',

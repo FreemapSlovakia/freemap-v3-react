@@ -232,6 +232,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `E-pošte o ${{ event: 'dogodku', picture: 'fotografiji' }[kind]}${title ? ` »${title}«` : ''} ne boste več prejemali.`,
     resumed: ({ kind, title }) =>
       `E-pošto o ${{ event: 'dogodku', picture: 'fotografiji' }[kind]}${title ? ` »${title}«` : ''} boste spet prejemali.`,
+    filterStopped: ({ title }) =>
+      `E-pošte o novih dogodkih za shranjeni filter »${title}« ne boste več prejemali.`,
+    filterResumed: ({ title }) =>
+      `E-pošto o novih dogodkih za shranjeni filter »${title}« boste spet prejemali.`,
+    filterGone:
+      'Ta shranjeni filter ne obstaja več, zato e-pošta zanj ne bo več prihajala.',
     undo: 'Razveljavi',
     stop: 'Izklopi e-pošto',
     openEvent: 'Odpri dogodek',

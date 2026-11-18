@@ -202,6 +202,10 @@ export type Messages = {
       kind: 'event' | 'picture';
       title: string | null;
     }) => string;
+    /** A saved events filter's emails of new events. */
+    filterStopped: (props: { title: string }) => string;
+    filterResumed: (props: { title: string }) => string;
+    filterGone: string;
     undo: string;
     /** Stops them again, from a link used before. */
     stop: string;

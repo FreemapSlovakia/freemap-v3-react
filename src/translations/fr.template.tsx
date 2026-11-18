@@ -233,6 +233,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `Vous ne recevrez plus d’e-mails sur ${{ event: 'l’événement', picture: 'la photo' }[kind]}${title ? ` « ${title} »` : ''}.`,
     resumed: ({ kind, title }) =>
       `Vous recevrez de nouveau des e-mails sur ${{ event: 'l’événement', picture: 'la photo' }[kind]}${title ? ` « ${title} »` : ''}.`,
+    filterStopped: ({ title }) =>
+      `Vous ne recevrez plus d’e-mails sur les nouveaux événements du filtre enregistré « ${title} ».`,
+    filterResumed: ({ title }) =>
+      `Vous recevrez de nouveau des e-mails sur les nouveaux événements du filtre enregistré « ${title} ».`,
+    filterGone:
+      'Ce filtre enregistré n’existe plus : vous ne recevrez plus d’e-mails pour lui.',
     undo: 'Annuler',
     stop: 'Arrêter les e-mails',
     openEvent: 'Ouvrir l’événement',

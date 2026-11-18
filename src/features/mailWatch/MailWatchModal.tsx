@@ -1,6 +1,7 @@
 import { HttpError, httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import { eventsSavedFiltersLoad } from '@features/events/model/savedFiltersSlice.js';
 import { galleryRequestImage } from '@features/gallery/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
@@ -22,6 +23,7 @@ import {
   FaUndo,
 } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
+import type { Dispatch } from 'redux';
 import z from 'zod';
 import {
   type MailTarget,
@@ -32,7 +34,8 @@ import {
 type Props = { show: boolean };
 
 const ResultSchema = z.object({
-  target: MailTargetSchema,
+  // `eventFilter`: a saved events filter's emails, by its own token.
+  target: z.enum([...MailTargetSchema.options, 'eventFilter']),
   targetId: z.string(),
   title: z.string().nullable(),
   watching: z.boolean(),
@@ -67,9 +70,24 @@ const KIND = {
 
 /** What a token is about, read from it (`<user>.<target>.<id>.<signature>`). */
 function tokenKind(token: string | null) {
-  const target = MailTargetSchema.safeParse(token?.split('.')[1]);
+  const segment = token?.split('.')[1];
+
+  if (segment === 'filter') {
+    return 'filter';
+  }
+
+  const target = MailTargetSchema.safeParse(segment);
 
   return target.success ? KIND[target.data] : null;
+}
+
+/** What shows the state reloads it: a bell, or the saved filters. */
+function refresh(dispatch: Dispatch, result: Result) {
+  dispatch(
+    result.target === 'eventFilter'
+      ? eventsSavedFiltersLoad()
+      : mailWatchLoad({ target: result.target, targetId: result.targetId }),
+  );
 }
 
 const HANDLED_KEY = 'fm.mailWatch.handled';
@@ -144,8 +162,8 @@ export default function MailWatchModal({ show }: Props): ReactElement {
       (result) => {
         markHandled(token);
 
-        // A bell showing it reloads, for whoever is logged in here.
-        dispatch(mailWatchLoad(result));
+        // For whoever is logged in here.
+        refresh(dispatch, result);
 
         if (current) {
           setState({ token, type: 'done', result });
@@ -173,7 +191,7 @@ export default function MailWatchModal({ show }: Props): ReactElement {
   const goneKind = tokenKind(token);
 
   const open = () => {
-    if (!result) {
+    if (!result || result.target === 'eventFilter') {
       return;
     }
 
@@ -206,7 +224,9 @@ export default function MailWatchModal({ show }: Props): ReactElement {
         ) : state.type === 'error' ? (
           state.gone && goneKind ? (
             <Alert variant="info" className="mb-0">
-              {m?.mailWatch.gone(goneKind)}
+              {goneKind === 'filter'
+                ? m?.mailWatch.filterGone
+                : m?.mailWatch.gone(goneKind)}
             </Alert>
           ) : (
             <Alert variant="danger" className="mb-0">
@@ -215,12 +235,18 @@ export default function MailWatchModal({ show }: Props): ReactElement {
           )
         ) : (
           <p className="mb-0">
-            {(state.result.watching
-              ? m?.mailWatch.resumed
-              : m?.mailWatch.stopped)?.({
-              kind: KIND[state.result.target],
-              title: state.result.title,
-            })}
+            {state.result.target === 'eventFilter'
+              ? (state.result.watching
+                  ? m?.mailWatch.filterResumed
+                  : m?.mailWatch.filterStopped)?.({
+                  title: state.result.title ?? '',
+                })
+              : (state.result.watching
+                  ? m?.mailWatch.resumed
+                  : m?.mailWatch.stopped)?.({
+                  kind: KIND[state.result.target],
+                  title: state.result.title,
+                })}
           </p>
         )}
       </Modal.Body>
@@ -247,7 +273,7 @@ export default function MailWatchModal({ show }: Props): ReactElement {
               setByToken(getState, token, watching)
                 .then(
                   (next) => {
-                    dispatch(mailWatchLoad(next));
+                    refresh(dispatch, next);
 
                     setState({ token, type: 'done', result: next });
                   },
@@ -268,7 +294,7 @@ export default function MailWatchModal({ show }: Props): ReactElement {
           />
         )}
 
-        {result && (
+        {result && result.target !== 'eventFilter' && (
           <FmFooterButton
             variant="secondary"
             icon={<FaExternalLinkAlt />}

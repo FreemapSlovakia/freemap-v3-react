@@ -242,6 +242,12 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       `Non riceverà più email ${{ event: 'sull’evento', picture: 'sulla foto' }[kind]}${title ? ` «${title}»` : ''}.`,
     resumed: ({ kind, title }) =>
       `Riceverà di nuovo email ${{ event: 'sull’evento', picture: 'sulla foto' }[kind]}${title ? ` «${title}»` : ''}.`,
+    filterStopped: ({ title }) =>
+      `Non riceverà più email sui nuovi eventi per il filtro salvato «${title}».`,
+    filterResumed: ({ title }) =>
+      `Riceverà di nuovo email sui nuovi eventi per il filtro salvato «${title}».`,
+    filterGone:
+      'Questo filtro salvato non esiste più, quindi non arriveranno altre email.',
     undo: 'Annulla',
     stop: 'Interrompi le email',
     openEvent: 'Apri l’evento',
