@@ -92,8 +92,8 @@ export type EventsMessages = {
     name: string;
     notify: string;
     saveAndApply: string;
-    /** With a period and emails: only events in it when added are mailed. */
-    periodWarning: string;
+    /** With a period and emails: an event is mailed as it comes within it. */
+    periodNote: string;
     /** With fixed dates: those are not saved. */
     datesWarning: string;
     delete: string;

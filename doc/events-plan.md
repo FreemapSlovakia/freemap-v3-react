@@ -167,9 +167,11 @@ from the selection toolbar (**Edit**).
       (`events-within`); up to 20 named filters in the account (API
       `eventFilter`, `/event-filters`), picked in the Filter dialog and its
       caret, never with fixed dates; with **Email me**, events others add that
-      match are mailed by `eventFilterMail.ts`, batched per filter (10 quiet
-      minutes, at most 2 hours), a period checked when the event is added, and
-      the email's link stops that filter (`<user>.filter.<id>` tokens).
+      match are mailed by `eventFilterMail.ts`, once each, batched per filter
+      (10 quiet minutes, at most 2 hours): added since `matchSince`, or with a
+      period, coming within it since the job last looked (`matchedUntil`,
+      advanced from 7:00 local); the email's link stops that filter
+      (`<user>.filter.<id>` tokens).
 - [ ] **Organizer's email on the event**, where the organizer agrees to it in
       the form — a contact beside the thread.
 - [ ] Texts in the other languages (cs first).

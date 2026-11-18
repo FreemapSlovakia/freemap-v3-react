@@ -151,8 +151,8 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     name: 'Nazwa',
     notify: 'Wysyłaj e-mailem nowe wydarzenia pasujące do tego filtra',
     saveAndApply: 'Zapisz i zastosuj',
-    periodWarning:
-      'E-maile obejmują tylko wydarzenia, które w chwili dodania zaczynają się w okresie. Wydarzenie dodane wcześniej nie zostanie wysłane, gdy jego data później znajdzie się w okresie.',
+    periodNote:
+      'Każde wydarzenie trafia do e-maila raz: gdy zostanie dodane w okresie albo później, gdy jego data znajdzie się w okresie. Wydarzenia, które w chwili zapisania filtra są już w okresie, nie są wysyłane.',
     datesWarning:
       'Stałe daty nie są zapisywane: zapisany filtr obejmuje wszystkie nadchodzące wydarzenia. Aby zachować zakres, należy wybrać okres.',
     delete: 'Usuń',

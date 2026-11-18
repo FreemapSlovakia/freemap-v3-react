@@ -558,8 +558,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                   />
 
                   {within && saveNotify && (
-                    <Alert variant="warning" className="mt-3 mb-0">
-                      {em?.savedFilters.periodWarning}
+                    <Alert variant="info" className="mt-3 mb-0">
+                      {em?.savedFilters.periodNote}
                     </Alert>
                   )}
 

@@ -152,8 +152,8 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     name: 'Nome',
     notify: 'Invia via e-mail i nuovi eventi che corrispondono a questo filtro',
     saveAndApply: 'Salva e applica',
-    periodWarning:
-      'Le e-mail includono solo gli eventi che, quando vengono aggiunti, iniziano entro il periodo. Un evento aggiunto prima non viene inviato quando la sua data rientra in seguito nel periodo.',
+    periodNote:
+      'Ogni evento viene inviato per e-mail una volta: quando viene aggiunto entro il periodo, oppure in seguito, quando la sua data rientra nel periodo. Gli eventi già entro il periodo al momento del salvataggio del filtro non vengono inviati.',
     datesWarning:
       'Le date fisse non vengono salvate: il filtro salvato comprende tutti gli eventi futuri. Per mantenere un intervallo, scelga invece un periodo.',
     delete: 'Elimina',

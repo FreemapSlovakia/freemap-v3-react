@@ -172,8 +172,8 @@ const en: EventsMessages = {
     name: 'Name',
     notify: 'Email me new events matching this filter',
     saveAndApply: 'Save and apply',
-    periodWarning:
-      'Emails cover only events that start within the period when they are added. An event added earlier is not emailed when its date later comes within the period.',
+    periodNote:
+      'Each event is emailed once: when it is added within the period, or later, when its date comes within the period. Events already within the period when the filter is saved are not emailed.',
     datesWarning:
       'Fixed dates are not saved: the saved filter covers all upcoming events. To keep a range, choose a period instead.',
     delete: 'Delete',
