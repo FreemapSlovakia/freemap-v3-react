@@ -148,7 +148,7 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     dontSave: '— nincs mentés',
     newFilter: 'Új mentett szűrő',
     name: 'Név',
-    notify: 'A szűrőnek megfelelő új események küldése e-mailben',
+    notify: 'A szűrőnek megfelelő események küldése e-mailben',
     saveAndApply: 'Mentés és alkalmazás',
     periodNote:
       'Minden eseményről egyszer kap e-mailt: amikor az időszakon belül hozzáadják, vagy később, amikor a dátuma az időszakba kerül. Azokról az eseményekről, amelyek a szűrő mentésekor már az időszakon belül vannak, nem kap e-mailt.',

@@ -172,7 +172,7 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     dontSave: '— nicht speichern',
     newFilter: 'Neuer gespeicherter Filter',
     name: 'Name',
-    notify: 'Neue passende Veranstaltungen per E-Mail senden',
+    notify: 'Passende Veranstaltungen per E-Mail senden',
     saveAndApply: 'Speichern und anwenden',
     periodNote:
       'Jede Veranstaltung wird einmal per E-Mail gemeldet: wenn sie innerhalb des Zeitraums hinzugefügt wird, oder später, wenn ihr Datum in den Zeitraum fällt. Veranstaltungen, die beim Speichern des Filters bereits im Zeitraum liegen, werden nicht gemeldet.',

@@ -174,7 +174,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     dontSave: '— neukladať',
     newFilter: 'Nový uložený filter',
     name: 'Názov',
-    notify: 'Posielať e-mailom nové akcie zodpovedajúce tomuto filtru',
+    notify: 'Posielať e-mailom akcie zodpovedajúce tomuto filtru',
     saveAndApply: 'Uložiť a použiť',
     periodNote:
       'Každá akcia príde e-mailom raz: keď ju pridajú v rámci obdobia, alebo neskôr, keď sa jej dátum dostane do obdobia. Akcie, ktoré sú v období už pri uložení filtra, sa neposielajú.',

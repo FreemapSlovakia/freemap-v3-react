@@ -170,7 +170,7 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     dontSave: '— ne shrani',
     newFilter: 'Nov shranjeni filter',
     name: 'Ime',
-    notify: 'Pošiljaj nove dogodke, ki ustrezajo temu filtru, po e-pošti',
+    notify: 'Pošiljaj dogodke, ki ustrezajo temu filtru, po e-pošti',
     saveAndApply: 'Shrani in uporabi',
     periodNote:
       'O vsakem dogodku prejmete e-pošto enkrat: ko je dodan v obdobju ali pozneje, ko njegov datum pride v obdobje. Za dogodke, ki so ob shranjevanju filtra že v obdobju, sporočila ne prejmete.',

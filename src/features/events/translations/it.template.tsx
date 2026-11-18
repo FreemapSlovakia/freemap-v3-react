@@ -150,7 +150,7 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     dontSave: '— non salvare',
     newFilter: 'Nuovo filtro salvato',
     name: 'Nome',
-    notify: 'Invia via e-mail i nuovi eventi che corrispondono a questo filtro',
+    notify: 'Invia via e-mail gli eventi che corrispondono a questo filtro',
     saveAndApply: 'Salva e applica',
     periodNote:
       'Ogni evento viene inviato per e-mail una volta: quando viene aggiunto entro il periodo, oppure in seguito, quando la sua data rientra nel periodo. Gli eventi già entro il periodo al momento del salvataggio del filtro non vengono inviati.',

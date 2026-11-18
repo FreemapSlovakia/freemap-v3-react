@@ -158,8 +158,7 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
     dontSave: '— ne pas enregistrer',
     newFilter: 'Nouveau filtre enregistré',
     name: 'Nom',
-    notify:
-      'Recevoir par e-mail les nouveaux événements correspondant à ce filtre',
+    notify: 'Recevoir par e-mail les événements correspondant à ce filtre',
     saveAndApply: 'Enregistrer et appliquer',
     periodNote:
       'Chaque événement est envoyé une fois par e-mail : lorsqu’il est ajouté dans la période, ou plus tard, lorsque sa date entre dans la période. Les événements déjà dans la période lors de l’enregistrement du filtre ne sont pas envoyés.',

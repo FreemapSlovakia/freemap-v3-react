@@ -170,7 +170,7 @@ const en: EventsMessages = {
     dontSave: '— don’t save',
     newFilter: 'New saved filter',
     name: 'Name',
-    notify: 'Email me new events matching this filter',
+    notify: 'Email me events matching this filter',
     saveAndApply: 'Save and apply',
     periodNote:
       'Each event is emailed once: when it is added within the period, or later, when its date comes within the period. Events already within the period when the filter is saved are not emailed.',
