@@ -176,8 +176,6 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     name: 'Názov',
     notify: 'Posielať e-mailom akcie zodpovedajúce tomuto filtru',
     saveAndApply: 'Uložiť a použiť',
-    periodNote:
-      'Každá akcia príde e-mailom raz: keď ju pridajú v rámci obdobia, alebo neskôr, keď sa jej dátum dostane do obdobia. Akcie, ktoré sú v období už pri uložení filtra, sa neposielajú.',
     datesWarning:
       'Pevné dátumy sa neukladajú: uložený filter zahŕňa všetky nadchádzajúce akcie. Ak chcete rozsah zachovať, zvoľte radšej obdobie.',
     delete: 'Vymazať',

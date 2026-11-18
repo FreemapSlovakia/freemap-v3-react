@@ -172,6 +172,10 @@ from the selection toolbar (**Edit**).
       period, coming within it since the job last looked (`matchedUntil`,
       advanced from 7:00 local); the email's link stops that filter
       (`<user>.filter.<id>` tokens).
+- [ ] **Manual chapter** on events, saved filters and their emails. Say that
+      with a period each event is emailed once — when added within it, or
+      later when its date comes within it — and that those already within it
+      when the filter is saved are not.
 - [ ] **Organizer's email on the event**, where the organizer agrees to it in
       the form — a contact beside the thread.
 - [ ] Texts in the other languages (cs first).

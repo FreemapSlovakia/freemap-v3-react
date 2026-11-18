@@ -150,8 +150,6 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     name: 'Név',
     notify: 'A szűrőnek megfelelő események küldése e-mailben',
     saveAndApply: 'Mentés és alkalmazás',
-    periodNote:
-      'Minden eseményről egyszer kap e-mailt: amikor az időszakon belül hozzáadják, vagy később, amikor a dátuma az időszakba kerül. Azokról az eseményekről, amelyek a szűrő mentésekor már az időszakon belül vannak, nem kap e-mailt.',
     datesWarning:
       'A rögzített dátumok nem kerülnek mentésre: a mentett szűrő minden közelgő eseményre vonatkozik. A tartomány megtartásához válasszon inkább időszakot.',
     delete: 'Törlés',

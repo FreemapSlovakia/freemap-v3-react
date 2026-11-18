@@ -160,8 +160,6 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
     name: 'Nom',
     notify: 'Recevoir par e-mail les événements correspondant à ce filtre',
     saveAndApply: 'Enregistrer et appliquer',
-    periodNote:
-      'Chaque événement est envoyé une fois par e-mail : lorsqu’il est ajouté dans la période, ou plus tard, lorsque sa date entre dans la période. Les événements déjà dans la période lors de l’enregistrement du filtre ne sont pas envoyés.',
     datesWarning:
       'Les dates fixes ne sont pas enregistrées : le filtre enregistré couvre tous les événements à venir. Pour conserver une plage, choisissez plutôt une période.',
     delete: 'Supprimer',

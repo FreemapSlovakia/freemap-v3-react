@@ -557,12 +557,6 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                     label={em?.savedFilters.notify}
                   />
 
-                  {within && saveNotify && (
-                    <Alert variant="info" className="mt-3 mb-0">
-                      {em?.savedFilters.periodNote}
-                    </Alert>
-                  )}
-
                   {!within && (from || to) && (
                     <Alert variant="warning" className="mt-3 mb-0">
                       {em?.savedFilters.datesWarning}

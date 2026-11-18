@@ -172,8 +172,6 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     name: 'Ime',
     notify: 'Pošiljaj dogodke, ki ustrezajo temu filtru, po e-pošti',
     saveAndApply: 'Shrani in uporabi',
-    periodNote:
-      'O vsakem dogodku prejmete e-pošto enkrat: ko je dodan v obdobju ali pozneje, ko njegov datum pride v obdobje. Za dogodke, ki so ob shranjevanju filtra že v obdobju, sporočila ne prejmete.',
     datesWarning:
       'Fiksni datumi se ne shranijo: shranjeni filter zajema vse prihodnje dogodke. Če želite ohraniti razpon, izberite obdobje.',
     delete: 'Izbriši',

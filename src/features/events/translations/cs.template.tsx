@@ -164,8 +164,6 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     name: 'Název',
     notify: 'Zasílat e-mailem akce odpovídající tomuto filtru',
     saveAndApply: 'Uložit a použít',
-    periodNote:
-      'Každá akce přijde e-mailem jednou: když ji přidají v rámci období, nebo později, když se její datum dostane do období. Akce, které jsou v období už při uložení filtru, se neposílají.',
     datesWarning:
       'Pevná data se neukládají: uložený filtr zahrnuje všechny nadcházející akce. Chcete-li rozsah zachovat, zvolte raději období.',
     delete: 'Smazat',
