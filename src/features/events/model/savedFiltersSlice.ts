@@ -82,7 +82,7 @@ export const selectSavedFilters = (state: RootState) =>
  */
 export const selectAppliedSavedFilter = createSelector(
   [
-    (state: RootState) => state.events.filter,
+    (state: RootState) => state.eventsSettings.filter,
     selectSavedFilters,
     (state: RootState) => state.eventsSavedFilters.pickedId,
   ],

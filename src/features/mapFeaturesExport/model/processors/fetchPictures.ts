@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { RootState } from '@app/store/store.js';
 import { createFilter } from '@features/gallery/galleryUtils.js';
+import { activeGalleryFilterSelector } from '@features/gallery/model/selectors.js';
 import { mapPromise } from '@features/map/hooks/leafletElementHolder.js';
 import { objectToURLSearchParams } from '@shared/stringUtils.js';
 import { IsoDateSchema } from '@shared/types/common.js';
@@ -98,7 +99,7 @@ export async function fetchPictures(getState: () => RootState) {
         // Sources come from the gallery filter (both by default); Wikimedia
         // photos export the metadata we have (dates, rating, license, azimuth,
         // location) and link back to Commons / the freemap viewer.
-        ...createFilter(getState().gallery.filter),
+        ...createFilter(activeGalleryFilterSelector(getState())),
         fields: [
           'id',
           'title',

@@ -49,7 +49,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
   const gm = useGalleryMessages();
 
-  const filter = useAppSelector((state) => state.gallery.filter);
+  const filter = useAppSelector((state) => state.gallerySettings.filter);
 
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
 

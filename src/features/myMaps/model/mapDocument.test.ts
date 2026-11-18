@@ -48,7 +48,7 @@ function state({
     routePlanner: { points: [], transportType: 'car', mode: 'route' },
     objects: { active: [] },
     search: { selectedResults: [], previewId: null },
-    gallery: { filter: {} },
+    gallerySettings: { filter: {} },
     trackViewer: {
       trackGeojson: features.length
         ? { type: 'FeatureCollection', features }
@@ -140,7 +140,9 @@ describe('mapContentString — what counts as a change', () => {
 
   it('ignores an unset gallery filter however it is spelled', () => {
     expect(
-      mapContentString(state({ gallery: { filter: { tag: undefined } } })),
+      mapContentString(
+        state({ gallerySettings: { filter: { tag: undefined } } }),
+      ),
     ).toBe(mapContentString(state()));
   });
 
@@ -456,13 +458,13 @@ describe('mapContentString — a date that is not one', () => {
   it('leaves out an invalid gallery filter date instead of throwing', () => {
     expect(() =>
       mapContentString(
-        state({ gallery: { filter: { takenAtFrom: invalid } } }),
+        state({ gallerySettings: { filter: { takenAtFrom: invalid } } }),
       ),
     ).not.toThrow();
 
     expect(
       mapContentString(
-        state({ gallery: { filter: { takenAtFrom: invalid } } }),
+        state({ gallerySettings: { filter: { takenAtFrom: invalid } } }),
       ),
     ).not.toContain('gallery-taken-at-from');
   });

@@ -83,7 +83,7 @@ export default function EventsMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const filterActive = useAppSelector(
-    ({ events: { filter } }) => !isFilterEmpty(filter),
+    ({ eventsSettings: { filter } }) => !isFilterEmpty(filter),
   );
 
   const userId = useAppSelector((state) => state.auth.user?.id);

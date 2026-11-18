@@ -94,7 +94,7 @@ export const eventsLoadListProcessor: Processor = {
     try {
       const res = await httpRequest({
         getState,
-        url: `/events?${objectToURLSearchParams({ ...filterToRequest(state.events.filter), summary: '1' })}`,
+        url: `/events?${objectToURLSearchParams({ ...filterToRequest(state.eventsSettings.filter), summary: '1' })}`,
         expectedStatus: 200,
         cancelActions: triggers,
       });

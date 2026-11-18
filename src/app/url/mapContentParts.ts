@@ -1,4 +1,14 @@
 import { urlWire } from '@features/dataViewer/model/urlForm.js';
+import {
+  GALLERY_SOURCES,
+  type GallerySource,
+} from '@features/gallery/galleryUtils.js';
+import {
+  type GalleryLicense,
+  GalleryLicenseSchema,
+} from '@features/gallery/licenses.js';
+import type { GalleryFilter } from '@features/gallery/model/actions.js';
+import { activeGalleryFilterSelector } from '@features/gallery/model/selectors.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import {
   featureIdsEqual,
@@ -42,6 +52,162 @@ export function isValidDate(d: Date): boolean {
   return !Number.isNaN(d.getTime());
 }
 
+/** The photo filter's URL parameters; none for an empty filter. */
+export function galleryFilterParts(filter: GalleryFilter): QueryPart[] {
+  const parts: QueryPart[] = [];
+
+  if (filter.userId) {
+    parts.push(['gallery-user-id', filter.userId]);
+  }
+
+  if (filter.tag != null) {
+    parts.push(['gallery-tag', filter.tag]);
+  }
+
+  if (filter.ratingFrom) {
+    parts.push(['gallery-rating-from', filter.ratingFrom]);
+  }
+
+  if (filter.ratingTo) {
+    parts.push(['gallery-rating-to', filter.ratingTo]);
+  }
+
+  pushDate(parts, 'gallery-taken-at-from', filter.takenAtFrom);
+
+  pushDate(parts, 'gallery-taken-at-to', filter.takenAtTo);
+
+  pushDate(parts, 'gallery-created-at-from', filter.createdAtFrom);
+
+  pushDate(parts, 'gallery-created-at-to', filter.createdAtTo);
+
+  if (filter.pano !== undefined) {
+    parts.push(['gallery-pano', filter.pano]);
+  }
+
+  if (filter.premium !== undefined) {
+    parts.push(['gallery-premium', filter.premium]);
+  }
+
+  for (const license of filter.license ?? []) {
+    parts.push(['gallery-license', license]);
+  }
+
+  // Only a restricting subset; all of them, like undefined, means no
+  // restriction and reads back as such.
+  if (filter.sources && filter.sources.length < GALLERY_SOURCES.length) {
+    for (const source of filter.sources) {
+      parts.push(['gallery-source', source]);
+    }
+  }
+
+  return parts;
+}
+
+/** A query string as its params, a repeated one as a list. */
+export function parseQuery(search: string): Record<string, string | string[]> {
+  const q: Record<string, string | string[]> = {};
+
+  for (const [k, v] of new URLSearchParams(search)) {
+    const e = q[k];
+
+    if (Array.isArray(e)) {
+      e.push(v);
+    } else if (e === undefined) {
+      q[k] = v;
+    } else {
+      q[k] = [e, v];
+    }
+  }
+
+  return q;
+}
+
+/** The photo filter `galleryFilterParts` wrote; invalid values are left out. */
+export function galleryFilterFromQuery(
+  query: Record<string, string | string[] | undefined>,
+): GalleryFilter {
+  const one = (key: string) => {
+    const v = query[key];
+
+    return typeof v === 'string' ? v : undefined;
+  };
+
+  const all = (key: string) => {
+    const v = query[key];
+
+    return v === undefined ? [] : Array.isArray(v) ? v : [v];
+  };
+
+  const num = (key: string) => {
+    const n = Number.parseFloat(one(key) ?? '');
+
+    return n || undefined;
+  };
+
+  const date = (key: string) => {
+    const d = new Date(one(key) ?? '');
+
+    return isValidDate(d) ? d : undefined;
+  };
+
+  const flag = (key: string) => {
+    const v = one(key);
+
+    return v === undefined ? undefined : v === 'true';
+  };
+
+  const license = all('gallery-license').filter(
+    (x): x is GalleryLicense => GalleryLicenseSchema.safeParse(x).success,
+  );
+
+  const sources = all('gallery-source').filter((x): x is GallerySource =>
+    (GALLERY_SOURCES as string[]).includes(x),
+  );
+
+  const filter: GalleryFilter = {
+    userId: num('gallery-user-id'),
+    tag: one('gallery-tag'),
+    ratingFrom: num('gallery-rating-from'),
+    ratingTo: num('gallery-rating-to'),
+    takenAtFrom: date('gallery-taken-at-from'),
+    takenAtTo: date('gallery-taken-at-to'),
+    createdAtFrom: date('gallery-created-at-from'),
+    createdAtTo: date('gallery-created-at-to'),
+    pano: flag('gallery-pano'),
+    premium: flag('gallery-premium'),
+    license: license.length ? license : undefined,
+    sources:
+      sources.length && sources.length < GALLERY_SOURCES.length
+        ? sources
+        : undefined,
+  };
+
+  return Object.fromEntries(
+    Object.entries(filter).filter(([, v]) => v !== undefined),
+  ) as GalleryFilter;
+}
+
+export const sameGalleryFilter = (a: GalleryFilter, b: GalleryFilter) =>
+  serializeQuery(galleryFilterParts(a)) ===
+  serializeQuery(galleryFilterParts(b));
+
+/** Whether it restricts nothing: no URL params. */
+export const isGalleryFilterEmpty = (f: GalleryFilter) =>
+  galleryFilterParts(f).length === 0;
+
+/**
+ * A saved map's photo filter, or undefined for none: saved with the layer off
+ * it is empty, as older maps' always-stored one mostly is.
+ */
+export const mapGalleryFilter = ({
+  galleryFilter,
+}: {
+  galleryFilter?: GalleryFilter;
+}): GalleryFilter | undefined =>
+  galleryFilter && !isGalleryFilterEmpty(galleryFilter)
+    ? galleryFilter
+    : undefined;
+
 /**
  * The URL parameters describing what a map holds — the same content a saved map
  * document stores.
@@ -54,14 +220,7 @@ export function isValidDate(d: Date): boolean {
  * through.
  */
 export function getMapContentParts(state: RootState): QueryPart[] {
-  const {
-    routePlanner,
-    trackViewer,
-    gallery: { filter: galleryFilter },
-    tracking,
-    objects,
-    search,
-  } = state;
+  const { routePlanner, trackViewer, tracking, objects, search } = state;
 
   const parts: QueryPart[] = [];
 
@@ -124,47 +283,8 @@ export function getMapContentParts(state: RootState): QueryPart[] {
   // (`localTrack`). `track-uid=` / `import-url=` are read, never written.
   parts.push(...(urlWire(trackViewer.trackGeojson) ?? []));
 
-  if (galleryFilter.userId) {
-    parts.push(['gallery-user-id', galleryFilter.userId]);
-  }
-
-  if (galleryFilter.tag != null) {
-    parts.push(['gallery-tag', galleryFilter.tag]);
-  }
-
-  if (galleryFilter.ratingFrom) {
-    parts.push(['gallery-rating-from', galleryFilter.ratingFrom]);
-  }
-
-  if (galleryFilter.ratingTo) {
-    parts.push(['gallery-rating-to', galleryFilter.ratingTo]);
-  }
-
-  pushDate(parts, 'gallery-taken-at-from', galleryFilter.takenAtFrom);
-
-  pushDate(parts, 'gallery-taken-at-to', galleryFilter.takenAtTo);
-
-  pushDate(parts, 'gallery-created-at-from', galleryFilter.createdAtFrom);
-
-  pushDate(parts, 'gallery-created-at-to', galleryFilter.createdAtTo);
-
-  if (galleryFilter.pano !== undefined) {
-    parts.push(['gallery-pano', galleryFilter.pano]);
-  }
-
-  if (galleryFilter.premium !== undefined) {
-    parts.push(['gallery-premium', galleryFilter.premium]);
-  }
-
-  for (const license of galleryFilter.license ?? []) {
-    parts.push(['gallery-license', license]);
-  }
-
-  // Only a restricting subset is serialized; undefined (= both sources) stays
-  // out of the URL.
-  for (const source of galleryFilter.sources ?? []) {
-    parts.push(['gallery-source', source]);
-  }
+  // None while the layer is off: the filter is then only remembered.
+  parts.push(...galleryFilterParts(activeGalleryFilterSelector(state)));
 
   if (objects.active.length) {
     parts.push(['objects', objects.active.join(';')]);

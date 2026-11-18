@@ -9,6 +9,7 @@ import {
   galleryRequestImage,
   gallerySetImageIds,
 } from '../actions.js';
+import { activeGalleryFilterSelector } from '../selectors.js';
 
 export const galleryRequestImagesByOrderProcessor: Processor<
   typeof galleryList
@@ -23,7 +24,7 @@ export const galleryRequestImagesByOrderProcessor: Processor<
           by: 'order',
           orderBy: action.payload.substring(1),
           direction: action.payload[0] === '+' ? 'asc' : 'desc',
-          ...createFilter(getState().gallery.filter),
+          ...createFilter(activeGalleryFilterSelector(getState())),
         }),
       expectedStatus: 200,
     }).catch(async (err) => {

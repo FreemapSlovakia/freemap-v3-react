@@ -88,7 +88,7 @@ export function EventsLayerList(): ReactElement {
 
   const events = useAppSelector((state) => state.events.list);
 
-  const near = useAppSelector((state) => state.events.filter.near);
+  const near = useAppSelector((state) => state.eventsSettings.filter.near);
 
   const home = useAppSelector((state) => state.homeLocation.homeLocation);
 

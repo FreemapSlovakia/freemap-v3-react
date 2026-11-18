@@ -93,6 +93,15 @@ function makeState(): RootState {
       showDirection: true,
       showLegend: true,
       premium: true,
+      filter: { tag: 'x', takenAtFrom: new Date('2026-01-02T00:00:00.000Z') },
+    },
+    eventsSettings: {
+      colorizeBy: 'when',
+      showLegend: true,
+      listSort: 'date',
+      listInView: false,
+      listTraits: ['distance'],
+      filter: { within: '1w', transport: ['hiking'] },
     },
     mapDetails: { excludeSources: [] },
     weatherRadarSettings: { showNowcast: false },
@@ -249,6 +258,16 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         showDirection: true,
         showLegend: true,
         premium: true,
+        filter: 'gallery-tag=x&gallery-taken-at-from=2026-01-02',
+      },
+      // The filter as its URL parameters.
+      eventsSettings: {
+        colorizeBy: 'when',
+        showLegend: true,
+        listSort: 'date',
+        listInView: false,
+        listTraits: ['distance'],
+        filter: { 'events-within': '1w', 'events-transport': 'hiking' },
       },
       mapDetails: { excludeSources: [] },
       elevationSettings: {
@@ -327,6 +346,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
         'main',
         'map',
         'mapDetails',
+        'eventsSettings',
         'gallerySettings',
         'objectsSettings',
         'routePlanner',
@@ -445,6 +465,15 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.map?.zoom).toBe(8);
     expect(initial.map?.zoomSnap).toBe(0.5);
     expect(initial.gallerySettings?.recentTags).toEqual(['x']);
+    // The filters round-trip, the photo filter's dates as dates.
+    expect(initial.gallerySettings?.filter.tag).toBe('x');
+    expect(initial.gallerySettings?.filter.takenAtFrom).toEqual(
+      new Date('2026-01-02T00:00:00.000Z'),
+    );
+    expect(initial.eventsSettings?.filter).toEqual({
+      within: '1w',
+      transport: ['hiking'],
+    });
     // trackViewerSettings.colorizeTrackBy round-trips through save → rehydrate.
     expect(initial.trackViewerSettings?.colorizeTrackBy).toBe('heartRate');
     // trackingSettings round-trips through save → rehydrate. The display prefs

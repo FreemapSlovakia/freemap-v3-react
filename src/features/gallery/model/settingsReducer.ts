@@ -1,20 +1,22 @@
+import { mapGalleryFilter } from '@app/url/mapContentParts.js';
+import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { DEFAULT_PHOTO_LICENSE, type GalleryLicense } from '../licenses.js';
 import {
   type GalleryColorizeBy,
+  type GalleryFilter,
   galleryAddTag,
   galleryColorizeBy,
   galleryQuickAddTag,
+  gallerySetFilter,
   gallerySetLicense,
   galleryToggleDirection,
   galleryToggleLegend,
   galleryTogglePremium,
 } from './actions.js';
 
-// Persisted gallery display preferences. A dedicated settings slice (not the
-// transient items/filter state), so the colorize mode, direction/legend
-// toggles, recently-used tags, and per-upload premium default survive map
-// clears without per-handler preservation.
+// Persisted gallery preferences, the filter among them; never reset by a map
+// clear.
 export interface GallerySettingsState {
   colorizeBy: GalleryColorizeBy | null;
   recentTags: string[];
@@ -26,6 +28,8 @@ export interface GallerySettingsState {
   // Default license for newly added upload items; mirrors the user's last
   // license choice in the upload modal.
   license: GalleryLicense;
+  /** Remembered also while the photos layer is off; then not in the URL. */
+  filter: GalleryFilter;
 }
 
 export const gallerySettingsInitialState: GallerySettingsState = {
@@ -35,6 +39,7 @@ export const gallerySettingsInitialState: GallerySettingsState = {
   showLegend: true,
   premium: true,
   license: DEFAULT_PHOTO_LICENSE,
+  filter: {},
 };
 
 export const gallerySettingsReducer = createReducer(
@@ -55,6 +60,17 @@ export const gallerySettingsReducer = createReducer(
       })
       .addCase(gallerySetLicense, (state, action) => {
         state.license = action.payload;
+      })
+      .addCase(gallerySetFilter, (state, action) => {
+        state.filter = action.payload;
+      })
+      .addCase(mapsLoaded, (state, action) => {
+        // A map without one keeps the remembered filter.
+        const filter = mapGalleryFilter(action.payload.data);
+
+        if (filter) {
+          state.filter = filter;
+        }
       })
       .addMatcher(
         isAnyOf(galleryAddTag, galleryQuickAddTag),

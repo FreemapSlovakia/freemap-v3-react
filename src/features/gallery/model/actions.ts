@@ -9,6 +9,9 @@ import {
   GalleryLicenseSchema,
 } from '../licenses.js';
 
+/** Map overlay-layer code for the photos layer. */
+export const GALLERY_LAYER = 'I';
+
 // Keys of `GalleryMessages` used to label item/edit-form validation failures.
 export type GalleryValidationError =
   | 'missingPositionError'
@@ -130,7 +133,6 @@ export const GalleryFilterSchema = z.object({
 });
 
 export type GalleryFilter = z.infer<typeof GalleryFilterSchema>;
-
 export const galleryAddTag = createAction<string>('GALLERY_ADD_TAG');
 
 export const galleryRequestImages = createAction<LatLon>(

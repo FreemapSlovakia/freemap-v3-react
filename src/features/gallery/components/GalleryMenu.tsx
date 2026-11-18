@@ -1,4 +1,5 @@
 import { saveSettings, setActiveModal } from '@app/store/actions.js';
+import { isGalleryFilterEmpty } from '@app/url/mapContentParts.js';
 import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
@@ -124,9 +125,7 @@ export default function GalleryMenu() {
   );
 
   const filterIsActive = useAppSelector(
-    (state) =>
-      Object.values(state.gallery.filter).filter((v) => v !== undefined)
-        .length > 0,
+    (state) => !isGalleryFilterEmpty(state.gallerySettings.filter),
   );
 
   // Controlled "more" (cog) dropdown, so the license chooser can swap the menu

@@ -240,7 +240,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
   const em = useEventsMessages();
 
-  const filter = useAppSelector((state) => state.events.filter);
+  const filter = useAppSelector((state) => state.eventsSettings.filter);
 
   const [from, setFrom] = useState('');
 

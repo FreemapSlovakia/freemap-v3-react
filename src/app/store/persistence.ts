@@ -1,3 +1,9 @@
+import {
+  galleryFilterFromQuery,
+  galleryFilterParts,
+  parseQuery,
+  serializeQuery,
+} from '@app/url/mapContentParts.js';
 import { authInitialState } from '@features/auth/model/reducer.js';
 import {
   UserSchema,
@@ -17,6 +23,10 @@ import {
   GRADE_WINDOW_WHOLE_LINE,
 } from '@features/elevationChart/model/settingsReducer.js';
 import { EventsColorizeBySchema } from '@features/events/model/colorize.js';
+import {
+  filterFromQuery,
+  filterToQuery,
+} from '@features/events/model/filter.js';
 import {
   DEFAULT_LIST_TRAITS,
   EventsListSortSchema,
@@ -498,6 +508,11 @@ export const PersistedGallerySettingsSchema = z
     showLegend: z.boolean(),
     premium: z.boolean(),
     license: GalleryLicenseSchema,
+    // Stored as its URL query, so it is read back as a link is.
+    filter: z
+      .string()
+      .transform((s) => galleryFilterFromQuery(parseQuery(s)))
+      .catch({}),
   })
   .partial();
 
@@ -525,6 +540,11 @@ export const PersistedEventsSettingsSchema = z
         ),
       ])
       .catch(DEFAULT_LIST_TRAITS),
+    // Stored as its URL parameters, so it is read back as a link is.
+    filter: z
+      .record(z.string(), z.string())
+      .transform((q) => filterFromQuery(q))
+      .catch({}),
   })
   .partial();
 
@@ -853,6 +873,7 @@ const PERSIST: PersistEntry[] = [
       showLegend: g.showLegend,
       premium: g.premium,
       license: g.license,
+      filter: serializeQuery(galleryFilterParts(g.filter)),
     }),
   }),
   defineEntry({
@@ -871,7 +892,10 @@ const PERSIST: PersistEntry[] = [
     key: 'eventsSettings',
     schema: PersistedEventsSettingsSchema,
     initial: eventsSettingsInitialState,
-    persist: (e) => e,
+    persist: (e) => ({
+      ...e,
+      filter: Object.fromEntries(filterToQuery(e.filter)),
+    }),
   }),
   defineEntry({
     key: 'osmNotesSettings',

@@ -10,6 +10,7 @@ import {
   galleryRequestImages,
   gallerySetImageIds,
 } from '../actions.js';
+import { activeGalleryFilterSelector } from '../selectors.js';
 
 export const galleryRequestImagesByRadiusProcessor: Processor<
   typeof galleryRequestImages
@@ -27,7 +28,7 @@ export const galleryRequestImagesByRadiusProcessor: Processor<
           lat,
           lon,
           distance: 5000 / 2 ** getState().map.zoom,
-          ...createFilter(getState().gallery.filter),
+          ...createFilter(activeGalleryFilterSelector(getState())),
         }),
       expectedStatus: 200,
     }).catch(async (err) => {

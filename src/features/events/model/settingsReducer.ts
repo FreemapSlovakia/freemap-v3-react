@@ -1,12 +1,14 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
   eventsColorizeBy,
+  eventsSetFilter,
   eventsSetListInView,
   eventsSetListSort,
   eventsToggleLegend,
   eventsToggleListTrait,
 } from './actions.js';
 import type { EventsColorizeBy } from './colorize.js';
+import type { EventsFilter } from './filter.js';
 import {
   DEFAULT_LIST_TRAITS,
   type EventsListSort,
@@ -22,6 +24,8 @@ export interface EventsSettingsState {
   listInView: boolean;
   /** What each of its rows shows beside the dates. */
   listTraits: EventsListTrait[];
+  /** Remembered also while the layer is off; then not in the URL. */
+  filter: EventsFilter;
 }
 
 export const eventsSettingsInitialState: EventsSettingsState = {
@@ -30,6 +34,7 @@ export const eventsSettingsInitialState: EventsSettingsState = {
   listSort: 'date',
   listInView: false,
   listTraits: DEFAULT_LIST_TRAITS,
+  filter: {},
 };
 
 export const eventsSettingsReducer = createReducer(
@@ -44,6 +49,9 @@ export const eventsSettingsReducer = createReducer(
       })
       .addCase(eventsSetListSort, (state, action) => {
         state.listSort = action.payload;
+      })
+      .addCase(eventsSetFilter, (state, action) => {
+        state.filter = action.payload;
       })
       .addCase(eventsSetListInView, (state, action) => {
         state.listInView = action.payload;

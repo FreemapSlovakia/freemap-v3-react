@@ -1,5 +1,4 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
-import { mapRefocus } from '@features/map/model/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
   type GalleryItem,
@@ -170,28 +169,6 @@ describe('galleryReducer — togglePremium propagates to items', () => {
 });
 
 describe('galleryReducer — resets', () => {
-  it('mapRefocus to layers without the gallery overlay resets the filter', () => {
-    const state = {
-      ...galleryInitialState,
-      filter: { ...galleryInitialState.filter, tag: 'x' },
-    };
-
-    const next = galleryReducer(state, mapRefocus({ layers: ['X'] }));
-
-    expect(next.filter).toEqual(galleryInitialState.filter);
-  });
-
-  it('mapRefocus keeping the gallery overlay leaves the filter intact', () => {
-    const state = {
-      ...galleryInitialState,
-      filter: { ...galleryInitialState.filter, tag: 'x' },
-    };
-
-    const next = galleryReducer(state, mapRefocus({ layers: ['X', 'I'] }));
-
-    expect(next.filter.tag).toBe('x');
-  });
-
   it('clearMapFeatures resets items but preserves dirtySeq', () => {
     const state = {
       ...galleryInitialState,

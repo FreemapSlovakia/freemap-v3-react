@@ -1,6 +1,7 @@
 import type { RootState } from '@app/store/store.js';
 import {
   getMapContentParts,
+  mapGalleryFilter,
   serializeQuery,
 } from '@app/url/mapContentParts.js';
 import {
@@ -13,6 +14,7 @@ import {
   completeCollection,
   featuresInLink,
 } from '@features/dataViewer/model/urlForm.js';
+import { activeGalleryFilterSelector } from '@features/gallery/model/selectors.js';
 import { presetOnlyConfigs } from '@features/map/model/layerSetup.js';
 import { inlinePresets } from '@features/map/model/mapPreset.js';
 import { routePlannerFromMapData } from '@features/routePlanner/model/reducer.js';
@@ -48,8 +50,7 @@ function documentOrder(features: readonly Feature[]): number[] | undefined {
  * it has unsaved changes.
  */
 export function getMapDataFromState(state: RootState): MapData {
-  const { tracking, routePlanner, objects, gallery, trackViewer, map, search } =
-    state;
+  const { tracking, routePlanner, objects, trackViewer, map, search } = state;
 
   // What the drawing form can say goes where every client reads it; the rest
   // rides as the viewer's track.
@@ -92,7 +93,8 @@ export function getMapDataFromState(state: RootState): MapData {
     search: {
       results: savedSearchResultsFromState(search),
     },
-    galleryFilter: gallery.filter,
+    // Empty while the photos layer is off, which a load reads as none.
+    galleryFilter: activeGalleryFilterSelector(state),
     // Only the fields the loader reads back; the rest of the slice is transient
     // view state (selected track, elevation decision, render cache).
     trackViewer: {
@@ -245,7 +247,11 @@ export function fingerprintDocument(data: MapData, base: RootState): string {
           previewId: null,
         }
       : base.search,
-    gallery: { ...base.gallery, filter: data.galleryFilter ?? {} },
+    // As the load does: a map without one keeps the remembered filter.
+    gallerySettings: {
+      ...base.gallerySettings,
+      filter: mapGalleryFilter(data) ?? base.gallerySettings.filter,
+    },
     tracking: {
       ...base.tracking,
       trackedDevices: data.tracking?.trackedDevices ?? [],
@@ -276,12 +282,14 @@ export const fingerprintState = createSelector(
     (state: RootState) => state.tracking.trackedDevices,
     (state: RootState) => state.routePlanner,
     (state: RootState) => state.objects.active,
-    (state: RootState) => state.gallery.filter,
+    (state: RootState) => state.gallerySettings.filter,
     (state: RootState) => state.trackViewer.trackGeojson,
     (state: RootState) => state.trackViewer.trackUID,
     (state: RootState) => state.trackViewer.gpxUrl,
     (state: RootState) => state.search.selectedResults,
     (state: RootState) => state.search.previewId,
+    // Whether the photos layer, and with it the photo filter, is on.
+    (state: RootState) => state.map.layers,
   ],
   (
     trackedDevices,
@@ -293,6 +301,7 @@ export const fingerprintState = createSelector(
     gpxUrl,
     selectedResults,
     previewId,
+    layers,
   ) =>
     // Only the slices the serialization reads are rebuilt, so anything it starts
     // reading without being listed above fails here rather than silently
@@ -301,8 +310,9 @@ export const fingerprintState = createSelector(
       tracking: { trackedDevices },
       routePlanner,
       objects: { active },
-      gallery: { filter },
+      gallerySettings: { filter },
       trackViewer: { trackGeojson, trackUID, gpxUrl },
       search: { selectedResults, previewId },
+      map: { layers },
     } as RootState),
 );

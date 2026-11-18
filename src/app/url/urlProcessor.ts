@@ -1,5 +1,6 @@
 import { localTrack } from '@features/dataViewer/model/localTrack.js';
 import { snapshotKey } from '@features/dataViewer/trackStore.js';
+import { EVENTS_LAYER } from '@features/events/model/actions.js';
 import { filterToQuery } from '@features/events/model/filter.js';
 import {
   isEmptySetup,
@@ -306,9 +307,10 @@ function updateUrl(state: RootState, forced: boolean): void {
     trackViewerSettings,
     trackingSettings,
     gallery,
+    gallerySettings,
     changesets,
     changesetInspector,
-    events: { filter: eventsFilter },
+    eventsSettings: { filter: eventsFilter },
     main,
     tracking,
     search,
@@ -387,7 +389,7 @@ function updateUrl(state: RootState, forced: boolean): void {
     changesetInspector.inspected?.id,
     changesetInspector.history?.id,
     gallery.activeImageId,
-    gallery.filter,
+    gallerySettings.filter,
     eventsFilter,
     main.activeModal,
     main.embedFeatures,
@@ -728,8 +730,10 @@ function updateUrl(state: RootState, forced: boolean): void {
 
   // Which events are listed, not what the map holds — so it stays in the
   // address bar (and thus in a shared link) even under a saved map, and no map
-  // document carries it.
-  queryParts.push(...filterToQuery(eventsFilter));
+  // document carries it. With the layer off it is only remembered.
+  if (map.layers.includes(EVENTS_LAYER)) {
+    queryParts.push(...filterToQuery(eventsFilter));
+  }
 
   {
     // The gallery viewer (own + Wikimedia Commons photos) keeps its own slice

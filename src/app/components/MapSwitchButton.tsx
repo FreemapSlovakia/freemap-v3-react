@@ -1,7 +1,9 @@
+import { isGalleryFilterEmpty } from '@app/url/mapContentParts.js';
 import { hasRole } from '@features/auth/model/types.js';
 import { isCachedMapComplete } from '@features/cachedMaps/cachedTileMaps.js';
 import { EVENTS_LAYER } from '@features/events/model/actions.js';
 import { isFilterEmpty } from '@features/events/model/filter.js';
+import { GALLERY_LAYER } from '@features/gallery/model/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import {
@@ -104,8 +106,6 @@ import { useMediaQuery } from 'react-responsive';
 import type { Messages } from '@/translations/messagesInterface.js';
 import { setActiveModal } from '../store/actions.js';
 
-const GALLERY_LAYER = 'I';
-
 /** The filter a filtered layer's badge opens. */
 const FILTER_MODALS: Record<
   string,
@@ -188,12 +188,12 @@ export function MapSwitchButton(): ReactElement {
   const activeLayers = useAppSelector((state) => state.map.layers);
 
   // A filtered layer's badge: it shows less than there is.
-  const pictureFilterIsActive = useAppSelector((state) =>
-    Object.values(state.gallery.filter).some((x) => x !== undefined),
+  const pictureFilterIsActive = useAppSelector(
+    (state) => !isGalleryFilterEmpty(state.gallerySettings.filter),
   );
 
   const eventFilterIsActive = useAppSelector(
-    (state) => !isFilterEmpty(state.events.filter),
+    (state) => !isFilterEmpty(state.eventsSettings.filter),
   );
 
   const filterWarnings: Record<string, string | undefined> = {

@@ -14,7 +14,6 @@ import {
   eventsSaveDone,
   eventsSetCommentDraft,
   eventsSetComments,
-  eventsSetFilter,
   eventsSetList,
   eventsSetParticipants,
   eventsSetPickingStart,
@@ -23,12 +22,10 @@ import {
   eventsSetSelected,
   eventsStartPicked,
 } from './actions.js';
-import type { EventsFilter } from './filter.js';
 
 export interface EventsState {
   /** Summaries, for the markers and the list; the selected one in full. */
   list: EventSummary[];
-  filter: EventsFilter;
   selected: EventItem | null;
   /** Who is going to the selected event and who is interested. */
   participants: { eventId: string; items: EventParticipant[] } | null;
@@ -49,7 +46,6 @@ export interface EventsState {
 
 const initialState: EventsState = {
   list: [],
-  filter: {},
   selected: null,
   participants: null,
   comments: null,
@@ -66,9 +62,6 @@ export const eventsReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(eventsSetList, (state, { payload }) => {
       state.list = payload;
-    })
-    .addCase(eventsSetFilter, (state, { payload }) => {
-      state.filter = payload;
     })
     .addCase(eventsSetSelected, (state, { payload }) => {
       state.selected = payload;

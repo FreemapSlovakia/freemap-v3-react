@@ -38,22 +38,18 @@ import {
   eventsSetFilter,
 } from '@features/events/model/actions.js';
 import { EventsColorizeBySchema } from '@features/events/model/colorize.js';
-import { filterFromQuery, sameFilter } from '@features/events/model/filter.js';
+import {
+  filterFromQuery,
+  isFilterEmpty,
+  sameFilter,
+} from '@features/events/model/filter.js';
 import {
   eventsLayerOnSelector,
   selectedEventId,
 } from '@features/events/model/selectors.js';
 import {
-  GALLERY_SOURCES,
-  type GallerySource,
-} from '@features/gallery/galleryUtils.js';
-import {
-  type GalleryLicense,
-  GalleryLicenseSchema,
-} from '@features/gallery/licenses.js';
-import {
+  GALLERY_LAYER,
   GalleryColorizeBySchema,
-  type GalleryFilter,
   galleryClear,
   galleryColorizeBy,
   galleryRequestImage,
@@ -199,6 +195,12 @@ import type { RootAction } from '../store/rootAction.js';
 import { isToolOpen, openToolsSelector } from '../store/selectors.js';
 import type { MyStore, RootState } from '../store/store.js';
 import { type EntryRequest, hasOwnContent, openEntry } from './entryContent.js';
+import {
+  galleryFilterFromQuery,
+  isGalleryFilterEmpty,
+  parseQuery,
+  sameGalleryFilter,
+} from './mapContentParts.js';
 import { type PanelParam, panelFromQuery } from './panelParam.js';
 import { holdChartRequest, takeChartRequest } from './pendingChartRequest.js';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from './urlMapUtils.js';
@@ -206,24 +208,6 @@ import { setUrlUpdatingEnabled } from './urlUpdating.js';
 
 // As `CustomMapEditor` makes them, or the legacy `.<n>` / `:<n>`.
 const CUSTOM_ID_RE = /^(?:[0-9a-z]{1,6}|[.:]\d+)$/;
-
-function parseQuery(search: string) {
-  const q: Record<string, string | string[]> = {};
-
-  for (const [k, v] of new URLSearchParams(search)) {
-    const e = q[k];
-
-    if (Array.isArray(e)) {
-      e.push(v);
-    } else if (e === undefined) {
-      q[k] = v;
-    } else {
-      q[k] = [e, v];
-    }
-  }
-
-  return q;
-}
 
 export function handleLocationChange(store: MyStore): void {
   const { getState, dispatch } = store;
@@ -622,10 +606,6 @@ export function handleLocationChange(store: MyStore): void {
     panel?.type === 'osm' ? panel.id : undefined,
   );
 
-  handleGallery(getState, dispatch, query);
-
-  handleEvents(getState, dispatch, query);
-
   const customLayerDefsStr = query['custom-layers'];
 
   const { customLayers } = getState().map;
@@ -779,6 +759,15 @@ export function handleLocationChange(store: MyStore): void {
       ...customTypes.filter((type) => !named.has(type)),
     ];
   }
+
+  // Before the layers turn on, so one loads with the link's filter at once.
+  handleFilters(getState, dispatch, query, {
+    linkLayers: mapStateFromUrl.layers,
+    // A saved map's link in a fresh tab: its document brings the filter.
+    mapBringsGallery: id !== undefined && sq === undefined,
+    // An event's link turns the layer on, whatever `layers=` says.
+    eventLink: panel?.type === 'event',
+  });
 
   const diff = getMapStateDiffFromUrl(mapStateFromUrl, getState().map);
 
@@ -1522,178 +1511,52 @@ function handleSelectedElement(
   }
 }
 
-function handleGallery(
+/**
+ * The photo and events filters a link sets — to exactly its params, so none
+ * clears one — or leaves remembered: with `layers=`, a layer's filter while it
+ * turns the layer on; without, when the link carries that filter.
+ */
+function handleFilters(
   getState: () => RootState,
   dispatch: Dispatch<RootAction>,
   query: Record<string, string | string[]>,
+  {
+    linkLayers,
+    mapBringsGallery,
+    eventLink,
+  }: {
+    linkLayers: string[] | undefined;
+    mapBringsGallery: boolean;
+    eventLink: boolean;
+  },
 ) {
-  let a = query['gallery-user-id'];
+  const sets = (layer: string, hasParams: boolean) =>
+    linkLayers ? linkLayers.includes(layer) : hasParams;
 
-  const qUserId = typeof a === 'string' ? parseInt(a, 10) : undefined;
-
-  a = query['gallery-tag'];
-
-  const qGalleryTag = typeof a === 'string' ? a : undefined;
-
-  a = query['gallery-rating-from'];
-
-  const qRatingFrom = typeof a === 'string' ? parseFloat(a) : undefined;
-
-  a = query['gallery-rating-to'];
-
-  const qRatingTo = typeof a === 'string' ? parseFloat(a) : undefined;
-
-  a = query['gallery-taken-at-from'];
-
-  const qTakenAtFrom = parseDate(a);
-
-  a = query['gallery-taken-at-to'];
-
-  const qTakenAtTo = parseDate(a);
-
-  a = query['gallery-created-at-from'];
-
-  const qCreatedAtFrom = parseDate(a);
-
-  a = query['gallery-created-at-to'];
-
-  const qCreatedAtTo = parseDate(a);
-
-  a = query['gallery-pano'];
-
-  const qPano = typeof a !== 'string' ? undefined : a === 'true';
-
-  a = query['gallery-premium'];
-
-  const qPremium = typeof a !== 'string' ? undefined : a === 'true';
-
-  a = query['gallery-license'];
-
-  const qLicenseAll = (
-    a === undefined ? [] : Array.isArray(a) ? a : [a]
-  ).filter(
-    (x): x is GalleryLicense => GalleryLicenseSchema.safeParse(x).success,
-  );
-
-  const qLicense = qLicenseAll.length > 0 ? qLicenseAll : undefined;
-
-  a = query['gallery-source'];
-
-  const qSourcesAll = (
-    a === undefined ? [] : Array.isArray(a) ? a : [a]
-  ).filter((x): x is GallerySource =>
-    (GALLERY_SOURCES as string[]).includes(x),
-  );
-
-  const qSources =
-    qSourcesAll.length > 0 && qSourcesAll.length < GALLERY_SOURCES.length
-      ? qSourcesAll
-      : undefined;
-
-  if (
-    qUserId ||
-    qGalleryTag != null ||
-    qRatingFrom ||
-    qRatingTo ||
-    qTakenAtFrom ||
-    qTakenAtTo ||
-    qCreatedAtFrom ||
-    qCreatedAtTo ||
-    qPano !== undefined ||
-    qPremium !== undefined ||
-    qLicense ||
-    qSources
-  ) {
-    const { filter } = getState().gallery;
-
-    const newFilter: GalleryFilter = {};
-
-    if (qUserId && filter.userId !== qUserId) {
-      newFilter.userId = qUserId;
-    }
-
-    if (typeof qGalleryTag === 'string' && filter.tag !== qGalleryTag) {
-      newFilter.tag = qGalleryTag;
-    }
-
-    if (qRatingFrom && filter.ratingFrom !== qRatingFrom) {
-      newFilter.ratingFrom = qRatingFrom;
-    }
-
-    if (qRatingTo && filter.ratingTo !== qRatingTo) {
-      newFilter.ratingTo = qRatingTo;
-    }
-
-    if (
-      qTakenAtFrom &&
-      (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !==
-        qTakenAtFrom.getTime()
-    ) {
-      newFilter.takenAtFrom = qTakenAtFrom;
-    }
-
-    if (
-      qTakenAtTo &&
-      (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !==
-        qTakenAtTo.getTime()
-    ) {
-      newFilter.takenAtTo = qTakenAtTo;
-    }
-
-    if (
-      qCreatedAtFrom &&
-      (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !==
-        qCreatedAtFrom.getTime()
-    ) {
-      newFilter.createdAtFrom = qCreatedAtFrom;
-    }
-
-    if (
-      qCreatedAtTo &&
-      (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !==
-        qCreatedAtTo.getTime()
-    ) {
-      newFilter.createdAtTo = qCreatedAtTo;
-    }
-
-    if (qPano !== filter.pano) {
-      newFilter.pano = qPano;
-    }
-
-    if (qPremium !== filter.premium) {
-      newFilter.premium = qPremium;
-    }
-
-    if (qLicense && (filter.license ?? []).join(',') !== qLicense.join(',')) {
-      newFilter.license = qLicense;
-    }
-
-    if (qSources && (filter.sources ?? []).join(',') !== qSources.join(',')) {
-      newFilter.sources = qSources;
-    }
-
-    if (Object.keys(newFilter).length !== 0) {
-      dispatch(gallerySetFilter({ ...filter, ...newFilter }));
-    }
-  }
-
-  const cb = GalleryColorizeBySchema.safeParse(query['gallery-cb']);
-
-  if (cb.success) {
-    dispatch(galleryColorizeBy(cb.data));
-  }
-}
-
-function handleEvents(
-  getState: () => RootState,
-  dispatch: Dispatch<RootAction>,
-  query: Record<string, string | string[]>,
-) {
-  const next = filterFromQuery(query);
+  const gallery = galleryFilterFromQuery(query);
 
   // Only when it differs: every hash change would otherwise refetch.
-  if (!sameFilter(getState().events.filter, next)) {
-    dispatch(eventsSetFilter(next));
+  if (
+    !mapBringsGallery &&
+    sets(GALLERY_LAYER, !isGalleryFilterEmpty(gallery)) &&
+    !sameGalleryFilter(getState().gallerySettings.filter, gallery)
+  ) {
+    dispatch(gallerySetFilter(gallery));
+  }
+
+  const events = filterFromQuery(query);
+
+  if (
+    (eventLink || sets(EVENTS_LAYER, !isFilterEmpty(events))) &&
+    !sameFilter(getState().eventsSettings.filter, events)
+  ) {
+    dispatch(eventsSetFilter(events));
+  }
+
+  const gcb = GalleryColorizeBySchema.safeParse(query['gallery-cb']);
+
+  if (gcb.success) {
+    dispatch(galleryColorizeBy(gcb.data));
   }
 
   const cb = query['events-cb'];

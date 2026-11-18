@@ -1,7 +1,5 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { l10nSetLanguage } from '@features/l10n/model/actions.js';
-import { mapRefocus } from '@features/map/model/actions.js';
-import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
   parseCoordinates,
@@ -13,7 +11,6 @@ import type { LatLon } from '@shared/types/common.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 import { DEFAULT_PHOTO_LICENSE } from '../licenses.js';
 import {
-  type GalleryFilter,
   type GalleryItem,
   type GalleryItemError,
   type GalleryTag,
@@ -30,7 +27,6 @@ import {
   gallerySavePicture,
   gallerySetComment,
   gallerySetEditModel,
-  gallerySetFilter,
   gallerySetImage,
   gallerySetImageFetchFailed,
   gallerySetImageIds,
@@ -65,7 +61,6 @@ export interface GalleryState {
   users: GalleryUser[];
   dirtySeq: number;
   comment: string;
-  filter: GalleryFilter;
   editModel: PictureModel | null;
   /** `editModel` as the edit opened, for its unsaved changes. */
   editSeed: PictureModel | null;
@@ -93,16 +88,6 @@ export const galleryInitialState: GalleryState = {
 
   dirtySeq: 0,
   comment: '',
-  filter: {
-    tag: undefined,
-    userId: undefined,
-    takenAtFrom: undefined,
-    takenAtTo: undefined,
-    createdAtFrom: undefined,
-    createdAtTo: undefined,
-    ratingFrom: undefined,
-    ratingTo: undefined,
-  },
 
   editModel: null,
   editSeed: null,
@@ -124,19 +109,10 @@ const closedViewer = {
 
 export const galleryReducer = createReducer(galleryInitialState, (builder) =>
   builder
-    .addCase(mapRefocus, (state, action) => {
-      if (action.payload.layers && !action.payload.layers.includes('I')) {
-        state.filter = galleryInitialState.filter;
-      }
-    })
     .addCase(clearMapFeatures, (state) => ({
       ...galleryInitialState,
       // `dirtySeq` is a render counter, not a pref; carry it across a clear.
       dirtySeq: state.dirtySeq,
-      // The filter is a lens over the still-present photos layer, not a map
-      // feature — a clear must not silently drop it. It resets on its own when
-      // the layer is turned off (see `mapRefocus`).
-      filter: state.filter,
     }))
     .addCase(gallerySetImageIds, (state, action) => ({
       ...state,
@@ -304,9 +280,6 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     .addCase(gallerySetComment, (state, action) => {
       state.comment = action.payload;
     })
-    .addCase(gallerySetFilter, (state, action) => {
-      state.filter = action.payload;
-    })
     .addCase(setActiveModal, (state, action) => {
       if (action.payload === null) {
         state.items = [];
@@ -388,10 +361,6 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(gallerySavePicture, (state) => {
       state.saveErrors = state.editModel ? getErrors(state.editModel) : [];
-    })
-    .addCase(mapsLoaded, (state, action) => {
-      state.filter =
-        action.payload.data.galleryFilter ?? galleryInitialState.filter;
     }),
 );
 

@@ -137,7 +137,7 @@ export function Layers(): ReactNode {
 
   const shadingOnServer = useAppSelector((state) => state.map.shadingOnServer);
 
-  const galleryFilter = useAppSelector((state) => state.gallery.filter);
+  const galleryFilter = useAppSelector((state) => state.gallerySettings.filter);
 
   const galleryColorizeBy = useAppSelector(
     (state) => state.gallerySettings.colorizeBy,
