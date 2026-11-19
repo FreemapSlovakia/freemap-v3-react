@@ -9,7 +9,10 @@ import {
   selectedEventId,
 } from '@features/events/model/selectors.js';
 import { useEventMatches } from '@features/events/useEventMatches.js';
-import { useSavedPlaces } from '@features/homeLocation/useSavedPlaces.js';
+import {
+  type SavedPlace,
+  useSavedPlaces,
+} from '@features/homeLocation/useSavedPlaces.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
@@ -117,6 +120,51 @@ type Props = {
 
 // One empty list, so the effects that depend on it don't run every render.
 const NO_PLACES: PlaceMatch[] = [];
+
+/**
+ * A saved place as a search result, to preview and to pick. Its id is the
+ * place's, so a pick of one already on the map selects that one.
+ */
+function placeResult(place: SavedPlace): SearchResult {
+  return {
+    source: 'place',
+    id: { type: 'other', id: place.key },
+    geojson: point([place.position.lon, place.position.lat]),
+    displayName: place.label,
+  };
+}
+
+function PlaceItem({
+  place,
+  positions,
+}: {
+  place: SavedPlace;
+  positions: number[];
+}) {
+  const dispatch = useDispatch();
+
+  const result = placeResult(place);
+
+  return (
+    <Dropdown.Item
+      as="button"
+      type="button"
+      eventKey={`saved-${place.key}`}
+      onClick={preventDefault}
+      // Previewed as the other results are.
+      onMouseEnter={() => dispatch(searchSetHover(result))}
+      onMouseLeave={() => dispatch(searchUnsetHover(result.id))}
+      onFocus={() => dispatch(searchSetHover(result))}
+      onBlur={() => dispatch(searchUnsetHover(result.id))}
+    >
+      {place.icon}
+
+      <MenuLabel>
+        <Highlight text={place.label} at={positions} />
+      </MenuLabel>
+    </Dropdown.Item>
+  );
+}
 
 function preventDefault(e: { preventDefault: () => void }) {
   e.preventDefault();
@@ -501,23 +549,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       if (eventKey.startsWith('saved-')) {
         const key = eventKey.slice(6);
 
-        const at = choosePlace(key, 'search');
+        const place = savedPlaces.find((p) => p.key === key);
 
-        if (at) {
+        if (place && choosePlace(key, 'search')) {
           // Shown as a found result, with its marker and panel; not
-          // remembered among the recent ones. Its id is the place's, so a pick
-          // of one already on the map selects that one.
-          const result: SearchResult = {
-            source: 'place',
-            id: { type: 'other', id: key },
-            geojson: point([at.lon, at.lat]),
-            displayName: savedPlaces.find((p) => p.key === key)?.label,
-          };
+          // remembered among the recent ones.
+          const result = placeResult(place);
 
           // Not the result fit, which the base map caps: closer in, never out.
           dispatch(
             mapRefocus({
-              ...at,
+              ...place.position,
               zoom: Math.max(store.getState().map.zoom, 15),
             }),
           );
@@ -883,19 +925,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           )}
 
           {shownPlaces.map(({ place, positions }) => (
-            <Dropdown.Item
-              key={place.key}
-              as="button"
-              type="button"
-              eventKey={`saved-${place.key}`}
-              onClick={preventDefault}
-            >
-              {place.icon}
-
-              <MenuLabel>
-                <Highlight text={place.label} at={positions} />
-              </MenuLabel>
-            </Dropdown.Item>
+            <PlaceItem key={place.key} place={place} positions={positions} />
           ))}
 
           {functionMatches.length > 0 && (
