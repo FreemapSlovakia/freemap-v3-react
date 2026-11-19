@@ -111,7 +111,7 @@ the gallery** and **OSM edits**. Users opt in (and link an OSM account for edits
 - Evaluation runs **monthly** as an API cron job and credits the period before
   last, so deletions and reverts show up first.
 
-### Earning (numbers to be calibrated, see step 4)
+### Earning (numbers to be calibrated on real data)
 
 - Days of premium per counted photo and per mapping-day class, with a **cap per
   period** (e.g. at most 31 days earned per month). A steady contributor then keeps
@@ -203,19 +203,23 @@ payment details, and paying from it extends the premium immediately, with no gap
 
 1. [ ] **Premium pass for credits.** API endpoint, subscriber refusal,
        `PremiumActivationModal` option, translations, Matomo, `llms-*.md`.
-2. [ ] **One tile allowance for export and cache.** Monthly allowance per
-       account in the API, credits beyond it; the cache downloads a package
-       from the export pipeline; both modals show what is left.
-3. [ ] **Volunteer preview.** Collect photo and OSM numbers per user and show
-       "you would earn N days" in the account modal, with no grants. Calibrate the
-       rates and cap on real data.
-4. [ ] **Volunteer grants.** Ledger, monthly cron, Polar period patch (tested in
-       the Polar sandbox first), notifications, `llms-*.md`.
-5. [ ] **Area grants** (only if needed). Signed bbox tokens on the tile servers;
-       per-job credits for the 3D model.
-6. [ ] **Direct payment by QR code.** Orders with a variable symbol, Fio polling
-       and matching, receipts, monthly CSV, a UI option in the premium and
-       credits modals, terms and privacy text, translations, `llms-*.md`.
+2. [ ] **Direct payment by QR code.** Orders with a variable symbol, Fio polling
+       and matching (an unmatched payment emails the admin), receipts, monthly
+       CSV, a UI option in the premium and credits modals, terms and privacy
+       text, translations, `llms-*.md`.
+3. [ ] **Volunteer premium by hand.** Quarterly, the admin reviews gallery and
+       OSM activity and grants premium through the admin endpoint
+       (`adminPatchUserHandler`), only to users without a live subscription.
+
+### Later, if data asks for it
+
+- **One tile allowance for export and cache**, the cache downloading through the
+  export pipeline. First check the tile-server logs for cache load; a
+  per-account rate limit may be enough.
+- **Automated volunteer premium:** photos first (a query on our own data), then
+  OSM scoring. Ledger, monthly cron, and the Polar period patch once subscribers
+  are among the volunteers.
+- **Area grants** for per-job credits, if the pass prices single jobs badly.
 
 ## Open questions
 
@@ -228,7 +232,7 @@ payment details, and paying from it extends the premium immediately, with no gap
 4. **Accountant: VAT on premium given for contributions.** Public CC photos and
    OSM edits give the company nothing exclusive, which looks like a promotion.
    Premium-only photos make premium worth more, so premium granted for them is
-   closer to a barter, which is a taxable supply at market value. Ask before step 4.
+   closer to a barter, which is a taxable supply at market value. Ask before granting any.
 5. **Overlap with Rovas**, which already rewards volunteer work and is accepted
    for premium. Check the share of premium paid via Rovas first; if it is
    marginal, accept the double reward.
