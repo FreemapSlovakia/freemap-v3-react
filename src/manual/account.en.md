@@ -30,10 +30,11 @@ The first login with a provider creates a new Freemap account. To log in to the 
 
 ## The Account dialog
 
-Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</kbd> <kbd>a</kbd>) in place of **Log in**. The dialog has four sections:
+Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</kbd> <kbd>a</kbd>) in place of **Log in**. The dialog has five sections:
 
 - :FaShoppingBasket: **Premium and purchases** – premium access, credits and **Manage payments**, described in [Premium and credits](#show=manual/premium).
 - :FaAddressCard: **Personal information**
+- :FaBell: **Email notifications**
 - :FaUserCircle: **Login providers**
 - :FaKey: **App tokens**
 
@@ -53,6 +54,18 @@ A new email address is not stored by **Save**: press :FaEnvelope: **Send code**,
 Without any email address, the yellow strip asks for one; **Don’t remind me** in it, or removing your address here, stops that for good. The comment form of a photo you uploaded or commented on also says when new comments can't be emailed to you.
 
 Below them, :FaHome: **Home position** is saved as soon as you set it: :FaMapMarkerAlt: **Set on the map** lets you click it on the map or find it by its address, :FaTimes: **Remove** clears it. The route planner and the events filter offer it as a place.
+
+## Email notifications
+
+Freemap can email you about photos and [events](#show=manual/events) you take part in: new comments on your photos and on photos you commented on, new comments on events you organize, attend or follow, and a change of their time or place or their cancellation; and each new participant of an event you organize. The :FaBell: bell on each photo and event turns these emails about it on or off.
+
+This section turns them off altogether: **Comments on photos**, and **Events: comments, changes, deletion and attendance**. The emails go only to a confirmed address.
+
+## Profiles
+
+Clicking a user's name – a photo's author or commenter, an event's organizer or participant, a row of the photo leaderboard – opens their profile: their picture, **About me**, since when they are a member, and whatever they chose to show of their email and their OpenStreetMap, GitHub or Strava profiles. It also states how many public events they organize, and their photo statistics: photos uploaded, countries photographed, views, average rating and their place on the leaderboard. A shown OpenStreetMap profile adds their mapping statistics.
+
+:FaCamera: **Photos on the map** shows only their photos on the map. On your own profile, :FaUserEdit: **Edit profile** opens this dialog.
 
 ## Login providers
 

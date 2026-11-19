@@ -435,6 +435,10 @@ const messages: Messages = {
           'help, find, lookup, geocoding, coordinates, address, place, keep on the map',
         'manual-osm-notes':
           'help, report, bug, error, mistake, openstreetmap, josm, id',
+        'manual-events':
+          'help, trip, hike, outing, club, calendar, interested, going, organizer',
+        'manual-terrain-model':
+          'help, 3d print, printing, printer, stl, 3mf, relief, bambu',
         'manual-route-planner':
           'help, navigation, directions, waypoints, plan a route, how to',
         'manual-maps':

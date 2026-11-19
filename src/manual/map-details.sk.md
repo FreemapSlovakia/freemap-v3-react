@@ -29,11 +29,11 @@ Tlačidlom :FaDatabase: **Zdroje** na lište zvolíte, ktoré zdroje sa použij�
 
 ## Podrobnosti o prvku
 
-Ukázaním na riadok v zozname sa prvok zobrazí na mape. Kliknutím na riadok prvok vyberiete: mapa sa presunie na prvok a otvoria sa podrobnosti o prvku – názov a druh, nadmorská výška, značky OpenStreetMap a zdroj. Čo podrobnosti obsahujú, popisuje kapitola [Objekty](#show=manual/objects).
+Ukázaním na riadok v zozname sa prvok zobrazí na mape. Kliknutím na riadok prvok vyberiete: mapa sa presunie na prvok a vpravo, na telefóne cez dolnú polovicu obrazovky, sa otvorí jeho panel s podrobnosťami – názov a druh, nadmorská výška, fotky, značky OpenStreetMap a zdroj. Čo podrobnosti obsahujú, popisuje kapitola [Objekty](#show=manual/objects).
 
 ![Vybraný prvok s podrobnosťami](./images/map-details-selected.sk.webp)
 
-Krížikom podrobnosti zatvoríte; kliknutím na prvok v mape sa znova otvoria.
+Krížikom panela (alebo klávesom <kbd>Esc</kbd>) ho zatvoríte; kliknutím na prvok v mape sa znova otvorí.
 
 ## História prvku
 
@@ -41,9 +41,10 @@ Tlačidlo :FaHistory: **História** v podrobnostiach prvku OpenStreetMap zobraz�
 
 ## Čo s nájdeným prvkom
 
-Vybraný prvok má vlastnú lištu:
+V hornej časti panela prvku:
 
 - :FaThumbtack: **Ponechať na mape** – prvok zostane na mape aj po výbere iného prvku. Ponechaný prvok odstránite tlačidlom :FaTrash: **Zmazať**.
-- V ponuke :FaEllipsisV: nájdete :FaPencilAlt: **Skonvertovať na kreslenie**, ktoré z prvku urobí kreslenie na úpravu (pozrite [Kreslenie](#show=manual/drawing)), akcie pre dané miesto ako v kontextovej ponuke mapy a :FaExternalLinkAlt: **Otvoriť v…** – pri prvku OpenStreetMap **OpenStreetMap.org**, **OpenStreetMap.org (história)** a editory **JOSM** a **iD**, za nimi ďalšie mapy a aplikácie.
+- V ponuke :FaEllipsisV: nájdete :FaPencilAlt: **Skonvertovať na kreslenie**, ktoré z prvku urobí kreslenie na úpravu (pozrite [Kreslenie](#show=manual/drawing)), a akcie pre dané miesto ako v kontextovej ponuke mapy.
+- :FaExternalLinkAlt: **Otvoriť v…** – pri prvku OpenStreetMap **OpenStreetMap.org**, **OpenStreetMap.org (história)** a editory **JOSM** a **iD**, za nimi ďalšie mapy a aplikácie.
 
 :FaFileExport: **Export mapových dát** v hlavnom menu uloží nájdené prvky do súboru GPX alebo iného formátu. Vzhľad prvkov na mape nastavíte v :FaPaintBrush: **Štýl nálezu** na konci zoznamu vo vyhľadávacom poli.

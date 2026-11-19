@@ -79,6 +79,38 @@
     "width": 488,
     "height": 207
   },
+  "events-filter.en.webp": {
+    "width": 816,
+    "height": 1047
+  },
+  "events-filter.sk.webp": {
+    "width": 816,
+    "height": 1047
+  },
+  "events-map.en.mobile.webp": {
+    "width": 390,
+    "height": 760
+  },
+  "events-map.en.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "events-map.sk.mobile.webp": {
+    "width": 390,
+    "height": 760
+  },
+  "events-map.sk.webp": {
+    "width": 820,
+    "height": 520
+  },
+  "events-panel.en.webp": {
+    "width": 424,
+    "height": 900
+  },
+  "events-panel.sk.webp": {
+    "width": 424,
+    "height": 900
+  },
   "map-details-results.en.mobile.webp": {
     "width": 390,
     "height": 756
@@ -176,12 +208,12 @@
     "height": 764
   },
   "objects-details.en.webp": {
-    "width": 396,
-    "height": 631
+    "width": 424,
+    "height": 900
   },
   "objects-details.sk.webp": {
-    "width": 396,
-    "height": 631
+    "width": 424,
+    "height": 900
   },
   "objects-search.en.mobile.webp": {
     "width": 390,
@@ -327,6 +359,14 @@
     "width": 510,
     "height": 1444
   },
+  "terrain-model-dialog.en.webp": {
+    "width": 816,
+    "height": 1769
+  },
+  "terrain-model-dialog.sk.webp": {
+    "width": 816,
+    "height": 1769
+  },
   "toposcope-dial.en.webp": {
     "width": 516,
     "height": 516
@@ -414,5 +454,13 @@
   "weather-radar-toolbar.sk.webp": {
     "width": 722,
     "height": 64
+  },
+  "wiki-panel.en.webp": {
+    "width": 424,
+    "height": 900
+  },
+  "wiki-panel.sk.webp": {
+    "width": 424,
+    "height": 900
   }
 }

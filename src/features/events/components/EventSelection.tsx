@@ -87,6 +87,7 @@ export default function EventSelection(): ReactElement | null {
       summary={(event) => <EventLine event={event} traits={ALL_TRAITS} />}
       marks={(event) => <EventIndicators event={event} traits={ALL_TRAITS} />}
       keepVisible={(event) => event.startPoint}
+      manual="events"
       onClose={() => dispatch(selectFeature(null))}
     >
       {(event) => (

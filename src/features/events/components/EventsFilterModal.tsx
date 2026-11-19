@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { PlaceName } from '@features/search/components/PlaceName.js';
@@ -488,6 +489,8 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
         <Modal.Title>
           <FaFilter /> {em?.filter.title}
         </Modal.Title>
+
+        <ManualHeaderButton chapter="events" />
       </Modal.Header>
 
       <form onSubmit={handleSubmit} className="d-contents">

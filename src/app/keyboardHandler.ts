@@ -249,9 +249,10 @@ const toolChapters: Record<Tool, string> = {
 };
 
 /**
- * The manual chapter F1 opens: the open modal's `ManualHeaderButton` one, else
- * a selected note's, search result's or object's, else the map-click tool's, else the
- * newest other tool's; undefined opens the first.
+ * The manual chapter F1 opens: the open modal's or docked panel's
+ * `ManualHeaderButton` one, else a selected note's, search result's or
+ * object's, else the map-click tool's, else the newest other tool's; undefined
+ * opens the first.
  */
 export function manualChapterFor(state: RootState): string | undefined {
   const modalChapter =
@@ -265,6 +266,15 @@ export function manualChapterFor(state: RootState): string | undefined {
 
   if (state.gallery.activeImageId) {
     return 'photos';
+  }
+
+  // A docked panel's book button, as a modal's.
+  const panelChapter = document.querySelector<HTMLElement>(
+    '.fm-dock [data-manual-chapter]',
+  )?.dataset['manualChapter'];
+
+  if (panelChapter) {
+    return panelChapter;
   }
 
   // A selection's toolbar, before the tools' it may sit beside.

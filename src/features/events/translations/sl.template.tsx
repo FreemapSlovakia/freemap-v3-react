@@ -57,7 +57,7 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Naslov',
     description: 'Opis',
     contactHint:
-      'Navedite, kako vas je mogoče doseči — telefon, e-pošto ali skupino v klepetu: dogodki zaenkrat nimajo razprave.',
+      'Navedite, kako vas je mogoče doseči — telefon, e-pošto ali skupino v klepetu.',
     cover: 'Naslovna slika',
     coverTooLarge: 'Slika je večja od 20 MB.',
     start: 'Začetek',

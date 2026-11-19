@@ -89,6 +89,12 @@ Ak poznáte mapu, ktorá chýba, napíšte na [freemap@freemap.sk](mailto:freema
 
 :FaInfoCircle: vpravo dole → :FaList: **Legenda mapy** (<kbd>m</kbd> <kbd>l</kbd>) vysvetľuje značky zapnutých máp. Pri viacerých mapách má každá mapa vlastnú časť. V legende turistickej mapy je pole **Hľadať v legende**; pri niektorých mapách je legenda odkazom na OpenStreetMap Wiki. Položka je v ponuke, len keď je zapnutá mapa, ktorá legendu má.
 
+## Wikipedia
+
+Prekrytie :FaWikipediaW: **Wikipedia** (<kbd>Shift</kbd>+<kbd>W</kbd>) označuje miesta, ktoré majú článok na Wikipédii, od priblíženia 8. Kliknutím na značku otvoríte panel článku – vpravo, na telefóne cez dolnú polovicu obrazovky – s fotkami miesta z Wikimedia Commons, údajmi z Wikidát a textom článku. Názov otvorí celý článok na Wikipédii, vo vašom jazyku, ak v ňom existuje. Krížik panela alebo kláves <kbd>Esc</kbd> ho zatvorí, rovnako ako vypnutie prekrytia.
+
+![Panel článku](./images/wiki-panel.sk.webp)
+
 ## Jas mapy a viditeľnosť dátovej vrstvy
 
 Na konci menu :FaCog: sú dva posuvníky:

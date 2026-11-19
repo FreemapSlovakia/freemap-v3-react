@@ -1,4 +1,5 @@
 import { setActiveModal } from '@app/store/actions.js';
+import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapToggleLayer } from '@features/map/model/actions.js';
 import { LEGEND_ITEM } from '@shared/colorizers/components/legendToggleOption.js';
@@ -6,6 +7,10 @@ import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuGutter } from '@shared/components/MenuGutter.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
+import {
+  Action,
+  ResponsiveActions,
+} from '@shared/components/ResponsiveActions.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { usePersistentBoolean } from '@shared/hooks/usePersistentBoolean.js';
@@ -81,6 +86,8 @@ export default function EventsMenu(): ReactElement {
   const em = useEventsMessages();
 
   const dispatch = useDispatch();
+
+  const manualAction = useManualAction();
 
   const filterActive = useAppSelector(
     ({ eventsSettings: { filter } }) => !isFilterEmpty(filter),
@@ -308,6 +315,12 @@ export default function EventsMenu(): ReactElement {
                   </Button>
                 )}
               </LongPressTooltip>
+            )}
+
+            {!hidden && (
+              <ResponsiveActions toggleLabel={m?.general.actions}>
+                <Action {...manualAction('events')} />
+              </ResponsiveActions>
             )}
 
             <ButtonGroup>

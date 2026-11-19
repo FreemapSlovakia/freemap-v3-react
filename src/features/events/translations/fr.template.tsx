@@ -37,7 +37,7 @@ const fr: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Titre',
     description: 'Description',
     contactHint:
-      'Indiquez comment vous joindre — un numéro de téléphone, un e-mail ou un groupe de discussion : les événements n’ont pas encore de discussion.',
+      'Indiquez comment vous joindre — un numéro de téléphone, un e-mail ou un groupe de discussion.',
     cover: 'Image de couverture',
     coverTooLarge: 'L’image dépasse 20 Mo.',
     start: 'Début',

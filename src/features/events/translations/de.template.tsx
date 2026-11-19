@@ -58,7 +58,7 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Titel',
     description: 'Beschreibung',
     contactHint:
-      'Geben Sie an, wie Sie erreichbar sind — Telefonnummer, E-Mail oder Chatgruppe: Veranstaltungen haben noch keine Diskussion.',
+      'Geben Sie an, wie Sie erreichbar sind — Telefonnummer, E-Mail oder Chatgruppe.',
     cover: 'Titelbild',
     coverTooLarge: 'Das Bild ist größer als 20 MB.',
     start: 'Beginn',

@@ -72,4 +72,5 @@ The address in your browser's address bar always describes what you see: the map
 ## More
 
 - :FaRegKeyboard: [Keyboard shortcuts](#show=manual/shortcuts) make many actions faster.
+- At the bottom of the main menu, :MdLightMode: **Light mode**, :MdDarkMode: **Dark mode** and :MdHdrAuto: **Automatic mode** switch the colours of the app; automatic follows your device.
 - Most functions work without an account. Once :FaSignInAlt: [logged in](#show=login), you can save your maps and upload photos.

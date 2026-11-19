@@ -29,11 +29,11 @@ With :FaDatabase: **Sources** in the toolbar you choose which sources are asked;
 
 ## Feature details
 
-Pointing at a row in the list shows the feature on the map. Click the row to select it: the map moves to the feature and its details open – the name and kind, the elevation, the OpenStreetMap tags and the source. What the details show is described in [Objects](#show=manual/objects).
+Pointing at a row in the list shows the feature on the map. Click the row to select it: the map moves to the feature and its panel opens on the right, or over the lower half of a phone's screen, with its details – the name and kind, the elevation, photos of it, the OpenStreetMap tags and the source. What the details show is described in [Objects](#show=manual/objects).
 
 ![A selected feature with its details](./images/map-details-selected.en.webp)
 
-The × closes the details; clicking the feature on the map brings them back.
+The panel's × (or <kbd>Esc</kbd>) closes it; clicking the feature on the map brings it back.
 
 ## History of an element
 
@@ -41,9 +41,10 @@ For an OpenStreetMap element, :FaHistory: **History** in the details lists its v
 
 ## What to do with a found feature
 
-The selected feature has its own toolbar:
+At the top of the feature's panel:
 
 - :FaThumbtack: **Keep on the map** – the feature stays on the map when you select another one. A kept feature is removed with :FaTrash: **Delete**.
-- :FaEllipsisV: holds :FaPencilAlt: **Convert to drawing**, which turns the feature into a drawing you can edit (see [Drawing](#show=manual/drawing)), the actions for the place, as in the map's context menu, and :FaExternalLinkAlt: **Open in…** – for an OpenStreetMap element **OpenStreetMap.org**, **OpenStreetMap.org (history)** and the editors **JOSM** and **iD**, followed by other maps and apps.
+- :FaEllipsisV: holds :FaPencilAlt: **Convert to drawing**, which turns the feature into a drawing you can edit (see [Drawing](#show=manual/drawing)), and the actions for the place, as in the map's context menu.
+- :FaExternalLinkAlt: **Open in…** – for an OpenStreetMap element **OpenStreetMap.org**, **OpenStreetMap.org (history)** and the editors **JOSM** and **iD**, followed by other maps and apps.
 
 :FaFileExport: **Map data export** in the main menu saves the found features as GPX or another format. How they are drawn on the map is set in :FaPaintBrush: **Lookup style**, near the end of the search box's list.

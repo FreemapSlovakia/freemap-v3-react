@@ -89,6 +89,12 @@ If you know of a map that is missing, write to [freemap@freemap.sk](mailto:freem
 
 :FaInfoCircle: at the bottom right → :FaList: **Map legend** (<kbd>m</kbd> <kbd>l</kbd>) explains the symbols of the maps that are on. With several maps, each has its own section. The outdoor map's legend has a **Search the legend** box; for some maps the legend is a link to the OpenStreetMap Wiki. The item is there only when a map with a legend is on.
 
+## Wikipedia
+
+The :FaWikipediaW: **Wikipedia** overlay (<kbd>Shift</kbd>+<kbd>W</kbd>) marks the places that have a Wikipedia article, from zoom 8 on. Click a marker to open the article's panel – on the right, or over the lower half of a phone's screen – with photos of the place from Wikimedia Commons, its facts from Wikidata and the article's text. The title opens the whole article on Wikipedia, in your language where it has one. The panel's × or <kbd>Esc</kbd> closes it, and so does turning the overlay off.
+
+![An article's panel](./images/wiki-panel.en.webp)
+
 ## Brightness and data layer opacity
 
 The :FaCog: menu ends with two sliders:

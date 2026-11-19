@@ -28,7 +28,7 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Cím',
     description: 'Leírás',
     contactHint:
-      'Adja meg, hogyan lehet elérni Önt — telefonszám, e-mail vagy csevegőcsoport: az eseményekhez egyelőre nincs hozzászólási lehetőség.',
+      'Adja meg, hogyan lehet elérni Önt — telefonszám, e-mail vagy csevegőcsoport.',
     cover: 'Borítókép',
     coverTooLarge: 'A kép nagyobb 20 MB-nál.',
     start: 'Kezdés',

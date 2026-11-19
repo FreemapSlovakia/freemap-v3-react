@@ -29,7 +29,7 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Titolo',
     description: 'Descrizione',
     contactHint:
-      'Indichi come essere contattati — un numero di telefono, un’e-mail o un gruppo di chat: gli eventi non hanno ancora una discussione.',
+      'Indichi come essere contattati — un numero di telefono, un’e-mail o un gruppo di chat.',
     cover: 'Immagine di copertina',
     coverTooLarge: 'L’immagine supera i 20 MB.',
     start: 'Inizio',

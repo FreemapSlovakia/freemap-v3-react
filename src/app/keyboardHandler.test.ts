@@ -715,6 +715,19 @@ describe('handleEvent — F1', () => {
     }
   });
 
+  it("opens the chapter of a docked panel's header button before a tool's", () => {
+    document.body.innerHTML =
+      '<div class="fm-dock"><a data-manual-chapter="events"></a></div>';
+
+    try {
+      expect(handleEvent(f1(), withMain({ mapTool: 'route-planner' }))).toEqual(
+        setActiveModal({ type: 'manual', chapter: 'events' }),
+      );
+    } finally {
+      document.body.innerHTML = '';
+    }
+  });
+
   it("falls back to the tool's chapter over a modal without one", () => {
     expect(
       handleEvent(

@@ -54,7 +54,7 @@ const en: EventsMessages = {
     title: 'Title',
     description: 'Description',
     contactHint:
-      'Say how to reach you — a phone number, an email or a chat group: events have no discussion yet.',
+      'Say how to reach you — a phone number, an email or a chat group.',
     cover: 'Cover image',
     coverTooLarge: 'The image is larger than 20 MB.',
     start: 'Start',

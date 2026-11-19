@@ -28,7 +28,7 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Tytuł',
     description: 'Opis',
     contactHint:
-      'Warto podać sposób kontaktu — telefon, e-mail lub grupę na czacie: wydarzenia nie mają jeszcze dyskusji.',
+      'Warto podać sposób kontaktu — telefon, e-mail lub grupę na czacie.',
     cover: 'Obraz tytułowy',
     coverTooLarge: 'Obraz jest większy niż 20 MB.',
     start: 'Początek',

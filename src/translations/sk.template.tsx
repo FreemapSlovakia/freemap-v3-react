@@ -472,6 +472,10 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'pomoc, návod, hľadať, nájsť, súradnice, adresa, miesto, ponechať na mape',
         'manual-osm-notes':
           'pomoc, návod, poznámka, hlásenie, chyba, openstreetmap, josm, id',
+        'manual-events':
+          'pomoc, návod, akcia, výlet, túra, podujatie, klub, kalendár, záujem, organizátor',
+        'manual-terrain-model':
+          'pomoc, návod, 3d tlač, tlačiareň, stl, 3mf, reliéf, bambu',
         'manual-route-planner':
           'pomoc, návod, navigácia, trasa, plánovanie trasy, zastávky',
         'manual-maps':

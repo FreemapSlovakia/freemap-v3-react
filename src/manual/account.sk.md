@@ -30,10 +30,11 @@ Prvé prihlásenie cez poskytovateľa vytvorí nový účet Freemap. Ak sa chcet
 
 ## Dialóg Účet
 
-Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :FaUser: [Účet](#show=account) (<kbd>e</kbd> <kbd>a</kbd>). Dialóg má štyri časti:
+Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :FaUser: [Účet](#show=account) (<kbd>e</kbd> <kbd>a</kbd>). Dialóg má päť častí:
 
 - :FaShoppingBasket: **Prémium a nákupy** – prémiový prístup, kredity a **Spravovať platby**, opísané v kapitole [Prémiový prístup a kredity](#show=manual/premium).
 - :FaAddressCard: **Osobné údaje**
+- :FaBell: **E-mailové notifikácie**
 - :FaUserCircle: **Poskytovatelia prihlásenia**
 - :FaKey: **Aplikačné tokeny**
 
@@ -53,6 +54,18 @@ Novú e-mailovú adresu **Uložiť** neuloží: stlačte :FaEnvelope: **Poslať 
 Bez akejkoľvek e-mailovej adresy žltý pásik o ňu požiada; **Nepripomínať** v ňom alebo odstránenie adresy tu to natrvalo vypne. Formulár komentára k fotke, ktorú ste nahrali alebo komentovali, tiež upozorní, keď vám nové komentáre nemôžu prísť e-mailom.
 
 Pod nimi je :FaHome: **Domovská poloha**, ktorá sa uloží hneď, ako ju nastavíte: :FaMapMarkerAlt: **Nastaviť v mape** umožní kliknúť na ňu v mape alebo ju nájsť podľa adresy, :FaTimes: **Odstrániť** ju zruší. Ponúka ju plánovač trás aj filter akcií.
+
+## E-mailové notifikácie
+
+Freemap vám môže posielať e-maily o fotkách a [akciách](#show=manual/events), na ktorých sa zúčastňujete: o nových komentároch k vašim fotkám a k fotkám, ktoré ste komentovali, o nových komentároch k akciám, ktoré organizujete, na ktoré prídete alebo ktoré sledujete, a o zmene ich termínu či miesta alebo ich zrušení; a o každom novom účastníkovi akcie, ktorú organizujete. Zvonček :FaBell: pri každej fotke a akcii tieto e-maily o nej zapne alebo vypne.
+
+Táto časť ich vypne úplne: **Komentáre k fotkám** a **Akcie: komentáre, zmeny, zmazanie a účasť**. E-maily chodia len na potvrdenú adresu.
+
+## Profily
+
+Kliknutím na meno používateľa – autora či komentátora fotky, organizátora alebo účastníka akcie, riadok rebríčka fotiek – otvoríte jeho profil: obrázok, **O mne**, odkedy je členom a to, čo sa rozhodol ukázať zo svojho e-mailu a profilov na OpenStreetMap, GitHube či Strave. Uvádza aj počet verejných akcií, ktoré organizuje, a štatistiky fotiek: nahrané fotky, nafotené krajiny, zobrazenia, priemerné hodnotenie a miesto v rebríčku. Zobrazený profil na OpenStreetMap pridá jeho mapovateľské štatistiky.
+
+:FaCamera: **Fotografie na mape** ukáže na mape len jeho fotky. Na vlastnom profile otvorí :FaUserEdit: **Upraviť profil** tento dialóg.
 
 ## Poskytovatelia prihlásenia
 

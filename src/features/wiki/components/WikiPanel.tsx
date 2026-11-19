@@ -44,6 +44,7 @@ export default function WikiPanel(): ReactElement {
         typeof item === 'string' ? item.split(/:(.*)/)[1] : item.title
       }
       keepVisible={() => point}
+      manual="maps"
       onClose={() => dispatch(selectFeature(null))}
     >
       {(item) => {

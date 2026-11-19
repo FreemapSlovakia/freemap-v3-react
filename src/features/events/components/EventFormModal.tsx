@@ -2,6 +2,7 @@ import { httpRequest } from '@app/httpRequest.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { hasRole } from '@features/auth/model/types.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { mapsSave } from '@features/myMaps/model/actions.js';
 import { loadMapDocument } from '@features/myMaps/model/loadMapDocument.js';
@@ -827,6 +828,8 @@ export default function EventFormModal({ show }: Props): ReactElement {
           <FaCalendarDay />{' '}
           {target?.id ? em?.form.editEvent : em?.form.newEvent}
         </Modal.Title>
+
+        <ManualHeaderButton chapter="events" />
       </Modal.Header>
 
       <form onSubmit={handleSubmit} className="d-contents">

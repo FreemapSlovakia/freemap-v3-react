@@ -1,6 +1,7 @@
 import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { useAreaCountries } from '@features/map/useAreaCountries.js';
@@ -1260,6 +1261,8 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
         <Modal.Title>
           <FaCube /> <Text k="mainMenu.terrainModel" />
         </Modal.Title>
+
+        <ManualHeaderButton chapter="terrain-model" />
       </Modal.Header>
 
       <Modal.Body>

@@ -72,4 +72,5 @@ Adresa v paneli prehliadača vždy popisuje to, čo vidíte: mapu, miesto, nakre
 ## Ďalej
 
 - :FaRegKeyboard: [Klávesové skratky](#show=manual/shortcuts) mnohé úkony zrýchlia.
+- Dole v hlavnom menu prepínajú :MdLightMode: **Svetlý režim**, :MdDarkMode: **Tmavý režim** a :MdHdrAuto: **Automatický režim** farby aplikácie; automatický sa riadi vaším zariadením.
 - Väčšina funkcií funguje bez účtu. Po :FaSignInAlt: [prihlásení](#show=login) si môžete ukladať mapy a nahrávať fotografie.

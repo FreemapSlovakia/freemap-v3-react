@@ -8,6 +8,7 @@ import {
 } from '@features/auth/model/types.js';
 import { namedRoles } from '@features/auth/translations/namedRoles.js';
 import { useAuthMessages } from '@features/auth/translations/useAuthMessages.js';
+import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { MEDALS } from '@features/gallery/medals.js';
 import {
   galleryRequestImage,
@@ -404,6 +405,8 @@ export default function UserProfileModal({ show }: Props): ReactElement {
             </>
           )}
         </Modal.Title>
+
+        <ManualHeaderButton chapter="account" />
       </Modal.Header>
 
       <Modal.Body>

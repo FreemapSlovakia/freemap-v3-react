@@ -5,7 +5,9 @@
 //   node scripts/manual-screenshots.mjs [name…]
 //
 // Env: FM_URL (default https://local.freemap.sk:9000), LANGS (default sk,en),
-// CHROMIUM (default /usr/bin/chromium). Needs `cwebp` on PATH.
+// CHROMIUM (default /usr/bin/chromium), LOCAL_TILES (default
+// http://localhost:3050: a dev tile server, whose tiles are taken from
+// production instead). Needs `cwebp` on PATH.
 
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -18,6 +20,11 @@ const BASE = process.env.FM_URL ?? 'https://local.freemap.sk:9000';
 const OUT = path.resolve('src/manual/images');
 
 const LANGS = process.env.LANGS?.split(',') ?? ['sk', 'en'];
+
+// A dev tile server holds only what it has rendered, so low zooms come out blank.
+const LOCAL_TILES = process.env.LOCAL_TILES ?? 'http://localhost:3050';
+
+const OUTDOOR_TILES = 'https://outdoor.tiles.freemap.sk';
 
 const MAP = 'map=13/48.7483/19.1480&layers=X';
 
@@ -362,20 +369,15 @@ const shots = [
   },
   {
     name: 'objects-details',
-    // Peaks around Chopok; the first marker is Prašivá, with prominence and key col.
+    // Peaks around Chopok; the first marker's panel shows prominence and key col.
     hash: 'map=14/48.9380/19.5800&layers=X&objects=natural=peak',
+    viewport: { width: 1280, height: 900 },
     steps: async (page) => {
-      // The details popup is a toast: shown, while the others stay hidden.
-      await page.addStyleTag({
-        content:
-          '[class*="Toasts-module__toasts"] { display: flex !important; } [class*="Toast-module__toast"]:not(:has(.lead)) { display: none !important; }',
-      });
-
       await page.locator('.leaflet-marker-icon').first().click();
 
-      await page.locator('[class*="Toast-module__toast"]:has(.lead)').waitFor();
+      await page.locator('.fm-dock .lead, .fm-dock table').first().waitFor();
     },
-    crop: '[class*="Toast-module__toast"]:has(.lead)',
+    crop: '.fm-dock',
   },
   {
     name: 'map-details-results',
@@ -481,6 +483,81 @@ const shots = [
     },
     crop: '.modal-content',
   },
+  {
+    name: 'events-map',
+    // Czechia, where the hiking club's imported calendar fills the map.
+    hash: 'map=8/49.80/15.40&layers=X~A',
+    mobile: true,
+    viewport: { width: 820, height: 520 },
+    steps: async (page) => {
+      await page.waitForSelector('.leaflet-marker-icon');
+    },
+  },
+  {
+    name: 'events-panel',
+    // Novoroční výstup na Kleť, an imported event. TODO: once it has passed, or
+    // its calendar drops it, pick another upcoming event's id.
+    hash: 'map=12/48.5154/14.1720&layers=X~A&panel=event/1gjmYVfc',
+    viewport: { width: 1280, height: 900 },
+    steps: async (page) => {
+      await page
+        .locator('.fm-dock .lead, .fm-dock h5, .fm-dock p')
+        .first()
+        .waitFor();
+    },
+    crop: '.fm-dock',
+  },
+  {
+    name: 'events-filter',
+    hash: 'map=8/49.80/15.40&layers=X~A&show=events-filter',
+    viewport: { width: 1280, height: 1300 },
+    crop: '.modal-content',
+  },
+  {
+    name: 'terrain-model-dialog',
+    // A hiking route from Štrbské Pleso up Kriváň, on the landcover.
+    hash: 'map=13/49.1420/20.0300&layers=X&points=49.1194/20.0631,49.1627/19.9997&transport=hiking&show=terrain-model',
+    // The whole form, preview and filament colours included.
+    viewport: { width: 1280, height: 2200 },
+    steps: async (page) => {
+      await page.locator('.modal-content canvas').waitFor({ timeout: 60_000 });
+
+      // Offered once the route is in.
+      await page
+        .locator('#chk-plannedRoute:not([disabled])')
+        .waitFor({ timeout: 60_000 });
+
+      await page.locator('#chk-plannedRoute').setChecked(true, { force: true });
+
+      // By its label: the hidden input ignores a forced click.
+      if (!(await page.locator('#fm-terrain-model-landcover').isChecked())) {
+        await page.locator('label[for="fm-terrain-model-landcover"]').click();
+      }
+
+      // The landcover loads and is laid out with a spinner in the preview.
+      // TODO: a spinner not up yet after this wait passes it; check the shot.
+      await page.waitForTimeout(1000);
+
+      await page.waitForFunction(
+        () => !document.querySelector('.modal-content .spinner-border'),
+        undefined,
+        { timeout: 90_000 },
+      );
+
+      await page.waitForTimeout(3000);
+    },
+    crop: '.modal-content',
+  },
+  {
+    name: 'wiki-panel',
+    hash: 'map=13/48.7360/19.1460&layers=X~w&panel=wiki/sk:Banská%20Bystrica',
+    viewport: { width: 1280, height: 900 },
+    steps: async (page) => {
+      // The title shows at once; the photos come with the article.
+      await page.locator('.fm-dock img').first().waitFor({ timeout: 30_000 });
+    },
+    crop: '.fm-dock',
+  },
 ];
 
 async function waitForTiles(page, label) {
@@ -514,6 +591,15 @@ async function capture(browser, shot, lang, mobile) {
     colorScheme: 'light',
     locale: lang,
     ignoreHTTPSErrors: true,
+  });
+
+  // Fetched and handed over: `continue` may not change the protocol.
+  await context.route(`${LOCAL_TILES}/**`, async (route) => {
+    const response = await route.fetch({
+      url: route.request().url().replace(LOCAL_TILES, OUTDOOR_TILES),
+    });
+
+    await route.fulfill({ response });
   });
 
   const page = await context.newPage();

@@ -57,7 +57,7 @@ const sk: DeepPartialWithRequiredObjects<EventsMessages> = {
     title: 'Názov',
     description: 'Popis',
     contactHint:
-      'Uveďte, ako vás zastihnúť — telefón, e-mail alebo skupinu v chate: akcie zatiaľ nemajú diskusiu.',
+      'Uveďte, ako vás zastihnúť — telefón, e-mail alebo skupinu v chate.',
     cover: 'Titulný obrázok',
     coverTooLarge: 'Obrázok je väčší ako 20 MB.',
     start: 'Začiatok',
