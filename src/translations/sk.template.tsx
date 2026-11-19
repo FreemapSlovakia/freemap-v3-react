@@ -415,6 +415,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     result: 'Nález',
     showMore: 'Zobraziť viac',
     recent: 'Nedávne hľadania',
+    places: 'Moje miesta',
     keepOnMap: 'Ponechať na mape',
     offlineHint:
       'Bez pripojenia na internet možno nájsť iba súradnice, ohraničujúci box, čísla dlaždíc (z/x/y) alebo vložený GeoJSON.',
@@ -426,6 +427,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Dlaždica',
       coords: 'Súradnice',
+      place: 'Moje miesto',
       'nominatim-forward': 'Geokódovanie',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

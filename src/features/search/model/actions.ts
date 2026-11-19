@@ -40,6 +40,8 @@ export const SearchSourceSchema = z.union([
     'geojson',
     'tile',
     'coords',
+    // One of the user's places, picked in the search box.
+    'place',
     // Map details reads OSM data from freemap-osm-api and geocodes against
     // Photon; these four ids name the kind of lookup, not the backend. They are
     // part of the saved-map format (and of the persisted map-details source
@@ -54,6 +56,15 @@ export const SearchSourceSchema = z.union([
 ]);
 
 export type SearchSource = z.infer<typeof SearchSourceSchema>;
+
+/** Sources whose results are named by the source itself: map, panel and list. */
+export const sourceNamedSearchSources: ReadonlySet<SearchSource> = new Set([
+  'bbox',
+  'coords',
+  'place',
+  'tile',
+  'geojson',
+]);
 
 export interface SearchResult {
   source: SearchSource;

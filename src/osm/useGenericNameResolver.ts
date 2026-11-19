@@ -1,7 +1,7 @@
 import { useMessages } from '@features/l10n/l10nInjector.js';
-import type {
-  SearchResult,
-  SearchSource,
+import {
+  type SearchResult,
+  sourceNamedSearchSources,
 } from '@features/search/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
@@ -98,9 +98,7 @@ export function useGenericNameParts(
     return EMPTY;
   }
 
-  const sourceName = (
-    ['bbox', 'coords', 'tile', 'geojson'] as SearchSource[]
-  ).includes(result.source)
+  const sourceName = sourceNamedSearchSources.has(result.source)
     ? m?.search.sources[result.source]
     : // An empty one is no name at all, and falls back to the OSM tags like a
       // result that carries none.

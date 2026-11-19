@@ -332,6 +332,8 @@ export type Messages = {
     result: string;
     showMore: string;
     recent: string;
+    /** Caption of the user's saved places in the list. */
+    places: string;
     keepOnMap: string;
     offlineHint: string;
     sources: Record<SearchSource, string>;

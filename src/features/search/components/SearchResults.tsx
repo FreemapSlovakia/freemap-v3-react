@@ -36,12 +36,13 @@ import {
   type PathOptions,
 } from 'leaflet';
 import { type ReactElement, useCallback } from 'react';
+import { FaMapPin } from 'react-icons/fa';
 import { GeoJSON } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import {
   type SearchResult,
-  type SearchSource,
   searchSelectResult,
+  sourceNamedSearchSources,
 } from '../model/actions.js';
 import { hasGeometry } from '../model/resultUtils.js';
 
@@ -209,6 +210,8 @@ function ResultGeometry({
 }: Props): ReactElement {
   const isOsm = result.id.type === 'osm';
 
+  const isPlace = result.source === 'place';
+
   const language = useAppSelector((state) => state.l10n.language);
 
   const markerType = useAppSelector(
@@ -231,6 +234,8 @@ function ResultGeometry({
         markerType,
         poiOpacity: window.fmHeadless?.searchResultStyle?.opacity ?? 1,
         poi: img[0],
+        // The pin that marks a place wherever it is offered.
+        faIcon: isPlace ? <FaMapPin /> : undefined,
       };
 
       return marker(latLng, {
@@ -243,7 +248,7 @@ function ResultGeometry({
         }),
       });
     },
-    [isOsm, markerColor, markerType, active, preview],
+    [isOsm, isPlace, markerColor, markerType, active, preview],
   );
 
   const annotateFeature = useCallback(
@@ -325,9 +330,7 @@ function ResultGeometry({
           ...result.geojson,
           properties: deleteNonstringValues({
             ...result.geojson.properties,
-            __fm_genericName: (
-              ['bbox', 'coords', 'tile', 'geojson'] as SearchSource[]
-            ).includes(result.source)
+            __fm_genericName: sourceNamedSearchSources.has(result.source)
               ? m?.search.sources[result.source]
               : result.genericName,
             __fm_displayName: result.displayName,

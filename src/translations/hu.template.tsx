@@ -382,6 +382,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   search: {
     showMore: 'Több megjelenítése',
     recent: 'Legutóbbi keresések',
+    places: 'Saját helyek',
     offlineHint:
       'Internetkapcsolat nélkül csak koordináták, határoló keret, csempeszámok (z/x/y) vagy beillesztett GeoJSON találhatók meg.',
     inProgress: 'Keresés…',
@@ -403,6 +404,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Csempe',
       coords: 'Koordináták',
+      place: 'Saját hely',
       'nominatim-forward': 'Geokódolás',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

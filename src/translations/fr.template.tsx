@@ -373,6 +373,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   search: {
     showMore: 'Afficher plus',
     recent: 'Recherches récentes',
+    places: 'Mes lieux',
     offlineHint:
       'Sans connexion Internet, seules les coordonnées, un cadre de délimitation, des numéros de tuile (z/x/y) ou du GeoJSON collé peuvent être trouvés.',
     fetchingError: ({ err }) => addError(messages, 'Erreur de recherche', err),
@@ -382,6 +383,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Tuile',
       coords: 'Coordonnées',
+      place: 'Mon lieu',
       'overpass-nearby': 'À proximité',
       'overpass-surrounding': 'Objets englobants',
       'nominatim-forward': 'Géocodage',

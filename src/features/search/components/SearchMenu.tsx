@@ -9,9 +9,10 @@ import {
   selectedEventId,
 } from '@features/events/model/selectors.js';
 import { useEventMatches } from '@features/events/useEventMatches.js';
+import { useSavedPlaces } from '@features/homeLocation/useSavedPlaces.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
-import { mapToggleLayer } from '@features/map/model/actions.js';
+import { mapRefocus, mapToggleLayer } from '@features/map/model/actions.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
 import { SourceName } from '@features/objects/components/SourceName.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
@@ -53,6 +54,7 @@ import {
   type OsmFeatureId,
   stringifyFeatureId,
 } from '@shared/types/featureId.js';
+import { point } from '@turf/helpers';
 import clsx from 'clsx';
 import type { Geometry } from 'geojson';
 import {
@@ -91,6 +93,7 @@ import {
   type CommandMatch,
   useCommandMatches,
 } from '../hooks/useCommandMatches.js';
+import { type PlaceMatch, usePlaceMatches } from '../hooks/usePlaceMatches.js';
 import {
   SEARCH_PROGRESS_ID,
   type SearchResult,
@@ -111,6 +114,9 @@ type Props = {
   hidden?: boolean;
   preventShortcut?: boolean;
 };
+
+// One empty list, so the effects that depend on it don't run every render.
+const NO_PLACES: PlaceMatch[] = [];
 
 function preventDefault(e: { preventDefault: () => void }) {
   e.preventDefault();
@@ -226,6 +232,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   // function, so it is left alone.
   const commands = useCommandMatches(isLocalSearchQuery(value) ? '' : value);
 
+  const { places: savedPlaces, choosePlace } = useSavedPlaces();
+
+  const placeMatches = usePlaceMatches(value, savedPlaces);
+
+  // The user's places: all of them under an empty box, beside the recent
+  // searches, and by name once something is typed.
+  const shownPlaces =
+    isLocalSearchQuery(value) || (!value && results.length > 0)
+      ? NO_PLACES
+      : placeMatches;
+
   const functionMatches = commands.filter(
     ({ command }) => command.kind === 'function',
   );
@@ -270,10 +287,16 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const hasRecent = recent.length > 0 && !window.fmEmbedded;
 
+  const hasPlaces = savedPlaces.length > 0 && !window.fmEmbedded;
+
   const recentShown = !value && results.length === 0 && hasRecent;
+
+  // What an empty box lists.
+  const emptyListShown = recentShown || (!value && shownPlaces.length > 0);
 
   const hasRows =
     results.length > 0 ||
+    shownPlaces.length > 0 ||
     commands.length > 0 ||
     poiMatches.length > 0 ||
     eventMatches.length > 0 ||
@@ -365,12 +388,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
         // Opened here, by the user emptying the box, rather than by the effect
         // below, which would also open it after a command pick empties it.
-        if (!value && hasRecent) {
+        if (!value && (hasRecent || hasPlaces)) {
           setOpen(true);
         }
       }
     },
-    [dispatch, query, results.length, hasRecent],
+    [dispatch, query, results.length, hasRecent, hasPlaces],
   );
 
   // After a pick that goes nowhere in the results: the box is emptied and the
@@ -475,6 +498,45 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         return;
       }
 
+      if (eventKey.startsWith('saved-')) {
+        const key = eventKey.slice(6);
+
+        const at = choosePlace(key, 'search');
+
+        if (at) {
+          // Shown as a found result, with its marker and panel; not
+          // remembered among the recent ones. Its id is the place's, so a pick
+          // of one already on the map selects that one.
+          const result: SearchResult = {
+            source: 'place',
+            id: { type: 'other', id: key },
+            geojson: point([at.lon, at.lat]),
+            displayName: savedPlaces.find((p) => p.key === key)?.label,
+          };
+
+          // Not the result fit, which the base map caps: closer in, never out.
+          dispatch(
+            mapRefocus({
+              ...at,
+              zoom: Math.max(store.getState().map.zoom, 15),
+            }),
+          );
+
+          dispatch(
+            searchSelectResult({
+              result,
+              details: pickShowsDetailsSelector(store.getState(), result),
+              // Only out from under a panel that opens over it.
+              focus: 'pan',
+            }),
+          );
+        }
+
+        spendQuery();
+
+        return;
+      }
+
       if (eventKey.startsWith('cmd-')) {
         const id = eventKey.slice(4);
 
@@ -525,6 +587,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     },
     [
       commands,
+      choosePlace,
+      savedPlaces,
       eventMatches,
       results,
       value,
@@ -557,8 +621,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const shownEventsRef = useRef('');
 
+  const shownPlacesRef = useRef('');
+
+  // Found by what is typed; an empty box lists them all, as the recent ones.
+  const typedPlaces = value ? shownPlaces : NO_PLACES;
+
   useEffect(() => {
     const commandKey = commands.map(({ command }) => command.id).join();
+
+    const placeKey = typedPlaces.map(({ place }) => place.key).join();
 
     const poiKey = poiMatches.map(({ category }) => category.key).join();
 
@@ -567,6 +638,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     if (
       results === shownResultsRef.current &&
       commandKey === shownCommandsRef.current &&
+      placeKey === shownPlacesRef.current &&
       poiKey === shownPoiRef.current &&
       eventKey === shownEventsRef.current
     ) {
@@ -578,6 +650,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     shownResultsRef.current = results;
 
     shownCommandsRef.current = commandKey;
+
+    shownPlacesRef.current = placeKey;
 
     shownPoiRef.current = poiKey;
 
@@ -602,18 +676,31 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       // Otherwise the user has moved on to something of their own. Suggestions
       // land a keystroke's delay plus a round trip later, so taking the caret
       // back here would pull it out of whatever they are filling in now.
-    } else if (commands.length || poiMatches.length || eventMatches.length) {
+    } else if (
+      commands.length ||
+      typedPlaces.length ||
+      poiMatches.length ||
+      eventMatches.length
+    ) {
       // Answered for what is being typed, so the caret is in the box — unless
       // something else rebuilt the list (signing in, a layer going).
       if (!inputRef.current || document.activeElement === inputRef.current) {
         setOpen(true);
       }
-    } else if (!recentShown) {
-      // Emptied results under an empty box leave the recent searches up.
+    } else if (!emptyListShown) {
+      // Emptied results under an empty box leave the recent searches and the
+      // places up.
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, commands, poiMatches, eventMatches, recentShown]);
+  }, [
+    results,
+    commands,
+    typedPlaces,
+    poiMatches,
+    eventMatches,
+    emptyListShown,
+  ]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -750,6 +837,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 button's place: it opens the list's own settings row. */}
             {results.length ||
             commands.length ||
+            typedPlaces.length ||
             poiMatches.length ||
             eventMatches.length ||
             (!value && !window.fmEmbedded) ? (
@@ -788,6 +876,28 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           className={classes.searchDropdown}
           scrollResetKey={query}
         >
+          {shownPlaces.length > 0 && (
+            <div className="dropdown-caption-divider">
+              <Text k="search.places" />
+            </div>
+          )}
+
+          {shownPlaces.map(({ place, positions }) => (
+            <Dropdown.Item
+              key={place.key}
+              as="button"
+              type="button"
+              eventKey={`saved-${place.key}`}
+              onClick={preventDefault}
+            >
+              {place.icon}
+
+              <MenuLabel>
+                <Highlight text={place.label} at={positions} />
+              </MenuLabel>
+            </Dropdown.Item>
+          ))}
+
           {functionMatches.length > 0 && (
             <div className="dropdown-caption-divider">
               <Text k="search.commands.caption" />
@@ -856,6 +966,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             // what the caption above announced.
             const divider =
               (commands.length > 0 ||
+                shownPlaces.length > 0 ||
                 poiMatches.length > 0 ||
                 eventMatches.length > 0 ||
                 !(

@@ -379,6 +379,7 @@ const messages: Messages = {
     result: 'Lookup',
     showMore: 'Show more',
     recent: 'Recent searches',
+    places: 'My places',
     keepOnMap: 'Keep on the map',
     offlineHint:
       'Without an internet connection only coordinates, a bounding box, tile numbers (z/x/y) or pasted GeoJSON can be found.',
@@ -387,6 +388,7 @@ const messages: Messages = {
       geojson: 'GeoJSON',
       tile: 'Tile',
       coords: 'Coordinates',
+      place: 'My place',
       'overpass-nearby': 'Nearby',
       'overpass-surrounding': 'Containing features',
       'nominatim-forward': 'Forward geocoding',

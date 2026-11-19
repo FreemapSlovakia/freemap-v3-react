@@ -368,6 +368,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   search: {
     showMore: 'Pokaż więcej',
     recent: 'Ostatnie wyszukiwania',
+    places: 'Moje miejsca',
     offlineHint:
       'Bez połączenia z internetem można znaleźć tylko współrzędne, obszar ograniczający, numery kafelków (z/x/y) lub wklejony GeoJSON.',
     inProgress: 'Wyszukiwanie…',
@@ -390,6 +391,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Kafelek',
       coords: 'Współrzędne',
+      place: 'Moje miejsce',
       'nominatim-forward': 'Geokodowanie',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

@@ -385,6 +385,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   search: {
     showMore: 'Mostra altro',
     recent: 'Ricerche recenti',
+    places: 'I miei luoghi',
     offlineHint:
       'Senza una connessione a internet è possibile trovare solo coordinate, un riquadro di delimitazione, numeri di tassello (z/x/y) o GeoJSON incollato.',
     inProgress: 'Ricerca in corso…',
@@ -406,6 +407,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Tile',
       coords: 'Coordinate',
+      place: 'Il mio luogo',
       'nominatim-forward': 'Geocodifica',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

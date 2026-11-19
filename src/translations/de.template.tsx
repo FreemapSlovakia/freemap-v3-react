@@ -381,6 +381,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   search: {
     showMore: 'Mehr anzeigen',
     recent: 'Letzte Suchen',
+    places: 'Meine Orte',
     offlineHint:
       'Ohne Internetverbindung können nur Koordinaten, ein Begrenzungsrahmen, Kachelnummern (z/x/y) oder eingefügtes GeoJSON gefunden werden.',
     inProgress: 'Suche…',
@@ -402,6 +403,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Kachel',
       coords: 'Koordinaten',
+      place: 'Mein Ort',
       'nominatim-forward': 'Geokodierung',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

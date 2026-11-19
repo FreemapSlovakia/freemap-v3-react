@@ -31,8 +31,8 @@ import {
 } from '@features/routePlanner/model/routeColors.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import {
-  type SearchSource,
   searchSelectResult,
+  sourceNamedSearchSources,
 } from '@features/search/model/actions.js';
 import { hasGeometry } from '@features/search/model/resultUtils.js';
 import { keptSearchResultsSelector } from '@features/search/model/selectors.js';
@@ -147,14 +147,6 @@ function nameAndKind(
   };
 }
 
-// Sources whose result is named by the kind of lookup, as on the map.
-const SOURCE_NAMED = new Set<SearchSource>([
-  'bbox',
-  'coords',
-  'tile',
-  'geojson',
-]);
-
 function SearchItems(): ReactElement {
   const m = useMessages();
 
@@ -182,7 +174,7 @@ function SearchItems(): ReactElement {
         const generic =
           result.genericName ||
           osm.generic ||
-          (SOURCE_NAMED.has(result.source)
+          (sourceNamedSearchSources.has(result.source)
             ? m?.search.sources[result.source as 'bbox']
             : undefined);
 

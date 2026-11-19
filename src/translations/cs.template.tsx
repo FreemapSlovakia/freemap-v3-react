@@ -375,6 +375,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   search: {
     showMore: 'Zobrazit více',
     recent: 'Nedávná hledání',
+    places: 'Moje místa',
     inProgress: 'Hledám…',
     noResults: 'Nebyly nalezeny žádné výsledky',
     prompt: 'Zadejte lokalitu',
@@ -401,6 +402,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Dlaždice',
       coords: 'Souřadnice',
+      place: 'Moje místo',
       'nominatim-forward': 'Geokódování',
       osm: 'OpenStreetMap',
       'wms:': 'WMS',

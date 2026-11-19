@@ -380,6 +380,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
   search: {
     showMore: 'Prikaži več',
     recent: 'Nedavna iskanja',
+    places: 'Moji kraji',
     offlineHint:
       'Brez internetne povezave je mogoče najti samo koordinate, omejevalni okvir, številke ploščic (z/x/y) ali prilepljen GeoJSON.',
     inProgress: 'Iščem…',
@@ -398,6 +399,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       geojson: 'GeoJSON',
       tile: 'Ploščica',
       coords: 'Koordinate',
+      place: 'Moj kraj',
       'overpass-nearby': 'Bližnji objekti',
       'overpass-surrounding': 'Objekti, ki vsebujejo',
       'nominatim-forward': 'Geokodiranje',
