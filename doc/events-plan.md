@@ -262,17 +262,21 @@ from the selection toolbar (**Edit**).
         date; a standing offer (over three dates a week) skipped, a series
         posted six weeks ahead. Italy's federations give nothing: FIASP
         disallows all, CAI's central calendar is empty, FIE lists news.
-  - [x] KST regions' calendars (`kstRegions.mjs`): each region's yearly PDF,
-        found where its publisher puts it (Malé Karpaty through
-        kbtbratislava.sk's media API, the file renamed each upload; Trenčín
-        linked from ksttn.sk), its `pdftotext -layout` text read whole by
-        the LLM (`calendarEvents`, Claude Opus 5.5, cached by the text), a
-        two-pages-to-a-sheet PDF half by half; placed within 100 km of the
-        region, a namesake elsewhere refused. Its copies of the yearbook's
+  - [x] KST regions' calendars (`kstRegions.mjs`), each found where its
+        publisher puts it and read whole by the LLM (`calendarEvents`,
+        Claude Opus 5.5, cached by the text): yearly PDFs' `pdftotext
+        -layout` text (Malé Karpaty through kbtbratislava.sk's media API,
+        the file renamed each upload, its two-pages-to-a-sheet read half by
+        half; Trenčín from ksttn.sk; Kysuce, Liptov, Žilina, Orava and
+        Prievidza from kstturiec.sk's page of the kraj's calendars), Turiec's
+        scanned PDF as page images (`pdftoppm`, too big to send whole), and
+        web pages (Prešov's per year through its form; Košice, Stará Ľubovňa
+        and Rožňava read once for whatever years they hold, a line with
+        today's date left out so the text changes only with the list).
+        Placed within 100 km of the region, a namesake elsewhere refused; an
+        event two regions list posted once; its copies of the yearbook's
         events give way to them (`defersTo`), as to those entered by hand.
-  - [ ] More KST regions: kstturiec.sk links Orava, Liptov, Čadca, Žilina
-        and Prievidza's PDFs (Turiec's own is scanned images); ktmk.sk lists
-        Košice's in HTML. Nitra and Banská Bystrica kraj publish none.
+        Nitra and Banská Bystrica kraj and most of the east publish none.
 - [x] **Colorize by** (`model/colorize.ts`): when (default — ended, happening,
       upcoming graded by how soon), mine and others, transport, length,
       duration, ascent, difficulty, dogs, children; a legend, the
