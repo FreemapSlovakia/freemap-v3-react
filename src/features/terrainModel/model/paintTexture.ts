@@ -1,18 +1,44 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
+import type { LandcoverImage } from './landcover.js';
 import type { Paint } from './paint.js';
 import { worldPixels } from './tileGrid.js';
 
 const SIDE = 2048;
 
 /**
+ * Stretched over the canvas, its points kept sharp.
+ * TODO: copied anew on every repaint; once per image would do.
+ */
+function drawLandcover(
+  ctx: CanvasRenderingContext2D,
+  { data, cols, rows }: LandcoverImage,
+): void {
+  const tmp = document.createElement('canvas');
+
+  tmp.width = cols;
+
+  tmp.height = rows;
+
+  tmp.getContext('2d')!.putImageData(new ImageData(data, cols, rows), 0, 0);
+
+  ctx.imageSmoothingEnabled = false;
+
+  ctx.drawImage(tmp, 0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  ctx.imageSmoothingEnabled = true;
+}
+
+/**
  * The area view's texture with the coloured features drawn on it: over the map
- * draped there, else over the ground colour. Web Mercator, as `mapTexture`.
+ * draped there, else over the ground colour; the landcover under them as
+ * `landcoverImage` made it. Web Mercator, as `mapTexture`.
  */
 export function paintTexture(
   base: HTMLCanvasElement | null,
   bbox: Bbox,
   paint: Paint,
   widthMm: number,
+  landcover: LandcoverImage | undefined,
 ): HTMLCanvasElement {
   const [west, south, east, north] = bbox;
 
@@ -55,6 +81,10 @@ export function paintTexture(
       }
     });
   };
+
+  if (landcover) {
+    drawLandcover(ctx, landcover);
+  }
 
   for (const { colour, rings } of paint.fills) {
     ctx.fillStyle = paint.palette[colour]!;

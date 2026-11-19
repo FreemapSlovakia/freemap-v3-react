@@ -1,4 +1,5 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
+import type { LandcoverImage, ModelGrid } from './landcover.js';
 import type { Paint } from './paint.js';
 import type { Mesh, StlOptions } from './stl.js';
 
@@ -25,7 +26,8 @@ export type WorkerRequest =
       mesh: Mesh;
       palette: string[];
       metadata: Record<string, string>;
-    };
+    }
+  | { kind: 'landcover'; bbox: Bbox; paint: Paint; grid: ModelGrid };
 
 export type WorkerResponse =
   | { type: 'progress'; phase: 'tiles'; done: number; total: number }
@@ -50,4 +52,5 @@ export type WorkerResponse =
       attributions: string[];
     }
   | { type: 'file'; blob: Blob }
+  | { type: 'landcover'; image: LandcoverImage }
   | { type: 'error'; message: string };

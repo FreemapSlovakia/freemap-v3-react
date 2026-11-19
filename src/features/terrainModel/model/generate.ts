@@ -64,8 +64,18 @@ function run<T extends WorkerResponse>(
     worker.terminate();
   };
 
+  let cancelled = false;
+
   // A script that fails to load reports no message.
   worker.onerror = (e) => {
+    // Terminated while its chunks still load, it reports that too; only then
+    // is the error ours alone, not the page's (and Sentry's).
+    if (cancelled) {
+      e.preventDefault();
+
+      return;
+    }
+
     reject(
       e.message
         ? new Error(e.message)
@@ -80,6 +90,8 @@ function run<T extends WorkerResponse>(
   return {
     promise,
     cancel: () => {
+      cancelled = true;
+
       worker.terminate();
 
       reject(new DOMException('cancelled', 'AbortError'));
@@ -106,6 +118,15 @@ export function write3mf(
   request: Omit<Extract<WorkerRequest, { kind: '3mf' }>, 'kind'>,
 ): Run<FileResult> {
   return run({ kind: '3mf', ...request }, 'file', () => {});
+}
+
+export type LandcoverResult = Extract<WorkerResponse, { type: 'landcover' }>;
+
+/** The area view's landcover image, off the page's thread. */
+export function computeLandcover(
+  request: Omit<Extract<WorkerRequest, { kind: 'landcover' }>, 'kind'>,
+): Run<LandcoverResult> {
+  return run({ kind: 'landcover', ...request }, 'landcover', () => {});
 }
 
 /** Only the sampled heights, for the preview. */

@@ -1,4 +1,5 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import type { AttributionDef } from '@shared/mapDefinitions.js';
 import parametricShading from '@shared/mapLibrary/defs/parametricShading.js';
 import { useEffect, useState } from 'react';
@@ -21,7 +22,7 @@ const PREVIEW_SAMPLES = COARSE ? 90_000 : 250_000;
 /** The texture's longest side, pixels. */
 const TEXTURE_SIDE = 2048;
 
-const DEBOUNCE_MS = 500;
+export const DEBOUNCE_MS = 500;
 
 export interface PreviewHeights {
   /** The area these were sampled for; one array per fetch, so it can key effects. */
@@ -113,7 +114,7 @@ export function usePreviewData(
           );
         },
         (err: unknown) => {
-          if (!(err instanceof DOMException && err.name === 'AbortError')) {
+          if (!isAbortError(err)) {
             setHeights({
               key,
               value: err instanceof NoElevationDataError ? 'noData' : 'failed',

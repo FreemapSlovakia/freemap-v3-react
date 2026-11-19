@@ -1,6 +1,7 @@
 import { decompress, init } from '@bokuweb/zstd-wasm';
 import { decodeSteps } from '@shared/elevationTile.js';
 import { NoElevationDataError } from './errors.js';
+import { landcoverImage } from './landcover.js';
 import { paintGrid } from './paint.js';
 import { buildMesh } from './stl.js';
 import { meshTo3mf } from './threeMf.js';
@@ -136,6 +137,14 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
         type: 'file',
         blob: await meshTo3mf(r.mesh, r.palette, r.metadata),
       });
+
+      return;
+    }
+
+    if (r.kind === 'landcover') {
+      const image = landcoverImage(r.bbox, r.paint, r.grid);
+
+      post({ type: 'landcover', image }, [image.data.buffer]);
 
       return;
     }

@@ -57,6 +57,8 @@ type Props = {
   widthMm: number;
   depthMm: number;
   texture: HTMLCanvasElement | null;
+  /** The texture's next version is being made. */
+  texturePending?: boolean;
   /** Shown while the GPU has dropped the view. */
   unavailable: ReactNode;
 };
@@ -282,6 +284,7 @@ export default function TerrainPreview({
   widthMm,
   depthMm,
   texture,
+  texturePending,
   unavailable,
 }: Props): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -552,6 +555,12 @@ export default function TerrainPreview({
 
       {view.kind === 'area' && view.stale && (
         <div className="position-absolute top-0 start-0 m-2">
+          <Spinner size="sm" />
+        </div>
+      )}
+
+      {texturePending && (
+        <div className="position-absolute bottom-0 end-0 m-2">
           <Spinner size="sm" />
         </div>
       )}

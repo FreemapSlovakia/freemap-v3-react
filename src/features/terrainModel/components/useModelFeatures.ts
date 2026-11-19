@@ -16,7 +16,7 @@ export type ModelShape =
   | { kind: 'point'; colour: string; coords: number[] };
 
 export interface ModelFeature {
-  source: FeatureSource;
+  source: FeatureSource | 'landcover';
   title?: string;
   shapes: ModelShape[];
 }

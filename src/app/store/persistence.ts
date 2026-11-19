@@ -446,6 +446,10 @@ const PersistedTerrainModelSettingsSchema = z
     omitted: z
       .array(HexColourSchema)
       .catch(terrainModelSettingsInitialState.omitted),
+    landcover: z.boolean().catch(terrainModelSettingsInitialState.landcover),
+    landcoverDetail: inRange(TERRAIN_MODEL_LIMITS.landcoverDetail).catch(
+      terrainModelSettingsInitialState.landcoverDetail,
+    ),
   })
   .partial();
 

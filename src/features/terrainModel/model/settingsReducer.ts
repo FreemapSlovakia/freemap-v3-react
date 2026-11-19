@@ -26,6 +26,10 @@ export interface TerrainModelSettingsState {
   colourMap: Record<string, string>;
   /** `#rrggbb` map colours whose features are left off the model. */
   omitted: string[];
+  /** Colours the model by landcover, under the features. */
+  landcover: boolean;
+  /** Landcover narrower than about this is smoothed away, millimetres. */
+  landcoverDetail: number;
 }
 
 /** The map's feature sources a model can colour. */
@@ -52,6 +56,7 @@ export const LIMITS = {
   base: { min: 0.4, max: 50 },
   lineWidth: { min: 0.2, max: 10 },
   pointSize: { min: 0.5, max: 20 },
+  landcoverDetail: { min: 0, max: 10 },
 } as const;
 
 export const terrainModelSettingsInitialState: TerrainModelSettingsState = {
@@ -64,6 +69,8 @@ export const terrainModelSettingsInitialState: TerrainModelSettingsState = {
   groundColour: '#f0f0f0',
   colourMap: {},
   omitted: [],
+  landcover: false,
+  landcoverDetail: 1.5,
 };
 
 export const terrainModelSettingsReducer = createReducer(

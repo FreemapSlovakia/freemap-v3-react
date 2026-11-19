@@ -42,6 +42,7 @@ import { formatSize } from '@shared/formatSize.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { usePersistentState } from '@shared/hooks/usePersistentState.js';
+import { isAbortError } from '@shared/isAbortError.js';
 import {
   type AttributionDef,
   FIXTHEMAP_ATTR,
@@ -73,8 +74,9 @@ import {
   InputGroup,
   Row,
   Spinner,
+  ToggleButton,
 } from 'react-bootstrap';
-import { FaChevronLeft, FaCube, FaDownload } from 'react-icons/fa';
+import { FaChevronLeft, FaCube, FaDownload, FaTree } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
 import { terrainModelSetSettings } from '../model/actions.js';
 import {
@@ -87,6 +89,7 @@ import {
   generateTerrainModel,
   write3mf,
 } from '../model/generate.js';
+import { LANDCOVER_CLASSES } from '../model/landcover.js';
 import { isTextureMap } from '../model/mapTexture.js';
 import type { Paint } from '../model/paint.js';
 import { paintTexture } from '../model/paintTexture.js';
@@ -116,6 +119,8 @@ import { type Mesh, meshToStl, meshTriangles, stlBytes } from '../model/stl.js';
 import { tileCount } from '../model/tileGrid.js';
 import { useTerrainModelMessages } from '../translations/useTerrainModelMessages.js';
 import type { AreaView, ModelView } from './TerrainPreview.js';
+import { useLandcover } from './useLandcover.js';
+import { useLandcoverImage } from './useLandcoverImage.js';
 import {
   type ModelFeature,
   type ModelShape,
@@ -187,7 +192,10 @@ function PreviewPlaceholder(): ReactElement {
 /** The finest elevation tile zoom served without premium. */
 const FREE_ZOOM = (parametricShading.premiumFromZoom ?? 16) - 1;
 
-/** Each map colour the features use, in order, with what uses it. */
+/**
+ * Each map colour the features use, in order, with what uses it.
+ * TODO: a drawn feature in a landcover class's colour shares its row.
+ */
 function colourRows(features: ModelFeature[]) {
   const rows = new Map<
     string,
@@ -204,7 +212,10 @@ function colourRows(features: ModelFeature[]) {
         rows.set(colour, row);
       }
 
-      row.sources.add(source);
+      // A landcover row is named by its class, as its title.
+      if (source !== 'landcover') {
+        row.sources.add(source);
+      }
 
       if (title) {
         row.titles.add(title);
@@ -233,23 +244,25 @@ function keepShapes(
 
 /** Whether a shape's extent overlaps the area. */
 function touches(shape: ModelShape, [west, south, east, north]: Bbox): boolean {
-  const coords =
+  const lines =
     shape.kind === 'point'
-      ? [shape.coords]
+      ? [[shape.coords]]
       : shape.kind === 'line'
-        ? shape.coords
-        : shape.rings.flat();
+        ? [shape.coords]
+        : shape.rings;
 
   let w = Infinity;
   let s = Infinity;
   let e = -Infinity;
   let n = -Infinity;
 
-  for (const [lon = 0, lat = 0] of coords) {
-    w = Math.min(w, lon);
-    e = Math.max(e, lon);
-    s = Math.min(s, lat);
-    n = Math.max(n, lat);
+  for (const line of lines) {
+    for (const [lon = 0, lat = 0] of line) {
+      w = Math.min(w, lon);
+      e = Math.max(e, lon);
+      s = Math.min(s, lat);
+      n = Math.max(n, lat);
+    }
   }
 
   return w <= east && e >= west && s <= north && n >= south;
@@ -264,7 +277,7 @@ function makePaint(
   features: ModelFeature[],
   settings: Pick<
     TerrainModelSettingsState,
-    'groundColour' | 'colourMap' | 'lineWidth' | 'pointSize'
+    'groundColour' | 'colourMap' | 'lineWidth' | 'pointSize' | 'landcoverDetail'
   >,
 ): Paint {
   const palette = [settings.groundColour];
@@ -281,6 +294,8 @@ function makePaint(
 
   const paint: Paint = {
     palette,
+    landcover: [],
+    landcoverDetailMm: settings.landcoverDetail,
     fills: [],
     lines: [],
     points: [],
@@ -288,22 +303,26 @@ function makePaint(
     pointSizeMm: settings.pointSize,
   };
 
-  for (const shape of features.flatMap(({ shapes }) => shapes)) {
-    const colour = index(shape.colour);
+  for (const { source, shapes } of features) {
+    const fills = source === 'landcover' ? paint.landcover : paint.fills;
 
-    switch (shape.kind) {
-      case 'fill':
-        paint.fills.push({ colour, rings: shape.rings });
+    for (const shape of shapes) {
+      const colour = index(shape.colour);
 
-        break;
-      case 'line':
-        paint.lines.push({ colour, coords: shape.coords });
+      switch (shape.kind) {
+        case 'fill':
+          fills.push({ colour, rings: shape.rings });
 
-        break;
-      case 'point':
-        paint.points.push({ colour, coords: shape.coords });
+          break;
+        case 'line':
+          paint.lines.push({ colour, coords: shape.coords });
 
-        break;
+          break;
+        case 'point':
+          paint.points.push({ colour, coords: shape.coords });
+
+          break;
+      }
     }
   }
 
@@ -621,50 +640,15 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
     [collected, sourcesKey],
   );
 
-  const { lineWidth, pointSize, groundColour, colourMap, omitted } = settings;
-
-  // Those reaching into the area: one elsewhere on the map takes no filament.
-  // TODO: by extent, so a line passing the area's corner can still take one.
-  const features = useMemo(
-    () => chosen && bbox && keepShapes(chosen, (shape) => touches(shape, bbox)),
-    [chosen, bbox],
-  );
-
-  const rows = useMemo(() => colourRows(features ?? []), [features]);
-
-  const painted = useMemo(
-    () =>
-      features &&
-      keepShapes(features, ({ colour }) => !omitted.includes(colour)),
-    [features, omitted],
-  );
-
-  const paint = useMemo(
-    () =>
-      painted?.length
-        ? makePaint(painted, { groundColour, colourMap, lineWidth, pointSize })
-        : undefined,
-    [painted, groundColour, colourMap, lineWidth, pointSize],
-  );
-
-  const routingAttributions = useRoutingAttributions();
-
-  // What the painted features are made of: OpenStreetMap, and the route's router.
-  const featureCredits = useMemo(() => {
-    const from = new Set(painted?.map(({ source }) => source));
-
-    const defs = new Set([
-      ...(from.has('plannedRoute') ? routingAttributions : []),
-      ...(from.has('search') ? [OSM_DATA_ATTR] : []),
-    ]);
-
-    // FOSSGIS asks for it wherever an OSRM result is shown as a link.
-    if (defs.has(OSRM_ROUTING_ATTR)) {
-      defs.add(FIXTHEMAP_ATTR);
-    }
-
-    return [...defs];
-  }, [painted, routingAttributions]);
+  const {
+    lineWidth,
+    pointSize,
+    groundColour,
+    colourMap,
+    omitted,
+    landcover,
+    landcoverDetail,
+  } = settings;
 
   // The previous area's grid stays up while the current one loads.
   const shownGrid = preview.heights ?? preview.last;
@@ -775,6 +759,84 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
       ? premiumCandidate
       : undefined;
 
+  // Not for an area the model refuses; by the model's plan, not the preview's.
+  const {
+    layers: landcoverLayers,
+    pending: landcoverPending,
+    failed: landcoverFailed,
+  } = useLandcover(landcover && !areaTooLarge ? bbox : null);
+
+  // A class per feature, bottom first, under the map's features.
+  const landcoverFeatures = useMemo(
+    () =>
+      (landcoverLayers ?? []).map(
+        ({ id, colour, polygons }): ModelFeature => ({
+          source: 'landcover',
+          title: tm?.landcoverClasses[id] ?? id,
+          shapes: polygons.map((rings) => ({ kind: 'fill', colour, rings })),
+        }),
+      ),
+    [landcoverLayers, tm],
+  );
+
+  // Those reaching into the area: one elsewhere on the map takes no filament.
+  // The landcover is the area's already. TODO: by extent, so a line passing
+  // the area's corner can still take one.
+  const chosenInArea = useMemo(
+    () => chosen && bbox && keepShapes(chosen, (shape) => touches(shape, bbox)),
+    [chosen, bbox],
+  );
+
+  const features = useMemo(
+    () =>
+      landcoverFeatures.length || chosenInArea
+        ? [...landcoverFeatures, ...(chosenInArea ?? [])]
+        : undefined,
+    [landcoverFeatures, chosenInArea],
+  );
+
+  const rows = useMemo(() => colourRows(features ?? []), [features]);
+
+  const painted = useMemo(
+    () =>
+      features &&
+      keepShapes(features, ({ colour }) => !omitted.includes(colour)),
+    [features, omitted],
+  );
+
+  const paint = useMemo(
+    () =>
+      painted?.length
+        ? makePaint(painted, {
+            groundColour,
+            colourMap,
+            lineWidth,
+            pointSize,
+            landcoverDetail,
+          })
+        : undefined,
+    [painted, groundColour, colourMap, lineWidth, pointSize, landcoverDetail],
+  );
+
+  const routingAttributions = useRoutingAttributions();
+
+  // What the painted features are made of: OpenStreetMap, and the route's router.
+  const featureCredits = useMemo(() => {
+    const from = new Set(painted?.map(({ source }) => source));
+
+    const defs = new Set([
+      ...(from.has('plannedRoute') ? routingAttributions : []),
+      ...(from.has('search') || from.has('landcover') ? [OSM_DATA_ATTR] : []),
+    ]);
+
+    // FOSSGIS asks for it wherever an OSRM result is shown as a link.
+    if (defs.has(OSRM_ROUTING_ATTR)) {
+      defs.add(FIXTHEMAP_ATTR);
+    }
+
+    return [...defs];
+  }, [painted, routingAttributions]);
+
   // What a built model was built from; any change makes it stale.
   const modelKey = JSON.stringify([
     bbox,
@@ -785,13 +847,15 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
     // The features themselves are taken when building, as the area is: what
     // the map shows later leaves the model.
     // By the choice, not by `paint`: features changing live must not drop a model.
-    sourcesValue !== '|' && [
+    (sourcesValue !== '|' || landcover) && [
       sourcesValue,
+      landcover,
       groundColour,
       colourMap,
       omitted,
       lineWidth,
       pointSize,
+      landcover && landcoverDetail,
     ],
   ]);
 
@@ -845,14 +909,80 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
 
   const textureWidthMm = plan?.widthMm;
 
+  // The colour settings the landcover uses, a filament per class ('' unticked),
+  // so the features' own changing doesn't remake its image.
+  const landcoverStyle = JSON.stringify([
+    groundColour,
+    LANDCOVER_CLASSES.map(({ colour }) =>
+      omitted.includes(colour) ? '' : filament(colourMap, colour),
+    ),
+  ]);
+
+  const landcoverOnly = useMemo(() => {
+    const [ground, filaments] = JSON.parse(landcoverStyle) as [
+      string,
+      string[],
+    ];
+
+    const map: Record<string, string> = Object.fromEntries(
+      LANDCOVER_CLASSES.map(({ colour }, i) => [colour, filaments[i] ?? '']),
+    );
+
+    // From the layers, not `landcoverFeatures`, whose titles follow the language.
+    const kept = (landcoverLayers ?? []).flatMap(
+      ({ colour, polygons }): ModelFeature[] =>
+        map[colour]
+          ? [
+              {
+                source: 'landcover',
+                shapes: polygons.map((rings) => ({
+                  kind: 'fill',
+                  colour,
+                  rings,
+                })),
+              },
+            ]
+          : [],
+    );
+
+    return kept.length
+      ? makePaint(kept, {
+          groundColour: ground,
+          colourMap: map,
+          lineWidth: 0,
+          pointSize: 0,
+          landcoverDetail,
+        })
+      : undefined;
+  }, [landcoverLayers, landcoverStyle, landcoverDetail]);
+
+  // The area view's landcover, opened in a worker as the model's is; only once
+  // the heights are of the area the landcover is (they arrive apart).
+  const landcoverPaint =
+    textureBbox &&
+    textureBbox.join() === bbox?.join() &&
+    textureWidthMm &&
+    !built
+      ? landcoverOnly
+      : undefined;
+
+  const { image: landcoverImage, drawing: landcoverDrawing } =
+    useLandcoverImage(landcoverPaint, textureBbox, plan);
+
   // The area view draws the coloured lines over its texture.
   // Not under a built model, which shows its own colours.
   const areaTexture = useMemo(
     () =>
       paint && textureBbox && textureWidthMm && !built
-        ? paintTexture(previewTexture, textureBbox, paint, textureWidthMm)
+        ? paintTexture(
+            previewTexture,
+            textureBbox,
+            paint,
+            textureWidthMm,
+            landcoverImage,
+          )
         : previewTexture,
-    [paint, previewTexture, textureBbox, textureWidthMm, built],
+    [paint, previewTexture, textureBbox, textureWidthMm, built, landcoverImage],
   );
 
   // One preview for both views, so switching keeps its context and camera.
@@ -919,7 +1049,7 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
     ).then(
       () => setResult((r) => (r?.key === key ? { ...r, saved: true } : r)),
       (err: unknown) => {
-        if (!(err instanceof DOMException && err.name === 'AbortError')) {
+        if (!isAbortError(err)) {
           setError(tm?.error({ err: String(err) }) ?? String(err));
         }
       },
@@ -1105,7 +1235,7 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
     } catch (err) {
       if (err instanceof NoElevationDataError) {
         setError(tm?.noData ?? err.message);
-      } else if (!(err instanceof DOMException && err.name === 'AbortError')) {
+      } else if (!isAbortError(err)) {
         setError(tm?.error({ err: String(err) }) ?? String(err));
       }
     } finally {
@@ -1178,6 +1308,9 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
                   <Suspense fallback={<PreviewPlaceholder />}>
                     <TerrainPreview
                       {...shown}
+                      texturePending={
+                        !modelView && (landcoverDrawing || landcoverPending)
+                      }
                       unavailable={<Text m={tm} k="previewUnavailable" />}
                     />
                   </Suspense>
@@ -1472,6 +1605,48 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
                     onChange={setSourcesValue}
                   />
 
+                  <ToggleButton
+                    id="fm-terrain-model-landcover"
+                    type="checkbox"
+                    variant="outline-primary"
+                    className="mt-2"
+                    value="landcover"
+                    checked={landcover}
+                    onChange={() => {
+                      if (!landcover) {
+                        trackMatomo([
+                          'trackEvent',
+                          'TerrainModel',
+                          'landcover',
+                        ]);
+                      }
+
+                      set({ landcover: !landcover });
+                    }}
+                  >
+                    <FaTree /> <Text m={tm} k="landcover" />
+                  </ToggleButton>
+
+                  {landcoverFailed && (
+                    <Form.Text className="d-block">
+                      <Text m={tm} k="landcoverFailed" />
+                    </Form.Text>
+                  )}
+
+                  {landcover && (
+                    <div className="mt-3">
+                      <MmField
+                        id="fm-terrain-model-landcover-detail"
+                        label={tm?.landcoverDetail}
+                        value={landcoverDetail}
+                        min={LIMITS.landcoverDetail.min}
+                        max={LIMITS.landcoverDetail.max}
+                        step={0.1}
+                        onChange={(v) => set({ landcoverDetail: v })}
+                      />
+                    </div>
+                  )}
+
                   {paint && (
                     <div className="d-flex flex-wrap column-gap-3 mt-3">
                       {paint.lines.length > 0 && (
@@ -1647,7 +1822,10 @@ export default function TerrainModelModal({ show }: Props): ReactElement {
               areaTooLarge ||
               sideTooLong ||
               busy ||
-              (sources.length > 0 && featuresPending)
+              (sources.length > 0 && featuresPending) ||
+              // Not without the landcover asked for; unticked, it builds.
+              landcoverPending ||
+              landcoverFailed
             }
             onClick={handleBuild}
             icon={busy ? <Spinner size="sm" /> : <FaCube />}

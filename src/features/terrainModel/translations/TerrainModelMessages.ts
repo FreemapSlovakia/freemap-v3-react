@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { LandcoverClass } from '../model/landcover.js';
 
 export type TerrainModelMessages = {
   area: string;
@@ -40,6 +41,12 @@ export type TerrainModelMessages = {
   colourFeaturesHint: string;
   lineWidth: string;
   pointSize: string;
+  /** The toggle colouring the model by OpenStreetMap landcover. */
+  landcover: string;
+  landcoverFailed: string;
+  /** Landcover narrower than this is smoothed away, mm. */
+  landcoverDetail: string;
+  landcoverClasses: Record<LandcoverClass, string>;
   colours: string;
   /** The colour of everything but the coloured features. */
   ground: string;
