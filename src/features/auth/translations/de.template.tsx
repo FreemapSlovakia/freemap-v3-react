@@ -21,9 +21,9 @@ const de: DeepPartialWithRequiredObjects<AuthMessages> = {
     picture: 'Profilbild',
     choosePicture: 'Bild auswählen',
     pictureTooLarge: 'Bild ist zu groß. Maximale Größe beträgt 5 MB.',
-    homeLocation: 'Heimatort',
-    homeLocationUnset: 'Nicht festgelegt',
-    setHomeLocation: 'Auf der Karte festlegen',
+    placesSection: 'Meine Orte',
+    noPlaces: 'Noch keine Orte',
+    placesPremium: 'Mehr als ein Ort ist mit Premium-Zugang verfügbar.',
     description: 'Über mich',
     roles: 'Meine Rollen',
     publicFields: ({ profile }) => (

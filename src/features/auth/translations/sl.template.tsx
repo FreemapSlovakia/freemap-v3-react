@@ -19,9 +19,9 @@ const sl: DeepPartialWithRequiredObjects<AuthMessages> = {
     picture: 'Profilna slika',
     choosePicture: 'Izberi sliko',
     pictureTooLarge: 'Slika je prevelika. Največja velikost je 5 MB.',
-    homeLocation: 'Domači položaj',
-    homeLocationUnset: 'Ni nastavljen',
-    setHomeLocation: 'Nastavi na zemljevidu',
+    placesSection: 'Moji kraji',
+    noPlaces: 'Še ni krajev',
+    placesPremium: 'Več kot en kraj je na voljo s premium dostopom.',
     roles: 'Moje vloge',
     emailUnconfirmed:
       'Ta naslov še ni potrjen. Dokler ga ne potrdite, Freemap nanj ne pošilja e-pošte in se z njim ni mogoče prijaviti.',

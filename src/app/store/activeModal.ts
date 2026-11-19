@@ -104,6 +104,7 @@ export type ModalId = z.infer<typeof ModalIdSchema>;
 export const AccountSectionSchema = z.enum([
   'payments',
   'personal',
+  'places',
   'notifications',
   'providers',
   'app-tokens',

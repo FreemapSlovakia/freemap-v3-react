@@ -24,9 +24,12 @@ const events = [
 ];
 
 const origins = {
-  nearMap: { lat: 50, lon: 17 },
-  nearHome: null,
-  nearPlace: null,
+  nearMap: [{ lat: 50, lon: 17 }],
+  nearHome: [
+    { lat: 50, lon: 17 },
+    { lat: 48, lon: 17 },
+  ],
+  nearPlace: [],
 };
 
 const ids = (sort: Parameters<typeof sortEvents>[1]) =>
@@ -51,8 +54,12 @@ describe('events list sort', () => {
     expect(sorted[0]!.km).toBeCloseTo(0);
   });
 
+  it('measures from the nearest of several origins', () => {
+    expect(ids('nearHome')).toEqual(['a', 'c', 'b']);
+  });
+
   it('falls back to the date without an origin', () => {
-    expect(ids('nearHome')).toEqual(['a', 'b', 'c']);
+    expect(ids('nearPlace')).toEqual(['a', 'b', 'c']);
   });
 
   it('puts the most going first, ties by date', () => {

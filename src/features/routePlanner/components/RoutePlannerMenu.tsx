@@ -1,18 +1,14 @@
-import {
-  convertToDrawing,
-  setActiveModal,
-  setSelectingHomeLocation,
-} from '@app/store/actions.js';
+import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
 import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
   elevationChartOpen,
 } from '@features/elevationChart/model/actions.js';
+import { useSavedPlaces } from '@features/homeLocation/useSavedPlaces.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
-import { toastsAdd } from '@features/toasts/model/actions.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import {
   LEGEND_ITEM,
@@ -56,7 +52,6 @@ import {
   type ReactElement,
   type ReactNode,
   type SubmitEvent,
-  type SyntheticEvent,
   useCallback,
   useMemo,
   useState,
@@ -73,14 +68,13 @@ import { BiShapePolygon } from 'react-icons/bi';
 import {
   FaBullseye,
   FaChartArea,
-  FaCrosshairs,
   FaDiceThree,
-  FaHome,
   FaMapMarkerAlt,
   FaPaintBrush,
   FaPalette,
   FaPencilAlt,
   FaPlay,
+  FaPlus,
   FaRandom,
   FaRegDotCircle,
   FaRoute,
@@ -123,7 +117,6 @@ import {
 } from '../model/reducer.js';
 import { plannedRouteLines } from '../model/routeGeometry.js';
 import { MAX_ALTERNATIVES } from '../model/settingsReducer.js';
-import { loadRoutePlannerMessages } from '../translations/loadRoutePlannerMessages.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RouteTransportSelect } from './RouteTransportSelect.js';
 
@@ -529,9 +522,24 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const milestones = useAppSelector((state) => state.routePlanner.milestones);
 
-  const homeLocation = useAppSelector(
-    (state) => state.homeLocation.homeLocation,
-  );
+  const { places: savedPlaces, choosePlace, addPlace } = useSavedPlaces();
+
+  const savedPlaceItems =
+    savedPlaces.length === 0 ? (
+      <Dropdown.Item as="button" eventKey="add-place">
+        <FaPlus />
+        <MenuLabel>
+          <Text k="main.addPlace" />
+        </MenuLabel>
+      </Dropdown.Item>
+    ) : (
+      savedPlaces.map((place) => (
+        <Dropdown.Item as="button" key={place.key} eventKey={place.key}>
+          {place.icon}
+          <MenuLabel>{place.label}</MenuLabel>
+        </Dropdown.Item>
+      ))
+    );
 
   const activeTransportType = useAppSelector(
     (state) => state.routePlanner.transportType,
@@ -688,39 +696,6 @@ export default function RoutePlannerMenu(): ReactElement {
     }
   };
 
-  function setFromHomeLocation(
-    pointType: string | null,
-    e: SyntheticEvent<unknown>,
-  ) {
-    if (e.target instanceof HTMLButtonElement) {
-      dispatch(setSelectingHomeLocation(true));
-
-      return;
-    }
-
-    if (!homeLocation) {
-      dispatch(
-        toastsAdd({
-          id: 'routePlanner.noHomeAlert',
-          messageKey: 'noHomeAlert.msg',
-          messageLoader: loadRoutePlannerMessages,
-          style: 'warning',
-          actions: [
-            {
-              name: rpm?.noHomeAlert.setHome ?? '',
-              action: setSelectingHomeLocation(true),
-            },
-            { nameKey: 'general.close', variant: 'dark' },
-          ],
-        }),
-      );
-    } else if (pointType === 'start') {
-      dispatch(routePlannerSetStart(homeLocation));
-    } else if (pointType === 'finish') {
-      dispatch(routePlannerSetFinish(homeLocation));
-    }
-  }
-
   const activeTTDef = transportTypeDefs[activeTransportType];
 
   // Only GraphHopper reports path details, and only the ones the legs' profiles
@@ -837,13 +812,13 @@ export default function RoutePlannerMenu(): ReactElement {
         <Dropdown
           className="btn-group"
           id="set-start-dropdown"
-          onSelect={(eventKey, e) => {
+          onSelect={(eventKey) => {
             if (eventKey === 'pick') {
               dispatch(routePlannerSetPickMode('start'));
             } else if (eventKey === 'current') {
               dispatch(routePlannerSetFromCurrentPosition('start'));
-            } else if (eventKey === 'home') {
-              setFromHomeLocation('start', e);
+            } else if (eventKey === 'add-place') {
+              addPlace();
             } else if (eventKey === 'from-finish' && finishPoint) {
               dispatch(
                 routePlannerSetStart({
@@ -851,6 +826,12 @@ export default function RoutePlannerMenu(): ReactElement {
                   lon: finishPoint.lon,
                 }),
               );
+            } else {
+              const at = choosePlace(eventKey, 'routeStart');
+
+              if (at) {
+                dispatch(routePlannerSetStart(at));
+              }
             }
           }}
         >
@@ -883,20 +864,7 @@ export default function RoutePlannerMenu(): ReactElement {
               </MenuLabel>
             </Dropdown.Item>
 
-            <Dropdown.Item as="button" eventKey="home">
-              <FaHome />
-              <MenuLabel>
-                <Text m={rpm} k="point.home" />
-              </MenuLabel>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="my-n1 ms-auto flex-shrink-0"
-                title={rpm?.selectHomeLocation}
-              >
-                <FaCrosshairs className="pe-none" />
-              </Button>
-            </Dropdown.Item>
+            {savedPlaceItems}
 
             {finishPoint &&
               activeMode !== 'roundtrip' &&
@@ -929,13 +897,13 @@ export default function RoutePlannerMenu(): ReactElement {
             <Dropdown
               id="set-finish-dropdown"
               className="btn-group"
-              onSelect={(eventKey, e) => {
+              onSelect={(eventKey) => {
                 if (eventKey === 'pick') {
                   dispatch(routePlannerSetPickMode('finish'));
                 } else if (eventKey === 'current') {
                   dispatch(routePlannerSetFromCurrentPosition('finish'));
-                } else if (eventKey === 'home') {
-                  setFromHomeLocation('finish', e);
+                } else if (eventKey === 'add-place') {
+                  addPlace();
                 } else if (eventKey === 'from-start' && startPoint) {
                   dispatch(
                     routePlannerSetFinish({
@@ -943,6 +911,12 @@ export default function RoutePlannerMenu(): ReactElement {
                       lon: startPoint.lon,
                     }),
                   );
+                } else {
+                  const at = choosePlace(eventKey, 'routeFinish');
+
+                  if (at) {
+                    dispatch(routePlannerSetFinish(at));
+                  }
                 }
               }}
             >
@@ -975,20 +949,7 @@ export default function RoutePlannerMenu(): ReactElement {
                   </MenuLabel>
                 </Dropdown.Item>
 
-                <Dropdown.Item as="button" eventKey="home">
-                  <FaHome />
-                  <MenuLabel>
-                    <Text m={rpm} k="point.home" />
-                  </MenuLabel>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="my-n1 ms-auto flex-shrink-0"
-                    title={rpm?.selectHomeLocation}
-                  >
-                    <FaCrosshairs className="pe-none" />
-                  </Button>
-                </Dropdown.Item>
+                {savedPlaceItems}
 
                 {startPoint && (
                   <Dropdown.Item as="button" eventKey="from-start">

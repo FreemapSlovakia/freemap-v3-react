@@ -19,7 +19,7 @@ function makeState(): RootState {
   return {
     l10n: { chosenLanguage: 'sk', language: 'en' },
     main: { hiddenInfoBars: { foo: 1 }, shownInfoBars: { foo: 2 } },
-    homeLocation: { homeLocation: { lat: 1, lon: 2 } },
+    homeLocation: { places: [{ id: 3, name: 'A', lat: 1, lon: 2 }] },
     // In state but not persisted (no PERSIST entry).
     location: {
       locate: true,
@@ -192,7 +192,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
     expect(saved).toEqual({
       l10n: { chosenLanguage: 'sk' },
       main: { hiddenInfoBars: { foo: 1 }, shownInfoBars: { foo: 2 } },
-      homeLocation: { homeLocation: { lat: 1, lon: 2 } },
+      homeLocation: { places: [{ id: 3, name: 'A', lat: 1, lon: 2 }] },
       cookieConsent: {
         cookieConsentResult: true,
         analyticCookiesAllowed: false,
@@ -440,7 +440,10 @@ describe('statePersistingMiddleware — writing only on a real change', () => {
 
     runMiddleware({
       ...state,
-      homeLocation: { ...state.homeLocation, homeLocation: { lat: 9, lon: 9 } },
+      homeLocation: {
+        ...state.homeLocation,
+        places: [{ id: 3, name: 'A', lat: 9, lon: 9 }],
+      },
     });
 
     expect(storage.getItem('store')).toContain('"lat":9');
@@ -456,7 +459,9 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.l10n?.chosenLanguage).toBe('sk');
     expect(initial.main?.hiddenInfoBars).toEqual({ foo: 1 });
     expect(initial.main?.shownInfoBars).toEqual({ foo: 2 });
-    expect(initial.homeLocation?.homeLocation).toEqual({ lat: 1, lon: 2 });
+    expect(initial.homeLocation?.places).toEqual([
+      { id: 3, name: 'A', lat: 1, lon: 2 },
+    ]);
     expect(initial.cookieConsent?.cookieConsentResult).toBe(true);
     expect(initial.objectsSettings?.selectedIcon).toBe('pin');
     expect(initial.objectsSettings?.color).toBe('#d00000');

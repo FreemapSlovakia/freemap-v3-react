@@ -25,7 +25,7 @@ When the viewshed has no viewpoint yet, the map shows **Click the map where you 
 
 The viewpoint is marked by a pin with an eye, and the circle around it shows how far the viewshed reaches.
 
-- :FaEye: **Pick on the map** in the toolbar lets you pick another viewpoint the same way; it is computed once you confirm it. Under the arrow next to it, :FaRegDotCircle: **Viewshed from my position** uses your GPS position.
+- :FaEye: **Pick on the map** in the toolbar lets you pick another viewpoint the same way; it is computed once you confirm it. Under the arrow next to it, :FaRegDotCircle: **Viewshed from my position** uses your GPS position, and :FaMapPin: [your places](#show=manual/account) are there too.
 - Drag the pin to move the viewpoint. Dragging does not compute anything: the circle turns dashed, the previous viewpoint stays on the map faded, and :FaSync: **Update** appears in the toolbar.
 - The :FaEllipsisV: menu next to it holds the same actions for the viewpoint as the map's context menu.
 

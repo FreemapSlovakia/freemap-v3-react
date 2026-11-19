@@ -21,9 +21,9 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
     picture: 'Profilový obrázok',
     choosePicture: 'Vybrať obrázok',
     pictureTooLarge: 'Obrázok je príliš veľký. Maximálna veľkosť je 5 MB.',
-    homeLocation: 'Domovská poloha',
-    homeLocationUnset: 'Nenastavená',
-    setHomeLocation: 'Nastaviť v mape',
+    placesSection: 'Moje miesta',
+    noPlaces: 'Zatiaľ žiadne miesta',
+    placesPremium: 'Viac ako jedno miesto je dostupné s prémiovým prístupom.',
     roles: 'Moje roly',
     publicFields: ({ profile }) => (
       <>Zobraziť na {profile('mojom verejnom profile')}</>

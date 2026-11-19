@@ -4,7 +4,6 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
-  selectHomeLocation: 'Vybrať na mape',
   transportScope: {
     title: 'Použiť na',
     route: 'Celú trasu',
@@ -54,7 +53,6 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     point: 'Bod trasy',
     pick: 'Vybrať na mape',
     current: 'Vaša poloha',
-    home: 'Domov',
     fromStart: 'Poloha štartu',
     fromFinish: 'Poloha cieľa',
   },
@@ -116,10 +114,6 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
-  noHomeAlert: {
-    msg: 'Najprv si musíte nastaviť domovskú polohu.',
-    setHome: 'Nastaviť',
-  },
   showMidpointHint:
     'Pre pridanie prechodného bodu potiahnite úsek cesty na zvolené miesto.',
   gpsError: 'Nepodarilo sa získať aktuálnu polohu.',

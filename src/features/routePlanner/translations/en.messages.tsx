@@ -3,7 +3,6 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const en: RoutePlannerMessages = {
-  selectHomeLocation: 'Select on the map',
   transportScope: {
     title: 'Apply to',
     route: 'Whole route',
@@ -53,7 +52,6 @@ const en: RoutePlannerMessages = {
     point: 'Route point',
     pick: 'Select on the map',
     current: 'Your position',
-    home: 'Home position',
     fromStart: 'Start position',
     fromFinish: 'Finish position',
   },
@@ -115,10 +113,6 @@ const en: RoutePlannerMessages = {
       </b>
     </>
   ),
-  noHomeAlert: {
-    msg: 'You need to set your home position in settings first.',
-    setHome: 'Set',
-  },
   showMidpointHint: 'To add a midpoint, drag a route segment.',
   gpsError: 'Error getting your current location.',
   routeNotFound:

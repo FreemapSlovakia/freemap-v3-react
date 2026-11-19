@@ -37,6 +37,7 @@ import {
   FaBell,
   FaEraser,
   FaKey,
+  FaMapMarkedAlt,
   FaShoppingBasket,
   FaSignOutAlt,
   FaUser,
@@ -46,9 +47,9 @@ import {
 import { useDispatch } from 'react-redux';
 import { AppTokensSection } from './AppTokensSection.js';
 import { AuthProvidersSection } from './AuthProvidersSection.js';
-import { HomeLocationField } from './HomeLocationField.js';
 import { NotificationsSection } from './NotificationsSection.js';
 import { PersonalInfoSection } from './PersonalInfoSection.js';
+import { PlacesField } from './PlacesField.js';
 
 type Props = { show: boolean };
 
@@ -210,8 +211,18 @@ export default function AccountModal({ show }: Props): ReactElement | null {
 
             <Accordion.Body className="bg-body-tertiary">
               <PersonalInfoSection />
+            </Accordion.Body>
+          </Accordion.Item>
 
-              <HomeLocationField />
+          <Accordion.Item eventKey={'places' satisfies AccountSection}>
+            <Accordion.Header>
+              <span>
+                <FaMapMarkedAlt /> <Text m={am} k="account.placesSection" />
+              </span>
+            </Accordion.Header>
+
+            <Accordion.Body>
+              <PlacesField />
             </Accordion.Body>
           </Accordion.Item>
 

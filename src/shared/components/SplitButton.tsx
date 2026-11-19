@@ -68,7 +68,7 @@ export function SplitButton({
       <FmDropdownMenu>
         {items.map((item, i) => (
           <Dropdown.Item
-            // The items are a fixed list written at the call site.
+            // Keyed as the event key is: by position in this render's list.
             key={i}
             as="button"
             type="button"

@@ -4,7 +4,6 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
-  selectHomeLocation: 'Kijelölés a térképen',
   ghParams: {
     tripParameters: 'Út paraméterei',
     seed: 'Véletlenszám mag',
@@ -41,7 +40,6 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   point: {
     pick: 'Kijelölés a térképen',
     current: 'Az Ön pozíciója',
-    home: 'Lakhely',
     fromStart: 'Indulási pozíció',
     fromFinish: 'Érkezési pozíció',
     point: 'Útpont',
@@ -102,10 +100,6 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
-  noHomeAlert: {
-    msg: 'Először meg kell adnia a lakóhelyét a beállításoknál.',
-    setHome: 'Megadás',
-  },
   showMidpointHint: 'Köztes pont megadásához húzzon el egy útszakaszt.',
   gpsError: 'Hiba történt jelenlegi pozíciójának meghatározásakor.',
   routeNotFound:

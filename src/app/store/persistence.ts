@@ -39,6 +39,7 @@ import { gallerySettingsInitialState } from '@features/gallery/model/settingsRed
 import { gpsRecorderSettingsInitialState } from '@features/gpsRecorder/model/settingsReducer.js';
 import { RecorderConfigSchema } from '@features/gpsRecorder/protocol.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
+import { PlacesCompatSchema } from '@features/homeLocation/places.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
 import {
   HeadingSourceSchema,
@@ -124,7 +125,6 @@ import {
 } from '@shared/mapDefinitions.js';
 import { nearestStep } from '@shared/mathUtils.js';
 import { TransportTypeCompatSchema } from '@shared/transportTypeDefs.js';
-import { LatLonSchema } from '@shared/types/common.js';
 import storage from 'local-storage-fallback';
 import z from 'zod';
 import { mainInitialState } from './reducer.js';
@@ -239,10 +239,7 @@ export const PersistedCookieConsentSchema = z
   .partial();
 
 export const PersistedHomeLocationSchema = z
-  .object({
-    homeLocation: LatLonSchema.nullable(),
-    unsent: z.boolean(),
-  })
+  .object({ places: PlacesCompatSchema })
   .partial();
 
 export const PersistedMainSchema = z
@@ -736,8 +733,8 @@ const PERSIST: PersistEntry[] = [
     key: 'homeLocation',
     schema: PersistedHomeLocationSchema,
     initial: homeLocationInitialState,
-    fallbackKey: 'main',
-    persist: (h) => ({ homeLocation: h.homeLocation, unsent: h.unsent }),
+    // The account's, for offline use; one still being created is never sent.
+    persist: (h) => ({ places: h.places.filter((p) => p.id > 0) }),
   }),
   defineEntry({
     key: 'main',

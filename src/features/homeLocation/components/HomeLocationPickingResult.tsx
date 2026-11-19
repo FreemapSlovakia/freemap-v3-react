@@ -2,7 +2,7 @@ import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.j
 import { PickMarker } from '@shared/components/PickMarker.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
-import { FaHome } from 'react-icons/fa';
+import { FaMapPin } from 'react-icons/fa';
 
 export function HomeLocationPickingResult(): ReactElement {
   const position = useAppSelector(
@@ -13,7 +13,7 @@ export function HomeLocationPickingResult(): ReactElement {
     <PickMarker
       position={position}
       pickAction={setSelectingHomeLocation}
-      faIcon={<FaHome />}
+      faIcon={<FaMapPin />}
     />
   );
 }

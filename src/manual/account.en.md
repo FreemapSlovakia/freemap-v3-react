@@ -30,10 +30,11 @@ The first login with a provider creates a new Freemap account. To log in to the 
 
 ## The Account dialog
 
-Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</kbd> <kbd>a</kbd>) in place of **Log in**. The dialog has five sections:
+Once logged in, the main menu shows :FaUser: [Account](#show=account) (<kbd>e</kbd> <kbd>a</kbd>) in place of **Log in**. The dialog has six sections:
 
 - :FaShoppingBasket: **Premium and purchases** – premium access, credits and **Manage payments**, described in [Premium and credits](#show=manual/premium).
 - :FaAddressCard: **Personal information**
+- :FaMapMarkedAlt: **My places**
 - :FaBell: **Email notifications**
 - :FaUserCircle: **Login providers**
 - :FaKey: **App tokens**
@@ -53,7 +54,13 @@ A new email address is not stored by **Save**: press :FaEnvelope: **Send code**,
 
 Without any email address, the yellow strip asks for one; **Don’t remind me** in it, or removing your address here, stops that for good. The comment form of a photo you uploaded or commented on also says when new comments can't be emailed to you.
 
-Below them, :FaHome: **Home position** is saved as soon as you set it: :FaMapMarkerAlt: **Set on the map** lets you click it on the map or find it by its address, :FaTimes: **Remove** clears it. The route planner and the events filter offer it as a place.
+## My places
+
+Places you go to often, such as your home, a cottage or a favourite peak. The route planner, the events filter, the panorama, the viewshed and the toposcope offer them wherever you choose a place, and the events list can be sorted by distance from the nearest of them.
+
+:FaPlus: **Add place** lets you pick one on the map, or find it by its address, and name it in the bar above the map. :FaPencilAlt: **Modify** moves or renames it, and :FaTimes: **Remove** deletes it. Changes are saved at once.
+
+You can have one place; with [premium](#show=premium), up to 20. If your premium ends, you keep and can still use the places you have, but you cannot add more.
 
 ## Email notifications
 

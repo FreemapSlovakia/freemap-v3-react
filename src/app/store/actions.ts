@@ -4,10 +4,7 @@ import {
   setAnalyticCookiesAllowed,
 } from '@features/cookieConsent/model/actions.js';
 import type { DrawingStyle } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
-import {
-  saveHomeLocation,
-  setSelectingHomeLocation,
-} from '@features/homeLocation/model/actions.js';
+import { setSelectingHomeLocation } from '@features/homeLocation/model/actions.js';
 import {
   locationSetHeadingSource,
   locationSetShowBearingLine,
@@ -73,7 +70,6 @@ export const resetApp = createAction('RESET_APP');
 export {
   locationSetHeadingSource,
   locationSetShowBearingLine,
-  saveHomeLocation,
   setSelectingHomeLocation,
   toggleLocate,
 };

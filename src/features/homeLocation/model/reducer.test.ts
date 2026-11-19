@@ -1,64 +1,101 @@
-import { authSetUser } from '@features/auth/model/actions.js';
-import { authReducer } from '@features/auth/model/reducer.js';
-import type { User } from '@features/auth/model/types.js';
+import { authLogout } from '@features/auth/model/actions.js';
 import { describe, expect, it } from 'vitest';
-import { homeLocationSent, saveHomeLocation } from './actions.js';
+import {
+  deletePlace,
+  placeStored,
+  savePlace,
+  startPickingPlace,
+} from './actions.js';
 import { homeLocationInitialState, homeLocationReducer } from './reducer.js';
 
-const user = (coordinates: User['coordinates']) =>
-  authSetUser({ coordinates } as User);
+const cottage = { id: -1, name: 'Cottage', lat: 48, lon: 17 };
 
-const here = { lat: 48, lon: 17 };
-
-const there = { lat: 49, lon: 18 };
-
-describe('home location sync', () => {
-  it("takes the account's, removal included, when nothing is unsent", () => {
-    const state = { ...homeLocationInitialState, homeLocation: here };
-
-    expect(homeLocationReducer(state, user(there)).homeLocation).toEqual(there);
-
-    expect(homeLocationReducer(state, user(null)).homeLocation).toBeNull();
-  });
-
-  it('keeps an unsent change over the account', () => {
-    const saved = homeLocationReducer(
+describe('places', () => {
+  it('adds, changes and deletes a place', () => {
+    const added = homeLocationReducer(
       homeLocationInitialState,
-      saveHomeLocation(here),
+      savePlace(cottage),
     );
 
-    expect(saved.unsent).toBe(true);
+    const moved = homeLocationReducer(
+      added,
+      savePlace({ ...cottage, name: 'Hut', lat: 49 }),
+    );
 
-    expect(homeLocationReducer(saved, user(there)).homeLocation).toEqual(here);
+    expect(moved.places).toEqual([{ ...cottage, name: 'Hut', lat: 49 }]);
 
-    const removed = homeLocationReducer(saved, saveHomeLocation(null));
-
-    expect(homeLocationReducer(removed, user(there)).homeLocation).toBeNull();
+    expect(homeLocationReducer(moved, deletePlace(-1)).places).toEqual([]);
   });
 
-  it("updates the logged-in user's copy once sent", () => {
-    const loggedIn = authReducer(
-      undefined,
-      authSetUser({ coordinates: here } as User),
+  it("takes the account's id once stored, unless deleted meanwhile", () => {
+    const added = homeLocationReducer(
+      homeLocationInitialState,
+      savePlace(cottage),
+    );
+
+    const stored = { ...cottage, id: 7 };
+
+    expect(
+      homeLocationReducer(added, placeStored({ localId: -1, place: stored }))
+        .places,
+    ).toEqual([stored]);
+
+    const deleted = homeLocationReducer(added, deletePlace(-1));
+
+    expect(
+      homeLocationReducer(deleted, placeStored({ localId: -1, place: stored }))
+        .places,
+    ).toEqual([]);
+  });
+
+  it('saves a pick begun before the create finished under the new id', () => {
+    const picking = homeLocationReducer(
+      homeLocationReducer(homeLocationInitialState, savePlace(cottage)),
+      startPickingPlace({ id: -1 }),
+    );
+
+    const stored = homeLocationReducer(
+      picking,
+      placeStored({ localId: -1, place: { ...cottage, id: 7 } }),
+    );
+
+    expect(stored.pickingPlace).toBe(7);
+
+    const edited = homeLocationReducer(
+      stored,
+      savePlace({ ...cottage, id: 7, name: 'Hut' }),
+    );
+
+    expect(edited.places).toEqual([{ ...cottage, id: 7, name: 'Hut' }]);
+  });
+
+  it('picks an existing place from where it is, a new one from nothing', () => {
+    const state = homeLocationReducer(
+      homeLocationInitialState,
+      savePlace(cottage),
     );
 
     expect(
-      authReducer(loggedIn, homeLocationSent(null)).user?.coordinates,
-    ).toBeNull();
+      homeLocationReducer(state, startPickingPlace({ id: -1 })),
+    ).toMatchObject({
+      selectingHomeLocation: { lat: 48, lon: 17 },
+      pickingPlace: -1,
+      pickedPlaceName: 'Cottage',
+    });
+
+    expect(homeLocationReducer(state, startPickingPlace({}))).toMatchObject({
+      selectingHomeLocation: null,
+      pickingPlace: null,
+      pickedPlaceName: '',
+    });
   });
 
-  it('counts as sent only what is still current', () => {
-    const saved = homeLocationReducer(
+  it('forgets the places on logout', () => {
+    const state = homeLocationReducer(
       homeLocationInitialState,
-      saveHomeLocation(there),
+      savePlace(cottage),
     );
 
-    expect(homeLocationReducer(saved, homeLocationSent(here)).unsent).toBe(
-      true,
-    );
-
-    expect(homeLocationReducer(saved, homeLocationSent(there)).unsent).toBe(
-      false,
-    );
+    expect(homeLocationReducer(state, authLogout()).places).toEqual([]);
   });
 });

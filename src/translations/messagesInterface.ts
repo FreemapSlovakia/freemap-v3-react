@@ -298,8 +298,11 @@ export type Messages = {
     close: string;
     closeTool: string;
     locateMe: string;
-    /** Asks for the map click that sets the user's home location. */
-    pickHomeLocationPrompt: string;
+    /** Asks for the map click that places a saved place. */
+    pickPlacePrompt: string;
+    placeName: string;
+    /** A place picker's item while the user has no places. */
+    addPlace: string;
     locationError: string;
     locationNoSignal: string;
     headingSource: string;

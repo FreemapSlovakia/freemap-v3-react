@@ -20,9 +20,9 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
     picture: 'Profilový obrázek',
     choosePicture: 'Vybrat obrázek',
     pictureTooLarge: 'Obrázek je příliš velký. Maximální velikost je 5 MB.',
-    homeLocation: 'Domovská poloha',
-    homeLocationUnset: 'Nenastavena',
-    setHomeLocation: 'Nastavit v mapě',
+    placesSection: 'Moje místa',
+    noPlaces: 'Zatím žádná místa',
+    placesPremium: 'Více než jedno místo je dostupné s prémiovým přístupem.',
     description: 'O mně',
     roles: 'Moje role',
     publicFields: ({ profile }) => (

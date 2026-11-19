@@ -4,7 +4,6 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
-  selectHomeLocation: 'Sélectionner sur la carte',
   transportScope: {
     title: 'Appliquer à',
     route: 'Tout l’itinéraire',
@@ -54,7 +53,6 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     point: 'Point de l’itinéraire',
     pick: 'Sélectionner sur la carte',
     current: 'Votre position',
-    home: 'Position du domicile',
     fromStart: 'Position de départ',
     fromFinish: 'Position d’arrivée',
   },
@@ -116,10 +114,6 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
-  noHomeAlert: {
-    msg: 'Vous devez d’abord définir la position de votre domicile dans les paramètres.',
-    setHome: 'Définir',
-  },
   showMidpointHint:
     'Pour ajouter un point intermédiaire, faites glisser un segment de l’itinéraire.',
   gpsError: 'Erreur lors de l’obtention de votre position actuelle.',

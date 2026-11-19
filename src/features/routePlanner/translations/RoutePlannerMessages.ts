@@ -5,7 +5,6 @@ import type { RoutingMode } from '../model/actions.js';
 type Err = { err: string };
 
 export type RoutePlannerMessages = {
-  selectHomeLocation: string;
   /** Which legs a transport chosen in the transport menu applies to. */
   transportScope: {
     title: string;
@@ -62,7 +61,6 @@ export type RoutePlannerMessages = {
     point: string;
     pick: string;
     current: string;
-    home: string;
     fromStart: string;
     fromFinish: string;
   };
@@ -98,10 +96,6 @@ export type RoutePlannerMessages = {
     h: ReactNode;
     m: ReactNode;
   }) => JSX.Element;
-  noHomeAlert: {
-    msg: string;
-    setHome: string;
-  };
   showMidpointHint: string;
   gpsError: string;
   routeNotFound: string;

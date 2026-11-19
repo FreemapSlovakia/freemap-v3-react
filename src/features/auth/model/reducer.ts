@@ -1,5 +1,4 @@
 import { setActiveModal } from '@app/store/actions.js';
-import { homeLocationSent } from '@features/homeLocation/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import { authLogout, authSetOsmGpxAuthorized, authSetUser } from './actions.js';
 import { purchaseOnLogin } from './purchaseActions.js';
@@ -37,7 +36,6 @@ export const authReducer = createReducer(authInitialState, (builder) =>
         premiumSubscriptionStatus: action.payload.premiumSubscriptionStatus,
         authProviders: action.payload.authProviders,
         credits: action.payload.credits,
-        coordinates: action.payload.coordinates,
         hasPicture: action.payload.hasPicture,
         osmGpxAuthorized: action.payload.osmGpxAuthorized,
       },
@@ -46,12 +44,6 @@ export const authReducer = createReducer(authInitialState, (builder) =>
     .addCase(authSetOsmGpxAuthorized, (state, action) => {
       if (state.user) {
         state.user.osmGpxAuthorized = action.payload;
-      }
-    })
-    // Other saves re-dispatch this user, which would restore the home it held.
-    .addCase(homeLocationSent, (state, action) => {
-      if (state.user) {
-        state.user.coordinates = action.payload;
       }
     })
     .addCase(authLogout, () => authInitialState)

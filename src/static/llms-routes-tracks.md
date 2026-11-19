@@ -14,7 +14,7 @@ In "Ordered" (point-to-point) mode a premium route can be multimodal: each segme
 
 Where routing finds no way through — for the whole route, or for one leg of a multimodal one — the map draws a straight red dotted line between those waypoints instead. That stretch is treated as what it is rather than as a route: colorize leaves it alone (so the dotted line still shows), and the elevation profile draws a straight line across it rather than the terrain under it, which keeps the ridges it happens to cross out of the climb totals. The rest of the route is unaffected. A wholly failed route also reports a duration of zero, there being nothing routed to estimate one from; where only one leg failed, its straight line is given the pace of the legs that did route, so the total reads as an estimate rather than as nothing.
 
-The **Start**/**Finish** (and midpoint) pickers offer: Select on the map, Your position, or Home position.
+The **Start**/**Finish** (and midpoint) pickers offer: Select on the map, Your position, or one of the user's saved places (see **My places** under Account in [Interface](/llms-interface.md)).
 
 Supported vehicles (the transport dropdown also offers "Straight line" for fully manual routing):
 

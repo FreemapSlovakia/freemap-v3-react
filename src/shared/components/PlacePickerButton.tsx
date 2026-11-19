@@ -1,12 +1,15 @@
+import { useSavedPlaces } from '@features/homeLocation/useSavedPlaces.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import {
   type FixConsumer,
+  fixReady,
   requestFix,
   setFixRequest,
 } from '@features/location/model/actions.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement, ReactNode } from 'react';
 import { Spinner } from 'react-bootstrap';
-import { FaRegDotCircle } from 'react-icons/fa';
+import { FaPlus, FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { SplitButton } from './SplitButton.js';
 
@@ -26,7 +29,7 @@ type Props = {
 /**
  * "Where does this go?", answered either by pointing at the map or by standing
  * somewhere. Pointing is under the button because it is the common case; the
- * GPS is behind the caret.
+ * GPS and the saved places are behind the caret.
  *
  * Owns the wait: a spinner while a fix is coming, and either half ends it —
  * picking because a fix landing mid-pick would place the thing itself, and the
@@ -43,6 +46,10 @@ export function PlacePickerButton({
   onAct,
 }: Props): ReactElement {
   const dispatch = useDispatch();
+
+  const { places, choosePlace, addPlace } = useSavedPlaces();
+
+  const m = useMessages();
 
   const awaitingFix = useAppSelector(
     (state) => state.location.fixRequest === consumer,
@@ -70,6 +77,24 @@ export function PlacePickerButton({
             dispatch(awaitingFix ? setFixRequest(null) : requestFix(consumer));
           },
         },
+        // Placed as a fix would be, which also ends any wait for one.
+        // TODO locating that the wait turned on stays on.
+        ...places.map((place) => ({
+          icon: place.icon,
+          label: place.label,
+          onSelect: () => {
+            const at = choosePlace(place.key, consumer);
+
+            if (at) {
+              onAct?.();
+
+              dispatch(fixReady({ consumer, ...at }));
+            }
+          },
+        })),
+        ...(places.length === 0
+          ? [{ icon: <FaPlus />, label: m?.main.addPlace, onSelect: addPlace }]
+          : []),
       ]}
     />
   );

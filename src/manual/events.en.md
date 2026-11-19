@@ -20,7 +20,7 @@ The overlay's toolbar has:
 - :FaPalette: **Colorize by** – colours the markers by **When** (ended grey, happening green, upcoming from orange for soon to purple for weeks away), **Mine and others**, **Transport**, **Length**, **Duration**, **Ascent**, **Difficulty**, **Dogs** or **Children**; **Legend** in the same menu explains the colours.
 - :FaPlus: **New event**, when you are logged in.
 
-In the :FaLayerGroup: **Map layers** panel, the row of the Events overlay opens a list of the events shown, which you can search by title, sort (by date, title, length, ascent, duration, interest, or by distance from the map center, home or the filter's place) and keep to the current view. The eye menu in its header chooses what the rows show.
+In the :FaLayerGroup: **Map layers** panel, the row of the Events overlay opens a list of the events shown, which you can search by title, sort (by date, title, length, ascent, duration, interest, or by distance from the map center, the nearest of your places or the filter's place) and keep to the current view. The eye menu in its header chooses what the rows show.
 
 ## Filtering
 
@@ -29,7 +29,7 @@ In the :FaLayerGroup: **Map layers** panel, the row of the Events overlay opens 
 ![The Events filter](./images/events-filter.en.webp)
 
 - **Date** – a **Range** of dates, or a period from today: **1 week**, **2 weeks**, **1 month**, **3 months**. Without a start date only events that haven't ended yet are shown.
-- **Near** – a place and a radius in km. Type coordinates or press **Set the location** and click the map; its menu offers **My location** and **Home position**.
+- **Near** – a place and a radius in km. Type coordinates or press **Set the location** and click the map; its menu offers **My location** and your places.
 - **Transport**, **Difficulty**, **Dogs welcome**, **Suitable for children**, and ranges of **Length**, **Duration** and **Ascent**.
 - **Origin** – **Entered here** or **Imported**.
 - **Include events that don't say** also shows events that leave out the transport, difficulty or a stat you filter on.

@@ -25,7 +25,7 @@ Kým vrstva nemá stanovisko, na mape sa zobrazí výzva **Kliknite do mapy tam,
 
 Stanovisko označuje špendlík s okom a kruh okolo stanoviska ukazuje dosah viditeľnosti.
 
-- :FaEye: **Vybrať v mape** na lište slúži na výber iného stanoviska rovnakým spôsobom; viditeľnosť sa vypočíta po potvrdení. Pod šípkou vedľa tlačidla je :FaRegDotCircle: **Viditeľnosť z mojej polohy**, ktorá použije vašu polohu z GPS.
+- :FaEye: **Vybrať v mape** na lište slúži na výber iného stanoviska rovnakým spôsobom; viditeľnosť sa vypočíta po potvrdení. Pod šípkou vedľa tlačidla je :FaRegDotCircle: **Viditeľnosť z mojej polohy**, ktorá použije vašu polohu z GPS, a tiež :FaMapPin: [vaše miesta](#show=manual/account).
 - Ťahaním špendlíka stanovisko presuniete. Presunutím sa nič nepočíta: kruh sa zmení na prerušovaný, predchádzajúce stanovisko zostane na mape vyblednuté a na lište sa zobrazí :FaSync: **Aktualizovať**.
 - V ponuke :FaEllipsisV: vedľa tlačidla sú pre stanovisko tie isté akcie ako v kontextovej ponuke mapy.
 

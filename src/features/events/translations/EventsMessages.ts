@@ -76,7 +76,6 @@ export type EventsMessages = {
     anywhere: string;
     within: string;
     myLocation: string;
-    homePosition: string;
     dogsWelcome: string;
     childrenSuitable: string;
     from: string;

@@ -2,7 +2,6 @@ import { authInitialState } from '@features/auth/model/reducer.js';
 import { cookieConsentInitialState } from '@features/cookieConsent/model/reducer.js';
 import { dataViewerSettingsInitialState } from '@features/dataViewer/model/settingsReducer.js';
 import { drawingSettingsInitialState } from '@features/drawing/model/reducers/drawingSettingsReducer.js';
-import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
 import { l10nInitialState } from '@features/l10n/model/reducer.js';
 import { mapInitialState } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
@@ -168,7 +167,7 @@ describe('getInitialState — parseWithFallback (slices once stored under `main`
     expect(getInitialState().cookieConsent?.cookieConsentResult).toBe(true);
   });
 
-  it('reads homeLocation / drawingSettings from `main` fallback too', () => {
+  it('reads drawingSettings from `main` fallback too', () => {
     seed({
       main: {
         homeLocation: { lat: 1, lon: 2 },
@@ -179,10 +178,8 @@ describe('getInitialState — parseWithFallback (slices once stored under `main`
 
     const initial = getInitialState();
 
-    expect(initial.homeLocation).toEqual({
-      ...homeLocationInitialState,
-      homeLocation: { lat: 1, lon: 2 },
-    });
+    // A home location from before places is the account's to give back.
+    expect(initial.homeLocation).toBeUndefined();
     // drawingSettings.style merges over the initial nested style.
     expect(initial.drawingSettings).toEqual({
       ...drawingSettingsInitialState,

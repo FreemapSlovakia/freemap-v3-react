@@ -30,8 +30,8 @@ import {
   FaCheck,
   FaCrosshairs,
   FaEye,
-  FaHome,
   FaMapMarkerAlt,
+  FaMapPin,
   FaRegCalendarAlt,
   FaRegCheckSquare,
   FaRegClock,
@@ -74,7 +74,7 @@ const SORT_ICONS: Record<EventsListSort, ReactElement> = {
   durationAsc: <FaRegClock />,
   durationDesc: <FaRegClock />,
   nearMap: <FaCrosshairs />,
-  nearHome: <FaHome />,
+  nearHome: <FaMapPin />,
   nearPlace: <FaMapMarkerAlt />,
   interestedDesc: <FaStar />,
   goingDesc: <FaCheck />,
@@ -90,7 +90,7 @@ export function EventsLayerList(): ReactElement {
 
   const near = useAppSelector((state) => state.eventsSettings.filter.near);
 
-  const home = useAppSelector((state) => state.homeLocation.homeLocation);
+  const places = useAppSelector((state) => state.homeLocation.places);
 
   // Read when needed, not subscribed: the list needn't re-render on every pan.
   const store = useStore<RootState>();
@@ -126,7 +126,7 @@ export function EventsLayerList(): ReactElement {
 
   // A distance sort needs its origin; without one it can't be chosen.
   const unavailable: Partial<Record<EventsListSort, boolean>> = {
-    nearHome: !home,
+    nearHome: places.length === 0,
     nearPlace: !near,
   };
 
@@ -194,9 +194,9 @@ export function EventsLayerList(): ReactElement {
       found,
       effectiveSort,
       {
-        nearMap: center,
-        nearHome: home,
-        nearPlace: near ?? null,
+        nearMap: [center],
+        nearHome: places,
+        nearPlace: near ? [near] : [],
       },
       language,
     );
@@ -206,7 +206,7 @@ export function EventsLayerList(): ReactElement {
     query,
     effectiveSort,
     center,
-    home,
+    places,
     near,
     language,
     inView,
@@ -219,7 +219,7 @@ export function EventsLayerList(): ReactElement {
   // biome-ignore lint/correctness/useExhaustiveDependencies: these are what reset it
   useEffect(() => {
     reset();
-  }, [query, effectiveSort, center, inView, near, home, bounds]);
+  }, [query, effectiveSort, center, inView, near, places, bounds]);
 
   // What the rows show: the ticked traits and the stat the list is sorted by.
   const traits = new Set(listTraits);

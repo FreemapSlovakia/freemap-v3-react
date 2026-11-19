@@ -30,10 +30,11 @@ Prvé prihlásenie cez poskytovateľa vytvorí nový účet Freemap. Ak sa chcet
 
 ## Dialóg Účet
 
-Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :FaUser: [Účet](#show=account) (<kbd>e</kbd> <kbd>a</kbd>). Dialóg má päť častí:
+Po prihlásení je v hlavnom menu namiesto položky **Prihlásenie** položka :FaUser: [Účet](#show=account) (<kbd>e</kbd> <kbd>a</kbd>). Dialóg má šesť častí:
 
 - :FaShoppingBasket: **Prémium a nákupy** – prémiový prístup, kredity a **Spravovať platby**, opísané v kapitole [Prémiový prístup a kredity](#show=manual/premium).
 - :FaAddressCard: **Osobné údaje**
+- :FaMapMarkedAlt: **Moje miesta**
 - :FaBell: **E-mailové notifikácie**
 - :FaUserCircle: **Poskytovatelia prihlásenia**
 - :FaKey: **Aplikačné tokeny**
@@ -53,7 +54,13 @@ Novú e-mailovú adresu **Uložiť** neuloží: stlačte :FaEnvelope: **Poslať 
 
 Bez akejkoľvek e-mailovej adresy žltý pásik o ňu požiada; **Nepripomínať** v ňom alebo odstránenie adresy tu to natrvalo vypne. Formulár komentára k fotke, ktorú ste nahrali alebo komentovali, tiež upozorní, keď vám nové komentáre nemôžu prísť e-mailom.
 
-Pod nimi je :FaHome: **Domovská poloha**, ktorá sa uloží hneď, ako ju nastavíte: :FaMapMarkerAlt: **Nastaviť v mape** umožní kliknúť na ňu v mape alebo ju nájsť podľa adresy, :FaTimes: **Odstrániť** ju zruší. Ponúka ju plánovač trás aj filter akcií.
+## Moje miesta
+
+Miesta, kam často chodíte, napríklad domov, chata alebo obľúbený vrchol. Plánovač trás, filter akcií, panoráma, viditeľnosť aj toposkop ich ponúkajú všade, kde vyberáte miesto, a zoznam akcií sa dá zoradiť podľa vzdialenosti od najbližšieho z nich.
+
+:FaPlus: **Pridať miesto** umožní vybrať ho v mape alebo nájsť podľa adresy a pomenovať na lište nad mapou. :FaPencilAlt: **Upraviť** ho presunie alebo premenuje a :FaTimes: **Odstrániť** ho zmaže. Zmeny sa uložia hneď.
+
+Mať môžete jedno miesto, s [prémiovým prístupom](#show=premium) až 20. Keď prémiový prístup skončí, miesta vám zostanú a môžete ich používať, no ďalšie nepridáte.
 
 ## E-mailové notifikácie
 

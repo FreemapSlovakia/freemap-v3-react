@@ -19,9 +19,9 @@ const hu: DeepPartialWithRequiredObjects<AuthMessages> = {
     publicFields: ({ profile }) => (
       <>Megjelenítés a {profile('nyilvános profilomon')}</>
     ),
-    homeLocation: 'Otthoni hely',
-    homeLocationUnset: 'Nincs beállítva',
-    setHomeLocation: 'Beállítás a térképen',
+    placesSection: 'Saját helyek',
+    noPlaces: 'Még nincsenek helyek',
+    placesPremium: 'Egynél több hely prémium hozzáféréssel érhető el.',
     roles: 'Szerepköreim',
     emailUnconfirmed:
       'Ez a cím még nincs megerősítve. Amíg meg nem erősíti, a Freemap nem küld rá e-mailt, és nem lehet vele bejelentkezni.',

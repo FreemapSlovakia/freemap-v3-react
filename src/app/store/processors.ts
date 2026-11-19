@@ -111,7 +111,12 @@ import {
   gpsRecorderSyncProcessor,
   gpsRecorderToolProcessor,
 } from '@features/gpsRecorder/model/processors.js';
-import { homeLocationSyncProcessor } from '@features/homeLocation/model/homeLocationProcessors.js';
+import {
+  deletePlaceProcessor,
+  placesLoadProcessor,
+  placesLoginProcessor,
+  savePlaceProcessor,
+} from '@features/homeLocation/model/homeLocationProcessors.js';
 import { l10nSetLanguageProcessor } from '@features/l10n/model/processor.js';
 import { legendProcessor } from '@features/legend/model/legendProcessor.js';
 import { followLocationProcessor } from '@features/location/model/followProcessor.js';
@@ -290,7 +295,10 @@ export const processors = [
   authInitProcessor,
   authTrackProcessor,
   l10nSetLanguageProcessor,
-  homeLocationSyncProcessor,
+  placesLoginProcessor,
+  placesLoadProcessor,
+  savePlaceProcessor,
+  deletePlaceProcessor,
   elevationChartProcessor,
   elevationChartPendingTargetProcessor,
   objectsFetchProcessor,

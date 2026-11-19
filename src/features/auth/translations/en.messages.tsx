@@ -20,9 +20,9 @@ const en: AuthMessages = {
     picture: 'Profile picture',
     choosePicture: 'Choose picture',
     pictureTooLarge: 'Picture is too large. Maximum size is 5 MB.',
-    homeLocation: 'Home position',
-    homeLocationUnset: 'Not set',
-    setHomeLocation: 'Set on the map',
+    placesSection: 'My places',
+    noPlaces: 'No places yet',
+    placesPremium: 'More than one place is available with premium access.',
     roles: 'My roles',
     publicFields: ({ profile }) => <>Show on {profile('my public profile')}</>,
     emailUnconfirmed:

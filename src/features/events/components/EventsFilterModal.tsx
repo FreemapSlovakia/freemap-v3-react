@@ -2,6 +2,7 @@ import { useDocumentTitle } from '@app/hooks/useDocumentTitle.js';
 import { setActiveModal } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
+import { useSavedPlaces } from '@features/homeLocation/useSavedPlaces.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import { PlaceName } from '@features/search/components/PlaceName.js';
@@ -47,7 +48,6 @@ import {
   FaDog,
   FaEraser,
   FaFilter,
-  FaHome,
   FaMapMarkerAlt,
   FaRegClock,
   FaRegDotCircle,
@@ -263,7 +263,7 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const home = useAppSelector((state) => state.homeLocation.homeLocation);
+  const { places: savedPlaces, choosePlace } = useSavedPlaces();
 
   const [transport, setTransport] = useState<string[]>([]);
 
@@ -684,8 +684,12 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                 onSelect={(key) => {
                   if (key === 'current') {
                     takeMyLocation();
-                  } else if (key === 'home' && home) {
-                    setPlace(latLonToString(home, language));
+                  } else {
+                    const at = choosePlace(key, 'eventsNear');
+
+                    if (at) {
+                      setPlace(latLonToString(at, language));
+                    }
                   }
                 }}
               >
@@ -697,15 +701,19 @@ export default function EventsFilterModal({ show }: Props): ReactElement {
                     <MenuLabel>{em?.filter.myLocation}</MenuLabel>
                   </Dropdown.Item>
 
-                  <Dropdown.Item
-                    as="button"
-                    type="button"
-                    eventKey="home"
-                    disabled={!home}
-                  >
-                    <FaHome />
-                    <MenuLabel>{em?.filter.homePosition}</MenuLabel>
-                  </Dropdown.Item>
+                  {/* No Add place: leaving for it would drop the unapplied
+                      filter. */}
+                  {savedPlaces.map((p) => (
+                    <Dropdown.Item
+                      key={p.key}
+                      as="button"
+                      type="button"
+                      eventKey={p.key}
+                    >
+                      {p.icon}
+                      <MenuLabel>{p.label}</MenuLabel>
+                    </Dropdown.Item>
+                  ))}
                 </FmDropdownMenu>
               </Dropdown>
             </InputGroup>

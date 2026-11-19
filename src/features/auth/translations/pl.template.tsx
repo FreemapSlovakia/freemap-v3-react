@@ -24,9 +24,9 @@ const pl: DeepPartialWithRequiredObjects<AuthMessages> = {
     publicFields: ({ profile }) => (
       <>Widoczne w {profile('profilu publicznym')}</>
     ),
-    homeLocation: 'Pozycja domowa',
-    homeLocationUnset: 'Nie ustawiono',
-    setHomeLocation: 'Ustaw na mapie',
+    placesSection: 'Moje miejsca',
+    noPlaces: 'Brak miejsc',
+    placesPremium: 'Więcej niż jedno miejsce jest dostępne z dostępem premium.',
     roles: 'Moje role',
     emailUnconfirmed:
       'Ten adres nie jest jeszcze potwierdzony. Do czasu potwierdzenia Freemap nie wysyła na niego żadnych wiadomości i nie można się nim zalogować.',

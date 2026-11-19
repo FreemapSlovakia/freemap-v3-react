@@ -83,8 +83,11 @@ export type EventsNearSort = (typeof NEAR_SORTS)[number];
 export const isNearSort = (sort: EventsListSort): sort is EventsNearSort =>
   (NEAR_SORTS as readonly EventsListSort[]).includes(sort);
 
-/** Where each distance sort measures from; null where it has no origin now. */
-export type SortOrigins = Record<EventsNearSort, LatLon | null>;
+/**
+ * Where each distance sort measures from, the nearest of several counting;
+ * empty where it has no origin now. `nearHome` is the user's saved places.
+ */
+export type SortOrigins = Record<EventsNearSort, LatLon[]>;
 
 export type ListedEvent = { event: EventSummary; km?: number };
 
@@ -135,13 +138,14 @@ export function sortEvents(
     return sorted(listed, byStat(statSort.stat, statSort.sign));
   }
 
-  const origin = isNearSort(sort) ? origins[sort] : null;
+  const from = isNearSort(sort) ? origins[sort] : [];
 
-  if (origin) {
+  if (from.length > 0) {
     return listed
       .map(({ event }) => ({
         event,
-        km: distanceTo(origin, event.startPoint) / 1000,
+        km:
+          Math.min(...from.map((o) => distanceTo(o, event.startPoint))) / 1000,
       }))
       .toSorted((a, b) => a.km - b.km || byDate(a, b));
   }

@@ -32,9 +32,10 @@ export type AuthMessages = {
     picture: string;
     choosePicture: string;
     pictureTooLarge: string;
-    homeLocation: string;
-    homeLocationUnset: string;
-    setHomeLocation: string;
+    placesSection: string;
+    noPlaces: string;
+    /** The premium gem's hint beside Add place. */
+    placesPremium: string;
     roles: string;
     /**
      * Labels the checkboxes of what the public profile shows; `profile` links

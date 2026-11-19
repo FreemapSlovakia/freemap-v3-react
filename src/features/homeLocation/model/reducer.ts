@@ -1,57 +1,92 @@
-import { authLogout, authSetUser } from '@features/auth/model/actions.js';
+import { authLogout } from '@features/auth/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import type { LatLon } from '@shared/types/common.js';
+import type { Place } from '../places.js';
 import {
-  homeLocationSent,
-  saveHomeLocation,
+  deletePlace,
+  placeStored,
+  placesSet,
+  savePlace,
+  setPickedPlaceName,
   setSelectingHomeLocation,
+  startPickingPlace,
 } from './actions.js';
 
 export interface HomeLocationState {
-  homeLocation: LatLon | null;
-  /** Set or removed here but not yet on the account, which it then overrides. */
-  unsent: boolean;
+  /** The account's places, kept for offline use; negative ids being created. */
+  places: Place[];
+  /** The picked position while picking a place; `false` when not picking. */
   selectingHomeLocation: LatLon | null | false;
+  /** The place being picked; null for a new one. */
+  pickingPlace: number | null;
+  pickedPlaceName: string;
 }
 
 export const homeLocationInitialState: HomeLocationState = {
-  homeLocation: null,
-  unsent: false,
+  places: [],
   selectingHomeLocation: false,
+  pickingPlace: null,
+  pickedPlaceName: '',
 };
 
 export const homeLocationReducer = createReducer(
   homeLocationInitialState,
   (builder) =>
     builder
-      // The account's, unless a change made here is still on its way there.
-      .addCase(authSetUser, (state, action) => {
-        if (action.payload && !state.unsent) {
-          state.homeLocation = action.payload.coordinates;
-        }
-      })
       .addCase(authLogout, (state) => {
-        state.homeLocation = null;
+        state.places = [];
+      })
+      .addCase(startPickingPlace, (state, action) => {
+        const place = state.places.find((p) => p.id === action.payload.id);
 
-        state.unsent = false;
+        state.selectingHomeLocation = place
+          ? { lat: place.lat, lon: place.lon }
+          : null;
+
+        state.pickingPlace = place?.id ?? null;
+
+        state.pickedPlaceName = place?.name ?? '';
       })
       .addCase(setSelectingHomeLocation, (state, action) => {
-        state.selectingHomeLocation =
-          action.payload === true ? state.homeLocation : action.payload;
+        state.selectingHomeLocation = action.payload;
       })
-      .addCase(saveHomeLocation, (state, action) => {
-        state.homeLocation = action.payload;
+      .addCase(setPickedPlaceName, (state, action) => {
+        state.pickedPlaceName = action.payload;
+      })
+      // TODO a pick of a place deleted meanwhile adds it back.
+      .addCase(savePlace, (state, action) => {
+        const i = state.places.findIndex((p) => p.id === action.payload.id);
 
-        state.unsent = true;
+        state.places =
+          i === -1
+            ? [...state.places, action.payload]
+            : state.places.with(i, action.payload);
 
         state.selectingHomeLocation = false;
       })
-      .addCase(homeLocationSent, (state, action) => {
-        // Unless it changed again while the request was out.
-        if (
-          JSON.stringify(state.homeLocation) === JSON.stringify(action.payload)
-        ) {
-          state.unsent = false;
+      .addCase(deletePlace, (state, action) => {
+        state.places = state.places.filter((p) => p.id !== action.payload);
+      })
+      .addCase(placeStored, (state, action) => {
+        const i = state.places.findIndex(
+          (p) => p.id === action.payload.localId,
+        );
+
+        // Unless deleted meanwhile; only the id, keeping an edit made meanwhile
+        // (sent after it).
+        if (i !== -1) {
+          state.places = state.places.with(i, {
+            ...state.places[i]!,
+            id: action.payload.place.id,
+          });
         }
+
+        // A pick of it begun meanwhile saves under the account's id.
+        if (state.pickingPlace === action.payload.localId) {
+          state.pickingPlace = action.payload.place.id;
+        }
+      })
+      .addCase(placesSet, (state, action) => {
+        state.places = action.payload;
       }),
 );

@@ -4,7 +4,6 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
-  selectHomeLocation: 'Wybierz na mapie',
   ghParams: {
     tripParameters: 'Parametry wycieczki',
     seed: 'Ziarno losowości',
@@ -20,7 +19,6 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   point: {
     pick: 'Wybierz na mapie',
     current: 'Moja pozycja',
-    home: 'Pozycja domowa',
     fromStart: 'Pozycja startu',
     fromFinish: 'Pozycja mety',
     point: 'Punkt trasy',
@@ -47,10 +45,6 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     roundtrip: 'Odwiedzanie miejsc (pętla)',
     'routndtrip-gh': 'Wycieczka (pętla)',
     isochrone: 'Izoliny czasu',
-  },
-  noHomeAlert: {
-    msg: 'Najpierw należy ustawić pozycję domową w ustawieniach.',
-    setHome: 'Ustaw',
   },
   milestones: 'Słupki kilometrowe',
   milestonesOff: 'Wyłączone',

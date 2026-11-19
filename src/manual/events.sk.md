@@ -20,7 +20,7 @@ Lišta prekrytia obsahuje:
 - :FaPalette: **Vyfarbiť podľa** – vyfarbí značky podľa **Termín** (skončené sivou, prebiehajúce zelenou, nadchádzajúce od oranžovej pre blízke po fialovú pre o týždne), **Moje a ostatné**, **Doprava**, **Dĺžka**, **Trvanie**, **Stúpanie**, **Náročnosť**, **Psy** alebo **Deti**; **Legenda** v tej istej ponuke farby vysvetlí.
 - :FaPlus: **Nová akcia**, ak ste prihlásení.
 
-V paneli :FaLayerGroup: **Vrstvy mapy** riadok prekrytia Akcie otvorí zoznam zobrazených akcií, v ktorom môžete hľadať podľa názvu, triediť (podľa dátumu, názvu, dĺžky, stúpania, trvania, záujmu alebo podľa vzdialenosti od stredu mapy, domova či miesta z filtra) a obmedziť ho na aktuálne zobrazenie. Ponuka s okom v jeho hlavičke určuje, čo riadky ukazujú.
+V paneli :FaLayerGroup: **Vrstvy mapy** riadok prekrytia Akcie otvorí zoznam zobrazených akcií, v ktorom môžete hľadať podľa názvu, triediť (podľa dátumu, názvu, dĺžky, stúpania, trvania, záujmu alebo podľa vzdialenosti od stredu mapy, najbližšieho z vašich miest či miesta z filtra) a obmedziť ho na aktuálne zobrazenie. Ponuka s okom v jeho hlavičke určuje, čo riadky ukazujú.
 
 ## Filtrovanie
 
@@ -29,7 +29,7 @@ V paneli :FaLayerGroup: **Vrstvy mapy** riadok prekrytia Akcie otvorí zoznam zo
 ![Filter akcií](./images/events-filter.sk.webp)
 
 - **Dátum** – **Rozsah** dátumov alebo obdobie od dnes: **1 týždeň**, **2 týždne**, **1 mesiac**, **3 mesiace**. Bez dátumu začiatku sa zobrazia iba akcie, ktoré ešte neskončili.
-- **V okolí** – miesto a polomer v km. Zadajte súradnice alebo stlačte **Nastaviť pozíciu** a kliknite do mapy; jeho ponuka ponúka **Moja poloha** a **Domovská poloha**.
+- **V okolí** – miesto a polomer v km. Zadajte súradnice alebo stlačte **Nastaviť pozíciu** a kliknite do mapy; jeho ponuka ponúka **Moja poloha** a vaše miesta.
 - **Doprava**, **Náročnosť**, **Psy vítané**, **Vhodné pre deti** a rozsahy **Dĺžka**, **Trvanie** a **Stúpanie**.
 - **Pôvod** – **Zadané tu** alebo **Prevzaté**.
 - **Vrátane akcií, ktoré to nemajú uvedené** zobrazí aj akcie, ktoré neuvádzajú dopravu, náročnosť alebo údaj, podľa ktorého filtrujete.

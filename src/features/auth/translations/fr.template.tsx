@@ -26,9 +26,9 @@ const fr: DeepPartialWithRequiredObjects<AuthMessages> = {
     choosePicture: 'Choisir une image',
     pictureTooLarge:
       'L’image est trop volumineuse. La taille maximale est de 5 Mo.',
-    homeLocation: 'Position du domicile',
-    homeLocationUnset: 'Non définie',
-    setHomeLocation: 'Définir sur la carte',
+    placesSection: 'Mes lieux',
+    noPlaces: 'Aucun lieu pour l’instant',
+    placesPremium: 'Plus d’un lieu est disponible avec l’accès premium.',
     roles: 'Mes rôles',
     emailUnconfirmed:
       'Cette adresse n’est pas encore confirmée. Tant qu’elle ne l’est pas, Freemap n’y envoie aucun e-mail et elle ne permet pas de se connecter.',

@@ -15,7 +15,7 @@ import {
   CustomLayerDefSchema,
   NamedMapDefSchema,
 } from '@shared/mapDefinitions.js';
-import { IsoDateSchema, LatLonSchema } from '@shared/types/common.js';
+import { IsoDateSchema } from '@shared/types/common.js';
 import z from 'zod';
 
 export const AuthProviderSchema = z.enum([
@@ -212,7 +212,6 @@ export const UserSchema = z.object({
   roles: knownValues(RoleSchema),
   publicFields: knownValues(PublicFieldSchema),
   language: z.string().nullish(),
-  coordinates: LatLonSchema.nullable(),
   name: z.string(),
   premiumExpiration: IsoDateSchema.nullable(),
   // Whether premium comes from a Polar subscription (which keeps the price it

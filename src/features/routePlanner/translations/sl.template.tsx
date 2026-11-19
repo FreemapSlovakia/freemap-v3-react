@@ -4,7 +4,6 @@ import { addError } from '@/translations/messagesInterface.js';
 import type { RoutePlannerMessages } from './RoutePlannerMessages.js';
 
 const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
-  selectHomeLocation: 'Izberi na zemljevidu',
   transportScope: {
     title: 'Uporabi za',
     route: 'Celotno pot',
@@ -54,7 +53,6 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     point: 'Točka poti',
     pick: 'Izberi na zemljevidu',
     current: 'Vaš položaj',
-    home: 'Domači položaj',
     fromStart: 'Začetni položaj',
     fromFinish: 'Ciljni položaj',
   },
@@ -116,10 +114,6 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       </b>
     </>
   ),
-  noHomeAlert: {
-    msg: 'Najprej morate v nastavitvah nastaviti svoj domači položaj.',
-    setHome: 'Nastavi',
-  },
   showMidpointHint: 'Za dodajanje vmesne točke povlecite odsek poti.',
   gpsError: 'Napaka pri pridobivanju trenutnega položaja.',
   routeNotFound:
