@@ -1,4 +1,5 @@
 import type { Bbox } from '@features/mapArea/model/actions.js';
+import type { Paint } from './paint.js';
 import type { Mesh, StlOptions } from './stl.js';
 
 /** Which grid to sample, and from where. */
@@ -15,10 +16,16 @@ export interface GridRequest {
   freeZoom: number;
 }
 
-/** The model's mesh, or only the sampled heights (for the area view). */
+/** The model's mesh, only the sampled heights (for the area view), or a mesh's 3MF. */
 export type WorkerRequest =
-  | ({ kind: 'stl' } & GridRequest & StlOptions)
-  | ({ kind: 'heights' } & GridRequest);
+  | ({ kind: 'stl'; paint?: Paint } & GridRequest & StlOptions)
+  | ({ kind: 'heights' } & GridRequest)
+  | {
+      kind: '3mf';
+      mesh: Mesh;
+      palette: string[];
+      metadata: Record<string, string>;
+    };
 
 export type WorkerResponse =
   | { type: 'progress'; phase: 'tiles'; done: number; total: number }
@@ -26,7 +33,7 @@ export type WorkerResponse =
   | { type: 'noData' }
   | {
       type: 'done';
-      /** Shown as it is, and written as STL only when downloaded. */
+      /** Shown as it is, and written as a file only when downloaded. */
       mesh: Mesh;
       /** Share of the grid without elevation data. */
       nodata: number;
@@ -42,4 +49,5 @@ export type WorkerResponse =
       /** The tiles' distinct `X-Attribution` values, unparsed. */
       attributions: string[];
     }
+  | { type: 'file'; blob: Blob }
   | { type: 'error'; message: string };

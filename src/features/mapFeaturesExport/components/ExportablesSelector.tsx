@@ -169,14 +169,17 @@ type Props = {
   /** Available (selectable) sources as a `|a|b|`-delimited string. */
   available: string;
   onChange: (next: string) => void;
+  /** The sources offered; all by default. */
+  types?: readonly Exportable[];
 };
 
-// The checkbox group of map-feature sources shared by the data export modal and
-// the raster map export modal.
+// The checkbox group of map-feature sources shared by the data and map export
+// modals and, narrowed by `types`, the terrain model.
 export function ExportablesSelector({
   value,
   available,
   onChange,
+  types,
 }: Props): ReactElement {
   const em = useMapFeaturesExportMessages();
 
@@ -190,21 +193,23 @@ export function ExportablesSelector({
 
   return (
     <div className="d-flex flex-wrap gap-2">
-      {exportableDefinitions.map(([type, Icon]) => (
-        <ToggleButton
-          key={type}
-          id={`chk-${type}`}
-          type="checkbox"
-          variant="outline-primary"
-          value={type}
-          checked={value.includes(`|${type}|`)}
-          disabled={!available.includes(`|${type}|`)}
-          onChange={() => toggle(type)}
-        >
-          <Icon /> <Text m={em} k={`what.${type}`} />
-          {type === 'pictures' && <OfflineBadge />}
-        </ToggleButton>
-      ))}
+      {exportableDefinitions
+        .filter(([type]) => !types || types.includes(type))
+        .map(([type, Icon]) => (
+          <ToggleButton
+            key={type}
+            id={`chk-${type}`}
+            type="checkbox"
+            variant="outline-primary"
+            value={type}
+            checked={value.includes(`|${type}|`)}
+            disabled={!available.includes(`|${type}|`)}
+            onChange={() => toggle(type)}
+          >
+            <Icon /> <Text m={em} k={`what.${type}`} />
+            {type === 'pictures' && <OfflineBadge />}
+          </ToggleButton>
+        ))}
     </div>
   );
 }

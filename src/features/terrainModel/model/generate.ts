@@ -6,7 +6,10 @@ import type {
   WorkerResponse,
 } from './workerProtocol.js';
 
-export type GenerateProgress = Extract<WorkerResponse, { type: 'progress' }>;
+/** The worker's progress, then a coloured model's 3MF being written. */
+export type GenerateProgress =
+  | Extract<WorkerResponse, { type: 'progress' }>
+  | { type: 'progress'; phase: 'file' };
 
 export type GenerateResult = Extract<WorkerResponse, { type: 'done' }>;
 
@@ -90,6 +93,19 @@ export function generateTerrainModel(
   onProgress: (progress: GenerateProgress) => void,
 ): Run<GenerateResult> {
   return run({ kind: 'stl', ...request }, 'done', onProgress);
+}
+
+export type FileResult = Extract<WorkerResponse, { type: 'file' }>;
+
+/**
+ * A built mesh as 3MF; the mesh is copied, as the view keeps showing it.
+ * TODO: for a model of millions of points the copy freezes the UI a moment and
+ * triples memory; write the 3MF in the building worker instead.
+ */
+export function write3mf(
+  request: Omit<Extract<WorkerRequest, { kind: '3mf' }>, 'kind'>,
+): Run<FileResult> {
+  return run({ kind: '3mf', ...request }, 'file', () => {});
 }
 
 /** Only the sampled heights, for the preview. */

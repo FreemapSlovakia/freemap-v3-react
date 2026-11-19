@@ -13,7 +13,10 @@ import {
 import type { Exportable } from '@features/mapFeaturesExport/model/actions.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { copyToClipboard } from '@shared/clipboardUtils.js';
-import { useRoutingAttributions } from '@shared/components/Attribution.js';
+import {
+  creditName,
+  useRoutingAttributions,
+} from '@shared/components/Attribution.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import {
   FmDismissButton,
@@ -67,7 +70,6 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { useDispatch, useStore } from 'react-redux';
-import type { Messages } from '@/translations/messagesInterface.js';
 import {
   ExportTooLargeError,
   exportMapToDocument,
@@ -118,20 +120,6 @@ function mapZoom(state: RootState) {
 
 function initialPrintDraft(state: RootState): PrintDraft {
   return { zoom: mapZoom(state), paper: null, px: null, locked: [] };
-}
-
-/**
- * An attribution's display name; only `nameKey` ones are translated, and a
- * label that isn't plain text cannot be burnt into an image or copied.
- */
-function creditName(def: AttributionDef, m: Messages | undefined): string {
-  if (def.name) {
-    return def.name;
-  }
-
-  const label = def.nameKey ? m?.mapLayers.attr[def.nameKey] : undefined;
-
-  return typeof label === 'string' ? label : '';
 }
 
 export default function MapToDocumentExportModal({

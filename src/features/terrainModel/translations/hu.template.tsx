@@ -11,6 +11,7 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'A terület elsimított előnézete. A létrehozás után a modell úgy jelenik meg, ahogy a fájlban van, az egyszerűsítéssel együtt.',
   viewModel: 'A létrehozott modell hű előnézete.',
   build: 'Modell létrehozása',
+  sizeAndShape: 'Méret és forma',
   dimensions: 'A modell méretei',
   scale: 'Méretarány',
   detail: ({ detail }) => `Vízszintes felbontás: ${detail} m`,
@@ -24,6 +25,7 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   progressTiles: ({ done, total }) =>
     `Magassági adatok letöltése (${done} / ${total})`,
   progressMesh: 'A modell elkészítése',
+  progressFile: 'A 3MF írása',
   exaggeration: 'Túlzás',
   exaggerationHint:
     'A magasságok ezzel szorzódnak: 1 fölött a domborzat meredekebb lesz a valóságosnál.',
@@ -37,6 +39,14 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   download: 'STL letöltése',
   result: ({ height, triangles, size }) =>
     `Modellmagasság ${height} mm, ${triangles} háromszög, ${size}.`,
+  colourFeatures: 'Térképelemek színesben',
+  colourFeaturesHint:
+    'A kiválasztott elemek a térképen látható színükben jelennek meg a modellen, amely 3MF-ként töltődik le többszínű nyomtatáshoz: minden szín egy filament. Egy terület kitöltést kap, ha a térképen a kitöltése legalább félig átlátszatlan, különben csak a körvonala jelenik meg.',
+  lineWidth: 'Vonalvastagság',
+  pointSize: 'Pontméret',
+  colours: 'Filamentszínek',
+  ground: 'Terep',
+  download3mf: '3MF letöltése',
   premiumRefused: ({ m }) =>
     `A prémium magassági adatokat elutasították, ezért a modell ${m} m-es adatokból készül. Finomabb részletekhez jelentkezzen be újra prémium fiókkal.`,
   partialData: ({ percent }) =>
@@ -47,6 +57,7 @@ const hu: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'A modell közzétételekor vagy megosztásakor tüntesse fel ezeket a forrásokat:',
   creditsNone: 'A magassági adatok nem jelezték, mely forrásokból származnak.',
   unknownSources: 'Nem azonosítható források:',
+  mentionFreemap: 'Örülnénk, ha megosztáskor ezt is feltüntetné:',
   discardModelTitle: 'A modell elvetése',
   discardModelQuestion: 'A modellt még nem töltötte le. Elveti?',
 };

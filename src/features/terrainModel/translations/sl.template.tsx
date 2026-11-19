@@ -11,6 +11,7 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Zglajen predogled območja. Po ustvarjanju je model prikazan tako, kot je v datoteki, skupaj s poenostavitvijo.',
   viewModel: 'Zvest predogled ustvarjenega modela.',
   build: 'Ustvari model',
+  sizeAndShape: 'Velikost in oblika',
   dimensions: 'Mere modela',
   scale: 'Merilo',
   detail: ({ detail }) => `Vodoravna ločljivost: ${detail} m`,
@@ -24,6 +25,7 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   progressTiles: ({ done, total }) =>
     `Prenašanje višinskih podatkov (${done} / ${total})`,
   progressMesh: 'Izdelava modela',
+  progressFile: 'Zapisovanje 3MF',
   exaggeration: 'Povečanje višin',
   exaggerationHint:
     'Višine se pomnožijo s tem številom: nad 1 je relief strmejši kot v resnici.',
@@ -37,6 +39,14 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   download: 'Prenesi STL',
   result: ({ height, triangles, size }) =>
     `Višina modela ${height} mm, trikotnikov: ${triangles}, ${size}.`,
+  colourFeatures: 'Elementi zemljevida v barvi',
+  colourFeaturesHint:
+    'Izbrani elementi se na modelu obarvajo z barvami z zemljevida, model pa se prenese kot 3MF za večbarvni tisk: vsaka barva en filament. Območje se zapolni, če je njegovo polnilo na zemljevidu vsaj napol neprosojno, sicer le njegov obris.',
+  lineWidth: 'Širina črte',
+  pointSize: 'Velikost točke',
+  colours: 'Barve filamentov',
+  ground: 'Teren',
+  download3mf: 'Prenesi 3MF',
   premiumRefused: ({ m }) =>
     `Višinski podatki Premium so bili zavrnjeni, zato je model izdelan iz podatkov na ${m} m. Za podrobnejši model se znova prijavite z računom Premium.`,
   partialData: ({ percent }) =>
@@ -46,6 +56,7 @@ const sl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   shareCredits: 'Pri objavi ali deljenju modela navedite te vire:',
   creditsNone: 'Višinski podatki niso sporočili, iz katerih virov izvirajo.',
   unknownSources: 'Viri, ki jih ni bilo mogoče poimenovati:',
+  mentionFreemap: 'Veseli bomo, če ob deljenju navedete tudi:',
   discardModelTitle: 'Zavrzi model',
   discardModelQuestion: 'Model še ni bil prenesen. Ga želite zavreči?',
 };

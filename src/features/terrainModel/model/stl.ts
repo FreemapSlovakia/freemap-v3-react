@@ -1,4 +1,6 @@
+import { currentSite, siteNames, siteUrls } from '@shared/sites.js';
 import Delatin from 'delatin';
+import { colourDelatin } from './colourDelatin.js';
 import { NoElevationDataError } from './errors.js';
 
 export interface StlOptions {
@@ -24,11 +26,14 @@ interface Triangulation {
 
 function simplified(
   heights: Float32Array,
+  classes: Uint8Array | undefined,
   cols: number,
   rows: number,
   maxError: number,
 ): Triangulation {
-  const tin = new Delatin(heights, cols, rows);
+  const tin = classes
+    ? colourDelatin(heights, classes, cols, rows)
+    : new Delatin(heights, cols, rows);
 
   tin.run(maxError);
 
@@ -112,6 +117,11 @@ export interface Mesh {
   topTriangles: number;
   /** Top of the model above the bed. */
   heightMm: number;
+  /**
+   * Palette index per triangle, for a coloured model: the surface's sorted by
+   * it, walls and bottom 0.
+   */
+  colours?: Uint8Array;
 }
 
 export const meshTriangles = (mesh: Mesh) => mesh.index.length / 3;
@@ -122,8 +132,13 @@ export const stlBytes = (mesh: Mesh) => 84 + meshTriangles(mesh) * 50;
 /**
  * A closed solid: walls and bottom are built on the surface's own boundary
  * vertices, so every edge has exactly two faces. No data sits at the lowest sample.
+ * `classes`, a palette index per grid point, colours it.
  */
-export function buildMesh(heights: Float32Array, o: StlOptions): Mesh {
+export function buildMesh(
+  heights: Float32Array,
+  o: StlOptions,
+  classes?: Uint8Array,
+): Mesh {
   const { cols, rows } = o;
 
   let min = Number.POSITIVE_INFINITY;
@@ -148,10 +163,14 @@ export function buildMesh(heights: Float32Array, o: StlOptions): Mesh {
 
   const zScale = o.mmPerM * o.exaggeration;
 
-  const { coords, triangles: top } =
+  const { coords, triangles: unsorted } =
     o.toleranceMm > 0
-      ? simplified(filled, cols, rows, o.toleranceMm / zScale)
+      ? simplified(filled, classes, cols, rows, o.toleranceMm / zScale)
       : fullGrid(cols, rows);
+
+  const coloured = classes && colourTriangles(coords, unsorted, classes, cols);
+
+  const top = coloured?.triangles ?? unsorted;
 
   const dx = o.widthMm / (cols - 1);
 
@@ -220,13 +239,76 @@ export function buildMesh(heights: Float32Array, o: StlOptions): Mesh {
     at += 9;
   });
 
+  let colours: Uint8Array | undefined;
+
+  if (coloured) {
+    colours = new Uint8Array(index.length / 3);
+
+    colours.set(coloured.colours);
+  }
+
   return {
     positions,
     index,
     topVertices,
     topTriangles,
     heightMm: o.baseMm + (max - min) * zScale,
+    colours,
   };
+}
+
+/**
+ * Each triangle's class, the one at least two of its vertices share (else the
+ * first's), with the triangles sorted by it.
+ */
+function colourTriangles(
+  coords: ArrayLike<number>,
+  triangles: ArrayLike<number>,
+  classes: Uint8Array,
+  cols: number,
+): { triangles: Uint32Array; colours: Uint8Array } {
+  const n = triangles.length / 3;
+
+  const of = (v: number) =>
+    classes[coords[2 * v + 1]! * cols + coords[2 * v]!]!;
+
+  const unsorted = new Uint8Array(n);
+
+  const counts = new Uint32Array(257);
+
+  for (let t = 0; t < n; t++) {
+    const a = of(triangles[3 * t]!);
+    const b = of(triangles[3 * t + 1]!);
+    const c = of(triangles[3 * t + 2]!);
+
+    const k = b === c ? b : a;
+
+    unsorted[t] = k;
+
+    counts[k + 1]!++;
+  }
+
+  for (let k = 1; k < 257; k++) {
+    counts[k]! += counts[k - 1]!;
+  }
+
+  const sorted = new Uint32Array(n * 3);
+
+  const colours = new Uint8Array(n);
+
+  for (let t = 0; t < n; t++) {
+    const k = unsorted[t]!;
+
+    const at = counts[k]!++;
+
+    colours[at] = k;
+
+    sorted[3 * at] = triangles[3 * t]!;
+    sorted[3 * at + 1] = triangles[3 * t + 1]!;
+    sorted[3 * at + 2] = triangles[3 * t + 2]!;
+  }
+
+  return { triangles: sorted, colours };
 }
 
 /** The mesh as binary STL, written when it is downloaded. */
@@ -237,7 +319,13 @@ export function meshToStl(mesh: Mesh): ArrayBuffer {
 
   const view = new DataView(data);
 
-  new Uint8Array(data, 0, 80).set(new TextEncoder().encode('freemap terrain'));
+  new Uint8Array(data, 0, 80).set(
+    new TextEncoder()
+      .encode(
+        `${siteNames[currentSite]} terrain model, ${siteUrls[currentSite]}`,
+      )
+      .slice(0, 80),
+  );
 
   view.setUint32(80, meshTriangles(mesh), true);
 

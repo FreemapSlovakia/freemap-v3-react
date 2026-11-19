@@ -22,6 +22,7 @@ import {
 import { useTerrainLicenses, useTileLicenses } from '@shared/tileLicenses.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { Fragment, type ReactElement, useMemo } from 'react';
+import type { Messages } from '@/translations/messagesInterface.js';
 import { useTileZoom } from '../hooks/useTileZoom.js';
 import {
   type AttributionDef,
@@ -440,6 +441,23 @@ export function useResolvedAttribution(
             </>,
           ] as const,
       );
+}
+
+/**
+ * An attribution's display name; only `nameKey` ones are translated, and a
+ * label that isn't plain text cannot be burnt into an image or copied.
+ */
+export function creditName(
+  def: AttributionDef,
+  m: Messages | undefined,
+): string {
+  if (def.name) {
+    return def.name;
+  }
+
+  const label = def.nameKey ? m?.mapLayers.attr[def.nameKey] : undefined;
+
+  return typeof label === 'string' ? label : '';
 }
 
 /** One category's credits, linked where they have a URL; a nameless one is left out. */

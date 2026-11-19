@@ -12,6 +12,7 @@ export type TerrainModelMessages = {
   viewArea: string;
   viewModel: string;
   build: string;
+  sizeAndShape: string;
   dimensions: string;
   scale: string;
   /** `detail`: the grid step on the ground, metres. */
@@ -23,6 +24,8 @@ export type TerrainModelMessages = {
   ) => ReactNode;
   progressTiles: (p: { done: string; total: string }) => string;
   progressMesh: string;
+  /** A coloured model's 3MF being written. */
+  progressFile: string;
   exaggeration: string;
   exaggerationHint: string;
   base: string;
@@ -32,6 +35,15 @@ export type TerrainModelMessages = {
   acrossAntimeridian: string;
   download: string;
   result: (p: { height: string; triangles: string; size: string }) => string;
+  /** The heading of the map features coloured on the model. */
+  colourFeatures: string;
+  colourFeaturesHint: string;
+  lineWidth: string;
+  pointSize: string;
+  colours: string;
+  /** The colour of everything but the coloured features. */
+  ground: string;
+  download3mf: string;
   premiumRefused: (p: { m: string }) => string;
   partialData: (p: { percent: string }) => string;
   noData: string;
@@ -41,6 +53,8 @@ export type TerrainModelMessages = {
   /** The elevation tiles named no datasets at all. */
   creditsNone: string;
   unknownSources: string;
+  /** A request to credit Freemap too, before its name and link. */
+  mentionFreemap: string;
   discardModelTitle: string;
   discardModelQuestion: string;
 };

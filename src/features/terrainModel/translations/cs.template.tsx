@@ -11,6 +11,7 @@ const cs: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Vyhlazený náhled území. Po vytvoření se model zobrazí tak, jak bude ve výsledném souboru, i se zjednodušením.',
   viewModel: 'Věrný náhled vytvořeného modelu.',
   build: 'Vytvořit model',
+  sizeAndShape: 'Rozměry a tvar',
   dimensions: 'Rozměry modelu',
   scale: 'Měřítko',
   detail: ({ detail }) => `Horizontální rozlišení: ${detail} m`,
@@ -24,6 +25,7 @@ const cs: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   progressTiles: ({ done, total }) =>
     `Stahují se výšková data (${done} / ${total})`,
   progressMesh: 'Vytváří se model',
+  progressFile: 'Zapisuje se 3MF',
   exaggeration: 'Zvýraznění výšek',
   exaggerationHint:
     'Výšky se jím násobí: nad 1 vyjde reliéf strmější, než ve skutečnosti je.',
@@ -37,6 +39,14 @@ const cs: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   download: 'Stáhnout STL',
   result: ({ height, triangles, size }) =>
     `Výška modelu ${height} mm, ${triangles} trojúhelníků, ${size}.`,
+  colourFeatures: 'Prvky mapy v barvě',
+  colourFeaturesHint:
+    'Vybrané prvky se na modelu obarví barvami z mapy a model se stáhne jako 3MF pro vícebarevný tisk: každá barva jeden filament. Plocha se vyplní, je-li její výplň na mapě alespoň z poloviny neprůhledná, jinak se vyznačí jen její obrys.',
+  lineWidth: 'Šířka čáry',
+  pointSize: 'Velikost bodu',
+  colours: 'Barvy filamentů',
+  ground: 'Terén',
+  download3mf: 'Stáhnout 3MF',
   premiumRefused: ({ m }) =>
     `Prémiová výšková data byla odmítnuta, model je proto vytvořen z dat po ${m} m. Pro jemnější detail se znovu přihlaste prémiovým účtem.`,
   partialData: ({ percent }) =>
@@ -46,6 +56,7 @@ const cs: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   shareCredits: 'Při publikování nebo sdílení modelu uveďte tyto zdroje:',
   creditsNone: 'Výšková data neoznámila, ze kterých zdrojů pocházejí.',
   unknownSources: 'Zdroje, které se nepodařilo pojmenovat:',
+  mentionFreemap: 'Potěší nás, když při sdílení uvedete také:',
   discardModelTitle: 'Zahodit model',
   discardModelQuestion: 'Model ještě nebyl stažen. Chcete jej zahodit?',
 };

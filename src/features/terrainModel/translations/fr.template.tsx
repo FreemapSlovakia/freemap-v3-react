@@ -11,6 +11,7 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Un aperçu lissé de la zone. Une fois créé, le modèle s’affiche tel que le fichier le contient, simplification comprise.',
   viewModel: 'Aperçu fidèle du modèle créé.',
   build: 'Créer le modèle',
+  sizeAndShape: 'Taille et forme',
   dimensions: 'Dimensions du modèle',
   scale: 'Échelle',
   detail: ({ detail }) => `Résolution horizontale : ${detail} m`,
@@ -24,6 +25,7 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   progressTiles: ({ done, total }) =>
     `Téléchargement des données d’altitude (${done} / ${total})`,
   progressMesh: 'Création du modèle',
+  progressFile: 'Écriture du 3MF',
   exaggeration: 'Exagération',
   exaggerationHint:
     'Les altitudes sont multipliées par cette valeur : au-dessus de 1, le relief est plus raide qu’en réalité.',
@@ -37,6 +39,14 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   download: 'Télécharger le STL',
   result: ({ height, triangles, size }) =>
     `Hauteur du modèle ${height} mm, ${triangles} triangles, ${size}.`,
+  colourFeatures: 'Éléments de la carte en couleur',
+  colourFeaturesHint:
+    'Les éléments choisis sont colorés sur le modèle dans leurs couleurs de la carte, et le modèle se télécharge en 3MF pour une impression multicolore : chaque couleur un filament. Une zone est remplie si son remplissage sur la carte est opaque au moins à moitié, sinon seul son contour est tracé.',
+  lineWidth: 'Largeur de ligne',
+  pointSize: 'Taille des points',
+  colours: 'Couleurs des filaments',
+  ground: 'Terrain',
+  download3mf: 'Télécharger le 3MF',
   premiumRefused: ({ m }) =>
     `Les données d’altitude Premium ont été refusées ; le modèle est donc créé à partir de données tous les ${m} m. Pour plus de détail, reconnectez-vous avec un compte Premium.`,
   partialData: ({ percent }) =>
@@ -48,6 +58,8 @@ const fr: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   creditsNone:
     'Les données d’altitude n’ont pas indiqué de quelles sources elles proviennent.',
   unknownSources: 'Sources qui n’ont pas pu être nommées :',
+  mentionFreemap:
+    'Nous vous serions reconnaissants de mentionner aussi, lors du partage :',
   discardModelTitle: 'Abandonner le modèle',
   discardModelQuestion:
     'Le modèle n’a pas encore été téléchargé. Voulez-vous l’abandonner ?',

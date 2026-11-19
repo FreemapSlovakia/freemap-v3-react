@@ -11,6 +11,7 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Eine geglättete Vorschau des Gebiets. Nach dem Erstellen wird das Modell so angezeigt, wie es in der Datei steht, samt Vereinfachung.',
   viewModel: 'Getreue Vorschau des erstellten Modells.',
   build: 'Modell erstellen',
+  sizeAndShape: 'Größe und Form',
   dimensions: 'Modellmaße',
   scale: 'Maßstab',
   detail: ({ detail }) => `Horizontale Auflösung: ${detail} m`,
@@ -24,6 +25,7 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   progressTiles: ({ done, total }) =>
     `Höhendaten werden geladen (${done} / ${total})`,
   progressMesh: 'Das Modell wird erstellt',
+  progressFile: 'Das 3MF wird geschrieben',
   exaggeration: 'Überhöhung',
   exaggerationHint:
     'Die Höhen werden damit multipliziert: über 1 wird das Relief steiler, als es ist.',
@@ -37,6 +39,14 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   download: 'STL herunterladen',
   result: ({ height, triangles, size }) =>
     `Modellhöhe ${height} mm, ${triangles} Dreiecke, ${size}.`,
+  colourFeatures: 'Kartenobjekte in Farbe',
+  colourFeaturesHint:
+    'Die gewählten Objekte werden auf dem Modell in ihren Kartenfarben eingefärbt, und das Modell wird als 3MF für einen Mehrfarbdruck heruntergeladen: jede Farbe ein Filament. Eine Fläche wird gefüllt, wenn ihre Füllung auf der Karte mindestens zur Hälfte deckend ist, sonst nur umrandet.',
+  lineWidth: 'Linienbreite',
+  pointSize: 'Punktgröße',
+  colours: 'Filamentfarben',
+  ground: 'Gelände',
+  download3mf: '3MF herunterladen',
   premiumRefused: ({ m }) =>
     `Die Premium-Höhendaten wurden abgelehnt, daher wird das Modell aus Daten im Abstand von ${m} m erstellt. Für feinere Details melden Sie sich erneut mit einem Premium-Konto an.`,
   partialData: ({ percent }) =>
@@ -48,6 +58,7 @@ const de: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   creditsNone:
     'Die Höhendaten haben nicht gemeldet, aus welchen Quellen sie stammen.',
   unknownSources: 'Quellen, die nicht benannt werden konnten:',
+  mentionFreemap: 'Wir freuen uns, wenn Sie beim Teilen auch Folgendes nennen:',
   discardModelTitle: 'Modell verwerfen',
   discardModelQuestion:
     'Das Modell wurde noch nicht heruntergeladen. Möchten Sie es verwerfen?',

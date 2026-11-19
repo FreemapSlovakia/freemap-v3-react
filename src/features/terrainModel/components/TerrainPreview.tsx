@@ -44,7 +44,12 @@ export type AreaView = {
 };
 
 /** The built model, triangle for triangle: what the file holds. */
-export type ModelView = { kind: 'model'; mesh: ModelMesh };
+export type ModelView = {
+  kind: 'model';
+  mesh: ModelMesh;
+  /** `#rrggbb` per palette index of a coloured mesh, which then shows no texture. */
+  palette?: string[];
+};
 
 type Props = {
   view: AreaView | ModelView;
@@ -98,9 +103,24 @@ function modelGeometry(view: ModelView, d: Dims): BufferGeometry {
 
   geometry.setIndex(new BufferAttribute(index, 1));
 
-  geometry.addGroup(0, topTriangles * 3, 0);
+  const { colours } = view.mesh;
 
-  geometry.addGroup(topTriangles * 3, index.length - topTriangles * 3, 1);
+  if (colours && view.palette) {
+    // A group per run of one colour, its material the palette index.
+    let start = 0;
+
+    for (let t = 1; t <= colours.length; t++) {
+      if (t === colours.length || colours[t] !== colours[start]) {
+        geometry.addGroup(start * 3, (t - start) * 3, colours[start]!);
+
+        start = t;
+      }
+    }
+  } else {
+    geometry.addGroup(0, topTriangles * 3, 0);
+
+    geometry.addGroup(topTriangles * 3, index.length - topTriangles * 3, 1);
+  }
 
   return geometry;
 }
@@ -274,6 +294,9 @@ export default function TerrainPreview({
 
   const wallRef = useRef<MeshLambertMaterial | null>(null);
 
+  // A coloured model's materials, one per palette colour.
+  const paletteRef = useRef<MeshLambertMaterial[]>([]);
+
   // Lost to a model too large for the GPU, or for a while to a backgrounded
   // tab; three restores it when the browser allows, and then it draws again.
   const [contextLost, setContextLost] = useState(false);
@@ -370,6 +393,10 @@ export default function TerrainPreview({
 
       wallRef.current?.dispose();
 
+      for (const material of paletteRef.current) {
+        material.dispose();
+      }
+
       renderer.dispose();
 
       // Lost on purpose below.
@@ -432,7 +459,26 @@ export default function TerrainPreview({
       mesh.geometry.dispose();
     }
 
+    for (const material of paletteRef.current) {
+      material.dispose();
+    }
+
     const dims = { bbox, widthMm, depthMm };
+
+    const palette =
+      view.kind === 'model' && view.mesh.colours && view.palette
+        ? view.palette.map(
+            // Double-sided, as the walls they colour are without a palette.
+            (color) =>
+              new MeshLambertMaterial({
+                color,
+                flatShading: true,
+                side: DoubleSide,
+              }),
+          )
+        : [];
+
+    paletteRef.current = palette;
 
     // The built model shows its facets, as a slicer does, and has no normals
     // but those; the area view is too coarse for facets to say anything.
@@ -444,7 +490,13 @@ export default function TerrainPreview({
 
     const meshes =
       view.kind === 'model'
-        ? [modelMesh(modelGeometry(view, dims), [surface, wall], dims)]
+        ? [
+            modelMesh(
+              modelGeometry(view, dims),
+              palette.length ? palette : [surface, wall],
+              dims,
+            ),
+          ]
         : areaGeometry(view, dims).map(
             (geometry, i) => new Mesh(geometry, i === 0 ? surface : wall),
           );

@@ -411,6 +411,8 @@ const PersistedViewshedSettingsSchema = z
 const inRange = ({ min, max }: { min: number; max: number }) =>
   z.number().min(min).max(max);
 
+const HexColourSchema = z.string().regex(/^#[0-9a-f]{6}$/);
+
 // Each field falls back alone, so one bad value doesn't reset the rest.
 const PersistedTerrainModelSettingsSchema = z
   .object({
@@ -429,6 +431,21 @@ const PersistedTerrainModelSettingsSchema = z
       .catch(terrainModelSettingsInitialState.maxDeviation),
     // A map uninstalled since falls back to the base map when shown.
     texture: z.string().catch(terrainModelSettingsInitialState.texture),
+    lineWidth: inRange(TERRAIN_MODEL_LIMITS.lineWidth).catch(
+      terrainModelSettingsInitialState.lineWidth,
+    ),
+    pointSize: inRange(TERRAIN_MODEL_LIMITS.pointSize).catch(
+      terrainModelSettingsInitialState.pointSize,
+    ),
+    groundColour: HexColourSchema.catch(
+      terrainModelSettingsInitialState.groundColour,
+    ),
+    colourMap: z
+      .record(HexColourSchema, HexColourSchema)
+      .catch(terrainModelSettingsInitialState.colourMap),
+    omitted: z
+      .array(HexColourSchema)
+      .catch(terrainModelSettingsInitialState.omitted),
   })
   .partial();
 

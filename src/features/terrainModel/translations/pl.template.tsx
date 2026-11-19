@@ -11,6 +11,7 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Wygładzony podgląd obszaru. Po utworzeniu model jest wyświetlany tak, jak jest w pliku, wraz z uproszczeniem.',
   viewModel: 'Wierny podgląd utworzonego modelu.',
   build: 'Utwórz model',
+  sizeAndShape: 'Rozmiar i kształt',
   dimensions: 'Wymiary modelu',
   scale: 'Skala',
   detail: ({ detail }) => `Rozdzielczość pozioma: ${detail} m`,
@@ -24,6 +25,7 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   progressTiles: ({ done, total }) =>
     `Pobieranie danych wysokościowych (${done} / ${total})`,
   progressMesh: 'Tworzenie modelu',
+  progressFile: 'Zapisywanie 3MF',
   exaggeration: 'Przewyższenie',
   exaggerationHint:
     'Wysokości są przez nie mnożone: powyżej 1 rzeźba wychodzi bardziej stroma niż w rzeczywistości.',
@@ -37,6 +39,14 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
   download: 'Pobierz STL',
   result: ({ height, triangles, size }) =>
     `Wysokość modelu ${height} mm, trójkąty: ${triangles}, ${size}.`,
+  colourFeatures: 'Elementy mapy w kolorze',
+  colourFeaturesHint:
+    'Wybrane elementy zostaną pokolorowane na modelu w kolorach z mapy, a model zostanie pobrany jako 3MF do druku wielokolorowego: każdy kolor to jeden filament. Obszar zostanie wypełniony, jeśli jego wypełnienie na mapie jest co najmniej w połowie nieprzezroczyste, w przeciwnym razie tylko jego obrys.',
+  lineWidth: 'Szerokość linii',
+  pointSize: 'Rozmiar punktu',
+  colours: 'Kolory filamentów',
+  ground: 'Teren',
+  download3mf: 'Pobierz 3MF',
   premiumRefused: ({ m }) =>
     `Dane wysokościowe Premium zostały odrzucone, więc model jest tworzony z danych co ${m} m. Aby uzyskać większą szczegółowość, należy zalogować się ponownie kontem Premium.`,
   partialData: ({ percent }) =>
@@ -47,6 +57,8 @@ const pl: DeepPartialWithRequiredObjects<TerrainModelMessages> = {
     'Przy publikowaniu lub udostępnianiu modelu należy podać następujące źródła:',
   creditsNone: 'Dane wysokościowe nie podały, z jakich źródeł pochodzą.',
   unknownSources: 'Źródła, których nie udało się nazwać:',
+  mentionFreemap:
+    'Będzie nam miło, jeśli przy udostępnianiu pojawi się też wzmianka o:',
   discardModelTitle: 'Odrzucenie modelu',
   discardModelQuestion: 'Model nie został jeszcze pobrany. Odrzucić go?',
 };

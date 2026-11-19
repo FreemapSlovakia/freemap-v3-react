@@ -10,6 +10,7 @@ const en: TerrainModelMessages = {
     'A smoothed preview of the area. Once created, the model is shown as the file holds it, simplification included.',
   viewModel: 'A faithful preview of the created model.',
   build: 'Create model',
+  sizeAndShape: 'Size and shape',
   dimensions: 'Model dimensions',
   scale: 'Scale',
   detail: ({ detail }) => `Horizontal resolution: ${detail} m`,
@@ -23,6 +24,7 @@ const en: TerrainModelMessages = {
   progressTiles: ({ done, total }) =>
     `Downloading elevation data (${done} / ${total})`,
   progressMesh: 'Building the model',
+  progressFile: 'Writing the 3MF',
   exaggeration: 'Height exaggeration',
   exaggerationHint:
     'Heights are multiplied by it: above 1 the relief comes out steeper than it is.',
@@ -36,6 +38,14 @@ const en: TerrainModelMessages = {
   download: 'Download STL',
   result: ({ height, triangles, size }) =>
     `Model height ${height} mm, ${triangles} triangles, ${size}.`,
+  colourFeatures: 'Map features in colour',
+  colourFeaturesHint:
+    'The chosen features are coloured on the model in their map colours, and the model downloads as 3MF for a multi-colour print: each colour a filament. An area is filled where its fill on the map is at least half opaque, else only outlined.',
+  lineWidth: 'Line width',
+  pointSize: 'Point size',
+  colours: 'Filament colours',
+  ground: 'Ground',
+  download3mf: 'Download 3MF',
   premiumRefused: ({ m }) =>
     `The premium elevation data was refused, so the model is built from data at ${m} m. Sign in again with a premium account for finer detail.`,
   partialData: ({ percent }) =>
@@ -46,6 +56,7 @@ const en: TerrainModelMessages = {
     'When you publish or share this model, accompany it with the following attribution:',
   creditsNone: 'The elevation data did not report which sources it comes from.',
   unknownSources: 'Sources that could not be named:',
+  mentionFreemap: 'If you share the model, we would appreciate a mention of:',
   discardModelTitle: 'Discard the model',
   discardModelQuestion:
     'The model has not been downloaded yet. Do you want to discard it?',

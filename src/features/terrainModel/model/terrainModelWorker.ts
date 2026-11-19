@@ -1,7 +1,9 @@
 import { decompress, init } from '@bokuweb/zstd-wasm';
 import { decodeSteps } from '@shared/elevationTile.js';
 import { NoElevationDataError } from './errors.js';
+import { paintGrid } from './paint.js';
 import { buildMesh } from './stl.js';
+import { meshTo3mf } from './threeMf.js';
 import { type ElevationTile, neededTiles, sampleGrid } from './tileGrid.js';
 import type {
   GridRequest,
@@ -9,7 +11,8 @@ import type {
   WorkerResponse,
 } from './workerProtocol.js';
 
-const initPromise = init();
+// On the first tile: a 3MF job never decodes one.
+let initPromise: Promise<void> | undefined;
 
 const CONCURRENCY = 6;
 
@@ -128,6 +131,17 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
   const r = evt.data;
 
   try {
+    if (r.kind === '3mf') {
+      post({
+        type: 'file',
+        blob: await meshTo3mf(r.mesh, r.palette, r.metadata),
+      });
+
+      return;
+    }
+
+    initPromise ??= init();
+
     await initPromise;
 
     let zoom = r.zoom;
@@ -179,7 +193,12 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
 
     post({ type: 'progress', phase: 'mesh' });
 
-    const mesh = buildMesh(heights, r);
+    const mesh = buildMesh(
+      heights,
+      r,
+      r.paint &&
+        paintGrid(r.bbox, r.cols, r.rows, r.widthMm, r.depthMm, r.paint),
+    );
 
     post(
       {
@@ -189,7 +208,11 @@ self.onmessage = async (evt: MessageEvent<WorkerRequest>) => {
         attributions: [...attributions],
         zoom,
       },
-      [mesh.positions.buffer, mesh.index.buffer],
+      [
+        mesh.positions.buffer,
+        mesh.index.buffer,
+        ...(mesh.colours ? [mesh.colours.buffer] : []),
+      ],
     );
   } catch (err) {
     if (err instanceof NoElevationDataError) {
