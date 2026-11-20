@@ -450,14 +450,7 @@ export function CustomMapForm({ type, value, onChange }: Props): ReactElement {
           <Text m={msm} k="filters.category" />
         </Form.Label>
 
-        <Form.Select
-          value={model.category}
-          onChange={(e) => {
-            const category = e.currentTarget.value as CategoryGroup;
-
-            setModelWithVersion((model) => ({ ...model, category }));
-          }}
-        >
+        <Form.Select value={model.category} onChange={handlers.category}>
           {CATEGORY_GROUPS.map((category) => (
             <option key={category} value={category}>
               {msm?.filters[category]}
