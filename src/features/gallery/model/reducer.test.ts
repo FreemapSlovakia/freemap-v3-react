@@ -153,6 +153,45 @@ describe('galleryReducer — upload error gating', () => {
 
     expect(next.uploadingId).toBeNull();
   });
+
+  it('validates an item added mid-batch before uploading it', () => {
+    const state = {
+      ...galleryInitialState,
+      uploadingId: 1,
+      items: [item({ id: 2, dirtyPosition: '', errors: undefined })],
+    };
+
+    const next = galleryReducer(state, galleryUpload());
+
+    expect(next.items[0].errors).toEqual(['missingPositionError']);
+    expect(next.uploadingId).toBeNull();
+  });
+
+  it('uploads an item whose position was fixed mid-batch', () => {
+    const state = {
+      ...galleryInitialState,
+      uploadingId: 1,
+      items: [item({ id: 2, errors: ['missingPositionError'] })],
+    };
+
+    const next = galleryReducer(state, galleryUpload());
+
+    expect(next.items[0].errors).toEqual([]);
+    expect(next.uploadingId).toBe(2);
+  });
+
+  it('keeps a server error mid-batch instead of retrying the item', () => {
+    const state = {
+      ...galleryInitialState,
+      uploadingId: 1,
+      items: [item({ id: 2, errors: ['~HTTP 500'] })],
+    };
+
+    const next = galleryReducer(state, galleryUpload());
+
+    expect(next.items[0].errors).toEqual(['~HTTP 500']);
+    expect(next.uploadingId).toBeNull();
+  });
 });
 
 describe('galleryReducer — togglePremium propagates to items', () => {

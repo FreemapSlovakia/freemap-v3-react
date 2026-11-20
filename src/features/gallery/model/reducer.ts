@@ -255,10 +255,24 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
             : null;
     })
     .addCase(galleryUpload, (state) => {
-      const items =
-        state.uploadingId === null
-          ? state.items.map((item) => ({ ...item, errors: getErrors(item) }))
-          : state.items;
+      // Validated at every step, so an item added or edited mid-batch can't go up
+      // unchecked; a server error sticks until the next batch, or it'd retry forever.
+      const items = state.items.map((item) => {
+        if (
+          state.uploadingId !== null &&
+          item.errors?.some((error) => error.startsWith('~'))
+        ) {
+          return item;
+        }
+
+        const errors = getErrors(item);
+
+        // unchanged items keep their identity, so their rows don't re-render
+        return item.errors?.length === errors.length &&
+          errors.every((error, i) => item.errors?.[i] === error)
+          ? item
+          : { ...item, errors };
+      });
 
       const next = items.find(
         (item) => !item.errors || item.errors.length === 0,
