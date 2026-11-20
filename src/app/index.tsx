@@ -67,7 +67,12 @@ window.localStorageFallback = storage;
 // (index.scss, leaflet.css) and only loads where flags are missing.
 // TODO: a browser that perturbs canvas reads (Brave, anti-fingerprinting
 // extensions) can fail the polyfill's detection and keep letter pairs.
-polyfillCountryFlagEmojis('Twemoji Country Flags', flagsFontUrl);
+try {
+  polyfillCountryFlagEmojis('Twemoji Country Flags', flagsFontUrl);
+} catch (err) {
+  // a blocked canvas read throws; flags then stay letter pairs, startup goes on
+  console.warn('Flag emoji polyfill failed:', err);
+}
 
 if (
   window.location.search === '?reset-local-storage' ||
