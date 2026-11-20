@@ -8,7 +8,7 @@ Panoráma je 360° pohľad na terén z bodu na mape s názvami viditeľných vrc
 
 ## Otvorenie panorámy
 
-V hlavnom menu zvoľte :PiMountains: **Panoráma**. Otvorí sa plávajúci panel, v spodnej časti panela je rad ovládacích prvkov. Potom zvoľte, odkiaľ sa chcete pozerať:
+V hlavnom menu zvoľte :PiMountains: **Panoráma** alebo stlačte <kbd>g</kbd> a potom <kbd>v</kbd>. Otvorí sa plávajúci panel, v spodnej časti panela je rad ovládacích prvkov. Potom zvoľte, odkiaľ sa chcete pozerať:
 
 - :FaStreetView: **Vybrať v mape** – kliknite na miesto v mape alebo ho nájdite podľa adresy na lište; značku môžete posunúť ťahaním a výber potvrďte tlačidlom :FaCheck: **OK**.
 - :FaRegDotCircle: **Pohľad z mojej polohy** v ponuke vedľa tohto tlačidla – panoráma z vašej polohy GPS. Tá istá ponuka ponúka aj :FaMapPin: [vaše miesta](#show=manual/account).

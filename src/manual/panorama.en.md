@@ -8,7 +8,7 @@ The panorama is a 360° view of the terrain from a point on the map, with the na
 
 ## Opening the panorama
 
-Choose :PiMountains: **Panorama** in the main menu. A floating panel opens; along its bottom is a row of controls. Then choose where to look from:
+Choose :PiMountains: **Panorama** in the main menu, or press <kbd>g</kbd>, then <kbd>v</kbd>. A floating panel opens; along its bottom is a row of controls. Then choose where to look from:
 
 - :FaStreetView: **Pick on the map** – click the place on the map, or find it by its address in the toolbar; drag the marker to adjust it and confirm with :FaCheck: **OK**.
 - :FaRegDotCircle: **View from my position**, in the menu next to that button – the panorama from your GPS position. The same menu offers :FaMapPin: [your places](#show=manual/account).

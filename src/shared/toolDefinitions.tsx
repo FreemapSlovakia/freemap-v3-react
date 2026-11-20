@@ -151,6 +151,7 @@ export const toolDefinitions: ToolDefinition[] = [
     tool: 'panorama',
     icon: <PiMountains />,
     msgKey: 'panorama',
+    kbd: 'KeyV',
     requiresOnline: true,
   },
   {
