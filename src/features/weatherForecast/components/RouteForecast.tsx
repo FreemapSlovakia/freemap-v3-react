@@ -7,7 +7,10 @@ import {
 } from '@features/routePlanner/model/schedule.js';
 import { usePlaceName } from '@features/search/hooks/usePlaceName.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import {
+  useDateTimeFormat,
+  WEEKDAY_TIME,
+} from '@shared/hooks/useDateTimeFormat.js';
 import { useNow } from '@shared/hooks/useNow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useMemo } from 'react';
@@ -96,11 +99,7 @@ function Row({ row: sample }: { row: RouteRow }): ReactElement {
 
   const name = usePlaceName(sample, true);
 
-  const timeFormat = useDateTimeFormat({
-    weekday: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const timeFormat = useDateTimeFormat(WEEKDAY_TIME);
 
   const integerFormat = useNumberFormat({ maximumFractionDigits: 0 });
 

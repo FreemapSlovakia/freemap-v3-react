@@ -103,6 +103,14 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       Przybycie: <b>{time}</b>
     </>
   ),
+  departure: ({ time }) => (
+    <>
+      Wyjście: <b>{time}</b>
+    </>
+  ),
+  departureLabel: 'Wyjście',
+  departureNow: 'Teraz',
+  departureTime: 'Godzina wyjścia',
   duration: ({ h, m, diff }) => (
     <>
       Czas:{' '}

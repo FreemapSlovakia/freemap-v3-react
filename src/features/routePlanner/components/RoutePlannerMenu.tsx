@@ -73,6 +73,7 @@ import { BiShapePolygon } from 'react-icons/bi';
 import {
   FaBullseye,
   FaChartArea,
+  FaClock,
   FaCloudSun,
   FaDiceThree,
   FaMapMarkerAlt,
@@ -831,6 +832,8 @@ export default function RoutePlannerMenu(): ReactElement {
               dispatch(routePlannerSetFromCurrentPosition('start'));
             } else if (eventKey === 'add-place') {
               addPlace();
+            } else if (eventKey === 'departure') {
+              dispatch(selectFeature({ type: 'route-point', id: 0 }));
             } else if (eventKey === 'from-finish' && finishPoint) {
               dispatch(
                 routePlannerSetStart({
@@ -888,6 +891,19 @@ export default function RoutePlannerMenu(): ReactElement {
                   </MenuLabel>
                 </Dropdown.Item>
               )}
+
+            {startPoint && activeMode !== 'isochrone' && (
+              <>
+                <Dropdown.Divider />
+
+                <Dropdown.Item as="button" eventKey="departure">
+                  <FaClock />
+                  <MenuLabel>
+                    <Text m={rpm} k="departureTime" />
+                  </MenuLabel>
+                </Dropdown.Item>
+              </>
+            )}
           </FmDropdownMenu>
         </Dropdown>
 

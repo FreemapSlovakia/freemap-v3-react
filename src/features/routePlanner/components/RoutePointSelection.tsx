@@ -4,7 +4,9 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
+import { RouteDepartureControl } from './RouteDepartureControl.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
+import { RoutePointTimes } from './RoutePointTimes.js';
 import { RouteStopControl } from './RouteStopControl.js';
 
 export default function RoutePointSelection():
@@ -31,6 +33,14 @@ export default function RoutePointSelection():
       state.routePlanner.mode === 'route',
   );
 
+  // A lone finish has no departure, and an isochrone takes no time of day.
+  const start = useAppSelector(
+    (state) =>
+      index === 0 &&
+      !state.routePlanner.finishOnly &&
+      state.routePlanner.mode !== 'isochrone',
+  );
+
   const rpm = useRoutePlannerMessages();
 
   return (
@@ -42,7 +52,11 @@ export default function RoutePointSelection():
         label={rpm?.point.point}
         deletable
       >
+        {start && <RouteDepartureControl />}
+
         {inner && <RouteStopControl index={index} stop={point.stop} />}
+
+        {index > 0 && <RoutePointTimes index={index} />}
 
         <PlaceActionsButton lat={point.lat} lon={point.lon} selection />
       </Selection>

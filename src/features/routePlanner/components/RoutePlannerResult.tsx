@@ -30,8 +30,10 @@ import {
   SELECTION_COLOR,
 } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
-import { useNow } from '@shared/hooks/useNow.js';
+import {
+  useDateTimeFormat,
+  WEEKDAY_TIME,
+} from '@shared/hooks/useDateTimeFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
@@ -65,6 +67,7 @@ import {
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
+import { useRouteSchedule } from '../hooks/useRouteSchedule.js';
 import {
   routePlannerAddPoint,
   routePlannerSetActiveAlternativeIndex,
@@ -82,7 +85,6 @@ import {
   stepModeDashArray,
 } from '../model/routeColors.js';
 import { alternativeCoordinates } from '../model/routeGeometry.js';
-import { legStops, scheduledSeconds } from '../model/schedule.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
 
@@ -152,43 +154,22 @@ export function RoutePlannerResult(): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
-  const departure = useAppSelector((state) => state.routePlanner.departure);
+  const routeSchedule = useRouteSchedule();
 
-  // An overnight goes on at a time of day, so without a departure the trip is
-  // timed from now.
-  const now = useNow(15 * 60_000);
-
-  const stops = useMemo(() => legStops(mode, points), [mode, points]);
+  const departure = routeSchedule?.departure ?? null;
 
   // The trip with its stops and when it arrives, where either says anything.
-  const schedule = useMemo(() => {
-    const alternative = alternatives[activeAlternativeIndex];
+  const schedule =
+    routeSchedule && (routeSchedule.hasStops || departure !== null)
+      ? {
+          withStops: routeSchedule.hasStops
+            ? (routeSchedule.end - routeSchedule.from) / 1000
+            : undefined,
+          arrival: departure === null ? undefined : routeSchedule.end,
+        }
+      : undefined;
 
-    const hasStops = stops.some(Boolean);
-
-    if (!alternative || (!hasStops && departure === null)) {
-      return undefined;
-    }
-
-    const seconds = hasStops
-      ? scheduledSeconds(
-          alternative.legs.map((leg) => leg.duration),
-          stops,
-          departure ?? now,
-        )
-      : alternative.duration;
-
-    return {
-      withStops: hasStops ? seconds : undefined,
-      arrival: departure === null ? undefined : departure + seconds * 1000,
-    };
-  }, [alternatives, activeAlternativeIndex, stops, departure, now]);
-
-  const arrivalFormat = useDateTimeFormat({
-    weekday: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const arrivalFormat = useDateTimeFormat(WEEKDAY_TIME);
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
@@ -480,6 +461,16 @@ export function RoutePlannerResult(): ReactElement {
             </div>
           )}
 
+          {departure !== null && (
+            <div>
+              <Text m={rpm}>
+                {(rpm) =>
+                  rpm.departure({ time: arrivalFormat.format(departure) })
+                }
+              </Text>
+            </div>
+          )}
+
           {schedule?.arrival !== undefined && (
             <div>
               <Text m={rpm}>
@@ -501,6 +492,7 @@ export function RoutePlannerResult(): ReactElement {
       rpm,
       language,
       arrivalFormat,
+      departure,
     ],
   );
 

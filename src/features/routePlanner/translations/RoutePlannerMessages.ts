@@ -88,8 +88,15 @@ export type RoutePlannerMessages = {
   tolled: ({ value }: { value: string }) => JSX.Element;
   /** The whole trip with its waypoints' stops, `duration` already formatted. */
   withStops: ({ duration }: { duration: string }) => JSX.Element;
-  /** At the finish, from the set departure. */
+  /** At the finish or a waypoint, from the set departure. */
   arrival: ({ time }: { time: string }) => JSX.Element;
+  /** From the start, or on from a stop. */
+  departure: ({ time }: { time: string }) => JSX.Element;
+  departureLabel: string;
+  /** Unsets the departure. */
+  departureNow: string;
+  /** The start menu's item selecting the start, where it is set. */
+  departureTime: string;
   duration: ({
     h,
     m,

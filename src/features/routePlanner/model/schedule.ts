@@ -90,27 +90,33 @@ export function legStops(
     : [];
 }
 
-/** The trip's length in seconds, stops included, from the legs' own durations. */
-export function scheduledSeconds(
+/**
+ * When each waypoint is reached and left (epoch ms), from the legs' own
+ * durations; they differ only at a stop.
+ */
+export function waypointTimes(
   legDurations: readonly number[],
   stops: readonly (RouteStop | undefined)[],
   departure: number,
-): number {
-  let seconds = 0;
+): { arrival: number; leave: number }[] {
+  const times = [{ arrival: departure, leave: departure }];
+
+  let at = departure;
 
   for (const [i, duration] of legDurations.entries()) {
-    seconds += duration;
+    const arrival = at + duration * 1000;
 
     const stop = stops[i];
 
-    if (stop && i < legDurations.length - 1) {
-      const at = departure + seconds * 1000;
+    at =
+      stop && i < legDurations.length - 1
+        ? Math.max(arrival, stopEnd(stop, arrival))
+        : arrival;
 
-      seconds += Math.max(0, stopEnd(stop, at) - at) / 1000;
-    }
+    times.push({ arrival, leave: at });
   }
 
-  return seconds;
+  return times;
 }
 
 /** What the route planner and a saved map store of a route: legs of timed steps. */

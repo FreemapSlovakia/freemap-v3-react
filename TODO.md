@@ -703,8 +703,10 @@ weighed and set aside:
 ## Route planner: stops and schedule (`src/features/routePlanner/`, `src/features/weatherForecast/`)
 
 Stops on inner waypoints (a pause, or nights and the time to go on), the
-departure, and `schedule.ts`'s timing are in; still to do:
+departure, and `schedule.ts`'s timing are in:
 
-- [ ] **Departure in the planner's own toolbar** (needed for public-transport
-  routing too); it is set only in the weather panel now.
+- [x] **Departure on the start marker's toolbar** (and the Start menu's
+  Departure time), with arrival/leave times on the other waypoints.
+- [ ] **Arrive by** on the finish, working the departure out backwards
+  (overnights make it non-trivial; public transport needs it).
 - [ ] Later on the same schedule: GPX export with times; public transport.

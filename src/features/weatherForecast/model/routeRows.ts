@@ -1,4 +1,5 @@
 import type { RoutePosition } from '@features/routePlanner/model/schedule.js';
+import { QUARTER_MS } from '@shared/dateUtils.js';
 
 const HOUR_MS = 3_600_000;
 
@@ -6,9 +7,6 @@ const SIX_HOURS_MS = 6 * HOUR_MS;
 
 /** How far ahead the forecast goes hourly; then by 6 hours, from 00 UTC. */
 const HOURLY_AHEAD_MS = 60 * HOUR_MS;
-
-/** Arrival times are estimates; a quarter of an hour is as exact as they get. */
-export const QUARTER_MS = 15 * 60_000;
 
 const MAX_ROWS = 24;
 

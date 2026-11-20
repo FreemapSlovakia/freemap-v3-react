@@ -103,6 +103,14 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       Érkezés: <b>{time}</b>
     </>
   ),
+  departure: ({ time }) => (
+    <>
+      Indulás: <b>{time}</b>
+    </>
+  ),
+  departureLabel: 'Indulás',
+  departureNow: 'Most',
+  departureTime: 'Indulás ideje',
   duration: ({ h, m, diff }) => (
     <>
       Időtartam:{' '}

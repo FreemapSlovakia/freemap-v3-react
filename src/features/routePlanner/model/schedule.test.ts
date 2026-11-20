@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   legStops,
-  scheduledSeconds,
   stopEnd,
   timedPositions,
+  waypointTimes,
 } from './schedule.js';
 
 // ~1.1 km per 0.01° of latitude.
@@ -103,15 +103,28 @@ describe('legStops', () => {
   });
 });
 
-describe('scheduledSeconds', () => {
-  it('adds the stops to the legs', () => {
+describe('waypointTimes', () => {
+  it('reaches and leaves each waypoint, apart only at a stop', () => {
+    const departure = new Date(2026, 10, 20, 10).getTime();
+
+    const hour = 3_600_000;
+
+    const times = waypointTimes(
+      [3600, 7200, 1800],
+      [{ kind: 'pause', minutes: 30 }, undefined],
+      departure,
+    );
+
     expect(
-      scheduledSeconds(
-        [600, 600, 600],
-        [{ kind: 'pause', minutes: 30 }, undefined],
-        0,
+      times.map((t) =>
+        [t.arrival, t.leave].map((ms) => (ms - departure) / hour),
       ),
-    ).toBe(3600);
+    ).toEqual([
+      [0, 0],
+      [1, 1.5],
+      [3.5, 3.5],
+      [4, 4],
+    ]);
   });
 });
 

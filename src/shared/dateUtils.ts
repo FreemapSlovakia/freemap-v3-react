@@ -10,6 +10,14 @@ export function isoInstant(ms: number): string {
   return new Date(ms).toISOString().replace(/\.000Z$/, 'Z');
 }
 
+/** Arrival times are estimates; a quarter of an hour is as exact as they get. */
+export const QUARTER_MS = 15 * 60_000;
+
+/** The next quarter hour from `ms`, or `ms` itself when it is one. */
+export function nextQuarter(ms: number): number {
+  return Math.ceil(ms / QUARTER_MS) * QUARTER_MS;
+}
+
 /**
  * A `datetime-local` value in the viewer's time zone; `withMs` keeps a
  * fraction of a second where there is one.

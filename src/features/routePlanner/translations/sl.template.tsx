@@ -117,6 +117,14 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       Prihod: <b>{time}</b>
     </>
   ),
+  departure: ({ time }) => (
+    <>
+      Odhod: <b>{time}</b>
+    </>
+  ),
+  departureLabel: 'Odhod',
+  departureNow: 'Zdaj',
+  departureTime: 'Čas odhoda',
   duration: ({ h, m, diff }) => (
     <>
       Trajanje:{' '}

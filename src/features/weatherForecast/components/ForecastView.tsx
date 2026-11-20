@@ -1,4 +1,7 @@
-import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import {
+  useDateTimeFormat,
+  WEEKDAY_TIME,
+} from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import type { ReactElement } from 'react';
 import { Accordion, Table } from 'react-bootstrap';
@@ -41,11 +44,7 @@ export function ForecastView({
 
   const timeFormat = useDateTimeFormat({ hour: '2-digit', minute: '2-digit' });
 
-  const updatedFormat = useDateTimeFormat({
-    weekday: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const updatedFormat = useDateTimeFormat(WEEKDAY_TIME);
 
   const integerFormat = useNumberFormat({ maximumFractionDigits: 0 });
 

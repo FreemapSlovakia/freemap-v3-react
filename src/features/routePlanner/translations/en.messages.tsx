@@ -116,6 +116,14 @@ const en: RoutePlannerMessages = {
       Arrival: <b>{time}</b>
     </>
   ),
+  departure: ({ time }) => (
+    <>
+      Departure: <b>{time}</b>
+    </>
+  ),
+  departureLabel: 'Departure',
+  departureNow: 'Now',
+  departureTime: 'Departure time',
   duration: ({ h, m, diff }) => (
     <>
       Duration:{' '}

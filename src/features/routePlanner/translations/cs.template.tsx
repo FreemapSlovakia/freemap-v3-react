@@ -103,6 +103,14 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
       Příchod: <b>{time}</b>
     </>
   ),
+  departure: ({ time }) => (
+    <>
+      Odchod: <b>{time}</b>
+    </>
+  ),
+  departureLabel: 'Odchod',
+  departureNow: 'Nyní',
+  departureTime: 'Čas odchodu',
   duration: ({ h, m, diff }) => (
     <>
       Trvání:{' '}
