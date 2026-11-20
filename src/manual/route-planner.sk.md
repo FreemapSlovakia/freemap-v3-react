@@ -20,8 +20,8 @@ Pri otvorenom nástroji vyhľadávania trás kliknite do mapy: prvé kliknutie u
 
 - V ponukách :FaPlay.text-success: **Štart** a :FaStop.text-danger: **Cieľ** na lište si zvolíte :FaMapMarkerAlt: **Vybrať na mape**, :FaRegDotCircle: **Vaša poloha** alebo niektoré z :FaMapPin: [vašich miest](#show=manual/account). Kým žiadne nemáte, ponúka sa :FaPlus: **Pridať miesto**.
 - ⇆ **Prehodiť štart a cieľ** otočí smer trasy.
-- Ktorýkoľvek bod môžete presunúť ťahaním. Potiahnutím samotnej čiary trasy ju usmerníte cez dané miesto: v režime :MdTimeline: **V určenom poradí** tak pribudne malý krúžok, pomocný bod. Nemá číslo, zastávku ani čas a trasa sa opisuje, akoby tam nebol. Ak sa trasa na ňom otáča späť, krúžok zožltne: bod presuňte, alebo, ak ide o miesto, kam idete a vraciate sa, vypnite :TbCircleDot: **Pomocný bod**.
-- :TbCircleDot: **Pomocný bod** v paneli bodu zmení zastávku na pomocný bod alebo naspäť.
+- Ktorýkoľvek bod môžete presunúť ťahaním. Potiahnutím samotnej čiary trasy ju usmerníte cez dané miesto: v režime :MdTimeline: **V určenom poradí** tak pribudne malý krúžok s bodkou, pomocný bod. Nemá číslo, zastávku ani čas a trasa sa opisuje, akoby tam nebol. Ak sa trasa na ňom otáča späť, bodka v krúžku zožltne: bod presuňte, alebo, ak ide o miesto, kam idete a vraciate sa, vypnite :FaRegDotCircle: **Pomocný bod**.
+- :FaRegDotCircle: **Pomocný bod** v paneli bodu zmení zastávku na pomocný bod alebo naspäť.
 - Kliknutím na bod ho vyberiete a na lište výberu nájdete :FaEllipsisV: s ponukou akcií pre toto miesto a :FaTrash: na odstránenie tohto bodu.
 
 ![Trasa s alternatívou](./images/route-planner-route.sk.webp)
@@ -42,9 +42,9 @@ Pri profiloch v časti OSRM sú režimy :MdTimeline: **V určenom poradí**, :Pi
 
 Pri cieli sa zobrazuje vzdialenosť a trvanie trasy vrátane zastávok a pri nastavenom odchode aj príchod. Ukázaním na zastávku uvidíte súčty až po túto zastávku a ukázaním na cieľ ich uvidíte v rovnakej podobe. Ostatné, aj spoplatnené úseky, nájdete v itinerári.
 
-V režime :MdTimeline: **V určenom poradí** otvorí :FaListOl: **Itinerár** na lište (na úzkej obrazovke pod :FaEllipsisV:), alebo kliknutie na popis pri cieli, itinerár trasy vedľa mapy; na začiatku je otvorený. Zostane otvorený aj pre ďalšie trasy, kým ho nezatvoríte, a zobrazuje sa, keď je otvorené vyhľadávanie trás alebo je vybraná zastávka či úsek trasy: **Odchod**, súčty a príchod, potom každú zastávku s časom príchodu, prestávkou alebo nocľahom a časom pokračovania, a medzi nimi každý úsek s jeho dopravou, vzdialenosťou a trvaním. Pomocné body sa v ňom nezobrazujú. Kliknutím na riadok vyberiete danú zastávku alebo úsek a uvidíte ho na mape, pričom itinerár zostane otvorený; prestávku zastávky nastavíte na jej lište. **Podrobné pokyny** pridajú každé odbočenie na úsekoch s názvom cesty a vzdialenosťou k ďalšiemu odbočeniu. Ukázaním na odbočenie alebo na riadok počasia sa jeho miesto vyznačí na mape; kliknutím ho uvidíte.
+V režime :MdTimeline: **V určenom poradí** otvorí :TbListDetails: **Podrobnosti trasy** na lište, alebo kliknutie na popis pri cieli, itinerár trasy vedľa mapy; na začiatku je otvorený. Zostane otvorený aj pre ďalšie trasy, kým ho nezatvoríte, a zobrazuje sa, keď je otvorené vyhľadávanie trás alebo je vybraná zastávka či úsek trasy: **Odchod**, súčty a príchod, potom každú zastávku s časom príchodu, prestávkou alebo nocľahom a časom pokračovania, a medzi nimi každý úsek s jeho dopravou, vzdialenosťou a trvaním. Pomocné body sa v ňom nezobrazujú. Kliknutím na riadok vyberiete danú zastávku alebo úsek a uvidíte ho na mape, pričom itinerár zostane otvorený; prestávku zastávky nastavíte na jej lište. **Podrobné pokyny** pridajú každé odbočenie na úsekoch s názvom cesty a vzdialenosťou k ďalšiemu odbočeniu. Ukázaním na odbočenie alebo na riadok počasia sa jeho miesto vyznačí na mape; kliknutím ho uvidíte.
 
-:FaClock: **Odchod** hore odchod zapne alebo vypne; bez neho itinerár neukazuje časy. :FaCloudSun: **Počasie** prepne na počasie pozdĺž trasy z tohto odchodu, ktorý potrebuje. V ostatných režimoch je to isté tlačidlo na lište :FaCloudSun: **Počasie pozdĺž trasy**.
+:FaClock: **Odchod** hore odchod zapne alebo vypne; bez neho itinerár neukazuje časy. :FaCloudSun: **Počasie** prepne na počasie pozdĺž trasy z tohto odchodu, ktorý potrebuje. V ostatných režimoch panel obsahuje len počasie.
 
 Medzi dvoma bodmi sa môže zobraziť aj alternatívna trasa. Kliknutím na alternatívnu trasu ju vyberiete. Koľko trás sa najviac zobrazí, nastavíte v :FaEllipsisV: → **Max. počet ponúkaných trás**.
 

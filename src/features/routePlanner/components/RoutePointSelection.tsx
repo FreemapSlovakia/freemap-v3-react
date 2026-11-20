@@ -6,7 +6,6 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RouteDepartureControl } from './RouteDepartureControl.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
-import { RoutePointTimes } from './RoutePointTimes.js';
 import { RouteShapingToggle } from './RouteShapingToggle.js';
 import { RouteStopControl } from './RouteStopControl.js';
 
@@ -62,8 +61,6 @@ export default function RoutePointSelection():
         {inner && !shaping && (
           <RouteStopControl index={index} stop={point.stop} />
         )}
-
-        {index > 0 && !shaping && <RoutePointTimes index={index} />}
 
         <PlaceActionsButton lat={point.lat} lon={point.lon} selection />
       </Selection>

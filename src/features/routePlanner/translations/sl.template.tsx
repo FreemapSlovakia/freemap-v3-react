@@ -51,6 +51,7 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Zamenjaj začetek in cilj',
   itinerary: {
     title: 'Načrt poti',
+    button: 'Podrobnosti poti',
     weather: 'Vreme',
     noDeparture: 'Nastavite čas odhoda, da vidite vreme ob poti.',
   },

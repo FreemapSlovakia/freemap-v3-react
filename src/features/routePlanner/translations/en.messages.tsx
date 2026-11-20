@@ -57,6 +57,7 @@ const en: RoutePlannerMessages = {
   },
   itinerary: {
     title: 'Itinerary',
+    button: 'Route details',
     weather: 'Weather',
     noDeparture: 'Set a departure time to see the weather along the route.',
   },

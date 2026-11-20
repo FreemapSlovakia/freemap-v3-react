@@ -94,7 +94,7 @@ import {
 
 const pointDraggingClassName = classes.dragging;
 
-/** A shaping point the route turns back at; muted like the finish's red. */
+/** The glyph of a shaping point the route turns back at. */
 const TURN_BACK_COLOR = '#f0ad4e';
 
 // Dedicated pane the route line and colorize canvas render into (declared with
@@ -591,13 +591,15 @@ export function RoutePlannerResult(): ReactElement {
 
         const shaping = isShaping(points, i, mode);
 
+        const times = schedule?.times?.[i];
+
         // `faIcon` and `label` are mutually exclusive on RichMarker.
         const content = isStart
           ? { faIcon: <FaPlay color="#409a40" /> }
           : isEnd
             ? { faIcon: <FaStop color="#d9534f" /> }
             : i === 0 || shaping
-              ? {} // start point in finishOnly mode: neither icon nor label
+              ? {} // start in finishOnly mode: none; a handle draws its own dot
               : { label: stopNumber(i, mode, waypoints, points) };
 
         return (
@@ -613,20 +615,15 @@ export function RoutePlannerResult(): ReactElement {
               !window.fmEmbedded
             }
             {...content}
-            markerType={shaping ? 'ring' : 'pin'}
-            color={
-              isStart
-                ? '#409a40'
-                : isEnd
-                  ? '#d9534f'
-                  : turnBacks.has(i)
-                    ? TURN_BACK_COLOR
-                    : '#3e64d5'
-            }
+            markerType={shaping ? 'handle' : 'pin'}
+            color={isStart ? '#409a40' : isEnd ? '#d9534f' : '#3e64d5'}
+            // The warning is its glyph's own; the ring stays a waypoint's blue.
+            glyphColor={turnBacks.has(i) ? TURN_BACK_COLOR : undefined}
             // Selection is the ring, so the waypoint keeps the color that says
             // which of the three it is.
             halo={selectedPoint === i ? SELECTION_COLOR : undefined}
-            zIndexOffset={isStart || points.length - 1 ? 10 : 1}
+            // The ends over the points between, the shaping ones lowest.
+            zIndexOffset={isStart || isEnd ? 10 : shaping ? 0 : 1}
             eventHandlers={
               window.fmEmbedded
                 ? {}
@@ -662,7 +659,16 @@ export function RoutePlannerResult(): ReactElement {
               )
             ) : (
               <Tooltip direction="top" key={points.length}>
-                <RouteSummary {...getPointDetails(i - 1)} />
+                <RouteSummary
+                  {...getPointDetails(i - 1)}
+                  // Not on a finish-only route's start, which is reached
+                  // by no leg.
+                  arrival={i > 0 ? times?.arrival : undefined}
+                  // Only where a stop holds the route there.
+                  leave={
+                    times?.leave !== times?.arrival ? times?.leave : undefined
+                  }
+                />
               </Tooltip>
             )}
           </RichMarker>
@@ -684,6 +690,7 @@ export function RoutePlannerResult(): ReactElement {
       handlePointClick,
       getSummary,
       markerOpacity,
+      schedule,
     ],
   );
 

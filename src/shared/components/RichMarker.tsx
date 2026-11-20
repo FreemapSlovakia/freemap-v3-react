@@ -37,6 +37,12 @@ const GLYPH_SIZE = 160;
 // outside, the same as a line's halo shows on each side.
 const HALO_STROKE = (2 * 3 * 310) / 24;
 
+/** A handle's drawn size in pixels, its own units: strokes as the ring's. */
+const HANDLE_SIZE = 16;
+
+/** Its box, wider for a finger to hit; the margin is transparent. */
+const HANDLE_BOX = 24;
+
 // The pin, shared by its fill and the ring stroked over it.
 const PIN_PATH =
   'M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z';
@@ -55,7 +61,8 @@ const textStyle: CSSProperties = {
 
 interface BaseIconProps {
   color?: string;
-  markerType?: MarkerType;
+  /** `handle`: a small ring with a dot, for a point that only shapes a line. */
+  markerType?: MarkerType | 'handle';
   /**
    * Draws a ring of this color around the marker's shape — the halo a line
    * wears, for something that has no outline to widen.
@@ -254,14 +261,20 @@ export function RichMarker({
       markerType,
     };
 
+    const round = markerType === 'ring' || markerType === 'square';
+
     return new MarkerLeafletIcon({
-      iconAnchor:
-        markerType === 'ring' || markerType === 'square'
-          ? [12, 12]
-          : markerIconOptions.iconAnchor,
-      tooltipAnchor:
-        markerType === 'ring' || markerType === 'square' ? [0, -10] : [0, -35],
-      iconSize: markerIconOptions.iconSize,
+      ...(markerType === 'handle'
+        ? {
+            iconAnchor: [HANDLE_BOX / 2, HANDLE_BOX / 2],
+            tooltipAnchor: [0, -HANDLE_SIZE / 2],
+            iconSize: [HANDLE_BOX, HANDLE_BOX],
+          }
+        : {
+            iconAnchor: round ? [12, 12] : markerIconOptions.iconAnchor,
+            tooltipAnchor: round ? [0, -10] : [0, -35],
+            iconSize: markerIconOptions.iconSize,
+          }),
       icon: <MarkerIcon {...iconProps} />,
       iconKey: markerIconKey(iconProps),
     });
@@ -643,7 +656,46 @@ export function MarkerIcon({
 
   return (
     <>
-      {markerType === 'ring' ? (
+      {markerType === 'handle' ? (
+        <svg
+          viewBox={`0 0 ${HANDLE_BOX} ${HANDLE_BOX}`}
+          xmlns="http://www.w3.org/2000/svg"
+          opacity={opacity}
+          style={haloStyle}
+        >
+          {haloProps && (
+            <circle
+              cx={HANDLE_BOX / 2}
+              cy={HANDLE_BOX / 2}
+              r={HANDLE_SIZE / 2 - 0.5}
+              {...haloProps}
+              strokeWidth={6}
+            />
+          )}
+
+          <circle
+            cx={HANDLE_BOX / 2}
+            cy={HANDLE_BOX / 2}
+            r={HANDLE_SIZE / 2 - 0.5}
+            fill={fillColor}
+          />
+
+          {/* White always: the dot is a spot of color, not a glyph to read. */}
+          <circle
+            cx={HANDLE_BOX / 2}
+            cy={HANDLE_BOX / 2}
+            r={HANDLE_SIZE / 2 - 2.5}
+            fill={GLYPH_INSET_LIGHT}
+          />
+
+          <circle
+            cx={HANDLE_BOX / 2}
+            cy={HANDLE_BOX / 2}
+            r={2.5}
+            fill={glyphFill}
+          />
+        </svg>
+      ) : markerType === 'ring' ? (
         <svg
           x="0px"
           y="0px"

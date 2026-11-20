@@ -58,6 +58,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   itinerary: {
     title: 'Itinerár',
+    button: 'Podrobnosti trasy',
     weather: 'Počasie',
     noDeparture: 'Nastavte čas odchodu a uvidíte počasie pozdĺž trasy.',
   },

@@ -51,6 +51,7 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Inverser le départ et l’arrivée',
   itinerary: {
     title: 'Itinéraire',
+    button: 'Détails de l’itinéraire',
     weather: 'Météo',
     noDeparture:
       'Définissez l’heure de départ pour voir la météo le long de l’itinéraire.',

@@ -39,6 +39,7 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Prohodit start a cíl',
   itinerary: {
     title: 'Itinerář',
+    button: 'Podrobnosti trasy',
     weather: 'Počasí',
     noDeparture: 'Nastavte čas odchodu a uvidíte počasí podél trasy.',
   },

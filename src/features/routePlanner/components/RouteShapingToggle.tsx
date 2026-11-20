@@ -2,7 +2,7 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { ReactElement } from 'react';
 import { Button } from 'react-bootstrap';
-import { TbCircleDot } from 'react-icons/tb';
+import { FaRegDotCircle } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { routePlannerSetShaping } from '../model/actions.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
@@ -38,7 +38,7 @@ export function RouteShapingToggle({
             dispatch(routePlannerSetShaping({ index, shaping: !shaping }));
           }}
         >
-          <TbCircleDot />
+          <FaRegDotCircle />
           <span className={labelClassName}>&ensp;{label}</span>
         </Button>
       )}

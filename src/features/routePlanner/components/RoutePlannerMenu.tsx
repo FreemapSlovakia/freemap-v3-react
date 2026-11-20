@@ -13,7 +13,6 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
-import { useWeatherForecastMessages } from '@features/weatherForecast/translations/useWeatherForecastMessages.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import {
   LEGEND_ITEM,
@@ -74,9 +73,7 @@ import {
   FaBullseye,
   FaChartArea,
   FaClock,
-  FaCloudSun,
   FaDiceThree,
-  FaListOl,
   FaMapMarkerAlt,
   FaPaintBrush,
   FaPalette,
@@ -91,6 +88,7 @@ import {
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { PiGraph } from 'react-icons/pi';
+import { TbListDetails } from 'react-icons/tb';
 import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
@@ -652,8 +650,6 @@ export default function RoutePlannerMenu(): ReactElement {
 
   const openRoutePanel = useOpenRoutePanel();
 
-  const wfm = useWeatherForecastMessages();
-
   const canSwap = useAppSelector(
     (state) => state.routePlanner.points.length > 1,
   );
@@ -1083,14 +1079,12 @@ export default function RoutePlannerMenu(): ReactElement {
         )}
 
         {routeFound && (
-          // One panel for both: the weather is its other view.
+          // One panel for both views; never in the ⋮, the way back to a
+          // closed panel.
           <Action
-            label={
-              activeMode === 'route' ? rpm?.itinerary.title : wfm?.alongRoute
-            }
-            icon={activeMode === 'route' ? <FaListOl /> : <FaCloudSun />}
-            showFrom="lg"
-            // The weather is fetched; the itinerary is the route's own.
+            label={rpm?.itinerary.button}
+            icon={<TbListDetails />}
+            showLabelFrom="xl"
             requiresOnline={routePanelShowsWeather}
             active={routePanelOpen}
             onClick={() => {

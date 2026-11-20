@@ -39,6 +39,7 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Kiindulási pont és cél felcserélése',
   itinerary: {
     title: 'Útiterv',
+    button: 'Útvonal részletei',
     weather: 'Időjárás',
     noDeparture: 'Állítsa be az indulási időt az útvonal menti időjáráshoz.',
   },

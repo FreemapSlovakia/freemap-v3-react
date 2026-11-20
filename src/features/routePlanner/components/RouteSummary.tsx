@@ -32,12 +32,15 @@ export function RouteSummary({
   tolled,
   withStops,
   arrival,
+  leave,
 }: RouteFigures & {
   tolled?: number;
   /** Seconds, stops included. */
   withStops?: number;
   /** Epoch ms. */
   arrival?: number;
+  /** When the route goes on from a stop, epoch ms. */
+  leave?: number;
 }): ReactElement {
   const rpm = useRoutePlannerMessages();
 
@@ -101,6 +104,14 @@ export function RouteSummary({
         <div className="text-nowrap">
           <Text m={rpm}>
             {(rpm) => rpm.arrival({ time: format.format(arrival) })}
+          </Text>
+        </div>
+      )}
+
+      {leave !== undefined && (
+        <div className="text-nowrap">
+          <Text m={rpm}>
+            {(rpm) => rpm.departure({ time: format.format(leave) })}
           </Text>
         </div>
       )}

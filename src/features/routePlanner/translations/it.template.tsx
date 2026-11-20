@@ -39,6 +39,7 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   swap: 'Inverti inizio e fine',
   itinerary: {
     title: 'Itinerario',
+    button: 'Dettagli del percorso',
     weather: 'Meteo',
     noDeparture:
       'Imposti l’orario di partenza per vedere il meteo lungo il percorso.',

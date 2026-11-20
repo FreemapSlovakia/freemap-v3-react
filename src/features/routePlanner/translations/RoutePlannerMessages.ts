@@ -67,6 +67,8 @@ export type RoutePlannerMessages = {
   };
   itinerary: {
     title: string;
+    /** The toolbar's button opening the panel, whatever its view. */
+    button: string;
     /** The panel's other view. */
     weather: string;
     /** The weather view without a departure. */

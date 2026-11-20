@@ -18,6 +18,7 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   },
   itinerary: {
     title: 'Reiseplan',
+    button: 'Routendetails',
     weather: 'Wetter',
     noDeparture:
       'Legen Sie eine Abfahrtszeit fest, um das Wetter entlang der Route zu sehen.',
