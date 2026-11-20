@@ -190,6 +190,8 @@ type Props<T> = {
   marks?: (item: T) => ReactNode;
   /** The manual chapter its header's book button opens, as a modal's does. */
   manual?: string;
+  /** Buttons in the header before the manual's (`fm-dock-action`). */
+  actions?: ReactNode;
   /** A place on the map to keep clear of the panel, panned to when hidden. */
   keepVisible?: (item: T) => LatLon | undefined;
   onClose: () => void;
@@ -210,6 +212,7 @@ export function DockPanel<T>({
   summary,
   marks,
   manual,
+  actions,
   keepVisible,
   onClose,
   children,
@@ -512,6 +515,8 @@ export function DockPanel<T>({
         </Offcanvas.Title>
 
         <div className="fm-dock-actions">
+          {actions}
+
           {/* An embed offers no manual. */}
           {manual && !window.fmEmbedded && (
             <ManualHeaderButton chapter={manual} from="panel" />

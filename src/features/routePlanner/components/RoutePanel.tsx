@@ -1,13 +1,17 @@
+import { openTool } from '@app/store/actions.js';
+import { isToolOpen } from '@app/store/selectors.js';
+import { useMessages } from '@features/l10n/l10nInjector.js';
 import { panToUncovered } from '@features/map/panToUncovered.js';
 import { RouteForecast } from '@features/weatherForecast/components/RouteForecast.js';
 import { useWeatherForecastMessages } from '@features/weatherForecast/translations/useWeatherForecastMessages.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useEffect, useMemo } from 'react';
-import { Form, ToggleButton } from 'react-bootstrap';
-import { FaCloudSun, FaListOl } from 'react-icons/fa';
+import { Button, Form, ToggleButton } from 'react-bootstrap';
+import { FaCloudSun, FaListOl, FaRoute } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   routePanelShown,
@@ -96,6 +100,7 @@ export default function RoutePanel(): ReactElement {
       label={label}
       title={() => label}
       manual="route-planner"
+      actions={<RoutePlannerHeaderButton />}
       onClose={() => dispatch(routePlannerSetPanelOpen(false))}
     >
       {() => (
@@ -186,5 +191,31 @@ export default function RoutePanel(): ReactElement {
         </>
       )}
     </DockPanel>
+  );
+}
+
+/** Opens the route planner beside its panel, shown by a selection alone. */
+function RoutePlannerHeaderButton(): ReactElement | null {
+  const dispatch = useDispatch();
+
+  const m = useMessages();
+
+  const open = useAppSelector((state) => isToolOpen(state, 'route-planner'));
+
+  return window.fmEmbedded ? null : (
+    <LongPressTooltip label={m?.tools.routePlanner} disabled={open}>
+      {({ props }) => (
+        <Button
+          {...props}
+          variant="link"
+          className="fm-dock-action"
+          disabled={open}
+          onClick={() => dispatch(openTool('route-planner'))}
+        >
+          {/* Centred like the ×, without the app's nudge onto a text line */}
+          <FaRoute style={{ top: 0 }} />
+        </Button>
+      )}
+    </LongPressTooltip>
   );
 }
