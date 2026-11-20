@@ -77,6 +77,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     },
     loading: 'Načítavam…',
+    placeAway: ({ name, distance }) => `${name}, ${distance} odtiaľto`,
     ok: 'OK',
     preventShowingAgain: 'Už viac nezobrazovať',
     closeWithoutSaving: 'Zavrieť okno bez uloženia zmien?',
@@ -771,6 +772,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startLine: 'Začať tu kresliť čiaru, merať dĺžku',
     queryFeatures: 'Zistiť detaily v okolí',
     showPhotos: 'Ukázať fotky v okolí',
+    weatherForecast: 'Predpoveď počasia',
   },
 
   errorStatus: {

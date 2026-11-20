@@ -3,6 +3,10 @@ import {
   osmIdKey,
   osmIdOf,
 } from '@features/changesets/model/changesetDiff.js';
+import {
+  parseWeatherPointId,
+  weatherPointId,
+} from '@features/weatherForecast/model/pointId.js';
 import type { OsmFeatureId } from '@shared/types/featureId.js';
 
 /**
@@ -18,7 +22,9 @@ export type PanelParam =
   /** A POI of the objects layer, selected once the layer has it. */
   | { type: 'object'; id: OsmFeatureId; history?: true }
   /** A Wikipedia article, `<lang>:<title>`; the title may hold a `/`. */
-  | { type: 'wiki'; id: string };
+  | { type: 'wiki'; id: string }
+  /** A point's weather forecast, `<lat>,<lon>`. */
+  | { type: 'weather'; id: string };
 
 /** As `encodePanel` writes one, so a link reads back exactly as written. */
 const positive = (s: string | undefined) =>
@@ -47,6 +53,9 @@ export function encodePanel(panel: PanelParam): string {
 
     case 'wiki':
       return `wiki/${panel.id}`;
+
+    case 'weather':
+      return `weather/${panel.id}`;
   }
 }
 
@@ -85,6 +94,12 @@ export function decodePanel(raw: string): PanelParam | null {
       return a && /^[\w-]{1,16}$/.test(a) && b === undefined
         ? { type: 'event', id: a }
         : null;
+
+    case 'weather': {
+      const point = a && b === undefined ? parseWeatherPointId(a) : undefined;
+
+      return point ? { type: 'weather', id: weatherPointId(point) } : null;
+    }
 
     case 'osm-note': {
       const id = positive(a);

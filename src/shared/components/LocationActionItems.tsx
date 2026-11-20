@@ -1,4 +1,8 @@
-import { openInExternalApp, openTool } from '@app/store/actions.js';
+import {
+  openInExternalApp,
+  openTool,
+  selectFeature,
+} from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { pointToFeature } from '@features/dataViewer/drawingWire.js';
 import {
@@ -11,6 +15,7 @@ import { Text } from '@features/l10n/Text.js';
 import { mapRefocus } from '@features/map/model/actions.js';
 import { useOpenInExternalAppMessages } from '@features/openInExternalApp/translations/useOpenInExternalAppMessages.js';
 import { searchSetQuery } from '@features/search/model/actions.js';
+import { weatherPointId } from '@features/weatherForecast/model/pointId.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
 import { RouteEndpointItems } from '@shared/components/RouteEndpointItems.js';
@@ -20,11 +25,13 @@ import {
 } from '@shared/components/ViewFromHereItems.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { lineStyleToProperties } from '@shared/styleFromProperties.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaCamera,
+  FaCloudSun,
   FaInfo,
   FaLink,
   FaMapMarkerAlt,
@@ -118,6 +125,30 @@ export function LocationActionItems({
           <FaCamera />
           <MenuLabel>
             <Text k="mapCtxMenu.showPhotos" />
+          </MenuLabel>
+        </OnlineOnlyItem>
+      )}
+
+      {!window.fmEmbedded && (
+        <OnlineOnlyItem
+          as="button"
+          onClick={() => {
+            trackMatomo(['trackEvent', 'Weather', 'forecast']);
+
+            dispatch(
+              selectFeature({
+                type: 'weather',
+                id: weatherPointId({ lat, lon }),
+                label: pointTitle,
+              }),
+            );
+
+            onAct?.();
+          }}
+        >
+          <FaCloudSun />
+          <MenuLabel>
+            <Text k="mapCtxMenu.weatherForecast" />
           </MenuLabel>
         </OnlineOnlyItem>
       )}

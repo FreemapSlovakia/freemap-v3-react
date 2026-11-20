@@ -1,0 +1,125 @@
+import { isPremium } from '@features/premium/premium.js';
+import { ForecastView } from '@features/weatherForecast/components/ForecastView.js';
+import { RouteForecast } from '@features/weatherForecast/components/RouteForecast.js';
+import {
+  dayKey,
+  FORECAST_DAYS,
+  type ForecastStep,
+  stepEnd,
+  useForecast,
+} from '@features/weatherForecast/model/forecast.js';
+import { fetchMapRoute } from '@features/weatherForecast/model/mapRoute.js';
+import { useWeatherForecastMessages } from '@features/weatherForecast/translations/useWeatherForecastMessages.js';
+import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCached } from '@shared/hooks/useCached.js';
+import { useNow } from '@shared/hooks/useNow.js';
+import type { ReactElement } from 'react';
+import type { EventItem } from '../model/actions.js';
+
+const DAY_MS = 86_400_000;
+
+/** The `YYYY-MM-DD` days a date-only event spans, as it shows them in UTC. */
+function utcDays(from: Date, to: Date): Set<string> {
+  const days = new Set<string>();
+
+  for (let t = from.getTime(); t <= to.getTime(); t += DAY_MS) {
+    days.add(new Date(t).toISOString().slice(0, 10));
+  }
+
+  return days;
+}
+
+/**
+ * The forecast for the event's start point and days, asked for only while the
+ * event is under way or starts within the forecast's reach.
+ */
+export function EventForecast({
+  event,
+}: {
+  event: EventItem;
+}): ReactElement | null {
+  const m = useWeatherForecastMessages();
+
+  const now = useNow();
+
+  const start = event.startAt.getTime();
+
+  // A date-only end is the midnight starting its last day.
+  const end = event.dateOnly
+    ? (event.endAt ?? event.startAt).getTime() + DAY_MS
+    : (event.endAt?.getTime() ?? start + (event.duration ?? 3600) * 1000);
+
+  const inRange = end > now && start < now + FORECAST_DAYS * DAY_MS;
+
+  const loaded = useForecast(inRange ? event.startPoint : null);
+
+  const premium = useAppSelector((state) => isPremium(state.auth.user));
+
+  // Its trip stats come from the linked map's route. A date-only event has no
+  // hour to time the route from.
+  const routed =
+    inRange &&
+    !event.dateOnly &&
+    event.mapId !== null &&
+    event.distance !== null;
+
+  // Not kept: the event's map may be replaced with another route.
+  const mapRoute = useCached(
+    routed && premium ? `map-route:${event.mapId}` : null,
+    () => fetchMapRoute(event.mapId!),
+    false,
+  );
+
+  const route = mapRoute.state === 'done' ? mapRoute.data : null;
+
+  if (loaded.state !== 'done') {
+    return null;
+  }
+
+  const eventDays = event.dateOnly
+    ? utcDays(event.startAt, event.endAt ?? event.startAt)
+    : undefined;
+
+  const overlaps = (from: number, to: number) => from < end && to > start;
+
+  const coversEvent = (step: ForecastStep) =>
+    overlaps(step.time.getTime(), stepEnd(step));
+
+  // A date-only event by its calendar days, as the forecast's days are named.
+  const covered = loaded.data.steps.some((step) =>
+    eventDays ? eventDays.has(dayKey(step.time)) : coversEvent(step),
+  );
+
+  if (!covered) {
+    return null;
+  }
+
+  return (
+    <>
+      <hr />
+
+      <h6 className="fw-semibold">{m?.title}</h6>
+
+      {/* Without premium, the lock offering it needs no route loaded. */}
+      {routed && (route || !premium) && (
+        <>
+          <p className="small text-muted mb-1">{m?.alongRoute}</p>
+
+          <RouteForecast route={route} departure={event.startAt} />
+        </>
+      )}
+
+      <ForecastView
+        key={event.id}
+        forecast={loaded.data}
+        collapsed
+        days={(day) =>
+          eventDays
+            ? eventDays.has(day.key)
+            : overlaps(day.date.getTime(), day.date.getTime() + DAY_MS)
+        }
+        highlight={eventDays ? undefined : coversEvent}
+      />
+    </>
+  );
+}

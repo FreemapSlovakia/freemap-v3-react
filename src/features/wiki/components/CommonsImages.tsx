@@ -1,4 +1,5 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { type Loaded, useCached } from '@shared/hooks/useCached.js';
 import { useDevicePixelRatio } from '@shared/hooks/useDevicePixelRatio.js';
 import {
   type ReactElement,
@@ -7,7 +8,6 @@ import {
   useState,
 } from 'react';
 import { Carousel } from 'react-bootstrap';
-import { type Loaded, useCached } from '../hooks/useCached.js';
 import { getJson } from '../model/article.js';
 import {
   type CommonsImage,

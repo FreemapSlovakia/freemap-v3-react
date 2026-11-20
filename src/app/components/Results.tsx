@@ -37,6 +37,12 @@ const gpsRecorderResultFactory = () =>
     '@features/gpsRecorder/components/GpsRecorderResult.js'
   );
 
+const weatherResultFactory = () =>
+  import(
+    /* webpackChunkName: "weather-result" */
+    '@features/weatherForecast/components/WeatherResult.js'
+  );
+
 export function Results(): ReactElement {
   // Prefer the densified render copy (extra DEM-sampled points on long
   // segments) when present; otherwise the recorded track.
@@ -78,6 +84,10 @@ export function Results(): ReactElement {
     Boolean(state.changesetInspector.inspected?.diff),
   );
 
+  const hasWeather = useAppSelector(
+    (state) => state.main.selection?.type === 'weather',
+  );
+
   return (
     <>
       {/* Mounted once for every charted feature: it reads only the chart's own
@@ -110,6 +120,8 @@ export function Results(): ReactElement {
       <TrackingResult />
 
       {hasRecording && <AsyncComponent factory={gpsRecorderResultFactory} />}
+
+      {hasWeather && <AsyncComponent factory={weatherResultFactory} />}
     </>
   );
 }

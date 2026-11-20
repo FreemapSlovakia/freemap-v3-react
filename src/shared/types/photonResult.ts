@@ -222,6 +222,13 @@ export function photonDisplayName(properties: PhotonProperties): string {
   return joinParts([properties.name, ...addressParts(properties)]);
 }
 
+/** The name and the town, for a line too short for the whole chain. */
+export function photonShortName(properties: PhotonProperties): string {
+  return joinParts(
+    [properties.name, ...addressParts(properties)].filter(Boolean).slice(0, 2),
+  );
+}
+
 /**
  * The same chain without the hit's own name, for a list that shows the name on
  * a line of its own.

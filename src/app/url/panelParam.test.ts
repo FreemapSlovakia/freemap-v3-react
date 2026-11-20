@@ -10,6 +10,8 @@ describe('panel=', () => {
   const kinds: [string, PanelParam][] = [
     ['event/NtSXf9PO', { type: 'event', id: 'NtSXf9PO' }],
     ['osm-note/4000000', { type: 'osm-note', id: 4000000 }],
+    ['weather/49.1794,20.0881', { type: 'weather', id: '49.1794,20.0881' }],
+    ['weather/-33.8568,151.2153', { type: 'weather', id: '-33.8568,151.2153' }],
     ['changeset/191453628', { type: 'changeset', id: 191453628 }],
     [
       'changeset/191453628/node/4637444503',
@@ -136,5 +138,13 @@ describe('panel=', () => {
     expect(decodePanel('osm-note/1e3')).toBeNull();
 
     expect(decodePanel('changeset/7/node/007')).toBeNull();
+
+    expect(decodePanel('weather/91,20')).toBeNull();
+
+    // Rounded to how the panel names it, so the link reads back the same.
+    expect(decodePanel('weather/49.17941234,20.08')).toEqual({
+      type: 'weather',
+      id: '49.1794,20.0800',
+    });
   });
 });

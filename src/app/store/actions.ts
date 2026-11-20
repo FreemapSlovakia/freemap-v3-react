@@ -189,8 +189,24 @@ export interface WikiSelection {
   id: string;
 }
 
+/** A point's weather forecast. */
+export interface WeatherSelection {
+  type: 'weather';
+  /** `<lat>,<lon>`, see `weatherPointId`. */
+  id: string;
+  /** What the place is called, where whoever asked knew. */
+  label?: string;
+}
+
+/** The weather along the planned route. */
+export interface RouteWeatherSelection {
+  type: 'route-weather';
+}
+
 export type Selection =
   | ChangesetElementSelection
+  | WeatherSelection
+  | RouteWeatherSelection
   | OsmNoteSelection
   | EventSelection
   | FeatureSelection
@@ -209,6 +225,8 @@ const PANEL_SELECTIONS: ReadonlySet<Selection['type']> = new Set([
   'osm-note',
   'event',
   'wiki',
+  'weather',
+  'route-weather',
 ]);
 
 export const hasPanel = (type: Selection['type'] | undefined): boolean =>

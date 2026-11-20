@@ -449,6 +449,11 @@ export const routePlannerSetMilestones = createAction<'abs' | 'rel' | false>(
   'ROUTE_PLANNER_SET_MILESTONES',
 );
 
+/** When the route sets off, as epoch ms; null for now. */
+export const routePlannerSetDeparture = createAction<number | null>(
+  'ROUTE_PLANNER_SET_DEPARTURE',
+);
+
 export const routePlannerSetRoundtripParams = createAction<
   Partial<RoundtripParams>
 >('ROUTE_PLANNER_SET_ROUNDTRIP_PARAMS');

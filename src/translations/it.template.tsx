@@ -76,6 +76,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     },
     loading: 'Caricamento…',
+    placeAway: ({ name, distance }) => `${name}, a ${distance}`,
     ok: 'OK',
     preventShowingAgain: 'Non mostrare più',
     closeWithoutSaving: 'Chiudere la finestra senza salvare?',
@@ -755,6 +756,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startLine: 'Inizia qui a disegnare una linea o misurazione',
     queryFeatures: 'Interroga le caratteristiche nelle vicinanze',
     showPhotos: 'Mostra le foto vicine',
+    weatherForecast: 'Previsioni meteo',
   },
 
   errorStatus: {

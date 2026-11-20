@@ -268,6 +268,9 @@ function selectionPanel({
     case 'wiki':
       return selection;
 
+    case 'weather':
+      return { type: 'weather', id: selection.id };
+
     case 'objects':
       return { type: 'object', id: selection.id, ...withHistory(selection.id) };
 

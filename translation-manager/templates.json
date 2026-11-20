@@ -21,6 +21,7 @@
     "src/features/dataViewer/translations/{LANG}.tsx",
     "src/features/gpsRecorder/translations/{LANG}.tsx",
     "src/features/weatherRadar/translations/{LANG}.tsx",
+    "src/features/weatherForecast/translations/{LANG}.tsx",
     "src/features/elevationChart/translations/{LANG}.tsx",
     "src/features/toposcope/translations/{LANG}.tsx",
     "src/features/panorama/translations/{LANG}.tsx",

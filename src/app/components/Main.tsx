@@ -210,6 +210,18 @@ const wikiPanelFactory = () =>
     '@features/wiki/components/WikiPanel.js'
   );
 
+const weatherPanelFactory = () =>
+  import(
+    /* webpackChunkName: "weather-panel" */
+    '@features/weatherForecast/components/WeatherPanel.js'
+  );
+
+const routeWeatherPanelFactory = () =>
+  import(
+    /* webpackChunkName: "route-weather-panel" */
+    '@features/weatherForecast/components/RouteWeatherPanel.js'
+  );
+
 const changesetInspectorPanelFactory = () =>
   import(
     /* webpackChunkName: "changeset-inspector-panel" */
@@ -1105,6 +1117,14 @@ export function Main(): ReactElement {
           )}
 
           {picked.has('wiki') && <AsyncComponent factory={wikiPanelFactory} />}
+
+          {picked.has('weather') && (
+            <AsyncComponent factory={weatherPanelFactory} />
+          )}
+
+          {picked.has('route-weather') && (
+            <AsyncComponent factory={routeWeatherPanelFactory} />
+          )}
 
           {picked.has('inspection') && (
             <AsyncComponent factory={changesetInspectorPanelFactory} />

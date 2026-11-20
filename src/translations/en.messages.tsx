@@ -75,6 +75,7 @@ const messages: Messages = {
       ),
     },
     loading: 'Loading…',
+    placeAway: ({ name, distance }) => `${name}, ${distance} away`,
     ok: 'OK',
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
@@ -728,6 +729,7 @@ const messages: Messages = {
     startLine: 'Start here drawing a line or measurement',
     queryFeatures: 'Query nearby features',
     showPhotos: 'Show nearby photos',
+    weatherForecast: 'Weather forecast',
   },
 
   errorStatus: {

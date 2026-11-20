@@ -1,0 +1,5 @@
+/* A day is one line, not a card. */
+.days {
+  --bs-accordion-btn-padding-y: 0.25rem;
+  --bs-accordion-btn-padding-x: 0.5rem;
+}

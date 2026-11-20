@@ -1,11 +1,11 @@
 import { Text } from '@features/l10n/Text.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCached } from '@shared/hooks/useCached.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { parseWikipediaTag } from '@shared/wikipediaTag.js';
 import { type ReactElement, useState } from 'react';
 import { Badge, Button } from 'react-bootstrap';
 import { FaWikipediaW } from 'react-icons/fa';
-import { useCached } from '../hooks/useCached.js';
 import { useWikidataItem } from '../hooks/useWikidataItem.js';
 import { fetchArticle, getJson } from '../model/article.js';
 import { commonsFromTags } from '../model/commons.js';

@@ -7,6 +7,14 @@ interface RequestInit {
   targetAddressSpace?: 'local' | 'private' | 'public' | 'loopback';
 }
 
+/** rspack's build-time directory context; see `@rspack/core/module`. */
+interface ImportMeta {
+  webpackContext(
+    request: string,
+    options?: { recursive?: boolean; regExp?: RegExp },
+  ): { (id: string): unknown; keys(): string[] };
+}
+
 declare module '*.wgsl' {
   const value: string;
   export default value;

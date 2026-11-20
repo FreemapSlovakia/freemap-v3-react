@@ -1035,6 +1035,21 @@ export function handleLocationChange(store: MyStore): void {
     dispatch(selectFeature(null));
   }
 
+  const weatherId = panel?.type === 'weather' ? panel.id : null;
+
+  const selection = getState().main.selection;
+
+  const selectedWeather = selection?.type === 'weather' ? selection.id : null;
+
+  if (weatherId !== null) {
+    if (selectedWeather !== weatherId) {
+      // TODO the label isn't in the URL, so Back retitles by the geocoder.
+      dispatch(selectFeature({ type: 'weather', id: weatherId }));
+    }
+  } else if (selectedWeather !== null) {
+    dispatch(selectFeature(null));
+  }
+
   // After `objects=`, whose POIs an object selection waits for.
   handleSelectedElement(getState, dispatch, panel, focus);
 

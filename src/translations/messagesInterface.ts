@@ -52,6 +52,8 @@ export type Messages = {
       hint: () => JSX.Element;
     };
     loading: string;
+    /** The nearest named place, farther off than "at" it: `distance` as "2.3 km". */
+    placeAway: (props: { name: string; distance: string }) => string;
     ok: string;
     preventShowingAgain: string;
     closeWithoutSaving: string;
@@ -457,6 +459,7 @@ export type Messages = {
     startLine: string;
     queryFeatures: string;
     showPhotos: string;
+    weatherForecast: string;
   };
   errorStatus: Record<number, string>;
   gpu: {

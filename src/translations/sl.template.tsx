@@ -77,6 +77,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     },
     loading: 'Nalaganje…',
+    placeAway: ({ name, distance }) => `${name}, ${distance} stran`,
     ok: 'V redu',
     preventShowingAgain: 'Ne prikaži več',
     closeWithoutSaving: 'Zaprem okno brez shranjevanja sprememb?',
@@ -743,6 +744,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startLine: 'Začni tukaj risati črto ali meriti',
     queryFeatures: 'Poizvedi po bližnjih objektih',
     showPhotos: 'Pokaži bližnje fotografije',
+    weatherForecast: 'Vremenska napoved',
   },
 
   errorStatus: {

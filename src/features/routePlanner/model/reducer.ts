@@ -33,6 +33,7 @@ import {
   routePlannerRemovePoint,
   routePlannerRestoreSavedRoute,
   routePlannerSetActiveAlternativeIndex,
+  routePlannerSetDeparture,
   routePlannerSetFinish,
   routePlannerSetIsochroneParams,
   routePlannerSetIsochrones,
@@ -105,6 +106,8 @@ export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
   itineraryIsVisible: boolean;
   roundtripParams: RoundtripParams;
   isochroneParams: IsochroneParams;
+  /** When the route sets off, as epoch ms; null for now. */
+  departure: number | null;
   hash?: string;
 }
 
@@ -135,6 +138,7 @@ export const cleanState: RoutePlannerCleanState = {
     buckets: 1,
     reverseFlow: false,
   },
+  departure: null,
   ...clearResult,
 };
 
@@ -291,6 +295,11 @@ function selectedPickMode(
   state: RoutePlannerState,
   { payload }: { payload: Selection | null },
 ): RoutePlannerState {
+  // The route's own panel; picking goes on beside it.
+  if (payload?.type === 'route-weather') {
+    return state;
+  }
+
   return {
     ...state,
     pickMode:
@@ -318,6 +327,10 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerSetMilestones, (state, { payload }) => ({
         ...state,
         milestones: payload,
+      }))
+      .addCase(routePlannerSetDeparture, (state, { payload }) => ({
+        ...state,
+        departure: payload,
       }))
       .addCase(selectFeature, selectedPickMode)
       .addCase(selectionRenumbered, selectedPickMode)

@@ -1,4 +1,8 @@
-import { convertToDrawing, setActiveModal } from '@app/store/actions.js';
+import {
+  convertToDrawing,
+  selectFeature,
+  setActiveModal,
+} from '@app/store/actions.js';
 import { useManualAction } from '@features/documents/hooks/useManualAction.js';
 import {
   elevationChartClose,
@@ -9,6 +13,7 @@ import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
+import { useWeatherForecastMessages } from '@features/weatherForecast/translations/useWeatherForecastMessages.js';
 import { colorizeModeOptions } from '@shared/colorizers/colorizeModeOptions.js';
 import {
   LEGEND_ITEM,
@@ -68,6 +73,7 @@ import { BiShapePolygon } from 'react-icons/bi';
 import {
   FaBullseye,
   FaChartArea,
+  FaCloudSun,
   FaDiceThree,
   FaMapMarkerAlt,
   FaPaintBrush,
@@ -630,6 +636,12 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.elevationChart.target?.type === 'route-planner',
   );
 
+  const routeWeatherOpen = useAppSelector(
+    (state) => state.main.selection?.type === 'route-weather',
+  );
+
+  const wfm = useWeatherForecastMessages();
+
   const canSwap = useAppSelector(
     (state) => state.routePlanner.points.length > 1,
   );
@@ -1038,6 +1050,27 @@ export default function RoutePlannerMenu(): ReactElement {
                 elevationProfileIsVisible
                   ? elevationChartClose()
                   : elevationChartOpen({ type: 'route-planner' }),
+              );
+            }}
+          />
+        )}
+
+        {routeFound && (
+          <Action
+            label={wfm?.alongRoute}
+            icon={<FaCloudSun />}
+            showFrom="xl"
+            requiresOnline
+            active={routeWeatherOpen}
+            onClick={() => {
+              if (!routeWeatherOpen) {
+                trackMatomo(['trackEvent', 'Weather', 'route']);
+              }
+
+              dispatch(
+                selectFeature(
+                  routeWeatherOpen ? null : { type: 'route-weather' },
+                ),
               );
             }}
           />

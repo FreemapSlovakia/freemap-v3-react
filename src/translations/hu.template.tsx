@@ -76,6 +76,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
       ),
     },
     loading: 'Töltés…',
+    placeAway: ({ name, distance }) => `${name}, ${distance} távolságra`,
     ok: 'OK',
     preventShowingAgain: 'Következő alkalommal ne jelenjék meg',
     closeWithoutSaving:
@@ -754,6 +755,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     startLine: 'Vonal vagy mérés indítása innen',
     queryFeatures: 'Részletek lekérdezése a közelben',
     showPhotos: 'Közeli fotók megjelenítése',
+    weatherForecast: 'Időjárás-előrejelzés',
   },
 
   errorStatus: {

@@ -1,11 +1,11 @@
 import { Text } from '@features/l10n/Text.js';
 import { useObjectsMessages } from '@features/objects/translations/useObjectsMessages.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useCached } from '@shared/hooks/useCached.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { Fragment, type ReactElement, type ReactNode, useState } from 'react';
 import { Button, Table } from 'react-bootstrap';
-import { useCached } from '../hooks/useCached.js';
 import { getJson } from '../model/article.js';
 import {
   fetchLabels,

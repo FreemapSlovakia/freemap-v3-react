@@ -57,6 +57,7 @@ import { selectedEventId } from '../model/selectors.js';
 import { loadEventsMessages } from '../translations/loadEventsMessages.js';
 import { useEventsMessages } from '../translations/useEventsMessages.js';
 import { EventDetails } from './EventDetails.js';
+import { EventForecast } from './EventForecast.js';
 import { EventLine } from './EventLine.js';
 import { EventIndicators } from './EventTraits.js';
 
@@ -98,6 +99,8 @@ export default function EventSelection(): ReactElement | null {
             event={event}
             mapActions={<EventMapActions event={event} />}
           />
+
+          <EventForecast event={event} />
 
           <EventParticipants event={event} />
 

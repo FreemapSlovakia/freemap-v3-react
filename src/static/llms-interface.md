@@ -161,6 +161,7 @@ Right-clicking (or long-pressing) a location on the map opens a context menu wit
 - Find coordinates and elevation
 - Query nearby features
 - Show nearby photos
+- Weather forecast (a docked panel with the point's forecast from MET Norway, up to ~9 days, each day opening into its hours; `panel=weather/<lat>,<lon>`)
 - Add here a point
 - Start here drawing a line or measurement
 - Route from here

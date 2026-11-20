@@ -1,11 +1,11 @@
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { type Loaded, useCached } from '@shared/hooks/useCached.js';
 import { getJson } from '../model/article.js';
 import {
   fetchWikidataItem,
   isWikidataRef,
   type WikidataItem,
 } from '../model/wikidata.js';
-import { type Loaded, useCached } from './useCached.js';
 
 /** One request per item, however many components read it; `ref` as `isWikidataRef` takes it. */
 export function useWikidataItem(ref: string | undefined): Loaded<WikidataItem> {

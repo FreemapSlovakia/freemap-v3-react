@@ -195,6 +195,10 @@ import { routePlannerFindRouteProcessor } from '@features/routePlanner/model/pro
 import { routePlannerMidpointHintProcessor } from '@features/routePlanner/model/processors/midpointHintProcessor.js';
 import { routePlannerOptimizeOrderProcessor } from '@features/routePlanner/model/processors/optimizeOrderProcessor.js';
 import { routePlannerRefocusMapProcessor } from '@features/routePlanner/model/processors/refocusMapProcessor.js';
+import {
+  routeWeatherCloseProcessor,
+  routeWeatherPickModeProcessor,
+} from '@features/routePlanner/model/processors/routeWeatherPickModeProcessor.js';
 import { routePlannerSetFromCurrentPositionProcessor } from '@features/routePlanner/model/processors/setFromCurrentPositionProcessor.js';
 import {
   searchHighlightProcessor,
@@ -352,6 +356,8 @@ export const processors = [
   routePlannerColorizeProcessor,
   routePlannerSetFromCurrentPositionProcessor,
   routePlannerMidpointHintProcessor,
+  routeWeatherPickModeProcessor,
+  routeWeatherCloseProcessor,
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowStartProcessor,
