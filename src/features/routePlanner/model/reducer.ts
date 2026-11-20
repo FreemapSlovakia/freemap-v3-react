@@ -49,6 +49,7 @@ import {
   routePlannerSetSampledGeojson,
   routePlannerSetSavedRoute,
   routePlannerSetStart,
+  routePlannerSetStop,
   routePlannerSetTransportType,
   routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
@@ -165,6 +166,7 @@ export type RoutePlannerMapData = Partial<
     | 'pickMode'
     | 'mode'
     | 'milestones'
+    | 'departure'
     | 'roundtripParams'
     | 'isochroneParams'
   >
@@ -195,6 +197,7 @@ export function routePlannerFromMapData(
     pickMode: data?.pickMode ?? routePlannerInitialState.pickMode,
     mode: data?.mode ?? routePlannerInitialState.mode,
     milestones: data?.milestones ?? routePlannerInitialState.milestones,
+    departure: data?.departure ?? routePlannerInitialState.departure,
     roundtripParams:
       data?.roundtripParams ?? routePlannerInitialState.roundtripParams,
     isochroneParams:
@@ -468,7 +471,24 @@ export const routePlannerReducer = createReducer(
         },
       )
       .addCase(routePlannerSetPoint, (state, action) => {
-        state.points[action.payload.position] = action.payload.point;
+        const { position, point } = action.payload;
+
+        // A moved waypoint keeps its stop.
+        const stop = state.points[position]?.stop;
+
+        state.points[position] =
+          stop && !point.stop ? { ...point, stop } : point;
+      })
+      .addCase(routePlannerSetStop, (state, { payload: { index, stop } }) => {
+        const point = state.points[index];
+
+        if (point) {
+          if (stop) {
+            point.stop = stop;
+          } else {
+            delete point.stop;
+          }
+        }
       })
       .addCase(routePlannerSetPoints, (state, { payload }) => {
         state.points = payload;
@@ -476,8 +496,10 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerRemovePoint, (state, action) => {
         state.points.splice(action.payload, 1);
 
-        // A finish starts no leg.
+        // A finish starts no leg and holds nothing up.
         delete state.points.at(-1)?.transport;
+
+        delete state.points.at(-1)?.stop;
       })
       .addCase(
         routePlannerChangeTransport,

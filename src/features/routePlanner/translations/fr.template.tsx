@@ -49,6 +49,15 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   finish: 'Arrivée',
   stop: 'Arrêt',
   swap: 'Inverser le départ et l’arrivée',
+  waypointStop: {
+    label: 'Arrêt',
+    none: 'Sans arrêt',
+    pause: 'Pause',
+    overnight: 'Nuitée',
+    minutes: 'min',
+    continueAt: 'Reprise à',
+    nights: 'Nuits',
+  },
   point: {
     point: 'Point de l’itinéraire',
     pick: 'Sélectionner sur la carte',
@@ -96,6 +105,16 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Sections à péage: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      Avec les arrêts : <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Arrivée : <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

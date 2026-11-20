@@ -56,6 +56,15 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     fromStart: 'Poloha štartu',
     fromFinish: 'Poloha cieľa',
   },
+  waypointStop: {
+    label: 'Zastávka',
+    none: 'Bez zastávky',
+    pause: 'Prestávka',
+    overnight: 'Nocľah',
+    minutes: 'min',
+    continueAt: 'Pokračovať o',
+    nights: 'Noci',
+  },
   transportType: {
     car: 'Auto',
     car4wd: 'Auto 4x4',
@@ -96,6 +105,16 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Spoplatnené úseky: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      So zastávkami: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Príchod: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

@@ -12,10 +12,16 @@ export function formatDuration(
   valueInSeconds: number,
   locale: string,
   style: 'short' | 'narrow' = 'short',
+  /** Whole days apart from the hours, for a trip of several. */
+  withDays = false,
 ): string {
   const totalMinutes = Math.round(valueInSeconds / 60);
 
-  const hours = Math.floor(totalMinutes / 60);
+  const totalHours = Math.floor(totalMinutes / 60);
+
+  const days = withDays ? Math.floor(totalHours / 24) : 0;
+
+  const hours = totalHours - days * 24;
 
   const minutes = totalMinutes % 60;
 
@@ -26,23 +32,24 @@ export function formatDuration(
       // format as an empty string rather than as "0 min".
       ...(totalMinutes === 0 ? { minutesDisplay: 'always' as const } : {}),
     }).format({
+      days,
       hours,
       minutes,
     });
   }
 
-  const format = (value: number, unit: 'hour' | 'minute') =>
+  const format = (value: number, unit: 'day' | 'hour' | 'minute') =>
     new Intl.NumberFormat(locale, {
       style: 'unit',
       unit,
       unitDisplay: style,
     }).format(value);
 
-  if (hours === 0) {
-    return format(minutes, 'minute');
-  }
+  const parts = [
+    days > 0 && format(days, 'day'),
+    hours > 0 && format(hours, 'hour'),
+    (minutes > 0 || totalMinutes === 0) && format(minutes, 'minute'),
+  ].filter(Boolean);
 
-  return minutes === 0
-    ? format(hours, 'hour')
-    : `${format(hours, 'hour')} ${format(minutes, 'minute')}`;
+  return parts.join(' ');
 }

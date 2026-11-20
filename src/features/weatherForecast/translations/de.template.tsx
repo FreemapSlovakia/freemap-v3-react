@@ -19,6 +19,8 @@ const de: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'Das Wetter entlang der Route mit Premium-Zugang',
   noRoute: 'Planen Sie zuerst eine Route.',
   past: 'Bei dieser Abfahrt liegt die ganze Route schon hinter Ihnen. Wählen Sie eine spätere.',
+  pause: 'Pause',
+  overnight: 'Übernachtung',
   pickPrompt:
     'Klicken Sie auf der Karte dorthin, wo Sie die Vorhersage möchten.',
   otherPlace: 'Anderer Ort',

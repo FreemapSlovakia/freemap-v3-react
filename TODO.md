@@ -702,27 +702,9 @@ weighed and set aside:
 
 ## Route planner: stops and schedule (`src/features/routePlanner/`, `src/features/weatherForecast/`)
 
-The weather along the route times rows by the router alone; a multi-day trip
-needs stops. Agreed design, not started:
+Stops on inner waypoints (a pause, or nights and the time to go on), the
+departure, and `schedule.ts`'s timing are in; still to do:
 
-- [ ] **Stops on inner waypoints** (point-to-point routing only), set in the
-  waypoint's selection toolbar: a **pause** (duration) or an **overnight**
-  (continue-at time of day + number of nights, 1 by default). Stored relative,
-  never as a date, so a changed departure shifts the trip. Premium to set or
-  change, behind `routePremiumUnlockedSelector`: a shared route keeps its stops
-  for a free viewer.
-- [ ] **A pure schedule function** (route, waypoints, stops, departure → the
-  time of every position; a stop is inserted where its waypoint's leg ends),
-  read by everything below. Stops stay **out of `routeKey`**.
-- [ ] **Totals**: moving time and total with stops in the route label; the
-  arrival once a departure is set.
 - [ ] **Departure in the planner's own toolbar** (needed for public-transport
-  routing too); the weather panel keeps a field bound to it.
-- [ ] **Persistence**: stops as a backward-compatible suffix in `points=` and
-  in a saved map's waypoints. Open: the departure in the URL (yes?) and in a
-  saved map (no?); stop kinds as above or one "continue at" with a day offset;
-  totals wording.
-- [ ] **Forecast on the schedule**: pauses shift the rows; each night one
-  **Overnight at X** row (the night's minimum and precipitation); an event's
-  route timed with its map's stops.
+  routing too); it is set only in the weather panel now.
 - [ ] Later on the same schedule: GPX export with times; public transport.

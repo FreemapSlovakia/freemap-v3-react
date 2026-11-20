@@ -77,6 +77,7 @@ export function getMapDataFromState(state: RootState): MapData {
       pickMode: routePlanner.pickMode,
       mode: routePlanner.mode,
       milestones: routePlanner.milestones,
+      departure: routePlanner.departure,
       roundtripParams: routePlanner.roundtripParams,
       isochroneParams: routePlanner.isochroneParams,
       // The computed route, so the map opens without a routing request — and

@@ -19,6 +19,8 @@ const sk: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'Počasie pozdĺž trasy s prémiovým prístupom',
   noRoute: 'Najprv naplánujte trasu.',
   past: 'Pri tomto odchode je celá trasa už za vami. Zvoľte neskorší.',
+  pause: 'Prestávka',
+  overnight: 'Nocľah',
   pickPrompt: 'Kliknite na mape tam, kde chcete predpoveď.',
   otherPlace: 'Iné miesto',
 };

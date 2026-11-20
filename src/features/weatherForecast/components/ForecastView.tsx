@@ -7,6 +7,7 @@ import {
   type ForecastDay,
   type ForecastStep,
   forecastDays,
+  formatTemperature,
   stepEnd,
 } from '../model/forecast.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
@@ -57,7 +58,8 @@ export function ForecastView({
   const open =
     (highlight && shown.find((d) => d.steps.some(highlight))) ?? shown[0];
 
-  const temperature = (t: number) => `${integerFormat.format(t)} °C`;
+  const temperature = (t: number) =>
+    `${formatTemperature(integerFormat, t)} °C`;
 
   return (
     <>

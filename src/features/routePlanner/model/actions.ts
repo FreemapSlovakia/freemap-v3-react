@@ -18,10 +18,13 @@ import {
   GeoJSONPropertiesSchema,
 } from 'zod-geojson';
 import type { TransportScope } from './legTransports.js';
+import { type RouteStop, RouteStopSchema } from './schedule.js';
 
 export const RoutePointSchema = z.object({
   ...LatLonSchema.shape,
   transport: TransportTypeSchema.optional(),
+  /** Held here before going on; not part of `routeKey`, as it routes nothing. */
+  stop: RouteStopSchema.optional(),
 });
 
 export type RoutePoint = z.infer<typeof RoutePointSchema>;
@@ -448,6 +451,12 @@ export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS');
 export const routePlannerSetMilestones = createAction<'abs' | 'rel' | false>(
   'ROUTE_PLANNER_SET_MILESTONES',
 );
+
+/** Sets or clears the stop at a waypoint. */
+export const routePlannerSetStop = createAction<{
+  index: number;
+  stop: RouteStop | null;
+}>('ROUTE_PLANNER_SET_STOP');
 
 /** When the route sets off, as epoch ms; null for now. */
 export const routePlannerSetDeparture = createAction<number | null>(

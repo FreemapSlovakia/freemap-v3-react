@@ -1,37 +1,9 @@
+import { timedPositions } from '@features/routePlanner/model/schedule.js';
 import { describe, expect, it } from 'vitest';
-import { routeRows, timedPositions } from './routeRows.js';
+import { routeRows } from './routeRows.js';
 
 // ~1.1 km per 0.01° of latitude.
 const north = (i: number, ele: number) => [20, 49 + i * 0.01, ele];
-
-describe('timedPositions', () => {
-  it('spreads a step’s duration over its length and joins steps', () => {
-    const positions = timedPositions({
-      legs: [
-        {
-          steps: [
-            {
-              duration: 600,
-              geometry: {
-                coordinates: [north(0, 500), north(1, 600), north(2, 700)],
-              },
-            },
-            {
-              duration: 300,
-              geometry: { coordinates: [north(2, 700), north(3, 650)] },
-            },
-          ],
-        },
-      ],
-    });
-
-    expect(positions.map((p) => Math.round(p.seconds))).toEqual([
-      0, 300, 600, 900,
-    ]);
-
-    expect(positions.map((p) => p.ele)).toEqual([500, 600, 700, 650]);
-  });
-});
 
 describe('routeRows', () => {
   const HOUR = 3_600_000;
@@ -103,5 +75,35 @@ describe('routeRows', () => {
     const rows = routeRows(route(12, 4), departure, departure + 90 * 60_000);
 
     expect(rows.map((r) => r.kind)).toEqual(['along', 'finish']);
+  });
+
+  it('gives a stop one row for its whole length', () => {
+    const leg = (from: number) => ({
+      steps: [
+        {
+          duration: 2 * 3600,
+          geometry: { coordinates: [north(from, 500), north(from + 1, 500)] },
+        },
+      ],
+    });
+
+    // Two hours to the hut, a 5-hour pause there, two more hours on.
+    const rows = routeRows(
+      timedPositions({ legs: [leg(0), leg(1)] }, [
+        { kind: 'pause', minutes: 300 },
+      ]),
+      departure,
+      departure,
+    );
+
+    expect(kindsAndHours(rows)).toEqual([
+      ['start', 0],
+      ['along', 1],
+      ['stop', 2],
+      ['along', 8],
+      ['finish', 9],
+    ]);
+
+    expect(rows[2]?.until).toBe(departure + 7 * HOUR);
   });
 });

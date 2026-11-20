@@ -1,11 +1,12 @@
 import { selectFeature } from '@app/store/actions.js';
 import { routePlannerSetDeparture } from '@features/routePlanner/model/actions.js';
+import { legStops } from '@features/routePlanner/model/schedule.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
 import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNow } from '@shared/hooks/useNow.js';
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { FaCloudSun } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
@@ -31,6 +32,12 @@ export default function RouteWeatherPanel(): ReactElement {
   );
 
   const departure = useAppSelector((state) => state.routePlanner.departure);
+
+  const points = useAppSelector((state) => state.routePlanner.points);
+
+  const mode = useAppSelector((state) => state.routePlanner.mode);
+
+  const stops = useMemo(() => legStops(mode, points), [mode, points]);
 
   const now = useNow();
 
@@ -81,7 +88,12 @@ export default function RouteWeatherPanel(): ReactElement {
           </Form.Group>
 
           {route ? (
-            <RouteForecast route={route} departure={new Date(from)} whenPast />
+            <RouteForecast
+              route={route}
+              stops={stops}
+              departure={new Date(from)}
+              whenPast
+            />
           ) : (
             <p>{m?.noRoute}</p>
           )}

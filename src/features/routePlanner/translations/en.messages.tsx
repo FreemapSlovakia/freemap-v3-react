@@ -55,6 +55,15 @@ const en: RoutePlannerMessages = {
     fromStart: 'Start position',
     fromFinish: 'Finish position',
   },
+  waypointStop: {
+    label: 'Stop',
+    none: 'No stop',
+    pause: 'Pause',
+    overnight: 'Overnight',
+    minutes: 'min',
+    continueAt: 'Continue at',
+    nights: 'Nights',
+  },
   transportType: {
     car: 'Car',
     car4wd: 'Car (4WD)',
@@ -95,6 +104,16 @@ const en: RoutePlannerMessages = {
   tolled: ({ value }) => (
     <>
       Toll roads: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      With stops: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Arrival: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

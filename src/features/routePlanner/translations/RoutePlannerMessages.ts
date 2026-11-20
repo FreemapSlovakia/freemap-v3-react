@@ -64,6 +64,17 @@ export type RoutePlannerMessages = {
     fromStart: string;
     fromFinish: string;
   };
+  /** A waypoint's stop: a pause, or nights spent there. */
+  waypointStop: {
+    label: string;
+    none: string;
+    pause: string;
+    overnight: string;
+    /** After the pause's length. */
+    minutes: string;
+    continueAt: string;
+    nights: string;
+  };
   transportType: Record<TransportTypeMsgKey, string>;
   transportTypeLabel: string;
   development: string;
@@ -75,6 +86,10 @@ export type RoutePlannerMessages = {
   distance: ({ value, diff }: { value: string; diff?: string }) => JSX.Element;
   /** How much of the route runs on road the driver pays for. */
   tolled: ({ value }: { value: string }) => JSX.Element;
+  /** The whole trip with its waypoints' stops, `duration` already formatted. */
+  withStops: ({ duration }: { duration: string }) => JSX.Element;
+  /** At the finish, from the set departure. */
+  arrival: ({ time }: { time: string }) => JSX.Element;
   duration: ({
     h,
     m,

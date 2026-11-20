@@ -19,6 +19,8 @@ const pl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'Pogoda wzdłuż trasy z dostępem premium',
   noRoute: 'Najpierw należy zaplanować trasę.',
   past: 'Przy tym wyjściu cała trasa jest już w przeszłości. Należy wybrać późniejsze.',
+  pause: 'Przerwa',
+  overnight: 'Nocleg',
   pickPrompt: 'Kliknięcie na mapie wybiera miejsce prognozy.',
   otherPlace: 'Inne miejsce',
 };

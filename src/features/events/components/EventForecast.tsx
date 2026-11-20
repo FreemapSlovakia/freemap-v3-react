@@ -105,7 +105,11 @@ export function EventForecast({
         <>
           <p className="small text-muted mb-1">{m?.alongRoute}</p>
 
-          <RouteForecast route={route} departure={event.startAt} />
+          <RouteForecast
+            route={route?.route ?? null}
+            stops={route?.stops}
+            departure={event.startAt}
+          />
         </>
       )}
 

@@ -37,6 +37,15 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   start: 'Start',
   finish: 'Cíl',
   swap: 'Prohodit start a cíl',
+  waypointStop: {
+    label: 'Zastávka',
+    none: 'Bez zastávky',
+    pause: 'Přestávka',
+    overnight: 'Nocleh',
+    minutes: 'min',
+    continueAt: 'Pokračovat v',
+    nights: 'Noci',
+  },
   point: {
     pick: 'Vybrat na mapě',
     current: 'Tvá poloha',
@@ -82,6 +91,16 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Zpoplatněné úseky: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      Se zastávkami: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Příchod: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

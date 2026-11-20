@@ -119,8 +119,15 @@ import {
   type RoutePoint,
   routePlannerColorizeBy,
   routePlannerSetColorizeLegend,
+  routePlannerSetDeparture,
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
+import {
+  decodeStop,
+  encodeStop,
+  parseDeparture,
+  type RouteStop,
+} from '@features/routePlanner/model/schedule.js';
 import {
   searchKeepResult,
   searchSelectResult,
@@ -323,14 +330,23 @@ export function handleLocationChange(store: MyStore): void {
               point = `manual/${point.slice(1)}`;
             }
 
-            const parts = point.split('/');
+            const [place = '', stopText] = point.split('~');
+
+            const parts = place.split('/');
 
             const transport = parts.length === 3 ? parts.shift() : undefined;
 
             return [
               transport,
               ...parts.map((part) => parseFloat(part)),
-            ] as unknown as [TransportType, number, number];
+              // Malformed, it is dropped rather than the whole route.
+              stopText === undefined ? undefined : decodeStop(stopText),
+            ] as unknown as [
+              TransportType,
+              number,
+              number,
+              RouteStop | undefined,
+            ];
           })
         : [];
 
@@ -344,7 +360,7 @@ export function handleLocationChange(store: MyStore): void {
         (point, i) =>
           (point !== null || i === 0 || i === qPoints.length - 1) &&
           (point === null ||
-            (point.length === 3 &&
+            (point.length === 4 &&
               TransportTypeCompatSchema.optional().safeParse(point[0])
                 .success &&
               !Number.isNaN(point[1]) &&
@@ -380,6 +396,7 @@ export function handleLocationChange(store: MyStore): void {
             transport: TransportTypeCompatSchema.optional().parse(point[0]),
             lat: point[1],
             lon: point[2],
+            ...(point[3] && { stop: point[3] }),
           },
       );
 
@@ -399,11 +416,16 @@ export function handleLocationChange(store: MyStore): void {
         finishOnly !== nextFinishOnly ||
         query['transport'] !== transportType ||
         points.length !== latLons.length ||
+        // TODO the URL's side lacks `?? ''`, so a point without a transport
+        // reads as changed and every location change sets the params again.
         points.some(
           (point, i) =>
-            (point.transport ?? '') + serializePoint(point) !==
+            (point.transport ?? '') +
+              serializePoint(point) +
+              (point.stop ? encodeStop(point.stop) : '') !==
             latLons[i]?.transport +
-              serializePoint(latLons[i] as unknown as RoutePoint),
+              serializePoint(latLons[i] as unknown as RoutePoint) +
+              (latLons[i]?.stop ? encodeStop(latLons[i].stop) : ''),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
         milestones !== reqMilestones ||
@@ -460,6 +482,12 @@ export function handleLocationChange(store: MyStore): void {
           milestones: reqMilestones,
         }),
       );
+    }
+
+    const departure = parseDeparture(query['departure']) ?? null;
+
+    if (departure !== getState().routePlanner.departure) {
+      dispatch(routePlannerSetDeparture(departure));
     }
   }
 

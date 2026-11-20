@@ -19,6 +19,8 @@ const fr: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'La météo le long de l’itinéraire avec l’accès premium',
   noRoute: 'Planifiez d’abord un itinéraire.',
   past: 'Avec ce départ, tout l’itinéraire est déjà passé. Choisissez-en un plus tard.',
+  pause: 'Pause',
+  overnight: 'Nuitée',
   pickPrompt:
     'Cliquez sur la carte à l’endroit où vous souhaitez les prévisions.',
   otherPlace: 'Autre lieu',

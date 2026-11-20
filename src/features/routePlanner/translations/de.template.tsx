@@ -16,6 +16,15 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     reverseFlowHint:
       'Die Ringe zeigen dann, von wo aus dieser Punkt erreichbar ist; ohne Haken, wohin man von ihm aus kommt. Einbahnstraßen und Abbiegeverbote machen den Unterschied.',
   },
+  waypointStop: {
+    label: 'Halt',
+    none: 'Kein Halt',
+    pause: 'Pause',
+    overnight: 'Übernachtung',
+    minutes: 'Min.',
+    continueAt: 'Weiter um',
+    nights: 'Nächte',
+  },
   point: {
     pick: 'Auf der Karte auswählen',
     current: 'Ihre Position',
@@ -82,6 +91,16 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Mautstrecken: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      Mit Halten: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Ankunft: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

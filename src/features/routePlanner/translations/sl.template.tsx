@@ -49,6 +49,15 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   finish: 'Cilj',
   stop: 'Postanek',
   swap: 'Zamenjaj začetek in cilj',
+  waypointStop: {
+    label: 'Postanek',
+    none: 'Brez postanka',
+    pause: 'Premor',
+    overnight: 'Prenočitev',
+    minutes: 'min',
+    continueAt: 'Nadaljevanje ob',
+    nights: 'Noči',
+  },
   point: {
     point: 'Točka poti',
     pick: 'Izberi na zemljevidu',
@@ -96,6 +105,16 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Cestninski odseki: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      S postanki: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Prihod: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

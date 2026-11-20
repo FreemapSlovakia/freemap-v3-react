@@ -37,6 +37,15 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   start: 'Kiindulás',
   finish: 'Úti cél',
   swap: 'Kiindulási pont és cél felcserélése',
+  waypointStop: {
+    label: 'Megálló',
+    none: 'Nincs megálló',
+    pause: 'Pihenő',
+    overnight: 'Éjszakázás',
+    minutes: 'perc',
+    continueAt: 'Továbbindulás',
+    nights: 'Éjszakák',
+  },
   point: {
     pick: 'Kijelölés a térképen',
     current: 'Az Ön pozíciója',
@@ -82,6 +91,16 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Fizetős szakaszok: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      Megállókkal: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Érkezés: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

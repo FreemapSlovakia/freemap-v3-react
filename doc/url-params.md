@@ -42,7 +42,8 @@ Params are read from `document.location.hash || document.location.search` (so `?
 
 | Param                                                 | Controls                                     | R/W | Format                              |
 | ----------------------------------------------------- | -------------------------------------------- | --- | ----------------------------------- |
-| `points`                                              | Waypoints                                    | r/w | `,`-separated `[transport/]lat/lon` |
+| `points`                                              | Waypoints, an inner one with its stop: `~p<minutes>` a pause, `~n<nights>-<HHMM>` an overnight going on at that local time | r/w | `,`-separated `[transport/]lat/lon[~stop]` |
+| `departure`                                           | When the route sets off                      | r/w | UTC to the minute, `YYYY-MM-DDTHH:MMZ` |
 | `transport`                                           | Transport type                               | r/w | transport id                        |
 | `route-mode`                                          | `route` / `trip` / `roundtrip` / `isochrone` | r/w | mode (omitted for `route`)          |
 | `milestones`                                          | Distance milestones                          | r/w | `abs` / `rel`                       |

@@ -9,6 +9,10 @@ import {
 } from '@features/gallery/licenses.js';
 import type { GalleryFilter } from '@features/gallery/model/actions.js';
 import { activeGalleryFilterSelector } from '@features/gallery/model/selectors.js';
+import {
+  encodeStop,
+  serializeDeparture,
+} from '@features/routePlanner/model/schedule.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import {
   featureIdsEqual,
@@ -234,12 +238,17 @@ export function getMapContentParts(state: RootState): QueryPart[] {
           .map(
             (point) =>
               (point?.transport ? `${point.transport}/` : '') +
-              serializeLatLon(point),
+              serializeLatLon(point) +
+              (point?.stop ? encodeStop(point.stop) : ''),
           )
           .join(','),
     ]);
 
     parts.push(['transport', routePlanner.transportType]);
+
+    if (routePlanner.departure !== null) {
+      parts.push(['departure', serializeDeparture(routePlanner.departure)]);
+    }
 
     if (routePlanner.mode !== 'route') {
       parts.push(['route-mode', routePlanner.mode]);

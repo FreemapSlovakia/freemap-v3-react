@@ -16,6 +16,15 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     reverseFlowHint:
       'Obszary pokazują wtedy, skąd można dotrzeć do tego punktu; bez zaznaczenia — dokąd można z niego dojechać. Różnicę robią jednokierunkowe ulice i zakazy skrętu.',
   },
+  waypointStop: {
+    label: 'Postój',
+    none: 'Bez postoju',
+    pause: 'Przerwa',
+    overnight: 'Nocleg',
+    minutes: 'min',
+    continueAt: 'Wymarsz o',
+    nights: 'Noce',
+  },
   point: {
     pick: 'Wybierz na mapie',
     current: 'Moja pozycja',
@@ -82,6 +91,16 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Odcinki płatne: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      Z postojami: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Przybycie: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

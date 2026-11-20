@@ -44,6 +44,14 @@ const ForecastSchema = z.object({
 
 export type Forecast = z.infer<typeof ForecastSchema>;
 
+/** Whole degrees; `+ 0` makes the -0 a value just below zero rounds to plain 0. */
+export function formatTemperature(
+  format: Intl.NumberFormat,
+  t: number,
+): string {
+  return format.format(Math.round(t) + 0);
+}
+
 /** About as far ahead as the forecast reaches. */
 export const FORECAST_DAYS = 9;
 
@@ -147,6 +155,47 @@ function severity(w: Weather): number {
   }
 
   return SKY_SEVERITY[w.sky];
+}
+
+/**
+ * A stretch of the forecast as one step: the worst weather, the lowest
+ * temperature, the strongest wind and the precipitation over its steps.
+ */
+export function spanStep(
+  steps: ForecastStep[],
+  from: number,
+  to: number,
+): ForecastStep | undefined {
+  const span = steps.filter((s) => s.time.getTime() < to && stepEnd(s) > from);
+
+  const first = span[0];
+
+  if (!first) {
+    return undefined;
+  }
+
+  const pick = (better: (a: ForecastStep, b: ForecastStep) => boolean) =>
+    span.reduce((best, s) => (better(s, best) ? s : best));
+
+  const windiest = pick((a, b) => a.windSpeed > b.windSpeed);
+
+  return {
+    ...first,
+    hours: (to - from) / 3_600_000,
+    temperature: pick((a, b) => a.temperature < b.temperature).temperature,
+    windSpeed: windiest.windSpeed,
+    windGust: windiest.windGust,
+    windDirection: windiest.windDirection,
+    // Each step's in proportion to the part of it the stretch covers.
+    precipitation: span.reduce((sum, s) => {
+      const start = s.time.getTime();
+
+      const covered = Math.min(to, stepEnd(s)) - Math.max(from, start);
+
+      return sum + (s.precipitation * covered) / (stepEnd(s) - start);
+    }, 0),
+    weather: pick((a, b) => severity(a.weather) > severity(b.weather)).weather,
+  };
 }
 
 /** The steps by local day; a day's symbol is the worst of 6:00 to 21:00. */

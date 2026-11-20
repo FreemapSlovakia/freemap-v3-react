@@ -21,6 +21,7 @@ import { colorizers } from '@shared/colorizers/index.js';
 import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
+import { formatDuration } from '@shared/durationFormatter.js';
 import {
   HALO_COLOR,
   HALO_PANE,
@@ -29,6 +30,8 @@ import {
   SELECTION_COLOR,
 } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
+import { useNow } from '@shared/hooks/useNow.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
@@ -79,6 +82,7 @@ import {
   stepModeDashArray,
 } from '../model/routeColors.js';
 import { alternativeCoordinates } from '../model/routeGeometry.js';
+import { legStops, scheduledSeconds } from '../model/schedule.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
 
@@ -147,6 +151,44 @@ export function RoutePlannerResult(): ReactElement {
   );
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const departure = useAppSelector((state) => state.routePlanner.departure);
+
+  // An overnight goes on at a time of day, so without a departure the trip is
+  // timed from now.
+  const now = useNow(15 * 60_000);
+
+  const stops = useMemo(() => legStops(mode, points), [mode, points]);
+
+  // The trip with its stops and when it arrives, where either says anything.
+  const schedule = useMemo(() => {
+    const alternative = alternatives[activeAlternativeIndex];
+
+    const hasStops = stops.some(Boolean);
+
+    if (!alternative || (!hasStops && departure === null)) {
+      return undefined;
+    }
+
+    const seconds = hasStops
+      ? scheduledSeconds(
+          alternative.legs.map((leg) => leg.duration),
+          stops,
+          departure ?? now,
+        )
+      : alternative.duration;
+
+    return {
+      withStops: hasStops ? seconds : undefined,
+      arrival: departure === null ? undefined : departure + seconds * 1000,
+    };
+  }, [alternatives, activeAlternativeIndex, stops, departure, now]);
+
+  const arrivalFormat = useDateTimeFormat({
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
@@ -420,10 +462,46 @@ export function RoutePlannerResult(): ReactElement {
       return distance ? (
         <Tooltip direction="top" permanent>
           <div>{getPointDetails(points.length - 2, showDiff, true)}</div>
+
+          {schedule?.withStops !== undefined && (
+            <div>
+              <Text m={rpm}>
+                {(rpm) =>
+                  rpm.withStops({
+                    duration: formatDuration(
+                      schedule.withStops!,
+                      language,
+                      'short',
+                      true,
+                    ),
+                  })
+                }
+              </Text>
+            </div>
+          )}
+
+          {schedule?.arrival !== undefined && (
+            <div>
+              <Text m={rpm}>
+                {(rpm) =>
+                  rpm.arrival({ time: arrivalFormat.format(schedule.arrival) })
+                }
+              </Text>
+            </div>
+          )}
         </Tooltip>
       ) : null;
     },
-    [alternatives, getPointDetails, points.length, activeAlternativeIndex],
+    [
+      alternatives,
+      getPointDetails,
+      points.length,
+      activeAlternativeIndex,
+      schedule,
+      rpm,
+      language,
+      arrivalFormat,
+    ],
   );
 
   const handlePointClick = useCallback(

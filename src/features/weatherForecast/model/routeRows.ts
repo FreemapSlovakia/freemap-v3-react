@@ -1,77 +1,4 @@
-import { distanceTo } from '@shared/geoutils.js';
-
-/** What the route planner and a saved map store of a route: legs of timed steps. */
-export type TimedRoute = {
-  legs: {
-    steps: {
-      duration: number;
-      geometry: { coordinates: number[][] };
-    }[];
-  }[];
-};
-
-export type RoutePosition = {
-  lat: number;
-  lon: number;
-  ele: number | null;
-  /** From the departure. */
-  seconds: number;
-  metres: number;
-};
-
-/**
- * Every coordinate of the route with the time it is reached: a step's duration
- * is spread over its coordinates by distance.
- */
-export function timedPositions(route: TimedRoute): RoutePosition[] {
-  const positions: RoutePosition[] = [];
-
-  let seconds = 0;
-
-  let metres = 0;
-
-  for (const leg of route.legs) {
-    for (const step of leg.steps) {
-      const coords = step.geometry.coordinates.map(
-        ([lon = 0, lat = 0, ele]) => ({
-          lat,
-          lon,
-          ele: ele ?? null,
-        }),
-      );
-
-      const gaps = coords.slice(1).map((c, i) => distanceTo(coords[i]!, c));
-
-      const length = gaps.reduce((a, b) => a + b, 0);
-
-      for (const [i, c] of coords.entries()) {
-        if (i > 0) {
-          const gap = gaps[i - 1]!;
-
-          metres += gap;
-
-          seconds += length > 0 ? (step.duration * gap) / length : 0;
-        }
-
-        const last = positions.at(-1);
-
-        // A step starts where the previous one ended.
-        if (last && last.lat === c.lat && last.lon === c.lon) {
-          continue;
-        }
-
-        positions.push({ ...c, seconds, metres });
-      }
-
-      // A step with no length still takes its time (a ferry's wait).
-      if (length === 0 && coords.length > 0) {
-        seconds += step.duration;
-      }
-    }
-  }
-
-  return positions;
-}
+import type { RoutePosition } from '@features/routePlanner/model/schedule.js';
 
 const HOUR_MS = 3_600_000;
 
@@ -89,9 +16,11 @@ const MAX_ROWS = 24;
 const MIN_GAP_MS = 20 * 60_000;
 
 export type RouteRow = RoutePosition & {
-  kind: 'start' | 'highest' | 'finish' | 'along';
+  kind: 'start' | 'highest' | 'finish' | 'along' | 'stop';
   /** When the route is there, epoch ms. */
   at: number;
+  /** A stop's end: the route stays there until then. */
+  until?: number;
 };
 
 /** Where the route is `seconds` after departure, between two positions. */
@@ -125,7 +54,8 @@ function positionAt(
 /**
  * Where to ask for the weather: where the route is at each of the forecast's
  * steps (hourly, then 6-hourly) and at the start, the highest point and the
- * finish; at most {@link MAX_ROWS}, thinning the steps, and none already past.
+ * finish; each stop as one row for its whole length; at most
+ * {@link MAX_ROWS}, thinning the steps, and none already past.
  */
 export function routeRows(
   positions: RoutePosition[],
@@ -144,17 +74,34 @@ export function routeRows(
 
   const timeOf = (p: RoutePosition) => quarter(departure + p.seconds * 1000);
 
+  // The position a stop is on is followed by the same place once it is over.
+  const stops = positions.flatMap((p, i): RouteRow[] => {
+    const resume = positions[i + 1];
+
+    return p.stop && resume
+      ? [{ ...p, kind: 'stop', at: timeOf(p), until: timeOf(resume) }]
+      : [];
+  });
+
   const fixed: RouteRow[] = [
     { ...first, kind: 'start', at: timeOf(first) },
     { ...last, kind: 'finish', at: timeOf(last) },
+    ...stops,
   ];
 
   const highest = positions.reduce((best, p) =>
     p.ele !== null && (best.ele === null || p.ele > best.ele) ? p : best,
   );
 
+  // Not beside a row already there, nor while the route stands at a stop.
   const clear = (at: number) =>
-    fixed.every((row) => Math.abs(row.at - at) >= MIN_GAP_MS);
+    fixed.every(
+      (row) =>
+        Math.abs(row.at - at) >= MIN_GAP_MS &&
+        (row.until === undefined ||
+          at <= row.at ||
+          at >= row.until + MIN_GAP_MS),
+    );
 
   if (highest.ele !== null && clear(timeOf(highest))) {
     fixed.push({ ...highest, kind: 'highest', at: timeOf(highest) });
@@ -183,13 +130,18 @@ export function routeRows(
 
   const upcoming = (t: number) => t > now - QUARTER_MS;
 
+  // The hours on the move, not standing at a stop.
+  const moving = steps.filter((t) =>
+    stops.every((row) => t <= row.at || t >= row.until!),
+  );
+
   // Thinned to fit what is still ahead, or a trip under way would get few rows;
   // counted over all the steps, so the rows kept stay put as hours pass.
   const every = Math.ceil(
-    steps.filter(upcoming).length / (MAX_ROWS - fixed.length),
+    moving.filter(upcoming).length / Math.max(1, MAX_ROWS - fixed.length),
   );
 
-  const along = steps
+  const along = moving
     .filter((t, i) => i % every === 0 && upcoming(t) && clear(t))
     .map(
       (t): RouteRow => ({
@@ -199,7 +151,8 @@ export function routeRows(
       }),
     );
 
-  return [...fixed.filter((row) => upcoming(row.at)), ...along].toSorted(
-    (a, b) => a.at - b.at,
-  );
+  return [
+    ...fixed.filter((row) => upcoming(row.until ?? row.at)),
+    ...along,
+  ].toSorted((a, b) => a.at - b.at);
 }

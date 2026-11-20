@@ -24,6 +24,9 @@ export type WeatherForecastMessages = {
   noRoute: string;
   /** The departure is so early that the whole route is over. */
   past: string;
+  /** A stop on the route, its row's kind. */
+  pause: string;
+  overnight: string;
   /** While the forecast's place is picked on the map. */
   pickPrompt: string;
   otherPlace: string;

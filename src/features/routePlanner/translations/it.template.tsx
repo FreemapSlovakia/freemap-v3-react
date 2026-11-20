@@ -37,6 +37,15 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   start: 'Inizio',
   finish: 'Fine',
   swap: 'Inverti inizio e fine',
+  waypointStop: {
+    label: 'Sosta',
+    none: 'Nessuna sosta',
+    pause: 'Pausa',
+    overnight: 'Pernottamento',
+    minutes: 'min',
+    continueAt: 'Ripartenza alle',
+    nights: 'Notti',
+  },
   point: {
     pick: 'Seleziona sulla mappa',
     current: 'La sua posizione',
@@ -82,6 +91,16 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   tolled: ({ value }) => (
     <>
       Tratti a pedaggio: <b>{value}</b>
+    </>
+  ),
+  withStops: ({ duration }) => (
+    <>
+      Con le soste: <b>{duration}</b>
+    </>
+  ),
+  arrival: ({ time }) => (
+    <>
+      Arrivo: <b>{time}</b>
     </>
   ),
   duration: ({ h, m, diff }) => (

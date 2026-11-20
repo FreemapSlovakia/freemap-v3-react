@@ -1,5 +1,10 @@
 import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
+import {
+  type RouteStop,
+  type TimedRoute,
+  timedPositions,
+} from '@features/routePlanner/model/schedule.js';
 import { usePlaceName } from '@features/search/hooks/usePlaceName.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
@@ -7,13 +12,14 @@ import { useNow } from '@shared/hooks/useNow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useMemo } from 'react';
 import { Alert, Table } from 'react-bootstrap';
-import { stepAt, stepEnd, useForecast } from '../model/forecast.js';
 import {
-  type RouteRow,
-  routeRows,
-  type TimedRoute,
-  timedPositions,
-} from '../model/routeRows.js';
+  formatTemperature,
+  spanStep,
+  stepAt,
+  stepEnd,
+  useForecast,
+} from '../model/forecast.js';
+import { type RouteRow, routeRows } from '../model/routeRows.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import { WeatherIcon } from './WeatherIcon.js';
 import { Wind } from './Wind.js';
@@ -21,15 +27,18 @@ import { Wind } from './Wind.js';
 /**
  * The weather where the route is at each of the forecast's steps, and at its
  * start, highest point and finish, for a route leaving at `departure`. Premium;
- * a lock offering it otherwise, which needs no route yet. `whenPast`: say so
- * when the whole route is over, where the departure can be changed.
+ * a lock offering it otherwise, which needs no route yet. `stops[i]` holds the
+ * route at the end of leg `i`. `whenPast`: say so when the whole route is
+ * over, where the departure can be changed.
  */
 export function RouteForecast({
   route,
+  stops,
   departure,
   whenPast,
 }: {
   route: TimedRoute | null;
+  stops?: readonly (RouteStop | undefined)[];
   departure: Date;
   whenPast?: boolean;
 }): ReactElement | null {
@@ -39,10 +48,12 @@ export function RouteForecast({
 
   const now = useNow();
 
+  const departureMs = departure.getTime();
+
   // A pass over every coordinate: not again at each tick of the clock.
   const positions = useMemo(
-    () => (route ? timedPositions(route) : null),
-    [route],
+    () => (route ? timedPositions(route, stops, departureMs) : null),
+    [route, stops, departureMs],
   );
 
   if (!premium) {
@@ -59,7 +70,7 @@ export function RouteForecast({
     return null;
   }
 
-  const rows = routeRows(positions, departure.getTime(), now);
+  const rows = routeRows(positions, departureMs, now);
 
   if (rows.length === 0) {
     return whenPast ? <p className="text-muted">{m?.past}</p> : null;
@@ -98,12 +109,14 @@ function Row({ row: sample }: { row: RouteRow }): ReactElement {
   const forecast = loaded.state === 'done' ? loaded.data : undefined;
 
   // A row of the last quarter hour may precede the forecast's first step.
+  const from = Math.max(at, forecast?.steps[0]?.time.getTime() ?? at);
+
+  // A stop's row speaks for its whole length.
   const step =
     forecast &&
-    stepAt(
-      forecast.steps,
-      Math.max(at, forecast.steps[0]?.time.getTime() ?? at),
-    );
+    (sample.until === undefined
+      ? stepAt(forecast.steps, from)
+      : spanStep(forecast.steps, from, sample.until));
 
   const lastStep = forecast?.steps.at(-1);
 
@@ -114,12 +127,18 @@ function Row({ row: sample }: { row: RouteRow }): ReactElement {
       ? m?.along({
           distance: `${integerFormat.format(sample.metres / 1000)} km`,
         })
-      : m?.[sample.kind];
+      : sample.kind === 'stop'
+        ? sample.stop && m?.[sample.stop.kind]
+        : m?.[sample.kind];
 
   return (
     <tr>
       <td className="ps-2">
-        <div className="fw-semibold text-nowrap">{timeFormat.format(at)}</div>
+        <div className="fw-semibold text-nowrap">
+          {timeFormat.format(at)}
+          {sample.until !== undefined &&
+            ` – ${timeFormat.format(sample.until)}`}
+        </div>
 
         <div className="small text-muted">
           {kind}
@@ -136,7 +155,7 @@ function Row({ row: sample }: { row: RouteRow }): ReactElement {
           </td>
 
           <td className="text-end text-nowrap">
-            {integerFormat.format(step.temperature)} °C
+            {formatTemperature(integerFormat, step.temperature)} °C
           </td>
 
           <td className="text-end text-nowrap text-info">
