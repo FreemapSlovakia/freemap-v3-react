@@ -4,13 +4,14 @@ import {
   init,
   lastEventId,
 } from '@sentry/browser';
-import { denyUrls, ignoreErrors } from './sentryFilters.js';
+import { denyUrls, ignoreErrors, isBotEvent } from './sentryFilters.js';
 
 // A separate entry loaded before `main`, so an error that keeps `main` from even
 // parsing is still reported. Bundled, not from a CDN, which blockers list.
 const dsn = process.env['SENTRY_DSN'];
 
-if (dsn && typeof Object.hasOwn !== 'undefined') {
+// Automated browsers (crawlers) only add noise.
+if (dsn && typeof Object.hasOwn !== 'undefined' && !navigator.webdriver) {
   init({
     dsn,
     // Proxied by nginx to Sentry, which filter lists block by URL.
@@ -18,6 +19,7 @@ if (dsn && typeof Object.hasOwn !== 'undefined') {
     tracesSampleRate: 0,
     ignoreErrors,
     denyUrls,
+    beforeSend: (event) => (isBotEvent(event) ? null : event),
   });
 
   // Only what the app calls; exposing the namespace defeats tree-shaking.

@@ -1,3 +1,5 @@
+import type { ErrorEvent } from '@sentry/browser';
+
 // Shared by the Sentry init and the error toast: the SDK hands out an event id
 // before these filters drop the event, so a toast would show a dead ticket id.
 export const ignoreErrors: (string | RegExp)[] = [
@@ -25,6 +27,21 @@ export const denyUrls: RegExp[] = [
   /^moz-extension:\/\//,
   /^safari-web-extension:\/\//,
 ];
+
+// The obscura headless crawler; its errors mostly throw from app code, which
+// `denyUrls` can't catch since it checks only the throwing frame.
+const BOT_FRAME = /^<obscura:/;
+
+/** Whether any stack frame of the event comes from a known bot runtime. */
+export function isBotEvent(event: ErrorEvent): boolean {
+  return Boolean(
+    event.exception?.values?.some((value) =>
+      value.stacktrace?.frames?.some((frame) =>
+        BOT_FRAME.test(frame.filename ?? ''),
+      ),
+    ),
+  );
+}
 
 function matches(pattern: string | RegExp, text: string) {
   return typeof pattern === 'string'
