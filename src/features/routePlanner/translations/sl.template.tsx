@@ -52,7 +52,7 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   itinerary: {
     title: 'Načrt poti',
     weather: 'Vreme',
-    noDeparture: 'Vklopite odhod, da vidite vreme ob poti.',
+    noDeparture: 'Nastavite čas odhoda, da vidite vreme ob poti.',
   },
   turnByTurn: {
     label: 'Navodila za pot',

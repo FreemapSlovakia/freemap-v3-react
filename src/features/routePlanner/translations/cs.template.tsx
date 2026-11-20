@@ -40,7 +40,7 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   itinerary: {
     title: 'Itinerář',
     weather: 'Počasí',
-    noDeparture: 'Zapněte odchod a uvidíte počasí podél trasy.',
+    noDeparture: 'Nastavte čas odchodu a uvidíte počasí podél trasy.',
   },
   turnByTurn: {
     label: 'Podrobné pokyny',

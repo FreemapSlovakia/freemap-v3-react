@@ -20,7 +20,7 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     title: 'Reiseplan',
     weather: 'Wetter',
     noDeparture:
-      'Schalten Sie die Abfahrt ein, um das Wetter entlang der Route zu sehen.',
+      'Legen Sie eine Abfahrtszeit fest, um das Wetter entlang der Route zu sehen.',
   },
   turnByTurn: {
     label: 'Abbiegehinweise',

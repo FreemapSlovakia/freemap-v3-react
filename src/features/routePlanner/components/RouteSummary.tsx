@@ -193,7 +193,8 @@ export function RouteLabelTooltip({
         onOpen
           ? {
               click(e) {
-                // Or the map takes it for a new finish.
+                // Or the map takes it for a new finish; the marker, as its
+                // event parent, still gets it and selects its point.
                 DomEvent.stopPropagation(e);
 
                 onOpen();

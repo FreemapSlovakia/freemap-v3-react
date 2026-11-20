@@ -1,4 +1,3 @@
-import { hasPanel } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { useDispatch, useStore } from 'react-redux';
@@ -9,18 +8,20 @@ import {
 } from '../model/actions.js';
 
 /**
- * The route panel is shown: open, with a route to show, while no other panel
- * holds the dock and no other tool the map's clicks.
+ * The route panel is shown: open, with a route, while the route is being
+ * worked with (its tool, or a point or leg of it selected) and no other panel
+ * holds the dock.
  */
 export function routePanelShown(state: RootState): boolean {
-  const { mapTool } = state.main;
+  const { mapTool, selection } = state.main;
 
   return (
     state.routePlannerSettings.panelOpen &&
     state.routePlanner.alternatives.length > 0 &&
-    !hasPanel(state.main.selection?.type) &&
     state.changesetInspector.inspected === null &&
-    (!mapTool || mapTool === 'route-planner')
+    (mapTool === 'route-planner' ||
+      (!mapTool &&
+        (selection?.type === 'route-point' || selection?.type === 'route-leg')))
   );
 }
 

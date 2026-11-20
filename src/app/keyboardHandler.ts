@@ -44,8 +44,6 @@ import {
   panoramaSetPicking,
   panoramaSetProbe,
 } from '@features/panorama/model/actions.js';
-import { routePanelShown } from '@features/routePlanner/hooks/useRoutePanel.js';
-import { routePlannerSetPanelOpen } from '@features/routePlanner/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import { weatherForecastSetPicking } from '@features/weatherForecast/model/actions.js';
@@ -230,11 +228,6 @@ export function escapeAction(state: RootState): UnknownAction | undefined {
   // toolbar-only tools close by their own button.
   if (state.main.mapTool) {
     return closeTool(state.main.mapTool);
-  }
-
-  // The route panel outlasts its tool, the route staying on the map.
-  if (routePanelShown(state)) {
-    return routePlannerSetPanelOpen(false);
   }
 
   // An inspection, after its selected element and the map-click tool beside it.

@@ -40,7 +40,8 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   itinerary: {
     title: 'Itinerario',
     weather: 'Meteo',
-    noDeparture: 'Attivi la partenza per vedere il meteo lungo il percorso.',
+    noDeparture:
+      'Imposti l’orario di partenza per vedere il meteo lungo il percorso.',
   },
   turnByTurn: {
     label: 'Indicazioni passo passo',

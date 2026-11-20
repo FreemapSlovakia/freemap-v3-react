@@ -638,11 +638,8 @@ export function RoutePlannerResult(): ReactElement {
                     dragend(e) {
                       handlePointDragEnd(i, e);
                     },
-                    click(e) {
-                      // Not its label's click, which Leaflet passes on to it.
-                      if (!(e as { propagatedFrom?: unknown }).propagatedFrom) {
-                        handlePointClick(i);
-                      }
+                    click() {
+                      handlePointClick(i);
                     },
                   }
             }

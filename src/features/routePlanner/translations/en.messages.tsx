@@ -58,7 +58,7 @@ const en: RoutePlannerMessages = {
   itinerary: {
     title: 'Itinerary',
     weather: 'Weather',
-    noDeparture: 'Turn on the departure to see the weather along the route.',
+    noDeparture: 'Set a departure time to see the weather along the route.',
   },
   turnByTurn: {
     label: 'Turn-by-turn',

@@ -19,7 +19,8 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   itinerary: {
     title: 'Plan podróży',
     weather: 'Pogoda',
-    noDeparture: 'Pogoda na trasie jest dostępna po włączeniu godziny wyjścia.',
+    noDeparture:
+      'Pogoda na trasie jest dostępna po ustawieniu godziny wyjścia.',
   },
   turnByTurn: {
     label: 'Wskazówki dojazdu',

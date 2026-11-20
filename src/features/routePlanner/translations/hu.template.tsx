@@ -40,7 +40,7 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   itinerary: {
     title: 'Útiterv',
     weather: 'Időjárás',
-    noDeparture: 'Kapcsolja be az indulást az útvonal menti időjáráshoz.',
+    noDeparture: 'Állítsa be az indulási időt az útvonal menti időjáráshoz.',
   },
   turnByTurn: {
     label: 'Részletes útvonal',

@@ -7,7 +7,7 @@ const state = ({
   route = true,
   selection = null as { type: string } | null,
   inspected = null as number | null,
-  mapTool = null as string | null,
+  mapTool = 'route-planner' as string | null,
 } = {}) =>
   ({
     routePlannerSettings: { panelOpen: open },
@@ -17,21 +17,24 @@ const state = ({
   }) as unknown as RootState;
 
 describe('routePanelShown', () => {
-  it('shows an open panel with a route, beside the route planner or no tool', () => {
+  it('shows an open panel while the route is worked with', () => {
     expect(routePanelShown(state())).toBe(true);
-    expect(routePanelShown(state({ mapTool: 'route-planner' }))).toBe(true);
-    expect(routePanelShown(state({ selection: { type: 'route-point' } }))).toBe(
-      true,
-    );
+
+    for (const type of ['route-point', 'route-leg']) {
+      expect(
+        routePanelShown(state({ mapTool: null, selection: { type } })),
+      ).toBe(true);
+    }
   });
 
-  it('hides it with no route, or while another panel or tool holds the map', () => {
+  it('hides it otherwise, the choice kept', () => {
     expect(routePanelShown(state({ open: false }))).toBe(false);
     expect(routePanelShown(state({ route: false }))).toBe(false);
-    expect(routePanelShown(state({ selection: { type: 'search' } }))).toBe(
-      false,
-    );
-    expect(routePanelShown(state({ inspected: 42 }))).toBe(false);
+    expect(routePanelShown(state({ mapTool: null }))).toBe(false);
+    expect(
+      routePanelShown(state({ mapTool: null, selection: { type: 'search' } })),
+    ).toBe(false);
     expect(routePanelShown(state({ mapTool: 'draw-lines' }))).toBe(false);
+    expect(routePanelShown(state({ inspected: 42 }))).toBe(false);
   });
 });
