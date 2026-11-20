@@ -2,7 +2,6 @@
 
 import { combineReducers, configureStore, isPlain } from '@reduxjs/toolkit';
 import { errorHandlingMiddleware } from '../store/middleware/errorHandlingMiddleware.js';
-import { perfWatchdogMiddleware } from '../store/middleware/perfWatchdog.js';
 import { createProcessorMiddleware } from '../store/middleware/processorMiddleware.js';
 import { statePersistingMiddleware } from '../store/middleware/statePersistingMiddleware.js';
 import { processors } from './processors.js';
@@ -38,7 +37,6 @@ export function createReduxStore() {
           ],
         },
       }).concat(
-        perfWatchdogMiddleware,
         errorHandlingMiddleware,
         statePersistingMiddleware,
         processorMiddleware,
