@@ -31,6 +31,22 @@ export function tileZoomOffset(
   return scaleWithDpi && dpr > 1.4 ? 1 : -Math.log2(featureScale);
 }
 
+const MERCATOR_HALF = 20_037_508.342789244;
+
+/**
+ * A tile's `{bbox}` for a WMS GetMap URL entered as a tile map, assuming
+ * EPSG:3857. Leaflet's URL template calls it as a function option.
+ */
+export function tileBbox({ x, y, z }: { x: number; y: number; z: number }) {
+  const size = (2 * MERCATOR_HALF) / 2 ** z;
+
+  const minX = -MERCATOR_HALF + x * size;
+
+  const maxY = MERCATOR_HALF - y * size;
+
+  return [minX, maxY - size, minX + size, maxY].join(',');
+}
+
 export function buildTileUrl(
   urlTemplate: string,
   x: number,
@@ -42,7 +58,8 @@ export function buildTileUrl(
     .replaceAll('{x}', String(x))
     .replaceAll('{y}', String(y))
     .replaceAll('{z}', String(z))
-    .replaceAll('{s}', subdomain);
+    .replaceAll('{s}', subdomain)
+    .replaceAll('{bbox}', () => tileBbox({ x, y, z }));
 }
 
 /**

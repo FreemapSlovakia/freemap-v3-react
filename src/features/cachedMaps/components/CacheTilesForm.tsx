@@ -162,9 +162,9 @@ export function CacheTilesForm({ editing, source }: Props): ReactElement {
         return { ...layer, url };
       });
 
-    // WMS is not offered: `buildTileUrl` substitutes only {x}/{y}/{z}, so every
-    // WMS tile would collapse to one cache entry, while the rendered layer asks
-    // for per-tile `?…&BBOX=…` URLs that are not in the cache. See TODO.md.
+    // WMS is not offered: its layers have no tile template, so every WMS tile
+    // would collapse to one cache entry, while the rendered layer asks for
+    // per-tile `?…&BBOX=…` URLs that are not in the cache. See TODO.md.
     const custom = customLayers
       .filter((def) => def.technology === 'tile')
       .filter((def) => def.type === editedSourceType)

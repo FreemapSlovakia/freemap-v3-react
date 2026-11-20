@@ -253,6 +253,7 @@ const PLACEHOLDER_PATTERNS: Record<string, string> = {
  * placeholders, `proto` and the `@Nx`/query `tail` are named groups.
  */
 export function tileTemplateToRegExp(template: string): RegExp {
+  // TODO a `{bbox}` template never matches, so its tiles skip the browse cache
   const named = new Set<string>();
 
   const body = template

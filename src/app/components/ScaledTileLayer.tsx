@@ -3,6 +3,7 @@ import { noteTileCodes } from '@shared/tileAttribution.js';
 import {
   markDrawnTile,
   pickTileScale,
+  tileBbox,
   withTileScale,
 } from '@shared/tileUrl.js';
 import {
@@ -108,7 +109,12 @@ class LScaledTileLayer extends TileLayer {
     tileAuth?: { fromZoom: number; token: string },
     options?: TileLayerOptions,
   ) {
-    super(urlTemplate, options);
+    const withBbox: TileLayerOptions & { bbox: typeof tileBbox } = {
+      ...options,
+      bbox: tileBbox,
+    };
+
+    super(urlTemplate, withBbox);
 
     this.extraScales = extraScales;
 
