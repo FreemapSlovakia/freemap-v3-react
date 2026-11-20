@@ -1,3 +1,4 @@
+import { hasPanel } from '@app/store/actions.js';
 import type { RootState } from '@app/store/store.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { useDispatch, useStore } from 'react-redux';
@@ -19,6 +20,8 @@ export function routePanelShown(state: RootState): boolean {
     state.routePlannerSettings.panelOpen &&
     state.routePlanner.alternatives.length > 0 &&
     state.changesetInspector.inspected === null &&
+    // Another panel (Wikipedia, a search result…) takes the dock.
+    !hasPanel(selection?.type) &&
     (mapTool === 'route-planner' ||
       (!mapTool &&
         (selection?.type === 'route-point' || selection?.type === 'route-leg')))

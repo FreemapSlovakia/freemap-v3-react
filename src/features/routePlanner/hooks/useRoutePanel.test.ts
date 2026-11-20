@@ -35,6 +35,8 @@ describe('routePanelShown', () => {
       routePanelShown(state({ mapTool: null, selection: { type: 'search' } })),
     ).toBe(false);
     expect(routePanelShown(state({ mapTool: 'draw-lines' }))).toBe(false);
+    // Beside the route planner too.
+    expect(routePanelShown(state({ selection: { type: 'wiki' } }))).toBe(false);
     expect(routePanelShown(state({ inspected: 42 }))).toBe(false);
   });
 });
