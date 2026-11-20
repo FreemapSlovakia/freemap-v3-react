@@ -10,7 +10,6 @@ const hu: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Forrás',
   gusts: 'széllökések',
   alongRoute: 'Időjárás az útvonal mentén',
-  departure: 'Indulás',
   start: 'Kiindulás',
   highest: 'Legmagasabb pont',
   finish: 'Cél',

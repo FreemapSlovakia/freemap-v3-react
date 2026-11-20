@@ -84,6 +84,7 @@ import {
 } from '@features/panorama/model/settingsReducer.js';
 import { DETAIL_MAX, type PanoramaDetail } from '@features/panorama/quality.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
+import { RoutePanelViewSchema } from '@features/routePlanner/model/actions.js';
 import { routePlannerInitialState } from '@features/routePlanner/model/reducer.js';
 import {
   MAX_ALTERNATIVES,
@@ -284,6 +285,11 @@ export const PersistedRoutePlannerSettingsSchema = z
       .min(1)
       .max(MAX_ALTERNATIVES)
       .catch(routePlannerSettingsInitialState.maxAlternatives),
+    panelOpen: z.boolean(),
+    panelView: RoutePanelViewSchema.catch(
+      routePlannerSettingsInitialState.panelView,
+    ),
+    turnByTurn: z.boolean(),
   })
   .partial();
 
@@ -778,6 +784,9 @@ const PERSIST: PersistEntry[] = [
       lineOpacity: s.lineOpacity,
       markerOpacity: s.markerOpacity,
       maxAlternatives: s.maxAlternatives,
+      panelOpen: s.panelOpen,
+      panelView: s.panelView,
+      turnByTurn: s.turnByTurn,
     }),
   }),
   defineEntry({

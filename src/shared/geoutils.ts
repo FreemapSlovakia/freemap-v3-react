@@ -841,3 +841,24 @@ export function mergeLines<T extends Geometry>(
     break;
   }
 }
+
+/** `[w, s, e, n]`. */
+export type Bbox = [number, number, number, number];
+
+// A loop: spreading a long track into `Math.min` overflows the stack.
+export function latLonBbox(points: Iterable<LatLon>): Bbox | undefined {
+  let bbox: Bbox | undefined;
+
+  for (const { lat, lon } of points) {
+    bbox = bbox
+      ? [
+          Math.min(bbox[0], lon),
+          Math.min(bbox[1], lat),
+          Math.max(bbox[2], lon),
+          Math.max(bbox[3], lat),
+        ]
+      : [lon, lat, lon, lat];
+  }
+
+  return bbox;
+}

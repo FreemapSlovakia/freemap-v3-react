@@ -49,6 +49,34 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   finish: 'Arrivée',
   stop: 'Arrêt',
   swap: 'Inverser le départ et l’arrivée',
+  itinerary: {
+    title: 'Itinéraire',
+    weather: 'Météo',
+    noDeparture:
+      'Activez le départ pour voir la météo le long de l’itinéraire.',
+  },
+  turnByTurn: {
+    label: 'Instructions détaillées',
+    maneuvers: {
+      depart: 'Partez',
+      continue: 'Continuez',
+      straight: 'Continuez tout droit',
+      left: 'Tournez à gauche',
+      right: 'Tournez à droite',
+      slightLeft: 'Légèrement à gauche',
+      slightRight: 'Légèrement à droite',
+      sharpLeft: 'Fortement à gauche',
+      sharpRight: 'Fortement à droite',
+      uturn: 'Faites demi-tour',
+      keepLeft: 'Serrez à gauche',
+      keepRight: 'Serrez à droite',
+      merge: 'Insérez-vous',
+      rampOn: 'Prenez la bretelle',
+      rampOff: 'Prenez la sortie',
+      roundabout: 'Entrez dans le giratoire',
+      exitRoundabout: 'Sortez du giratoire',
+    },
+  },
   shaping: {
     label: 'Point auxiliaire',
     hint: 'Oriente seulement l’itinéraire : sans numéro, arrêt ni horaire.',
@@ -128,21 +156,15 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     </>
   ),
   departureLabel: 'Départ',
-  departureNow: 'Maintenant',
+  departureOff: 'Non défini',
+  departureHint: 'Désactivé : sans horaires ni météo le long de l’itinéraire.',
   departureTime: 'Heure de départ',
-  duration: ({ h, m, diff }) => (
+  duration: ({ value, diff }) => (
     <>
       Durée :{' '}
       <b>
-        {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-      </b>
-    </>
-  ),
-  summary: ({ distance, h, m }) => (
-    <>
-      Distance : <b>{distance}</b> | Durée :{' '}
-      <b>
-        {h} h {m} m
+        {value}
+        {diff ? ` (+ ${diff})` : ''}
       </b>
     </>
   ),

@@ -49,6 +49,33 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   finish: 'Cilj',
   stop: 'Postanek',
   swap: 'Zamenjaj začetek in cilj',
+  itinerary: {
+    title: 'Načrt poti',
+    weather: 'Vreme',
+    noDeparture: 'Vklopite odhod, da vidite vreme ob poti.',
+  },
+  turnByTurn: {
+    label: 'Navodila za pot',
+    maneuvers: {
+      depart: 'Krenite',
+      continue: 'Nadaljujte',
+      straight: 'Nadaljujte naravnost',
+      left: 'Zavijte levo',
+      right: 'Zavijte desno',
+      slightLeft: 'Rahlo levo',
+      slightRight: 'Rahlo desno',
+      sharpLeft: 'Ostro levo',
+      sharpRight: 'Ostro desno',
+      uturn: 'Obrnite',
+      keepLeft: 'Držite se levo',
+      keepRight: 'Držite se desno',
+      merge: 'Vključite se',
+      rampOn: 'Zapeljite na priključek',
+      rampOff: 'Zapeljite z izvozom',
+      roundabout: 'Zapeljite v krožišče',
+      exitRoundabout: 'Zapustite krožišče',
+    },
+  },
   shaping: {
     label: 'Pomožna točka',
     hint: 'Le usmerja pot: brez številke, postanka in časa.',
@@ -128,21 +155,15 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     </>
   ),
   departureLabel: 'Odhod',
-  departureNow: 'Zdaj',
+  departureOff: 'Ni nastavljen',
+  departureHint: 'Izklopljen: brez ur in brez vremena ob poti.',
   departureTime: 'Čas odhoda',
-  duration: ({ h, m, diff }) => (
+  duration: ({ value, diff }) => (
     <>
       Trajanje:{' '}
       <b>
-        {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-      </b>
-    </>
-  ),
-  summary: ({ distance, h, m }) => (
-    <>
-      Razdalja: <b>{distance}</b> | Trajanje:{' '}
-      <b>
-        {h} h {m} m
+        {value}
+        {diff ? ` (+ ${diff})` : ''}
       </b>
     </>
   ),

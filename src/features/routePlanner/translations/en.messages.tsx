@@ -55,6 +55,33 @@ const en: RoutePlannerMessages = {
     fromStart: 'Start position',
     fromFinish: 'Finish position',
   },
+  itinerary: {
+    title: 'Itinerary',
+    weather: 'Weather',
+    noDeparture: 'Turn on the departure to see the weather along the route.',
+  },
+  turnByTurn: {
+    label: 'Turn-by-turn',
+    maneuvers: {
+      depart: 'Start',
+      continue: 'Continue',
+      straight: 'Go straight',
+      left: 'Turn left',
+      right: 'Turn right',
+      slightLeft: 'Bear left',
+      slightRight: 'Bear right',
+      sharpLeft: 'Turn sharp left',
+      sharpRight: 'Turn sharp right',
+      uturn: 'Make a U-turn',
+      keepLeft: 'Keep left',
+      keepRight: 'Keep right',
+      merge: 'Merge',
+      rampOn: 'Take the ramp',
+      rampOff: 'Take the exit',
+      roundabout: 'Enter the roundabout',
+      exitRoundabout: 'Exit the roundabout',
+    },
+  },
   shaping: {
     label: 'Shaping point',
     hint: 'Only steers the route: no number, stop or time.',
@@ -127,21 +154,15 @@ const en: RoutePlannerMessages = {
     </>
   ),
   departureLabel: 'Departure',
-  departureNow: 'Now',
+  departureOff: 'Not set',
+  departureHint: 'Off: no times and no weather along the route.',
   departureTime: 'Departure time',
-  duration: ({ h, m, diff }) => (
+  duration: ({ value, diff }) => (
     <>
       Duration:{' '}
       <b>
-        {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-      </b>
-    </>
-  ),
-  summary: ({ distance, h, m }) => (
-    <>
-      Distance: <b>{distance}</b> | Duration:{' '}
-      <b>
-        {h} h {m} m
+        {value}
+        {diff ? ` (+ ${diff})` : ''}
       </b>
     </>
   ),

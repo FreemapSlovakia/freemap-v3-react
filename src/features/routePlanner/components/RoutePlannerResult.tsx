@@ -20,8 +20,6 @@ import {
 import { colorizers } from '@shared/colorizers/index.js';
 import { useZoomColorize } from '@shared/colorizers/useZoomColorize.js';
 import { RichMarker } from '@shared/components/RichMarker.js';
-import { formatDistance } from '@shared/distanceFormatter.js';
-import { formatDuration } from '@shared/durationFormatter.js';
 import {
   HALO_COLOR,
   HALO_PANE,
@@ -30,10 +28,6 @@ import {
   SELECTION_COLOR,
 } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import {
-  useDateTimeFormat,
-  WEEKDAY_TIME,
-} from '@shared/hooks/useDateTimeFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
 import { along } from '@turf/along';
@@ -67,6 +61,7 @@ import {
 import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
+import { useOpenRoutePanel } from '../hooks/useRoutePanel.js';
 import { useRouteSchedule } from '../hooks/useRouteSchedule.js';
 import { useTurnBacks } from '../hooks/useTurnBacks.js';
 import {
@@ -78,7 +73,7 @@ import {
   type StepCoordinate,
 } from '../model/actions.js';
 import { ISOCHRONE_FILL_OPACITY, isochroneColor } from '../model/isochrones.js';
-import { routeColorizeFeatures, tolledMeters } from '../model/pathDetails.js';
+import { routeColorizeFeatures } from '../model/pathDetails.js';
 import { directLegsSelector } from '../model/reducer.js';
 import {
   INACTIVE_ALTERNATIVE_COLOR,
@@ -87,9 +82,15 @@ import {
   stopNumber,
 } from '../model/routeColors.js';
 import { alternativeCoordinates } from '../model/routeGeometry.js';
-import { isShaping, stretchBounds } from '../model/shaping.js';
+import { isShaping, joinStretch, stretchBounds } from '../model/shaping.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
+import { RouteHoverMarker } from './RouteHoverMarker.js';
 import classes from './RoutePlannerResult.module.css';
+import {
+  type RouteFigures,
+  RouteLabelTooltip,
+  RouteSummary,
+} from './RouteSummary.js';
 
 const pointDraggingClassName = classes.dragging;
 
@@ -158,26 +159,11 @@ export function RoutePlannerResult(): ReactElement {
     (state) => state.routePlanner.milestones,
   );
 
-  const language = useAppSelector((state) => state.l10n.language);
-
-  const routeSchedule = useRouteSchedule();
+  const schedule = useRouteSchedule();
 
   const turnBacks = useTurnBacks();
 
-  const departure = routeSchedule?.departure ?? null;
-
-  // The trip with its stops and when it arrives, where either says anything.
-  const schedule =
-    routeSchedule && (routeSchedule.hasStops || departure !== null)
-      ? {
-          withStops: routeSchedule.hasStops
-            ? (routeSchedule.end - routeSchedule.from) / 1000
-            : undefined,
-          arrival: departure === null ? undefined : routeSchedule.end,
-        }
-      : undefined;
-
-  const arrivalFormat = useDateTimeFormat(WEEKDAY_TIME);
+  const openRoutePanel = useOpenRoutePanel();
 
   const zoom = useAppSelector((state) => state.map.zoom);
 
@@ -262,71 +248,6 @@ export function RoutePlannerResult(): ReactElement {
     ),
   );
 
-  // The whole route's tolled length. Only the summary shows it: a per-waypoint
-  // running total would have to clip the spans, and the figure a driver wants is
-  // what the journey costs, not what it has cost so far.
-  const tolled = useMemo(
-    () => tolledMeters(alternatives[activeAlternativeIndex]),
-    [alternatives, activeAlternativeIndex],
-  );
-
-  const getPointDetails2 = useCallback(
-    (
-      distanceSum: number,
-      durationSum: number,
-      distanceDiff?: number,
-      durationDiff?: number,
-      showToll = false,
-    ) => {
-      return (
-        <div>
-          <div>
-            <Text m={rpm}>
-              {(rpm) =>
-                rpm.distance({
-                  value: formatDistance(distanceSum, language),
-                  diff:
-                    distanceDiff === undefined
-                      ? undefined
-                      : formatDistance(distanceDiff, language),
-                })
-              }
-            </Text>
-          </div>
-          {!Number.isNaN(durationSum) && (
-            <div>
-              <Text m={rpm}>
-                {(rpm) =>
-                  rpm.duration({
-                    h: Math.floor(Math.round(durationSum / 60) / 60),
-                    m: Math.round(durationSum / 60) % 60,
-                    diff:
-                      durationDiff === undefined || Number.isNaN(durationDiff)
-                        ? undefined
-                        : {
-                            h: Math.floor(Math.round(durationDiff / 60) / 60),
-                            m: Math.round(durationDiff / 60) % 60,
-                          },
-                  })
-                }
-              </Text>
-            </div>
-          )}
-          {showToll && tolled > 0 && (
-            <div>
-              <Text m={rpm}>
-                {(rpm) =>
-                  rpm.tolled({ value: formatDistance(tolled, language) })
-                }
-              </Text>
-            </div>
-          )}
-        </div>
-      );
-    },
-    [language, rpm, tolled],
-  );
-
   const milestones = useMemo(() => {
     if (!milestonesMode || !alternatives[activeAlternativeIndex]) {
       return [];
@@ -405,17 +326,13 @@ export function RoutePlannerResult(): ReactElement {
   }, [activeAlternativeIndex, alternatives, zoom, milestonesMode]);
 
   const getPointDetails = useCallback(
-    (i: number, showDiff = true, summary = false) => {
+    (i: number) => {
       let distanceSum = 0;
 
       let durationSum = 0;
 
-      const offset = summary ? 0 : 1;
-
       const ii =
-        mode === 'route' || summary
-          ? i
-          : (waypoints[i + offset]?.waypoint_index ?? -10) - offset;
+        mode === 'route' ? i : (waypoints[i + 1]?.waypoint_index ?? -10) - 1;
 
       for (let j = 0; j <= ii; j++) {
         const leg = alternatives[activeAlternativeIndex]?.legs[j];
@@ -429,91 +346,68 @@ export function RoutePlannerResult(): ReactElement {
 
       // From the previous real waypoint, over any shaping points between.
       const stretch =
-        showDiff && ii > 0
-          ? alternatives[activeAlternativeIndex]?.legs.slice(
-              mode === 'route' ? stretchBounds(points, mode, ii)[0] : ii,
-              ii + 1,
+        ii > 0
+          ? joinStretch(
+              points,
+              mode,
+              alternatives[activeAlternativeIndex]?.legs ?? [],
+              ii,
             )
           : undefined;
 
-      return getPointDetails2(
-        distanceSum,
-        durationSum,
-        stretch?.reduce((sum, leg) => sum + leg.distance, 0),
-        stretch?.reduce((sum, leg) => sum + leg.duration, 0),
-        summary,
-      );
+      return {
+        distance: distanceSum,
+        duration: durationSum,
+        distanceDiff: stretch?.metres,
+        durationDiff: stretch?.seconds,
+      } satisfies RouteFigures;
     },
-    [
-      alternatives,
-      activeAlternativeIndex,
-      getPointDetails2,
-      mode,
-      waypoints,
-      points,
-    ],
+    [alternatives, activeAlternativeIndex, mode, waypoints, points],
   );
 
-  const getSummary = useCallback(
-    (showDiff?: boolean) => {
-      const { distance } =
-        alternatives.find((_, alt) => alt === activeAlternativeIndex) ?? {};
+  // The finish's label opens the itinerary of a route in order, unless another
+  // tool owns map clicks.
+  const opens =
+    mode === 'route' &&
+    !window.fmEmbedded &&
+    (tool === null || tool === 'route-planner');
 
-      return distance ? (
-        <Tooltip direction="top" permanent>
-          <div>{getPointDetails(points.length - 2, showDiff, true)}</div>
+  const getSummary = useCallback(() => {
+    const alternative = alternatives[activeAlternativeIndex];
 
-          {schedule?.withStops !== undefined && (
-            <div>
-              <Text m={rpm}>
-                {(rpm) =>
-                  rpm.withStops({
-                    duration: formatDuration(
-                      schedule.withStops!,
-                      language,
-                      'short',
-                      true,
-                    ),
-                  })
-                }
-              </Text>
-            </div>
-          )}
+    const last =
+      alternative && alternative.legs.length > 1
+        ? joinStretch(
+            points,
+            mode,
+            alternative.legs,
+            alternative.legs.length - 1,
+          )
+        : undefined;
 
-          {departure !== null && (
-            <div>
-              <Text m={rpm}>
-                {(rpm) =>
-                  rpm.departure({ time: arrivalFormat.format(departure) })
-                }
-              </Text>
-            </div>
-          )}
-
-          {schedule?.arrival !== undefined && (
-            <div>
-              <Text m={rpm}>
-                {(rpm) =>
-                  rpm.arrival({ time: arrivalFormat.format(schedule.arrival) })
-                }
-              </Text>
-            </div>
-          )}
-        </Tooltip>
-      ) : null;
-    },
-    [
-      alternatives,
-      getPointDetails,
-      points.length,
-      activeAlternativeIndex,
-      schedule,
-      rpm,
-      language,
-      arrivalFormat,
-      departure,
-    ],
-  );
+    return alternative?.distance ? (
+      <RouteLabelTooltip
+        figures={{
+          distance: alternative.distance,
+          duration: alternative.duration,
+          // The last stretch's share, as a waypoint's tooltip gives its own.
+          distanceDiff: last?.metres,
+          durationDiff: last?.seconds,
+        }}
+        withStops={schedule?.withStops}
+        arrival={schedule?.end}
+        onOpen={opens ? () => openRoutePanel('itinerary') : undefined}
+      />
+    ) : null;
+  }, [
+    alternatives,
+    activeAlternativeIndex,
+    schedule,
+    opens,
+    openRoutePanel,
+    mode,
+    points,
+  ]);
 
   const handlePointClick = useCallback(
     (position: number) => {
@@ -524,20 +418,6 @@ export function RoutePlannerResult(): ReactElement {
     },
     [dispatch, selectedPoint],
   );
-
-  const [pointHovering, setPointHovering] = useState<number>(-1);
-
-  const handlePointMouseOver = useCallback((i: number) => {
-    if (!draggingRef.current && !pointPointerDownRef.current) {
-      setPointHovering(i);
-    }
-  }, []);
-
-  const handlePointMouseOut = useCallback(() => {
-    if (!draggingRef.current && !pointPointerDownRef.current) {
-      setPointHovering(-1);
-    }
-  }, []);
 
   const map = useMap();
 
@@ -758,26 +638,25 @@ export function RoutePlannerResult(): ReactElement {
                     dragend(e) {
                       handlePointDragEnd(i, e);
                     },
-                    click() {
-                      handlePointClick(i);
+                    click(e) {
+                      // Not its label's click, which Leaflet passes on to it.
+                      if (!(e as { propagatedFrom?: unknown }).propagatedFrom) {
+                        handlePointClick(i);
+                      }
                     },
-                    mouseover() {
-                      handlePointMouseOver(i);
-                    },
-                    mouseout: handlePointMouseOut,
                   }
             }
           >
             {i === points.length - 1 /* finish */ ? (
               mode === 'roundtrip' ? (
                 <Tooltip direction="top">
-                  {getPointDetails(points.length - 2)}
+                  <RouteSummary {...getPointDetails(points.length - 2)} />
                 </Tooltip>
               ) : (
-                getSummary(i === pointHovering)
+                getSummary()
               )
             ) : i === 0 && !finishOnly /* start */ ? (
-              mode === 'roundtrip' && getSummary(i === pointHovering)
+              mode === 'roundtrip' && getSummary()
             ) : shaping ? (
               turnBacks.has(i) && (
                 <Tooltip direction="top">
@@ -786,7 +665,7 @@ export function RoutePlannerResult(): ReactElement {
               )
             ) : (
               <Tooltip direction="top" key={points.length}>
-                {getPointDetails(i - 1)}
+                <RouteSummary {...getPointDetails(i - 1)} />
               </Tooltip>
             )}
           </RichMarker>
@@ -803,13 +682,10 @@ export function RoutePlannerResult(): ReactElement {
       turnBacks,
       rpm,
       handlePointDragStart,
-      handlePointMouseOut,
       getPointDetails,
       handlePointDragEnd,
       handlePointClick,
-      handlePointMouseOver,
       getSummary,
-      pointHovering,
       markerOpacity,
     ],
   );
@@ -1011,6 +887,8 @@ export function RoutePlannerResult(): ReactElement {
 
   return (
     <>
+      <RouteHoverMarker />
+
       {!window.fmEmbedded && routePlannerToolActive && dragLatLng && (
         <RichMarker
           interactive={false}

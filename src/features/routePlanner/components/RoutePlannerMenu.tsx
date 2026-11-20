@@ -76,6 +76,7 @@ import {
   FaClock,
   FaCloudSun,
   FaDiceThree,
+  FaListOl,
   FaMapMarkerAlt,
   FaPaintBrush,
   FaPalette,
@@ -94,6 +95,11 @@ import { useDispatch } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
 import {
+  routePanelShown,
+  routePanelView,
+  useOpenRoutePanel,
+} from '../hooks/useRoutePanel.js';
+import {
   type RoutingMode,
   routePlannerColorizeBy,
   routePlannerDelete,
@@ -106,6 +112,7 @@ import {
   routePlannerSetMaxAlternatives,
   routePlannerSetMilestones,
   routePlannerSetMode,
+  routePlannerSetPanelOpen,
   routePlannerSetPickMode,
   routePlannerSetRoundtripParams,
   routePlannerSetStart,
@@ -637,9 +644,13 @@ export default function RoutePlannerMenu(): ReactElement {
     (state) => state.elevationChart.target?.type === 'route-planner',
   );
 
-  const routeWeatherOpen = useAppSelector(
-    (state) => state.main.selection?.type === 'route-weather',
+  const routePanelOpen = useAppSelector(routePanelShown);
+
+  const routePanelShowsWeather = useAppSelector(
+    (state) => routePanelView(state) === 'weather',
   );
+
+  const openRoutePanel = useOpenRoutePanel();
 
   const wfm = useWeatherForecastMessages();
 
@@ -1072,22 +1083,22 @@ export default function RoutePlannerMenu(): ReactElement {
         )}
 
         {routeFound && (
+          // One panel for both: the weather is its other view.
           <Action
-            label={wfm?.alongRoute}
-            icon={<FaCloudSun />}
-            showFrom="xl"
-            requiresOnline
-            active={routeWeatherOpen}
+            label={
+              activeMode === 'route' ? rpm?.itinerary.title : wfm?.alongRoute
+            }
+            icon={activeMode === 'route' ? <FaListOl /> : <FaCloudSun />}
+            showFrom="lg"
+            // The weather is fetched; the itinerary is the route's own.
+            requiresOnline={routePanelShowsWeather}
+            active={routePanelOpen}
             onClick={() => {
-              if (!routeWeatherOpen) {
-                trackMatomo(['trackEvent', 'Weather', 'route']);
+              if (routePanelOpen) {
+                dispatch(routePlannerSetPanelOpen(false));
+              } else {
+                openRoutePanel();
               }
-
-              dispatch(
-                selectFeature(
-                  routeWeatherOpen ? null : { type: 'route-weather' },
-                ),
-              );
             }}
           />
         )}

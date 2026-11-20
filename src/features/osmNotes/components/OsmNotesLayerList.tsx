@@ -3,8 +3,8 @@ import {
   type Item,
   ItemList,
   type ItemSortOption,
-  latLonBbox,
 } from '@features/mapSettings/components/ItemList.js';
+import { latLonBbox } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';

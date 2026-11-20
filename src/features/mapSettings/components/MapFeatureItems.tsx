@@ -29,7 +29,11 @@ import {
   WAYPOINT_COLORS,
   waypointKind,
 } from '@features/routePlanner/model/routeColors.js';
-import { isShaping } from '@features/routePlanner/model/shaping.js';
+import { legsBbox } from '@features/routePlanner/model/routeGeometry.js';
+import {
+  isShaping,
+  joinStretch,
+} from '@features/routePlanner/model/shaping.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import {
   searchSelectResult,
@@ -47,7 +51,7 @@ import { IconGlyph } from '@shared/components/IconGlyph.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { formatDuration } from '@shared/durationFormatter.js';
 import { featureDataProps, featureLabel } from '@shared/featureProperties.js';
-import { formatLocationLines } from '@shared/geoutils.js';
+import { formatLocationLines, latLonBbox } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useEffectiveChosenLanguage } from '@shared/hooks/useEffectiveChosenLanguage.js';
@@ -89,7 +93,6 @@ import {
   type Item,
   ItemList,
   type ItemSortOption,
-  latLonBbox,
 } from './ItemList.js';
 
 /** The items of one of the tools' features, each selected on the map by a tap. */
@@ -613,74 +616,60 @@ function RouteItems(): ReactElement {
 
   let duration = 0;
 
-  // The legs since the last real waypoint: shaping points join them into one.
-  let stretch: { at: number; index: number; legs: typeof legs } | undefined;
-
   for (const [at, index] of visits.entries()) {
+    // A shaping point only joins the legs around it.
+    if (isShaping(points, index, mode)) {
+      continue;
+    }
+
     const pointKind = kind(index);
 
-    const shaping = isShaping(points, index, mode);
+    items.push({
+      key: `point-${index}`,
+      icon:
+        pointKind === 'start' ? (
+          <FaPlay />
+        ) : pointKind === 'finish' ? (
+          <FaStop />
+        ) : (
+          <FaMapMarkerAlt />
+        ),
+      color: WAYPOINT_COLORS[pointKind],
+      label: name(index),
+      // How far it is from the start, as its marker's tooltip says.
+      subline:
+        pointKind === 'finish'
+          ? totals
+          : at > 0 && legs[at - 1]
+            ? figures(distance, duration)
+            : undefined,
+      selects: { type: 'route-point', id: index },
+      bbox: () => latLonBbox([points[index]!]),
+    });
 
-    if (!shaping) {
-      stretch = { at, index, legs: [] };
-    }
+    // Only a route in order has shaping points, and visits its points in order.
+    const {
+      bounds: [, last],
+      joined,
+      metres,
+      seconds,
+    } = joinStretch(points, mode, legs, at);
 
-    if (!shaping) {
-      items.push({
-        key: `point-${index}`,
-        icon:
-          pointKind === 'start' ? (
-            <FaPlay />
-          ) : pointKind === 'finish' ? (
-            <FaStop />
-          ) : (
-            <FaMapMarkerAlt />
-          ),
-        color: WAYPOINT_COLORS[pointKind],
-        label: name(index),
-        // How far it is from the start, as its marker's tooltip says.
-        subline:
-          pointKind === 'finish'
-            ? totals
-            : at > 0 && legs[at - 1]
-              ? figures(distance, duration)
-              : undefined,
-        selects: { type: 'route-point', id: index },
-        bbox: () => latLonBbox([points[index]!]),
-      });
-    }
-
-    const leg = legs[at];
-
-    if (!leg) {
+    if (joined.length === 0) {
       continue;
     }
 
-    distance += leg.distance;
+    distance += metres;
 
-    duration += leg.duration;
+    duration += seconds;
 
-    if (!stretch) {
-      continue;
-    }
+    const from = name(index);
 
-    stretch.legs.push(leg);
-
-    const next = visited(at + 1);
-
-    if (isShaping(points, next, mode)) {
-      continue;
-    }
-
-    const stretchLegs = stretch.legs;
-
-    const from = name(stretch.index);
-
-    const to = name(next);
+    const to = name(visited(last + 1));
 
     items.push({
-      key: `leg-${stretch.at}`,
-      icon: transportTypeDefs[transports[stretch.index] ?? transportType].icon,
+      key: `leg-${at}`,
+      icon: transportTypeDefs[transports[index] ?? transportType].icon,
       label: `${from} → ${to}`,
       display: (
         <>
@@ -689,22 +678,9 @@ function RouteItems(): ReactElement {
           {to}
         </>
       ),
-      subline: figures(
-        stretchLegs.reduce((sum, leg) => sum + leg.distance, 0),
-        stretchLegs.reduce((sum, leg) => sum + leg.duration, 0),
-      ),
-      selects: { type: 'route-leg', id: stretch.at },
-      bbox: () =>
-        latLonBbox(
-          stretchLegs
-            .flatMap((leg) => leg.steps)
-            .flatMap((step) =>
-              step.geometry.coordinates.map(([lon, lat]) => ({
-                lat: lat!,
-                lon: lon!,
-              })),
-            ),
-        ),
+      subline: figures(metres, seconds),
+      selects: { type: 'route-leg', id: at },
+      bbox: () => legsBbox(joined),
     });
   }
 

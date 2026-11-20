@@ -10,7 +10,6 @@ const de: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Quelle',
   gusts: 'Böen',
   alongRoute: 'Wetter entlang der Route',
-  departure: 'Abfahrt',
   start: 'Start',
   highest: 'Höchster Punkt',
   finish: 'Ziel',

@@ -198,15 +198,9 @@ export interface WeatherSelection {
   label?: string;
 }
 
-/** The weather along the planned route. */
-export interface RouteWeatherSelection {
-  type: 'route-weather';
-}
-
 export type Selection =
   | ChangesetElementSelection
   | WeatherSelection
-  | RouteWeatherSelection
   | OsmNoteSelection
   | EventSelection
   | FeatureSelection
@@ -226,7 +220,6 @@ const PANEL_SELECTIONS: ReadonlySet<Selection['type']> = new Set([
   'event',
   'wiki',
   'weather',
-  'route-weather',
 ]);
 
 export const hasPanel = (type: Selection['type'] | undefined): boolean =>

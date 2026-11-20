@@ -1,47 +1,6 @@
+import { makeSlot } from '@shared/storeSlot.js';
 import type { TerrainProgress } from '@shared/terrainService.js';
 import type { LatLon } from '@shared/types/common.js';
-import { useSyncExternalStore } from 'react';
-
-/**
- * One thing the map and the picture pass between them frame by frame, kept
- * outside Redux: every dispatch writes the persisted state and rewrites the
- * URL, which is not a thing to do sixty times a second. Each slot keeps its own
- * listeners, so the gesture setting one does not wake the readers of the rest,
- * and its own idea of what counts as the same value.
- */
-function makeSlot<T>(same: (a: T, b: T) => boolean) {
-  let value: T | null = null;
-
-  const listeners = new Set<() => void>();
-
-  const read = () => value;
-
-  const subscribe = (listener: () => void) => {
-    listeners.add(listener);
-
-    return () => {
-      listeners.delete(listener);
-    };
-  };
-
-  return {
-    set(next: T | null): void {
-      if (value === next || (value && next && same(value, next))) {
-        return;
-      }
-
-      value = next;
-
-      for (const listener of listeners) {
-        listener();
-      }
-    },
-
-    useValue(): T | null {
-      return useSyncExternalStore(subscribe, read, read);
-    },
-  };
-}
 
 /** Which way the viewer is looking, and how much of the horizon it holds. */
 export interface PanoramaView {

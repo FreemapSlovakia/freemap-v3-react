@@ -10,7 +10,6 @@ const sl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Vir',
   gusts: 'sunki',
   alongRoute: 'Vreme ob poti',
-  departure: 'Odhod',
   start: 'Začetek',
   highest: 'Najvišja točka',
   finish: 'Cilj',

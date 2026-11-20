@@ -26,6 +26,7 @@ import {
 import {
   routePlannerAddPoint,
   routePlannerDelete,
+  routePlannerSetPanelOpen,
   routePlannerSetPoint,
 } from '@features/routePlanner/model/actions.js';
 import {
@@ -186,6 +187,12 @@ export const mainReducer = createReducer(mainInitialState, (builder) => {
     })
     .addCase(clearMapFeatures, (state) => {
       state.selection = null;
+    })
+    // The route panel docks in the place of a selection's own.
+    .addCase(routePlannerSetPanelOpen, (state, { payload }) => {
+      if (payload && hasPanel(state.selection?.type)) {
+        state.selection = null;
+      }
     })
     // Starting one lets go of a selection with a panel, a history's element
     // included (its breadcrumb keeps it), and of the previous one's element.

@@ -6,6 +6,7 @@ import {
   timedPositions,
 } from '@features/routePlanner/model/schedule.js';
 import { usePlaceName } from '@features/search/hooks/usePlaceName.js';
+import { ClickableRow } from '@shared/components/ClickableRow.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   useDateTimeFormat,
@@ -28,22 +29,24 @@ import { WeatherIcon } from './WeatherIcon.js';
 import { Wind } from './Wind.js';
 
 /**
- * The weather where the route is at each of the forecast's steps, and at its
- * start, highest point and finish, for a route leaving at `departure`. Premium;
- * a lock offering it otherwise, which needs no route yet. `stops[i]` holds the
- * route at the end of leg `i`. `whenPast`: say so when the whole route is
- * over, where the departure can be changed.
+ * The weather at the route's forecast steps, start, highest point and finish,
+ * leaving at `departure` (premium). `stops[i]` holds the route after leg `i`;
+ * `whenPast` says when it is all over.
  */
 export function RouteForecast({
   route,
   stops,
   departure,
   whenPast,
+  onHover,
+  onClick,
 }: {
   route: TimedRoute | null;
   stops?: readonly (RouteStop | undefined)[];
   departure: Date;
   whenPast?: boolean;
+  onHover?: (row: RouteRow | null) => void;
+  onClick?: (row: RouteRow) => void;
 }): ReactElement | null {
   const m = useWeatherForecastMessages();
 
@@ -80,17 +83,30 @@ export function RouteForecast({
   }
 
   return (
-    <Table size="sm" className="align-middle">
+    <Table size="sm" hover={Boolean(onClick)} className="align-middle">
       <tbody>
         {rows.map((row) => (
-          <Row key={`${row.kind}:${row.at}`} row={row} />
+          <Row
+            key={`${row.kind}:${row.at}`}
+            row={row}
+            onHover={onHover}
+            onClick={onClick}
+          />
         ))}
       </tbody>
     </Table>
   );
 }
 
-function Row({ row: sample }: { row: RouteRow }): ReactElement {
+function Row({
+  row: sample,
+  onHover,
+  onClick,
+}: {
+  row: RouteRow;
+  onHover?: (row: RouteRow | null) => void;
+  onClick?: (row: RouteRow) => void;
+}): ReactElement {
   const { at } = sample;
 
   const m = useWeatherForecastMessages();
@@ -124,14 +140,17 @@ function Row({ row: sample }: { row: RouteRow }): ReactElement {
   const kind =
     sample.kind === 'along'
       ? m?.along({
-          distance: `${integerFormat.format(sample.metres / 1000)} km`,
+          distance: `${integerFormat.format(sample.metres / 1000)}\u00a0km`,
         })
       : sample.kind === 'stop'
         ? sample.stop && m?.[sample.stop.kind]
         : m?.[sample.kind];
 
   return (
-    <tr>
+    <ClickableRow
+      onClick={onClick && (() => onClick(sample))}
+      onHover={onHover && ((on) => onHover(on ? sample : null))}
+    >
       <td className="ps-2">
         <div className="fw-semibold text-nowrap">
           {timeFormat.format(at)}
@@ -141,7 +160,7 @@ function Row({ row: sample }: { row: RouteRow }): ReactElement {
 
         <div className="small text-muted">
           {kind}
-          {elevation !== null && ` · ${integerFormat.format(elevation)} m`}
+          {elevation !== null && ` · ${integerFormat.format(elevation)}\u00a0m`}
         </div>
 
         {name && <div className="small text-muted">{name}</div>}
@@ -177,6 +196,6 @@ function Row({ row: sample }: { row: RouteRow }): ReactElement {
                 : null}
         </td>
       )}
-    </tr>
+    </ClickableRow>
   );
 }

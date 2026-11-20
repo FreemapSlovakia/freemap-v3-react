@@ -1,8 +1,10 @@
+import { closeTool, openTool, selectFeature } from '@app/store/actions.js';
 import { describe, expect, it } from 'vitest';
 import {
   routePlannerColorizeBy,
   routePlannerPreventHint,
   routePlannerSetColorizeLegend,
+  routePlannerSetPanelOpen,
 } from './actions.js';
 import {
   routePlannerSettingsInitialState,
@@ -44,5 +46,22 @@ describe('routePlannerSettingsReducer', () => {
     );
 
     expect(next.preventHint).toBe(true);
+  });
+});
+
+describe('routePlannerSettingsReducer — route panel', () => {
+  const open = routePlannerSettingsReducer(
+    routePlannerSettingsInitialState,
+    routePlannerSetPanelOpen(true),
+  );
+
+  it('stays open whatever else is opened or closed', () => {
+    expect(
+      [
+        selectFeature({ type: 'route-point', id: 0 }),
+        openTool('draw-lines'),
+        closeTool('route-planner'),
+      ].reduce(routePlannerSettingsReducer, open).panelOpen,
+    ).toBe(true);
   });
 });

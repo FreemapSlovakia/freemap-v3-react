@@ -332,10 +332,6 @@ export const routePlannerSetIsochrones = createAction<{
   timestamp: number;
 }>('ROUTE_PLANNER_SET_ISOCHRONES');
 
-export const routePlannerToggleItineraryVisibility = createAction(
-  'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY',
-);
-
 export const routePlannerSetParams = createAction<{
   points: RoutePoint[];
   finishOnly: boolean;
@@ -462,6 +458,25 @@ export const routePlannerSetStop = createAction<{
   index: number;
   stop: RouteStop | null;
 }>('ROUTE_PLANNER_SET_STOP');
+
+/** Opens or closes the route panel (itinerary and weather). */
+export const routePlannerSetPanelOpen = createAction<boolean>(
+  'ROUTE_PLANNER_SET_PANEL_OPEN',
+);
+
+export const RoutePanelViewSchema = z.enum(['itinerary', 'weather']);
+
+export type RoutePanelView = z.infer<typeof RoutePanelViewSchema>;
+
+/** The route panel's view, kept for the next time it opens. */
+export const routePlannerSetPanelView = createAction<RoutePanelView>(
+  'ROUTE_PLANNER_SET_PANEL_VIEW',
+);
+
+/** Whether the itinerary lists each leg's turns. */
+export const routePlannerSetTurnByTurn = createAction<boolean>(
+  'ROUTE_PLANNER_SET_TURN_BY_TURN',
+);
 
 /** Makes an inner waypoint a shaping point, or a real one again. */
 export const routePlannerSetShaping = createAction<{

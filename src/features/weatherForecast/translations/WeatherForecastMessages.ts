@@ -11,7 +11,6 @@ export type WeatherForecastMessages = {
   /** After the wind speed: "gusts 54 km/h". */
   gusts: string;
   alongRoute: string;
-  departure: string;
   start: string;
   highest: string;
   finish: string;

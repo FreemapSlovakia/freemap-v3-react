@@ -16,9 +16,9 @@ import {
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { usePaged } from '@shared/components/LoadMoreSentinel.js';
 import { TruncatedText } from '@shared/components/TruncatedText.js';
+import type { Bbox } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { DELETABLE_SELECTIONS, sameSelection } from '@shared/selection.js';
-import type { LatLon } from '@shared/types/common.js';
 import { bbox as turfBbox } from '@turf/bbox';
 import clsx from 'clsx';
 import type { GeoJSON } from 'geojson';
@@ -38,8 +38,6 @@ import {
   PanelToolbar,
 } from './PanelListControls.js';
 import { RowRemoveButton } from './RowRemoveButton.js';
-
-export type Bbox = [number, number, number, number];
 
 export type Item = {
   key: string;
@@ -92,24 +90,6 @@ export type ItemSort = {
 const FILTER_FROM = 10;
 
 const PAGE_ROWS = 100;
-
-// A loop: spreading a long track into `Math.min` overflows the stack.
-export function latLonBbox(points: Iterable<LatLon>): Bbox | undefined {
-  let bbox: Bbox | undefined;
-
-  for (const { lat, lon } of points) {
-    bbox = bbox
-      ? [
-          Math.min(bbox[0], lon),
-          Math.min(bbox[1], lat),
-          Math.max(bbox[2], lon),
-          Math.max(bbox[3], lat),
-        ]
-      : [lon, lat, lon, lat];
-  }
-
-  return bbox;
-}
 
 export function geojsonBbox(
   geojson: GeoJSON | null | undefined,

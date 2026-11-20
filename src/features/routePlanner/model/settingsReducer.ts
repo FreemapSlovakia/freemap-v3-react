@@ -3,11 +3,15 @@ import { toggleColorizeLegend } from '@shared/colorizers/colorizeSettings.js';
 import type { ColorizingMode } from '@shared/colorizers/index.js';
 import { clamp } from '@shared/mathUtils.js';
 import {
+  type RoutePanelView,
   routePlannerColorizeBy,
   routePlannerPreventHint,
   routePlannerSetColorizeLegend,
   routePlannerSetMaxAlternatives,
+  routePlannerSetPanelOpen,
+  routePlannerSetPanelView,
   routePlannerSetStyle,
+  routePlannerSetTurnByTurn,
 } from './actions.js';
 
 // Persisted route-planner display preferences. A dedicated settings slice (not
@@ -31,6 +35,12 @@ export interface RoutePlannerSettingsState {
    * both near enough in time and different enough to be worth offering.
    */
   maxAlternatives: number;
+  /** The route panel is open: changed only by opening or closing it. */
+  panelOpen: boolean;
+  /** The route panel's view, opened on next time. */
+  panelView: RoutePanelView;
+  /** The itinerary lists each leg's turns. */
+  turnByTurn: boolean;
 }
 
 /** As many as the router is ever asked for; each one costs its own geometry. */
@@ -44,6 +54,9 @@ export const routePlannerSettingsInitialState: RoutePlannerSettingsState = {
   lineOpacity: 1,
   markerOpacity: 1,
   maxAlternatives: 2,
+  panelOpen: false,
+  panelView: 'itinerary',
+  turnByTurn: false,
 };
 
 export const routePlannerSettingsReducer = createReducer(
@@ -66,5 +79,14 @@ export const routePlannerSettingsReducer = createReducer(
       })
       .addCase(routePlannerSetMaxAlternatives, (state, { payload }) => {
         state.maxAlternatives = clamp(payload, 1, MAX_ALTERNATIVES);
+      })
+      .addCase(routePlannerSetPanelOpen, (state, { payload }) => {
+        state.panelOpen = payload;
+      })
+      .addCase(routePlannerSetPanelView, (state, { payload }) => {
+        state.panelView = payload;
+      })
+      .addCase(routePlannerSetTurnByTurn, (state, { payload }) => {
+        state.turnByTurn = payload;
       }),
 );

@@ -14,7 +14,7 @@ import { stretchBounds } from './shaping.js';
  * the mode themselves.
  */
 export function legTransports(
-  points: RoutePoint[],
+  points: readonly RoutePoint[],
   defaultTransport: TransportType,
 ): TransportType[] {
   // A point can be absent (the URL spells a finish-only route with a leading

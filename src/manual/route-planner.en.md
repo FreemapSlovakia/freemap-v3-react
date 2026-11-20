@@ -40,7 +40,11 @@ With the profiles listed under OSRM the modes are :MdTimeline: **Ordered**, :PiG
 
 ## Route details
 
-The finish shows the route's **Distance** and **Duration**, and the length of toll roads, if the route uses any. Pointing at a stop shows the totals up to it.
+The finish shows the route's distance and duration, stops included, and with a departure set, the arrival. Pointing at a stop shows the totals up to it, and pointing at the finish shows them in the same form. The rest, toll roads included, is in the itinerary.
+
+In :MdTimeline: **Ordered** mode, :FaListOl: **Itinerary** in the toolbar (on a narrow screen under :FaEllipsisV:), or a click on the finish's label, opens the route's itinerary beside the map, and it stays open for the next route until you close it: the **Departure**, the totals and the arrival, then each stop with its arrival, its pause or overnight and when the route goes on, and each leg between them with its transport, distance and duration. Shaping points are left out. A click on a row selects that stop or leg and shows it on the map, while the itinerary stays open; a stop's toolbar sets its pause. **Turn-by-turn** adds each turn along the legs, with the road's name and the distance to the next turn. Pointing at a turn, or at a row of the weather, marks its place on the map; a click shows it.
+
+:FaClock: **Departure** at the top turns the departure on and off; without it the itinerary shows no clock times. :FaCloudSun: **Weather** switches to the weather along the route from that departure, which it needs. In the other modes the same button in the toolbar is :FaCloudSun: **Weather along the route**.
 
 Between two points an alternative route may appear as well. Click it to make it the chosen one. How many routes appear at most is set under :FaEllipsisV: → **Max routes to offer**.
 

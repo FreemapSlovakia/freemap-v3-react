@@ -9,7 +9,6 @@ const en: WeatherForecastMessages = {
   source: 'Source',
   gusts: 'gusts',
   alongRoute: 'Weather along the route',
-  departure: 'Departure',
   start: 'Start',
   highest: 'Highest point',
   finish: 'Finish',

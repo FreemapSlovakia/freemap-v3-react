@@ -10,7 +10,6 @@ const fr: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Source',
   gusts: 'rafales',
   alongRoute: 'Météo le long de l’itinéraire',
-  departure: 'Départ',
   start: 'Départ',
   highest: 'Point le plus haut',
   finish: 'Arrivée',

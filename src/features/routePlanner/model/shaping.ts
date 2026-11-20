@@ -44,6 +44,32 @@ export function stretchBounds(
   return [from, to];
 }
 
+type Timed = { distance: number; duration: number };
+
+/** The stretch holding `leg`: its bounds, its legs and what they add up to. */
+export function joinStretch<L extends Timed>(
+  points: readonly MaybeShaping[],
+  mode: RoutingMode,
+  legs: readonly L[],
+  leg: number,
+): {
+  bounds: [from: number, to: number];
+  joined: L[];
+  metres: number;
+  seconds: number;
+} {
+  const bounds = stretchBounds(points, mode, leg);
+
+  const joined = legs.slice(bounds[0], bounds[1] + 1);
+
+  return {
+    bounds,
+    joined,
+    metres: joined.reduce((sum, l) => sum + l.distance, 0),
+    seconds: joined.reduce((sum, l) => sum + l.duration, 0),
+  };
+}
+
 /** A waypoint's number on its marker in route mode: real waypoints counted from 1. */
 export function waypointNumber(
   points: readonly MaybeShaping[],

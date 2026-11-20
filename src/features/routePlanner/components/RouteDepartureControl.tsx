@@ -5,38 +5,56 @@ import { FaClock } from 'react-icons/fa';
 import { useDepartureInput } from '../hooks/useDepartureInput.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 
-/** The route's departure, on its start; unset, the next quarter hour. */
-export function RouteDepartureControl(): ReactElement {
+/** The route's departure, turned on and off by its label; off, it has none. */
+export function RouteDepartureControl({
+  className,
+}: {
+  className?: string;
+}): ReactElement {
   const rpm = useRoutePlannerMessages();
 
   const input = useDepartureInput();
 
+  const on = input.departure !== null;
+
   return (
-    <InputGroup className="w-auto flex-nowrap">
+    <InputGroup className={className ?? 'w-auto flex-nowrap'}>
       <LongPressTooltip
         breakpoint="sm"
         label={rpm?.departureLabel}
-        toggleOnClick
+        hint={rpm?.departureHint}
       >
         {({ props, label, labelClassName }) => (
-          <InputGroup.Text {...props}>
+          <Button
+            {...props}
+            variant="outline-primary"
+            active={on}
+            onClick={input.toggle}
+          >
             <FaClock />
             <span className={labelClassName}>&ensp;{label}</span>
-          </InputGroup.Text>
+          </Button>
         )}
       </LongPressTooltip>
 
-      <Form.Control
-        type="datetime-local"
-        value={input.value}
-        isInvalid={input.past}
-        onChange={(e) => input.onChange(e.currentTarget.value)}
-      />
-
-      {input.departure !== null && (
-        <Button variant="secondary" onClick={input.clear}>
-          {rpm?.departureNow}
-        </Button>
+      {on ? (
+        <Form.Control
+          type="datetime-local"
+          value={input.value}
+          isInvalid={input.past}
+          onChange={(e) => input.onChange(e.currentTarget.value)}
+          // Not on change: a half-edited date reads as empty too.
+          onBlur={(e) =>
+            input.onBlur(
+              e.currentTarget.value,
+              e.currentTarget.validity.badInput,
+            )
+          }
+        />
+      ) : (
+        <InputGroup.Text className="text-muted flex-grow-1">
+          {rpm?.departureOff}
+        </InputGroup.Text>
       )}
     </InputGroup>
   );

@@ -56,6 +56,33 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     fromStart: 'Poloha štartu',
     fromFinish: 'Poloha cieľa',
   },
+  itinerary: {
+    title: 'Itinerár',
+    weather: 'Počasie',
+    noDeparture: 'Zapnite odchod a uvidíte počasie pozdĺž trasy.',
+  },
+  turnByTurn: {
+    label: 'Podrobné pokyny',
+    maneuvers: {
+      depart: 'Vyrazte',
+      continue: 'Pokračujte',
+      straight: 'Pokračujte rovno',
+      left: 'Odbočte vľavo',
+      right: 'Odbočte vpravo',
+      slightLeft: 'Mierne vľavo',
+      slightRight: 'Mierne vpravo',
+      sharpLeft: 'Ostro vľavo',
+      sharpRight: 'Ostro vpravo',
+      uturn: 'Otočte sa',
+      keepLeft: 'Držte sa vľavo',
+      keepRight: 'Držte sa vpravo',
+      merge: 'Zaraďte sa',
+      rampOn: 'Vojdite na nájazd',
+      rampOff: 'Zíďte výjazdom',
+      roundabout: 'Vojdite do kruhového objazdu',
+      exitRoundabout: 'Opustite kruhový objazd',
+    },
+  },
   shaping: {
     label: 'Pomocný bod',
     hint: 'Len usmerňuje trasu: bez čísla, zastávky a času.',
@@ -128,21 +155,15 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     </>
   ),
   departureLabel: 'Odchod',
-  departureNow: 'Teraz',
+  departureOff: 'Nenastavený',
+  departureHint: 'Vypnutý: bez časov a bez počasia pozdĺž trasy.',
   departureTime: 'Čas odchodu',
-  duration: ({ h, m, diff }) => (
+  duration: ({ value, diff }) => (
     <>
       Trvanie:{' '}
       <b>
-        {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
-      </b>
-    </>
-  ),
-  summary: ({ distance, h, m }) => (
-    <>
-      Vzdialenosť: <b>{distance}</b> | Trvanie:{' '}
-      <b>
-        {h} h {m} m
+        {value}
+        {diff ? ` (+ ${diff})` : ''}
       </b>
     </>
   ),

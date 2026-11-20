@@ -1,22 +1,19 @@
-import { nextQuarter } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
-import { useNow } from '@shared/hooks/useNow.js';
 import { useMemo } from 'react';
 import { legStops, waypointTimes } from '../model/schedule.js';
 
 export type RouteSchedule = {
-  /** The set departure; null when unset. */
-  departure: number | null;
-  /** The departure in effect: the set one, or the next quarter hour. */
-  from: number;
-  hasStops: boolean;
+  /** Epoch ms. */
+  departure: number;
   /** Each waypoint's times, in a route in order whose legs match its points. */
   times: { arrival: number; leave: number }[] | undefined;
+  /** The whole trip in seconds, where a stop makes it more than the moving time. */
+  withStops: number | undefined;
   /** At the finish, stops included. */
   end: number;
 };
 
-/** The active route's timing, from its departure. */
+/** The active route's timing; none without a set departure. */
 export function useRouteSchedule(): RouteSchedule | undefined {
   const departure = useAppSelector((state) => state.routePlanner.departure);
 
@@ -31,15 +28,10 @@ export function useRouteSchedule(): RouteSchedule | undefined {
       ],
   );
 
-  // Ticks by the minute so the default never lags behind a passed quarter.
-  const quarter = nextQuarter(useNow());
-
   return useMemo(() => {
-    if (!alternative) {
+    if (!alternative || departure === null) {
       return undefined;
     }
-
-    const from = departure ?? quarter;
 
     const stops = legStops(mode, points);
 
@@ -50,21 +42,20 @@ export function useRouteSchedule(): RouteSchedule | undefined {
         ? waypointTimes(
             alternative.legs.map((leg) => leg.duration),
             stops,
-            from,
+            departure,
           )
         : undefined;
 
-    const hasStops = times !== undefined && stops.some(Boolean);
+    const end = times
+      ? times.at(-1)!.arrival
+      : departure + alternative.duration * 1000;
 
     return {
       departure,
-      from,
-      hasStops,
       times,
-      end:
-        hasStops && times
-          ? times.at(-1)!.arrival
-          : from + alternative.duration * 1000,
+      withStops:
+        times && stops.some(Boolean) ? (end - departure) / 1000 : undefined,
+      end,
     };
-  }, [alternative, departure, mode, points, quarter]);
+  }, [alternative, departure, mode, points]);
 }

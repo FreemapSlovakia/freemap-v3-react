@@ -713,23 +713,17 @@ departure, and `schedule.ts`'s timing are in:
   the exports' waypoints, dropped by Optimize order, `~s` in `points=`.
   Dragging the route line adds one; the point's toolbar toggles it. One
   the route turns back at is yellow (`turnBacks`), with a tooltip saying so.
-- [ ] **Itinerary in a docked panel** (`DockPanel`, like the weather along the
-  route), all from `useRouteSchedule` so it can't disagree with the label or
-  the waypoint toolbar. One panel with two views, **Itinerary | Weather**,
-  under a shared header; `route-weather` opens it on Weather. Rows are real
-  waypoints only, a leg row spanning `stretchBounds`. Drop the dead
-  `itineraryIsVisible` / `routePlannerToggleItineraryVisibility` first:
-  - header: the departure field (`useDepartureInput`), total distance,
-    duration with and without stops, arrival, tolls;
-  - a row per waypoint (name or coordinates, cumulative distance and time,
-    arrival, the stop and when the route goes on), with each leg's distance,
-    duration and transport between the rows;
-  - a row's click selects its waypoint, whose toolbar edits the stop — the
-    panel reads, the toolbar edits;
-  - the finish's permanent label opens it on click; whether the label then
-    shrinks to two lines (distance · duration, arrival) is open.
-  - Later: a waypoint row's weather icon and temperature at its arrival
-    (premium), from `useForecast`.
+- [x] **Itinerary in a docked panel** (`RoutePanel`): one toolbar button
+  and one panel with an **Itinerary | Weather** switch under a shared
+  departure field. The panel is route state (`panelOpen`), not a selection,
+  so a row selects its waypoint or leg and the panel stays open beside it.
+  Rows are the real waypoints (`model/itinerary.ts`) and the legs between
+  them; **Turn-by-turn** lists each leg's maneuvers (`model/maneuvers.ts`).
+- [ ] Itinerary later: a waypoint row's weather icon and temperature at its
+  arrival (premium), from `useForecast`; whether the finish's label shrinks to
+  two lines (distance · duration, arrival) now that the panel holds the rest.
+- [x] **Departure is on or off** — the 🕒 label toggles it (on: the next
+  quarter hour); off, no clock times and no weather along the route. No "Now".
 - [ ] **Arrive by** on the finish, working the departure out backwards
   (overnights make it non-trivial; public transport needs it).
 - [ ] Later on the same schedule: GPX export with times; public transport.

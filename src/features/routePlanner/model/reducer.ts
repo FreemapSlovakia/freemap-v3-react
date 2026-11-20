@@ -54,7 +54,6 @@ import {
   routePlannerSetTransportType,
   routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
-  routePlannerToggleItineraryVisibility,
   type SavedRoute,
   type Waypoint,
 } from './actions.js';
@@ -106,7 +105,6 @@ export interface RoutePlannerCleanState extends RoutePlannerCleanResultState {
   points: RoutePoint[];
   finishOnly: boolean;
   pickMode: PickMode | null;
-  itineraryIsVisible: boolean;
   roundtripParams: RoundtripParams;
   isochroneParams: IsochroneParams;
   /** When the route sets off, as epoch ms; null for now. */
@@ -130,7 +128,6 @@ export const cleanState: RoutePlannerCleanState = {
   points: [],
   finishOnly: false,
   pickMode: null,
-  itineraryIsVisible: false,
   roundtripParams: {
     distance: 5000,
     seed: 0,
@@ -300,11 +297,6 @@ function selectedPickMode(
   state: RoutePlannerState,
   { payload }: { payload: Selection | null },
 ): RoutePlannerState {
-  // The route's own panel; picking goes on beside it.
-  if (payload?.type === 'route-weather') {
-    return state;
-  }
-
   return {
     ...state,
     pickMode:
@@ -329,6 +321,7 @@ export const routePlannerReducer = createReducer(
         milestones: state.milestones,
         pickMode: 'start',
       }))
+
       .addCase(routePlannerSetMilestones, (state, { payload }) => ({
         ...state,
         milestones: payload,
@@ -599,10 +592,6 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerSetPickMode, (state, action) => ({
         ...state,
         pickMode: action.payload,
-      }))
-      .addCase(routePlannerToggleItineraryVisibility, (state) => ({
-        ...state,
-        itineraryIsVisible: !state.itineraryIsVisible,
       }))
       .addCase(
         routePlannerSetResult,

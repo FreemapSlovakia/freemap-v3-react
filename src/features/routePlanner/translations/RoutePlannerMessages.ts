@@ -1,6 +1,7 @@
 import type { TransportTypeMsgKey } from '@shared/transportTypeDefs.js';
-import type { JSX, ReactNode } from 'react';
+import type { JSX } from 'react';
 import type { RoutingMode } from '../model/actions.js';
+import type { Maneuver } from '../model/maneuvers.js';
 
 type Err = { err: string };
 
@@ -64,12 +65,23 @@ export type RoutePlannerMessages = {
     fromStart: string;
     fromFinish: string;
   };
-  /** A waypoint's stop: a pause, or nights spent there. */
+  itinerary: {
+    title: string;
+    /** The panel's other view. */
+    weather: string;
+    /** The weather view without a departure. */
+    noDeparture: string;
+  };
+  turnByTurn: {
+    label: string;
+    maneuvers: Record<Maneuver, string>;
+  };
   shaping: {
     label: string;
     hint: string;
     turnsBack: string;
   };
+  /** A waypoint's stop: a pause, or nights spent there. */
   waypointStop: {
     label: string;
     none: string;
@@ -98,31 +110,14 @@ export type RoutePlannerMessages = {
   /** From the start, or on from a stop. */
   departure: ({ time }: { time: string }) => JSX.Element;
   departureLabel: string;
-  /** Unsets the departure. */
-  departureNow: string;
+  /** In place of the field while there is no departure. */
+  departureOff: string;
+  /** What the departure's toggle being off means. */
+  departureHint: string;
   /** The start menu's item selecting the start, where it is set. */
   departureTime: string;
-  duration: ({
-    h,
-    m,
-    diff,
-  }: {
-    h: number;
-    m: number;
-    diff?: {
-      h: number;
-      m: number;
-    };
-  }) => JSX.Element;
-  summary: ({
-    distance,
-    h,
-    m,
-  }: {
-    distance: ReactNode;
-    h: ReactNode;
-    m: ReactNode;
-  }) => JSX.Element;
+  /** `value` and `diff` already formatted. */
+  duration: ({ value, diff }: { value: string; diff?: string }) => JSX.Element;
   showMidpointHint: string;
   gpsError: string;
   routeNotFound: string;

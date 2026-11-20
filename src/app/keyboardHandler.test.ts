@@ -17,6 +17,7 @@ import {
   panoramaSetPicking,
   panoramaSetProbe,
 } from '@features/panorama/model/actions.js';
+import { routePlannerSetPanelOpen } from '@features/routePlanner/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
 import {
@@ -86,6 +87,8 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     },
     changesetInspector: { inspected: null, history: null },
     osmNotes: { selected: null },
+    routePlanner: { alternatives: [] },
+    routePlannerSettings: { panelOpen: false },
     ...overrides,
   } as unknown as RootState;
 }
@@ -377,6 +380,41 @@ describe('handleEvent — Escape', () => {
 
       menu.remove();
     }
+  });
+
+  it('deselects a route point, then closes the tool, then the route panel', () => {
+    const open = {
+      routePlanner: { alternatives: [{}] },
+      routePlannerSettings: { panelOpen: true },
+    };
+
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          ...open,
+          main: {
+            activeModal: null,
+            selection: { type: 'route-point', id: 1 },
+          },
+        }),
+      ),
+    ).toEqual(selectFeature(null));
+
+    // The tool before the panel, which outlasts it.
+    expect(
+      handleEvent(
+        esc(),
+        makeState({
+          ...open,
+          main: { activeModal: null, mapTool: 'route-planner' },
+        }),
+      ),
+    ).toEqual(closeTool('route-planner'));
+
+    expect(handleEvent(esc(), makeState(open))).toEqual(
+      routePlannerSetPanelOpen(false),
+    );
   });
 
   it('leaves the panorama picking before anything else', () => {

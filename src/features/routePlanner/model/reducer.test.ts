@@ -23,7 +23,6 @@ import {
   routePlannerSetTransportType,
   routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
-  routePlannerToggleItineraryVisibility,
 } from './actions.js';
 import {
   routePlannerInitialState,
@@ -430,15 +429,6 @@ describe('routePlannerReducer — reset & misc', () => {
     expect(next.transportType).toBe('car');
     expect(next.mode).toBe('trip');
     expect(next.milestones).toBe('rel');
-  });
-
-  it('toggleItineraryVisibility flips the flag', () => {
-    const next = routePlannerReducer(
-      routePlannerInitialState,
-      routePlannerToggleItineraryVisibility(),
-    );
-
-    expect(next.itineraryIsVisible).toBe(true);
   });
 
   it('setActiveAlternativeIndex stores the index', () => {

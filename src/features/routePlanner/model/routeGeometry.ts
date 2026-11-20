@@ -1,5 +1,6 @@
+import { type Bbox, latLonBbox } from '@shared/geoutils.js';
 import type { Feature, Polygon, Position } from 'geojson';
-import type { Alternative, Step } from './actions.js';
+import type { Alternative, Leg, Step } from './actions.js';
 
 /**
  * An alternative as the single line it draws: every step's coordinates, with
@@ -65,4 +66,17 @@ export function plannedRouteLines(
     : alternative
       ? [alternativeCoordinates(alternative)]
       : [];
+}
+
+/** The legs' bounding box; undefined where they have no line. */
+export function legsBbox(legs: readonly Leg[]): Bbox | undefined {
+  return latLonBbox(
+    legs
+      .flatMap((leg) => leg.steps)
+      .flatMap((step) =>
+        step.geometry.coordinates.flatMap(([lon, lat]) =>
+          lon === undefined || lat === undefined ? [] : [{ lat, lon }],
+        ),
+      ),
+  );
 }

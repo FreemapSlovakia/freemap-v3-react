@@ -37,6 +37,7 @@ import { MyMapsMenu } from '@features/myMaps/components/MyMapsMenu.js';
 import { isPremium } from '@features/premium/premium.js';
 import RouteLegSelection from '@features/routePlanner/components/RouteLegSelection.js';
 import RoutePointSelection from '@features/routePlanner/components/RoutePointSelection.js';
+import { routePanelShown } from '@features/routePlanner/hooks/useRoutePanel.js';
 import { SearchMenu } from '@features/search/components/SearchMenu.js';
 import { Toasts } from '@features/toasts/components/Toasts.js';
 import { TrackingSelection } from '@features/tracking/components/TrackingSelection.js';
@@ -216,10 +217,10 @@ const weatherPanelFactory = () =>
     '@features/weatherForecast/components/WeatherPanel.js'
   );
 
-const routeWeatherPanelFactory = () =>
+const routePanelFactory = () =>
   import(
-    /* webpackChunkName: "route-weather-panel" */
-    '@features/weatherForecast/components/RouteWeatherPanel.js'
+    /* webpackChunkName: "route-panel" */
+    '@features/routePlanner/components/RoutePanel.js'
   );
 
 const changesetInspectorPanelFactory = () =>
@@ -742,13 +743,16 @@ export function Main(): ReactElement {
   // A panel is mounted from its first use on: a result being looked at, an
   // object whose type is switched off or a note whose layer goes takes its
   // selection along, and the panel must outlive it to slide out.
+  const routePanelOpen = useAppSelector(routePanelShown);
+
   const [picked, setPicked] = useState<
-    ReadonlySet<Selection['type'] | 'inspection'>
+    ReadonlySet<Selection['type'] | 'inspection' | 'route'>
   >(() => new Set());
 
   const using = new Set([
     ...(selectionType && hasPanel(selectionType) ? [selectionType] : []),
     ...(inspecting ? (['inspection'] as const) : []),
+    ...(routePanelOpen ? (['route'] as const) : []),
   ]);
 
   if (!using.isSubsetOf(picked)) {
@@ -1135,8 +1139,8 @@ export function Main(): ReactElement {
             <AsyncComponent factory={weatherPanelFactory} />
           )}
 
-          {picked.has('route-weather') && (
-            <AsyncComponent factory={routeWeatherPanelFactory} />
+          {picked.has('route') && (
+            <AsyncComponent factory={routePanelFactory} />
           )}
 
           {picked.has('inspection') && (

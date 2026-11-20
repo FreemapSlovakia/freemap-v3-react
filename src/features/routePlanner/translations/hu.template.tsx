@@ -37,6 +37,33 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   start: 'Kiindulás',
   finish: 'Úti cél',
   swap: 'Kiindulási pont és cél felcserélése',
+  itinerary: {
+    title: 'Útiterv',
+    weather: 'Időjárás',
+    noDeparture: 'Kapcsolja be az indulást az útvonal menti időjáráshoz.',
+  },
+  turnByTurn: {
+    label: 'Részletes útvonal',
+    maneuvers: {
+      depart: 'Induljon',
+      continue: 'Haladjon tovább',
+      straight: 'Haladjon egyenesen',
+      left: 'Forduljon balra',
+      right: 'Forduljon jobbra',
+      slightLeft: 'Enyhén balra',
+      slightRight: 'Enyhén jobbra',
+      sharpLeft: 'Élesen balra',
+      sharpRight: 'Élesen jobbra',
+      uturn: 'Forduljon vissza',
+      keepLeft: 'Tartson balra',
+      keepRight: 'Tartson jobbra',
+      merge: 'Csatlakozzon',
+      rampOn: 'Hajtson fel a felhajtóra',
+      rampOff: 'Hajtson le a lehajtón',
+      roundabout: 'Hajtson be a körforgalomba',
+      exitRoundabout: 'Hagyja el a körforgalmat',
+    },
+  },
   shaping: {
     label: 'Segédpont',
     hint: 'Csak az útvonalat igazítja: szám, megálló és idő nélkül.',
@@ -114,21 +141,15 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     </>
   ),
   departureLabel: 'Indulás',
-  departureNow: 'Most',
+  departureOff: 'Nincs beállítva',
+  departureHint: 'Kikapcsolva: időpontok és útvonalmenti időjárás nélkül.',
   departureTime: 'Indulás ideje',
-  duration: ({ h, m, diff }) => (
+  duration: ({ value, diff }) => (
     <>
       Időtartam:{' '}
       <b>
-        {h} óra {m} perc{diff && ` (+ ${diff.h} óra ${diff.m} perc)`}
-      </b>
-    </>
-  ),
-  summary: ({ distance, h, m }) => (
-    <>
-      Távolság: <b>{distance}</b> | Időtartam:{' '}
-      <b>
-        {h} óra {m} perc
+        {value}
+        {diff ? ` (+ ${diff})` : ''}
       </b>
     </>
   ),

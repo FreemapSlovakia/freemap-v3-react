@@ -40,7 +40,11 @@ Pri profiloch v časti OSRM sú režimy :MdTimeline: **V určenom poradí**, :Pi
 
 ## Údaje o trase
 
-Pri cieli sa zobrazuje **Vzdialenosť** a **Trvanie** trasy a ak trasa vedie po spoplatnených úsekoch, aj dĺžka týchto úsekov. Ukázaním na zastávku uvidíte súčty až po túto zastávku.
+Pri cieli sa zobrazuje vzdialenosť a trvanie trasy vrátane zastávok a pri nastavenom odchode aj príchod. Ukázaním na zastávku uvidíte súčty až po túto zastávku a ukázaním na cieľ ich uvidíte v rovnakej podobe. Ostatné, aj spoplatnené úseky, nájdete v itinerári.
+
+V režime :MdTimeline: **V určenom poradí** otvorí :FaListOl: **Itinerár** na lište (na úzkej obrazovke pod :FaEllipsisV:), alebo kliknutie na popis pri cieli, itinerár trasy vedľa mapy, ktorý zostane otvorený aj pre ďalšie trasy, kým ho nezatvoríte: **Odchod**, súčty a príchod, potom každú zastávku s časom príchodu, prestávkou alebo nocľahom a časom pokračovania, a medzi nimi každý úsek s jeho dopravou, vzdialenosťou a trvaním. Pomocné body sa v ňom nezobrazujú. Kliknutím na riadok vyberiete danú zastávku alebo úsek a uvidíte ho na mape, pričom itinerár zostane otvorený; prestávku zastávky nastavíte na jej lište. **Podrobné pokyny** pridajú každé odbočenie na úsekoch s názvom cesty a vzdialenosťou k ďalšiemu odbočeniu. Ukázaním na odbočenie alebo na riadok počasia sa jeho miesto vyznačí na mape; kliknutím ho uvidíte.
+
+:FaClock: **Odchod** hore odchod zapne alebo vypne; bez neho itinerár neukazuje časy. :FaCloudSun: **Počasie** prepne na počasie pozdĺž trasy z tohto odchodu, ktorý potrebuje. V ostatných režimoch je to isté tlačidlo na lište :FaCloudSun: **Počasie pozdĺž trasy**.
 
 Medzi dvoma bodmi sa môže zobraziť aj alternatívna trasa. Kliknutím na alternatívnu trasu ju vyberiete. Koľko trás sa najviac zobrazí, nastavíte v :FaEllipsisV: → **Max. počet ponúkaných trás**.
 

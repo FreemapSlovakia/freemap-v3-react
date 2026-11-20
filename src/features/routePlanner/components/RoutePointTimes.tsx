@@ -22,8 +22,7 @@ export function RoutePointTimes({
 
   const format = useDateTimeFormat(WEEKDAY_TIME);
 
-  const times =
-    schedule?.departure === null ? undefined : schedule?.times?.[index];
+  const times = schedule?.times?.[index];
 
   if (!times) {
     return null;

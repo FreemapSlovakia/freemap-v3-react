@@ -16,6 +16,34 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     reverseFlowHint:
       'Die Ringe zeigen dann, von wo aus dieser Punkt erreichbar ist; ohne Haken, wohin man von ihm aus kommt. Einbahnstraßen und Abbiegeverbote machen den Unterschied.',
   },
+  itinerary: {
+    title: 'Reiseplan',
+    weather: 'Wetter',
+    noDeparture:
+      'Schalten Sie die Abfahrt ein, um das Wetter entlang der Route zu sehen.',
+  },
+  turnByTurn: {
+    label: 'Abbiegehinweise',
+    maneuvers: {
+      depart: 'Start',
+      continue: 'Weiter',
+      straight: 'Geradeaus',
+      left: 'Links abbiegen',
+      right: 'Rechts abbiegen',
+      slightLeft: 'Leicht links',
+      slightRight: 'Leicht rechts',
+      sharpLeft: 'Scharf links',
+      sharpRight: 'Scharf rechts',
+      uturn: 'Wenden',
+      keepLeft: 'Links halten',
+      keepRight: 'Rechts halten',
+      merge: 'Einfädeln',
+      rampOn: 'Auffahrt nehmen',
+      rampOff: 'Ausfahrt nehmen',
+      roundabout: 'In den Kreisverkehr',
+      exitRoundabout: 'Kreisverkehr verlassen',
+    },
+  },
   shaping: {
     label: 'Hilfspunkt',
     hint: 'Lenkt nur die Route: ohne Nummer, Halt und Zeit.',
@@ -114,21 +142,15 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     </>
   ),
   departureLabel: 'Abfahrt',
-  departureNow: 'Jetzt',
+  departureOff: 'Nicht festgelegt',
+  departureHint: 'Aus: ohne Uhrzeiten und ohne Wetter entlang der Route.',
   departureTime: 'Abfahrtszeit',
-  duration: ({ h, m, diff }) => (
+  duration: ({ value, diff }) => (
     <>
       Dauer:{' '}
       <b>
-        {h}h {m}m{diff && ` (+ ${diff.h}h ${diff.m}m)`}
-      </b>
-    </>
-  ),
-  summary: ({ distance, h, m }) => (
-    <>
-      Entfernung: <b>{distance}</b> | Dauer:{' '}
-      <b>
-        {h}h {m}m
+        {value}
+        {diff ? ` (+ ${diff})` : ''}
       </b>
     </>
   ),
