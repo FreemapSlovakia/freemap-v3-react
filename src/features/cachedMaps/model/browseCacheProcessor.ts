@@ -114,8 +114,12 @@ export function syncBrowseCache(getState: () => RootState): Promise<void> {
       notifyServiceWorker('browse-cache-changed');
     })
     .catch((err) => {
-      // IndexedDB refused (site data blocked): there is no browse cache then.
-      if (!(err instanceof DOMException && err.name === 'SecurityError')) {
+      // IndexedDB refused (site data blocked) or absent (iOS lockdown mode,
+      // some in-app browsers): there is no browse cache then.
+      if (
+        !(err instanceof DOMException && err.name === 'SecurityError') &&
+        !(err instanceof ReferenceError && typeof indexedDB === 'undefined')
+      ) {
         throw err;
       }
     });
