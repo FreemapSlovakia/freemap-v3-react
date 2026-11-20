@@ -440,6 +440,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-map-preferences': 'ustawienia, opcje, przezroczystość nakładek',
         'modal-elevation-settings': 'profil wysokościowy, wysokość, wykres',
         'clear-map-features': 'usuń wszystko, wyczyść, zresetuj mapę',
+        'weather-forecast':
+          'pogoda, meteo, temperatura, deszcz, śnieg, wiatr, burza, forecast',
         'layer-X': 'turystyka, rower, biegówki, jazda konna, freemap',
         'layer-XK': 'szlaki turystyczne, znaki, kst',
         'layer-O': 'osm, mapnik, standardowa',

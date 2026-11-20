@@ -4,6 +4,7 @@ import { useClearMapPickOnLeave } from '@features/mapPick/useClearMapPickOnLeave
 import { PickingMenu } from '@shared/components/PickingMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
+import { PiMountains } from 'react-icons/pi';
 import { useDispatch } from 'react-redux';
 import {
   panoramaLookAt,
@@ -28,6 +29,7 @@ export default function PanoramaPickingMenu(): ReactElement {
       // A switch between viewpoint and target starts the address search over,
       // as the marker's own key drops the pick.
       key={picking}
+      icon={<PiMountains />}
       prompt={
         picking === 'target' ? m?.pickTargetPrompt : m?.pickViewpointPrompt
       }

@@ -19,6 +19,8 @@ const sl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'Vreme ob poti s premium dostopom',
   noRoute: 'Najprej načrtujte pot.',
   past: 'Pri tem odhodu je cela pot že za vami. Izberite poznejšega.',
+  pickPrompt: 'Kliknite na zemljevidu tja, kjer želite napoved.',
+  otherPlace: 'Drug kraj',
 };
 
 export default sl;

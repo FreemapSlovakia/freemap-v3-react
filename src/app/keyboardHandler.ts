@@ -46,6 +46,7 @@ import {
 } from '@features/panorama/model/actions.js';
 import { toposcopeSetPickingCenter } from '@features/toposcope/model/actions.js';
 import { viewshedSetPickingViewpoint } from '@features/viewshed/model/actions.js';
+import { weatherForecastSetPicking } from '@features/weatherForecast/model/actions.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { chordPrefixCodes, chordTarget } from '@shared/chordDefinitions.js';
 import { isDropdownOpen } from '@shared/dropdownOpen.js';
@@ -104,6 +105,10 @@ const PICKING: Record<
   panorama: { leave: () => panoramaSetPicking(null), fromModal: false },
   'viewshed-viewpoint': {
     leave: () => viewshedSetPickingViewpoint(false),
+    fromModal: false,
+  },
+  'weather-forecast': {
+    leave: () => weatherForecastSetPicking(false),
     fromModal: false,
   },
   'map-area': { leave: () => mapAreaSelectCancel(), fromModal: true },
@@ -576,6 +581,12 @@ export function handleEvent(event: KeyboardEvent, state: RootState) {
 
       case 'gallery-list':
         return galleryList('-createdAt');
+
+      // Not over another picking mode, and not offline, as its menu item.
+      case 'weather-forecast':
+        return pickingModeSelector(state) === null && navigator.onLine
+          ? weatherForecastSetPicking(true)
+          : undefined;
     }
   }
 

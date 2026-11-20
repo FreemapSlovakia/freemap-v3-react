@@ -458,6 +458,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'impostazioni, opzioni, opacità delle sovrapposizioni',
         'modal-elevation-settings': 'profilo altimetrico, quota, grafico',
         'clear-map-features': 'rimuovi tutto, cancella, azzera mappa',
+        'weather-forecast':
+          'tempo, previsione, temperatura, pioggia, neve, vento, temporale, forecast',
         'layer-X': 'escursionismo, ciclismo, sci, cavallo, freemap',
         'layer-XK': 'sentieri segnalati, segnavia, kst',
         'layer-O': 'osm, mapnik, standard',

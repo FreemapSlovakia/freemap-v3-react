@@ -23,6 +23,7 @@ import {
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { l10nSetChosenLanguage } from '@features/l10n/model/actions.js';
 import type { Submenu } from '@features/mainMenu/components/submenu.js';
+import { weatherForecastSetPicking } from '@features/weatherForecast/model/actions.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { Language } from '@shared/langUtils.js';
@@ -36,6 +37,7 @@ export type EventKey =
   | 'url'
   | 'drawing'
   | 'clear-map-features'
+  | 'weather-forecast'
   | 'fullscreen'
   | 'reset-app'
   | 'close'
@@ -247,6 +249,14 @@ export function useMenuHandler({
 
       if (key === 'clear-map-features') {
         dispatch(clearMapFeatures());
+
+        setShow(false);
+
+        return;
+      }
+
+      if (key === 'weather-forecast') {
+        dispatch(weatherForecastSetPicking(true));
 
         setShow(false);
 

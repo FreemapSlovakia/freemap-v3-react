@@ -9,6 +9,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
+import { FaMapPin } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 export default function HomeLocationPickingMenu(): ReactElement {
@@ -47,6 +48,7 @@ export default function HomeLocationPickingMenu(): ReactElement {
 
   return (
     <PickingMenu
+      icon={<FaMapPin />}
       prompt={m?.main.pickPlacePrompt}
       onConfirm={confirm}
       confirmLabel={m?.general.save}

@@ -536,6 +536,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'predvoľby, preferencie, voľby, priehľadnosť prekrytia',
         'modal-elevation-settings': 'výškový profil, nadmorská výška, graf',
         'clear-map-features': 'vyčistiť, zmazať všetko, vymazať mapu',
+        'weather-forecast':
+          'počasie, meteo, teplota, dážď, sneh, vietor, búrka, zrážky, forecast',
         'layer-X': 'turistika, cyklo, bežky, jazdenie, freemap',
         'layer-XK': 'turistické trasy, značky, kst',
         'layer-O': 'osm, mapnik, štandardná',

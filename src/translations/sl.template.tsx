@@ -452,6 +452,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'nastavitve, možnosti, prosojnost prekrivnih slojev',
         'modal-elevation-settings': 'višinski profil, nadmorska višina, graf',
         'clear-map-features': 'odstrani vse, izbriši, ponastavi karto',
+        'weather-forecast':
+          'meteo, temperatura, dež, sneg, veter, nevihta, forecast',
         'layer-X': 'pohodništvo, kolesarjenje, smučanje, jahanje, freemap',
         'layer-XK': 'planinske poti, markacije, kst',
         'layer-O': 'osm, mapnik, standardna',

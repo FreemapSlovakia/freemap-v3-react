@@ -46,6 +46,7 @@ import { trackingReducer } from '@features/tracking/model/reducer.js';
 import { trackingSettingsReducer } from '@features/tracking/model/settingsReducer.js';
 import { viewshedReducer } from '@features/viewshed/model/reducer.js';
 import { viewshedSettingsReducer } from '@features/viewshed/model/settingsReducer.js';
+import { weatherForecastReducer } from '@features/weatherForecast/model/reducer.js';
 import { weatherRadarReducer } from '@features/weatherRadar/model/reducer.js';
 import { weatherRadarSettingsReducer } from '@features/weatherRadar/model/settingsReducer.js';
 import { wikiReducer } from '@features/wiki/model/reducer.js';
@@ -100,6 +101,7 @@ export const reducers = {
   trackViewerSettings: dataViewerSettingsReducer,
   viewshed: viewshedReducer,
   viewshedSettings: viewshedSettingsReducer,
+  weatherForecast: weatherForecastReducer,
   weatherRadar: weatherRadarReducer,
   weatherRadarSettings: weatherRadarSettingsReducer,
   myMaps: mapsReducer,

@@ -9,6 +9,8 @@ import { LongPressTooltip } from './LongPressTooltip.js';
 import { Toolbar } from './Toolbar.js';
 
 type Props = {
+  /** The asking feature's own icon, before the prompt. */
+  icon: ReactNode;
   /** What the map is being asked for. */
   prompt: ReactNode;
   onCancel: () => void;
@@ -21,8 +23,8 @@ type Props = {
   cancelKbd?: string;
   /** The mode's own controls, between the prompt and the buttons. */
   children?: ReactNode;
-  /** Adds an address search; the found place only stages the pick to confirm. */
-  onPlace?: (position: LatLon) => void;
+  /** Adds an address search; the found place stages the pick to confirm, or answers without a confirm. */
+  onPlace?: (position: LatLon, name: string) => void;
 };
 
 /**
@@ -30,6 +32,7 @@ type Props = {
  * rest of the chrome is hidden; see `inPickingModeSelector`.
  */
 export function PickingMenu({
+  icon,
   prompt,
   onCancel,
   onConfirm,
@@ -49,7 +52,10 @@ export function PickingMenu({
 
       <Toolbar className="mt-2">
         <ButtonToolbar>
-          <div className="px-1 align-self-center">{prompt}</div>
+          <div className="px-1 align-self-center d-flex align-items-center gap-2">
+            <span className="flex-shrink-0 d-inline-flex">{icon}</span>
+            {prompt}
+          </div>
 
           {onPlace && <PlaceSearch onPlace={onPlace} />}
 

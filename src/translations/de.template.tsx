@@ -456,6 +456,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'einstellungen, optionen, deckkraft der überlagerung',
         'modal-elevation-settings': 'höhenprofil, höhe, diagramm',
         'clear-map-features': 'alles entfernen, löschen, karte zurücksetzen',
+        'weather-forecast':
+          'prognose, meteo, temperatur, regen, schnee, wind, gewitter, forecast',
         'layer-X': 'wandern, radfahren, langlauf, reiten, freemap',
         'layer-XK': 'wanderwege, markierungen, kst',
         'layer-O': 'osm, mapnik, standard',

@@ -4,6 +4,7 @@ import { useClearMapPickOnLeave } from '@features/mapPick/useClearMapPickOnLeave
 import { PickingMenu } from '@shared/components/PickingMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
+import { PiCompassRoseBold } from 'react-icons/pi';
 import { useDispatch, useStore } from 'react-redux';
 import { placeToposcopeCenter } from '../centerPoint.js';
 import { toposcopeSetPickingCenter } from '../model/actions.js';
@@ -27,6 +28,7 @@ export default function ToposcopeCenterPickingMenu(): ReactElement {
 
   return (
     <PickingMenu
+      icon={<PiCompassRoseBold />}
       prompt={m?.pickCenterPrompt}
       onConfirm={() => {
         if (position) {

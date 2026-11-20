@@ -3,11 +3,13 @@ import { usePlaceName } from '@features/search/hooks/usePlaceName.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import type { LatLon } from '@shared/types/common.js';
 import { type ReactElement, useState } from 'react';
-import { Alert } from 'react-bootstrap';
-import { FaCloudSun } from 'react-icons/fa';
+import { Alert, Button } from 'react-bootstrap';
+import { FaCloudSun, FaMapMarkerAlt } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
+import { weatherForecastSetPicking } from '../model/actions.js';
 import { useForecast } from '../model/forecast.js';
 import { parseWeatherPointId } from '../model/pointId.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
@@ -20,6 +22,8 @@ export default function WeatherPanel(): ReactElement {
   const m = useWeatherForecastMessages();
 
   const language = useAppSelector((state) => state.l10n.language);
+
+  const online = useOnline();
 
   const selection = useAppSelector((state) =>
     state.main.selection?.type === 'weather' ? state.main.selection : null,
@@ -72,6 +76,18 @@ export default function WeatherPanel(): ReactElement {
             </p>
 
             {named && <p className="small text-muted mb-2">{coords(item)}</p>}
+
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mb-2"
+              disabled={!online}
+              onClick={() => {
+                dispatch(weatherForecastSetPicking(true));
+              }}
+            >
+              <FaMapMarkerAlt /> {m?.otherPlace}
+            </Button>
 
             {point && <PanelForecast key={item.id} point={point} />}
           </>

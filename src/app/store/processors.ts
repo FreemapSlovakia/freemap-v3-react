@@ -227,6 +227,7 @@ import {
   viewshedReleaseProcessor,
   viewshedRenderProcessor,
 } from '@features/viewshed/model/processors.js';
+import { weatherForecastPickTrackingProcessor } from '@features/weatherForecast/model/processors.js';
 import {
   weatherRadarLayerProcessor,
   weatherRadarRefreshProcessor,
@@ -358,6 +359,7 @@ export const processors = [
   routePlannerMidpointHintProcessor,
   routeWeatherPickModeProcessor,
   routeWeatherCloseProcessor,
+  weatherForecastPickTrackingProcessor,
   ...Object.values(trackingAccessTokenProcessors),
   ...Object.values(trackingDeviceProcessors),
   trackingFollowStartProcessor,

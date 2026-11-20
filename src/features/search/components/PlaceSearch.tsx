@@ -14,6 +14,7 @@ import {
   photonAddress,
   photonExtentToBBox,
   photonForwardUrl,
+  photonShortName,
   uniquePhotonFeatures,
 } from '@shared/types/photonResult.js';
 import type { Map as LeafletMap } from 'leaflet';
@@ -24,8 +25,8 @@ import { useDispatch, useStore } from 'react-redux';
 import { HideArrow, minQueryLength, suggestDelayMs } from './searchInput.js';
 
 type Props = {
-  /** Where the chosen place is; the map is already moved there. */
-  onPlace: (position: LatLon) => void;
+  /** Where the chosen place is, and its name; the map is already moved there. */
+  onPlace: (position: LatLon, name: string) => void;
 };
 
 /**
@@ -165,7 +166,7 @@ export function PlaceSearch({ onPlace }: Props): ReactElement | null {
       );
     }
 
-    onPlace({ lat, lon });
+    onPlace({ lat, lon }, photonShortName(feature.properties));
 
     trackMatomo(['trackEvent', 'Search', 'pickingPlace']);
   }

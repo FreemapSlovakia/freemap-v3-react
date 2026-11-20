@@ -19,6 +19,8 @@ const hu: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'Az időjárás az útvonal mentén prémium hozzáféréssel',
   noRoute: 'Először tervezzen útvonalat.',
   past: 'Ezzel az indulással a teljes útvonal már a múltban van. Válasszon későbbit.',
+  pickPrompt: 'Kattintson a térképen oda, ahol az előrejelzést szeretné.',
+  otherPlace: 'Másik hely',
 };
 
 export default hu;

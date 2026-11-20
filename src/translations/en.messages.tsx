@@ -496,6 +496,8 @@ const messages: Messages = {
         'modal-map-preferences': 'settings, options, overlay opacity',
         'modal-elevation-settings': 'altitude, profile, chart settings',
         'clear-map-features': 'remove all, erase, reset map',
+        'weather-forecast':
+          'meteo, temperature, rain, snow, wind, storm, outlook',
         'layer-X': 'hiking, cycling, skiing, riding, freemap',
         'layer-XK': 'hiking trails, markers, kst',
         'layer-O': 'osm, mapnik, standard',

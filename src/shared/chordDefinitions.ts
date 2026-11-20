@@ -9,7 +9,7 @@ import { toolDefinitions } from './toolDefinitions.js';
 export type ChordTarget =
   | { modal: ModalId }
   | { external: ExternalTarget }
-  | { command: 'clear-map-features' | 'gallery-list' };
+  | { command: 'clear-map-features' | 'gallery-list' | 'weather-forecast' };
 
 export type ChordDefinition = ChordTarget & {
   /** `KeyboardEvent.code`s: the key that starts the chord, then the one that completes it. */
@@ -27,6 +27,7 @@ export const chordDefinitions: ChordDefinition[] = [
   { codes: ['KeyG', 'KeyM'], modal: 'my-maps' },
   { codes: ['KeyG', 'KeyW'], modal: 'tracking-watched' },
   { codes: ['KeyG', 'KeyD'], modal: 'tracking-my' },
+  { codes: ['KeyG', 'KeyF'], command: 'weather-forecast' },
 
   { codes: ['KeyE', 'KeyA'], modal: 'account' },
   { codes: ['KeyE', 'KeyG'], modal: 'map-features-export' },

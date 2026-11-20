@@ -3,6 +3,7 @@ import { useClearMapPickOnLeave } from '@features/mapPick/useClearMapPickOnLeave
 import { PickingMenu } from '@shared/components/PickingMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
+import { FaEye } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { viewshedPick, viewshedSetPickingViewpoint } from '../model/actions.js';
 import { useViewshedMessages } from '../translations/useViewshedMessages.js';
@@ -18,6 +19,7 @@ export default function ViewshedViewpointPickingMenu(): ReactElement {
 
   return (
     <PickingMenu
+      icon={<FaEye />}
       prompt={m?.pickViewpointPrompt}
       // `viewshedPick` ends the picking mode itself.
       onConfirm={() => position && dispatch(viewshedPick(position))}

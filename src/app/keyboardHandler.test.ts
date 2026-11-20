@@ -75,6 +75,7 @@ function makeState(overrides: Record<string, unknown> = {}): RootState {
     toposcope: { pickingCenter: false },
     panorama: { picking: null },
     viewshed: { pickingViewpoint: false },
+    weatherForecast: { picking: false },
     events: { pickingStart: false },
     elevationChart: { target: null },
     trackViewer: {

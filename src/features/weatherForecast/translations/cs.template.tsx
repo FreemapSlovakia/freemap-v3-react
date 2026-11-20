@@ -19,6 +19,8 @@ const cs: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'Počasí podél trasy s prémiovým přístupem',
   noRoute: 'Nejprve naplánujte trasu.',
   past: 'Při tomto odchodu je celá trasa už za vámi. Zvolte pozdější.',
+  pickPrompt: 'Klikněte na mapě tam, kde chcete předpověď.',
+  otherPlace: 'Jiné místo',
 };
 
 export default cs;

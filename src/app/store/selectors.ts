@@ -58,6 +58,7 @@ const PICKING_MODES = [
   ['toposcope-center', (s) => s.toposcope.pickingCenter],
   ['panorama', (s) => s.panorama.picking !== null],
   ['viewshed-viewpoint', (s) => s.viewshed.pickingViewpoint],
+  ['weather-forecast', (s) => s.weatherForecast.picking],
   ['map-area', (s) => s.mapArea.selecting !== null],
   ['map-library-preview', (s) => s.mapLibrary.preview !== null],
   ['home-location', (s) => s.homeLocation.selectingHomeLocation !== false],
@@ -80,6 +81,7 @@ const PICKING_CURSOR: Record<PickingMode, string> = {
   'toposcope-center': 'crosshair',
   panorama: 'crosshair',
   'viewshed-viewpoint': 'crosshair',
+  'weather-forecast': 'crosshair',
   'home-location': 'crosshair',
   // A click on the map does nothing in these: the area is set by its handles,
   // and the other two only show something.

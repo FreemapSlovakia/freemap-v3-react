@@ -2,6 +2,7 @@ import { PickingMenu } from '@shared/components/PickingMenu.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import type { ReactElement } from 'react';
 import { Form } from 'react-bootstrap';
+import { FaCalendarDay } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   eventsConfirmPick,
@@ -24,6 +25,7 @@ export default function EventStartPickingMenu(): ReactElement {
 
   return (
     <PickingMenu
+      icon={<FaCalendarDay />}
       prompt={radius === null ? em?.picking.startPoint : em?.picking.place}
       onConfirm={() => dispatch(eventsConfirmPick())}
       confirmDisabled={!placed}

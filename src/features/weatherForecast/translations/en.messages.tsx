@@ -18,6 +18,8 @@ const en: WeatherForecastMessages = {
   locked: 'The weather along the route with premium access',
   noRoute: 'Plan a route first.',
   past: 'From this departure, the whole route is already behind. Choose a later one.',
+  pickPrompt: 'Click on the map where you want the forecast.',
+  otherPlace: 'Another place',
 };
 
 export default en;

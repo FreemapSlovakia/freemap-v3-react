@@ -19,6 +19,8 @@ const it: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   locked: 'Il meteo lungo il percorso con l’accesso premium',
   noRoute: 'Pianifichi prima un percorso.',
   past: 'Con questa partenza l’intero percorso è già passato. Ne scelga una più tarda.',
+  pickPrompt: 'Clicchi sulla mappa dove desidera le previsioni.',
+  otherPlace: 'Un altro luogo',
 };
 
 export default it;

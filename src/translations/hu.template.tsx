@@ -456,6 +456,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-elevation-settings':
           'magassági profil, tengerszint feletti magasság, diagram',
         'clear-map-features': 'összes törlése, törlés, térkép visszaállítása',
+        'weather-forecast':
+          'meteo, hőmérséklet, eső, hó, szél, vihar, forecast',
         'layer-X': 'túrázás, kerékpározás, síelés, lovaglás, freemap',
         'layer-XK': 'turistautak, jelzések, kst',
         'layer-O': 'osm, mapnik, alap',

@@ -16,6 +16,7 @@ import {
 } from '@features/map/model/actions.js';
 import type { LayerKind } from '@features/map/model/layerKind.js';
 import type { MapPreset } from '@features/map/model/mapPreset.js';
+import { weatherForecastSetPicking } from '@features/weatherForecast/model/actions.js';
 import type { UnknownAction } from '@reduxjs/toolkit';
 import { Chord } from '@shared/components/Chord.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
@@ -31,6 +32,7 @@ import { BiWifiOff } from 'react-icons/bi';
 import {
   FaBook,
   FaChartArea,
+  FaCloudSun,
   FaCode,
   FaCube,
   FaDatabase,
@@ -277,6 +279,16 @@ export function getCommands(ctx: CommandContext): Command[] {
       label: m.main.clearMap,
       badges: <Chord command="clear-map-features" />,
       action: clearMapFeatures(),
+    });
+
+    add({
+      id: 'weather-forecast',
+      kind: 'function',
+      icon: <FaCloudSun />,
+      label: m.mapCtxMenu.weatherForecast,
+      badges: <Chord command="weather-forecast" />,
+      action: weatherForecastSetPicking(true),
+      requiresOnline: true,
     });
 
     add({

@@ -3,6 +3,7 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useId, useRef } from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
+import { FaCamera } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import {
   galleryConfirmPickedPosition,
@@ -37,6 +38,7 @@ export default function GalleryPositionPickingMenu(): ReactElement {
 
   return (
     <PickingMenu
+      icon={<FaCamera />}
       prompt={gm?.locationPicking.title}
       onConfirm={() => dispatch(galleryConfirmPickedPosition())}
       onCancel={() => dispatch(gallerySetItemForPositionPicking(null))}

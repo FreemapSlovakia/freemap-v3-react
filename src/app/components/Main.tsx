@@ -288,6 +288,18 @@ const viewshedViewpointPickingMenuFactory = () =>
     '@features/viewshed/components/ViewshedViewpointPickingMenu.js'
   );
 
+const weatherPickingFactory = () =>
+  import(
+    /* webpackChunkName: "weather-picking" */
+    '@features/weatherForecast/components/WeatherPicking.js'
+  );
+
+const weatherPickingMenuFactory = () =>
+  import(
+    /* webpackChunkName: "weather-picking-menu" */
+    '@features/weatherForecast/components/WeatherPickingMenu.js'
+  );
+
 const eventsMenuFactory = () =>
   import(
     /* webpackChunkName: "events-menu" */
@@ -691,6 +703,7 @@ const PICKING_MENU: Record<
   'toposcope-center': toposcopeCenterPickingMenuFactory,
   panorama: panoramaPickingMenuFactory,
   'viewshed-viewpoint': viewshedViewpointPickingMenuFactory,
+  'weather-forecast': weatherPickingMenuFactory,
   'map-area': mapAreaSelectionMenuFactory,
   'map-library-preview': mapLibraryPreviewMenuFactory,
   'home-location': homeLocationPickingMenuFactory,
@@ -1350,6 +1363,10 @@ export function Main(): ReactElement {
 
             {pickingMode === 'viewshed-viewpoint' && (
               <AsyncComponent factory={viewshedViewpointPickingFactory} />
+            )}
+
+            {pickingMode === 'weather-forecast' && (
+              <AsyncComponent factory={weatherPickingFactory} />
             )}
 
             {pickingMode === 'event-start' && (

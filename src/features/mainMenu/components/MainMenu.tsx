@@ -24,6 +24,7 @@ import type { ReactElement } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   FaChevronRight,
+  FaCloudSun,
   FaCode,
   FaCube,
   FaDatabase,
@@ -160,6 +161,16 @@ export function MainMenu(): ReactElement {
             )
           );
         })}
+
+      <OnlineOnlyItem as="button" eventKey="weather-forecast">
+        <FaCloudSun />
+        <MenuLabel>
+          <Text k="mapCtxMenu.weatherForecast" />
+        </MenuLabel>
+        <MenuGutter>
+          <Chord command="weather-forecast" />
+        </MenuGutter>
+      </OnlineOnlyItem>
 
       <Dropdown.Divider />
 
