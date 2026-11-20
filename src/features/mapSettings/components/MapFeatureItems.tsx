@@ -622,6 +622,10 @@ function RouteItems(): ReactElement {
     const shaping = isShaping(points, index, mode);
 
     if (!shaping) {
+      stretch = { at, index, legs: [] };
+    }
+
+    if (!shaping) {
       items.push({
         key: `point-${index}`,
         icon:
@@ -656,7 +660,9 @@ function RouteItems(): ReactElement {
 
     duration += leg.duration;
 
-    stretch = shaping && stretch ? stretch : { at, index, legs: [] };
+    if (!stretch) {
+      continue;
+    }
 
     stretch.legs.push(leg);
 

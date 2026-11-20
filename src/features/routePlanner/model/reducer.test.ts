@@ -27,6 +27,7 @@ import {
 } from './actions.js';
 import {
   routePlannerInitialState,
+  routePlannerOptimizeApplicable,
   routePlannerReducer,
   standingSavedRoute,
   storedRouteIsShowing,
@@ -281,6 +282,17 @@ describe('routePlannerReducer — shaping points', () => {
     expect(next.points[1]?.shaping).toBe(true);
 
     expect(next.points[1]?.stop).toBeUndefined();
+  });
+
+  it('optimizing needs three waypoints besides shaping points', () => {
+    const shaped = routePlannerReducer(
+      state,
+      routePlannerSetShaping({ index: 1, shaping: true }),
+    );
+
+    expect(routePlannerOptimizeApplicable(state)).toBe(true);
+
+    expect(routePlannerOptimizeApplicable(shaped)).toBe(false);
   });
 
   it('removing the finish makes no shaping finish', () => {

@@ -59,6 +59,7 @@ import {
   type Waypoint,
 } from './actions.js';
 import { applyTransport, legTransports } from './legTransports.js';
+import { isShaping } from './shaping.js';
 
 export interface SampledRouteLine {
   line: Feature<LineString>;
@@ -717,7 +718,9 @@ export function routePlannerOptimizeApplicable(
   return (
     transportTypeDefs[state.transportType].api === 'gh' &&
     state.mode === 'route' &&
-    state.points.length >= 3
+    // Shaping points are dropped before reordering.
+    state.points.filter((_, i) => !isShaping(state.points, i, state.mode))
+      .length >= 3
   );
 }
 

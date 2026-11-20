@@ -13,6 +13,7 @@ import {
   type TransportScope,
 } from '../model/legTransports.js';
 import { multimodalEditingSelector } from '../model/reducer.js';
+import { stretchBounds } from '../model/shaping.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 import { RoutePlannerTransportType } from './RoutePlannerTransportType.js';
@@ -31,6 +32,8 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
   const transportType = useAppSelector(
     (state) => state.routePlanner.transportType,
   );
+
+  const mode = useAppSelector((state) => state.routePlanner.mode);
 
   const canBeManual = useAppSelector(
     (state) =>
@@ -60,11 +63,14 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
 
     const [from, to] = sectionBounds(legs, id);
 
+    const [stretchFrom, stretchTo] = stretchBounds(points, mode, id);
+
     const options: [Scope, ReactElement][] = [
       ['leg', <Text key="leg" m={rpm} k="transportScope.leg" />],
     ];
 
-    if (from < to) {
+    // Wider than the stretch "This segment" already covers.
+    if (from < stretchFrom || to > stretchTo) {
       options.push([
         'section',
         <Text key="section" m={rpm} k="transportScope.section" />,
@@ -79,7 +85,7 @@ export default function RouteLegSelection(): ReactElement | undefined | false {
     }
 
     return options;
-  }, [multimodal, id, legs, transport, rpm]);
+  }, [multimodal, id, legs, transport, rpm, points, mode]);
 
   return (
     id !== undefined &&

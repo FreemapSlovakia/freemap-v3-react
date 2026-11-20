@@ -930,10 +930,15 @@ export function RoutePlannerResult(): ReactElement {
                     click() {
                       changeAlternative(alt);
 
+                      // A stretch is named by its first leg.
                       dispatch(
                         selectFeature({
                           type: 'route-leg',
-                          id: routeSlice.legIndex,
+                          id: stretchBounds(
+                            points,
+                            mode,
+                            routeSlice.legIndex,
+                          )[0],
                         }),
                       );
                     },

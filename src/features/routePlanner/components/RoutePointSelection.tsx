@@ -52,7 +52,7 @@ export default function RoutePointSelection():
       <Selection
         control={<RoutePlannerToggleButton />}
         icon={<FaMapMarkerAlt />}
-        label={shaping ? rpm?.shaping.label : rpm?.point.point}
+        label={rpm?.point.point}
         deletable
       >
         {start && <RouteDepartureControl />}

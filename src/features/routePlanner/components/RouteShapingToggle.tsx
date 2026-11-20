@@ -21,7 +21,7 @@ export function RouteShapingToggle({
 
   return (
     <LongPressTooltip
-      breakpoint="sm"
+      breakpoint="md"
       label={rpm?.shaping.label}
       hint={rpm?.shaping.hint}
     >
