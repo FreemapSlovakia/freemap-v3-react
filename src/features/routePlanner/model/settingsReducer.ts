@@ -54,7 +54,7 @@ export const routePlannerSettingsInitialState: RoutePlannerSettingsState = {
   lineOpacity: 1,
   markerOpacity: 1,
   maxAlternatives: 2,
-  panelOpen: false,
+  panelOpen: true,
   panelView: 'itinerary',
   turnByTurn: false,
 };
