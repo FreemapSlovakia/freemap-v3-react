@@ -1,4 +1,3 @@
-import { isPremium } from '@features/premium/premium.js';
 import { ForecastView } from '@features/weatherForecast/components/ForecastView.js';
 import { RouteForecast } from '@features/weatherForecast/components/RouteForecast.js';
 import {
@@ -10,7 +9,6 @@ import {
 } from '@features/weatherForecast/model/forecast.js';
 import { fetchMapRoute } from '@features/weatherForecast/model/mapRoute.js';
 import { useWeatherForecastMessages } from '@features/weatherForecast/translations/useWeatherForecastMessages.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useCached } from '@shared/hooks/useCached.js';
 import { useNow } from '@shared/hooks/useNow.js';
 import type { ReactElement } from 'react';
@@ -53,8 +51,6 @@ export function EventForecast({
 
   const loaded = useForecast(inRange ? event.startPoint : null);
 
-  const premium = useAppSelector((state) => isPremium(state.auth.user));
-
   // Its trip stats come from the linked map's route. A date-only event has no
   // hour to time the route from.
   const routed =
@@ -65,7 +61,7 @@ export function EventForecast({
 
   // Not kept: the event's map may be replaced with another route.
   const mapRoute = useCached(
-    routed && premium ? `map-route:${event.mapId}` : null,
+    routed ? `map-route:${event.mapId}` : null,
     () => fetchMapRoute(event.mapId!),
     false,
   );
@@ -100,14 +96,13 @@ export function EventForecast({
 
       <h6 className="fw-semibold">{m?.title}</h6>
 
-      {/* Without premium, the lock offering it needs no route loaded. */}
-      {routed && (route || !premium) && (
+      {route && (
         <>
           <p className="small text-muted mb-1">{m?.alongRoute}</p>
 
           <RouteForecast
-            route={route?.route ?? null}
-            stops={route?.stops}
+            route={route.route}
+            stops={route.stops}
             departure={event.startAt}
           />
         </>

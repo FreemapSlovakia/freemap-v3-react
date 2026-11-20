@@ -19,7 +19,6 @@ export type WeatherForecastMessages = {
   /** Reached later than the forecast reaches. */
   beyond: string;
   /** Premium upsell. */
-  locked: string;
   noRoute: string;
   /** The departure is so early that the whole route is over. */
   past: string;

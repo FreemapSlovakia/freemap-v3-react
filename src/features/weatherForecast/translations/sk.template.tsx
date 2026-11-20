@@ -15,7 +15,6 @@ const sk: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   finish: 'Cieľ',
   along: ({ distance }) => `Po ${distance}`,
   beyond: 'Mimo dosahu predpovede',
-  locked: 'Počasie pozdĺž trasy s prémiovým prístupom',
   noRoute: 'Najprv naplánujte trasu.',
   past: 'Pri tomto odchode je celá trasa už za vami. Zvoľte neskorší.',
   pause: 'Prestávka',

@@ -1,5 +1,3 @@
-import { PremiumGem } from '@features/premium/components/PremiumGem.js';
-import { isPremium } from '@features/premium/premium.js';
 import {
   type RouteStop,
   type TimedRoute,
@@ -7,7 +5,6 @@ import {
 } from '@features/routePlanner/model/schedule.js';
 import { usePlaceName } from '@features/search/hooks/usePlaceName.js';
 import { ClickableRow } from '@shared/components/ClickableRow.js';
-import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import {
   useDateTimeFormat,
   WEEKDAY_TIME,
@@ -15,7 +12,7 @@ import {
 import { useNow } from '@shared/hooks/useNow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useMemo } from 'react';
-import { Alert, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import {
   formatTemperature,
   spanStep,
@@ -30,7 +27,7 @@ import { Wind } from './Wind.js';
 
 /**
  * The weather at the route's forecast steps, start, highest point and finish,
- * leaving at `departure` (premium). `stops[i]` holds the route after leg `i`;
+ * leaving at `departure`. `stops[i]` holds the route after leg `i`;
  * `whenPast` says when it is all over.
  */
 export function RouteForecast({
@@ -50,8 +47,6 @@ export function RouteForecast({
 }): ReactElement | null {
   const m = useWeatherForecastMessages();
 
-  const premium = useAppSelector((state) => isPremium(state.auth.user));
-
   const now = useNow();
 
   const departureMs = departure.getTime();
@@ -61,16 +56,6 @@ export function RouteForecast({
     () => (route ? timedPositions(route, stops, departureMs) : null),
     [route, stops, departureMs],
   );
-
-  if (!premium) {
-    return (
-      <Alert variant="warning" className="d-flex align-items-center gap-2">
-        <PremiumGem />
-
-        {m?.locked}
-      </Alert>
-    );
-  }
 
   if (!positions) {
     return null;

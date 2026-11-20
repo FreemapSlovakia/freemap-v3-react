@@ -15,7 +15,6 @@ const de: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   finish: 'Ziel',
   along: ({ distance }) => `Nach ${distance}`,
   beyond: 'Außerhalb der Vorhersage',
-  locked: 'Das Wetter entlang der Route mit Premium-Zugang',
   noRoute: 'Planen Sie zuerst eine Route.',
   past: 'Bei dieser Abfahrt liegt die ganze Route schon hinter Ihnen. Wählen Sie eine spätere.',
   pause: 'Pause',

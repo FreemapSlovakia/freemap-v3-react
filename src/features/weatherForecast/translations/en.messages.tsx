@@ -14,7 +14,6 @@ const en: WeatherForecastMessages = {
   finish: 'Finish',
   along: ({ distance }) => `After ${distance}`,
   beyond: 'Beyond the forecast',
-  locked: 'The weather along the route with premium access',
   noRoute: 'Plan a route first.',
   past: 'From this departure, the whole route is already behind. Choose a later one.',
   pause: 'Pause',

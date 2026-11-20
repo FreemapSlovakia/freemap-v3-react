@@ -15,7 +15,6 @@ const hu: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   finish: 'Cél',
   along: ({ distance }) => `${distance} után`,
   beyond: 'Az előrejelzésen túl',
-  locked: 'Az időjárás az útvonal mentén prémium hozzáféréssel',
   noRoute: 'Először tervezzen útvonalat.',
   past: 'Ezzel az indulással a teljes útvonal már a múltban van. Válasszon későbbit.',
   pause: 'Pihenő',
