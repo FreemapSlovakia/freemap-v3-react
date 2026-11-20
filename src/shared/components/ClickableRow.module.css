@@ -1,0 +1,12 @@
+/* Selected: blue and white as a list's selected row. Set on the cells, as the
+   table's hover sets them, and over it. */
+.selected > * {
+  --bs-table-bg-state: var(--bs-primary) !important;
+  --bs-table-color-state: var(--bs-white) !important;
+
+  /* Grey is lost on the blue: a fainter white instead. */
+  & :global(.text-muted) {
+    color: inherit !important;
+    opacity: 0.75;
+  }
+}

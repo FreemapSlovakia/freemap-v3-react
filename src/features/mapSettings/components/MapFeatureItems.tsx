@@ -22,6 +22,7 @@ import { selectRecorderLines } from '@features/gpsRecorder/model/selectors.js';
 import { recorderLineLength } from '@features/gpsRecorder/segments.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { RoutePointName } from '@features/routePlanner/components/RoutePointName.js';
 import { legTransports } from '@features/routePlanner/model/legTransports.js';
 import { tolledMeters } from '@features/routePlanner/model/pathDetails.js';
 import {
@@ -636,6 +637,18 @@ function RouteItems(): ReactElement {
         ),
       color: WAYPOINT_COLORS[pointKind],
       label: name(index),
+      // By its place, as the itinerary names it; stops keep their number.
+      display: (
+        <RoutePointName
+          point={points[index]}
+          number={
+            pointKind === 'stop' && !(finishOnly && index === 0)
+              ? order(index)
+              : undefined
+          }
+          fallback={name(index)}
+        />
+      ),
       // How far it is from the start, as its marker's tooltip says.
       subline:
         pointKind === 'finish'

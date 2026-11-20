@@ -139,9 +139,7 @@ function Figures({
     <>
       <span className="text-nowrap">{formatDistance(metres, language)}</span>
       {' · '}
-      <span className="text-nowrap">
-        {formatDuration(seconds, language, 'narrow')}
-      </span>
+      <span className="text-nowrap">{formatDuration(seconds, language)}</span>
     </>
   );
 }
@@ -180,7 +178,11 @@ function WaypointRow({
         }
       }}
     >
-      <td className="ps-2 text-center" style={{ color: WAYPOINT_COLORS[kind] }}>
+      <td
+        className="ps-2 text-center"
+        // White on the selection's blue, which would hide a stop's number.
+        style={selected ? undefined : { color: WAYPOINT_COLORS[kind] }}
+      >
         {kind === 'start' ? (
           <FaPlay />
         ) : kind === 'finish' ? (

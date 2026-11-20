@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { type ReactElement, type ReactNode, useEffect, useRef } from 'react';
+import classes from './ClickableRow.module.css';
 
 /** A table row acting on a click and telling `onHover` of a mouse over it, also on unmounting. */
 export function ClickableRow({
@@ -40,7 +41,7 @@ export function ClickableRow({
 
   return (
     <tr
-      className={clsx(className, active && 'table-active')}
+      className={clsx(className, active && classes.selected)}
       style={onClick && { cursor: 'pointer' }}
       onClick={onClick}
       // A mouse's only: a tap enters without ever leaving.
