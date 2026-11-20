@@ -105,8 +105,10 @@ function abortable<T>(promise: Promise<T>, signal: AbortSignal): Promise<T> {
 
 async function loadItemLabels(lang: string): Promise<Record<string, string>> {
   const [res, osmMapping] = await Promise.all([
-    // bounded, so a hung request doesn't stay in the cache
-    fetch(`${fmMapserverUrl}/legend`, { signal: AbortSignal.timeout(30_000) }),
+    // bounded where the browser can, so a hung request doesn't stay in the cache
+    fetch(`${fmMapserverUrl}/legend`, {
+      signal: AbortSignal.timeout?.(30_000),
+    }),
     getOsmMapping(lang),
   ]);
 

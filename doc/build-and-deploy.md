@@ -29,6 +29,7 @@ The `builtin:swc-loader` rule sets `env: { targets: browserTargets, mode: 'usage
 
 - Only `src/` is covered — `node_modules` is excluded from the rule, so a dependency using a newer built-in is not polyfilled.
 - Detection is by method name, with one exception: SWC does not detect calls to the ES2025 Set methods (`union`, `difference`, `isSubsetOf`, …). They are polyfilled because any `new Set(` in `src/` injects all of them, and `main` and `sw` both construct Sets. A Set method called only on a Set some dependency created would not be covered.
+- Web-platform APIs are not core-js's: `AbortSignal.timeout` and `AbortSignal.any` are missing in still-targeted browsers, so callers feature-test them. Going without a time bound is acceptable there; losing a caller's cancellation is not.
 - Keep the `coreJs` version in step with the installed `core-js`; an older value omits newer polyfills.
 
 ## A stylesheet reached only from lazy chunks is emitted into every one of them

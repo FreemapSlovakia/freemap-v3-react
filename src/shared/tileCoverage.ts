@@ -91,7 +91,8 @@ export function loadTileCoverage(url: string): Promise<TileCoverage> {
 
   if (!promise) {
     // the base map waits for it, so a hanging server must not keep it blank
-    promise = fetch(url, { signal: AbortSignal.timeout(COVERAGE_TIMEOUT_MS) })
+    // missing in Safari < 16 and Chrome < 103, which go without the bound
+    promise = fetch(url, { signal: AbortSignal.timeout?.(COVERAGE_TIMEOUT_MS) })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`coverage ${res.status}`);

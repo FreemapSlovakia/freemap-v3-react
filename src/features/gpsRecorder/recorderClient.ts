@@ -61,6 +61,30 @@ const TRACK_TIMEOUT_MS = 20_000;
  */
 const BODY_STALL_MS = 10_000;
 
+function withCallerSignal(
+  controller: AbortController,
+  signal?: AbortSignal | null,
+): AbortSignal {
+  if (!signal) {
+    return controller.signal;
+  }
+
+  if (typeof AbortSignal.any === 'function') {
+    return AbortSignal.any([signal, controller.signal]);
+  }
+
+  // Chrome < 116, Firefox < 124 and Safari < 17.4 lack `any`: forward by hand
+  if (signal.aborted) {
+    controller.abort(signal.reason);
+  } else {
+    signal.addEventListener('abort', () => controller.abort(signal.reason), {
+      once: true,
+    });
+  }
+
+  return controller.signal;
+}
+
 async function recorderFetch(
   path: string,
   timeoutMs: number,
@@ -81,9 +105,7 @@ async function recorderFetch(
   try {
     response = await fetch(`${RECORDER_ORIGIN}${path}`, {
       ...init,
-      signal: init?.signal
-        ? AbortSignal.any([init.signal, controller.signal])
-        : controller.signal,
+      signal: withCallerSignal(controller, init?.signal),
       // Declares the target up front so Chrome's Local Network Access check
       // resolves to the loopback space and prompts, instead of blocking.
       targetAddressSpace: 'loopback',
