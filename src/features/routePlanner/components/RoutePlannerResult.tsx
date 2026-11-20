@@ -78,6 +78,7 @@ import {
   STEP_MODE_COLORS,
   stepModeDashArray,
 } from '../model/routeColors.js';
+import { alternativeCoordinates } from '../model/routeGeometry.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
 
@@ -300,14 +301,22 @@ export function RoutePlannerResult(): ReactElement {
       return [];
     }
 
-    const line = lineString(
-      alternatives[activeAlternativeIndex].legs
-        .flatMap((leg) => leg.steps)
-        .filter((step) => step.geometry.coordinates.length > 1)
-        .flatMap((step) => step.geometry.coordinates),
+    const coordinates = alternativeCoordinates(
+      alternatives[activeAlternativeIndex],
     );
 
+    // a route between identical points has no line to mark
+    if (coordinates.length < 2) {
+      return [];
+    }
+
+    const line = lineString(coordinates);
+
     const len = length(line);
+
+    if (len <= 0) {
+      return [];
+    }
 
     const milestones: Feature<Point>[] = [];
 
