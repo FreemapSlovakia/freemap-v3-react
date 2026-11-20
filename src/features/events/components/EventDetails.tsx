@@ -26,14 +26,16 @@ import { useEventDatesFormat } from './useEventDatesFormat.js';
 
 /**
  * An event's details, as its panel shows them under its actions; `mapActions`
- * go beside the linked map's name.
+ * go beside the linked map's name, `forecast` above the description.
  */
 export function EventDetails({
   event,
   mapActions,
+  forecast,
 }: {
   event: EventItem;
   mapActions?: ReactNode;
+  forecast?: ReactNode;
 }): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
@@ -194,6 +196,8 @@ export function EventDetails({
           {mapActions}
         </div>
       )}
+
+      {forecast}
 
       {/* The organizer's free text, apart from the fields above it. */}
       {event.description && (

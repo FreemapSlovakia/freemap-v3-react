@@ -96,7 +96,7 @@ export function EventForecast({
 
   return (
     <>
-      <hr />
+      <hr className="my-2" />
 
       <h6 className="fw-semibold">{m?.title}</h6>
 

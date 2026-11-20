@@ -98,9 +98,8 @@ export default function EventSelection(): ReactElement | null {
           <EventDetails
             event={event}
             mapActions={<EventMapActions event={event} />}
+            forecast={<EventForecast event={event} />}
           />
-
-          <EventForecast event={event} />
 
           <EventParticipants event={event} />
 
