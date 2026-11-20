@@ -5,6 +5,7 @@ import type {
   StepMode,
   Waypoint,
 } from './actions.js';
+import { waypointNumber } from './shaping.js';
 
 /** Route line color per transport mode, as the map draws it. */
 export const STEP_MODE_COLORS: Record<StepMode, string> = {
@@ -138,16 +139,19 @@ export const WAYPOINT_ICONS: Partial<Record<WaypointKind, string>> = {
 };
 
 /**
- * The number a stop is marked with, as the map draws it: its own position for a
- * point-to-point route, the router's visiting order for the modes that reorder
- * the waypoints.
+ * The number a stop is marked with, as the map draws it: its place among the
+ * real waypoints for a point-to-point route, the router's visiting order for
+ * the modes that reorder the waypoints.
  */
 export function stopNumber(
   index: number,
   mode: RoutingMode,
   waypoints: Waypoint[],
+  points: readonly ({ shaping?: true } | null | undefined)[],
 ): number | undefined {
-  return mode === 'route' ? index : waypoints[index]?.waypoint_index;
+  return mode === 'route'
+    ? waypointNumber(points, index, mode)
+    : waypoints[index]?.waypoint_index;
 }
 
 /**

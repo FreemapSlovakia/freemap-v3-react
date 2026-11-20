@@ -10,7 +10,7 @@ import {
 import type { GalleryFilter } from '@features/gallery/model/actions.js';
 import { activeGalleryFilterSelector } from '@features/gallery/model/selectors.js';
 import {
-  encodeStop,
+  encodePointMark,
   serializeDeparture,
 } from '@features/routePlanner/model/schedule.js';
 import { transportTypeDefs } from '@shared/transportTypeDefs.js';
@@ -239,7 +239,7 @@ export function getMapContentParts(state: RootState): QueryPart[] {
             (point) =>
               (point?.transport ? `${point.transport}/` : '') +
               serializeLatLon(point) +
-              (point?.stop ? encodeStop(point.stop) : ''),
+              (point ? encodePointMark(point) : ''),
           )
           .join(','),
     ]);

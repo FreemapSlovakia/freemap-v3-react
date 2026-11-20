@@ -7,6 +7,7 @@ import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages
 import { RouteDepartureControl } from './RouteDepartureControl.js';
 import { RoutePlannerToggleButton } from './RoutePlannerToggleButton.js';
 import { RoutePointTimes } from './RoutePointTimes.js';
+import { RouteShapingToggle } from './RouteShapingToggle.js';
 import { RouteStopControl } from './RouteStopControl.js';
 
 export default function RoutePointSelection():
@@ -23,7 +24,7 @@ export default function RoutePointSelection():
     index === undefined ? undefined : state.routePlanner.points[index],
   );
 
-  // A stop holds the route between two legs: only on an inner waypoint of a
+  // A stop or shaping holds between two legs: only on an inner waypoint of a
   // route through the points in order.
   const inner = useAppSelector(
     (state) =>
@@ -43,20 +44,26 @@ export default function RoutePointSelection():
 
   const rpm = useRoutePlannerMessages();
 
+  const shaping = inner && Boolean(point?.shaping);
+
   return (
     point &&
     index !== undefined && (
       <Selection
         control={<RoutePlannerToggleButton />}
         icon={<FaMapMarkerAlt />}
-        label={rpm?.point.point}
+        label={shaping ? rpm?.shaping.label : rpm?.point.point}
         deletable
       >
         {start && <RouteDepartureControl />}
 
-        {inner && <RouteStopControl index={index} stop={point.stop} />}
+        {inner && <RouteShapingToggle index={index} shaping={shaping} />}
 
-        {index > 0 && <RoutePointTimes index={index} />}
+        {inner && !shaping && (
+          <RouteStopControl index={index} stop={point.stop} />
+        )}
+
+        {index > 0 && !shaping && <RoutePointTimes index={index} />}
 
         <PlaceActionsButton lat={point.lat} lon={point.lon} selection />
       </Selection>

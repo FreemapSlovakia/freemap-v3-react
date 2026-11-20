@@ -65,6 +65,11 @@ export type RoutePlannerMessages = {
     fromFinish: string;
   };
   /** A waypoint's stop: a pause, or nights spent there. */
+  shaping: {
+    label: string;
+    hint: string;
+    turnsBack: string;
+  };
   waypointStop: {
     label: string;
     none: string;

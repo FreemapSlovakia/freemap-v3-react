@@ -21,6 +21,7 @@ import {
   waypointKind,
 } from '@features/routePlanner/model/routeColors.js';
 import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
+import { isShaping } from '@features/routePlanner/model/shaping.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
 import { hasGeometry } from '@features/search/model/resultUtils.js';
@@ -347,6 +348,11 @@ async function addPlannedRoute(
   // The start/finish/stop markers are part of what the route puts on the map,
   // so they always come along, in the colors and glyphs the map gives them.
   for (const [i, pt] of points.entries()) {
+    // A shaping point is only how the line runs, which the line carries.
+    if (isShaping(points, i, mode)) {
+      continue;
+    }
+
     const kind = waypointKind(i, points.length, finishOnly, mode);
 
     // `markerOpacity` rides on the color's alpha: both the baked SVG and the
@@ -354,7 +360,7 @@ async function addPlannedRoute(
     // together.
     const color = joinColorAlpha(WAYPOINT_COLORS[kind], markerOpacity);
 
-    const number = stopNumber(i, mode, waypoints);
+    const number = stopNumber(i, mode, waypoints, points);
 
     // Stops are numbered inside their marker, in the visiting order the map
     // shows.

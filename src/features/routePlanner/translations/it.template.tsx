@@ -37,6 +37,11 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   start: 'Inizio',
   finish: 'Fine',
   swap: 'Inverti inizio e fine',
+  shaping: {
+    label: 'Punto ausiliario',
+    hint: 'Orienta solo il percorso: senza numero, sosta né orario.',
+    turnsBack: 'Il percorso torna indietro qui.',
+  },
   waypointStop: {
     label: 'Sosta',
     none: 'Nessuna sosta',

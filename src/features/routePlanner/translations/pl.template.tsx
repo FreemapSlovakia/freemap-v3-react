@@ -16,6 +16,11 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     reverseFlowHint:
       'Obszary pokazują wtedy, skąd można dotrzeć do tego punktu; bez zaznaczenia — dokąd można z niego dojechać. Różnicę robią jednokierunkowe ulice i zakazy skrętu.',
   },
+  shaping: {
+    label: 'Punkt pomocniczy',
+    hint: 'Tylko kieruje trasą: bez numeru, postoju i czasu.',
+    turnsBack: 'Trasa zawraca w tym miejscu.',
+  },
   waypointStop: {
     label: 'Postój',
     none: 'Bez postoju',

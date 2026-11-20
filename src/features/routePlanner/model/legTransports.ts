@@ -1,5 +1,6 @@
 import type { TransportType } from '@shared/transportTypeDefs.js';
 import type { RoutePoint } from './actions.js';
+import { stretchBounds } from './shaping.js';
 
 /**
  * The transport each leg of an ordered route is planned with: a leg takes the
@@ -31,6 +32,7 @@ export type TransportScope =
   | { type: 'last-section' }
   /** Only the legs added later. */
   | { type: 'next' }
+  /** The legs between the real waypoints around `leg`. */
   | { type: 'leg'; leg: number }
   /** The run of neighbouring legs sharing the transport of `leg`. */
   | { type: 'section'; leg: number }
@@ -128,10 +130,13 @@ export function applyTransport(
 
       break;
 
-    case 'leg':
-      legs[scope.leg] = transport;
+    case 'leg': {
+      const [from, to] = stretchBounds(points, 'route', scope.leg);
+
+      legs.fill(transport, from, to + 1);
 
       break;
+    }
 
     case 'section':
       set(...sectionBounds(legs, scope.leg));

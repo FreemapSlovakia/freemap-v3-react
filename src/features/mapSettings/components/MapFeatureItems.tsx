@@ -29,6 +29,7 @@ import {
   WAYPOINT_COLORS,
   waypointKind,
 } from '@features/routePlanner/model/routeColors.js';
+import { isShaping } from '@features/routePlanner/model/shaping.js';
 import { useRoutePlannerMessages } from '@features/routePlanner/translations/useRoutePlannerMessages.js';
 import {
   searchSelectResult,
@@ -550,7 +551,8 @@ function RouteItems(): ReactElement {
     waypointKind(index, points.length, finishOnly, mode);
 
   // Its marker's number: the router's visiting order where it reorders them.
-  const order = (index: number) => stopNumber(index, mode, waypoints) ?? index;
+  const order = (index: number) =>
+    stopNumber(index, mode, waypoints, points) ?? index;
 
   // Named by kind, as the icon and the marker are; a finish-only route's first
   // stop, which its marker leaves unnumbered, goes without a number too.
@@ -611,31 +613,38 @@ function RouteItems(): ReactElement {
 
   let duration = 0;
 
+  // The legs since the last real waypoint: shaping points join them into one.
+  let stretch: { at: number; index: number; legs: typeof legs } | undefined;
+
   for (const [at, index] of visits.entries()) {
     const pointKind = kind(index);
 
-    items.push({
-      key: `point-${index}`,
-      icon:
-        pointKind === 'start' ? (
-          <FaPlay />
-        ) : pointKind === 'finish' ? (
-          <FaStop />
-        ) : (
-          <FaMapMarkerAlt />
-        ),
-      color: WAYPOINT_COLORS[pointKind],
-      label: name(index),
-      // How far it is from the start, as its marker's tooltip says.
-      subline:
-        pointKind === 'finish'
-          ? totals
-          : at > 0 && legs[at - 1]
-            ? figures(distance, duration)
-            : undefined,
-      selects: { type: 'route-point', id: index },
-      bbox: () => latLonBbox([points[index]!]),
-    });
+    const shaping = isShaping(points, index, mode);
+
+    if (!shaping) {
+      items.push({
+        key: `point-${index}`,
+        icon:
+          pointKind === 'start' ? (
+            <FaPlay />
+          ) : pointKind === 'finish' ? (
+            <FaStop />
+          ) : (
+            <FaMapMarkerAlt />
+          ),
+        color: WAYPOINT_COLORS[pointKind],
+        label: name(index),
+        // How far it is from the start, as its marker's tooltip says.
+        subline:
+          pointKind === 'finish'
+            ? totals
+            : at > 0 && legs[at - 1]
+              ? figures(distance, duration)
+              : undefined,
+        selects: { type: 'route-point', id: index },
+        bbox: () => latLonBbox([points[index]!]),
+      });
+    }
 
     const leg = legs[at];
 
@@ -647,13 +656,25 @@ function RouteItems(): ReactElement {
 
     duration += leg.duration;
 
-    const from = name(index);
+    stretch = shaping && stretch ? stretch : { at, index, legs: [] };
 
-    const to = name(visited(at + 1));
+    stretch.legs.push(leg);
+
+    const next = visited(at + 1);
+
+    if (isShaping(points, next, mode)) {
+      continue;
+    }
+
+    const stretchLegs = stretch.legs;
+
+    const from = name(stretch.index);
+
+    const to = name(next);
 
     items.push({
-      key: `leg-${at}`,
-      icon: transportTypeDefs[transports[index] ?? transportType].icon,
+      key: `leg-${stretch.at}`,
+      icon: transportTypeDefs[transports[stretch.index] ?? transportType].icon,
       label: `${from} → ${to}`,
       display: (
         <>
@@ -662,16 +683,21 @@ function RouteItems(): ReactElement {
           {to}
         </>
       ),
-      subline: figures(leg.distance, leg.duration),
-      selects: { type: 'route-leg', id: at },
+      subline: figures(
+        stretchLegs.reduce((sum, leg) => sum + leg.distance, 0),
+        stretchLegs.reduce((sum, leg) => sum + leg.duration, 0),
+      ),
+      selects: { type: 'route-leg', id: stretch.at },
       bbox: () =>
         latLonBbox(
-          leg.steps.flatMap((step) =>
-            step.geometry.coordinates.map(([lon, lat]) => ({
-              lat: lat!,
-              lon: lon!,
-            })),
-          ),
+          stretchLegs
+            .flatMap((leg) => leg.steps)
+            .flatMap((step) =>
+              step.geometry.coordinates.map(([lon, lat]) => ({
+                lat: lat!,
+                lon: lon!,
+              })),
+            ),
         ),
     });
   }

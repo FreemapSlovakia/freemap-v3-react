@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+  decodePointMark,
+  encodePointMark,
   legStops,
   stopEnd,
   timedPositions,
@@ -100,6 +102,34 @@ describe('legStops', () => {
     expect(legStops('route', points)).toEqual([pause, undefined]);
 
     expect(legStops('trip', points)).toEqual([]);
+  });
+
+  it('takes no stop from a shaping point', () => {
+    const pause = { kind: 'pause', minutes: 10 } as const;
+
+    expect(legStops('route', [{}, { stop: pause, shaping: true }, {}])).toEqual(
+      [undefined],
+    );
+  });
+});
+
+describe('point marks', () => {
+  it('round-trips a stop and a shaping point', () => {
+    const pause = { kind: 'pause', minutes: 30 } as const;
+
+    expect(encodePointMark({ stop: pause })).toBe('~p30');
+
+    expect(encodePointMark({ shaping: true })).toBe('~s');
+
+    expect(encodePointMark({})).toBe('');
+
+    expect(decodePointMark('p30')).toEqual({ stop: pause });
+
+    expect(decodePointMark('s')).toEqual({ shaping: true });
+
+    expect(decodePointMark('x')).toEqual({});
+
+    expect(decodePointMark(undefined)).toEqual({});
   });
 });
 

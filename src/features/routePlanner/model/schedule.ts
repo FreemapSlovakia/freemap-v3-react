@@ -44,6 +44,28 @@ export function decodeStop(text: string): RouteStop | undefined {
   ).data;
 }
 
+/** What `points=` writes after a waypoint: its stop, or `~s` for a shaping point. */
+export function encodePointMark(point: {
+  stop?: RouteStop;
+  shaping?: true;
+}): string {
+  return point.shaping ? '~s' : point.stop ? encodeStop(point.stop) : '';
+}
+
+/** {@link encodePointMark}'s text without its `~`; empty when malformed. */
+export function decodePointMark(text: string | undefined): {
+  stop?: RouteStop;
+  shaping?: true;
+} {
+  if (text === 's') {
+    return { shaping: true };
+  }
+
+  const stop = text === undefined ? undefined : decodeStop(text);
+
+  return stop ? { stop } : {};
+}
+
 /** The departure as `departure=` carries it: UTC to the minute. */
 export function serializeDeparture(ms: number): string {
   return `${new Date(ms).toISOString().slice(0, 16)}Z`;
@@ -79,14 +101,16 @@ export function stopEnd(stop: RouteStop, arrival: number): number {
 
 /**
  * The stop at the end of each leg: an inner waypoint's, in a route through
- * the points in order — never the finish's, which holds nothing up.
+ * the points in order — never the finish's nor a shaping point's.
  */
 export function legStops(
   mode: string | undefined,
-  points: readonly ({ stop?: RouteStop } | null | undefined)[],
+  points: readonly ({ stop?: RouteStop; shaping?: true } | null | undefined)[],
 ): (RouteStop | undefined)[] {
   return (mode ?? 'route') === 'route'
-    ? points.slice(1, -1).map((point) => point?.stop)
+    ? points
+        .slice(1, -1)
+        .map((point) => (point?.shaping ? undefined : point?.stop))
     : [];
 }
 

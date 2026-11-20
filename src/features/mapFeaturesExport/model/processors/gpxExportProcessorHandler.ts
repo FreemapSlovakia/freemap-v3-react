@@ -28,6 +28,7 @@ import {
   waypointKind,
 } from '@features/routePlanner/model/routeColors.js';
 import type { RoutePlannerSettingsState } from '@features/routePlanner/model/settingsReducer.js';
+import { isShaping } from '@features/routePlanner/model/shaping.js';
 import { loadRoutePlannerMessages } from '@features/routePlanner/translations/loadRoutePlannerMessages.js';
 import type { RoutePlannerMessages } from '@features/routePlanner/translations/RoutePlannerMessages.js';
 import { hasGeometry } from '@features/search/model/resultUtils.js';
@@ -983,6 +984,11 @@ function addPlannedRoute(
   // The start/finish/stop markers are part of what the route puts on the map,
   // so they always come along.
   for (const [i, point] of points.entries()) {
+    // A shaping point is only how the line runs, which the track carries.
+    if (isShaping(points, i, mode)) {
+      continue;
+    }
+
     const midpointWptEle = createElement(
       doc.documentElement,
       'wpt',
@@ -992,7 +998,7 @@ function addPlannedRoute(
 
     const kind = waypointKind(i, points.length, finishOnly, mode);
 
-    const number = stopNumber(i, mode, waypoints);
+    const number = stopNumber(i, mode, waypoints, points);
 
     createElement(
       midpointWptEle,

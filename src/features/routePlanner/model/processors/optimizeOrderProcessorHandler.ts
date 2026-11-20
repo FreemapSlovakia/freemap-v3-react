@@ -15,6 +15,7 @@ import {
   routePlannerHasTransportOverride,
   routePlannerOptimizeApplicable,
 } from '../reducer.js';
+import { isShaping } from '../shaping.js';
 import { updateRouteTypes } from './findRouteProcessor.js';
 
 const variantOptions: Record<
@@ -52,12 +53,15 @@ const handle: ProcessorHandler<typeof routePlannerOptimizeOrder> = async ({
 
   const variant = action.payload;
 
+  // Shaping points steer stretches a new order breaks up, so they go.
+  const real = points.filter((_, i) => !isShaping(points, i, mode));
+
   // Drop a trailing return-to-start copy left by an earlier round-trip optimize
   // so re-optimizing stays idempotent instead of accumulating duplicates.
   const base =
-    points.length > 1 && sameLatLon(points.at(-1)!, points[0]!)
-      ? points.slice(0, -1)
-      : points;
+    real.length > 1 && sameLatLon(real.at(-1)!, real[0]!)
+      ? real.slice(0, -1)
+      : real;
 
   const matrix = await buildCostMatrix({
     points: base,

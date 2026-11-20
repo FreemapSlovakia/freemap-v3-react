@@ -49,6 +49,11 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   finish: 'Cilj',
   stop: 'Postanek',
   swap: 'Zamenjaj začetek in cilj',
+  shaping: {
+    label: 'Pomožna točka',
+    hint: 'Le usmerja pot: brez številke, postanka in časa.',
+    turnsBack: 'Pot se tu obrne nazaj.',
+  },
   waypointStop: {
     label: 'Postanek',
     none: 'Brez postanka',

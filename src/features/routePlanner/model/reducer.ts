@@ -48,6 +48,7 @@ import {
   routePlannerSetRoundtripParams,
   routePlannerSetSampledGeojson,
   routePlannerSetSavedRoute,
+  routePlannerSetShaping,
   routePlannerSetStart,
   routePlannerSetStop,
   routePlannerSetTransportType,
@@ -473,11 +474,14 @@ export const routePlannerReducer = createReducer(
       .addCase(routePlannerSetPoint, (state, action) => {
         const { position, point } = action.payload;
 
-        // A moved waypoint keeps its stop.
-        const stop = state.points[position]?.stop;
+        // A moved waypoint keeps its stop, or stays a shaping point.
+        const { stop, shaping } = state.points[position] ?? {};
 
-        state.points[position] =
-          stop && !point.stop ? { ...point, stop } : point;
+        state.points[position] = {
+          ...point,
+          ...(stop && !point.stop && !point.shaping && { stop }),
+          ...(shaping && !point.stop && { shaping }),
+        };
       })
       .addCase(routePlannerSetStop, (state, { payload: { index, stop } }) => {
         const point = state.points[index];
@@ -485,21 +489,56 @@ export const routePlannerReducer = createReducer(
         if (point) {
           if (stop) {
             point.stop = stop;
+
+            delete point.shaping;
           } else {
             delete point.stop;
           }
         }
       })
+      .addCase(
+        routePlannerSetShaping,
+        (state, { payload: { index, shaping } }) => {
+          const point = state.points[index];
+
+          if (!point || index === 0 || index === state.points.length - 1) {
+            return;
+          }
+
+          if (!shaping) {
+            delete point.shaping;
+
+            return;
+          }
+
+          point.shaping = true;
+
+          delete point.stop;
+
+          // The stretch goes on as it arrived.
+          const transport = state.points[index - 1]?.transport;
+
+          if (transport) {
+            point.transport = transport;
+          } else {
+            delete point.transport;
+          }
+        },
+      )
       .addCase(routePlannerSetPoints, (state, { payload }) => {
         state.points = payload;
       })
       .addCase(routePlannerRemovePoint, (state, action) => {
         state.points.splice(action.payload, 1);
 
-        // A finish starts no leg and holds nothing up.
+        // A finish starts no leg and holds nothing up; an end shapes nothing.
         delete state.points.at(-1)?.transport;
 
         delete state.points.at(-1)?.stop;
+
+        delete state.points.at(-1)?.shaping;
+
+        delete state.points[0]?.shaping;
       })
       .addCase(
         routePlannerChangeTransport,

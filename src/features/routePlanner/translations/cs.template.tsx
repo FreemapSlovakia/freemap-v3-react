@@ -37,6 +37,11 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   start: 'Start',
   finish: 'Cíl',
   swap: 'Prohodit start a cíl',
+  shaping: {
+    label: 'Pomocný bod',
+    hint: 'Jen usměrňuje trasu: bez čísla, zastávky a času.',
+    turnsBack: 'Trasa se tu otáčí zpět.',
+  },
   waypointStop: {
     label: 'Zastávka',
     none: 'Bez zastávky',

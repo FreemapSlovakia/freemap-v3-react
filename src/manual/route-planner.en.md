@@ -20,7 +20,8 @@ With the route finder open, click the map: the first click places the start, the
 
 - Under :FaPlay.text-success: **Start** and :FaStop.text-danger: **Finish** in the toolbar you choose :FaMapMarkerAlt: **Select on the map**, :FaRegDotCircle: **Your position** or one of :FaMapPin: [your places](#show=manual/account). Without any, :FaPlus: **Add place** is offered instead.
 - ⇆ **Swap start and finish** reverses the route.
-- Drag any point to move it. Drag the route line itself to add a stop at that place.
+- Drag any point to move it. Drag the route line itself to steer the route through that place: in :MdTimeline: **Ordered** mode this adds a small ring, a shaping point. It has no number, stop or time, and the route is described as if it were not there. Where the route goes back the way it came, the ring turns yellow: move the point, or, for a place you go to and come back from, turn off :TbCircleDot: **Shaping point**.
+- :TbCircleDot: **Shaping point** in a point's toolbar turns a stop into a shaping point, or back.
 - Click a point to select it. Its toolbar has :FaEllipsisV: with a menu of actions for that place, and :FaTrash: to remove that point.
 
 ![A route with an alternative](./images/route-planner-route.en.webp)

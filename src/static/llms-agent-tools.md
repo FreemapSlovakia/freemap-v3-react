@@ -13,7 +13,7 @@ When the page is open in a browser whose AI agent supports [WebMCP](https://gith
 | `search-places`                    | Runs the search box — by name, category, OSM element id, coordinates, bounding box or pasted GeoJSON — and returns the results with their coordinates. |
 | `show-search-result`               | Draws one of those results on the map and moves to it.                                                                                                 |
 | `clear-search-results`             | Empties the result list and takes the results off the map.                                                                                             |
-| `plan-route`                       | Plans a route through given waypoints (transport type, ordered route or shortest trip) and returns its length and time.                                |
+| `plan-route`                       | Plans a route through given waypoints (transport type, ordered route or shortest trip, shaping points) and returns its length and time.                |
 | `get-route-itinerary`              | The turn-by-turn steps of the planned route.                                                                                                           |
 | `list-object-categories`           | Finds POI categories by name in the UI language; each row carries the filter `show-objects` takes.                                                     |
 | `show-objects`                     | Shows POIs of the given categories within the current map view and returns what was found (zoom 8 or closer).                                          |

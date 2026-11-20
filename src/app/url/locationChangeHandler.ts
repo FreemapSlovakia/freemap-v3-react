@@ -123,10 +123,9 @@ import {
   routePlannerSetParams,
 } from '@features/routePlanner/model/actions.js';
 import {
-  decodeStop,
-  encodeStop,
+  decodePointMark,
+  encodePointMark,
   parseDeparture,
-  type RouteStop,
 } from '@features/routePlanner/model/schedule.js';
 import {
   searchKeepResult,
@@ -340,12 +339,12 @@ export function handleLocationChange(store: MyStore): void {
               transport,
               ...parts.map((part) => parseFloat(part)),
               // Malformed, it is dropped rather than the whole route.
-              stopText === undefined ? undefined : decodeStop(stopText),
+              decodePointMark(stopText),
             ] as unknown as [
               TransportType,
               number,
               number,
-              RouteStop | undefined,
+              ReturnType<typeof decodePointMark>,
             ];
           })
         : [];
@@ -396,7 +395,7 @@ export function handleLocationChange(store: MyStore): void {
             transport: TransportTypeCompatSchema.optional().parse(point[0]),
             lat: point[1],
             lon: point[2],
-            ...(point[3] && { stop: point[3] }),
+            ...point[3],
           },
       );
 
@@ -422,10 +421,10 @@ export function handleLocationChange(store: MyStore): void {
           (point, i) =>
             (point.transport ?? '') +
               serializePoint(point) +
-              (point.stop ? encodeStop(point.stop) : '') !==
+              encodePointMark(point) !==
             latLons[i]?.transport +
               serializePoint(latLons[i] as unknown as RoutePoint) +
-              (latLons[i]?.stop ? encodeStop(latLons[i].stop) : ''),
+              (latLons[i] ? encodePointMark(latLons[i]) : ''),
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
         milestones !== reqMilestones ||

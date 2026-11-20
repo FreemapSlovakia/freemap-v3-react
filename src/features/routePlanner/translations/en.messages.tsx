@@ -55,6 +55,11 @@ const en: RoutePlannerMessages = {
     fromStart: 'Start position',
     fromFinish: 'Finish position',
   },
+  shaping: {
+    label: 'Shaping point',
+    hint: 'Only steers the route: no number, stop or time.',
+    turnsBack: 'The route turns back here.',
+  },
   waypointStop: {
     label: 'Stop',
     none: 'No stop',

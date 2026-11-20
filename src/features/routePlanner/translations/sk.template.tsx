@@ -56,6 +56,11 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     fromStart: 'Poloha štartu',
     fromFinish: 'Poloha cieľa',
   },
+  shaping: {
+    label: 'Pomocný bod',
+    hint: 'Len usmerňuje trasu: bez čísla, zastávky a času.',
+    turnsBack: 'Trasa sa tu otáča späť.',
+  },
   waypointStop: {
     label: 'Zastávka',
     none: 'Bez zastávky',

@@ -16,6 +16,11 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
     reverseFlowHint:
       'Die Ringe zeigen dann, von wo aus dieser Punkt erreichbar ist; ohne Haken, wohin man von ihm aus kommt. Einbahnstraßen und Abbiegeverbote machen den Unterschied.',
   },
+  shaping: {
+    label: 'Hilfspunkt',
+    hint: 'Lenkt nur die Route: ohne Nummer, Halt und Zeit.',
+    turnsBack: 'Die Route kehrt hier um.',
+  },
   waypointStop: {
     label: 'Halt',
     none: 'Kein Halt',

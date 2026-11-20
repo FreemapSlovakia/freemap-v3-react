@@ -25,11 +25,16 @@ export const RoutePointSchema = z.object({
   transport: TransportTypeSchema.optional(),
   /** Held here before going on; not part of `routeKey`, as it routes nothing. */
   stop: RouteStopSchema.optional(),
+  /** Only shapes the route (see `isShaping`); never with a stop, nor in `routeKey`. */
+  shaping: z.literal(true).optional(),
 });
 
 export type RoutePoint = z.infer<typeof RoutePointSchema>;
 
-export type NewRoutePoint = LatLon & { transport?: TransportType };
+export type NewRoutePoint = LatLon & {
+  transport?: TransportType;
+  shaping?: true;
+};
 
 export const PickModeSchema = z.enum(['start', 'finish']);
 
@@ -457,6 +462,12 @@ export const routePlannerSetStop = createAction<{
   index: number;
   stop: RouteStop | null;
 }>('ROUTE_PLANNER_SET_STOP');
+
+/** Makes an inner waypoint a shaping point, or a real one again. */
+export const routePlannerSetShaping = createAction<{
+  index: number;
+  shaping: boolean;
+}>('ROUTE_PLANNER_SET_SHAPING');
 
 /** When the route sets off, as epoch ms; null for now. */
 export const routePlannerSetDeparture = createAction<number | null>(

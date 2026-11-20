@@ -20,7 +20,8 @@ Pri otvorenom nástroji vyhľadávania trás kliknite do mapy: prvé kliknutie u
 
 - V ponukách :FaPlay.text-success: **Štart** a :FaStop.text-danger: **Cieľ** na lište si zvolíte :FaMapMarkerAlt: **Vybrať na mape**, :FaRegDotCircle: **Vaša poloha** alebo niektoré z :FaMapPin: [vašich miest](#show=manual/account). Kým žiadne nemáte, ponúka sa :FaPlus: **Pridať miesto**.
 - ⇆ **Prehodiť štart a cieľ** otočí smer trasy.
-- Ktorýkoľvek bod môžete presunúť ťahaním. Potiahnutím samotnej čiary trasy pridáte na dané miesto zastávku.
+- Ktorýkoľvek bod môžete presunúť ťahaním. Potiahnutím samotnej čiary trasy ju usmerníte cez dané miesto: v režime :MdTimeline: **V určenom poradí** tak pribudne malý krúžok, pomocný bod. Nemá číslo, zastávku ani čas a trasa sa opisuje, akoby tam nebol. Ak sa trasa na ňom otáča späť, krúžok zožltne: bod presuňte, alebo, ak ide o miesto, kam idete a vraciate sa, vypnite :TbCircleDot: **Pomocný bod**.
+- :TbCircleDot: **Pomocný bod** v paneli bodu zmení zastávku na pomocný bod alebo naspäť.
 - Kliknutím na bod ho vyberiete a na lište výberu nájdete :FaEllipsisV: s ponukou akcií pre toto miesto a :FaTrash: na odstránenie tohto bodu.
 
 ![Trasa s alternatívou](./images/route-planner-route.sk.webp)

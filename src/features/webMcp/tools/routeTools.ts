@@ -24,6 +24,12 @@ export const routeTools = [
           z.object({
             lat: z.number().min(-90).max(90),
             lon: z.number().min(-180).max(180),
+            shaping: z
+              .boolean()
+              .optional()
+              .describe(
+                'An inner point that only steers the route ("route" mode): unnumbered, never a stop.',
+              ),
           }),
         )
         .min(2)
@@ -44,7 +50,13 @@ export const routeTools = [
         store.dispatch(routePlannerSetMode(mode));
       }
 
-      store.dispatch(routePlannerSetPoints(points));
+      store.dispatch(
+        routePlannerSetPoints(
+          points.map(({ shaping, ...point }) =>
+            shaping ? { ...point, shaping: true } : point,
+          ),
+        ),
+      );
 
       const key = routeKey(store.getState().routePlanner);
 

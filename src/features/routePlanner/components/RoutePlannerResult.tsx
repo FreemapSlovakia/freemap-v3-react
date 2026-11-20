@@ -68,6 +68,7 @@ import { Hotline } from 'react-leaflet-hotline';
 import { useDispatch } from 'react-redux';
 import { useRouteColorizeMode } from '../hooks/useRouteColorizeMode.js';
 import { useRouteSchedule } from '../hooks/useRouteSchedule.js';
+import { useTurnBacks } from '../hooks/useTurnBacks.js';
 import {
   routePlannerAddPoint,
   routePlannerSetActiveAlternativeIndex,
@@ -83,12 +84,17 @@ import {
   INACTIVE_ALTERNATIVE_COLOR,
   STEP_MODE_COLORS,
   stepModeDashArray,
+  stopNumber,
 } from '../model/routeColors.js';
 import { alternativeCoordinates } from '../model/routeGeometry.js';
+import { isShaping, stretchBounds } from '../model/shaping.js';
 import { useRoutePlannerMessages } from '../translations/useRoutePlannerMessages.js';
 import classes from './RoutePlannerResult.module.css';
 
 const pointDraggingClassName = classes.dragging;
+
+/** A shaping point the route turns back at; muted like the finish's red. */
+const TURN_BACK_COLOR = '#f0ad4e';
 
 // Dedicated pane the route line and colorize canvas render into (declared with
 // the `<Pane>` in the render output), so `lineOpacity` can be applied to the
@@ -155,6 +161,8 @@ export function RoutePlannerResult(): ReactElement {
   const language = useAppSelector((state) => state.l10n.language);
 
   const routeSchedule = useRouteSchedule();
+
+  const turnBacks = useTurnBacks();
 
   const departure = routeSchedule?.departure ?? null;
 
@@ -419,20 +427,31 @@ export function RoutePlannerResult(): ReactElement {
         }
       }
 
-      const leg =
+      // From the previous real waypoint, over any shaping points between.
+      const stretch =
         showDiff && ii > 0
-          ? alternatives[activeAlternativeIndex]?.legs[ii]
+          ? alternatives[activeAlternativeIndex]?.legs.slice(
+              mode === 'route' ? stretchBounds(points, mode, ii)[0] : ii,
+              ii + 1,
+            )
           : undefined;
 
       return getPointDetails2(
         distanceSum,
         durationSum,
-        leg?.distance,
-        leg?.duration,
+        stretch?.reduce((sum, leg) => sum + leg.distance, 0),
+        stretch?.reduce((sum, leg) => sum + leg.duration, 0),
         summary,
       );
     },
-    [alternatives, activeAlternativeIndex, getPointDetails2, mode, waypoints],
+    [
+      alternatives,
+      activeAlternativeIndex,
+      getPointDetails2,
+      mode,
+      waypoints,
+      points,
+    ],
   );
 
   const getSummary = useCallback(
@@ -591,6 +610,12 @@ export function RoutePlannerResult(): ReactElement {
 
   const routePlannerToolActiveRef = useRef(routePlannerToolActive);
 
+  const modeRef = useRef(mode);
+
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
+
   useEffect(() => {
     routePlannerToolActiveRef.current = routePlannerToolActive;
   }, [routePlannerToolActive]);
@@ -638,6 +663,8 @@ export function RoutePlannerResult(): ReactElement {
           point: {
             lat: e.latlng.lat,
             lon: e.latlng.lng,
+            // Dragging the line is fine-tuning it.
+            ...(modeRef.current === 'route' && { shaping: true }),
           },
           position: segment,
         }),
@@ -682,14 +709,16 @@ export function RoutePlannerResult(): ReactElement {
 
         const isEnd = mode !== 'roundtrip' && i === points.length - 1;
 
+        const shaping = isShaping(points, i, mode);
+
         // `faIcon` and `label` are mutually exclusive on RichMarker.
         const content = isStart
           ? { faIcon: <FaPlay color="#409a40" /> }
           : isEnd
             ? { faIcon: <FaStop color="#d9534f" /> }
-            : i === 0
+            : i === 0 || shaping
               ? {} // start point in finishOnly mode: neither icon nor label
-              : { label: mode === 'route' ? i : waypoints[i]?.waypoint_index };
+              : { label: stopNumber(i, mode, waypoints, points) };
 
         return (
           <RichMarker
@@ -704,7 +733,16 @@ export function RoutePlannerResult(): ReactElement {
               !window.fmEmbedded
             }
             {...content}
-            color={isStart ? '#409a40' : isEnd ? '#d9534f' : '#3e64d5'}
+            markerType={shaping ? 'ring' : 'pin'}
+            color={
+              isStart
+                ? '#409a40'
+                : isEnd
+                  ? '#d9534f'
+                  : turnBacks.has(i)
+                    ? TURN_BACK_COLOR
+                    : '#3e64d5'
+            }
             // Selection is the ring, so the waypoint keeps the color that says
             // which of the three it is.
             halo={selectedPoint === i ? SELECTION_COLOR : undefined}
@@ -740,6 +778,12 @@ export function RoutePlannerResult(): ReactElement {
               )
             ) : i === 0 && !finishOnly /* start */ ? (
               mode === 'roundtrip' && getSummary(i === pointHovering)
+            ) : shaping ? (
+              turnBacks.has(i) && (
+                <Tooltip direction="top">
+                  <Text m={rpm} k="shaping.turnsBack" />
+                </Tooltip>
+              )
             ) : (
               <Tooltip direction="top" key={points.length}>
                 {getPointDetails(i - 1)}
@@ -756,6 +800,8 @@ export function RoutePlannerResult(): ReactElement {
       mode,
       waypoints,
       finishOnly,
+      turnBacks,
+      rpm,
       handlePointDragStart,
       handlePointMouseOut,
       getPointDetails,
@@ -826,129 +872,137 @@ export function RoutePlannerResult(): ReactElement {
     [activeColorizer, lineWidth],
   );
 
-  const paths = useMemo(
-    () =>
-      alternatives
-        .map((alternative, index) => ({
-          ...alternative,
-          alt: index,
-          index: index === activeAlternativeIndex ? -1000 : index,
-        }))
-        .sort((a, b) => b.index - a.index)
-        .map(({ legs, alt }) => (
-          <Fragment
-            key={`alt-${timestamp}--${activeAlternativeIndex}-${alt}-${selectedSegment}`}
-          >
-            {legs
-              .flatMap((leg, legIndex) =>
-                leg.steps.map((step) => ({ legIndex, ...step })),
-              )
-              .map((routeSlice, i: number) => {
-                const selected =
-                  selectedSegment === routeSlice.legIndex &&
-                  alt === activeAlternativeIndex &&
-                  !routeSlice.connector;
+  const paths = useMemo(() => {
+    // A leg is selected with the legs it shares a stretch with.
+    const selectedStretch =
+      selectedSegment === undefined
+        ? undefined
+        : stretchBounds(points, mode, selectedSegment);
 
-                return routeSlice.geometry.coordinates.length < 2 ? null : (
-                  // Background halo: the white/blue outline plus the click/drag
-                  // hit area for every alternative. When colorizing, the
-                  // Hotline canvas (its own outline disabled) paints the colored
-                  // line on top, so the halo shows through as its edges.
-                  <Polyline
-                    key={`slice-${i}-${interactive}`}
-                    // A selected leg says so at the halos' own strength: only
-                    // the plain casing is the line's own decoration, and only it
-                    // fades with the line. Remounted on a selection change by
-                    // the `selectedSegment` in the fragment key above, which is
-                    // what lets the pane switch take.
-                    pane={selected ? HALO_PANE : casingPaneName}
-                    interactive={interactive && !routeSlice.connector}
-                    ref={bringToFront}
-                    positions={routeSlice.geometry.coordinates.map(reverse)}
-                    // Width lives in pathOptions (not a top-level prop) so
-                    // react-leaflet restyles the layer when it changes; opacity
-                    // is applied to the whole casing pane instead.
-                    pathOptions={{
-                      weight: lineWidth + HALO_WIDTH,
-                      color: selected ? SELECTION_COLOR : HALO_COLOR,
-                    }}
-                    bubblingMouseEvents={false}
-                    eventHandlers={{
-                      click() {
-                        changeAlternative(alt);
+    return alternatives
+      .map((alternative, index) => ({
+        ...alternative,
+        alt: index,
+        index: index === activeAlternativeIndex ? -1000 : index,
+      }))
+      .sort((a, b) => b.index - a.index)
+      .map(({ legs, alt }) => (
+        <Fragment
+          key={`alt-${timestamp}--${activeAlternativeIndex}-${alt}-${selectedStretch}`}
+        >
+          {legs
+            .flatMap((leg, legIndex) =>
+              leg.steps.map((step) => ({ legIndex, ...step })),
+            )
+            .map((routeSlice, i: number) => {
+              const selected =
+                selectedStretch !== undefined &&
+                routeSlice.legIndex >= selectedStretch[0] &&
+                routeSlice.legIndex <= selectedStretch[1] &&
+                alt === activeAlternativeIndex &&
+                !routeSlice.connector;
 
-                        dispatch(
-                          selectFeature({
-                            type: 'route-leg',
-                            id: routeSlice.legIndex,
-                          }),
-                        );
-                      },
+              return routeSlice.geometry.coordinates.length < 2 ? null : (
+                // Background halo: the white/blue outline plus the click/drag
+                // hit area for every alternative. When colorizing, the
+                // Hotline canvas (its own outline disabled) paints the colored
+                // line on top, so the halo shows through as its edges.
+                <Polyline
+                  key={`slice-${i}-${interactive}`}
+                  // A selected leg says so at the halos' own strength: only
+                  // the plain casing is the line's own decoration, and only it
+                  // fades with the line. Remounted on a selection change by
+                  // the `selectedStretch` in the fragment key above, which is
+                  // what lets the pane switch take.
+                  pane={selected ? HALO_PANE : casingPaneName}
+                  interactive={interactive && !routeSlice.connector}
+                  ref={bringToFront}
+                  positions={routeSlice.geometry.coordinates.map(reverse)}
+                  // Width lives in pathOptions (not a top-level prop) so
+                  // react-leaflet restyles the layer when it changes; opacity
+                  // is applied to the whole casing pane instead.
+                  pathOptions={{
+                    weight: lineWidth + HALO_WIDTH,
+                    color: selected ? SELECTION_COLOR : HALO_COLOR,
+                  }}
+                  bubblingMouseEvents={false}
+                  eventHandlers={{
+                    click() {
+                      changeAlternative(alt);
 
-                      mousedown() {
-                        if (onlyStart || !routePlannerToolActiveRef.current) {
-                          return;
-                        }
+                      dispatch(
+                        selectFeature({
+                          type: 'route-leg',
+                          id: routeSlice.legIndex,
+                        }),
+                      );
+                    },
 
-                        map?.dragging.disable();
-                        dragSegment.current = routeSlice.legIndex;
-                      },
-                    }}
-                  />
-                );
-              })}
+                    mousedown() {
+                      if (onlyStart || !routePlannerToolActiveRef.current) {
+                        return;
+                      }
 
-            {legs
-              .flatMap((leg, legIndex) =>
-                leg.steps.map((step) => ({ legIndex, ...step })),
-              )
-              .map((routeSlice, i: number) =>
-                routeSlice.geometry.coordinates.length < 2 ||
-                // The colorized Hotline canvas replaces the active
-                // alternative's foreground line; the halo above carries its
-                // outline. A failed leg keeps its line — the canvas leaves
-                // those metres unpainted, and nothing else says routing gave up.
-                (showColorized &&
-                  alt === activeAlternativeIndex &&
-                  routeSlice.mode !== 'error') ? null : (
-                  // foreground
-                  <Polyline
-                    key={`slice-${timestamp}-${alt}-${i}`}
-                    pane={routePaneName}
-                    ref={bringToFront}
-                    positions={routeSlice.geometry.coordinates.map(reverse)}
-                    // Width lives in pathOptions (not a top-level prop) so
-                    // react-leaflet restyles the layer when it changes; opacity
-                    // is applied to the whole route pane instead.
-                    pathOptions={{
-                      weight: lineWidth,
-                      color:
-                        alt !== activeAlternativeIndex
-                          ? INACTIVE_ALTERNATIVE_COLOR
-                          : STEP_MODE_COLORS[routeSlice.mode],
-                    }}
-                    dashArray={stepModeDashArray(routeSlice.mode)?.join(', ')}
-                    interactive={false}
-                    bubblingMouseEvents={false}
-                  />
-                ),
-              )}
-          </Fragment>
-        )),
-    [
-      onlyStart,
-      alternatives,
-      activeAlternativeIndex,
-      showColorized,
-      timestamp,
-      interactive,
-      selectedSegment,
-      changeAlternative,
-      map,
-      dispatch,
-      lineWidth,
-    ],
-  );
+                      map?.dragging.disable();
+                      dragSegment.current = routeSlice.legIndex;
+                    },
+                  }}
+                />
+              );
+            })}
+
+          {legs
+            .flatMap((leg, legIndex) =>
+              leg.steps.map((step) => ({ legIndex, ...step })),
+            )
+            .map((routeSlice, i: number) =>
+              routeSlice.geometry.coordinates.length < 2 ||
+              // The colorized Hotline canvas replaces the active
+              // alternative's foreground line; the halo above carries its
+              // outline. A failed leg keeps its line — the canvas leaves
+              // those metres unpainted, and nothing else says routing gave up.
+              (showColorized &&
+                alt === activeAlternativeIndex &&
+                routeSlice.mode !== 'error') ? null : (
+                // foreground
+                <Polyline
+                  key={`slice-${timestamp}-${alt}-${i}`}
+                  pane={routePaneName}
+                  ref={bringToFront}
+                  positions={routeSlice.geometry.coordinates.map(reverse)}
+                  // Width lives in pathOptions (not a top-level prop) so
+                  // react-leaflet restyles the layer when it changes; opacity
+                  // is applied to the whole route pane instead.
+                  pathOptions={{
+                    weight: lineWidth,
+                    color:
+                      alt !== activeAlternativeIndex
+                        ? INACTIVE_ALTERNATIVE_COLOR
+                        : STEP_MODE_COLORS[routeSlice.mode],
+                  }}
+                  dashArray={stepModeDashArray(routeSlice.mode)?.join(', ')}
+                  interactive={false}
+                  bubblingMouseEvents={false}
+                />
+              ),
+            )}
+        </Fragment>
+      ));
+  }, [
+    onlyStart,
+    alternatives,
+    activeAlternativeIndex,
+    showColorized,
+    timestamp,
+    interactive,
+    selectedSegment,
+    points,
+    mode,
+    changeAlternative,
+    map,
+    dispatch,
+    lineWidth,
+  ]);
 
   return (
     <>

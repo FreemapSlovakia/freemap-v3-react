@@ -17,7 +17,9 @@ import {
   routePlannerSetPoint,
   routePlannerSetResult,
   routePlannerSetRoundtripParams,
+  routePlannerSetShaping,
   routePlannerSetStart,
+  routePlannerSetStop,
   routePlannerSetTransportType,
   routePlannerSupersedeSavedRoute,
   routePlannerSwapEnds,
@@ -211,6 +213,85 @@ describe('routePlannerReducer — point editing', () => {
       'manual',
       undefined,
     ]);
+  });
+});
+
+describe('routePlannerReducer — shaping points', () => {
+  const pause = { kind: 'pause', minutes: 10 } as const;
+
+  const state = {
+    ...routePlannerInitialState,
+    points: [
+      pt(0, 0, 'car'),
+      { lat: 1, lon: 1, transport: 'foot' as const, stop: pause },
+      pt(2, 2),
+    ],
+  };
+
+  it('setShaping drops the stop and continues the arriving transport', () => {
+    const next = routePlannerReducer(
+      state,
+      routePlannerSetShaping({ index: 1, shaping: true }),
+    );
+
+    expect(next.points[1]).toEqual({
+      lat: 1,
+      lon: 1,
+      transport: 'car',
+      shaping: true,
+    });
+  });
+
+  it('setShaping leaves the ends alone', () => {
+    const next = routePlannerReducer(
+      state,
+      routePlannerSetShaping({ index: 2, shaping: true }),
+    );
+
+    expect(next.points[2]?.shaping).toBeUndefined();
+  });
+
+  it('a stop makes a shaping point a real one again', () => {
+    const shaped = routePlannerReducer(
+      state,
+      routePlannerSetShaping({ index: 1, shaping: true }),
+    );
+
+    const next = routePlannerReducer(
+      shaped,
+      routePlannerSetStop({ index: 1, stop: pause }),
+    );
+
+    expect(next.points[1]?.shaping).toBeUndefined();
+
+    expect(next.points[1]?.stop).toEqual(pause);
+  });
+
+  it('a moved shaping point stays one', () => {
+    const shaped = routePlannerReducer(
+      state,
+      routePlannerSetShaping({ index: 1, shaping: true }),
+    );
+
+    const next = routePlannerReducer(
+      shaped,
+      routePlannerSetPoint({ position: 1, point: pt(1.5, 1.5, 'car') }),
+    );
+
+    expect(next.points[1]?.shaping).toBe(true);
+
+    expect(next.points[1]?.stop).toBeUndefined();
+  });
+
+  it('removing the finish makes no shaping finish', () => {
+    const shaped = routePlannerReducer(
+      state,
+      routePlannerSetShaping({ index: 1, shaping: true }),
+    );
+
+    const next = routePlannerReducer(shaped, routePlannerRemovePoint(2));
+
+    expect(next.points[1]?.shaping).toBeUndefined();
   });
 });
 

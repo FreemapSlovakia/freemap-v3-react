@@ -49,6 +49,11 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   finish: 'Arrivée',
   stop: 'Arrêt',
   swap: 'Inverser le départ et l’arrivée',
+  shaping: {
+    label: 'Point auxiliaire',
+    hint: 'Oriente seulement l’itinéraire : sans numéro, arrêt ni horaire.',
+    turnsBack: 'L’itinéraire fait demi-tour ici.',
+  },
   waypointStop: {
     label: 'Arrêt',
     none: 'Sans arrêt',

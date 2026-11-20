@@ -37,6 +37,11 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   start: 'Kiindulás',
   finish: 'Úti cél',
   swap: 'Kiindulási pont és cél felcserélése',
+  shaping: {
+    label: 'Segédpont',
+    hint: 'Csak az útvonalat igazítja: szám, megálló és idő nélkül.',
+    turnsBack: 'Az útvonal itt visszafordul.',
+  },
   waypointStop: {
     label: 'Megálló',
     none: 'Nincs megálló',

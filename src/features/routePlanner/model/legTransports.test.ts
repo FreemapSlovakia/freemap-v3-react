@@ -82,6 +82,18 @@ describe('applyTransport', () => {
     ]);
   });
 
+  it('changes the whole stretch across shaping points as one leg', () => {
+    expect(
+      apply({ type: 'leg', leg: 3 }, [
+        point('car'),
+        point('car'),
+        point(),
+        { ...point(), shaping: true },
+        point(),
+      ]),
+    ).toEqual([['car', 'car', 'foot', 'foot'], 'hiking']);
+  });
+
   it('changes a section, carrying the next leg when it ends the route', () => {
     expect(apply({ type: 'section', leg: 0 })).toEqual([
       ['foot', 'foot', 'hiking', 'hiking'],
