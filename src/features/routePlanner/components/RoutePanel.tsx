@@ -90,7 +90,7 @@ export default function RoutePanel(): ReactElement {
 
   return (
     <DockPanel
-      item="route"
+      item={open ? 'route' : null}
       show={open}
       icon={view === 'itinerary' ? <FaListOl /> : <FaCloudSun />}
       label={label}

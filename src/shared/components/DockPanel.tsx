@@ -221,10 +221,13 @@ export function DockPanel<T>({
 
   const picking = useAppSelector(inPickingModeSelector);
 
-  if (item !== null && item !== kept) {
+  // Closed while a picking mode has it out of sight: no slide-out to wait for.
+  const dropped = !show && picking;
+
+  // Not taking back what `dropped` let go, or the two would alternate forever.
+  if (item !== null && item !== kept && !dropped) {
     setKept(item);
-  } else if (!show && picking && kept !== null) {
-    // Closed while a picking mode had it out of sight: no slide-out to wait for.
+  } else if (dropped && kept !== null) {
     setKept(null);
   }
 
