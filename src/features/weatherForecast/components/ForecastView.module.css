@@ -3,3 +3,28 @@
   --bs-accordion-btn-padding-y: 0.25rem;
   --bs-accordion-btn-padding-x: 0.5rem;
 }
+
+.instant :global(.collapsing) {
+  transition: none;
+}
+
+/* Fixed widths line the days' amounts and temperatures up. */
+.precipitation {
+  min-width: 5em;
+}
+
+.temperatures {
+  min-width: 6.5em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Under the date, past the day's 32 px icon and the gap. */
+.info {
+  padding-inline-start: calc(32px + 0.5rem);
+}
+
+.sunIcon {
+  font-size: 1.4em;
+  vertical-align: -0.3em;
+}

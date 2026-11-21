@@ -21,6 +21,22 @@ const sl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   overnight: 'Prenočitev',
   pickPrompt: 'Kliknite na zemljevidu tja, kjer želite napoved.',
   otherPlace: 'Drug kraj',
+  outside: 'Napoved pokriva samo Evropo.',
+  feelsLike: ({ temperature }) => `Občutna temperatura: ${temperature}`,
+  snowDepth: ({ depth }) => `${depth} snega`,
+  snowLine: ({ elevation }) => `Meja sneženja: ${elevation}`,
+  humidity: ({ value }) => `Vlažnost: ${value}`,
+  freezingLevel: ({ elevation }) => `Ničta izoterma na ${elevation}`,
+  clouds: ({ low, mid, high }) =>
+    `Oblačnost: nizka ${low}, srednja ${mid}, visoka ${high}`,
+  thunderRisk: ({ level }) => `Nevarnost neviht: ${level}`,
+  thunderLevels: { low: 'nizka', moderate: 'zmerna', high: 'visoka' },
+  sunshine: ({ duration }) => `Sončno obsevanje: ${duration}`,
+  uvIndex: ({ index }) => `UV-indeks: ${index}`,
+  gustsMax: ({ speed }) => `Sunki do ${speed}`,
+  wetHours: ({ hours }) => `Padavine: ${hours}`,
+  chanceMax: ({ probability }) => `verjetnost do ${probability}`,
+  visibility: ({ distance }) => `Vidljivost: ${distance}`,
 };
 
 export default sl;

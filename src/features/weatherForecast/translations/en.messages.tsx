@@ -20,6 +20,22 @@ const en: WeatherForecastMessages = {
   overnight: 'Overnight',
   pickPrompt: 'Click on the map where you want the forecast.',
   otherPlace: 'Another place',
+  outside: 'The forecast covers Europe only.',
+  feelsLike: ({ temperature }) => `Feels like ${temperature}`,
+  snowDepth: ({ depth }) => `${depth} of snow`,
+  snowLine: ({ elevation }) => `Snow above ${elevation}`,
+  humidity: ({ value }) => `Humidity: ${value}`,
+  freezingLevel: ({ elevation }) => `0 °C at ${elevation}`,
+  clouds: ({ low, mid, high }) =>
+    `Clouds: low ${low}, mid ${mid}, high ${high}`,
+  thunderRisk: ({ level }) => `Thunderstorm risk: ${level}`,
+  thunderLevels: { low: 'low', moderate: 'moderate', high: 'high' },
+  sunshine: ({ duration }) => `Sunshine: ${duration}`,
+  uvIndex: ({ index }) => `UV index: ${index}`,
+  gustsMax: ({ speed }) => `Gusts up to ${speed}`,
+  wetHours: ({ hours }) => `Precipitation for ${hours}`,
+  chanceMax: ({ probability }) => `chance up to ${probability}`,
+  visibility: ({ distance }) => `Visibility: ${distance}`,
 };
 
 export default en;

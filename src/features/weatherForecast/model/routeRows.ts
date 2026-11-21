@@ -3,11 +3,6 @@ import { QUARTER_MS } from '@shared/dateUtils.js';
 
 const HOUR_MS = 3_600_000;
 
-const SIX_HOURS_MS = 6 * HOUR_MS;
-
-/** How far ahead the forecast goes hourly; then by 6 hours, from 00 UTC. */
-const HOURLY_AHEAD_MS = 60 * HOUR_MS;
-
 const MAX_ROWS = 24;
 
 /** Closer than this to the start, the summit or the finish, a step's row adds nothing. */
@@ -51,7 +46,7 @@ function positionAt(
 
 /**
  * Where to ask for the weather: where the route is at each of the forecast's
- * steps (hourly, then 6-hourly) and at the start, the highest point and the
+ * hourly steps and at the start, the highest point and the
  * finish; each stop as one row for its whole length; at most
  * {@link MAX_ROWS}, thinning the steps, and none already past.
  */
@@ -109,21 +104,12 @@ export function routeRows(
 
   const steps: number[] = [];
 
-  const firstHour = Math.ceil(departure / HOUR_MS) * HOUR_MS;
-
   for (
-    let t =
-      firstHour < now + HOURLY_AHEAD_MS
-        ? firstHour
-        : Math.ceil(departure / SIX_HOURS_MS) * SIX_HOURS_MS;
+    let t = Math.ceil(departure / HOUR_MS) * HOUR_MS;
     t < end;
+    t += HOUR_MS
   ) {
     steps.push(t);
-
-    t =
-      t + HOUR_MS < now + HOURLY_AHEAD_MS
-        ? t + HOUR_MS
-        : (Math.floor(t / SIX_HOURS_MS) + 1) * SIX_HOURS_MS;
   }
 
   const upcoming = (t: number) => t > now - QUARTER_MS;

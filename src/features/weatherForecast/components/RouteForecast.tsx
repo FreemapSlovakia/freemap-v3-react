@@ -22,6 +22,7 @@ import {
 } from '../model/forecast.js';
 import { type RouteRow, routeRows } from '../model/routeRows.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
+import { Precipitation } from './Precipitation.js';
 import { WeatherIcon } from './WeatherIcon.js';
 import { Wind } from './Wind.js';
 
@@ -104,8 +105,6 @@ function Row({
 
   const integerFormat = useNumberFormat({ maximumFractionDigits: 0 });
 
-  const mmFormat = useNumberFormat({ maximumFractionDigits: 1 });
-
   const forecast = loaded.state === 'done' ? loaded.data : undefined;
 
   // A row of the last quarter hour may precede the forecast's first step.
@@ -162,8 +161,7 @@ function Row({
           </td>
 
           <td className="text-end text-nowrap text-info">
-            {step.precipitation >= 0.1 &&
-              `${mmFormat.format(step.precipitation)} mm`}
+            <Precipitation of={step} />
           </td>
 
           <td className="text-nowrap pe-2">
@@ -176,9 +174,11 @@ function Row({
             ? m?.failed
             : !forecast
               ? m?.loading
-              : lastStep && at >= stepEnd(lastStep)
-                ? m?.beyond
-                : null}
+              : !lastStep
+                ? m?.outside
+                : at >= stepEnd(lastStep)
+                  ? m?.beyond
+                  : null}
         </td>
       )}
     </ClickableRow>

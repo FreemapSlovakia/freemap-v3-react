@@ -21,6 +21,22 @@ const sk: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   overnight: 'Nocľah',
   pickPrompt: 'Kliknite na mape tam, kde chcete predpoveď.',
   otherPlace: 'Iné miesto',
+  outside: 'Predpoveď pokrýva iba Európu.',
+  feelsLike: ({ temperature }) => `Pocitová teplota: ${temperature}`,
+  snowDepth: ({ depth }) => `${depth} snehu`,
+  snowLine: ({ elevation }) => `Sneží nad ${elevation}`,
+  humidity: ({ value }) => `Vlhkosť: ${value}`,
+  freezingLevel: ({ elevation }) => `0 °C vo výške ${elevation}`,
+  clouds: ({ low, mid, high }) =>
+    `Oblačnosť: nízka ${low}, stredná ${mid}, vysoká ${high}`,
+  thunderRisk: ({ level }) => `Riziko búrok: ${level}`,
+  thunderLevels: { low: 'nízke', moderate: 'stredné', high: 'vysoké' },
+  sunshine: ({ duration }) => `Slnečný svit: ${duration}`,
+  uvIndex: ({ index }) => `UV index: ${index}`,
+  gustsMax: ({ speed }) => `Nárazy až ${speed}`,
+  wetHours: ({ hours }) => `Zrážky: ${hours}`,
+  chanceMax: ({ probability }) => `pravdepodobnosť až ${probability}`,
+  visibility: ({ distance }) => `Dohľadnosť: ${distance}`,
 };
 
 export default sk;

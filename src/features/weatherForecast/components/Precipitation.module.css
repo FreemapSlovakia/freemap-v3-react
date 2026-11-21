@@ -1,0 +1,12 @@
+.line {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* A fixed slot, in rem so the smaller probability line keeps it too: the
+   units line up whichever icon follows. */
+.icon {
+  display: inline-block;
+  width: 1.1rem;
+  text-align: end;
+}

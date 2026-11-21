@@ -21,6 +21,26 @@ const pl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   overnight: 'Nocleg',
   pickPrompt: 'Kliknięcie na mapie wybiera miejsce prognozy.',
   otherPlace: 'Inne miejsce',
+  outside: 'Prognoza obejmuje tylko Europę.',
+  feelsLike: ({ temperature }) => `Odczuwalna: ${temperature}`,
+  snowDepth: ({ depth }) => `${depth} śniegu`,
+  snowLine: ({ elevation }) => `Śnieg powyżej ${elevation}`,
+  humidity: ({ value }) => `Wilgotność: ${value}`,
+  freezingLevel: ({ elevation }) => `Izoterma 0 °C na ${elevation}`,
+  clouds: ({ low, mid, high }) =>
+    `Chmury: niskie ${low}, średnie ${mid}, wysokie ${high}`,
+  thunderRisk: ({ level }) => `Ryzyko burz: ${level}`,
+  thunderLevels: {
+    low: 'niskie',
+    moderate: 'umiarkowane',
+    high: 'wysokie',
+  },
+  sunshine: ({ duration }) => `Usłonecznienie: ${duration}`,
+  uvIndex: ({ index }) => `Indeks UV: ${index}`,
+  gustsMax: ({ speed }) => `Porywy do ${speed}`,
+  wetHours: ({ hours }) => `Opady przez ${hours}`,
+  chanceMax: ({ probability }) => `prawdopodobieństwo do ${probability}`,
+  visibility: ({ distance }) => `Widzialność: ${distance}`,
 };
 
 export default pl;

@@ -21,6 +21,22 @@ const it: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   overnight: 'Pernottamento',
   pickPrompt: 'Clicchi sulla mappa dove desidera le previsioni.',
   otherPlace: 'Un altro luogo',
+  outside: 'La previsione copre solo l’Europa.',
+  feelsLike: ({ temperature }) => `Percepita: ${temperature}`,
+  snowDepth: ({ depth }) => `${depth} di neve`,
+  snowLine: ({ elevation }) => `Quota neve: ${elevation}`,
+  humidity: ({ value }) => `Umidità: ${value}`,
+  freezingLevel: ({ elevation }) => `Zero termico a ${elevation}`,
+  clouds: ({ low, mid, high }) =>
+    `Nubi: basse ${low}, medie ${mid}, alte ${high}`,
+  thunderRisk: ({ level }) => `Rischio temporali: ${level}`,
+  thunderLevels: { low: 'basso', moderate: 'moderato', high: 'alto' },
+  sunshine: ({ duration }) => `Soleggiamento: ${duration}`,
+  uvIndex: ({ index }) => `Indice UV: ${index}`,
+  gustsMax: ({ speed }) => `Raffiche fino a ${speed}`,
+  wetHours: ({ hours }) => `Precipitazioni per ${hours}`,
+  chanceMax: ({ probability }) => `probabilità fino a ${probability}`,
+  visibility: ({ distance }) => `Visibilità: ${distance}`,
 };
 
 export default it;

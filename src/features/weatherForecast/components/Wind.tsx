@@ -1,18 +1,23 @@
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
+import clsx from 'clsx';
 import type { ReactElement } from 'react';
 import { WiDirectionUp } from 'react-icons/wi';
-import type { ForecastStep } from '../model/forecast.js';
+import { type ForecastStep, KMH_PER_MS } from '../model/forecast.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
+import { gustLook } from './hazardLook.js';
 
-const KMH_PER_MS = 3.6;
-
-/** The wind's arrow, pointing where it goes, its speed and any gusts. */
+/**
+ * The wind's arrow, pointing where it goes, its speed and, under it, any
+ * gusts, coloured by their strength.
+ */
 export function Wind({ step }: { step: ForecastStep }): ReactElement {
   const m = useWeatherForecastMessages();
 
   const integerFormat = useNumberFormat({ maximumFractionDigits: 0 });
 
   const kmh = (ms: number) => integerFormat.format(ms * KMH_PER_MS);
+
+  const look = gustLook(step.windGust);
 
   return (
     <>
@@ -23,7 +28,11 @@ export function Wind({ step }: { step: ForecastStep }): ReactElement {
         />
       )}{' '}
       {kmh(step.windSpeed)} km/h
-      {step.windGust !== null && ` (${m?.gusts} ${kmh(step.windGust)})`}
+      {step.windGust !== null && (
+        <div className={clsx('small', look.className)} style={look.style}>
+          {m?.gusts} {kmh(step.windGust)} km/h
+        </div>
+      )}
     </>
   );
 }

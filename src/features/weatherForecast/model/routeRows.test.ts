@@ -8,7 +8,7 @@ const north = (i: number, ele: number) => [20, 49 + i * 0.01, ele];
 describe('routeRows', () => {
   const HOUR = 3_600_000;
 
-  // 08:00 UTC, so 6-hour steps fall on 12:00 and 18:00 UTC.
+  // 08:00 UTC.
   const departure = Date.UTC(2026, 10, 20, 8);
 
   // A position every 15 minutes.
@@ -61,14 +61,14 @@ describe('routeRows', () => {
     expect(rows.at(-1)?.kind).toBe('finish');
   });
 
-  it('goes by 6 hours from 00 UTC beyond the hourly forecast', () => {
-    const rows = routeRows(route(60, 0), departure, departure - 3 * 24 * HOUR);
+  it('stays hourly days ahead', () => {
+    const rows = routeRows(route(16, 0), departure, departure - 10 * 24 * HOUR);
 
     expect(
       rows
         .filter((r) => r.kind === 'along')
         .map((r) => new Date(r.at).getUTCHours()),
-    ).toEqual([12, 18]);
+    ).toEqual([9, 10, 11]);
   });
 
   it('leaves out what is already past', () => {

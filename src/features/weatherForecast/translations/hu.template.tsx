@@ -21,6 +21,22 @@ const hu: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   overnight: 'Éjszakázás',
   pickPrompt: 'Kattintson a térképen oda, ahol az előrejelzést szeretné.',
   otherPlace: 'Másik hely',
+  outside: 'Az előrejelzés csak Európát fedi le.',
+  feelsLike: ({ temperature }) => `Hőérzet: ${temperature}`,
+  snowDepth: ({ depth }) => `${depth} hó`,
+  snowLine: ({ elevation }) => `Hóhatár: ${elevation}`,
+  humidity: ({ value }) => `Páratartalom: ${value}`,
+  freezingLevel: ({ elevation }) => `Fagyszint: ${elevation}`,
+  clouds: ({ low, mid, high }) =>
+    `Felhőzet: alacsony ${low}, közepes ${mid}, magas ${high}`,
+  thunderRisk: ({ level }) => `Zivatarveszély: ${level}`,
+  thunderLevels: { low: 'alacsony', moderate: 'közepes', high: 'magas' },
+  sunshine: ({ duration }) => `Napsütés: ${duration}`,
+  uvIndex: ({ index }) => `UV-index: ${index}`,
+  gustsMax: ({ speed }) => `Széllökés max. ${speed}`,
+  wetHours: ({ hours }) => `Csapadék: ${hours}`,
+  chanceMax: ({ probability }) => `valószínűség max. ${probability}`,
+  visibility: ({ distance }) => `Látótávolság: ${distance}`,
 };
 
 export default hu;

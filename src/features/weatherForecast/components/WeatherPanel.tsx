@@ -80,7 +80,7 @@ export default function WeatherPanel(): ReactElement {
             <Button
               variant="secondary"
               size="sm"
-              className="mb-2"
+              className="mb-3"
               disabled={!online}
               onClick={() => {
                 dispatch(weatherForecastSetPicking(true));

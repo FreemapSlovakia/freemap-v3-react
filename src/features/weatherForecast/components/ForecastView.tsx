@@ -3,25 +3,28 @@ import {
   WEEKDAY_TIME,
 } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
-import type { ReactElement } from 'react';
-import { Accordion, Table } from 'react-bootstrap';
+import clsx from 'clsx';
+import { type ReactElement, useState } from 'react';
+import { Accordion } from 'react-bootstrap';
 import {
   type Forecast,
   type ForecastDay,
   type ForecastStep,
   forecastDays,
   formatTemperature,
-  stepEnd,
+  MIN_SNOW_DEPTH,
 } from '../model/forecast.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
+import { DayHours } from './DayHours.js';
+import { DetailItems } from './DetailItems.js';
 import classes from './ForecastView.module.css';
+import { Precipitation } from './Precipitation.js';
 import { WeatherIcon } from './WeatherIcon.js';
-import { Wind } from './Wind.js';
 
 /**
- * The forecast by day, one day open at a time with its hours; `days` keeps only
- * some, and `highlight` marks steps such as an event's hours, whose first day
- * opens unless `collapsed`.
+ * The forecast by day, one day open at a time with its hours, each of which
+ * opens its details; `days` keeps only some, and `highlight` marks steps such
+ * as an event's hours, whose first day opens unless `collapsed`.
  */
 export function ForecastView({
   forecast,
@@ -42,118 +45,156 @@ export function ForecastView({
     month: 'numeric',
   });
 
-  const timeFormat = useDateTimeFormat({ hour: '2-digit', minute: '2-digit' });
-
   const updatedFormat = useDateTimeFormat(WEEKDAY_TIME);
 
   const integerFormat = useNumberFormat({ maximumFractionDigits: 0 });
 
-  const mmFormat = useNumberFormat({ maximumFractionDigits: 1 });
+  const [opened, setOpened] = useState<number | null>(null);
 
-  const all = forecastDays(forecast.steps);
+  // Undefined until a day is toggled: then the default below applies.
+  const [activeDay, setActiveDay] = useState<string | null>();
+
+  const [instant, setInstant] = useState(false);
+
+  if (forecast.steps.length === 0) {
+    return <p className="text-muted">{m?.outside}</p>;
+  }
+
+  const all = forecastDays(forecast.steps, forecast.sun);
 
   const shown = days ? all.filter(days) : all;
 
   const open =
     (highlight && shown.find((d) => d.steps.some(highlight))) ?? shown[0];
 
+  // The default too where a refreshed forecast no longer has the day chosen.
+  const chosen = activeDay === null || shown.some((d) => d.key === activeDay);
+
+  const active =
+    chosen && activeDay !== undefined
+      ? activeDay
+      : collapsed
+        ? null
+        : (open?.key ?? null);
+
   const temperature = (t: number) =>
     `${formatTemperature(integerFormat, t)} °C`;
+
+  // Not closing over `opened`, so the days' tables needn't re-render on a click.
+  const toggle = (time: number) =>
+    setOpened((current) => (current === time ? null : time));
+
+  // A day above closing as this one opens would slide this one's header out of
+  // sight: both switch at once instead, and the header is scrolled to.
+  const select = (key: string | null) => {
+    const index = (k: string | null) => shown.findIndex((d) => d.key === k);
+
+    setInstant(
+      key !== null && index(active) !== -1 && index(active) < index(key),
+    );
+
+    setActiveDay(key);
+  };
+
+  const revealHeader = (collapse: HTMLElement) => {
+    if (instant) {
+      collapse.previousElementSibling?.scrollIntoView({ block: 'nearest' });
+
+      setInstant(false);
+    }
+  };
 
   return (
     <>
       <Accordion
-        defaultActiveKey={collapsed ? undefined : open?.key}
-        className={`mb-2 ${classes.days}`}
+        activeKey={active}
+        onSelect={(key) => select(typeof key === 'string' ? key : null)}
+        className={clsx('mb-2', classes.days, instant && classes.instant)}
       >
         {shown.map((day) => (
           <Accordion.Item key={day.key} eventKey={day.key}>
             <Accordion.Header>
-              <span className="d-flex align-items-center gap-2 w-100 me-2">
-                <WeatherIcon
-                  weather={{ ...day.weather, day: true }}
-                  size={32}
-                />
+              <span className="w-100 me-2">
+                <span className="d-flex align-items-center gap-2">
+                  <WeatherIcon
+                    weather={{ ...day.weather, day: true }}
+                    size={32}
+                  />
 
-                <span className="fw-semibold flex-grow-1">
-                  {dayFormat.format(day.date)}
+                  <span className="flex-grow-1 fw-semibold text-nowrap">
+                    {dayFormat.format(day.date)}
+                  </span>
+
+                  <span
+                    className={clsx(
+                      'text-info text-end',
+                      classes.precipitation,
+                    )}
+                  >
+                    <Precipitation of={day} />
+                  </span>
+
+                  <span className={clsx('text-end', classes.temperatures)}>
+                    {temperature(day.min)} / {temperature(day.max)}
+                  </span>
                 </span>
 
-                {day.precipitation >= 0.1 && (
-                  <span className="text-info text-nowrap">
-                    {mmFormat.format(day.precipitation)} mm
+                {day.snowDepth !== null && day.snowDepth >= MIN_SNOW_DEPTH && (
+                  <span
+                    className={clsx('d-block small text-muted', classes.info)}
+                  >
+                    {m?.snowDepth({
+                      depth: `${integerFormat.format(day.snowDepth)} cm`,
+                    })}
                   </span>
                 )}
-
-                <span className="text-nowrap">
-                  {temperature(day.min)} / {temperature(day.max)}
-                </span>
               </span>
             </Accordion.Header>
 
-            <Accordion.Body className="p-0">
-              <Table size="sm" className="mb-0 align-middle">
-                <tbody>
-                  {day.steps.map((step) => (
-                    <tr
-                      key={step.time.getTime()}
-                      className={
-                        highlight?.(step) ? 'table-primary' : undefined
-                      }
-                    >
-                      <td className="text-nowrap ps-2">
-                        {timeFormat.format(step.time)}
-                        {step.hours > 1 &&
-                          `–${timeFormat.format(new Date(stepEnd(step)))}`}
-                      </td>
-
-                      <td>
-                        <WeatherIcon weather={step.weather} size={28} />
-                      </td>
-
-                      <td className="text-end text-nowrap">
-                        {temperature(step.temperature)}
-                      </td>
-
-                      <td className="text-end text-nowrap text-info">
-                        {step.precipitation >= 0.1 &&
-                          `${mmFormat.format(step.precipitation)} mm`}
-                        {step.precipitationProbability !== null &&
-                          step.precipitationProbability > 0 &&
-                          ` ${integerFormat.format(step.precipitationProbability)} %`}
-                      </td>
-
-                      <td className="text-nowrap pe-2">
-                        <Wind step={step} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Accordion.Body>
+            {/* A day's hours are built once it first opens, not all 16 days' up front. */}
+            <Accordion.Collapse
+              eventKey={day.key}
+              mountOnEnter
+              onEntered={revealHeader}
+            >
+              <div className="accordion-body p-0">
+                <DayHours
+                  day={day}
+                  opened={
+                    opened !== null &&
+                    day.steps.some((s) => s.time.getTime() === opened)
+                      ? opened
+                      : null
+                  }
+                  onToggle={toggle}
+                  highlight={highlight}
+                />
+              </div>
+            </Accordion.Collapse>
           </Accordion.Item>
         ))}
       </Accordion>
 
       <p className="small text-body-secondary mb-0">
-        {forecast.elevation !== null && (
-          <>
-            {m?.elevation({
-              elevation: integerFormat.format(forecast.elevation),
-            })}
-            {' · '}
-          </>
-        )}
-        {m?.updated({ time: updatedFormat.format(forecast.updatedAt) })}
-        {' · '}
-        {m?.source}:{' '}
-        <a
-          href={forecast.attribution.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {forecast.attribution.name}
-        </a>
+        <DetailItems
+          items={[
+            forecast.elevation !== null &&
+              m?.elevation({
+                elevation: integerFormat.format(forecast.elevation),
+              }),
+            m?.updated({ time: updatedFormat.format(forecast.updatedAt) }),
+            <>
+              {m?.source}:{' '}
+              <a
+                href={forecast.attribution.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {forecast.attribution.name}
+              </a>
+            </>,
+          ]}
+        />
       </p>
     </>
   );

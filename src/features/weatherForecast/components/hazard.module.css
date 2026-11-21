@@ -1,0 +1,23 @@
+/* Amber, far enough from the danger red to tell apart. */
+.warning {
+  color: #e67700;
+}
+
+:global([data-bs-theme="dark"]) .warning {
+  color: #ffa94d;
+}
+
+.danger {
+  color: var(--bs-danger);
+  font-weight: 600;
+}
+
+/* A gust's colour by its strength, from grey through amber to red (`--hue`,
+   `--sat` set inline). */
+.gust {
+  color: hsl(var(--hue) var(--sat) 40%);
+}
+
+:global([data-bs-theme="dark"]) .gust {
+  color: hsl(var(--hue) var(--sat) 65%);
+}

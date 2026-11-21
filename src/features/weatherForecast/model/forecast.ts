@@ -18,18 +18,45 @@ const WeatherSchema = z.object({
 
 export type Weather = z.infer<typeof WeatherSchema>;
 
+// Absent from a forecast the browser cached before the API had it.
+const optional = z.number().nullable().default(null);
+
 const ForecastStepSchema = z.object({
   time: IsoDateSchema,
   /** How long `weather` and `precipitation` last from `time`. */
   hours: z.number(),
   temperature: z.number(),
+  apparentTemperature: optional,
   /** m/s */
   windSpeed: z.number(),
   windGust: z.number().nullable(),
   /** Where the wind blows from, in degrees. */
   windDirection: z.number().nullable(),
+  /** % */
+  cloudCoverLow: optional,
+  cloudCoverMid: optional,
+  cloudCoverHigh: optional,
   precipitation: z.number(),
   precipitationProbability: z.number().nullable(),
+  /** mm of rain over the step. */
+  rain: optional,
+  /** cm of fresh snow over the step. */
+  snowfall: optional,
+  /** cm on the ground. */
+  snowDepth: optional,
+  /** Metres above sea level of 0 °C. */
+  freezingLevel: optional,
+  /** J/kg, the energy for thunderstorms. */
+  cape: optional,
+  /** Minutes over the step. */
+  sunshine: optional,
+  uvIndex: optional,
+  /** Metres. */
+  visibility: optional,
+  /** Metres above sea level from which it falls as snow. */
+  snowLine: optional,
+  /** % */
+  humidity: optional,
   weather: WeatherSchema,
 });
 
@@ -39,6 +66,13 @@ const ForecastSchema = z.object({
   updatedAt: IsoDateSchema,
   elevation: z.number().nullable(),
   steps: ForecastStepSchema.array(),
+  sun: z
+    .object({
+      sunrise: IsoDateSchema.nullable(),
+      sunset: IsoDateSchema.nullable(),
+    })
+    .array()
+    .default([]),
   attribution: z.object({ name: z.string(), url: z.string() }),
 });
 
@@ -53,7 +87,41 @@ export function formatTemperature(
 }
 
 /** About as far ahead as the forecast reaches. */
-export const FORECAST_DAYS = 9;
+export const FORECAST_DAYS = 16;
+
+export const KMH_PER_MS = 3.6;
+
+/** The least precipitation, in mm or cm, that counts: it reads as 0.1. */
+export const MIN_AMOUNT = 0.05;
+
+/**
+ * Whether anything falls in a step, by the amounts shown: snow, rain, or the
+ * total where the forecast doesn't split it.
+ */
+export function isWet(
+  s: Pick<ForecastStep, 'rain' | 'snowfall' | 'precipitation'>,
+): boolean {
+  return s.rain === null && s.snowfall === null
+    ? s.precipitation >= MIN_AMOUNT
+    : (s.rain ?? 0) >= MIN_AMOUNT || (s.snowfall ?? 0) >= MIN_AMOUNT;
+}
+
+/** The least snow on the ground, in cm, worth saying. */
+export const MIN_SNOW_DEPTH = 1;
+
+/** The values' sum, null where no value is known. */
+export function sumKnown(values: (number | null)[]): number | null {
+  const known = values.filter((v) => v !== null);
+
+  return known.length ? known.reduce((a, b) => a + b, 0) : null;
+}
+
+/** The values' maximum, null where no value is known. */
+export function maxKnown(values: (number | null)[]): number | null {
+  const known = values.filter((v) => v !== null);
+
+  return known.length ? Math.max(...known) : null;
+}
 
 export function stepEnd(step: ForecastStep): number {
   return step.time.getTime() + step.hours * 3_600_000;
@@ -98,6 +166,18 @@ async function requestForecast(key: string): Promise<Forecast> {
     { headers: { accept: 'application/json' } },
   );
 
+  // Outside Europe, as the API words it: a forecast with no steps. Any other
+  // 404 is a failure.
+  if (res.status === 404 && (await res.text()).includes('outside Europe')) {
+    return {
+      updatedAt: new Date(),
+      elevation: null,
+      steps: [],
+      sun: [],
+      attribution: { name: '', url: '' },
+    };
+  }
+
   if (!res.ok) {
     throw new Error(`weather forecast: ${res.status}`);
   }
@@ -126,7 +206,15 @@ export type ForecastDay = {
   min: number;
   max: number;
   precipitation: number;
-  windMax: number;
+  /** mm of rain, if the provider says. */
+  rain: number | null;
+  /** cm of fresh snow, if the provider says. */
+  snowfall: number | null;
+  /** The deepest cm of snow on the ground, if the provider says. */
+  snowDepth: number | null;
+  /** Null in a polar day or night, or from a provider without them. */
+  sunrise: Date | null;
+  sunset: Date | null;
   /** The worst of its daytime weather. */
   weather: Weather;
 };
@@ -179,28 +267,47 @@ export function spanStep(
 
   const windiest = pick((a, b) => a.windSpeed > b.windSpeed);
 
+  // Each step's in proportion to the part of it the stretch covers.
+  const total = (value: (s: ForecastStep) => number | null) =>
+    span.reduce((sum, s) => {
+      const start = s.time.getTime();
+
+      const covered = Math.min(to, stepEnd(s)) - Math.max(from, start);
+
+      return sum + ((value(s) ?? 0) * covered) / (stepEnd(s) - start);
+    }, 0);
+
   return {
     ...first,
     hours: (to - from) / 3_600_000,
     temperature: pick((a, b) => a.temperature < b.temperature).temperature,
     windSpeed: windiest.windSpeed,
-    windGust: windiest.windGust,
+    // The strongest gust, which needn't come with the strongest wind.
+    windGust: maxKnown(span.map((s) => s.windGust)),
     windDirection: windiest.windDirection,
-    // Each step's in proportion to the part of it the stretch covers.
-    precipitation: span.reduce((sum, s) => {
-      const start = s.time.getTime();
-
-      const covered = Math.min(to, stepEnd(s)) - Math.max(from, start);
-
-      return sum + (s.precipitation * covered) / (stepEnd(s) - start);
-    }, 0),
+    precipitation: total((s) => s.precipitation),
+    rain: span.every((s) => s.rain === null) ? null : total((s) => s.rain),
+    snowfall: span.every((s) => s.snowfall === null)
+      ? null
+      : total((s) => s.snowfall),
     weather: pick((a, b) => severity(a.weather) > severity(b.weather)).weather,
   };
 }
 
 /** The steps by local day; a day's symbol is the worst of 6:00 to 21:00. */
-export function forecastDays(steps: ForecastStep[]): ForecastDay[] {
+export function forecastDays(
+  steps: ForecastStep[],
+  sun: Forecast['sun'],
+): ForecastDay[] {
   const byDay = Map.groupBy(steps, (step) => dayKey(step.time));
+
+  // Each by the local day it falls on, not by the UTC day it is listed by.
+  const byLocalDay = (times: (Date | null)[]) =>
+    new Map(times.flatMap((t) => (t ? [[dayKey(t), t] as const] : [])));
+
+  const sunrises = byLocalDay(sun.map((s) => s.sunrise));
+
+  const sunsets = byLocalDay(sun.map((s) => s.sunset));
 
   return [...byDay].map(([key, daySteps]) => {
     const daytime = daySteps.filter((s) => {
@@ -222,7 +329,11 @@ export function forecastDays(steps: ForecastStep[]): ForecastDay[] {
       min: Math.min(...daySteps.map((s) => s.temperature)),
       max: Math.max(...daySteps.map((s) => s.temperature)),
       precipitation: daySteps.reduce((sum, s) => sum + s.precipitation, 0),
-      windMax: Math.max(...daySteps.map((s) => s.windSpeed)),
+      rain: sumKnown(daySteps.map((s) => s.rain)),
+      snowfall: sumKnown(daySteps.map((s) => s.snowfall)),
+      snowDepth: maxKnown(daySteps.map((s) => s.snowDepth)),
+      sunrise: sunrises.get(key) ?? null,
+      sunset: sunsets.get(key) ?? null,
       weather: (daytime.length ? daytime : daySteps).reduce((worst, s) =>
         severity(s.weather) > severity(worst.weather) ? s : worst,
       ).weather,

@@ -22,6 +22,22 @@ const fr: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   pickPrompt:
     'Cliquez sur la carte à l’endroit où vous souhaitez les prévisions.',
   otherPlace: 'Autre lieu',
+  outside: 'La prévision ne couvre que l’Europe.',
+  feelsLike: ({ temperature }) => `Ressenti : ${temperature}`,
+  snowDepth: ({ depth }) => `${depth} de neige`,
+  snowLine: ({ elevation }) => `Limite pluie-neige : ${elevation}`,
+  humidity: ({ value }) => `Humidité : ${value}`,
+  freezingLevel: ({ elevation }) => `Isotherme 0 °C à ${elevation}`,
+  clouds: ({ low, mid, high }) =>
+    `Nuages : bas ${low}, moyens ${mid}, hauts ${high}`,
+  thunderRisk: ({ level }) => `Risque d’orage : ${level}`,
+  thunderLevels: { low: 'faible', moderate: 'modéré', high: 'élevé' },
+  sunshine: ({ duration }) => `Ensoleillement : ${duration}`,
+  uvIndex: ({ index }) => `Indice UV : ${index}`,
+  gustsMax: ({ speed }) => `Rafales jusqu’à ${speed}`,
+  wetHours: ({ hours }) => `Précipitations pendant ${hours}`,
+  chanceMax: ({ probability }) => `probabilité jusqu’à ${probability}`,
+  visibility: ({ distance }) => `Visibilité : ${distance}`,
 };
 
 export default fr;
