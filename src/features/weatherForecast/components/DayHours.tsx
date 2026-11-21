@@ -19,7 +19,11 @@ import { StepDetails } from './StepDetails.js';
 import { WeatherIcon } from './WeatherIcon.js';
 import { Wind } from './Wind.js';
 
-type Formats = { time: Intl.DateTimeFormat; integer: Intl.NumberFormat };
+type Formats = {
+  time: Intl.DateTimeFormat;
+  hour: Intl.DateTimeFormat;
+  integer: Intl.NumberFormat;
+};
 
 /**
  * An open day: its summary, then its hours, each opening its details on a
@@ -46,6 +50,8 @@ export function DayHours({
       minute: '2-digit',
       timeZone,
     }),
+    // The hour a row starts; its sums cover the hour from it.
+    hour: useDateTimeFormat({ hour: 'numeric', timeZone }),
     integer: useNumberFormat({ maximumFractionDigits: 0 }),
   };
 
@@ -108,10 +114,7 @@ function HourRow({
           onToggle(step.time.getTime());
         }}
       >
-        <td className="text-nowrap ps-2">
-          {formats.time.format(step.time)}
-          {step.hours > 1 && `–${formats.time.format(new Date(stepEnd(step)))}`}
-        </td>
+        <td className="text-nowrap ps-2">{formats.hour.format(step.time)}</td>
 
         <td>
           <WeatherIcon weather={step.weather} size={28} />
