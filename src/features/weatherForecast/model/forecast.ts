@@ -255,41 +255,33 @@ function severity(w: Weather): number {
 }
 
 /**
- * A day's symbol from its hours' weather: thunder if any hour has it; else
- * the most common dry sky, with showers where precipitation falls in at most
- * a quarter of the hours under a mostly sunny sky; else the worst precipitation.
+ * A day's symbol: the worst hour's with thunder or wet hours over a quarter;
+ * else the middle sky of its hours, with any precipitation as showers under a sunny one.
  */
 export function daySymbol(hours: Weather[]): Weather {
   const worst = hours.reduce((a, b) => (severity(b) > severity(a) ? b : a));
 
-  const dry = hours.filter((w) => !w.precipitation);
+  const wet = hours.filter((w) => w.precipitation).length;
 
-  const wet = hours.length - dry.length;
-
-  if (worst.thunder || dry.length === 0) {
+  if (worst.thunder || wet * 4 > hours.length) {
     return worst;
   }
 
-  // A tie goes to the cloudier sky.
-  const [sky] = [...Map.groupBy(dry, (w) => w.sky)].reduce((a, b) =>
-    b[1].length > a[1].length ||
-    (b[1].length === a[1].length && SKY_SEVERITY[b[0]] > SKY_SEVERITY[a[0]])
-      ? b
-      : a,
-  );
+  // Of an even count, the cloudier of the two middle ones.
+  const sky = hours
+    .map((w) => w.sky)
+    .toSorted((a, b) => SKY_SEVERITY[a] - SKY_SEVERITY[b])
+    .at(Math.floor(hours.length / 2))!;
 
-  if (!worst.precipitation) {
-    return { sky, precipitation: null, thunder: false, day: true };
-  }
-
-  return wet * 4 <= hours.length && SKY_SEVERITY[sky] < SKY_SEVERITY.cloudy
-    ? {
-        sky,
-        precipitation: { ...worst.precipitation, showers: true },
-        thunder: false,
-        day: true,
-      }
-    : worst;
+  return {
+    sky,
+    precipitation: worst.precipitation && {
+      ...worst.precipitation,
+      showers: SKY_SEVERITY[sky] < SKY_SEVERITY.cloudy,
+    },
+    thunder: false,
+    day: true,
+  };
 }
 
 /**

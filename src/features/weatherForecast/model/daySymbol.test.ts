@@ -22,10 +22,23 @@ const day = (rest: Weather, ...first: Weather[]) => [
 ];
 
 describe('daySymbol', () => {
-  it('takes the most common sky, not the worst', () => {
+  it('takes the middle sky, not the worst', () => {
     expect(daySymbol(day(sky('clear'), sky('cloudy'), sky('fog')))).toEqual(
       sky('clear'),
     );
+  });
+
+  it('makes a sunny morning and a cloudy afternoon partly cloudy', () => {
+    expect(
+      daySymbol([
+        ...Array.from({ length: 4 }, () => sky('clear')),
+        sky('fair'),
+        sky('fair'),
+        sky('partlyCloudy'),
+        sky('partlyCloudy'),
+        ...Array.from({ length: 7 }, () => sky('cloudy')),
+      ]),
+    ).toEqual(sky('partlyCloudy'));
   });
 
   it('shows a short rain as showers under a sunny sky', () => {
@@ -41,8 +54,13 @@ describe('daySymbol', () => {
     ).toEqual(rain());
   });
 
-  it('shows a short rain under a cloudy sky as rain', () => {
-    expect(daySymbol(day(sky('cloudy'), rain()))).toEqual(rain());
+  it('shows a short rain under a cloudy sky as rain, even from showers', () => {
+    const shower: Weather = {
+      ...rain(),
+      precipitation: { type: 'rain', intensity: 'light', showers: true },
+    };
+
+    expect(daySymbol(day(sky('cloudy'), shower))).toEqual(rain());
   });
 
   it('shows thunder in any hour', () => {
