@@ -4,6 +4,7 @@ const en: WeatherForecastMessages = {
   title: 'Weather forecast',
   loading: 'Loading the forecast…',
   failed: 'The forecast could not be loaded.',
+  retry: 'Try again',
   elevation: ({ elevation }) => `For ${elevation} m above sea level`,
   localTime: ({ difference }) => `Local time (${difference})`,
   updated: ({ time }) => `Updated ${time}`,

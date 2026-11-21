@@ -34,7 +34,7 @@ export type Loaded<T> =
   | { state: 'idle' }
   | { state: 'loading' }
   | { state: 'done'; data: T }
-  | { state: 'error' };
+  | { state: 'error'; retry: () => void };
 
 /**
  * `load`'s result, shared by every caller of the same key unless `shared` is
@@ -47,6 +47,12 @@ export function useCached<T>(
 ): Loaded<T> {
   const [result, setResult] = useState<{ key: string; loaded: Loaded<T> }>();
 
+  // Retries by key, so a retry kept from an earlier key reloads nothing current.
+  // It loads anew: the shared cache keeps no failure, the unshared nothing.
+  const [retried, setRetried] = useState<Record<string, number>>({});
+
+  const attempt = key === null ? 0 : (retried[key] ?? 0);
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: the key names what `load` loads
   useEffect(() => {
     if (key === null) {
@@ -55,15 +61,21 @@ export function useCached<T>(
 
     let live = true;
 
+    const retry = () => {
+      setResult((prev) => (prev?.key === key ? undefined : prev));
+
+      setRetried((prev) => ({ ...prev, [key]: (prev[key] ?? 0) + 1 }));
+    };
+
     (shared ? cached(key, load) : load()).then(
       (data) => live && setResult({ key, loaded: { state: 'done', data } }),
-      () => live && setResult({ key, loaded: { state: 'error' } }),
+      () => live && setResult({ key, loaded: { state: 'error', retry } }),
     );
 
     return () => {
       live = false;
     };
-  }, [key]);
+  }, [key, attempt]);
 
   if (key === null) {
     return { state: 'idle' };

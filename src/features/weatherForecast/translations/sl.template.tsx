@@ -5,6 +5,7 @@ const sl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   title: 'Vremenska napoved',
   loading: 'Nalaganje napovedi…',
   failed: 'Napovedi ni bilo mogoče naložiti.',
+  retry: 'Poskusi znova',
   elevation: ({ elevation }) => `Za ${elevation} m n. m.`,
   localTime: ({ difference }) => `Lokalni čas (${difference})`,
   updated: ({ time }) => `Posodobljeno ${time}`,

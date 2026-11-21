@@ -1,3 +1,4 @@
+import { ForecastFailed } from '@features/weatherForecast/components/ForecastFailed.js';
 import { ForecastView } from '@features/weatherForecast/components/ForecastView.js';
 import { RouteForecast } from '@features/weatherForecast/components/RouteForecast.js';
 import {
@@ -68,8 +69,30 @@ export function EventForecast({
 
   const route = mapRoute.state === 'done' ? mapRoute.data : null;
 
-  if (loaded.state !== 'done') {
+  if (loaded.state === 'idle') {
     return null;
+  }
+
+  const heading = (
+    <>
+      <hr className="my-2" />
+
+      <h6 className="fw-semibold">{m?.title}</h6>
+    </>
+  );
+
+  if (loaded.state !== 'done') {
+    return (
+      <>
+        {heading}
+
+        {loaded.state === 'error' ? (
+          <ForecastFailed retry={loaded.retry} className="py-2 small" />
+        ) : (
+          <p className="small text-muted">{m?.loading}</p>
+        )}
+      </>
+    );
   }
 
   const eventDays = event.dateOnly
@@ -94,9 +117,7 @@ export function EventForecast({
 
   return (
     <>
-      <hr className="my-2" />
-
-      <h6 className="fw-semibold">{m?.title}</h6>
+      {heading}
 
       {route && (
         <>

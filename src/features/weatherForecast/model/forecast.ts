@@ -1,6 +1,7 @@
 import type { Loaded } from '@shared/hooks/useCached.js';
 import { useCached } from '@shared/hooks/useCached.js';
 import { IsoDateSchema, type LatLon } from '@shared/types/common.js';
+import { useEffect } from 'react';
 import z from 'zod';
 import {
   isKnownZone,
@@ -223,7 +224,38 @@ export function useForecast(
   const key = point ? `${point.lat.toFixed(3)},${point.lon.toFixed(3)}` : null;
 
   // Not kept here: the HTTP cache knows when the forecast goes stale.
-  return useCached(key, () => fetchForecast(key!), false);
+  const loaded = useCached(key, () => fetchForecast(key!), false);
+
+  const ownRetry = loaded.state === 'error' ? loaded.retry : undefined;
+
+  useEffect(() => {
+    if (!ownRetry) {
+      return;
+    }
+
+    failedForecasts.add(ownRetry);
+
+    return () => {
+      failedForecasts.delete(ownRetry);
+    };
+  }, [ownRetry]);
+
+  return loaded.state === 'error'
+    ? { state: 'error', retry: retryFailedForecasts }
+    : loaded;
+}
+
+/** The forecasts showing a failure, which mostly come together, as a route's rows do. */
+const failedForecasts = new Set<() => void>();
+
+// Between the retries, so a route's rows don't come back as one burst.
+const RETRY_SPACING_MS = 100;
+
+/** Any failed forecast asked again asks every one. */
+function retryFailedForecasts() {
+  for (const [i, retry] of [...failedForecasts].entries()) {
+    setTimeout(retry, i * RETRY_SPACING_MS);
+  }
 }
 
 export type ForecastDay = {

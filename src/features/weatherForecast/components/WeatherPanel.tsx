@@ -8,7 +8,7 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { type ReactElement, useState } from 'react';
-import { Alert, Button, ToggleButton } from 'react-bootstrap';
+import { Button, ToggleButton } from 'react-bootstrap';
 import {
   FaChartLine,
   FaCloudSun,
@@ -21,6 +21,7 @@ import { useForecast } from '../model/forecast.js';
 import { parseWeatherPointId } from '../model/pointId.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import { ForecastCharts } from './ForecastCharts.js';
+import { ForecastFailed } from './ForecastFailed.js';
 import { ForecastFooter } from './ForecastFooter.js';
 import { ForecastView } from './ForecastView.js';
 
@@ -183,7 +184,7 @@ function PanelForecast({
       );
 
     case 'error':
-      return <Alert variant="warning">{m?.failed}</Alert>;
+      return <ForecastFailed retry={loaded.retry} />;
 
     default:
       return <p>{m?.loading}</p>;

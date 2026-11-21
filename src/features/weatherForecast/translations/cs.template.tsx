@@ -5,6 +5,7 @@ const cs: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   title: 'Předpověď počasí',
   loading: 'Načítá se předpověď…',
   failed: 'Předpověď se nepodařilo načíst.',
+  retry: 'Zkusit znovu',
   elevation: ({ elevation }) => `Pro ${elevation} m n. m.`,
   localTime: ({ difference }) => `Místní čas (${difference})`,
   updated: ({ time }) => `Aktualizováno ${time}`,

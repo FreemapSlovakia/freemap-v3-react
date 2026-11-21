@@ -4,6 +4,8 @@ export type WeatherForecastMessages = {
   title: string;
   loading: string;
   failed: string;
+  /** The button beside `failed`. */
+  retry: string;
   /** The terrain height the temperatures are adjusted to. */
   elevation: (props: { elevation: string }) => string;
   /** The times are the place's, which differ from the viewer's by "+1 h". */

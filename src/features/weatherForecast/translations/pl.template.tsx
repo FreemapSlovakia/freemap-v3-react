@@ -5,6 +5,7 @@ const pl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   title: 'Prognoza pogody',
   loading: 'Wczytywanie prognozy…',
   failed: 'Nie udało się wczytać prognozy.',
+  retry: 'Ponów',
   elevation: ({ elevation }) => `Dla ${elevation} m n.p.m.`,
   localTime: ({ difference }) => `Czas lokalny (${difference})`,
   updated: ({ time }) => `Zaktualizowano ${time}`,

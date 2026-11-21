@@ -5,6 +5,7 @@ const it: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   title: 'Previsioni meteo',
   loading: 'Caricamento delle previsioni…',
   failed: 'Impossibile caricare le previsioni.',
+  retry: 'Riprova',
   elevation: ({ elevation }) => `Per ${elevation} m s.l.m.`,
   localTime: ({ difference }) => `Ora locale (${difference})`,
   updated: ({ time }) => `Aggiornamento: ${time}`,

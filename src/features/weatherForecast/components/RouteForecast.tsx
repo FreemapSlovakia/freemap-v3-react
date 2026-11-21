@@ -22,6 +22,7 @@ import {
 } from '../model/forecast.js';
 import { type RouteRow, routeRows } from '../model/routeRows.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
+import { ForecastFailed } from './ForecastFailed.js';
 import { Precipitation } from './Precipitation.js';
 import { WeatherIcon } from './WeatherIcon.js';
 import { Wind } from './Wind.js';
@@ -170,15 +171,15 @@ function Row({
         </>
       ) : (
         <td colSpan={4} className="text-muted small pe-2">
-          {loaded.state === 'error'
-            ? m?.failed
-            : !forecast
-              ? m?.loading
-              : !lastStep
-                ? m?.outside
-                : at >= stepEnd(lastStep)
-                  ? m?.beyond
-                  : null}
+          {loaded.state === 'error' ? (
+            <ForecastFailed retry={loaded.retry} inline />
+          ) : !forecast ? (
+            m?.loading
+          ) : !lastStep ? (
+            m?.outside
+          ) : at >= stepEnd(lastStep) ? (
+            m?.beyond
+          ) : null}
         </td>
       )}
     </ClickableRow>
