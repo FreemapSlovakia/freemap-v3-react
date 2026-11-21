@@ -172,10 +172,26 @@ function fetchForecast(key: string): Promise<Forecast> {
 async function requestForecast(key: string): Promise<Forecast> {
   const [lat, lon] = key.split(',');
 
-  const res = await fetch(
-    `${process.env['API_URL']}/weather/forecast?lat=${lat}&lon=${lon}`,
-    { headers: { accept: 'application/json' } },
-  );
+  const ask = () =>
+    fetch(`${process.env['API_URL']}/weather/forecast?lat=${lat}&lon=${lon}`, {
+      headers: { accept: 'application/json' },
+    });
+
+  let res = await ask();
+
+  // Asked once more where the API says it may help — Open-Meteo stalling for a
+  // few seconds, or its queue full — spread out, as many points fail at once.
+  const retryAfter = Number(res.headers.get('Retry-After'));
+
+  if (!res.ok && retryAfter > 0 && retryAfter <= 30) {
+    await res.body?.cancel();
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, (retryAfter + Math.random() * 2) * 1000),
+    );
+
+    res = await ask();
+  }
 
   // Outside Europe, as the API words it: a forecast with no steps. Any other
   // 404 is a failure.
