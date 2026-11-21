@@ -1,18 +1,27 @@
 import { selectFeature, type WeatherSelection } from '@app/store/actions.js';
 import { usePlaceName } from '@features/search/hooks/usePlaceName.js';
 import { DockPanel } from '@shared/components/DockPanel.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { latLonToString } from '@shared/geoutils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { type ReactElement, useState } from 'react';
-import { Alert, Button } from 'react-bootstrap';
-import { FaCloudSun, FaMapMarkerAlt } from 'react-icons/fa';
+import { Alert, Button, ToggleButton } from 'react-bootstrap';
+import {
+  FaChartLine,
+  FaCloudSun,
+  FaListUl,
+  FaMapMarkerAlt,
+} from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { weatherForecastSetPicking } from '../model/actions.js';
 import { useForecast } from '../model/forecast.js';
 import { parseWeatherPointId } from '../model/pointId.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
+import { ForecastCharts } from './ForecastCharts.js';
+import { ForecastFooter } from './ForecastFooter.js';
 import { ForecastView } from './ForecastView.js';
 
 /** The forecast for the point the `weather` selection names. */
@@ -50,10 +59,14 @@ export default function WeatherPanel(): ReactElement {
   const name = (item: WeatherSelection) =>
     item.label ?? (item === shown ? placeName : null);
 
+  // Here rather than per place, so another place opens in the same view.
+  const [view, setView] = useState<View>('days');
+
   return (
     <DockPanel
       item={shown}
       show={selection !== null}
+      wide={view === 'charts'}
       icon={<FaCloudSun />}
       label={m?.title}
       manual="weather-forecast"
@@ -90,7 +103,14 @@ export default function WeatherPanel(): ReactElement {
               <FaMapMarkerAlt /> {m?.otherPlace}
             </Button>
 
-            {point && <PanelForecast key={item.id} point={point} />}
+            {point && (
+              <PanelForecast
+                key={item.id}
+                point={point}
+                view={view}
+                setView={setView}
+              />
+            )}
           </>
         );
       }}
@@ -98,14 +118,69 @@ export default function WeatherPanel(): ReactElement {
   );
 }
 
-function PanelForecast({ point }: { point: LatLon }): ReactElement | null {
+type View = 'days' | 'charts';
+
+function PanelForecast({
+  point,
+  view,
+  setView,
+}: {
+  point: LatLon;
+  view: View;
+  setView: (view: View) => void;
+}): ReactElement | null {
   const m = useWeatherForecastMessages();
 
   const loaded = useForecast(point);
 
   switch (loaded.state) {
     case 'done':
-      return <ForecastView forecast={loaded.data} />;
+      return (
+        <>
+          {loaded.data.steps.length > 0 && (
+            <FitToggleButtonGroup
+              type="radio"
+              name="weatherView"
+              className="w-100 mb-3"
+              value={view}
+              onChange={(next: View) => {
+                if (next === 'charts') {
+                  trackMatomo(['trackEvent', 'Weather', 'charts']);
+                }
+
+                setView(next);
+              }}
+            >
+              <ToggleButton
+                id="weatherView-days"
+                value="days"
+                variant="outline-primary"
+              >
+                <FaListUl /> {m?.views.days}
+              </ToggleButton>
+
+              <ToggleButton
+                id="weatherView-charts"
+                value="charts"
+                variant="outline-primary"
+              >
+                <FaChartLine /> {m?.views.charts}
+              </ToggleButton>
+            </FitToggleButtonGroup>
+          )}
+
+          {/* Nothing to chart beyond the models' reach: the list says so. */}
+          {view === 'charts' && loaded.data.steps.length > 0 ? (
+            <>
+              <ForecastCharts forecast={loaded.data} />
+
+              <ForecastFooter forecast={loaded.data} />
+            </>
+          ) : (
+            <ForecastView forecast={loaded.data} />
+          )}
+        </>
+      );
 
     case 'error':
       return <Alert variant="warning">{m?.failed}</Alert>;

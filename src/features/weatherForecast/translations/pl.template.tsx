@@ -42,6 +42,25 @@ const pl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   wetHours: ({ hours }) => `Opady przez ${hours}`,
   chanceMax: ({ probability }) => `prawdopodobieństwo do ${probability}`,
   visibility: ({ distance }) => `Widzialność: ${distance}`,
+  views: { days: 'Dni', charts: 'Wykresy' },
+  charts: {
+    temperature: 'Temperatura (°C)',
+    precipitation: ({ hours }) => `Opady (mm w ${hours} h)`,
+    wind: 'Wiatr i porywy (km/h)',
+    freezing: 'Izoterma 0 °C (m)',
+    chance: 'Prawdopodobieństwo opadów (%)',
+    clouds: 'Zachmurzenie według wysokości',
+    layers: { high: 'wysokie', mid: 'średnie', low: 'niskie' },
+    keys: {
+      actual: 'rzeczywista',
+      feelsLike: 'odczuwalna',
+      rain: 'deszcz',
+      snow: 'śnieg',
+      average: 'średnia',
+      gusts: 'porywy',
+      place: 'wysokość miejsca',
+    },
+  },
 };
 
 export default pl;

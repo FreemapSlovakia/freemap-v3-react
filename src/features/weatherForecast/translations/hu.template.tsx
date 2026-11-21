@@ -38,6 +38,25 @@ const hu: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   wetHours: ({ hours }) => `Csapadék: ${hours}`,
   chanceMax: ({ probability }) => `valószínűség max. ${probability}`,
   visibility: ({ distance }) => `Látótávolság: ${distance}`,
+  views: { days: 'Napok', charts: 'Grafikonok' },
+  charts: {
+    temperature: 'Hőmérséklet (°C)',
+    precipitation: ({ hours }) => `Csapadék (mm / ${hours} óra)`,
+    wind: 'Szél és széllökések (km/h)',
+    freezing: 'A 0 °C magassága (m)',
+    chance: 'Csapadék valószínűsége (%)',
+    clouds: 'Felhőzet magasság szerint',
+    layers: { high: 'magas', mid: 'közép', low: 'alacsony' },
+    keys: {
+      actual: 'valós',
+      feelsLike: 'hőérzet',
+      rain: 'eső',
+      snow: 'hó',
+      average: 'átlag',
+      gusts: 'széllökések',
+      place: 'a hely magassága',
+    },
+  },
 };
 
 export default hu;

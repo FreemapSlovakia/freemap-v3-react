@@ -58,4 +58,28 @@ export type WeatherForecastMessages = {
   /** After `wetHours` and a comma: the day's highest chance of precipitation. */
   chanceMax: (props: { probability: string }) => string;
   visibility: (props: { distance: string }) => string;
+  /** The panel's switch between the list of days and the charts. */
+  views: { days: string; charts: string };
+  charts: {
+    temperature: string;
+    /** The bars' period: 3 hours, or 1 zoomed in. */
+    precipitation: (props: { hours: number }) => string;
+    wind: string;
+    freezing: string;
+    chance: string;
+    clouds: string;
+    /** The cloud chart's rows. */
+    layers: { high: string; mid: string; low: string };
+    /** The charts' legends. */
+    keys: {
+      actual: string;
+      feelsLike: string;
+      rain: string;
+      snow: string;
+      average: string;
+      gusts: string;
+      /** The place's elevation, against the height of 0 °C. */
+      place: string;
+    };
+  };
 };

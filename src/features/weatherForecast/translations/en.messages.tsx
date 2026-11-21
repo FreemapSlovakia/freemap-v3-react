@@ -37,6 +37,25 @@ const en: WeatherForecastMessages = {
   wetHours: ({ hours }) => `Precipitation for ${hours}`,
   chanceMax: ({ probability }) => `chance up to ${probability}`,
   visibility: ({ distance }) => `Visibility: ${distance}`,
+  views: { days: 'Days', charts: 'Charts' },
+  charts: {
+    temperature: 'Temperature (°C)',
+    precipitation: ({ hours }) => `Precipitation (mm in ${hours} h)`,
+    wind: 'Wind and gusts (km/h)',
+    freezing: '0 °C height (m)',
+    chance: 'Chance of precipitation (%)',
+    clouds: 'Clouds by height',
+    layers: { high: 'high', mid: 'mid', low: 'low' },
+    keys: {
+      actual: 'actual',
+      feelsLike: 'feels like',
+      rain: 'rain',
+      snow: 'snow',
+      average: 'average',
+      gusts: 'gusts',
+      place: 'this place',
+    },
+  },
 };
 
 export default en;

@@ -38,6 +38,25 @@ const cs: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   wetHours: ({ hours }) => `Srážky: ${hours}`,
   chanceMax: ({ probability }) => `pravděpodobnost až ${probability}`,
   visibility: ({ distance }) => `Dohlednost: ${distance}`,
+  views: { days: 'Dny', charts: 'Grafy' },
+  charts: {
+    temperature: 'Teplota (°C)',
+    precipitation: ({ hours }) => `Srážky (mm za ${hours} h)`,
+    wind: 'Vítr a nárazy (km/h)',
+    freezing: 'Výška 0 °C (m)',
+    chance: 'Pravděpodobnost srážek (%)',
+    clouds: 'Oblačnost podle výšky',
+    layers: { high: 'vysoká', mid: 'střední', low: 'nízká' },
+    keys: {
+      actual: 'skutečná',
+      feelsLike: 'pocitová',
+      rain: 'déšť',
+      snow: 'sníh',
+      average: 'průměr',
+      gusts: 'nárazy',
+      place: 'výška místa',
+    },
+  },
 };
 
 export default cs;

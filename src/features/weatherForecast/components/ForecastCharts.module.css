@@ -1,0 +1,161 @@
+.charts {
+  --fc-temperature: #e8590c;
+  --fc-rain: #1c7ed6;
+  --fc-snow: #868e96;
+  --fc-wind: var(--bs-body-color);
+  --fc-gusts: #e67700;
+  --fc-freezing: #1c7ed6;
+  --fc-cloud: #495057;
+
+  font-size: 13px;
+  /* A horizontal drag pans the charts; a vertical one scrolls the panel. */
+  touch-action: pan-y;
+  user-select: none;
+
+  > svg {
+    display: block;
+    overflow: visible;
+  }
+}
+
+.zoomed {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  font-size: 13px;
+  color: var(--bs-secondary-color);
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+:global([data-bs-theme="dark"]) .charts {
+  --fc-temperature: #ff922b;
+  --fc-rain: #4dabf7;
+  --fc-snow: #adb5bd;
+  --fc-gusts: #ffa94d;
+  --fc-freezing: #4dabf7;
+  --fc-cloud: #ced4da;
+}
+
+.title {
+  font-weight: 600;
+  color: var(--bs-body-color);
+}
+
+.tick {
+  text-anchor: end;
+  fill: var(--bs-secondary-color);
+}
+
+.initial {
+  font-weight: 600;
+}
+
+/* Over opaque cover: light and dark dashes in turn, to show on any shade. */
+.dayLight {
+  stroke: color-mix(in srgb, var(--bs-body-bg) 70%, var(--bs-body-color));
+  stroke-width: 1;
+}
+
+.dayDark {
+  stroke: var(--bs-secondary-color);
+  stroke-opacity: 0.8;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.night {
+  fill: var(--bs-secondary-bg);
+}
+
+.temperature {
+  fill: none;
+  stroke: var(--fc-temperature);
+  stroke-width: 1.5;
+}
+
+.feelsLike {
+  fill: none;
+  stroke: var(--fc-temperature);
+  stroke-width: 1.25;
+  stroke-dasharray: 4 3;
+}
+
+.rain {
+  fill: var(--fc-rain);
+}
+
+.snow {
+  fill: var(--fc-snow);
+}
+
+.chance {
+  fill: var(--fc-rain);
+  opacity: 0.45;
+}
+
+.wind {
+  fill: none;
+  stroke: var(--fc-wind);
+  stroke-width: 1.25;
+}
+
+.gusts {
+  fill: none;
+  stroke: var(--fc-gusts);
+  stroke-width: 1.25;
+}
+
+.arrow {
+  fill: none;
+  stroke: var(--fc-wind);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.freezing {
+  fill: none;
+  stroke: var(--fc-freezing);
+  stroke-width: 1.25;
+}
+
+.freezingGround {
+  fill: none;
+  stroke: var(--fc-freezing);
+  stroke-width: 1.25;
+  stroke-dasharray: 2 3;
+}
+
+.elevation {
+  stroke: var(--bs-body-color);
+  stroke-width: 1;
+  stroke-dasharray: 4 2;
+}
+
+.charts > .days {
+  margin-bottom: var(--fm-space-3);
+}
+
+.days text {
+  text-anchor: middle;
+  fill: var(--bs-secondary-color);
+}
+
+.days .date text {
+  text-anchor: start;
+}

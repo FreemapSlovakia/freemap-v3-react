@@ -13,12 +13,19 @@ import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import {
+  CHART_AXIS,
+  CHART_GRID,
+  CHART_GRID_DASHED,
+  CHART_LABEL,
+} from '@shared/chartStyle.js';
 import windowClasses from '@shared/components/FloatingWindow.module.css';
 import {
   FloatingWindowGrips,
   FullscreenButton,
 } from '@shared/components/FloatingWindowControls.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
+import { ViewIndicator } from '@shared/components/ViewIndicator.js';
 import { formatDistance } from '@shared/distanceFormatter.js';
 import { downloadSvg } from '@shared/downloadSvg.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
@@ -66,7 +73,15 @@ const ml = 50,
   mb = 44;
 
 // Matches the SVG font-size set in the CSS module; used to estimate label size.
-const FONT_PX = 12;
+const FONT_PX = 13;
+
+// The min/max elevation and the end distance.
+const LIMIT_LINE = {
+  stroke: 'var(--bs-danger)',
+  strokeOpacity: 0.6,
+  strokeWidth: 1,
+  strokeDasharray: '3 3',
+};
 
 // Rough average glyph width as a fraction of the font size, for estimating a
 // label's rendered length (top-margin sizing and centering a shorter line).
@@ -1032,50 +1047,33 @@ export default function ElevationChart(): ReactElement | null {
               />
             )}
 
-            {/* Dashed reference lines spanning the plot. */}
+            {/* Reference lines spanning the plot, as the forecast's charts draw
+                theirs; the min/max/end limits are the accent's, dashed. */}
             <g className="grid">
               <g className="grid-horizontal">
-                {hLines.map((y, i) => {
-                  const limit = hLines.length - i < 3;
-
-                  return (
-                    <line
-                      key={`gy${i}`}
-                      x1={ml}
-                      x2={width - mr}
-                      y1={mapY(y)}
-                      y2={mapY(y)}
-                      strokeWidth={1}
-                      stroke={
-                        limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'
-                      }
-                      opacity={limit ? 0.6 : 0.4}
-                      strokeDasharray="2 2"
-                    />
-                  );
-                })}
+                {hLines.map((y, i) => (
+                  <line
+                    key={`gy${i}`}
+                    x1={ml}
+                    x2={width - mr}
+                    y1={mapY(y)}
+                    y2={mapY(y)}
+                    {...(hLines.length - i < 3 ? LIMIT_LINE : CHART_GRID)}
+                  />
+                ))}
               </g>
 
               <g className="grid-vertical">
-                {vLines.map((x, i) => {
-                  const limit = x === endX;
-
-                  return (
-                    <line
-                      key={`gx${i}`}
-                      x1={mapX(x)}
-                      x2={mapX(x)}
-                      y1={mt}
-                      y2={height - mb}
-                      strokeWidth={1}
-                      stroke={
-                        limit ? 'var(--bs-danger)' : 'var(--bs-secondary)'
-                      }
-                      opacity={limit ? 0.6 : 0.4}
-                      strokeDasharray="2 2"
-                    />
-                  );
-                })}
+                {vLines.map((x, i) => (
+                  <line
+                    key={`gx${i}`}
+                    x1={mapX(x)}
+                    x2={mapX(x)}
+                    y1={mt}
+                    y2={height - mb}
+                    {...(x === endX ? LIMIT_LINE : CHART_GRID_DASHED)}
+                  />
+                ))}
               </g>
             </g>
 
@@ -1092,15 +1090,10 @@ export default function ElevationChart(): ReactElement | null {
                   x2={ml}
                   y1={mt}
                   y2={height - mb}
-                  stroke="var(--bs-body-color)"
-                  strokeWidth={1}
+                  {...CHART_AXIS}
                 />
 
-                <g
-                  className="ticks"
-                  stroke="var(--bs-body-color)"
-                  strokeWidth={1}
-                >
+                <g className="ticks" {...CHART_AXIS}>
                   {hLines.map((y, i) => {
                     const limit = hLines.length - i < 3;
 
@@ -1117,11 +1110,7 @@ export default function ElevationChart(): ReactElement | null {
                   })}
                 </g>
 
-                <g
-                  className="tick-labels"
-                  fill="var(--bs-body-color)"
-                  textAnchor="end"
-                >
+                <g className="tick-labels" fill={CHART_LABEL} textAnchor="end">
                   {hLines.map((y, i) => {
                     const limit = hLines.length - i < 3;
 
@@ -1153,7 +1142,7 @@ export default function ElevationChart(): ReactElement | null {
                   x={ml}
                   y={mt - 6}
                   textAnchor="end"
-                  fill="var(--bs-body-color)"
+                  fill={CHART_LABEL}
                 >
                   {gm?.general.masl}
                 </text>
@@ -1167,15 +1156,10 @@ export default function ElevationChart(): ReactElement | null {
                   x2={width - mr}
                   y1={height - mb}
                   y2={height - mb}
-                  stroke="var(--bs-body-color)"
-                  strokeWidth={1}
+                  {...CHART_AXIS}
                 />
 
-                <g
-                  className="ticks"
-                  stroke="var(--bs-body-color)"
-                  strokeWidth={1}
-                >
+                <g className="ticks" {...CHART_AXIS}>
                   {vLines.map((x, i) => {
                     const limit = x === endX;
 
@@ -1194,7 +1178,7 @@ export default function ElevationChart(): ReactElement | null {
 
                 <g
                   className="tick-labels"
-                  fill="var(--bs-body-color)"
+                  fill={CHART_LABEL}
                   textAnchor="start"
                 >
                   {vLines.map((x, i) => {
@@ -1231,7 +1215,7 @@ export default function ElevationChart(): ReactElement | null {
                   y={height - mb}
                   textAnchor="start"
                   dominantBaseline="middle"
-                  fill="var(--bs-body-color)"
+                  fill={CHART_LABEL}
                 >
                   km
                 </text>
@@ -1365,37 +1349,7 @@ export default function ElevationChart(): ReactElement | null {
             {/* Which part of the profile the zoomed plot is showing. Informative
                 only, and it sits in the clearance the waypoint labels already
                 keep above the plot, so it costs no room. */}
-            {view.to - view.from < 1 &&
-              (() => {
-                const w = Math.max(plotWidth * (view.to - view.from), 6);
-
-                return (
-                  <g className="view-indicator">
-                    <rect
-                      x={ml}
-                      y={mt - 4}
-                      width={plotWidth}
-                      height={3}
-                      rx={1.5}
-                      fill="var(--bs-secondary)"
-                      opacity={0.25}
-                    />
-
-                    <rect
-                      x={Math.min(
-                        ml + plotWidth * view.from,
-                        ml + plotWidth - w,
-                      )}
-                      y={mt - 4}
-                      width={w}
-                      height={3}
-                      rx={1.5}
-                      fill="var(--bs-primary)"
-                      opacity={0.8}
-                    />
-                  </g>
-                );
-              })()}
+            <ViewIndicator x={ml} y={mt - 4} width={plotWidth} view={view} />
 
             {/* Transparent interaction overlay on top: the whole plot is one
                 target, so a gesture is not interrupted by whatever it passes

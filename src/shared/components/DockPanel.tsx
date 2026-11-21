@@ -11,6 +11,7 @@ import {
   type ReactElement,
   type ReactNode,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -192,6 +193,8 @@ type Props<T> = {
   manual?: string;
   /** Buttons in the header before the manual's (`fm-dock-action`). */
   actions?: ReactNode;
+  /** Wider on the side, for content that gains from width, as charts do. */
+  wide?: boolean;
   /** A place on the map to keep clear of the panel, panned to when hidden. */
   keepVisible?: (item: T) => LatLon | undefined;
   onClose: () => void;
@@ -213,6 +216,7 @@ export function DockPanel<T>({
   marks,
   manual,
   actions,
+  wide,
   keepVisible,
   onClose,
   children,
@@ -251,6 +255,21 @@ export function DockPanel<T>({
   const [enteredSide, setEnteredSide] = useState<'end' | 'bottom' | null>(null);
 
   const entered = enteredSide === side;
+
+  const widened = wide === true && side === 'end';
+
+  const widenedRef = useRef(widened);
+
+  // Before paint, so the controls follow the width's transition from its start.
+  useLayoutEffect(() => {
+    if (widenedRef.current !== widened) {
+      widenedRef.current = widened;
+
+      resizing(true);
+
+      resizing(false);
+    }
+  }, [widened]);
 
   const at = kept !== null ? keepVisible?.(kept) : undefined;
 
@@ -481,7 +500,7 @@ export function DockPanel<T>({
       autoFocus={false}
       restoreFocus={false}
       keyboard={false}
-      className={`fm-dock fm-dock-${sized}`}
+      className={clsx(`fm-dock fm-dock-${sized}`, widened && 'fm-dock-wide')}
     >
       <Offcanvas.Header
         closeButton

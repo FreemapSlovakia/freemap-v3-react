@@ -38,6 +38,25 @@ const sl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   wetHours: ({ hours }) => `Padavine: ${hours}`,
   chanceMax: ({ probability }) => `verjetnost do ${probability}`,
   visibility: ({ distance }) => `Vidljivost: ${distance}`,
+  views: { days: 'Dnevi', charts: 'Grafi' },
+  charts: {
+    temperature: 'Temperatura (°C)',
+    precipitation: ({ hours }) => `Padavine (mm v ${hours} h)`,
+    wind: 'Veter in sunki (km/h)',
+    freezing: 'Ničta izoterma (m)',
+    chance: 'Verjetnost padavin (%)',
+    clouds: 'Oblačnost po višini',
+    layers: { high: 'visoka', mid: 'srednja', low: 'nizka' },
+    keys: {
+      actual: 'dejanska',
+      feelsLike: 'občutena',
+      rain: 'dež',
+      snow: 'sneg',
+      average: 'povprečje',
+      gusts: 'sunki',
+      place: 'višina kraja',
+    },
+  },
 };
 
 export default sl;

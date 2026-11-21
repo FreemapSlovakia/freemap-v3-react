@@ -547,7 +547,11 @@ a[target]:not(
      puts in full screen (1012, see `Main.module.css`). */
   --bs-offcanvas-zindex: 1011;
   --bs-offcanvas-transition:
-    transform 0.3s ease-in-out, height 0.3s ease-in-out;
+    transform 0.3s ease-in-out, height 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+.fm-dock.fm-dock-wide {
+  --bs-offcanvas-width: max(26rem, min(44rem, 45vw));
 }
 
 /* A phone's bottom panel at its other heights; see `DockPanel`. */

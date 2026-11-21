@@ -1,7 +1,4 @@
-import {
-  useDateTimeFormat,
-  WEEKDAY_TIME,
-} from '@shared/hooks/useDateTimeFormat.js';
+import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import clsx from 'clsx';
 import { type ReactElement, useState } from 'react';
@@ -14,10 +11,9 @@ import {
   formatTemperature,
   MIN_SNOW_DEPTH,
 } from '../model/forecast.js';
-import { zoneDifference } from '../model/timeZone.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import { DayHours } from './DayHours.js';
-import { DetailItems } from './DetailItems.js';
+import { ForecastFooter } from './ForecastFooter.js';
 import classes from './ForecastView.module.css';
 import { Precipitation } from './Precipitation.js';
 import { WeatherIcon } from './WeatherIcon.js';
@@ -50,8 +46,6 @@ export function ForecastView({
     timeZone,
   });
 
-  const updatedFormat = useDateTimeFormat({ ...WEEKDAY_TIME, timeZone });
-
   const integerFormat = useNumberFormat({ maximumFractionDigits: 0 });
 
   const [opened, setOpened] = useState<number | null>(null);
@@ -66,8 +60,6 @@ export function ForecastView({
   }
 
   const all = forecastDays(forecast);
-
-  const difference = zoneDifference(forecast.timeZone, all[0].steps[0].time);
 
   const shown = days ? all.filter(days) : all;
 
@@ -183,28 +175,7 @@ export function ForecastView({
         ))}
       </Accordion>
 
-      <p className="small text-body-secondary mb-0">
-        <DetailItems
-          items={[
-            forecast.elevation !== null &&
-              m?.elevation({
-                elevation: integerFormat.format(forecast.elevation),
-              }),
-            difference && m?.localTime({ difference }),
-            m?.updated({ time: updatedFormat.format(forecast.updatedAt) }),
-            <>
-              {m?.source}:{' '}
-              <a
-                href={forecast.attribution.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {forecast.attribution.name}
-              </a>
-            </>,
-          ]}
-        />
-      </p>
+      <ForecastFooter forecast={forecast} />
     </>
   );
 }

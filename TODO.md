@@ -732,3 +732,7 @@ departure, and `schedule.ts`'s timing are in:
   browser's. A visitor from another zone sees an event card's highlighted
   hours an hour off its stated start. Switching means the departure picker
   and the events' dates too, not just the rows.
+- [ ] **15-minute charts**: Open-Meteo's `minutely_15` gives the first ~2 days
+  in quarter hours for central Europe (ICON-D2). The API asks only `hourly`;
+  the charts would take the finer steps where they exist and show them
+  zoomed in, as hourly bars replace 3-hour ones now.

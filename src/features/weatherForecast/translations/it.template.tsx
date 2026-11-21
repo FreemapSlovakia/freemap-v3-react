@@ -38,6 +38,25 @@ const it: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   wetHours: ({ hours }) => `Precipitazioni per ${hours}`,
   chanceMax: ({ probability }) => `probabilità fino a ${probability}`,
   visibility: ({ distance }) => `Visibilità: ${distance}`,
+  views: { days: 'Giorni', charts: 'Grafici' },
+  charts: {
+    temperature: 'Temperatura (°C)',
+    precipitation: ({ hours }) => `Precipitazioni (mm in ${hours} h)`,
+    wind: 'Vento e raffiche (km/h)',
+    freezing: 'Zero termico (m)',
+    chance: 'Probabilità di precipitazioni (%)',
+    clouds: 'Nubi per quota',
+    layers: { high: 'alte', mid: 'medie', low: 'basse' },
+    keys: {
+      actual: 'reale',
+      feelsLike: 'percepita',
+      rain: 'pioggia',
+      snow: 'neve',
+      average: 'media',
+      gusts: 'raffiche',
+      place: 'quota del luogo',
+    },
+  },
 };
 
 export default it;
