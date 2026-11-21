@@ -228,7 +228,7 @@ export type ForecastDay = {
   /** Null in a polar day or night, or from a provider without them. */
   sunrise: Date | null;
   sunset: Date | null;
-  /** The worst of its daytime weather. */
+  /** Its daytime's weather, by `daySymbol`. */
   weather: Weather;
 };
 
@@ -252,6 +252,44 @@ function severity(w: Weather): number {
   }
 
   return SKY_SEVERITY[w.sky];
+}
+
+/**
+ * A day's symbol from its hours' weather: thunder if any hour has it; else
+ * the most common dry sky, with showers where precipitation falls in at most
+ * a quarter of the hours under a mostly sunny sky; else the worst precipitation.
+ */
+export function daySymbol(hours: Weather[]): Weather {
+  const worst = hours.reduce((a, b) => (severity(b) > severity(a) ? b : a));
+
+  const dry = hours.filter((w) => !w.precipitation);
+
+  const wet = hours.length - dry.length;
+
+  if (worst.thunder || dry.length === 0) {
+    return worst;
+  }
+
+  // A tie goes to the cloudier sky.
+  const [sky] = [...Map.groupBy(dry, (w) => w.sky)].reduce((a, b) =>
+    b[1].length > a[1].length ||
+    (b[1].length === a[1].length && SKY_SEVERITY[b[0]] > SKY_SEVERITY[a[0]])
+      ? b
+      : a,
+  );
+
+  if (!worst.precipitation) {
+    return { sky, precipitation: null, thunder: false, day: true };
+  }
+
+  return wet * 4 <= hours.length && SKY_SEVERITY[sky] < SKY_SEVERITY.cloudy
+    ? {
+        sky,
+        precipitation: { ...worst.precipitation, showers: true },
+        thunder: false,
+        day: true,
+      }
+    : worst;
 }
 
 /**
@@ -305,7 +343,7 @@ export function spanStep(
 
 /**
  * The steps by the place's day (`timeZone`, or the browser's where null); a
- * day's symbol is the worst of 6:00 to 21:00 there.
+ * day's symbol is that of its hours from 6:00 to 21:00 there.
  */
 export function forecastDays({
   steps,
@@ -345,9 +383,9 @@ export function forecastDays({
       snowDepth: maxKnown(daySteps.map((s) => s.snowDepth)),
       sunrise: sunrises.get(key) ?? null,
       sunset: sunsets.get(key) ?? null,
-      weather: (daytime.length ? daytime : daySteps).reduce((worst, s) =>
-        severity(s.weather) > severity(worst.weather) ? s : worst,
-      ).weather,
+      weather: daySymbol(
+        (daytime.length ? daytime : daySteps).map((s) => s.weather),
+      ),
     };
   });
 }

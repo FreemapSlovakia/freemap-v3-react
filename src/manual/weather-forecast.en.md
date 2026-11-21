@@ -17,7 +17,7 @@ The forecast opens in a panel beside the map. :FaMapMarkerAlt: **Another place**
 
 ## Days
 
-Each day shows the worst weather of its daytime, the new snow in cm and the rain in mm, and the lowest and highest temperature. Under the date is the snow on the ground.
+Each day shows its prevailing weather, the new snow in cm and the rain in mm, and the lowest and highest temperature. Under the date is the snow on the ground.
 
 A click opens the day. At its top is a summary of the day: the hours of sunshine, the strongest gusts, how many hours it rains or snows and the highest chance of it, and the UV index when it is high enough to matter.
 
@@ -26,24 +26,6 @@ A click opens the day. At its top is a summary of the day: the hours of sunshine
 Each hour of an open day shows the weather, the temperature, the precipitation – new snow in cm, rain in mm, and the chance of it – and the wind: the arrow points where the wind blows, and below it are the gusts. Strong gusts are coloured, from orange to red as they grow. A slim row between two hours marks sunrise or sunset.
 
 A click on an hour opens its details: the height of 0 °C, the clouds low, mid and high, the humidity, and where it applies, the temperature it feels like, the snow on the ground, the height above which it snows, the risk of thunderstorms, the minutes of sunshine, the UV index and visibility under 10 km.
-
-## What time a value is for
-
-An hour row, say **10**, shows values of two kinds: totals over the hour from 10:00 to 11:00, and the state at a moment.
-
-| Value | Time it is for |
-|---|---|
-| Rain, snow or thunder in the picture | 10:00–11:00 |
-| Sun, clouds or fog in the picture | 11:00 |
-| Sun or moon in the picture | 10:00 |
-| Clouds low, mid and high | 11:00 |
-| Rain and new snow, and the chance of it | total over 10:00–11:00 |
-| Gusts | strongest over 10:00–11:00 |
-| Sunshine | minutes over 10:00–11:00 |
-| Temperature, wind, humidity, visibility, UV index | 10:00 |
-| Height of 0 °C, snow line, risk of thunderstorms, snow on the ground | 10:00 |
-
-The picture and the clouds always describe the same sky.
 
 ## Local time
 
