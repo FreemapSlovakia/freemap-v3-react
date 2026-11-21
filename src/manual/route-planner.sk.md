@@ -42,10 +42,6 @@ Pri profiloch v časti OSRM sú režimy :MdTimeline: **V určenom poradí**, :Pi
 
 Pri cieli sa zobrazuje vzdialenosť a trvanie trasy vrátane zastávok a pri nastavenom odchode aj príchod. Ukázaním na zastávku uvidíte súčty až po túto zastávku a ukázaním na cieľ ich uvidíte v rovnakej podobe. Ostatné, aj spoplatnené úseky, nájdete v itinerári.
 
-V režime :MdTimeline: **V určenom poradí** otvorí :TbListDetails: **Podrobnosti trasy** na lište, alebo kliknutie na popis pri cieli, itinerár trasy vedľa mapy; na začiatku je otvorený. Zostane otvorený aj pre ďalšie trasy, kým ho nezatvoríte, a zobrazuje sa, keď je otvorené vyhľadávanie trás alebo je vybraná zastávka či úsek trasy; :FaRoute: v jeho hlavičke otvorí vyhľadávanie trás: **Odchod**, súčty a príchod, potom každú zastávku s časom príchodu, prestávkou alebo nocľahom a časom pokračovania, a medzi nimi každý úsek s jeho dopravou, vzdialenosťou a trvaním. Pomocné body sa v ňom nezobrazujú. Kliknutím na riadok vyberiete danú zastávku alebo úsek a uvidíte ho na mape, pričom itinerár zostane otvorený; prestávku zastávky nastavíte na jej lište. **Podrobné pokyny** pridajú každé odbočenie na úsekoch s názvom cesty a vzdialenosťou k ďalšiemu odbočeniu. Ukázaním na odbočenie alebo na riadok počasia sa jeho miesto vyznačí na mape; kliknutím ho uvidíte.
-
-:FaClock: **Odchod** hore odchod zapne alebo vypne; bez neho itinerár neukazuje časy. :FaCloudSun: **Počasie** prepne na počasie pozdĺž trasy z tohto odchodu, ktorý potrebuje. V ostatných režimoch panel obsahuje len počasie.
-
 Medzi dvoma bodmi sa môže zobraziť aj alternatívna trasa. Kliknutím na alternatívnu trasu ju vyberiete. Koľko trás sa najviac zobrazí, nastavíte v :FaEllipsisV: → **Max. počet ponúkaných trás**.
 
 V ponuke :FaEllipsisV: ďalej nájdete:
@@ -54,6 +50,34 @@ V ponuke :FaEllipsisV: ďalej nájdete:
 - :FaMapMarkerAlt: **Kilometrovník** – značky pozdĺž trasy v kilometroch alebo percentách.
 - :FaPencilAlt: **Skonvertovať na kreslenie** – z trasy urobí čiary, ktoré môžete upravovať, pozrite [Kreslenie](#show=manual/drawing).
 - :FaPaintBrush: **Štýl trasy** – hrúbka a krytie čiary trasy a značiek na trase.
+
+## Itinerár
+
+V režime :MdTimeline: **V určenom poradí** otvorí :TbListDetails: **Podrobnosti trasy** na lište, alebo kliknutie na popis pri cieli, itinerár trasy vedľa mapy; na začiatku je otvorený. Zostane otvorený aj pre ďalšie trasy, kým ho nezatvoríte, a zobrazuje sa, keď je otvorené vyhľadávanie trás alebo je vybraná zastávka či úsek trasy; :FaRoute: v hlavičke itinerára otvorí vyhľadávanie trás.
+
+![Itinerár túry na Chopok](./images/route-planner-itinerary.sk.webp)
+
+V itinerári sú súčty a príchod, potom každá zastávka s časom príchodu, prestávkou alebo nocľahom a časom pokračovania a medzi zastávkami každý úsek s dopravou, vzdialenosťou a trvaním. Pomocné body sa v itinerári nezobrazujú. Kliknutím na riadok vyberiete danú zastávku alebo úsek a uvidíte ho na mape, pričom itinerár zostane otvorený. **Podrobné pokyny** pridajú každé odbočenie na úsekoch s názvom cesty a vzdialenosťou k ďalšiemu odbočeniu; ukázaním na odbočenie sa miesto odbočenia vyznačí na mape a kliknutím ho uvidíte.
+
+## Odchod a zastávky
+
+:FaClock: **Odchod** hore v itinerári odchod zapne alebo vypne; pole vedľa nastaví dátum a čas odchodu. Nájdete ho aj na lište štartu a v ponuke :FaPlay.text-success: **Štart** na lište vyhľadávania trás ako :FaClock: **Čas odchodu**. Bez odchodu itinerár neukazuje časy a počasie pozdĺž trasy nie je k dispozícii.
+
+Kliknite na zastávku a na lište zastávky cez :FaMugHot: **Zastávka** nastavte, ako dlho tam zostanete:
+
+- :FaBan: **Bez zastávky** – trasa pokračuje bez prerušenia.
+- :FaMugHot: **Prestávka** – prestávka na zadaný počet minút.
+- :FaBed: **Nocľah** – trasa pokračuje v čase **Pokračovať o** po zadanom počte nocí (**Noci**).
+
+Časy na ďalších zastávkach a príchod sa posunú o dĺžku zastávky.
+
+## Počasie pozdĺž trasy
+
+:FaCloudSun: **Počasie** hore v paneli prepne na počasie pozdĺž trasy v časoch, keď tam budete: na štarte, každú hodinu cesty, na najvyššom bode, na každej prestávke alebo nocľahu a v cieli. Každý riadok ukazuje čas zaokrúhlený na štvrťhodinu, nadmorskú výšku a miesto, počasie, teplotu, zrážky a vietor. Ukázaním na riadok sa miesto vyznačí na mape; kliknutím ho uvidíte. Pri bode, kam predpoveď ešte nesiaha, je **Mimo dosahu predpovede**. V iných režimoch ako :MdTimeline: **V určenom poradí** panel obsahuje len počasie.
+
+![Počasie pozdĺž túry na Chopok](./images/route-planner-weather.sk.webp)
+
+Počasie potrebuje nastavený odchod. Čo ktorý údaj znamená a predpoveď pre ľubovoľné iné miesto nájdete v kapitole [Predpoveď počasia](#show=manual/weather-forecast).
 
 ## Vyfarbenie trasy
 
@@ -75,4 +99,5 @@ V režime :FaBullseye: **Izochróny** kliknutím do mapy zadáte jeden bod a map
 
 - iný spôsob dopravy pre každú časť trasy – kliknite na časť trasy a zvoľte spôsob dopravy pre túto časť; <kbd>Shift</kbd>+kliknutie do mapy pridá bod spojený priamou čiarou,
 - :FaRandom: **Optimalizovať poradie** zastávok na najkratší čas cesty,
+- prestávky a nocľahy na zastávkach,
 - všetky režimy vyfarbenia a výškový profil z podrobného modelu terénu.

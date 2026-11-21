@@ -271,6 +271,14 @@
     "width": 1154,
     "height": 87
   },
+  "route-planner-itinerary.en.webp": {
+    "width": 424,
+    "height": 620
+  },
+  "route-planner-itinerary.sk.webp": {
+    "width": 424,
+    "height": 620
+  },
   "route-planner-route.en.webp": {
     "width": 1280,
     "height": 760
@@ -294,6 +302,14 @@
   "route-planner-toolbar.sk.webp": {
     "width": 1253,
     "height": 64
+  },
+  "route-planner-weather.en.webp": {
+    "width": 424,
+    "height": 760
+  },
+  "route-planner-weather.sk.webp": {
+    "width": 424,
+    "height": 760
   },
   "screen.en.mobile.webp": {
     "width": 390,
@@ -438,6 +454,14 @@
   "viewshed-toolbar.sk.webp": {
     "width": 625,
     "height": 199
+  },
+  "weather-forecast.en.webp": {
+    "width": 424,
+    "height": 1100
+  },
+  "weather-forecast.sk.webp": {
+    "width": 424,
+    "height": 1100
   },
   "weather-radar-toolbar.en.mobile.webp": {
     "width": 390,

@@ -46,6 +46,7 @@ Kliknutím na značku, riadok zoznamu alebo výsledok vyhľadávania otvoríte p
 
 - :FaStar: **Mám záujem** a :FaCheck: **Prídem** dajú vedieť ostatným – jedno alebo druhé; ďalším stlačením to vezmete späť. Treba byť prihlásený.
 - Podrobnosti: titulný obrázok, dátumy, organizátor, dĺžka, trvanie, stúpanie a klesanie, náročnosť, či sú vítané psy a či je vhodná pre deti, a popis.
+- Pri akcii v najbližších 16 dňoch [predpoveď počasia](#show=manual/weather-forecast) pre miesto akcie na dni akcie a ak pripojená mapa akcie obsahuje trasu, aj počasie pozdĺž trasy.
 - Kto príde a kto má záujem; meno otvorí profil daného človeka.
 - **Diskusia** – komentáre od najstaršieho. :FaBell: sleduje akciu e-mailom: dozviete sa o nových komentároch, o zmene termínu či miesta a o zrušení. Organizátor a tí, čo prídu alebo majú záujem, ju sledujú sami od seba.
 

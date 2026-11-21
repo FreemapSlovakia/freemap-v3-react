@@ -42,10 +42,6 @@ With the profiles listed under OSRM the modes are :MdTimeline: **Ordered**, :PiG
 
 The finish shows the route's distance and duration, stops included, and with a departure set, the arrival. Pointing at a stop shows the totals up to it, and pointing at the finish shows them in the same form. The rest, toll roads included, is in the itinerary.
 
-In :MdTimeline: **Ordered** mode, :TbListDetails: **Route details** in the toolbar, or a click on the finish's label, opens the route's itinerary beside the map; it is open from the start. It stays open for the next route until you close it, and shows while the route finder is open or a stop or leg of the route is selected; :FaRoute: in its header opens the route finder: the **Departure**, the totals and the arrival, then each stop with its arrival, its pause or overnight and when the route goes on, and each leg between them with its transport, distance and duration. Shaping points are left out. A click on a row selects that stop or leg and shows it on the map, while the itinerary stays open; a stop's toolbar sets its pause. **Turn-by-turn** adds each turn along the legs, with the road's name and the distance to the next turn. Pointing at a turn, or at a row of the weather, marks its place on the map; a click shows it.
-
-:FaClock: **Departure** at the top turns the departure on and off; without it the itinerary shows no clock times. :FaCloudSun: **Weather** switches to the weather along the route from that departure, which it needs. In the other modes the panel holds only the weather.
-
 Between two points an alternative route may appear as well. Click it to make it the chosen one. How many routes appear at most is set under :FaEllipsisV: → **Max routes to offer**.
 
 The :FaEllipsisV: menu also holds:
@@ -54,6 +50,34 @@ The :FaEllipsisV: menu also holds:
 - :FaMapMarkerAlt: **Milestones** – markers along the route in kilometres or percent.
 - :FaPencilAlt: **Convert to drawing** – turns the route into lines you can edit, see [Drawing](#show=manual/drawing).
 - :FaPaintBrush: **Route style** – the width and opacity of the line and its markers.
+
+## Itinerary
+
+In :MdTimeline: **Ordered** mode, :TbListDetails: **Route details** in the toolbar, or a click on the finish's label, opens the route's itinerary beside the map; it is open from the start. It stays open for the next route until you close it, and shows while the route finder is open or a stop or leg of the route is selected; :FaRoute: in its header opens the route finder.
+
+![The itinerary of a hike up Chopok](./images/route-planner-itinerary.en.webp)
+
+The itinerary lists the totals and the arrival, then each stop with its arrival, its pause or overnight and when the route goes on, and each leg between them with its transport, distance and duration. Shaping points are left out. A click on a row selects that stop or leg and shows it on the map, while the itinerary stays open. **Turn-by-turn** adds each turn along the legs, with the road's name and the distance to the next turn; pointing at a turn marks its place on the map, and a click shows it.
+
+## Departure and stops
+
+:FaClock: **Departure** at the top of the itinerary turns the departure on and off; the field beside it sets its date and time. The start's toolbar has it too, and :FaPlay.text-success: **Start** in the route finder's toolbar has :FaClock: **Departure time**. Without a departure the itinerary shows no clock times and there is no weather along the route.
+
+Click a stop to set, on its toolbar, how long you stay there with :FaMugHot: **Stop**:
+
+- :FaBan: **No stop** – the route goes straight on.
+- :FaMugHot: **Pause** – a break of the minutes you enter.
+- :FaBed: **Overnight** – the route goes on at the time under **Continue at**, after the number of **Nights**.
+
+The times at the following stops and the arrival move by the stop's length.
+
+## Weather along the route
+
+:FaCloudSun: **Weather** at the top of the panel switches to the weather along the route at the times you will be there: at the start, every hour along the way, at the highest point, at each pause or overnight and at the finish. Each row shows its time, rounded to the quarter hour, the elevation and the place, the weather, the temperature, the precipitation and the wind. Pointing at a row marks its place on the map; a click shows it. A point the forecast does not reach yet says **Beyond the forecast**. In the modes other than :MdTimeline: **Ordered** the panel holds only the weather.
+
+![The weather along the hike up Chopok](./images/route-planner-weather.en.webp)
+
+The weather needs a departure. What each value means, and the forecast for any other place, is in [Weather forecast](#show=manual/weather-forecast).
 
 ## Colorizing the route
 
@@ -75,4 +99,5 @@ In the :FaBullseye: **Isochrones** mode, a click on the map sets one point and t
 
 - a different transport for each part of a route – click a part of the route and choose its transport; <kbd>Shift</kbd>+click on the map adds a point joined by a straight line,
 - :FaRandom: **Optimize order** of the stops for the shortest travel time,
+- pauses and overnights at the stops,
 - all colorizing modes, and an elevation profile read from the detailed terrain model.

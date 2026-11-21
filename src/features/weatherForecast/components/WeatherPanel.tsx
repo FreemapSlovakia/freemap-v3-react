@@ -56,6 +56,7 @@ export default function WeatherPanel(): ReactElement {
       show={selection !== null}
       icon={<FaCloudSun />}
       label={m?.title}
+      manual="weather-forecast"
       title={(item) => name(item) ?? coords(item)}
       keepVisible={(item) => parseWeatherPointId(item.id)}
       onClose={() => dispatch(selectFeature(null))}

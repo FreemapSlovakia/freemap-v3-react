@@ -454,6 +454,8 @@ const messages: Messages = {
           'help, hillshade, relief, terrain, sky view, openness, lidar, dem',
         'manual-weather-radar':
           'help, rain, precipitation, weather, forecast, storm, animation',
+        'manual-weather-forecast':
+          'help, meteo, temperature, snow, wind, gusts, clouds, thunderstorm, hourly',
         'manual-panorama': 'help, 360, view, peaks, horizon, terrain render',
         'manual-viewshed':
           'help, visibility, line of sight, what can be seen, view from',

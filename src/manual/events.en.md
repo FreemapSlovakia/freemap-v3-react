@@ -46,6 +46,7 @@ Click a marker, a row of the list or a search result to open the event's panel �
 
 - :FaStar: **Interested** and :FaCheck: **Going** let others know – one or the other; pressing it again withdraws it. You need to be logged in.
 - The details: the cover image, dates, organizer, length, duration, ascent and descent, difficulty, whether dogs are welcome and whether it suits children, and the description.
+- For an event in the next 16 days, the [weather forecast](#show=manual/weather-forecast) for its place on its days, and where the event's linked map has a route, the weather along it.
 - Who is going and who is interested; a name opens that person's profile.
 - **Discussion** – comments, oldest first. :FaBell: follows the event by email: you hear of new comments, and of a change of time or place or a cancellation. The organizer and those going or interested follow it on their own.
 

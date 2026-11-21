@@ -491,6 +491,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'pomoc, návod, tieňovanie, reliéf, terén, výškopis, lidar, dmr',
         'manual-weather-radar':
           'pomoc, návod, dážď, zrážky, počasie, predpoveď, búrka, meteoradar',
+        'manual-weather-forecast':
+          'pomoc, návod, meteo, teplota, sneh, vietor, nárazy, oblačnosť, búrka, hodiny',
         'manual-panorama': 'pomoc, návod, 360, výhľad, vrcholy, obzor, terén',
         'manual-viewshed':
           'pomoc, návod, viditeľnosť, rozhľad, výhľad, čo je odtiaľ vidieť',

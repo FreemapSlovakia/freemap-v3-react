@@ -31,6 +31,10 @@ const MAP = 'map=13/48.7483/19.1480&layers=X';
 // A hiking route across Banská Bystrica.
 const ROUTE = 'points=48.7356/19.1458,48.7800/19.2350&transport=hiking';
 
+// From Jasná up Chopok, leaving tomorrow at 08:00 in Slovakia's winter time,
+// so always within the forecast.
+const CHOPOK_HIKE = `map=14/48.9520/19.5900&layers=X&tools=route-planner&points=48.9600/19.5870,48.9433/19.5925&transport=hiking&departure=${new Date(Date.now() + 86_400_000).toISOString().slice(0, 10)}T07:00Z`;
+
 // The High Tatras and their valleys in the "Hypsometric tints + shading" preset.
 const SHADED =
   'map=12/49.1200/20.1000&layers=h&l.h=s00000000!color-relief_0.0_5A9E5AFF_200.0_A8C878FF_500.0_E8DC96FF_1000.0_D4A868FF_1600.0_B07C54FF_2300.0_968278FF_3000.0_FFFFFFFF!hillshade-igor_135.0_1.0_000000CC';
@@ -110,6 +114,42 @@ const shots = [
     // The narrowest the route finder's toolbar fits in; the height keeps the
     // route and the label at its finish clear of the toolbars.
     viewport: { width: 1280, height: 760 },
+  },
+  {
+    name: 'route-planner-itinerary',
+    hash: CHOPOK_HIKE,
+    // Low enough to leave little empty panel under the rows.
+    viewport: { width: 1280, height: 620 },
+    crop: '.fm-dock',
+  },
+  {
+    name: 'route-planner-weather',
+    hash: CHOPOK_HIKE,
+    viewport: { width: 1280, height: 760 },
+    steps: async (page, lang) => {
+      const dock = page.locator('.fm-dock');
+
+      await dock
+        .getByText(lang === 'sk' ? 'Počasie' : 'Weather', { exact: true })
+        .click();
+
+      await dock.getByText('°C').first().waitFor();
+    },
+    crop: '.fm-dock',
+  },
+  {
+    name: 'weather-forecast',
+    // Chopok, with its first hour's details open.
+    hash: 'map=12/48.9433/19.5925&layers=X&panel=weather/48.9433%2C19.5925',
+    viewport: { width: 1280, height: 1100 },
+    steps: async (page) => {
+      const row = page.locator('.fm-dock tbody tr').first();
+
+      await row.waitFor();
+
+      await row.click();
+    },
+    crop: '.fm-dock',
   },
   {
     name: 'drawing-toolbar',
