@@ -6,6 +6,7 @@ const sk: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   loading: 'Načítava sa predpoveď…',
   failed: 'Predpoveď sa nepodarilo načítať.',
   elevation: ({ elevation }) => `Pre ${elevation} m n. m.`,
+  localTime: ({ difference }) => `Miestny čas (${difference})`,
   updated: ({ time }) => `Aktualizované ${time}`,
   source: 'Zdroj',
   gusts: 'nárazy',

@@ -727,3 +727,8 @@ departure, and `schedule.ts`'s timing are in:
 - [ ] **Arrive by** on the finish, working the departure out backwards
   (overnights make it non-trivial; public transport needs it).
 - [ ] Later on the same schedule: GPX export with times; public transport.
+- [ ] **Clocks across zones**: the point forecast shows the place's zone, but
+  the departure, the route's weather rows and an event's times show the
+  browser's. A visitor from another zone sees an event card's highlighted
+  hours an hour off its stated start. Switching means the departure picker
+  and the events' dates too, not just the rows.

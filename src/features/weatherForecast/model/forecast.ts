@@ -2,6 +2,12 @@ import type { Loaded } from '@shared/hooks/useCached.js';
 import { useCached } from '@shared/hooks/useCached.js';
 import { IsoDateSchema, type LatLon } from '@shared/types/common.js';
 import z from 'zod';
+import {
+  isKnownZone,
+  zonedDayKey,
+  zonedDayStart,
+  zonedHour,
+} from './timeZone.js';
 
 const WeatherSchema = z.object({
   sky: z.enum(['clear', 'fair', 'partlyCloudy', 'cloudy', 'fog']),
@@ -73,6 +79,11 @@ const ForecastSchema = z.object({
     })
     .array()
     .default([]),
+  /**
+   * The place's IANA zone, which its days and times are shown in; null where
+   * missing or unknown to the browser.
+   */
+  timeZone: z.string().refine(isKnownZone).nullable().catch(null),
   attribution: z.object({ name: z.string(), url: z.string() }),
 });
 
@@ -174,6 +185,7 @@ async function requestForecast(key: string): Promise<Forecast> {
       elevation: null,
       steps: [],
       sun: [],
+      timeZone: null,
       attribution: { name: '', url: '' },
     };
   }
@@ -199,8 +211,9 @@ export function useForecast(
 }
 
 export type ForecastDay = {
-  /** `YYYY-MM-DD`, in local time. */
+  /** `YYYY-MM-DD`, in the place's time zone. */
   key: string;
+  /** The midnight it starts with there. */
   date: Date;
   steps: ForecastStep[];
   min: number;
@@ -218,10 +231,6 @@ export type ForecastDay = {
   /** The worst of its daytime weather. */
   weather: Weather;
 };
-
-export function dayKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
 
 const SKY_SEVERITY: Record<Weather['sky'], number> = {
   clear: 0,
@@ -294,24 +303,30 @@ export function spanStep(
   };
 }
 
-/** The steps by local day; a day's symbol is the worst of 6:00 to 21:00. */
-export function forecastDays(
-  steps: ForecastStep[],
-  sun: Forecast['sun'],
-): ForecastDay[] {
-  const byDay = Map.groupBy(steps, (step) => dayKey(step.time));
+/**
+ * The steps by the place's day (`timeZone`, or the browser's where null); a
+ * day's symbol is the worst of 6:00 to 21:00 there.
+ */
+export function forecastDays({
+  steps,
+  sun,
+  timeZone,
+}: Pick<Forecast, 'steps' | 'sun' | 'timeZone'>): ForecastDay[] {
+  const byDay = Map.groupBy(steps, (step) => zonedDayKey(step.time, timeZone));
 
-  // Each by the local day it falls on, not by the UTC day it is listed by.
-  const byLocalDay = (times: (Date | null)[]) =>
-    new Map(times.flatMap((t) => (t ? [[dayKey(t), t] as const] : [])));
+  // Each by the day it falls on there, not by the UTC day it is listed by.
+  const byDayThere = (times: (Date | null)[]) =>
+    new Map(
+      times.flatMap((t) => (t ? [[zonedDayKey(t, timeZone), t] as const] : [])),
+    );
 
-  const sunrises = byLocalDay(sun.map((s) => s.sunrise));
+  const sunrises = byDayThere(sun.map((s) => s.sunrise));
 
-  const sunsets = byLocalDay(sun.map((s) => s.sunset));
+  const sunsets = byDayThere(sun.map((s) => s.sunset));
 
   return [...byDay].map(([key, daySteps]) => {
     const daytime = daySteps.filter((s) => {
-      const hour = s.time.getHours();
+      const hour = zonedHour(s.time, timeZone);
 
       return hour >= 6 && hour < 21;
     });
@@ -320,11 +335,7 @@ export function forecastDays(
 
     return {
       key,
-      date: new Date(
-        first.time.getFullYear(),
-        first.time.getMonth(),
-        first.time.getDate(),
-      ),
+      date: zonedDayStart(first.time, timeZone),
       steps: daySteps,
       min: Math.min(...daySteps.map((s) => s.temperature)),
       max: Math.max(...daySteps.map((s) => s.temperature)),

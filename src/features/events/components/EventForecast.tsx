@@ -1,13 +1,13 @@
 import { ForecastView } from '@features/weatherForecast/components/ForecastView.js';
 import { RouteForecast } from '@features/weatherForecast/components/RouteForecast.js';
 import {
-  dayKey,
   FORECAST_DAYS,
   type ForecastStep,
   stepEnd,
   useForecast,
 } from '@features/weatherForecast/model/forecast.js';
 import { fetchMapRoute } from '@features/weatherForecast/model/mapRoute.js';
+import { zonedDayKey } from '@features/weatherForecast/model/timeZone.js';
 import { useWeatherForecastMessages } from '@features/weatherForecast/translations/useWeatherForecastMessages.js';
 import { useCached } from '@shared/hooks/useCached.js';
 import { useNow } from '@shared/hooks/useNow.js';
@@ -83,7 +83,9 @@ export function EventForecast({
 
   // A date-only event by its calendar days, as the forecast's days are named.
   const covered = loaded.data.steps.some((step) =>
-    eventDays ? eventDays.has(dayKey(step.time)) : coversEvent(step),
+    eventDays
+      ? eventDays.has(zonedDayKey(step.time, loaded.data.timeZone))
+      : coversEvent(step),
   );
 
   if (!covered) {
@@ -113,9 +115,7 @@ export function EventForecast({
         forecast={loaded.data}
         collapsed
         days={(day) =>
-          eventDays
-            ? eventDays.has(day.key)
-            : overlaps(day.date.getTime(), day.date.getTime() + DAY_MS)
+          eventDays ? eventDays.has(day.key) : day.steps.some(coversEvent)
         }
         highlight={eventDays ? undefined : coversEvent}
       />

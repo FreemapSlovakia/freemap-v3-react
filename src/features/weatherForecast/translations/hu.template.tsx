@@ -6,6 +6,7 @@ const hu: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   loading: 'Az előrejelzés betöltése…',
   failed: 'Az előrejelzést nem sikerült betölteni.',
   elevation: ({ elevation }) => `${elevation} m tengerszint feletti magasságra`,
+  localTime: ({ difference }) => `Helyi idő (${difference})`,
   updated: ({ time }) => `Frissítve: ${time}`,
   source: 'Forrás',
   gusts: 'széllökések',

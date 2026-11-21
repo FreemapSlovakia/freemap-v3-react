@@ -24,22 +24,28 @@ type Formats = { time: Intl.DateTimeFormat; integer: Intl.NumberFormat };
 /**
  * An open day: its summary, then its hours, each opening its details on a
  * click (`opened`, the open hour if it is one of this day's), with a slim row
- * after the hour the sun rises or sets in.
+ * after the hour the sun rises or sets in; times by the place's `timeZone`.
  */
 export function DayHours({
   day,
   opened,
   onToggle,
   highlight,
+  timeZone,
 }: {
   day: ForecastDay;
   opened: number | null;
   onToggle: (time: number) => void;
   highlight?: (step: ForecastStep) => boolean;
+  timeZone: string | undefined;
 }): ReactElement {
   // Shared by the day's rows rather than built in each.
   const formats: Formats = {
-    time: useDateTimeFormat({ hour: '2-digit', minute: '2-digit' }),
+    time: useDateTimeFormat({
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone,
+    }),
     integer: useNumberFormat({ maximumFractionDigits: 0 }),
   };
 

@@ -14,6 +14,7 @@ import {
   formatTemperature,
   MIN_SNOW_DEPTH,
 } from '../model/forecast.js';
+import { zoneDifference } from '../model/timeZone.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import { DayHours } from './DayHours.js';
 import { DetailItems } from './DetailItems.js';
@@ -39,13 +40,17 @@ export function ForecastView({
 }): ReactElement {
   const m = useWeatherForecastMessages();
 
+  // The place's clock, not the browser's: what one goes by there.
+  const timeZone = forecast.timeZone ?? undefined;
+
   const dayFormat = useDateTimeFormat({
     weekday: 'short',
     day: 'numeric',
     month: 'numeric',
+    timeZone,
   });
 
-  const updatedFormat = useDateTimeFormat(WEEKDAY_TIME);
+  const updatedFormat = useDateTimeFormat({ ...WEEKDAY_TIME, timeZone });
 
   const integerFormat = useNumberFormat({ maximumFractionDigits: 0 });
 
@@ -60,7 +65,9 @@ export function ForecastView({
     return <p className="text-muted">{m?.outside}</p>;
   }
 
-  const all = forecastDays(forecast.steps, forecast.sun);
+  const all = forecastDays(forecast);
+
+  const difference = zoneDifference(forecast.timeZone, all[0].steps[0].time);
 
   const shown = days ? all.filter(days) : all;
 
@@ -168,6 +175,7 @@ export function ForecastView({
                   }
                   onToggle={toggle}
                   highlight={highlight}
+                  timeZone={timeZone}
                 />
               </div>
             </Accordion.Collapse>
@@ -182,6 +190,7 @@ export function ForecastView({
               m?.elevation({
                 elevation: integerFormat.format(forecast.elevation),
               }),
+            difference && m?.localTime({ difference }),
             m?.updated({ time: updatedFormat.format(forecast.updatedAt) }),
             <>
               {m?.source}:{' '}
