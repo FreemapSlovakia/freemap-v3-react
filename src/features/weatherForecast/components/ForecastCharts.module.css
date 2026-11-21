@@ -159,3 +159,15 @@
 .days .date text {
   text-anchor: start;
 }
+
+/* Behind the cursor's values and time, over what they cover. */
+.readout {
+  fill: var(--bs-body-bg);
+  fill-opacity: 0.9;
+  stroke: var(--bs-border-color);
+}
+
+.days .cursorTime {
+  font-weight: 600;
+  fill: var(--bs-body-color);
+}

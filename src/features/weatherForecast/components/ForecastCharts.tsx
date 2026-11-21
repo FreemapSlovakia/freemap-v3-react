@@ -1,5 +1,6 @@
 import {
   CHART_AXIS,
+  CHART_CURSOR,
   CHART_GRID,
   CHART_GRID_DASHED,
 } from '@shared/chartStyle.js';
@@ -46,6 +47,9 @@ const MIN_SPAN_MS = 6 * HOUR_MS;
 // What one wheel notch does to the zoom.
 const WHEEL_FACTOR = 1.25;
 
+// Farther than this and a press was a drag, not a tap.
+const TAP_SLOP_PX = 4;
+
 // Rough glyph width at the charts' font size, for fitting labels.
 const CHAR_PX = 7.2;
 
@@ -77,7 +81,12 @@ type Axis = {
   right: number;
   /** The time labels drawn under each chart. */
   labels?: ReactNode;
+  /** Where the read-out hour is, in px, while it is in view. */
+  cursor?: number;
 };
+
+/** The values at the cursor, each in its series' colour. */
+type Readout = { text: string; color: string; bold?: boolean }[];
 
 /** The whole forecast as stacked charts on one time axis, zoomed and panned together. */
 export function ForecastCharts({
@@ -101,19 +110,35 @@ export function ForecastCharts({
 
   const hourFormat = useDateTimeFormat({ hour: 'numeric', timeZone });
 
+  const cursorFormat = useDateTimeFormat({
+    weekday: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone,
+  });
+
+  const n0 = useNumberFormat({ maximumFractionDigits: 0 });
+
+  const n1 = useNumberFormat({ maximumFractionDigits: 1 });
+
   const ref = useRef<HTMLDivElement>(null);
 
   const width = useWidth(ref);
 
   const [view, setView] = useState(WHOLE_VIEW);
 
-  // Another forecast starts unzoomed.
+  /** The step whose values are read out: hovered, or tapped on a touch screen. */
+  const [hoverT, setHoverT] = useState<number | null>(null);
+
+  // Another forecast starts unzoomed and unread.
   const [shown, setShown] = useState(forecast);
 
   if (shown !== forecast) {
     setShown(forecast);
 
     setView(WHOLE_VIEW);
+
+    setHoverT(null);
   }
 
   const { steps } = forecast;
@@ -181,6 +206,9 @@ export function ForecastCharts({
 
       e.preventDefault();
 
+      // The hour under the pointer moves with the zoom; the next move reads it.
+      setHoverT(null);
+
       zoomAt(
         e.clientX - el.getBoundingClientRect().left,
         e.deltaY < 0 ? WHEEL_FACTOR : 1 / WHEEL_FACTOR,
@@ -192,11 +220,34 @@ export function ForecastCharts({
     return () => el.removeEventListener('wheel', onWheel);
   }, [zoomAt]);
 
+  /** The time of the step nearest the pointer: a move within an hour changes nothing. */
+  const timeAt = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const x = e.clientX - e.currentTarget.getBoundingClientRect().left;
+
+    if (x < LEFT || x > width - RIGHT || !steps.length) {
+      return null;
+    }
+
+    const t =
+      t0 +
+      (view.from + ((x - LEFT) / plotWidth) * (view.to - view.from)) *
+        (t1 - t0);
+
+    return steps
+      .reduce((a, b) =>
+        Math.abs(b.time.getTime() - t) < Math.abs(a.time.getTime() - t) ? b : a,
+      )
+      .time.getTime();
+  };
+
   /** Pressed pointers by id, each at the x it was last seen at. */
   const pointers = useRef(new Map<number, number>());
 
   /** The fingers' spread on the previous move, while pinching. */
   const pinchRef = useRef<number | null>(null);
+
+  /** How far the press has moved: a tap hardly does. */
+  const travelRef = useRef(0);
 
   const handlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse' && e.button !== 0) {
@@ -205,12 +256,19 @@ export function ForecastCharts({
 
     e.currentTarget.setPointerCapture(e.pointerId);
 
+    // A second finger makes it no tap, whatever the first one does after.
+    travelRef.current = pointers.current.size ? Infinity : 0;
+
     pointers.current.set(e.pointerId, e.clientX);
 
     pinchRef.current = null;
   };
 
   const handlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse') {
+      setHoverT(timeAt(e));
+    }
+
     const previous = pointers.current.get(e.pointerId);
 
     if (previous === undefined) {
@@ -222,10 +280,14 @@ export function ForecastCharts({
     const xs = [...pointers.current.values()];
 
     if (xs.length < 2) {
+      travelRef.current += Math.abs(e.clientX - previous);
+
       panBy(e.clientX - previous);
 
       return;
     }
+
+    travelRef.current = Infinity;
 
     const spread = Math.abs(xs[0]! - xs[1]!);
 
@@ -240,9 +302,25 @@ export function ForecastCharts({
   };
 
   const handlePointerEnd = (e: ReactPointerEvent<HTMLDivElement>) => {
+    // A finger has no hover: a tap is what reads the values.
+    if (
+      e.type === 'pointerup' &&
+      e.pointerType !== 'mouse' &&
+      pointers.current.size === 1 &&
+      travelRef.current <= TAP_SLOP_PX
+    ) {
+      setHoverT(timeAt(e));
+    }
+
     pointers.current.delete(e.pointerId);
 
     pinchRef.current = null;
+  };
+
+  const handlePointerLeave = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === 'mouse') {
+      setHoverT(null);
+    }
   };
 
   const zoomed = view.to - view.from < 1;
@@ -282,6 +360,28 @@ export function ForecastCharts({
   const allBins = binned(steps, binStart, t1, binMs);
 
   const bins = allBins.filter((b) => b.from + binMs >= from && b.from <= to);
+
+  // The hour nearest the pointer, and the bar it falls in.
+  const hovered =
+    hoverT === null
+      ? undefined
+      : steps.find((s) => s.time.getTime() === hoverT);
+
+  const hoveredAt = hovered?.time.getTime();
+
+  const hoveredBin =
+    hoveredAt === undefined
+      ? undefined
+      : allBins.find((b) => hoveredAt >= b.from && hoveredAt < b.from + binMs);
+
+  const cursorX = hoveredAt === undefined ? undefined : axis.x(hoveredAt);
+
+  const binMiddle = hoveredBin && axis.x(hoveredBin.from + binMs / 2);
+
+  axis.cursor =
+    cursorX !== undefined && cursorX >= axis.left && cursorX <= axis.right
+      ? cursorX
+      : undefined;
 
   const hourLabelPx =
     Math.max(
@@ -373,6 +473,33 @@ export function ForecastCharts({
           ),
         )}
       </g>
+
+      {axis.cursor !== undefined &&
+        hovered &&
+        (() => {
+          const text = cursorFormat.format(hovered.time);
+
+          const w = textWidth(text, true) + 8;
+
+          const x = clamp(axis.cursor - w / 2, 0, width - w);
+
+          return (
+            <g>
+              <rect
+                className={classes.readout}
+                x={x}
+                y={1}
+                width={w}
+                height={LINE + 3}
+                rx={3}
+              />
+
+              <text className={classes.cursorTime} x={x + w / 2} y={LINE}>
+                {text}
+              </text>
+            </g>
+          );
+        })()}
     </svg>
   );
 
@@ -384,6 +511,7 @@ export function ForecastCharts({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}
       onPointerCancel={handlePointerEnd}
+      onPointerLeave={handlePointerLeave}
     >
       {plotWidth > 0 && steps.length > 0 && (
         <>
@@ -407,6 +535,23 @@ export function ForecastCharts({
               s.apparentTemperature ?? s.temperature,
             ])}
             zero
+            readout={
+              hovered && [
+                {
+                  text: `${n0.format(hovered.temperature)} °C`,
+                  color: 'var(--fc-temperature)',
+                  bold: true,
+                },
+                ...(hovered.apparentTemperature === null
+                  ? []
+                  : [
+                      {
+                        text: `${n0.format(hovered.apparentTemperature)} °C`,
+                        color: 'var(--fc-temperature)',
+                      },
+                    ]),
+              ]
+            }
           >
             {(y) => (
               <>
@@ -439,6 +584,21 @@ export function ForecastCharts({
             ]}
             axis={axis}
             values={[0, 1, ...allBins.map((b) => b.rain + b.snow)]}
+            cursorAt={binMiddle}
+            readout={
+              hoveredBin && [
+                {
+                  text: `${n1.format(hoveredBin.rain)} mm`,
+                  color: 'var(--fc-rain)',
+                  bold: true,
+                },
+                {
+                  text: `${n1.format(hoveredBin.snow)} mm`,
+                  color: 'var(--fc-snow)',
+                  bold: true,
+                },
+              ]
+            }
           >
             {(y) =>
               bins.map((b) => {
@@ -474,6 +634,16 @@ export function ForecastCharts({
             axis={axis}
             values={[0, 100]}
             size={70}
+            cursorAt={binMiddle}
+            readout={
+              hoveredBin && [
+                {
+                  text: `${n0.format(hoveredBin.chance)} %`,
+                  color: 'var(--fc-rain)',
+                  bold: true,
+                },
+              ]
+            }
           >
             {(y) =>
               bins.map((b) => (
@@ -496,6 +666,23 @@ export function ForecastCharts({
             size={62}
             rows={layers}
             opaque
+            readout={
+              hovered &&
+              [
+                hovered.cloudCoverHigh,
+                hovered.cloudCoverMid,
+                hovered.cloudCoverLow,
+              ].flatMap((cover, i) =>
+                cover === null
+                  ? []
+                  : [
+                      {
+                        text: `${initial(layers[i])} ${n0.format(cover)} %`,
+                        color: 'var(--bs-body-color)',
+                      },
+                    ],
+              )
+            }
           >
             {(y) =>
               visible.flatMap((s) =>
@@ -503,13 +690,22 @@ export function ForecastCharts({
                   (cover, i) =>
                     cover !== null &&
                     cover > 0 && (
-                      // Opaque and overlapping the next by a pixel: translucent
-                      // abutting rects leave hairline seams.
+                      // Centred on its time, the cover being the sky at that
+                      // moment. Opaque and overlapping the next by a pixel:
+                      // translucent abutting rects leave hairline seams.
                       <rect
                         key={`${s.time.getTime()}-${i}`}
-                        x={axis.x(s.time.getTime())}
+                        x={axis.x(s.time.getTime() - s.hours * HOUR_MS * 0.5)}
+                        // The last runs on to the forecast's end.
                         width={
-                          axis.x(stepEnd(s)) - axis.x(s.time.getTime()) + 1
+                          axis.x(
+                            stepEnd(s) +
+                              (s === steps.at(-1)
+                                ? 0
+                                : -s.hours * HOUR_MS * 0.5),
+                          ) -
+                          axis.x(s.time.getTime() - s.hours * HOUR_MS * 0.5) +
+                          1
                         }
                         y={y(3 - i)}
                         height={y(2 - i) - y(3 - i)}
@@ -535,6 +731,24 @@ export function ForecastCharts({
               ...steps.map((s) => (s.windGust ?? s.windSpeed) * KMH_PER_MS),
             ]}
             strip={arrowStep ? ARROW_ROW : 0}
+            readout={
+              hovered && [
+                {
+                  text: `${n0.format(hovered.windSpeed * KMH_PER_MS)} km/h`,
+                  color: 'var(--fc-wind)',
+                  bold: true,
+                },
+                ...(hovered.windGust === null
+                  ? []
+                  : [
+                      {
+                        text: `${n0.format(hovered.windGust * KMH_PER_MS)} km/h`,
+                        color: 'var(--fc-gusts)',
+                        bold: true,
+                      },
+                    ]),
+              ]
+            }
           >
             {(y) => (
               <>
@@ -588,6 +802,19 @@ export function ForecastCharts({
                 ...(forecast.elevation === null ? [] : [forecast.elevation]),
                 ...freezing.map((s) => Math.max(0, s.freezingLevel!)),
               ]}
+              readout={
+                hovered?.freezingLevel != null
+                  ? [
+                      {
+                        text: aloft(hovered)
+                          ? `${n0.format(hovered.freezingLevel)} m`
+                          : '≤ 0 m',
+                        color: 'var(--fc-freezing)',
+                        bold: true,
+                      },
+                    ]
+                  : undefined
+              }
             >
               {(y) => (
                 <>
@@ -680,6 +907,8 @@ function Chart({
   rows,
   strip = 0,
   opaque,
+  readout,
+  cursorAt,
   children,
 }: {
   title: string | undefined;
@@ -696,6 +925,9 @@ function Chart({
   strip?: number;
   /** The children cover the plot: no night shading, the day lines over them. */
   opaque?: boolean;
+  readout?: Readout;
+  /** Where the cursor stands in a chart of periods: the middle of its bar. */
+  cursorAt?: number;
   children: (y: Scale) => ReactNode;
 }): ReactElement {
   const clipId = `fc-${useId().replace(/\W/g, '')}`;
@@ -723,6 +955,11 @@ function Chart({
   );
 
   const clip = `url(#${clipId})`;
+
+  const cursor =
+    axis.cursor === undefined
+      ? undefined
+      : clamp(cursorAt ?? axis.cursor, axis.left, axis.right);
 
   return (
     <>
@@ -845,10 +1082,95 @@ function Chart({
           fill="none"
           d={`M${axis.left},${TOP}V${TOP + height}H${axis.right}`}
         />
+
+        {cursor !== undefined && (
+          <>
+            <line
+              {...CHART_CURSOR}
+              x1={cursor}
+              x2={cursor}
+              y1={TOP}
+              y2={TOP + height}
+            />
+
+            {readout && readout.length > 0 && (
+              <ReadoutBox readout={readout} axis={axis} cursor={cursor} />
+            )}
+          </>
+        )}
       </svg>
 
       {axis.labels}
     </>
+  );
+}
+
+const READOUT_GAP = 8;
+
+let measuring: { ctx: CanvasRenderingContext2D; family: string } | undefined;
+
+/** A label's rendered width at the charts' 13px, where a box must fit it. */
+function textWidth(text: string, bold?: boolean): number {
+  if (!measuring) {
+    const ctx = document.createElement('canvas').getContext('2d');
+
+    if (!ctx) {
+      return text.length * CHAR_PX;
+    }
+
+    measuring = { ctx, family: getComputedStyle(document.body).fontFamily };
+  }
+
+  measuring.ctx.font = `${bold ? 600 : 400} 13px ${measuring.family}`;
+
+  return measuring.ctx.measureText(text).width;
+}
+
+/** The values at the cursor, at the plot's top, beside it on the roomier side. */
+function ReadoutBox({
+  readout,
+  axis,
+  cursor,
+}: {
+  readout: Readout;
+  axis: Axis;
+  cursor: number;
+}): ReactElement {
+  const w =
+    readout.reduce((sum, r) => sum + textWidth(r.text, r.bold), 0) +
+    (readout.length - 1) * READOUT_GAP +
+    8;
+
+  const x = clamp(
+    cursor + 6 + w <= axis.right ? cursor + 6 : cursor - 6 - w,
+    0,
+    axis.width - w,
+  );
+
+  return (
+    <g>
+      <rect
+        className={classes.readout}
+        x={x}
+        y={TOP}
+        width={w}
+        height={LINE + 3}
+        rx={3}
+      />
+
+      <text x={x + 4} y={TOP + LINE - 2}>
+        {readout.map((r, i) => (
+          <tspan
+            key={i}
+            dx={i ? READOUT_GAP : 0}
+            fill={r.color}
+            fontWeight={r.bold ? 600 : undefined}
+          >
+            {r.text}
+          </tspan>
+        ))}
+      </text>
+    </g>
   );
 }
 

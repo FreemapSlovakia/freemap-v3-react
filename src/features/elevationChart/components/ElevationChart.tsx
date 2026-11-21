@@ -15,6 +15,7 @@ import { usePremiumMessages } from '@features/premium/translations/usePremiumMes
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import {
   CHART_AXIS,
+  CHART_CURSOR,
   CHART_GRID,
   CHART_GRID_DASHED,
   CHART_LABEL,
@@ -1042,8 +1043,7 @@ export default function ElevationChart(): ReactElement | null {
                 x2={pointerX}
                 y1={mt}
                 y2={height - mb}
-                stroke="var(--bs-danger)"
-                strokeWidth={1}
+                {...CHART_CURSOR}
               />
             )}
 

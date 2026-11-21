@@ -18,6 +18,12 @@ export const CHART_GRID = {
   strokeWidth: 1,
 };
 
+/** The vertical line at the place or time being read. */
+export const CHART_CURSOR = {
+  stroke: 'var(--bs-danger)',
+  strokeWidth: 1,
+};
+
 export const CHART_GRID_DASHED = {
   stroke: 'var(--bs-secondary-color)',
   strokeOpacity: 0.35,
