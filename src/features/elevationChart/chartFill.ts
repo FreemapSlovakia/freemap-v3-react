@@ -14,16 +14,79 @@ export interface FillStop {
   color: string;
 }
 
+/** A stretch of one colour, in metres along the profile. */
+export interface FillBand {
+  from: number;
+  to: number;
+  color: string;
+}
+
+/**
+ * The fill for a mode that names categories rather than measuring a scale:
+ * one band per stretch of a value, painted solid.
+ *
+ * Not a gradient with a colour change at each boundary, though the stops say
+ * exactly that: a browser rasterizes a wide gradient through a lookup table of
+ * its own size, so every hard step comes out smeared over several pixels — which
+ * on an unzoomed chart, where a stretch is a dozen pixels wide, turns a road
+ * surface into a wash. Solid shapes cannot blend.
+ */
+export function buildFillBands(
+  colorizer: Colorizer | null,
+  stops: ColorizedAtDistance[],
+  vFrom: number,
+  vTo: number,
+): FillBand[] | null {
+  if (!colorizer || stops.length < 2 || !(vTo > vFrom)) {
+    return null;
+  }
+
+  const bands: FillBand[] = [];
+
+  for (const stop of stops) {
+    const color = colorOf(colorizer, stop);
+
+    const last = bands.at(-1);
+
+    if (last?.color === color) {
+      last.to = stop.distance;
+    } else {
+      // A boundary is one distance with a colour on each side, so the next band
+      // starts where the last one ended rather than at its own first stop.
+      bands.push({
+        from: last ? last.to : stop.distance,
+        to: stop.distance,
+        color,
+      });
+    }
+  }
+
+  const visible = bands
+    .map((band) => ({
+      ...band,
+      from: Math.max(band.from, vFrom),
+      to: Math.min(band.to, vTo),
+    }))
+    .filter((band) => band.to > band.from);
+
+  return visible.length ? visible : null;
+}
+
+const colorOf = (colorizer: Colorizer, stop: ColorizedAtDistance) =>
+  stop.gap
+    ? NO_DATA_COLOR
+    : rgbCss(paletteColorAt(colorizer.palette, stop.color));
+
 /**
  * The gradient the profile's fill is painted with, for the stretch of it on
- * screen. `null` where there is nothing to paint.
+ * screen — for the modes that measure a scale; a categorical one is banded
+ * instead (see {@link buildFillBands}). `null` where there is nothing to paint.
  *
- * Three rules earn their keep here: a run of one colour is written as its two
- * ends, not once, or it would blur into whatever follows; a `spanBased` mode
- * gets both colours at a boundary, so categories meet at an edge instead of
- * fading; and at most one stop per pixel column is written, since the list is
- * rebuilt on every frame of a drag and a vertex apiece would be thousands of
- * elements for a gradient the screen shows one colour per pixel of.
+ * Two rules earn their keep here: a run of one colour is written as its two
+ * ends, not once, or it would blur into whatever follows; and at most one stop
+ * per pixel column is written, since the list is rebuilt on every frame of a
+ * drag and a vertex apiece would be thousands of elements for a gradient the
+ * screen shows one colour per pixel of.
  */
 export function buildFillStops(
   colorizer: Colorizer | null,
@@ -74,9 +137,7 @@ export function buildFillStops(
 
     const stop = stops[i]!;
 
-    const color = stop.gap
-      ? NO_DATA_COLOR
-      : rgbCss(paletteColorAt(colorizer.palette, stop.color));
+    const color = colorOf(colorizer, stop);
 
     const offset = clamp((stop.distance - vFrom) / (vTo - vFrom), 0, 1);
 
@@ -94,10 +155,6 @@ export function buildFillStops(
       out.push(pending);
 
       pending = null;
-    }
-
-    if (previous && colorizer.spanBased) {
-      out.push({ offset, color: previous.color });
     }
 
     out.push({ offset, color });
