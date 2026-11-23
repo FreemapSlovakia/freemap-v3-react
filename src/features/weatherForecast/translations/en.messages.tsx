@@ -9,6 +9,10 @@ const en: WeatherForecastMessages = {
   localTime: ({ difference }) => `Local time (${difference})`,
   updated: ({ time }) => `Updated ${time}`,
   source: 'Source',
+  terrainSource: 'Terrain for sunrise and sunset',
+  sunHidden: 'The terrain hides the sun all day',
+  overTerrain: ({ level }) =>
+    `over the terrain (${level} over a level horizon)`,
   gusts: 'gusts',
   alongRoute: 'Weather along the route',
   start: 'Start',

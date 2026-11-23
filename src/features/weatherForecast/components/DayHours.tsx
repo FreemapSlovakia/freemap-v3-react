@@ -3,7 +3,7 @@ import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { ComponentType, ReactElement } from 'react';
-import { Table } from 'react-bootstrap';
+import { Spinner, Table } from 'react-bootstrap';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import { WiSunrise, WiSunset } from 'react-icons/wi';
 import {
@@ -12,6 +12,7 @@ import {
   formatTemperature,
   stepEnd,
 } from '../model/forecast.js';
+import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import { DaySummary } from './DaySummary.js';
 import classes from './ForecastView.module.css';
 import { Precipitation } from './Precipitation.js';
@@ -36,12 +37,15 @@ export function DayHours({
   onToggle,
   highlight,
   timeZone,
+  sunLoading = false,
 }: {
   day: ForecastDay;
   opened: number | null;
   onToggle: (time: number) => void;
   highlight?: (step: ForecastStep) => boolean;
   timeZone: string | undefined;
+  /** The times over the terrain are on their way. */
+  sunLoading?: boolean;
 }): ReactElement {
   // Shared by the day's rows rather than built in each.
   const formats: Formats = {
@@ -70,6 +74,7 @@ export function DayHours({
               highlighted={highlight?.(step) ?? false}
               onToggle={onToggle}
               formats={formats}
+              sunLoading={sunLoading}
             />
           ))}
         </tbody>
@@ -92,6 +97,7 @@ function HourRow({
   highlighted,
   onToggle,
   formats,
+  sunLoading,
 }: {
   step: ForecastStep;
   day: ForecastDay;
@@ -99,6 +105,7 @@ function HourRow({
   highlighted: boolean;
   onToggle: (time: number) => void;
   formats: Formats;
+  sunLoading: boolean;
 }): ReactElement {
   const rowClass = highlighted ? 'table-primary' : undefined;
 
@@ -151,6 +158,8 @@ function HourRow({
       {within(day.sunrise, step) && (
         <SunRow
           at={day.sunrise}
+          level={day.level.sunrise}
+          loading={sunLoading}
           Icon={WiSunrise}
           format={formats.time}
           className={rowClass}
@@ -160,6 +169,8 @@ function HourRow({
       {within(day.sunset, step) && (
         <SunRow
           at={day.sunset}
+          level={day.level.sunset}
+          loading={sunLoading}
           Icon={WiSunset}
           format={formats.time}
           className={rowClass}
@@ -172,20 +183,41 @@ function HourRow({
 /** A slim row among the hours where the sun rises or sets. */
 function SunRow({
   at,
+  level,
+  loading,
   Icon,
   format,
   className,
 }: {
   at: Date;
+  /** Over a level horizon; `at` is over the terrain where it differs. */
+  level: Date | null;
+  loading: boolean;
   Icon: ComponentType<{ className?: string }>;
   format: Intl.DateTimeFormat;
   /** The hour's, so a highlighted stretch isn't broken by it. */
   className?: string;
 }): ReactElement {
+  const m = useWeatherForecastMessages();
+
+  const shown = format.format(at);
+
+  // Said only where the terrain moves it by a minute or more.
+  const levelShown = level && format.format(level);
+
   return (
     <tr className={className}>
       <td colSpan={6} className="small text-muted ps-2 py-0">
-        <Icon className={classes.sunIcon} /> {format.format(at)}
+        <Icon className={classes.sunIcon} /> {shown}
+        {levelShown && levelShown !== shown && (
+          <> {m?.overTerrain({ level: levelShown })}</>
+        )}
+        {loading && (
+          <>
+            {' '}
+            <Spinner size="sm" />
+          </>
+        )}
       </td>
     </tr>
   );

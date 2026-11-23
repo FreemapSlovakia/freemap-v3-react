@@ -12,7 +12,7 @@ import {
 import { useNow } from '@shared/hooks/useNow.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { type ReactElement, useMemo } from 'react';
-import { Table } from 'react-bootstrap';
+import { Spinner, Table } from 'react-bootstrap';
 import {
   formatTemperature,
   spanStep,
@@ -174,7 +174,9 @@ function Row({
           {loaded.state === 'error' ? (
             <ForecastFailed retry={loaded.retry} inline />
           ) : !forecast ? (
-            m?.loading
+            <>
+              <Spinner size="sm" /> {m?.loading}
+            </>
           ) : !lastStep ? (
             m?.outside
           ) : at >= stepEnd(lastStep) ? (

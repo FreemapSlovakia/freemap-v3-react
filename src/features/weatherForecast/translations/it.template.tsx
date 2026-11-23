@@ -10,6 +10,10 @@ const it: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   localTime: ({ difference }) => `Ora locale (${difference})`,
   updated: ({ time }) => `Aggiornamento: ${time}`,
   source: 'Fonte',
+  terrainSource: "Rilievo per l'alba e il tramonto",
+  sunHidden: 'Il rilievo nasconde il sole tutto il giorno',
+  overTerrain: ({ level }) =>
+    `sopra il rilievo (${level} su un orizzonte piatto)`,
   gusts: 'raffiche',
   alongRoute: 'Meteo lungo il percorso',
   start: 'Partenza',

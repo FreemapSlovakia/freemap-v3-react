@@ -5,6 +5,7 @@ import {
   CHART_GRID_DASHED,
 } from '@shared/chartStyle.js';
 import { ViewIndicator } from '@shared/components/ViewIndicator.js';
+import type { Loaded } from '@shared/hooks/useCached.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import { clamp } from '@shared/mathUtils.js';
@@ -27,6 +28,7 @@ import {
   KMH_PER_MS,
   stepEnd,
 } from '../model/forecast.js';
+import type { TerrainSun } from '../model/terrainSun.js';
 import { zonedHour } from '../model/timeZone.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import classes from './ForecastCharts.module.css';
@@ -91,8 +93,10 @@ type Readout = { text: string; color: string; bold?: boolean }[];
 /** The whole forecast as stacked charts on one time axis, zoomed and panned together. */
 export function ForecastCharts({
   forecast,
+  terrainSun,
 }: {
   forecast: Forecast;
+  terrainSun?: Loaded<TerrainSun>;
 }): ReactElement {
   const m = useWeatherForecastMessages();
 
@@ -331,7 +335,10 @@ export function ForecastCharts({
 
   const axis: Axis = {
     x: (t) => LEFT + ((t - from) / (to - from)) * plotWidth,
-    days: forecastDays(forecast),
+    days: forecastDays(
+      forecast,
+      terrainSun?.state === 'done' ? terrainSun.data.days : undefined,
+    ),
     from,
     to,
     width,
@@ -1286,7 +1293,14 @@ function nights(axis: Axis): [number, number][] {
     return result;
   }
 
-  const firstRise = days[0]?.sunrise?.getTime();
+  // Past any day the terrain hides the sun on.
+  const riseFrom = (i: number) =>
+    days
+      .slice(i)
+      .find((d) => !d.sunHidden)
+      ?.sunrise?.getTime();
+
+  const firstRise = riseFrom(0);
 
   if (firstRise !== undefined && start < firstRise) {
     result.push([start, firstRise]);
@@ -1299,7 +1313,7 @@ function nights(axis: Axis): [number, number][] {
       continue;
     }
 
-    const rise = days[i + 1]?.sunrise?.getTime() ?? end;
+    const rise = riseFrom(i + 1) ?? end;
 
     result.push([Math.max(set, start), Math.min(rise, end)]);
   }

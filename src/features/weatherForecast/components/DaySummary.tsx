@@ -42,6 +42,7 @@ export function DaySummary({ day }: { day: ForecastDay }): ReactElement | null {
     <DetailItems
       className="small text-muted px-2 py-1 border-bottom"
       items={[
+        day.sunHidden && m?.sunHidden,
         sunMinutes !== null &&
           sunMinutes >= 30 &&
           m?.sunshine({ duration: formatDuration(sunMinutes * 60, language) }),

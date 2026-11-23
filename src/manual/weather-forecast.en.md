@@ -23,7 +23,7 @@ A click opens the day. At its top is a summary of the day: the hours of sunshine
 
 ## Hours
 
-Each hour of an open day shows the weather, the temperature, the precipitation – new snow in cm, rain in mm, and the chance of it – and the wind: the arrow points where the wind blows, and below it are the gusts. Strong gusts are coloured, from orange to red as they grow. A slim row between two hours marks sunrise or sunset.
+Each hour of an open day shows the weather, the temperature, the precipitation – new snow in cm, rain in mm, and the chance of it – and the wind: the arrow points where the wind blows, and below it are the gusts. Strong gusts are coloured, from orange to red as they grow. A slim row between two hours marks sunrise or sunset. Where the terrain model covers the place, it is the time the sun clears or drops behind the surrounding terrain, followed by the time over a level horizon. A day on which the terrain hides the sun from morning to evening says so in its summary.
 
 A click on an hour opens its details: the height of 0 °C, the clouds low, mid and high, the humidity, and where it applies, the temperature it feels like, the snow on the ground, the height above which it snows, the risk of thunderstorms, the minutes of sunshine, the UV index and visibility under 10 km.
 

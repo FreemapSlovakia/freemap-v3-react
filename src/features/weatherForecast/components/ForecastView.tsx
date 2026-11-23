@@ -1,3 +1,4 @@
+import type { Loaded } from '@shared/hooks/useCached.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useNumberFormat } from '@shared/hooks/useNumberFormat.js';
 import clsx from 'clsx';
@@ -11,6 +12,7 @@ import {
   formatTemperature,
   MIN_SNOW_DEPTH,
 } from '../model/forecast.js';
+import type { TerrainSun } from '../model/terrainSun.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import { DayHours } from './DayHours.js';
 import { ForecastFooter } from './ForecastFooter.js';
@@ -28,11 +30,13 @@ export function ForecastView({
   days,
   highlight,
   collapsed,
+  terrainSun,
 }: {
   forecast: Forecast;
   days?: (day: ForecastDay) => boolean;
   highlight?: (step: ForecastStep) => boolean;
   collapsed?: boolean;
+  terrainSun?: Loaded<TerrainSun>;
 }): ReactElement {
   const m = useWeatherForecastMessages();
 
@@ -59,7 +63,10 @@ export function ForecastView({
     return <p className="text-muted">{m?.outside}</p>;
   }
 
-  const all = forecastDays(forecast);
+  const all = forecastDays(
+    forecast,
+    terrainSun?.state === 'done' ? terrainSun.data.days : undefined,
+  );
 
   const shown = days ? all.filter(days) : all;
 
@@ -168,6 +175,7 @@ export function ForecastView({
                   onToggle={toggle}
                   highlight={highlight}
                   timeZone={timeZone}
+                  sunLoading={terrainSun?.state === 'loading'}
                 />
               </div>
             </Accordion.Collapse>
@@ -175,7 +183,7 @@ export function ForecastView({
         ))}
       </Accordion>
 
-      <ForecastFooter forecast={forecast} />
+      <ForecastFooter forecast={forecast} terrainSun={terrainSun} />
     </>
   );
 }

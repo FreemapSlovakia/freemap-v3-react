@@ -3,6 +3,7 @@ import { useCached } from '@shared/hooks/useCached.js';
 import { IsoDateSchema, type LatLon } from '@shared/types/common.js';
 import { useEffect } from 'react';
 import z from 'zod';
+import type { TerrainSunDay } from './terrainSun.js';
 import {
   isKnownZone,
   zonedDayKey,
@@ -273,9 +274,16 @@ export type ForecastDay = {
   snowfall: number | null;
   /** The deepest cm of snow on the ground, if the provider says. */
   snowDepth: number | null;
-  /** Null in a polar day or night, or from a provider without them. */
+  /**
+   * Over the terrain where its skyline is known, else over a level horizon.
+   * Null in a polar day or night, or from a provider without them.
+   */
   sunrise: Date | null;
   sunset: Date | null;
+  /** Over a level horizon. */
+  level: { sunrise: Date | null; sunset: Date | null };
+  /** The terrain hides the sun all day. */
+  sunHidden: boolean;
   /** Its daytime's weather, by `daySymbol`. */
   weather: Weather;
 };
@@ -385,11 +393,10 @@ export function spanStep(
  * The steps by the place's day (`timeZone`, or the browser's where null); a
  * day's symbol is that of its hours from 6:00 to 21:00 there.
  */
-export function forecastDays({
-  steps,
-  sun,
-  timeZone,
-}: Pick<Forecast, 'steps' | 'sun' | 'timeZone'>): ForecastDay[] {
+export function forecastDays(
+  { steps, sun, timeZone }: Pick<Forecast, 'steps' | 'sun' | 'timeZone'>,
+  terrainSun?: Map<string, TerrainSunDay>,
+): ForecastDay[] {
   const byDay = Map.groupBy(steps, (step) => zonedDayKey(step.time, timeZone));
 
   // Each by the day it falls on there, not by the UTC day it is listed by.
@@ -411,6 +418,13 @@ export function forecastDays({
 
     const first = daySteps[0]!;
 
+    const level = {
+      sunrise: sunrises.get(key) ?? null,
+      sunset: sunsets.get(key) ?? null,
+    };
+
+    const terrain = terrainSun?.get(key);
+
     return {
       key,
       date: zonedDayStart(first.time, timeZone),
@@ -421,8 +435,16 @@ export function forecastDays({
       rain: sumKnown(daySteps.map((s) => s.rain)),
       snowfall: sumKnown(daySteps.map((s) => s.snowfall)),
       snowDepth: maxKnown(daySteps.map((s) => s.snowDepth)),
-      sunrise: sunrises.get(key) ?? null,
-      sunset: sunsets.get(key) ?? null,
+      // Not over the terrain where the level horizon sees none: no skyline
+      // can make a polar day's sun rise.
+      sunrise: terrain?.hidden
+        ? null
+        : level.sunrise && (terrain?.sunrise ?? level.sunrise),
+      sunset: terrain?.hidden
+        ? null
+        : level.sunset && (terrain?.sunset ?? level.sunset),
+      level,
+      sunHidden: terrain?.hidden ?? false,
       weather: daySymbol(
         (daytime.length ? daytime : daySteps).map((s) => s.weather),
       ),

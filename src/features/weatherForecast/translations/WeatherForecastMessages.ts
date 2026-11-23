@@ -14,6 +14,12 @@ export type WeatherForecastMessages = {
   updated: (props: { time: string }) => string;
   /** Before the provider's name. */
   source: string;
+  /** Before the terrain models sunrise and sunset are computed over. */
+  terrainSource: string;
+  /** After a sunrise or sunset time that the terrain delays or brings forward. */
+  overTerrain: (props: { level: string }) => string;
+  /** A day the surrounding terrain hides the sun from rise to set. */
+  sunHidden: string;
   /** Under the wind speed: "gusts 54 km/h". */
   gusts: string;
   alongRoute: string;

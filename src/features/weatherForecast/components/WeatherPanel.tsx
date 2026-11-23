@@ -8,7 +8,7 @@ import { useOnline } from '@shared/hooks/useOnline.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import type { LatLon } from '@shared/types/common.js';
 import { type ReactElement, useState } from 'react';
-import { Button, ToggleButton } from 'react-bootstrap';
+import { Button, Spinner, ToggleButton } from 'react-bootstrap';
 import {
   FaChartLine,
   FaCloudSun,
@@ -19,6 +19,7 @@ import { useDispatch } from 'react-redux';
 import { weatherForecastSetPicking } from '../model/actions.js';
 import { useForecast } from '../model/forecast.js';
 import { parseWeatherPointId } from '../model/pointId.js';
+import { useTerrainSun } from '../model/terrainSun.js';
 import { useWeatherForecastMessages } from '../translations/useWeatherForecastMessages.js';
 import { ForecastCharts } from './ForecastCharts.js';
 import { ForecastFailed } from './ForecastFailed.js';
@@ -134,6 +135,11 @@ function PanelForecast({
 
   const loaded = useForecast(point);
 
+  const terrainSun = useTerrainSun(
+    point,
+    loaded.state === 'done' ? loaded.data : null,
+  );
+
   switch (loaded.state) {
     case 'done':
       return (
@@ -173,12 +179,12 @@ function PanelForecast({
           {/* Nothing to chart beyond the models' reach: the list says so. */}
           {view === 'charts' && loaded.data.steps.length > 0 ? (
             <>
-              <ForecastCharts forecast={loaded.data} />
+              <ForecastCharts forecast={loaded.data} terrainSun={terrainSun} />
 
-              <ForecastFooter forecast={loaded.data} />
+              <ForecastFooter forecast={loaded.data} terrainSun={terrainSun} />
             </>
           ) : (
-            <ForecastView forecast={loaded.data} />
+            <ForecastView forecast={loaded.data} terrainSun={terrainSun} />
           )}
         </>
       );
@@ -187,6 +193,10 @@ function PanelForecast({
       return <ForecastFailed retry={loaded.retry} />;
 
     default:
-      return <p>{m?.loading}</p>;
+      return (
+        <p>
+          <Spinner as="span" size="sm" /> {m?.loading}
+        </p>
+      );
   }
 }

@@ -23,7 +23,7 @@ Kliknutím deň otvoríte. Na začiatku je súhrn dňa: hodiny slnečného svitu
 
 ## Hodiny
 
-Pri každej hodine otvoreného dňa je počasie, teplota, zrážky – nový sneh v cm, dážď v mm a pravdepodobnosť zrážok – a vietor: šípka ukazuje, kam vietor fúka, a pod šípkou sú nárazy. Silné nárazy sú zafarbené, od oranžovej po červenú podľa sily. Úzky riadok medzi dvoma hodinami označuje východ alebo západ slnka.
+Pri každej hodine otvoreného dňa je počasie, teplota, zrážky – nový sneh v cm, dážď v mm a pravdepodobnosť zrážok – a vietor: šípka ukazuje, kam vietor fúka, a pod šípkou sú nárazy. Silné nárazy sú zafarbené, od oranžovej po červenú podľa sily. Úzky riadok medzi dvoma hodinami označuje východ alebo západ slnka. Kde miesto pokrýva model terénu, je to čas, keď slnko vyjde spoza okolitého terénu alebo za ním zapadne, a za ním čas nad rovným obzorom. Deň, keď terén skrýva slnko od rána do večera, to uvádza vo svojom súhrne.
 
 Kliknutím na hodinu otvoríte podrobnosti: výšku, v ktorej je 0 °C, oblačnosť nízku, strednú a vysokú, vlhkosť a tam, kde to má význam, pocitovú teplotu, sneh na zemi, výšku, nad ktorou sneží, riziko búrok, minúty slnečného svitu, UV index a dohľadnosť pod 10 km.
 

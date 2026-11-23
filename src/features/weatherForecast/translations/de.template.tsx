@@ -10,6 +10,10 @@ const de: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   localTime: ({ difference }) => `Ortszeit (${difference})`,
   updated: ({ time }) => `Aktualisiert ${time}`,
   source: 'Quelle',
+  terrainSource: 'Gelände für Sonnenauf- und -untergang',
+  sunHidden: 'Die Sonne bleibt den ganzen Tag hinter dem Gelände',
+  overTerrain: ({ level }) =>
+    `über dem Gelände (${level} über ebenem Horizont)`,
   gusts: 'Böen',
   alongRoute: 'Wetter entlang der Route',
   start: 'Start',
