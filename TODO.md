@@ -551,6 +551,11 @@ Bugs and feature requests are issues under `area: maps-layers`.
   and menu/toolbar defaults stay inline: `effectiveShortcut` holds the part
   with logic, and the rest differ on purpose (`undefined` is "the default",
   `null` "none", and a new offline map starts with none).
+- [ ] **A `maxZoom` below `MIN_MAX_ZOOM` stays in the account on the server.**
+  `MaxZoomCompatSchema` raises it on every load, but nothing writes the raised
+  value back: the preferences modal sends `maxZoom` only when the field
+  changes. Harmless for this client; validate or migrate it in the API if
+  another consumer ever reads the settings.
 
 ## Search / Photon geocoder (see [`doc/photon-geocoder.md`](./doc/photon-geocoder.md))
 

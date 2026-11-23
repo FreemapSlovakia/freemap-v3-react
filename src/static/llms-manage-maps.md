@@ -86,7 +86,7 @@ A link or a My maps document carries the presets on the map as copies, so it ope
 - Keyboard shortcut: <kbd>m</kbd> <kbd>p</kbd>
 - URL path: `/#show=map-preferences`
 
-- **Max zoom** — global maximum zoom level
+- **Max zoom** — global maximum zoom level, 18 or more (default 20); a lower cap keeps a non-premium user off the premium-only levels of the outdoor and aerial maps
 - **Zoom step** — the smallest zoom change scroll-wheel, pinch, box zoom and the one-finger double-tap drag can settle on: `1` (whole zoom levels, the default), `½`, `¼`, or _Free_ (no snapping at all). The <kbd>+</kbd>/<kbd>−</kbd> buttons and keys always go to the next whole level whatever this says
 - **Resolution scale** — simulates display pixel density and affects which tile variant is fetched (Auto by default)
 - **Pixel-exact tiles** — off by default; puts each tile pixel on exactly one screen pixel, so tiles stay sharp on a display with a fractional pixel ratio (such as 1.25 or 1.75). The tile variant then follows the nearest whole ratio and the resolution scale is ignored; the map looks slightly larger or smaller, and the map's zoom levels shift off whole numbers (by about 0.19 at 1.75), though `map=` in the URL still carries the whole level

@@ -170,6 +170,20 @@ export const CreatedAppTokenSchema = z.object({
   token: z.string(),
 });
 
+/** Lower caps only spare a user the premium-only levels of the outdoor and aerial maps. */
+export const MIN_MAX_ZOOM = 18;
+
+export const MaxZoomSchema = z.number().int().min(MIN_MAX_ZOOM);
+
+/** A cap stored below the floor becomes the floor, the nearest it may be. */
+export const MaxZoomCompatSchema = z.preprocess(
+  (v) =>
+    typeof v === 'number' && Number.isFinite(v)
+      ? Math.max(MIN_MAX_ZOOM, Math.round(v))
+      : v,
+  MaxZoomSchema,
+);
+
 export const UserSettingsSchema = z.object({
   layersSettings: z.record(z.string(), LayerSettingsSchema).optional(),
   layerSetups: z.record(z.string(), LayerSetupSchema).optional(),
@@ -177,7 +191,7 @@ export const UserSettingsSchema = z.object({
     .array(z.union([CustomLayerDefSchema, NamedMapDefSchema]))
     .optional(),
   presets: z.array(MapPresetSchema).optional(),
-  maxZoom: z.number().optional(),
+  maxZoom: MaxZoomSchema.optional(),
 });
 
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
@@ -192,7 +206,7 @@ export const UserSettingsCompatSchema = z.object({
   layerSetups: LayerSetupsCompatSchema.optional().catch(undefined),
   customLayers: CustomLayerDefArrayCompatSchema.optional().catch(undefined),
   presets: MapPresetArrayCompatSchema.optional().catch(undefined),
-  maxZoom: UserSettingsSchema.shape.maxZoom.catch(undefined),
+  maxZoom: MaxZoomCompatSchema.optional().catch(undefined),
 });
 
 export const UserSchema = z.object({

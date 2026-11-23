@@ -670,7 +670,7 @@ describe('mapReducer — presets across sign-in', () => {
       ],
       layersSettings: { X: { showInToolbar: false } },
       layerSetups: { w: { opacity: 0.5 } },
-      maxZoom: 16,
+      maxZoom: 18,
     } as typeof local;
 
     for (const next of [

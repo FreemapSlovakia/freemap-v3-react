@@ -5,6 +5,7 @@ import {
   saveSettings,
   setActiveModal,
 } from '@app/store/actions.js';
+import { MIN_MAX_ZOOM } from '@features/auth/model/types.js';
 import { ManualHeaderButton } from '@features/documents/components/ManualHeaderButton.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
@@ -112,7 +113,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
     initialShowBearingLine,
   );
 
-  const invalidMaxZoom = isInvalidInt(maxZoom, false, 0, 99);
+  const invalidMaxZoom = isInvalidInt(maxZoom, false, MIN_MAX_ZOOM, 99);
 
   useDocumentTitle(show ? m?.mapLayers.preferences : undefined);
 
@@ -278,7 +279,7 @@ export default function MapPreferencesModal({ show }: Props): ReactElement {
 
             <Form.Control
               type="number"
-              min={0}
+              min={MIN_MAX_ZOOM}
               max={99}
               value={maxZoom}
               disabled={!canSaveSettings}

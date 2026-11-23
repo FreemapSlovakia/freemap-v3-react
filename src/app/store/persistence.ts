@@ -6,6 +6,7 @@ import {
 } from '@app/url/mapContentParts.js';
 import { authInitialState } from '@features/auth/model/reducer.js';
 import {
+  MaxZoomCompatSchema,
   UserSchema,
   UserSettingsCompatSchema,
 } from '@features/auth/model/types.js';
@@ -159,7 +160,7 @@ export const PersistedMapSchema = z
     linkPresets: MapPresetArrayCompatSchema.optional().catch(undefined),
     legacyMapWarningSuppressions: z.array(z.string()),
     shadingOnServer: z.boolean(),
-    maxZoom: z.number(),
+    maxZoom: MaxZoomCompatSchema.optional().catch(undefined),
     resolutionScale: z.number().nullable(),
     featureScale: z.number(),
     zoomSnap: z.number(),
