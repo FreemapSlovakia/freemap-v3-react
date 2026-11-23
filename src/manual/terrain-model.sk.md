@@ -29,7 +29,7 @@ Pre viacfarebnú tlačiareň môže model niesť prvky z mapy vo farbe – napl�
 
 **Krajinná pokrývka** vyfarbí terén pod nimi podľa toho, čo ho pokrýva: polia a sady, lúky a trávu, zastavané územie, les, skaly a sutiny, ľadovce a vodu. **Najmenší detail pokrývky** vyhladí pásy a škvrny užšie než táto hodnota, ktoré by sa vytlačili len ako šum.
 
-**Farby filamentov** uvádzajú terén a každú použitú farbu, každú s filamentom, ktorým sa vytlačí. Ak dvom farbám priradíte ten istý filament, budú ho zdieľať; zrušením zaškrtnutia farby jej prvky z modelu vynecháte. Model s farbami sa stiahne ako 3MF, ktorý slicery ako Bambu Studio načítajú s farbami priradenými filamentom; bez nich je to obyčajný STL.
+**Farby filamentov** uvádzajú terén a každú použitú farbu, každú s filamentom, ktorým sa vytlačí. Ak dvom farbám priradíte ten istý filament, budú ho zdieľať; zrušením zaškrtnutia farby jej prvky z modelu vynecháte. Model s farbami sa stiahne ako 3MF, ktorý slicery ako Bambu Studio načítajú s farbami priradenými filamentom; OrcaSlicer a Snapmaker Orca načítajú, ktorým filamentom sa ktorá časť tlačí, a toľko filamentov aj ich farby nastavíte sami; bez nich je to obyčajný STL.
 
 ## Vytvorenie a stiahnutie
 

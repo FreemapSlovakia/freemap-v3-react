@@ -1,7 +1,7 @@
 import { strFromU8, unzipSync } from 'fflate';
 import { describe, expect, it } from 'vitest';
 import { buildMesh, meshTriangles } from './stl.js';
-import { meshTo3mf } from './threeMf.js';
+import { meshTo3mf, paintCode } from './threeMf.js';
 
 const cols = 20;
 
@@ -64,7 +64,30 @@ describe('meshTo3mf', async () => {
     expect(p1).toEqual([...mesh.colours!]);
   });
 
+  it('paints each triangle with its filament for Orca', () => {
+    const paint = [...model.matchAll(/<triangle [^>]*/g)].map(
+      (m) => / paint_color="(\w+)"/.exec(m[0])?.[1],
+    );
+
+    expect(paint).toEqual([...mesh.colours!].map((c) => (c ? '8' : undefined)));
+  });
+
   it('escapes metadata', () => {
     expect(model).toContain('<metadata name="Title">Test &amp; co</metadata>');
+  });
+});
+
+describe('paintCode', () => {
+  it('encodes filaments as Orca serializes them', () => {
+    expect([1, 2, 3, 4, 17, 18, 33, 34].map(paintCode)).toEqual([
+      '4',
+      '8',
+      '0C',
+      '1C',
+      'EC',
+      '0FC',
+      'FFC',
+      undefined,
+    ]);
   });
 });

@@ -29,7 +29,7 @@ For a multi-colour printer the model can carry the features on the map in colour
 
 **Landcover** colours the terrain under them by what covers it: farmland, meadows and grass, built-up areas, forest, rock and scree, glaciers and water. **Smallest landcover detail** smooths away strips and spots narrower than this, which would print only as noise.
 
-**Filament colours** lists the ground and every colour used, each with the filament it prints in. Give two colours the same filament and they share it; untick a colour to leave its features off. A model with colours downloads as 3MF, which slicers such as Bambu Studio read with the colours assigned to filaments; without them it is a plain STL.
+**Filament colours** lists the ground and every colour used, each with the filament it prints in. Give two colours the same filament and they share it; untick a colour to leave its features off. A model with colours downloads as 3MF, which slicers such as Bambu Studio read with the colours assigned to filaments; OrcaSlicer and Snapmaker Orca read which filament each part prints in, and you set up that many filaments and their colours yourself; without them it is a plain STL.
 
 ## Creating and downloading
 
