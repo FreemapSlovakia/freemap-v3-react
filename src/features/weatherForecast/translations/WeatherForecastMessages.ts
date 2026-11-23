@@ -18,6 +18,8 @@ export type WeatherForecastMessages = {
   terrainSource: string;
   /** After a sunrise or sunset time that the terrain delays or brings forward. */
   overTerrain: (props: { level: string }) => string;
+  /** After a sunrise or sunset time on a day the terrain hides the sun. */
+  overLevel: string;
   /** A day the surrounding terrain hides the sun from rise to set. */
   sunHidden: string;
   /** Under the wind speed: "gusts 54 km/h". */

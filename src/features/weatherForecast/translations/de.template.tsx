@@ -12,6 +12,7 @@ const de: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Quelle',
   terrainSource: 'Gelände für Sonnenauf- und -untergang',
   sunHidden: 'Die Sonne bleibt den ganzen Tag hinter dem Gelände',
+  overLevel: 'über ebenem Horizont',
   overTerrain: ({ level }) =>
     `über dem Gelände (${level} über ebenem Horizont)`,
   gusts: 'Böen',

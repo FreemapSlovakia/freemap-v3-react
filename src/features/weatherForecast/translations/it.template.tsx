@@ -12,6 +12,7 @@ const it: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Fonte',
   terrainSource: "Rilievo per l'alba e il tramonto",
   sunHidden: 'Il rilievo nasconde il sole tutto il giorno',
+  overLevel: 'su un orizzonte piatto',
   overTerrain: ({ level }) =>
     `sopra il rilievo (${level} su un orizzonte piatto)`,
   gusts: 'raffiche',

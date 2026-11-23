@@ -12,6 +12,7 @@ const sk: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Zdroj',
   terrainSource: 'Terén pre východ a západ slnka',
   sunHidden: 'Slnko je celý deň za terénom',
+  overLevel: 'nad rovným obzorom',
   overTerrain: ({ level }) => `nad terénom (${level} nad rovným obzorom)`,
   gusts: 'nárazy',
   alongRoute: 'Počasie pozdĺž trasy',

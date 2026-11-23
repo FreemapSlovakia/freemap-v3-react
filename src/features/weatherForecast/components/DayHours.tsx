@@ -109,6 +109,11 @@ function HourRow({
 }): ReactElement {
   const rowClass = highlighted ? 'table-primary' : undefined;
 
+  // A day the terrain hides the sun still has the level horizon's times.
+  const sunrise = day.sunHidden ? day.level.sunrise : day.sunrise;
+
+  const sunset = day.sunHidden ? day.level.sunset : day.sunset;
+
   return (
     <>
       <ClickableRow
@@ -155,10 +160,11 @@ function HourRow({
         </tr>
       )}
 
-      {within(day.sunrise, step) && (
+      {within(sunrise, step) && (
         <SunRow
-          at={day.sunrise}
+          at={sunrise}
           level={day.level.sunrise}
+          levelOnly={day.sunHidden}
           loading={sunLoading}
           Icon={WiSunrise}
           format={formats.time}
@@ -166,10 +172,11 @@ function HourRow({
         />
       )}
 
-      {within(day.sunset, step) && (
+      {within(sunset, step) && (
         <SunRow
-          at={day.sunset}
+          at={sunset}
           level={day.level.sunset}
+          levelOnly={day.sunHidden}
           loading={sunLoading}
           Icon={WiSunset}
           format={formats.time}
@@ -184,6 +191,7 @@ function HourRow({
 function SunRow({
   at,
   level,
+  levelOnly,
   loading,
   Icon,
   format,
@@ -192,6 +200,8 @@ function SunRow({
   at: Date;
   /** Over a level horizon; `at` is over the terrain where it differs. */
   level: Date | null;
+  /** `at` is over a level horizon: the terrain hides the sun all day. */
+  levelOnly: boolean;
   loading: boolean;
   Icon: ComponentType<{ className?: string }>;
   format: Intl.DateTimeFormat;
@@ -209,8 +219,11 @@ function SunRow({
     <tr className={className}>
       <td colSpan={6} className="small text-muted ps-2 py-0">
         <Icon className={classes.sunIcon} /> {shown}
-        {levelShown && levelShown !== shown && (
-          <> {m?.overTerrain({ level: levelShown })}</>
+        {levelOnly ? (
+          <> {m?.overLevel}</>
+        ) : (
+          levelShown &&
+          levelShown !== shown && <> {m?.overTerrain({ level: levelShown })}</>
         )}
         {loading && (
           <>

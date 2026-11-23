@@ -12,6 +12,7 @@ const fr: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Source',
   terrainSource: 'Relief pour le lever et le coucher du soleil',
   sunHidden: 'Le relief cache le soleil toute la journée',
+  overLevel: 'sur un horizon plat',
   overTerrain: ({ level }) =>
     `au-dessus du relief (${level} sur un horizon plat)`,
   gusts: 'rafales',

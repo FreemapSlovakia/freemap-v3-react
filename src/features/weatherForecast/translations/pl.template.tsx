@@ -12,6 +12,7 @@ const pl: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Źródło',
   terrainSource: 'Teren dla wschodu i zachodu słońca',
   sunHidden: 'Teren zasłania słońce przez cały dzień',
+  overLevel: 'przy płaskim horyzoncie',
   overTerrain: ({ level }) => `nad terenem (${level} przy płaskim horyzoncie)`,
   gusts: 'porywy',
   alongRoute: 'Pogoda wzdłuż trasy',

@@ -11,6 +11,7 @@ const en: WeatherForecastMessages = {
   source: 'Source',
   terrainSource: 'Terrain for sunrise and sunset',
   sunHidden: 'The terrain hides the sun all day',
+  overLevel: 'over a level horizon',
   overTerrain: ({ level }) =>
     `over the terrain (${level} over a level horizon)`,
   gusts: 'gusts',

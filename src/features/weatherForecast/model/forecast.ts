@@ -390,8 +390,38 @@ export function spanStep(
 }
 
 /**
+ * Each step's sunshine held to the minutes the sun stands over the terrain in
+ * it: the provider's is for a level horizon.
+ */
+export function overTerrain(
+  steps: ForecastStep[],
+  sunrise: Date | null,
+  sunset: Date | null,
+  hidden: boolean,
+): ForecastStep[] {
+  return steps.map((step) => {
+    const start = step.time.getTime();
+
+    const up = hidden
+      ? 0
+      : sunrise && sunset
+        ? Math.max(
+            0,
+            Math.min(stepEnd(step), sunset.getTime()) -
+              Math.max(start, sunrise.getTime()),
+          ) / 60_000
+        : null;
+
+    return step.sunshine === null || up === null || step.sunshine <= up
+      ? step
+      : { ...step, sunshine: up };
+  });
+}
+
+/**
  * The steps by the place's day (`timeZone`, or the browser's where null); a
- * day's symbol is that of its hours from 6:00 to 21:00 there.
+ * day's symbol is that of its hours from 6:00 to 21:00 there; with
+ * `terrainSun`, its sun times and sunshine are over the terrain.
  */
 export function forecastDays(
   { steps, sun, timeZone }: Pick<Forecast, 'steps' | 'sun' | 'timeZone'>,
@@ -425,24 +455,30 @@ export function forecastDays(
 
     const terrain = terrainSun?.get(key);
 
+    // Not over the terrain where the level horizon sees none: no skyline can
+    // make a polar day's sun rise.
+    const sunrise = terrain?.hidden
+      ? null
+      : level.sunrise && (terrain?.sunrise ?? level.sunrise);
+
+    const sunset = terrain?.hidden
+      ? null
+      : level.sunset && (terrain?.sunset ?? level.sunset);
+
     return {
       key,
       date: zonedDayStart(first.time, timeZone),
-      steps: daySteps,
+      steps: terrain
+        ? overTerrain(daySteps, sunrise, sunset, terrain.hidden)
+        : daySteps,
       min: Math.min(...daySteps.map((s) => s.temperature)),
       max: Math.max(...daySteps.map((s) => s.temperature)),
       precipitation: daySteps.reduce((sum, s) => sum + s.precipitation, 0),
       rain: sumKnown(daySteps.map((s) => s.rain)),
       snowfall: sumKnown(daySteps.map((s) => s.snowfall)),
       snowDepth: maxKnown(daySteps.map((s) => s.snowDepth)),
-      // Not over the terrain where the level horizon sees none: no skyline
-      // can make a polar day's sun rise.
-      sunrise: terrain?.hidden
-        ? null
-        : level.sunrise && (terrain?.sunrise ?? level.sunrise),
-      sunset: terrain?.hidden
-        ? null
-        : level.sunset && (terrain?.sunset ?? level.sunset),
+      sunrise,
+      sunset,
       level,
       sunHidden: terrain?.hidden ?? false,
       weather: daySymbol(

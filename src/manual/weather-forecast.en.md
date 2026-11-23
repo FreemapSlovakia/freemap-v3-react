@@ -19,11 +19,11 @@ The forecast opens in a panel beside the map. :FaMapMarkerAlt: **Another place**
 
 Each day shows its prevailing weather, the new snow in cm and the rain in mm, and the lowest and highest temperature. Under the date is the snow on the ground.
 
-A click opens the day. At its top is a summary of the day: the hours of sunshine, the strongest gusts, how many hours it rains or snows and the highest chance of it, and the UV index when it is high enough to matter.
+A click opens the day. At its top is a summary of the day: the hours of sunshine (where the terrain model covers the place, only while the sun stands above the surrounding terrain), the strongest gusts, how many hours it rains or snows and the highest chance of it, and the UV index when it is high enough to matter.
 
 ## Hours
 
-Each hour of an open day shows the weather, the temperature, the precipitation – new snow in cm, rain in mm, and the chance of it – and the wind: the arrow points where the wind blows, and below it are the gusts. Strong gusts are coloured, from orange to red as they grow. A slim row between two hours marks sunrise or sunset. Where the terrain model covers the place, it is the time the sun clears or drops behind the surrounding terrain, followed by the time over a level horizon. A day on which the terrain hides the sun from morning to evening says so in its summary.
+Each hour of an open day shows the weather, the temperature, the precipitation – new snow in cm, rain in mm, and the chance of it – and the wind: the arrow points where the wind blows, and below it are the gusts. Strong gusts are coloured, from orange to red as they grow. A slim row between two hours marks sunrise or sunset. Where the terrain model covers the place, it is the time the sun clears or drops behind the surrounding terrain, followed by the time over a level horizon. A day on which the terrain hides the sun from morning to evening says so in its summary, and its rows give only the times over a level horizon.
 
 A click on an hour opens its details: the height of 0 °C, the clouds low, mid and high, the humidity, and where it applies, the temperature it feels like, the snow on the ground, the height above which it snows, the risk of thunderstorms, the minutes of sunshine, the UV index and visibility under 10 km.
 

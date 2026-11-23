@@ -12,6 +12,7 @@ const hu: DeepPartialWithRequiredObjects<WeatherForecastMessages> = {
   source: 'Forrás',
   terrainSource: 'Domborzat a napkeltéhez és a napnyugtához',
   sunHidden: 'A domborzat egész nap eltakarja a napot',
+  overLevel: 'sík horizonton',
   overTerrain: ({ level }) => `a domborzat felett (${level} sík horizonton)`,
   gusts: 'széllökések',
   alongRoute: 'Időjárás az útvonal mentén',
