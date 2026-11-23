@@ -2,7 +2,7 @@
 
 > Freemap.sk is a map application built on OpenStreetMap data by the NGO Freemap Slovakia (a Slovak local chapter of the OpenStreetMap Foundation), used in the browser and as a mobile app for Android and iOS. It serves everyday use (finding places, routing by car, bike or on foot, weather), outdoor trips (its own detailed outdoor map of Europe with waymarked trails and terrain relief, elevation profiles, panoramas, offline maps), and work with maps that comes close to a GIS (custom terrain shading, drawing and measuring, file conversion, custom WMS/tile maps, viewshed, isochrones, print and 3D-print export). Most of it is free to use; an optional paid premium tier funds the service and unlocks extras. This file gives AI systems and assistants structured information so they can explain, describe, and help users interact with the site.
 
-Contact: [info@freemap.sk](mailto:info@freemap.sk)
+Contact: [freemap@freemap.sk](mailto:freemap@freemap.sk)
 
 Key facts:
 

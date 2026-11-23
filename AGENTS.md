@@ -51,6 +51,20 @@ If a change makes it wrong but you can't fully fix it, say so explicitly rather 
 - **A new part needs a row in the index listing** (`- [Title](/llms-<topic>.md): …`): `get-app-guide` finds the parts by matching those rows, and nginx serves `/llms-*.md` from a vhost block that fixes the content type (`etc/nginx/sites-available/www.freemap.{sk,eu}`).
 - **Keep cross-references by section name**, and link the file where the target is in another part — "see below" is wrong across a file boundary.
 
+## Keeping the app description in sync
+
+Freemap is described as a map for everyone — everyday use, the outdoors, and GIS-like power tools — not as an outdoor map only. When a feature lands that is worth naming in a description (a new tool, layer type, data source or a big step in an existing one), update every description in the same change set, or say which ones you left:
+
+- `doc/product-and-market.md` — the §3 inventory, and the §3a texts (short, paragraph, long), which are the source the others copy from
+- `src/static/llms.txt` — the summary and Key facts
+- `src/translations/<lang>-shared.ts` — the meta description, all 9 languages, at most 160 characters
+- `rspack.config.ts` — `appDescription` (web manifest), all 9 languages
+- `README.md` intro and the first sentence of `src/manual/getting-started.{en,sk}.md`
+- `sitemap-generator/hubs.ts` — the feature's hub page, if it has or deserves one
+- Outside the repo: the GitHub repo description (`gh repo edit --description`), the OSM wiki page [Freemap Slovakia](https://wiki.openstreetmap.org/wiki/Freemap_Slovakia), and the Mastodon and Facebook bios — prepare those three and let Martin confirm before saving
+
+Write counts that only grow as floors ("over 700,000 photos"), so the text stays true.
+
 ## Workflow
 
 - **Do not commit until I explicitly approve.** Leave the working tree dirty at the end of a task and wait for "commit"/"looks good"/similar. This overrides any "commit when done" instinct.
