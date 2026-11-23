@@ -101,7 +101,7 @@ const enDoc: EntryDoc = {
   loadingMessage: 'Loading…',
   skipNetworkMessage: 'Start the version saved on this device',
   appDescription:
-    'Freemap is a free online outdoor map based on OpenStreetMap data',
+    'Freemap is a free map of Europe built on OpenStreetMap, for everyday use, the outdoors and advanced work with maps',
   shortcutNames: ['My maps', 'Route finder', 'Objects'],
   tagline: 'more than just a map',
 };
@@ -119,7 +119,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Načítavam…',
     skipNetworkMessage: 'Spustiť verziu uloženú v zariadení',
     appDescription:
-      'Freemap je voľne dostupná online outdoorová mapa založená na dátach z OpenStreetMap',
+      'Freemap je bezplatná mapa Európy z dát OpenStreetMap – na bežné použitie, do prírody aj na pokročilú prácu s mapami',
     shortcutNames: ['Moje mapy', 'Vyhľadávač trás', 'Objekty'],
     tagline: 'viac než len mapa',
   },
@@ -134,7 +134,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Načítám…',
     skipNetworkMessage: 'Spustit verzi uloženou v zařízení',
     appDescription:
-      'Freemap je volně dostupná online outdoorová mapa založená na datech z OpenStreetMap',
+      'Freemap je bezplatná mapa Evropy z dat OpenStreetMap – pro běžné použití, do přírody i pro pokročilou práci s mapami',
     shortcutNames: ['Moje mapy', 'Vyhledávač tras', 'Objekty'],
     tagline: 'víc než jen mapa',
   },
@@ -149,7 +149,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Betöltés…',
     skipNetworkMessage: 'Az eszközön tárolt verzió indítása',
     appDescription:
-      'A Freemap szabadon elérhető online szabadidős térkép az OpenStreetMap adatai alapján',
+      'A Freemap ingyenes Európa-térkép az OpenStreetMap adatai alapján – mindennapi használatra, a szabadba és haladó térképes munkára',
     shortcutNames: ['Saját térképeim', 'Útvonaltervező', 'Objektumok'],
     tagline: 'több mint egy térkép',
   },
@@ -164,7 +164,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Caricamento…',
     skipNetworkMessage: 'Avvia la versione salvata sul dispositivo',
     appDescription:
-      'Freemap è una mappa outdoor online gratuita basata sui dati di OpenStreetMap',
+      "Freemap è una mappa gratuita dell'Europa basata sui dati di OpenStreetMap, per l'uso quotidiano, l'outdoor e il lavoro avanzato con le mappe",
     shortcutNames: ['Le mie mappe', 'Cerca percorso', 'Oggetti'],
     tagline: 'più di una semplice mappa',
   },
@@ -179,7 +179,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Lade…',
     skipNetworkMessage: 'Auf dem Gerät gespeicherte Version starten',
     appDescription:
-      'Freemap ist eine frei zugängliche Outdoor-Onlinekarte auf Basis von OpenStreetMap-Daten',
+      'Freemap ist eine kostenlose Europakarte auf Basis von OpenStreetMap-Daten – für den Alltag, für draußen und für anspruchsvolle Arbeit mit Karten',
     shortcutNames: ['Meine Karten', 'Routenplaner', 'Objekte'],
     tagline: 'mehr als nur eine Karte',
   },
@@ -193,7 +193,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Ładowanie…',
     skipNetworkMessage: 'Uruchom wersję zapisaną na urządzeniu',
     appDescription:
-      'Freemap to bezpłatna mapa outdoorowa online oparta na danych OpenStreetMap',
+      'Freemap to bezpłatna mapa Europy oparta na danych OpenStreetMap – na co dzień, w teren i do zaawansowanej pracy z mapami',
     shortcutNames: ['Moje mapy', 'Wyszukiwarka tras', 'Obiekty'],
     tagline: 'więcej niż tylko mapa',
   },
@@ -208,7 +208,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Nalaganje…',
     skipNetworkMessage: 'Zaženi različico, shranjeno v napravi',
     appDescription:
-      'Freemap je prosto dostopen spletni zemljevid za dejavnosti v naravi, ki temelji na podatkih OpenStreetMap',
+      'Freemap je brezplačen zemljevid Evrope na podlagi podatkov OpenStreetMap – za vsak dan, za naravo in za zahtevnejše delo z zemljevidi',
     shortcutNames: ['Moji zemljevidi', 'Iskalnik poti', 'Objekti'],
     tagline: 'več kot le zemljevid',
   },
@@ -223,7 +223,7 @@ const entryDocs: EntryDoc[] = [
     loadingMessage: 'Chargement…',
     skipNetworkMessage: 'Lancer la version enregistrée sur l’appareil',
     appDescription:
-      'Freemap est une carte outdoor en ligne gratuite basée sur les données OpenStreetMap',
+      'Freemap est une carte gratuite de l’Europe basée sur les données OpenStreetMap, pour le quotidien, le plein air et le travail avancé avec les cartes',
     shortcutNames: ['Mes cartes', 'Planificateur d’itinéraire', 'Objets'],
     tagline: 'plus qu’une simple carte',
   },

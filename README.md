@@ -2,7 +2,7 @@
 
 Source of [www.freemap.sk](https://www.freemap.sk), the web map portal of [OZ Freemap Slovakia](https://oz.freemap.sk), a non-commercial civic association.
 
-Freemap is a free web map application built on OpenStreetMap data. Its focus is a detailed outdoor map for hiking, cycling, cross-country skiing and horse riding across Europe, complemented by many additional base and overlay layers and by tools for search, route planning, drawing and measurement, GPX viewing, live tracking, personal maps, map embedding, and export.
+Freemap is a free map application built on OpenStreetMap data, for everyday use, for outdoor trips and for advanced work with maps. Anyone can find a place, plan a route by car, bike or on foot (mixing modes, with breaks and overnights and the weather along the way), check the forecast or the radar, and explore community and Wikimedia Commons photos, Wikipedia articles and events. Whatever is on the map can be saved as a personal map and shared or edited together. For the outdoors it has its own detailed map of 46 European countries with waymarked trails and relief from national terrain models, elevation profiles, panoramas, GPS recording, live tracking and offline maps. Beyond that it offers tools close to a GIS: parametric terrain shading, drawing and measuring, editing and converting GPX/KML/GeoJSON, custom WMS/tile maps and a library of over 1,400 more, viewshed and isochrones, print-ready PDF/SVG, MBTiles, and terrain models for 3D printing. For the full feature description see [`src/static/llms.txt`](./src/static/llms.txt).
 
 This repository is the **frontend** — a React single-page application. It talks to:
 

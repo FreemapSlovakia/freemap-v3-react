@@ -4,7 +4,7 @@ icon: FaMapSigns
 order: 100
 ---
 
-Freemap is a map for hiking, cycling, skiing and other outdoor activities, built on [OpenStreetMap](https://www.openstreetmap.org) data. This chapter shows where everything is.
+Freemap is a map built on [OpenStreetMap](https://www.openstreetmap.org) data – for finding places and routes, for trips outdoors, and with tools for drawing, measuring and working with map data. This chapter shows where everything is.
 
 ## The screen at a glance
 

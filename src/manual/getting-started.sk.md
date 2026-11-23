@@ -4,7 +4,7 @@ icon: FaMapSigns
 order: 100
 ---
 
-Freemap je mapa pre turistiku, cyklistiku, lyžovanie a ďalšie aktivity v prírode, postavená na dátach [OpenStreetMap](https://www.openstreetmap.org). Táto kapitola ukazuje, kde čo nájdete.
+Freemap je mapa postavená na dátach [OpenStreetMap](https://www.openstreetmap.org) – na hľadanie miest a trás, na výlety do prírody aj s nástrojmi na kreslenie, meranie a prácu s mapovými dátami. Táto kapitola ukazuje, kde čo nájdete.
 
 ## Obrazovka v skratke
 

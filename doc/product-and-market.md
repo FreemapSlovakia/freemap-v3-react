@@ -85,7 +85,10 @@ third-party OSRM. Profiles (`transportTypeDefs.tsx`): foot, hiking, easyhike, bi
 mtb, gravelbike, racingbike, ebike, stroller/wheelchair, car, carnotoll, car4wd,
 motorcycle, manual. **No ski-touring profile and no horse profile.** Modes: ordered,
 roundtrip, isochrones (GraphHopper); visiting-places (OSRM). Alternatives up to 5.
-Multimodal segmentation and Optimize order are premium.
+Departure time and an itinerary (distance, times, arrival, toll roads per waypoint);
+**weather along the route** at the time of passing (free). Multimodal segmentation (a
+transport per part of the route), breaks and overnights at stops, and Optimize order
+are premium.
 
 **Colorize** a route/track/live track by: elevation, steepness, surface, smoothness,
 road type, track grade, hiking (SAC) difficulty, MTB difficulty, waymark colour, speed,
@@ -105,6 +108,47 @@ Douglas–Peucker slider, project-point, join/split, Open in JOSM.
 URL); edit, not just view: select, join, split, split into segments, match to the
 routing graph, convert, elevation fill/override.
 
+**Search** — places, addresses (own Photon geocoder), coordinates in common formats,
+OSM element ids, bounding boxes, tile numbers, pasted GeoJSON; POIs by category
+(Objects); events; and the app's own functions, maps and manual chapters.
+
+**Maps and shading** — **parametric terrain shading** of all Europe, designed from
+layers (hillshade, slope, colour relief, contours, …) or presets (Swiss style,
+hypsometric tints, watercolour, night, …), rendered on the server or in the browser
+(WebGPU, experimental). A map library: the built-in maps plus **1,442 Editor Layer
+Index maps** (aerial and historic imagery, historic and national maps) and 21 curated
+ones; custom TMS/WMS/vector maps; presets; any map as base or overlay with opacity.
+
+**Photos** — **743,465 community photos** (583 uploaders, 2,236 360° panoramas) and
+**32.2 million geotagged Wikimedia Commons photos**, worldwide, re-imported monthly
+(fm6 counts, Nov 2026). Rating, comments, tags, a leaderboard, colorize by author,
+rating, date, season or licence; premium photos.
+
+**Wikipedia** overlay — article markers with an article panel.
+
+**Events** — shared trips with participants (interested/going), discussion, saved
+filters with email alerts, weather forecast in the panel. 3,566 events, 2,964 upcoming
+(Nov 2026); all but ~130 harvested from KČT, KST and its regions, DATAtourisme (FR),
+Südtirol, DVV and TTT calendars.
+
+**Weather** — hourly 16-day forecast for any place in Europe (Open-Meteo), in lists
+or charts, for the place's own elevation and time zone; along a route; in an event's
+panel; animated radar.
+
+**My maps** — everything on the map saved under a name: open on any device, share by
+link, invite editors, flag offline.
+
+**OSM tools** — map details (query features, element history), changeset viewer, OSM
+notes overlay, open in iD/JOSM.
+
+**Live tracking and recording** — devices on the map with their path, watch links;
+OsmAnd/Locus/Traccar or the Freemap GPS recorder as senders. The GPS recorder records
+a track in the web app on Android (a companion APK keeps recording with the browser
+closed).
+
+**3D terrain model** — STL for 3D printing, or 3MF with the route, drawings, points
+and landcover in filament colours for multi-colour printers; preview in the browser.
+
 **Offline** — in-browser tile caching per area/zoom/scale (free), and **MBTiles /
 SQLiteDB export** (costs credits, delivered by email link). Saved maps can be flagged
 offline; saving works offline and syncs later.
@@ -120,6 +164,70 @@ with automatically named peaks scored by prominence; **viewshed** overlay; **top
 **live tracking** (OsmAnd/Locus/Traccar as senders) with shareable watch tokens;
 **Android GPS recorder** via a companion APK; community photo gallery including
 geotagged Wikimedia Commons; deep-linkable URL state for everything.
+
+## 3a. Descriptions to reuse
+
+Freemap is a map for everyone, with power tools for those who want them — not an
+outdoor map only. Reuse these texts; recheck the figures before quoting them.
+
+**Tagline:** _more than just a map_
+
+**Short** (meta description, under 160 characters):
+
+> Free OpenStreetMap map of Europe: places, routes, outdoor map with relief, weather,
+> photos, events, drawing, measuring, GPX and offline maps.
+
+**Paragraph** (forums, wikis):
+
+> Freemap is a free map application built on OpenStreetMap by the Slovak OSM community
+> (OZ Freemap Slovakia), in the browser and as an Android and iOS app. Anyone can use it
+> to find a place, plan a route by car, bike or on foot — mixing modes along the way,
+> with breaks and overnights and the weather at each point of the trip — check an hourly
+> weather forecast or the radar, and explore what is around: 740,000 community photos,
+> 32 million geotagged Wikimedia Commons photos, Wikipedia articles and thousands of
+> upcoming hikes and rides from club calendars. Whatever you put on the map you can save
+> as your own map, open on any device and share or edit with others. For the outdoors it
+> has its own detailed map of 46 European countries with waymarked trails and relief
+> from national terrain models, elevation profiles, panoramas, GPS track recording, live
+> tracking you can share with others, and offline maps. Those who want more get tools
+> close to a GIS: terrain shading you design yourself, drawing and measuring, editing
+> and converting GPX, KML and GeoJSON, your own WMS and tile maps plus a library of over
+> 1,400 more, viewshed and isochrones, print-ready PDF and SVG, MBTiles for GPS devices,
+> and terrain models for 3D printing, in colour too. Most of it is free; an optional
+> €15/year premium pays for the servers. Open source, with no user tracking.
+
+**Long** (wiki pages, about sections):
+
+- **Find and discover** — search for places, addresses, coordinates and OSM elements,
+  and for the app's own functions; points of interest by category; community and
+  Wikimedia photos; Wikipedia; events; weather forecast and radar.
+- **Get somewhere** — 13 travel profiles (car, toll-free car, 4WD, motorcycle, walking,
+  hiking, easy hike, stroller/wheelchair, bicycle, MTB, gravel, road bike, e-bike), a
+  different one for each part of a route; departure time, itinerary, breaks and
+  overnights at stops, weather along the route; alternatives, round trips, optimized
+  stop order, isochrones; routes and tracks coloured 18 ways, from steepness, surface
+  and difficulty to heart rate and power, with a matching elevation profile; sharing
+  or opening the place in Google or Apple Maps; saved places.
+- **Outdoors** — the Outdoor map with trails in their waymark colours; terrain shading;
+  panorama, toposcope, viewshed; GPS track recording in the web app on Android;
+  offline maps; maps and files for Garmin, Locus, OsmAnd and OruxMaps; the mobile app
+  with offline routing on the phone.
+- **Keep and share** — My maps: everything on the map saved, opened on any device,
+  shared by link, edited together, flagged for offline use; events with participants
+  and discussion; live tracking of phones and GPS trackers, shared by link; embed code.
+- **Power tools** — parametric shading; the map library, your own WMS/tile/vector maps,
+  presets and stacking with opacity; drawing with styles, properties and label
+  templates; length, area, azimuth; lossless GPX/KML/KMZ/TCX/GeoJSON conversion, join,
+  split, simplify, match to roads; PDF/SVG/PNG with a legend, MBTiles/SQLiteDB; terrain
+  models for 3D printing, STL or 3MF in colour with your route, drawings and landcover;
+  everything in the URL; `llms.txt` and WebMCP for AI agents.
+- **OSM mappers** — element details and history, changeset viewer, OSM notes, open in
+  iD or JOSM; edits show within minutes.
+
+The paragraph and the short text are in the repo too: the short one in nine languages
+in `src/translations/<lang>-shared.ts` (page meta, bot homepages), a one-line form in
+`appDescription` in `rspack.config.ts` (web manifest), and the summary of
+`src/static/llms.txt`.
 
 ## 4. Business model
 
