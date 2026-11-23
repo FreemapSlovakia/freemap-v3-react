@@ -497,9 +497,11 @@ a[target]:not(
   .fm-no-ext,
   .fm-no-ext *
 )::after {
-  content: "";
-  /* An empty inline sized by padding, not an inline-block: the latter is a
-     break opportunity, which sends the mark alone onto the next line. */
+  /* A word joiner, not "": Chrome leaves an empty inline's padding out of line
+     breaking, so the mark ran past the box; this one also glues it to the word. */
+  content: "\2060";
+  /* An inline sized by padding, not an inline-block: the latter is a break
+     opportunity, which sends the mark alone onto the next line. */
   display: inline;
   flex-shrink: 0;
   padding-left: 0.7em;

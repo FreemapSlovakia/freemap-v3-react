@@ -1,9 +1,10 @@
 import { Fragment, type ReactNode } from 'react';
 
 /**
- * The items that say something, joined by " · ", each kept whole: a line
- * breaks only between them. With `className`, in a div of its own; nothing at
- * all when no item says anything.
+ * The items that say something, joined by " · ", each kept whole where it fits
+ * a line: lines break between them, and only an item wider than a line wraps
+ * within itself. With `className`, in a div of its own; nothing at all when no
+ * item says anything.
  */
 export function DetailItems({
   items,
@@ -24,7 +25,7 @@ export function DetailItems({
   const joined = shown.map((item, i) => (
     // Items have no identity beyond their place.
     <Fragment key={i}>
-      <span className="text-nowrap">
+      <span className="d-inline-block mw-100">
         {item}
         {i < shown.length - 1 && ' ·'}
       </span>

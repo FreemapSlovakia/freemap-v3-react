@@ -35,8 +35,9 @@ export function ForecastFooter({
   const terrainCredits =
     terrainSun?.state === 'done' ? terrainSun.data.credits : [];
 
+  // The facts share a line; each credit, long and of another kind, has its own.
   return (
-    <p className="small text-body-secondary mb-0">
+    <div className="small text-body-secondary">
       <DetailItems
         items={[
           forecast.elevation !== null &&
@@ -45,39 +46,37 @@ export function ForecastFooter({
             }),
           difference && m?.localTime({ difference }),
           m?.updated({ time: updatedFormat.format(forecast.updatedAt) }),
-          <>
-            {m?.source}:{' '}
-            <a
-              href={forecast.attribution.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {forecast.attribution.name}
-            </a>
-          </>,
-          terrainCredits.length > 0 && (
-            <>
-              {m?.terrainSource}:{' '}
-              {terrainCredits.map((credit, i) => (
-                <Fragment key={`${credit.name} ${credit.url ?? ''}`}>
-                  {i > 0 && ', '}
-                  {credit.url ? (
-                    <a
-                      href={credit.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {credit.name}
-                    </a>
-                  ) : (
-                    credit.name
-                  )}
-                </Fragment>
-              ))}
-            </>
-          ),
         ]}
       />
-    </p>
+
+      <div>
+        {m?.source}:{' '}
+        <a
+          href={forecast.attribution.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {forecast.attribution.name}
+        </a>
+      </div>
+
+      {terrainCredits.length > 0 && (
+        <div>
+          {m?.terrainSource}:{' '}
+          {terrainCredits.map((credit, i) => (
+            <Fragment key={`${credit.name} ${credit.url ?? ''}`}>
+              {i > 0 && ', '}
+              {credit.url ? (
+                <a href={credit.url} target="_blank" rel="noopener noreferrer">
+                  {credit.name}
+                </a>
+              ) : (
+                credit.name
+              )}
+            </Fragment>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
