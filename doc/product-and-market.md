@@ -174,8 +174,8 @@ outdoor map only. Reuse these texts; recheck the figures before quoting them.
 
 **Short** (meta description, under 160 characters):
 
-> Free OpenStreetMap map of Europe: places, routes, outdoor map with relief, weather,
-> photos, events, drawing, measuring, GPX and offline maps.
+> Free OpenStreetMap map of Europe: route planner, hiking and cycling map with relief,
+> weather, photos, events, drawing, measuring, GPX and offline maps.
 
 **Paragraph** (forums, wikis):
 
@@ -183,8 +183,8 @@ outdoor map only. Reuse these texts; recheck the figures before quoting them.
 > (OZ Freemap Slovakia), in the browser and as an Android and iOS app. Anyone can use it
 > to find a place, plan a route by car, bike or on foot — mixing modes along the way,
 > with breaks and overnights and the weather at each point of the trip — check an hourly
-> weather forecast or the radar, and explore what is around: 740,000 community photos,
-> 32 million geotagged Wikimedia Commons photos, Wikipedia articles and thousands of
+> weather forecast or the radar, and explore what is around: over 700,000 community
+> photos, over 30 million geotagged Wikimedia Commons photos, Wikipedia articles and thousands of
 > upcoming hikes and rides from club calendars. Whatever you put on the map you can save
 > as your own map, open on any device and share or edit with others. For the outdoors it
 > has its own detailed map of 46 European countries with waymarked trails and relief
@@ -205,8 +205,8 @@ outdoor map only. Reuse these texts; recheck the figures before quoting them.
   hiking, easy hike, stroller/wheelchair, bicycle, MTB, gravel, road bike, e-bike), a
   different one for each part of a route; departure time, itinerary, breaks and
   overnights at stops, weather along the route; alternatives, round trips, optimized
-  stop order, isochrones; routes and tracks coloured 18 ways, from steepness, surface
-  and difficulty to heart rate and power, with a matching elevation profile; sharing
+  stop order, isochrones; routes coloured by steepness, surface or difficulty, recorded
+  tracks also by speed, heart rate or power, with a matching elevation profile; sharing
   or opening the place in Google or Apple Maps; saved places.
 - **Outdoors** — the Outdoor map with trails in their waymark colours; terrain shading;
   panorama, toposcope, viewshed; GPS track recording in the web app on Android;
@@ -248,7 +248,7 @@ in `src/translations/<lang>-shared.ts` (page meta, bot homepages), a one-line fo
 
 ## 5. Honest strengths
 
-1. **Terrain quality** — national LiDAR-derived models in 16 countries. Beats every free
+1. **Terrain quality** — national high-resolution models in 18 countries. Beats every free
    competitor and most paid ones outside their home country.
 2. **Breadth in a browser, no install** — planning, drawing, measuring, converting,
    exporting, offline, embedding, panorama, viewshed, radar, isochrones.
