@@ -330,7 +330,8 @@ button#freemap-logo {
     display: block;
   }
 
-  & img {
+  /* inline badges size themselves by their height attribute */
+  & img:not([height]) {
     display: block;
     max-width: 100%;
     height: auto;
