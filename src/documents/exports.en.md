@@ -136,6 +136,14 @@ In an app that lets you add your own online map (XYZ tiles), enter one of these 
 - The most detailed zooms (the _Premium from_ column) need premium: create a token under _Account › App tokens_ with the permissions for the premium zooms of the outdoor map, the terrain shadings and the aerial imagery, and append it to the address as `?token=fm_…`.
 - Credit the source: _© OpenStreetMap contributors and Freemap Slovakia_ (outdoor map and overlays), _LLS: ÚGKK SR_ (hillshading), _GKÚ Bratislava, NLC and ČÚZK_ (orthophotos), _Národné lesnícke centrum_ (forest roads). The outdoor map and KST also use regional elevation data, which must be credited too: each of their tiles lists the data's codes in the `X-Attribution` header, and what they mean is at [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
+#### Usage rules
+
+- **Identification.** Every request must say where it comes from. A website sends the `Referer` header; browsers send it by default unless the page turns it off (e.g. `Referrer-Policy: no-referrer`). An app sends its own `User-Agent` header with its name and version, e.g. `MyApp/1.2`. Library defaults (`Dart`, `okhttp`, `Dalvik`, `python-requests` and the like) do not count as identification. An app that loads tiles in a web view and can set neither header adds its name to the tile address instead, e.g. `?app=myapp`.
+- **No bulk downloading.** Without an agreement, do not prefetch tiles, download whole areas, or fetch them through your own server (proxy, cache). An offline map in an app may contain only the area the user chose.
+- **Larger projects.** If you develop an app or website that uses these tiles, or for commercial use or regular larger traffic, contact [freemap@freemap.sk](mailto:freemap@freemap.sk) in advance. Larger volumes may be charged.
+- **No guarantee.** Tile availability is not guaranteed.
+- Requests that do not follow these rules may receive a tile with a notice instead of the map.
+
 ## Garmin Map <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 
 This hiking and cycling map is based on OpenStreetMap data. You can use it in Garmin BaseCamp as a background map or install it directly on your Garmin GPS device. Contours are generated from [SRTM](http://www2.jpl.nasa.gov/srtm/).

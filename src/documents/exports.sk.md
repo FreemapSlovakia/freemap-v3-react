@@ -134,6 +134,14 @@ Do aplikácie, ktorá vie pridať vlastnú online mapu (dlaždice XYZ), zadajte 
 - Najpodrobnejšie zobrazenie (stĺpec _Prémium od_) vyžaduje prémiový prístup: vytvorte si v menu _Účet › Aplikačné tokeny_ token s oprávneniami na prémiové zobrazenie turistickej mapy, tieňovaní terénu a leteckej mapy a pripíšte ho k adrese ako `?token=fm_…`.
 - Uveďte zdroj: _© prispievatelia OpenStreetMap a Freemap Slovakia_ (outdoorová mapa a vrstvy), _LLS: ÚGKK SR_ (tieňovanie), _GKÚ Bratislava, NLC a ČÚZK_ (ortofotomozaiky), _Národné lesnícke centrum_ (lesné cesty). Outdoorová mapa a KST navyše využívajú výškové dáta podľa oblasti, ktoré tiež treba uviesť: každá ich dlaždica uvádza kódy týchto dát v hlavičke `X-Attribution` a ich význam je na [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
+#### Pravidlá používania
+
+- **Identifikácia.** Každá požiadavka musí prezradiť, odkiaľ pochádza. Web posiela hlavičku `Referer`; prehliadač ju posiela sám, pokiaľ ju stránka nevypne (napr. `Referrer-Policy: no-referrer`). Aplikácia posiela vlastnú hlavičku `User-Agent` s názvom a verziou, napr. `MojaAplikacia/1.2`. Predvolené hodnoty knižníc (`Dart`, `okhttp`, `Dalvik`, `python-requests` a pod.) sa za identifikáciu nepovažujú. Aplikácia, ktorá načítava dlaždice vo webovom zobrazení a nemôže nastaviť ani jednu hlavičku, pripíše svoj názov k adrese dlaždice, napr. `?app=mojaaplikacia`.
+- **Žiadne hromadné sťahovanie.** Bez dohody nesťahujte dlaždice do zásoby, celé územia ani cez vlastný server (proxy, cache). Offline mapa v aplikácii môže obsahovať len oblasť, ktorú si vybral používateľ.
+- **Väčšie projekty.** Ak vyvíjate aplikáciu alebo web, ktorý tieto dlaždice používa, alebo pri komerčnom použití či pravidelnej väčšej prevádzke sa vopred ozvite na [freemap@freemap.sk](mailto:freemap@freemap.sk). Väčší objem môže byť spoplatnený.
+- **Bez záruky.** Dostupnosť dlaždíc negarantujeme.
+- Požiadavky, ktoré tieto pravidlá nedodržiavajú, môžu namiesto mapy dostať dlaždicu s upozornením.
+
 ## Garmin mapa <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 
 Táto turisticko-cyklistická mapa je vytvorená z dát projektu OpenStreetMap. Mapu môžete používať buď v programe Garmin BaseCamp ako podkladovú mapu, alebo si ju nainštalovať do Garmin GPS prístroja. Vrstevnice sú vygenerované z [SRTM](http://www2.jpl.nasa.gov/srtm/).

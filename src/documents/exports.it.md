@@ -134,6 +134,14 @@ In un'applicazione che consente di aggiungere una propria mappa online (tile XYZ
 - I livelli di zoom più dettagliati (colonna _Premium da_) richiedono l'abbonamento premium: crei in _Account › App tokens_ un token con i permessi per gli zoom premium della mappa outdoor, delle ombreggiature del terreno e delle ortofoto, e lo aggiunga all'indirizzo come `?token=fm_…`.
 - Citi la fonte: _© contributori di OpenStreetMap e Freemap Slovakia_ (mappa outdoor e livelli), _LLS: ÚGKK SR_ (ombreggiatura), _GKÚ Bratislava, NLC e ČÚZK_ (ortofoto), _Národné lesnícke centrum_ (strade forestali). La mappa outdoor e i sentieri KST usano inoltre dati altimetrici regionali, anch'essi da citare: ogni loro tile ne riporta i codici nell'intestazione `X-Attribution` e il loro significato è su [outdoor.tiles.freemap.sk/licenses](https://outdoor.tiles.freemap.sk/licenses).
 
+#### Regole di utilizzo
+
+- **Identificazione.** Ogni richiesta deve indicare da dove proviene. Un sito web invia l'intestazione `Referer`; il browser la invia da sé, a meno che la pagina non la disattivi (ad es. `Referrer-Policy: no-referrer`). Un'applicazione invia una propria intestazione `User-Agent` con nome e versione, ad es. `MiaApp/1.2`. I valori predefiniti delle librerie (`Dart`, `okhttp`, `Dalvik`, `python-requests` e simili) non valgono come identificazione. Un'applicazione che carica i tile in una web view e non può impostare nessuna delle due intestazioni aggiunge invece il proprio nome all'indirizzo del tile, ad es. `?app=miaapp`.
+- **Nessuno scaricamento massivo.** Senza un accordo non scarichi tile in anticipo né intere aree, e non li richieda tramite un proprio server (proxy, cache). Una mappa offline in un'applicazione può contenere solo l'area scelta dall'utente.
+- **Progetti più grandi.** Se sviluppa un'applicazione o un sito che usa questi tile, oppure per un uso commerciale o un traffico regolare più consistente, ci contatti in anticipo a [freemap@freemap.sk](mailto:freemap@freemap.sk). Volumi maggiori possono essere a pagamento.
+- **Nessuna garanzia.** La disponibilità dei tile non è garantita.
+- Le richieste che non rispettano queste regole possono ricevere, al posto della mappa, un tile con un avviso.
+
 ## Mappe Garmin <img alt="Garmin" src="../static/garmin-logo.svg" style="height:0.9em;vertical-align:baseline">
 
 Questa mappa cicloturistica è stata creata dai dati del progetto OpenStreetMap. È possibile utilizzare la mappa nel programma Garmin BaseCamp come mappa di sfondo o installarla in un dispositivo GPS Garmin. I contorni sono generati da [SRTM](http://www2.jpl.nasa.gov/srtm/).

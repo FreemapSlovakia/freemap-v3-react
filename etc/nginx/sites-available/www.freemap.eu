@@ -20,6 +20,12 @@ if ($blocked_country) {
 		default_type 'text/html; charset=UTF-8';
 	}
 
+	# Short address printed on the tile servers' notice tiles.
+	# TODO: open the usage rules section once documents support section anchors.
+	location ~ ^/tiles/?$ {
+		return 302 /#show=document/exports;
+	}
+
 	location = / {
 		# Serve the matching static prerender to crawlers; humans get the SPA.
 		# The `[/.%]` guard keeps $args from escaping /sitemap/ in the try_files

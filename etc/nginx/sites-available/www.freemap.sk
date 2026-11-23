@@ -21,6 +21,12 @@ server {
 		default_type 'text/html; charset=UTF-8';
 	}
 
+	# Short address printed on the tile servers' notice tiles.
+	# TODO: open the usage rules section once documents support section anchors.
+	location ~ ^/tiles/?$ {
+		return 302 /#show=document/exports;
+	}
+
 	location = /admin {
 		root /var/www;
 
