@@ -34,6 +34,7 @@ import {
   mapPresetChange,
   mapPresetLayerAdd,
   mapPresetLayerRemove,
+  mapSetShadingDraft,
   type SetupTarget,
 } from '@features/map/model/actions.js';
 import {
@@ -67,6 +68,7 @@ import {
   type WmsLayerDef,
 } from '@features/mapLibrary/model/selectors.js';
 import {
+  PanelFooterSlotContext,
   PanelHeaderSlotContext,
   PanelToolbarSlotContext,
 } from '@features/mapSettings/panelHeaderSlot.js';
@@ -75,8 +77,10 @@ import { shownOsmNotesSelector } from '@features/osmNotes/model/selectors.js';
 import {
   colorToHexa,
   hexaToColor,
+  type Shading,
   type Color as ShadingColor,
 } from '@features/parameterizedShading/model/Shading.js';
+import { useShadingMessages } from '@features/parameterizedShading/translations/useShadingMessages.js';
 import { CustomMapGlyph } from '@shared/components/CustomMapGlyph.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
@@ -109,8 +113,10 @@ import {
   useState,
 } from 'react';
 import { Badge, Button, Card, CloseButton, Dropdown } from 'react-bootstrap';
+import { createPortal } from 'react-dom';
 import {
   FaArrowLeft,
+  FaCheck,
   FaCopy,
   FaLayerGroup,
   FaPencilAlt,
@@ -249,6 +255,8 @@ export default function MapLayersPanel(): ReactElement {
 
   const [toolbarSlot, setToolbarSlot] = useState<HTMLDivElement | null>(null);
 
+  const [footerSlot, setFooterSlot] = useState<HTMLDivElement | null>(null);
+
   const opened = useRef(false);
 
   const featuresListed = featureRows.length > 0;
@@ -346,7 +354,9 @@ export default function MapLayersPanel(): ReactElement {
               <MapFeatureItems feature={feature.id} elements={at.elements} />
             ) : target ? (
               <PanelHeaderSlotContext value={headerSlot}>
-                <LayerSettings key={setupKey(target)} target={target} />
+                <PanelFooterSlotContext value={footerSlot}>
+                  <LayerSettings key={setupKey(target)} target={target} />
+                </PanelFooterSlotContext>
               </PanelHeaderSlotContext>
             ) : at.preset !== undefined ? (
               <PresetLayers id={at.preset} onOpen={setPlace} />
@@ -355,6 +365,9 @@ export default function MapLayersPanel(): ReactElement {
             )}
           </PanelToolbarSlotContext>
         </div>
+
+        {/* Empty, it takes no room. */}
+        <div ref={setFooterSlot} />
       </div>
     </Card>
   );
@@ -1080,6 +1093,43 @@ function AddMap({ id }: { id: string }): ReactElement {
 }
 
 /** A map's settings, on a page of their own. */
+/** Its own component, so only a shading map loads the shading messages. */
+function ShadingDraftActions({
+  target,
+  draft,
+}: {
+  target: SetupTarget;
+  draft: Shading;
+}): ReactElement {
+  const sm = useShadingMessages();
+
+  const dispatch = useDispatch();
+
+  return (
+    <>
+      <FmFooterButton
+        variant="primary"
+        priority={3}
+        icon={<FaCheck />}
+        label={sm?.apply}
+        onClick={() =>
+          dispatch(
+            mapLayerSetupChange({ ...target, setup: { shading: draft } }),
+          )
+        }
+      />
+
+      <FmFooterButton
+        variant="secondary"
+        priority={1}
+        icon={<FaUndo />}
+        label={sm?.revert}
+        onClick={() => dispatch(mapSetShadingDraft(target))}
+      />
+    </>
+  );
+}
+
 function LayerSettings({
   target,
 }: {
@@ -1091,6 +1141,8 @@ function LayerSettings({
 
   const dispatch = useDispatch();
 
+  const footerSlot = useContext(PanelFooterSlotContext);
+
   const def = useTargetDef(target);
 
   const setup = useTargetSetup(target);
@@ -1100,6 +1152,13 @@ function LayerSettings({
   );
 
   const canSave = useCanSaveSettings();
+
+  // Rendered on the server, shading edits wait here for Apply.
+  const shadingDraft = useAppSelector((state) =>
+    state.map.shadingOnServer
+      ? state.map.shadingDrafts[target.type]
+      : undefined,
+  );
 
   if (!def) {
     return null;
@@ -1144,71 +1203,77 @@ function LayerSettings({
 
       {List && <List />}
 
-      {/* The map's own actions, set off from what its sections edit; not
-          under a list, which would push them out of reach. */}
-      {!hasList(technology) && (
-        <>
-          <hr />
-
-          {/* Labels give way to icons, least important first, when room runs out. */}
+      {/* The map's own actions, under the scrolled sections they don't edit. */}
+      {!hasList(technology) &&
+        footerSlot &&
+        createPortal(
+          // Labels give way to icons, least important first, when room runs out.
           <FmModalFooter
             as="div"
-            className="d-flex flex-nowrap justify-content-end gap-1 text-nowrap"
+            className="d-flex flex-nowrap justify-content-end gap-1 text-nowrap border-top p-2"
           >
-            {/* As set up here, under a name of its own. */}
-            {mapOrigin !== 'cached' &&
-              hasOwnConfig(technology) &&
-              !window.fmEmbedded && (
+            {/* Pending edits first need applying or reverting. */}
+            {shadingDraft ? (
+              <ShadingDraftActions target={target} draft={shadingDraft} />
+            ) : (
+              <>
+                {/* As set up here, under a name of its own. */}
+                {mapOrigin !== 'cached' &&
+                  hasOwnConfig(technology) &&
+                  !window.fmEmbedded && (
+                    <FmFooterButton
+                      variant="secondary"
+                      priority={0}
+                      icon={<FaSave />}
+                      label={msm?.saveAsMap}
+                      disabled={!canSave}
+                      onClick={() =>
+                        dispatch(
+                          setActiveModal({
+                            type: 'map-manager',
+                            customMap: {
+                              addNamedFrom: target,
+                              closeOnCancel: true,
+                            },
+                          }),
+                        )
+                      }
+                    />
+                  )}
+
+                {/* Its server, zooms and default kind are the map's own, in its form. */}
+                {mapOrigin === 'custom' && !window.fmEmbedded && (
+                  <FmFooterButton
+                    variant="secondary"
+                    priority={1}
+                    icon={<FaPencilAlt />}
+                    label={m?.general.modify}
+                    disabled={!canSave}
+                    onClick={() =>
+                      dispatch(
+                        setActiveModal({
+                          type: 'map-manager',
+                          customMap: { edit: target.type, closeOnCancel: true },
+                        }),
+                      )
+                    }
+                  />
+                )}
+
+                {/* Its label goes last: a bare ↺ is easy to miss. */}
                 <FmFooterButton
                   variant="secondary"
                   priority={2}
-                  icon={<FaSave />}
-                  label={msm?.saveAsMap}
-                  disabled={!canSave}
-                  onClick={() =>
-                    dispatch(
-                      setActiveModal({
-                        type: 'map-manager',
-                        customMap: {
-                          addNamedFrom: target,
-                          closeOnCancel: true,
-                        },
-                      }),
-                    )
-                  }
+                  icon={<FaUndo />}
+                  label={m?.general.resetToDefaults}
+                  disabled={isEmptySetup(setup)}
+                  onClick={() => dispatch(mapLayerSetupReset(target))}
                 />
-              )}
-
-            {/* Its server, zooms and default kind are the map's own, in its form. */}
-            {mapOrigin === 'custom' && !window.fmEmbedded && (
-              <FmFooterButton
-                variant="secondary"
-                priority={1}
-                icon={<FaPencilAlt />}
-                label={m?.general.modify}
-                disabled={!canSave}
-                onClick={() =>
-                  dispatch(
-                    setActiveModal({
-                      type: 'map-manager',
-                      customMap: { edit: target.type, closeOnCancel: true },
-                    }),
-                  )
-                }
-              />
+              </>
             )}
-
-            <FmFooterButton
-              variant="secondary"
-              priority={0}
-              icon={<FaUndo />}
-              label={m?.general.resetToDefaults}
-              disabled={isEmptySetup(setup)}
-              onClick={() => dispatch(mapLayerSetupReset(target))}
-            />
-          </FmModalFooter>
-        </>
-      )}
+          </FmModalFooter>,
+          footerSlot,
+        )}
     </div>
   );
 }

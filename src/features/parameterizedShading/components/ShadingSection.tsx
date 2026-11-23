@@ -10,18 +10,15 @@ import {
   useTargetDef,
   useTargetSetup,
 } from '@features/mapSettings/layerTarget.js';
-import { PanelHeaderSlotContext } from '@features/mapSettings/panelHeaderSlot.js';
 import { ExperimentalFunction } from '@shared/components/ExperimentalFunction.js';
 import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
-import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { SHADING_SOURCE } from '@shared/mapDefinitions.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
 import { produce } from 'immer';
-import { type ReactElement, useContext, useState } from 'react';
-import { Button, ToggleButton } from 'react-bootstrap';
-import { createPortal } from 'react-dom';
-import { FaCheck, FaCloud, FaDesktop, FaUndo } from 'react-icons/fa';
+import { type ReactElement, useState } from 'react';
+import { ToggleButton } from 'react-bootstrap';
+import { FaCloud, FaDesktop } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { colorReliefMaxElevation } from '../model/colorReliefMaxElevation.js';
 import { createDefaultShadingComponent } from '../model/createShadingComponent.js';
@@ -72,8 +69,6 @@ export default function ShadingSection({ target }: Props): ReactElement {
   const type = setupKey(target);
 
   const onServer = useAppSelector((state) => state.map.shadingOnServer);
-
-  const headerSlot = useContext(PanelHeaderSlotContext);
 
   const shading = draft ?? applied;
 
@@ -297,41 +292,6 @@ export default function ShadingSection({ target }: Props): ReactElement {
           onChange={setShading}
         />
       )}
-
-      {/* In the panel's header, so they stay in view however far it scrolls. */}
-      {onServer &&
-        draft &&
-        headerSlot &&
-        createPortal(
-          <>
-            <LongPressTooltip label={sm?.apply}>
-              {({ props }) => (
-                <Button
-                  variant="primary"
-                  className="flex-shrink-0"
-                  onClick={() => apply(draft)}
-                  {...props}
-                >
-                  <FaCheck />
-                </Button>
-              )}
-            </LongPressTooltip>
-
-            <LongPressTooltip label={sm?.revert}>
-              {({ props }) => (
-                <Button
-                  variant="secondary"
-                  className="flex-shrink-0"
-                  onClick={() => dispatch(mapSetShadingDraft(target))}
-                  {...props}
-                >
-                  <FaUndo />
-                </Button>
-              )}
-            </LongPressTooltip>
-          </>,
-          headerSlot,
-        )}
 
       <ParameterizedShadingModal
         kind={pending?.preset ?? null}

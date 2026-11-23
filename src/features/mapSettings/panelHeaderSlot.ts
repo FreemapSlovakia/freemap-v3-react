@@ -8,3 +8,6 @@ export const PanelHeaderSlotContext = createContext<HTMLElement | null>(null);
  * list's search and sort: it stays put while the page scrolls.
  */
 export const PanelToolbarSlotContext = createContext<HTMLElement | null>(null);
+
+/** Under the scrolled list, for a page's own actions: they stay in view. */
+export const PanelFooterSlotContext = createContext<HTMLElement | null>(null);
