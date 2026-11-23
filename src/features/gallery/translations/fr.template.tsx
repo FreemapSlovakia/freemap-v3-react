@@ -87,6 +87,8 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     azimuth: 'Azimut',
     tags: 'Étiquettes',
     setLocation: 'Définir l’emplacement',
+    rotateLeft: 'Pivoter à gauche',
+    rotateRight: 'Pivoter à droite',
   },
   uploadModal: {
     uploading: (n) => `Import en cours (${n})`,

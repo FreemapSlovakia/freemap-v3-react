@@ -78,7 +78,7 @@ export function pictureExportUrls({
   let imageUrl = `${process.env['API_URL']}/gallery/pictures/${id}/image`;
 
   if (hmac) {
-    imageUrl += `&hmac=${encodeURIComponent(hmac)}`;
+    imageUrl += `?hmac=${encodeURIComponent(hmac)}`;
   }
 
   return {

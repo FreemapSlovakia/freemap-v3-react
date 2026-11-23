@@ -92,6 +92,8 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     azimuth: 'Azymut',
     tags: 'Tagi',
     setLocation: 'Ustaw lokalizację',
+    rotateLeft: 'Obróć w lewo',
+    rotateRight: 'Obróć w prawo',
   },
 
   uploadModal: {

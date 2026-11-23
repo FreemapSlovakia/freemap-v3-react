@@ -8,6 +8,7 @@ import {
   type GalleryLicense,
   GalleryLicenseSchema,
 } from '../licenses.js';
+import type { Rotation } from '../rotation.js';
 
 /** Map overlay-layer code for the photos layer. */
 export const GALLERY_LAYER = 'I';
@@ -32,6 +33,7 @@ export interface GalleryItem {
   dirtyPosition: string | '';
   premium: boolean;
   license: GalleryLicense;
+  rotation: Rotation;
   errors: GalleryItemError[];
   previewKey?: object;
   file: File;
@@ -225,6 +227,16 @@ export const gallerySetFilter =
   createAction<GalleryFilter>('GALLERY_SET_FILTER');
 
 export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE');
+
+export interface SavedRotation {
+  rotation: Rotation;
+  /** When saved; reloads the viewer's image past the one it shows. */
+  at: number;
+}
+
+export const gallerySetSavedRotation = createAction<
+  SavedRotation & { id: number }
+>('GALLERY_SET_SAVED_ROTATION');
 
 export const galleryList = createAction<GalleryListOrder>('GALLERY_LIST');
 

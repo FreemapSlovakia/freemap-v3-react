@@ -80,6 +80,8 @@ export type GalleryMessages = {
     location: string;
     tags: string;
     setLocation: string;
+    rotateLeft: string;
+    rotateRight: string;
   };
   uploadModal: {
     title: string;

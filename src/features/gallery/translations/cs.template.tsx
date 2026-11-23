@@ -99,6 +99,8 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     azimuth: 'Azimut',
     tags: 'Tagy',
     setLocation: 'Nastavit pozici',
+    rotateLeft: 'Otočit doleva',
+    rotateRight: 'Otočit doprava',
   },
   uploadModal: {
     title: 'Nahrát fotky',

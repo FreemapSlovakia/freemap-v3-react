@@ -36,6 +36,7 @@ import {
   gallerySetLicense,
   gallerySetPickingAzimuth,
   gallerySetPickingPosition,
+  gallerySetSavedRotation,
   gallerySetTags,
   gallerySetUsers,
   galleryShowOnTheMap,
@@ -43,6 +44,7 @@ import {
   galleryToggleShowPreview,
   galleryUpload,
   type Picture,
+  type SavedRotation,
 } from './actions.js';
 
 export interface GalleryState {
@@ -64,6 +66,8 @@ export interface GalleryState {
   editModel: PictureModel | null;
   /** `editModel` as the edit opened, for its unsaved changes. */
   editSeed: PictureModel | null;
+  /** Photos rotated this session, by id; their image URLs skip the browser's copy. */
+  savedRotations: Record<number, SavedRotation>;
   showPosition: boolean;
   language: string;
   saveErrors: GalleryItemError[];
@@ -91,6 +95,7 @@ export const galleryInitialState: GalleryState = {
 
   editModel: null,
   editSeed: null,
+  savedRotations: {},
   saveErrors: [],
   showPosition: false,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
@@ -113,6 +118,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       ...galleryInitialState,
       // `dirtySeq` is a render counter, not a pref; carry it across a clear.
       dirtySeq: state.dirtySeq,
+      savedRotations: state.savedRotations,
     }))
     .addCase(gallerySetImageIds, (state, action) => ({
       ...state,
@@ -340,6 +346,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
                 : '',
             premium: Boolean(state.image?.premium),
             license: state.image?.license ?? DEFAULT_PHOTO_LICENSE,
+            rotation: 0,
           };
 
       // A copy, not the same object: the edit is changed in place.
@@ -350,6 +357,11 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
     })
     .addCase(gallerySetEditModel, (state, action) => {
       state.editModel = action.payload;
+    })
+    .addCase(gallerySetSavedRotation, (state, action) => {
+      const { id, ...saved } = action.payload;
+
+      state.savedRotations[id] = saved;
     })
     .addCase(galleryShowOnTheMap, (state) => {
       state.showPosition = true;

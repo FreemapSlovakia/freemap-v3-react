@@ -96,6 +96,8 @@ const en: GalleryMessages = {
     azimuth: 'Azimuth',
     tags: 'Tags',
     setLocation: 'Set the location',
+    rotateLeft: 'Rotate left',
+    rotateRight: 'Rotate right',
   },
   uploadModal: {
     title: 'Upload photos',

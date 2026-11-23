@@ -3,6 +3,7 @@ import { Text } from '@features/l10n/Text.js';
 import { PlaceName } from '@features/search/components/PlaceName.js';
 import { DateTime } from '@shared/components/DateTime.js';
 import { safeParseCoordinates } from '@shared/coordinatesParser.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import '@shared/styles/react-tags.scss';
 import {
   type ChangeEvent,
@@ -11,7 +12,7 @@ import {
   useState,
 } from 'react';
 import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
-import { FaMapMarkerAlt } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaRedo, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
 import type { GalleryLicense } from '../licenses.js';
@@ -21,6 +22,7 @@ import {
   type GalleryValidationError,
   galleryAddTag,
 } from '../model/actions.js';
+import { type Rotation, rotateBy } from '../rotation.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
 import { GalleryLicenseSelect } from './GalleryLicenseSelect.js';
@@ -35,10 +37,13 @@ export interface PictureModel {
   azimuth: string;
   premium: boolean;
   license: GalleryLicense;
+  rotation: Rotation;
 }
 
 interface Props {
   id?: number;
+  /** Off for a panorama. */
+  rotatable?: boolean;
   model: PictureModel;
   allTags: GalleryTag[];
   errors: GalleryItemError[] | null | undefined;
@@ -50,6 +55,7 @@ interface Props {
 
 export function GalleryEditForm({
   id,
+  rotatable = true,
   model,
   allTags,
   errors,
@@ -87,6 +93,12 @@ export function GalleryEditForm({
 
   const handlePremiumChange = (e: ChangeEvent<HTMLInputElement>) => {
     changeModel('premium', e.currentTarget.checked);
+  };
+
+  const handleRotate = (by: 90 | -90) => {
+    trackMatomo(['trackEvent', 'Gallery', 'rotate']);
+
+    changeModel('rotation', rotateBy(model.rotation, by));
   };
 
   const handleLicenseChange = (license: GalleryLicense) => {
@@ -128,6 +140,18 @@ export function GalleryEditForm({
             : (gm?.[error as GalleryValidationError] ?? error)}
         </Alert>
       ))}
+
+      {rotatable && (
+        <div className="mb-3 d-flex gap-2 justify-content-center">
+          <Button variant="secondary" onClick={() => handleRotate(-90)}>
+            <FaUndo /> <Text m={gm} k="editForm.rotateLeft" />
+          </Button>
+
+          <Button variant="secondary" onClick={() => handleRotate(90)}>
+            <FaRedo /> <Text m={gm} k="editForm.rotateRight" />
+          </Button>
+        </div>
+      )}
 
       <Form.Group controlId="pictureName" className="mb-3">
         <Form.Control

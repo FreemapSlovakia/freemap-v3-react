@@ -87,6 +87,7 @@ import {
 } from '../model/actions.js';
 import { galleryEditChangedSelector } from '../model/selectors.js';
 import { pictureIdToPath } from '../pictureIdPath.js';
+import { rotateBy, rotationTransform } from '../rotation.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import {
   fetchWikimediaMeta,
@@ -317,6 +318,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const [imgKey, setImgKey] = useState(0);
 
+  // Of the shown photo, for previewing a pending rotation.
+  const [aspect, setAspect] = useState<number | null>(null);
+
   const [activeImageId, setActiveImageId] = useState<number | null>(null);
 
   // Gates the "the author won't be notified" hint on Wikimedia photos.
@@ -330,6 +334,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   if (reduxActiveImageId !== activeImageId) {
     setLoading(true);
+
+    setAspect(null);
 
     setActiveImageId(reduxActiveImageId);
 
@@ -366,6 +372,29 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const commonsError = commonsEntry === 'error';
 
   const liveImage = storedImage?.id === activeImageId ? storedImage : null;
+
+  const savedRotations = useAppSelector(
+    (state) => state.gallery.savedRotations,
+  );
+
+  const saved =
+    activeImageId === null ? undefined : savedRotations[activeImageId];
+
+  const [shownSaved, setShownSaved] = useState(saved);
+
+  if (saved !== shownSaved) {
+    // The rotated image is on the way; the old one shows turned until it loads.
+    if (saved) {
+      setLoading(true);
+    }
+
+    setShownSaved(saved);
+  }
+
+  const previewRotation = rotateBy(
+    saved && loading ? saved.rotation : 0,
+    editModel?.rotation ?? 0,
+  );
 
   // Own photos carry the pano flag server-side; Commons 360s have no GPano/XMP,
   // so they're detected from their exact 2:1 dimensions in the fetched metadata.
@@ -713,6 +742,8 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const getImageUrl = (id: number) =>
     `${process.env['API_URL']}/gallery/pictures/${pictureIdToPath(id)}/image?width=${displayPixelWidth()}` +
+    // past the browser's in-memory copy of the unrotated image
+    (savedRotations[id] ? `&t=${savedRotations[id].at}` : '') +
     (user ? `&authToken=${encodeURIComponent(user.authToken)}` : '');
 
   // The displayed image: gallery photos stream from our server; Wikimedia photos
@@ -934,7 +965,19 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                       className={clsx('gallery-image', loading && 'loading')}
                       src={mainImageSrc}
                       alt={displayTitle ?? undefined}
-                      onLoad={() => setLoading(false)}
+                      style={{
+                        transform: aspect
+                          ? rotationTransform(previewRotation, aspect)
+                          : undefined,
+                      }}
+                      onLoad={(e) => {
+                        setLoading(false);
+
+                        setAspect(
+                          e.currentTarget.naturalWidth /
+                            e.currentTarget.naturalHeight,
+                        );
+                      }}
                       onError={() => {
                         setLoading(false);
 
@@ -1252,6 +1295,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
                   <fieldset disabled={!online}>
                     <GalleryEditForm
+                      rotatable={!pano}
                       model={editModel}
                       allTags={allTags}
                       errors={saveErrors}

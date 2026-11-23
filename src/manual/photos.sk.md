@@ -29,7 +29,7 @@ Tlačidlá dole:
 - :FaRegDotCircle: **Ukázať na mape** – ukáže, kde bola fotka odfotená; tlačidlom :FaChevronLeft: **Späť** sa k fotke vrátite.
 - :RiFullscreenLine: **Na celú obrazovku** – fotka cez celú obrazovku.
 - :FaEllipsisV: **Akcie** – ponuka akcií pre miesto, kde bola fotka odfotená, napr. :FaPencilAlt: **Kopírovať do kreslenia** pridá na mapu bod pomenovaný podľa fotky.
-- :FaPencilAlt: **Upraviť** a :FaTrash: **Zmazať** – len pri vašich vlastných fotkách.
+- :FaPencilAlt: **Upraviť** a :FaTrash: **Zmazať** – len pri vašich vlastných fotkách. **Upraviť** fotku aj otočí, okrem panorámy.
 
 ![Tlačidlá prehliadača fotiek](./images/photos-viewer.sk.webp)
 
@@ -52,6 +52,7 @@ Nahrávanie vyžaduje [prihlásenie](#show=login). Stlačte :FaUpload: **Nahrať
 
 Pri každej fotke vyplňte:
 
+- :FaUndo: **Otočiť doľava** alebo :FaRedo: **Otočiť doprava**, ak je fotka otočená nabok alebo hore nohami,
 - **Názov** a **Popis**,
 - **Dátum a čas fotenia**,
 - **Pozícia** – zadajte súradnice alebo stlačte :FaMapMarkerAlt: **Nastaviť pozíciu**, kliknite na miesto v mape alebo ho nájdite podľa adresy na lište a potvrďte tlačidlom :FaCheck: **OK**,

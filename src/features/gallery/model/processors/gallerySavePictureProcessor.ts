@@ -8,16 +8,22 @@ import {
   galleryRequestImage,
   gallerySavePicture,
   gallerySetLayerDirty,
+  gallerySetSavedRotation,
 } from '../actions.js';
+
+// A second save in flight would rotate the photo twice.
+let saving = false;
 
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,
   async handle({ getState, dispatch, toastError }) {
     const { image, editModel, saveErrors } = getState().gallery;
 
-    if (!image || !editModel || saveErrors.length) {
+    if (!image || !editModel || saveErrors.length || saving) {
       return;
     }
+
+    saving = true;
 
     trackMatomo(['trackEvent', 'Gallery', 'savePhoto']);
 
@@ -36,6 +42,7 @@ export const gallerySavePictureProcessor: Processor = {
           dirtyPosition: undefined,
           takenAt: editModel.takenAt ? new Date(editModel.takenAt) : null,
           azimuth: editModel.azimuth ? parseFloat(editModel.azimuth) : null,
+          rotation: editModel.rotation || undefined,
         },
         expectedStatus: 204,
       });
@@ -43,6 +50,8 @@ export const gallerySavePictureProcessor: Processor = {
       await toastError(err, loadGalleryMessages, 'savingError');
 
       return;
+    } finally {
+      saving = false;
     }
 
     dispatch(
@@ -55,8 +64,19 @@ export const gallerySavePictureProcessor: Processor = {
 
     dispatch(gallerySetLayerDirty());
 
+    // After the request, which drops the edit, so its rotation isn't previewed twice.
     if (getState().gallery.activeImageId === id) {
       dispatch(galleryRequestImage(id));
+    }
+
+    if (editModel.rotation && !image.pano) {
+      dispatch(
+        gallerySetSavedRotation({
+          id,
+          rotation: editModel.rotation,
+          at: Date.now(),
+        }),
+      );
     }
   },
 };

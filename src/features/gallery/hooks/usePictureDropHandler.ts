@@ -153,6 +153,7 @@ export function usePictureDropHandler(
           tags: keywords,
           premium,
           license,
+          rotation: 0,
           errors: [],
         });
 

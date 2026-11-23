@@ -101,6 +101,8 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     azimuth: 'Azimut',
     tags: 'Címkék',
     setLocation: 'Hely megadása',
+    rotateLeft: 'Forgatás balra',
+    rotateRight: 'Forgatás jobbra',
   },
 
   uploadModal: {

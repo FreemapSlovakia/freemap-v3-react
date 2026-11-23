@@ -58,6 +58,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       tags: item.tags,
       premium: item.premium,
       license: item.license,
+      rotation: item.rotation || undefined,
     }),
   );
 

@@ -98,6 +98,8 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     azimuth: 'Azimut',
     tags: 'Oznake',
     setLocation: 'Nastavi lokacijo',
+    rotateLeft: 'Zasukaj levo',
+    rotateRight: 'Zasukaj desno',
   },
   uploadModal: {
     title: 'Naloži fotografije',

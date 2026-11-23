@@ -12,6 +12,7 @@ import { FaTimes } from 'react-icons/fa';
 import type { Messages } from '@/translations/messagesInterface.js';
 import { getPreview, loadPreview } from '../imagePreview.js';
 import type { GalleryItemError, GalleryTag } from '../model/actions.js';
+import { rotationTransform } from '../rotation.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 
@@ -74,6 +75,17 @@ export function GalleryUploadItem({
       canvasContainer.current?.appendChild(canvas);
     }
   }, [previewKey]);
+
+  const { rotation } = model;
+
+  useEffect(() => {
+    const canvas = previewKey && getPreview(previewKey);
+
+    if (canvas) {
+      canvas.style.transform =
+        rotationTransform(rotation, canvas.width / canvas.height) ?? '';
+    }
+  }, [previewKey, rotation]);
 
   const handleLoadPreviewClick = useCallback(() => {
     setShowPreview2(true);

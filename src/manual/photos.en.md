@@ -29,7 +29,7 @@ The buttons at the bottom:
 - :FaRegDotCircle: **Show on the map** – shows where the photo was taken; :FaChevronLeft: **Back** returns to the photo.
 - :RiFullscreenLine: **Fullscreen** – the photo over the whole screen.
 - :FaEllipsisV: **Actions** – a menu of actions for the place where the photo was taken, e.g. :FaPencilAlt: **Copy to drawing** adds a point named after the photo to the map.
-- :FaPencilAlt: **Modify** and :FaTrash: **Delete** – only for your own photos.
+- :FaPencilAlt: **Modify** and :FaTrash: **Delete** – only for your own photos. **Modify** also rotates the photo, except a panorama.
 
 ![The viewer's buttons](./images/photos-viewer.en.webp)
 
@@ -52,6 +52,7 @@ Uploading needs you to be [logged in](#show=login). Press :FaUpload: **Upload**,
 
 For each photo fill in:
 
+- :FaUndo: **Rotate left** or :FaRedo: **Rotate right**, when the photo is turned sideways or upside down,
 - **Name** and **Description**,
 - **Capture date and time**,
 - **Location** – type coordinates, or press :FaMapMarkerAlt: **Set the location**, click the place on the map or find it by its address in the toolbar, and confirm with :FaCheck: **OK**,

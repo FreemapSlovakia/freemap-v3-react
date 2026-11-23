@@ -277,6 +277,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
                 azimuth,
                 premium,
                 license,
+                rotation,
               }) => (
                 <GalleryUploadItem
                   key={id}
@@ -287,6 +288,7 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
                   model={{
                     premium,
                     license,
+                    rotation,
                     dirtyPosition,
                     azimuth: typeof azimuth === 'number' ? String(azimuth) : '',
                     title,
