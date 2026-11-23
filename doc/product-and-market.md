@@ -224,10 +224,8 @@ outdoor map only. Reuse these texts; recheck the figures before quoting them.
 - **OSM mappers** — element details and history, changeset viewer, OSM notes, open in
   iD or JOSM; edits show within minutes.
 
-The paragraph and the short text are in the repo too: the short one in nine languages
-in `src/translations/<lang>-shared.ts` (page meta, bot homepages), a one-line form in
-`appDescription` in `rspack.config.ts` (web manifest), and the summary of
-`src/static/llms.txt`.
+Where these texts are used, in the repo and outside it, is listed in `AGENTS.md` under
+_Keeping the app description in sync_.
 
 ## 4. Business model
 

@@ -57,11 +57,11 @@ Freemap is described as a map for everyone — everyday use, the outdoors, and G
 
 - `doc/product-and-market.md` — the §3 inventory, and the §3a texts (short, paragraph, long), which are the source the others copy from
 - `src/static/llms.txt` — the summary and Key facts
-- `src/translations/<lang>-shared.ts` — the meta description, all 9 languages, at most 160 characters
-- `rspack.config.ts` — `appDescription` (web manifest), all 9 languages
+- `src/translations/<lang>-shared.ts` — the meta description, every UI language, at most 160 characters
+- `rspack.config.ts` — `appDescription` (web manifest), every UI language
 - `README.md` intro and the first sentence of `src/manual/getting-started.{en,sk}.md`
 - `sitemap-generator/hubs.ts` — the feature's hub page, if it has or deserves one
-- Outside the repo: the GitHub repo description (`gh repo edit --description`), the OSM wiki page [Freemap Slovakia](https://wiki.openstreetmap.org/wiki/Freemap_Slovakia), and the Mastodon and Facebook bios — prepare those three and let Martin confirm before saving
+- Outside the repo: the GitHub repo description (`gh repo edit --description`), the OSM wiki page [Freemap Slovakia](https://wiki.openstreetmap.org/wiki/Freemap_Slovakia), and the Mastodon and Facebook bios — prepare those three and let me confirm before saving
 
 Write counts that only grow as floors ("over 700,000 photos"), so the text stays true.
 
