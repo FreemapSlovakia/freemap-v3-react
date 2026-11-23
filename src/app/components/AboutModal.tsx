@@ -89,7 +89,13 @@ export default function AboutModal({ show }: Props): ReactElement {
 
         <ul>
           <li>
-            <Text m={lm} k="board" />: <a href="oz@freemap.sk">oz@freemap.sk</a>
+            <Text m={lm} k="board" />:{' '}
+            <a href="mailto:oz@freemap.sk">oz@freemap.sk</a>
+          </li>
+
+          <li>
+            <Text m={lm} k="mobileApps" />:{' '}
+            <a href="mailto:mobileapp@freemap.sk">mobileapp@freemap.sk</a>
           </li>
         </ul>
 

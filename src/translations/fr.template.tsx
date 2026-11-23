@@ -432,7 +432,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'faire un don, soutenir, contribuer, argent',
         'modal-legend': 'symboles, légende de la carte',
         'modal-manual': "aide, guide, mode d'emploi, documentation, help",
-        'modal-about': 'contact, e-mail, avis',
+        'modal-about':
+          'contact, e-mail, avis, signaler, erreur, problème, bug, application mobile',
         'modal-map-manager':
           'cartes installées, cartes disponibles, bibliothèque de cartes, catalogue, installer, désinstaller, ajouter des cartes, plus de cartes, configuration des couches, couches, gérer les cartes, barre d’outils, menu, opacité, raccourci, cartes personnalisées, carte personnalisée, wms, tms, ajouter une source',
         'modal-offline-maps': 'cartes téléchargées, stockage',

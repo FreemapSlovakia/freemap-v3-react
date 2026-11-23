@@ -444,7 +444,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'darovat, přispět, podpora, peníze',
         'modal-legend': 'značky, symboly, vysvětlivky',
         'modal-manual': 'nápověda, návod, dokumentace, manuál, help',
-        'modal-about': 'kontakt, e-mail, zpětná vazba',
+        'modal-about':
+          'kontakt, e-mail, zpětná vazba, nahlásit, chyba, problém, bug, mobilní aplikace',
         'modal-map-manager':
           'nainstalované mapy, dostupné mapy, knihovna map, katalog, instalovat, odinstalovat, přidat mapy, další mapy, nastavení vrstev, vrstvy, správa map, panel nástrojů, nabídka, průhlednost, zkratka, vlastní mapy, vlastní mapa, wms, tms, přidat mapu',
         'modal-offline-maps': 'stažené mapy, úložiště',

@@ -6,6 +6,7 @@ const en: ContactsMessages = {
   bankAccount: 'Bank account',
   generalContact: 'General contacts',
   board: 'Board',
+  mobileApps: 'Mobile apps for Android and iOS',
   boardMemebers: 'Board members',
   president: 'President',
   vicepresident: 'Vice-President',

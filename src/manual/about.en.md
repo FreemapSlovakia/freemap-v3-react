@@ -8,6 +8,8 @@ order: 1000
 
 Freemap Slovakia is a project that brings together the Slovak OpenStreetMap community and operates this portal. It is represented by the civic association OZ Freemap Slovakia; its address and the people to contact are under :FaRegAddressCard: [Contacts](#show=about) in :FaRegQuestionCircle: **Info & help**.
 
+Send problems with this web app and suggestions for it to [freemap@freemap.sk](mailto:freemap@freemap.sk), and those about the mobile apps for Android and iOS to [mobileapp@freemap.sk](mailto:mobileapp@freemap.sk). Errors in the map data itself are fixed in OpenStreetMap, see below.
+
 The main goal of the association is to support mapping and the creation of freely licensed maps, especially through:
 
 - **promoting the international OpenStreetMap.org project** and supporting mapping, especially in Slovakia,

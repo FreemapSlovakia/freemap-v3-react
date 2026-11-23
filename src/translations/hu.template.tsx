@@ -447,7 +447,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'adományozás, támogatás, pénz',
         'modal-legend': 'jelmagyarázat, jelek, szimbólumok',
         'modal-manual': 'súgó, segítség, útmutató, dokumentáció, help',
-        'modal-about': 'kapcsolat, e-mail, visszajelzés',
+        'modal-about':
+          'kapcsolat, e-mail, visszajelzés, bejelentés, hiba, probléma, bug, mobilalkalmazás',
         'modal-map-manager':
           'telepített térképek, elérhető térképek, térképtár, katalógus, telepítés, eltávolítás, térképek hozzáadása, további térképek, rétegek beállítása, rétegek, térképek kezelése, eszköztár, menü, átlátszóság, gyorsbillentyű, egyéni térképek, saját térkép, wms, tms, térképforrás hozzáadása',
         'modal-offline-maps': 'letöltött térképek, tárhely',

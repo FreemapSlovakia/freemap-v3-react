@@ -432,7 +432,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'wesprzyj, darowizna, wsparcie, pieniądze',
         'modal-legend': 'symbole, legenda mapy',
         'modal-manual': 'pomoc, instrukcja, poradnik, dokumentacja, help',
-        'modal-about': 'kontakt, e-mail, opinie',
+        'modal-about':
+          'kontakt, e-mail, opinie, zgłoś, błąd, problem, bug, aplikacja mobilna',
         'modal-map-manager':
           'zainstalowane mapy, dostępne mapy, biblioteka map, katalog, zainstaluj, odinstaluj, dodaj mapy, więcej map, konfiguracja warstw, warstwy, zarządzanie mapami, pasek narzędzi, menu, przezroczystość, skrót, własne mapy, własna mapa, wms, tms, dodaj źródło mapy',
         'modal-offline-maps': 'pobrane mapy, pamięć',

@@ -7,6 +7,7 @@ const sl: DeepPartialWithRequiredObjects<ContactsMessages> = {
   bankAccount: 'Bančni račun',
   generalContact: 'Splošni kontakti',
   board: 'Upravni odbor',
+  mobileApps: 'Mobilne aplikacije za Android in iOS',
   boardMemebers: 'Člani upravnega odbora',
   president: 'Predsednik',
   vicepresident: 'Podpredsednik',

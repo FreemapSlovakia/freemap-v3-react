@@ -8,6 +8,7 @@ const hu: DeepPartialWithRequiredObjects<ContactsMessages> = {
   bankAccount: 'Bankszámlaszám',
   generalContact: 'Általános elérhetőség',
   board: 'Elnökség',
+  mobileApps: 'Mobilalkalmazások Androidra és iOS-re',
   boardMemebers: 'Elnökségi tagok',
   president: 'Elnök',
   vicepresident: 'Alelnök',

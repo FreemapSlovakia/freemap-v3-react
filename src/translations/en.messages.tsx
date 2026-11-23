@@ -490,7 +490,8 @@ const messages: Messages = {
           'help, subscription, price, payment, credits, buy, ads, cancel, refund',
         'manual-about':
           'openstreetmap, osm, association, community, contribute, mapping, license, licence, attribution, copyright, commercial use',
-        'modal-about': 'contact, e-mail, feedback',
+        'modal-about':
+          'contact, e-mail, feedback, report, bug, problem, mobile app',
         'modal-map-manager':
           'installed maps, available maps, map library, catalog, catalogue, install, uninstall, add maps, more maps, layers configuration, layers, manage maps, toolbar, menu, opacity, shortcut, custom maps, own map, wms, tms, add map source',
         'modal-offline-maps': 'downloaded maps, storage',

@@ -4,6 +4,7 @@ export type ContactsMessages = {
   bankAccount: string;
   generalContact: string;
   board: string;
+  mobileApps: string;
   boardMemebers: string;
   president: string;
   vicepresident: string;

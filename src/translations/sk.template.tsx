@@ -529,7 +529,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
           'pomoc, predplatné, cena, platba, kredity, kúpiť, reklama, zrušiť, vrátenie peňazí, premium',
         'manual-about':
           'openstreetmap, osm, združenie, komunita, mapovanie, prispievanie, licencia, atribúcia, uvedenie zdroja, copyright, komerčné použitie',
-        'modal-about': 'kontakt, e-mail, spätná väzba',
+        'modal-about':
+          'kontakt, e-mail, spätná väzba, nahlásiť, chyba, problém, bug, mobilná aplikácia',
         'modal-map-manager':
           'nainštalované mapy, dostupné mapy, knižnica máp, katalóg, inštalovať, odinštalovať, pridať mapy, ďalšie mapy, nastavenie vrstiev, vrstvy, správa máp, panel nástrojov, menu, priehľadnosť, skratka, vlastné mapy, vlastná mapa, wms, tms, pridať mapu',
         'modal-offline-maps': 'stiahnuté mapy, úložisko',

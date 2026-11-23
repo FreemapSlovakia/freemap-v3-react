@@ -447,7 +447,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'spenden, unterstützen, sponsor, geld',
         'modal-legend': 'zeichenerklärung, symbole, kartenlegende',
         'modal-manual': 'hilfe, anleitung, bedienungsanleitung, dokumentation',
-        'modal-about': 'kontakt, e-mail, feedback',
+        'modal-about':
+          'kontakt, e-mail, feedback, melden, fehler, problem, bug, mobile app',
         'modal-map-manager':
           'installierte karten, verfügbare karten, kartenbibliothek, katalog, installieren, deinstallieren, karten hinzufügen, weitere karten, ebenenkonfiguration, ebenen, karten verwalten, symbolleiste, menü, deckkraft, tastenkürzel, benutzerdefinierte karten, eigene karte, wms, tms, kartenquelle hinzufügen',
         'modal-offline-maps': 'heruntergeladene karten, speicher',

@@ -7,6 +7,7 @@ const it: DeepPartialWithRequiredObjects<ContactsMessages> = {
   bankAccount: 'Conto bancario',
   generalContact: 'Contatti generali',
   board: 'Consiglio direttivo',
+  mobileApps: 'App mobili per Android e iOS',
   boardMemebers: 'Membri del consiglio',
   president: 'Presidente',
   vicepresident: 'Vice Presidente',

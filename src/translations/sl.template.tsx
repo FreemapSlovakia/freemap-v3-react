@@ -443,7 +443,8 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
         'modal-support-us': 'donacija, podpri, prispevaj, denar',
         'modal-legend': 'simboli, legenda karte',
         'modal-manual': 'pomoč, navodila, dokumentacija, vodič, help',
-        'modal-about': 'kontakt, e-pošta, povratne informacije',
+        'modal-about':
+          'kontakt, e-pošta, povratne informacije, prijava, napaka, težava, bug, mobilna aplikacija',
         'modal-map-manager':
           'nameščene karte, razpoložljive karte, knjižnica kart, katalog, namesti, odstrani, zemljevid, dodaj karte, več kart, nastavitev slojev, sloji, upravljanje kart, orodna vrstica, meni, prosojnost, bližnjica, karte po meri, lastna karta, wms, tms, dodaj vir karte',
         'modal-offline-maps': 'prenesene karte, shramba',

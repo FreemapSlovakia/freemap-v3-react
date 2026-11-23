@@ -7,6 +7,7 @@ const sk: DeepPartialWithRequiredObjects<ContactsMessages> = {
   bankAccount: 'Bankové spojenie',
   generalContact: 'Všeobecné kontakty',
   board: 'Predstavenstvo',
+  mobileApps: 'Mobilné aplikácie pre Android a iOS',
   boardMemebers: 'Členovia predstavenstva',
   president: 'Predseda',
   vicepresident: 'Podpredseda',
