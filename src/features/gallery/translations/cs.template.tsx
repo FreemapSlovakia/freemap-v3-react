@@ -184,6 +184,8 @@ const cs: DeepPartialWithRequiredObjects<GalleryMessages> = {
     rating: 'Hodnocení',
     noTags: 'bez tagů',
     tagSearch: 'Hledat tag',
+    tagModeAny: 'Alespoň jeden',
+    tagModeAll: 'Všechny',
     pano: 'Panoráma',
     premium: 'Prémiové',
     source: 'Zdroj',

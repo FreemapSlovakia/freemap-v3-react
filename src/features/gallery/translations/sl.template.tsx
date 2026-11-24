@@ -184,6 +184,8 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     rating: 'Ocena',
     noTags: 'brez oznak',
     tagSearch: 'Iskanje oznak',
+    tagModeAny: 'Vsaj ena',
+    tagModeAll: 'Vse',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Vir',

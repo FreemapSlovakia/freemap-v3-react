@@ -181,6 +181,8 @@ const en: GalleryMessages = {
     rating: 'Rating',
     noTags: 'no tags',
     tagSearch: 'Search tags',
+    tagModeAny: 'Any of them',
+    tagModeAll: 'All of them',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Source',

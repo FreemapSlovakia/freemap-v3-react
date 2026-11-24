@@ -135,7 +135,9 @@ export const PictureSchema = z.object({
 export type Picture = z.infer<typeof PictureSchema>;
 
 export const GalleryFilterSchema = z.object({
-  tagId: z.number().optional(),
+  tagIds: z.array(z.number()).optional(),
+  /** Photos with any of `tagIds` (the default) or all of them. */
+  tagMode: z.enum(['any', 'all']).optional(),
   /** A tag's name, from an older link or saved map; '' for photos with none. */
   tag: z.string().optional(),
   userId: z.number().optional(),
@@ -153,6 +155,38 @@ export const GalleryFilterSchema = z.object({
 });
 
 export type GalleryFilter = z.infer<typeof GalleryFilterSchema>;
+
+/** The tag ids a photo filter request may carry. */
+export const MAX_FILTER_TAGS = 50;
+
+/** Each id once, and no more than the API takes. */
+export function filterTagIds(ids: number[]): number[] | undefined {
+  const kept = [...new Set(ids)].slice(0, MAX_FILTER_TAGS);
+
+  return kept.length ? kept : undefined;
+}
+
+/** How many tags it names, by id or by a name; `tagMode` means something from 2. */
+export function filterTagCount({ tagIds, tag }: GalleryFilter): number {
+  return (tagIds?.length ?? 0) + (tag ? 1 : 0);
+}
+
+/**
+ * A saved map's filter: one older `tagId` into `tagIds`, then the ids as a
+ * link reads them.
+ */
+export const GalleryFilterCompatSchema = z
+  .preprocess((f) => {
+    if (f && typeof f === 'object' && 'tagId' in f) {
+      const { tagId, ...rest } = f as { tagId?: unknown };
+
+      return typeof tagId === 'number' ? { ...rest, tagIds: [tagId] } : rest;
+    }
+
+    return f;
+  }, GalleryFilterSchema)
+  .transform((f) => ({ ...f, tagIds: filterTagIds(f.tagIds ?? []) }));
+
 export const galleryAddTag = createAction<TagRef>('GALLERY_ADD_TAG');
 
 /** The filter's tag, held by its name, found as this id; turns no layer on. */

@@ -199,6 +199,8 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     rating: 'Valutazione',
     noTags: 'no tag',
     tagSearch: 'Cerca tag',
+    tagModeAny: 'Almeno uno',
+    tagModeAll: 'Tutti',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Fonte',

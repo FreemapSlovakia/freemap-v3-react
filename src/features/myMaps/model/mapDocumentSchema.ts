@@ -1,6 +1,6 @@
 import { LineCompatSchema } from '@features/drawing/model/actions/drawingLineActions.js';
 import { DrawingPointCompatSchema } from '@features/drawing/model/actions/drawingPointActions.js';
-import { GalleryFilterSchema } from '@features/gallery/model/actions.js';
+import { GalleryFilterCompatSchema } from '@features/gallery/model/actions.js';
 import { LayerSetupsCompatSchema } from '@features/map/model/layerSetup.js';
 import { MapPresetArrayCompatSchema } from '@features/map/model/mapPreset.js';
 import { ShadingSchema } from '@features/parameterizedShading/model/Shading.js';
@@ -147,7 +147,7 @@ export const MapsLoadResponseSchema = z.object({
       })
       .optional(),
     routePlanner: RoutePlannerMapDataCompatSchema.optional(),
-    galleryFilter: GalleryFilterSchema.optional(),
+    galleryFilter: GalleryFilterCompatSchema.optional(),
     trackViewer: DataViewerMapDataSchema.optional(),
     map: MapMapDataCompatSchema.optional(),
     objectsV2: z.object({ active: z.array(z.string()) }).optional(),

@@ -15,7 +15,8 @@ describe('the photo filter as URL params', () => {
   it('reads back what it writes', () => {
     const filter = {
       userId: 7,
-      tagId: 12,
+      tagIds: [12, 15],
+      tagMode: 'all' as const,
       tag: 'hrad',
       ratingFrom: 2,
       takenAtFrom: new Date('2026-01-02T00:00:00.000Z'),
@@ -46,6 +47,22 @@ describe('the photo filter as URL params', () => {
     expect(roundTrip('gallery-source=gallery&gallery-source=wikimedia')).toBe(
       '',
     );
+  });
+
+  it('reads an older link with one tag id', () => {
+    expect(galleryFilterFromQuery(parseQuery('gallery-tag-id=12'))).toEqual({
+      tagIds: [12],
+    });
+  });
+
+  it('reads each tag id once, and the mode only for two tags', () => {
+    expect(
+      roundTrip('gallery-tag-id=12&gallery-tag-id=12&gallery-tag-mode=all'),
+    ).toBe('gallery-tag-id=12');
+
+    expect(
+      roundTrip('gallery-tag-id=12&gallery-tag=hrad&gallery-tag-mode=all'),
+    ).toBe('gallery-tag-id=12&gallery-tag-mode=all&gallery-tag=hrad');
   });
 
   it('keeps an empty tag', () => {

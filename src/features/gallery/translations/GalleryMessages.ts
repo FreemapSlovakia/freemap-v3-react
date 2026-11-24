@@ -128,6 +128,8 @@ export type GalleryMessages = {
     rating: string;
     noTags: string;
     tagSearch: string;
+    tagModeAny: string;
+    tagModeAll: string;
     pano: string;
     premium: string;
     source: string;

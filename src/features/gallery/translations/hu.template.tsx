@@ -199,6 +199,8 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     rating: 'Értékelés',
     noTags: 'nincs címke',
     tagSearch: 'Címke keresése',
+    tagModeAny: 'Legalább egy',
+    tagModeAll: 'Mindegyik',
     pano: 'Panoráma',
     premium: 'Prémium',
     source: 'Forrás',

@@ -7,7 +7,11 @@ import {
   type GalleryLicense,
   GalleryLicenseSchema,
 } from '@features/gallery/licenses.js';
-import type { GalleryFilter } from '@features/gallery/model/actions.js';
+import {
+  filterTagCount,
+  filterTagIds,
+  type GalleryFilter,
+} from '@features/gallery/model/actions.js';
 import { activeGalleryFilterSelector } from '@features/gallery/model/selectors.js';
 import {
   encodePointMark,
@@ -64,8 +68,13 @@ export function galleryFilterParts(filter: GalleryFilter): QueryPart[] {
     parts.push(['gallery-user-id', filter.userId]);
   }
 
-  if (filter.tagId != null) {
-    parts.push(['gallery-tag-id', filter.tagId]);
+  // Sorted: the same tags in another order are the same filter.
+  for (const id of (filter.tagIds ?? []).toSorted((a, b) => a - b)) {
+    parts.push(['gallery-tag-id', id]);
+  }
+
+  if (filter.tagMode === 'all' && filterTagCount(filter) > 1) {
+    parts.push(['gallery-tag-mode', 'all']);
   }
 
   if (filter.tag != null) {
@@ -172,10 +181,23 @@ export function galleryFilterFromQuery(
     (GALLERY_SOURCES as string[]).includes(x),
   );
 
+  const tagIds =
+    filterTagIds(
+      all('gallery-tag-id')
+        .map(Number)
+        .filter((id) => Number.isInteger(id) && id > 0 && id < 2 ** 32),
+    ) ?? [];
+
+  const tag = one('gallery-tag');
+
   const filter: GalleryFilter = {
     userId: num('gallery-user-id'),
-    tagId: num('gallery-tag-id'),
-    tag: one('gallery-tag'),
+    tagIds: tagIds.length ? tagIds : undefined,
+    tagMode:
+      one('gallery-tag-mode') === 'all' && filterTagCount({ tagIds, tag }) > 1
+        ? 'all'
+        : undefined,
+    tag,
     ratingFrom: num('gallery-rating-from'),
     ratingTo: num('gallery-rating-to'),
     takenAtFrom: date('gallery-taken-at-from'),

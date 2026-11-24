@@ -1,6 +1,5 @@
 import { isHeicFile } from '@shared/heicSupport.js';
-import type z from 'zod';
-import type { GalleryFilter, GalleryFilterSchema } from './model/actions.js';
+import { filterTagCount, type GalleryFilter } from './model/actions.js';
 
 export type GallerySource = 'gallery' | 'wikimedia';
 
@@ -18,9 +17,11 @@ export const GALLERY_SOURCES: GallerySource[] = ['gallery', 'wikimedia'];
 // The min zoom at which photos appear is the layer's `minZoom` in
 // mapDefinitions (Leaflet prunes the tiles below it, like any other layer).
 
+/** The API's query parameters for a photo filter; an array repeats one. */
 export function createFilter({
   tag,
-  tagId,
+  tagIds,
+  tagMode,
   userId,
   ratingFrom,
   ratingTo,
@@ -32,10 +33,15 @@ export function createFilter({
   premium,
   license,
   sources,
-}: GalleryFilter): z.input<typeof GalleryFilterSchema> {
+}: GalleryFilter) {
   return {
     tag,
-    tagId,
+    tagId: tagIds,
+    // The API counts names and ids together.
+    tagMode:
+      tagMode === 'all' && filterTagCount({ tag, tagIds }) > 1
+        ? tagMode
+        : undefined,
     userId,
     ratingFrom,
     ratingTo,

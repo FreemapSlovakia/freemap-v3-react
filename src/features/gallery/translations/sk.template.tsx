@@ -183,6 +183,8 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     rating: 'Hodnotenie',
     noTags: 'bez tagov',
     tagSearch: 'Hľadať tag',
+    tagModeAny: 'Aspoň jeden',
+    tagModeAll: 'Všetky',
     pano: 'Panoráma',
     premium: 'Prémiové',
     source: 'Zdroj',

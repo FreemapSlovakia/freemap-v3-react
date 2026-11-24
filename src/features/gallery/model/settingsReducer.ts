@@ -4,6 +4,8 @@ import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { DEFAULT_PHOTO_LICENSE, type GalleryLicense } from '../licenses.js';
 import { isSameTag, type TagRef } from '../tagRefs.js';
 import {
+  filterTagCount,
+  filterTagIds,
   type GalleryColorizeBy,
   type GalleryFilter,
   galleryAddTag,
@@ -67,10 +69,18 @@ export const gallerySettingsReducer = createReducer(
         state.filter = action.payload;
       })
       .addCase(galleryFilterTagResolved, (state, action) => {
+        const tagIds = filterTagIds([
+          ...(state.filter.tagIds ?? []),
+          action.payload,
+        ]);
+
         state.filter = {
           ...state.filter,
           tag: undefined,
-          tagId: action.payload,
+          tagIds,
+          // The name may have been the id already there.
+          tagMode:
+            filterTagCount({ tagIds }) > 1 ? state.filter.tagMode : undefined,
         };
       })
       .addCase(mapsLoaded, (state, action) => {

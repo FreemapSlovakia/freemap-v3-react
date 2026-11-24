@@ -174,6 +174,8 @@ const fr: DeepPartialWithRequiredObjects<GalleryMessages> = {
     rating: 'Note',
     noTags: 'sans étiquette',
     tagSearch: 'Rechercher une étiquette',
+    tagModeAny: 'Au moins une',
+    tagModeAll: 'Toutes',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Source',

@@ -164,6 +164,8 @@ const de: DeepPartialWithRequiredObjects<GalleryMessages> = {
     rating: 'Bewertung',
     noTags: 'keine Tags',
     tagSearch: 'Tags durchsuchen',
+    tagModeAny: 'Mindestens einer',
+    tagModeAll: 'Alle',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Quelle',

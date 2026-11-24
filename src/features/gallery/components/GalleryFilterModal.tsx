@@ -46,7 +46,12 @@ import {
   LicenseBadge,
   PHOTO_LICENSES,
 } from '../licenses.js';
-import { gallerySetFilter } from '../model/actions.js';
+import {
+  filterTagCount,
+  filterTagIds,
+  gallerySetFilter,
+  MAX_FILTER_TAGS,
+} from '../model/actions.js';
 import {
   parseTagKey,
   tagKey,
@@ -59,8 +64,11 @@ import { TagRelationLine } from './TagRelationLine.js';
 
 type Props = { show: boolean };
 
-/** The select's value for photos with no tags; any other is a `tagKey`. */
+/** The value for photos with no tags; any other is a `tagKey`. */
 const NO_TAGS = '⌘';
+
+/** Prefixes a chosen tag's chip value. */
+const CHOSEN = 'chosen:';
 
 /** A tag not in the list: its name, else its id. */
 function shownTagKey(key: string) {
@@ -161,6 +169,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     return tree.map(
       ({ tag: { id, name, label, latin, count, synonyms }, depth, key }) => ({
         key,
+        name,
         value: tagKey({ id, name }),
         shown: '   '.repeat(depth) + shownOf.get(id),
         count,
@@ -172,7 +181,10 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     );
   }, [tags, language]);
 
-  const [tag, setTag] = useState('');
+  // `tagKey`s, or NO_TAGS alone.
+  const [chosen, setChosen] = useState<string[]>([]);
+
+  const [tagMode, setTagMode] = useState<'any' | 'all'>('any');
 
   const optionByKey = useMemo(
     () => new Map(tagOptions.map((option) => [option.key, option])),
@@ -243,33 +255,59 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     [suggestions, tagOptions, noTagsLabel],
   );
 
-  const selectedOption = tagOptions.find(({ value }) => value === tag);
+  // By `tagKey`, its first place in the tree.
+  const optionByValue = useMemo(() => {
+    const byValue = new Map<string, (typeof tagOptions)[number]>();
 
-  const selectedRelation = selectedOption?.relation;
+    for (const option of tagOptions) {
+      if (!byValue.has(option.value)) {
+        byValue.set(option.value, option);
+      }
+    }
+
+    return byValue;
+  }, [tagOptions]);
 
   // A name from an older link, or an id not in the list (gone, or the list
-  // still loading), shows by itself, so it can be cleared. Its value is no
-  // suggestion's: picking the chosen tag again would remove it.
-  const selectedTags =
-    tag === ''
-      ? []
-      : [
-          {
-            value: `chosen:${tag}`,
-            label:
-              tag === NO_TAGS
-                ? noTagsLabel
-                : (selectedOption?.shown.trimStart() ?? shownTagKey(tag)),
-          },
-        ];
+  // still loading), shows by itself, so it can be cleared. The value is no
+  // suggestion's: picking a chosen tag again would remove it.
+  const selectedTags = chosen.map((t) => ({
+    value: `${CHOSEN}${t}`,
+    label:
+      t === NO_TAGS
+        ? noTagsLabel
+        : (optionByValue.get(t)?.shown.trimStart() ?? shownTagKey(t)),
+  }));
 
+  // « no tags » excludes the others, and the other way round.
   const handleTagAdd = useCallback(
     ({ value }: Tag) => {
-      setTag(
-        value === NO_TAGS
-          ? NO_TAGS
-          : (optionByKey.get(value as string)?.value ?? ''),
-      );
+      if (value === NO_TAGS) {
+        setChosen([NO_TAGS]);
+
+        return;
+      }
+
+      const option = optionByKey.get(value as string);
+
+      if (option) {
+        const picked = option.value;
+
+        // A chip holding the same tag by its name (an older link) goes.
+        const sameName = tagKey({ name: option.name });
+
+        setChosen((prev) =>
+          prev.includes(picked) || prev.length >= MAX_FILTER_TAGS
+            ? prev
+            : [
+                ...prev.filter(
+                  (t) =>
+                    t !== NO_TAGS && tagNameKey(t) !== tagNameKey(sameName),
+                ),
+                picked,
+              ],
+        );
+      }
     },
     [optionByKey],
   );
@@ -297,15 +335,16 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   const [sources, setSources] = useState<GallerySource[]>(GALLERY_SOURCES);
 
   useEffect(() => {
-    setTag(
-      filter.tagId !== undefined
-        ? tagKey({ id: filter.tagId, name: '' })
-        : filter.tag === ''
-          ? NO_TAGS
-          : filter.tag
-            ? tagKey({ name: filter.tag })
-            : '',
+    setChosen(
+      filter.tag === ''
+        ? [NO_TAGS]
+        : [
+            ...(filter.tagIds ?? []).map((id) => tagKey({ id, name: '' })),
+            ...(filter.tag ? [tagKey({ name: filter.tag })] : []),
+          ],
     );
+
+    setTagMode(filter.tagMode ?? 'any');
 
     setUserId(
       typeof filter.userId === 'number' ? filter.userId.toString() : '',
@@ -415,15 +454,28 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
       dispatch(
         gallerySetFilter({
-          // An id, or a name from an older link or map, kept as it came.
-          ...(tag === NO_TAGS
+          // Ids, and a name from an older link or map, kept as it came.
+          ...(chosen.includes(NO_TAGS)
             ? { tag: '' }
             : (() => {
-                const parsed = parseTagKey(tag);
+                const parsed = chosen.map(parseTagKey);
 
-                return parsed && 'id' in parsed
-                  ? { tagId: parsed.id }
-                  : { tag: parsed?.name };
+                const tagIds = parsed.flatMap((p) =>
+                  p && 'id' in p ? [p.id] : [],
+                );
+
+                const tag = parsed.flatMap((p) =>
+                  p && 'name' in p ? [p.name] : [],
+                )[0];
+
+                return {
+                  tagIds: filterTagIds(tagIds),
+                  tagMode:
+                    tagMode === 'all' && filterTagCount({ tagIds, tag }) > 1
+                      ? ('all' as const)
+                      : undefined,
+                  tag,
+                };
               })()),
           userId: nn(userId ? parseInt(userId, 10) : undefined),
           takenAtFrom: nt(takenAtFrom ? new Date(takenAtFrom) : undefined),
@@ -447,7 +499,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     },
     [
       dispatch,
-      tag,
+      chosen,
+      tagMode,
       userId,
       takenAtFrom,
       takenAtTo,
@@ -513,7 +566,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   // panorama toggle (no Wikimedia photo is a panorama for us). Date/rating/
   // license just narrow them, so those carry no hint.
   const wikimediaExcludedHint = (
-    <Form.Text className="text-body-secondary">
+    <Form.Text className="d-block text-body-secondary">
       <SiWikimediacommons /> <Text m={gm} k="excludesWikimedia" />
     </Form.Text>
   );
@@ -552,7 +605,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
               suggestions={suggestions}
               suggestionsTransform={filterSuggestions}
               onAdd={handleTagAdd}
-              onDelete={() => setTag('')}
+              onDelete={(i) => setChosen((prev) => prev.toSpliced(i, 1))}
               collapseOnSelect
               // Without the library's "remove" title, which would show
               // beside the hierarchy tooltip.
@@ -561,32 +614,60 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
                 tag: selected,
                 title: _,
                 ...props
-              }) => (
-                // The selected tag's hierarchy and synonyms.
-                <LongPressTooltip
-                  label={
-                    selectedRelation && (
-                      <TagRelationLine relation={selectedRelation} />
-                    )
-                  }
-                  // False: counts as shown inline, so no tooltip opens.
-                  hideLabel={selectedRelation !== undefined}
-                >
-                  {({ props: tooltip }) => (
-                    <button
-                      type="button"
-                      className={classNames.tag}
-                      {...props}
-                      {...tooltip}
-                    >
-                      <span className={classNames.tagName}>
-                        {selected.label}
-                      </span>
-                    </button>
-                  )}
-                </LongPressTooltip>
-              )}
+              }) => {
+                // The chosen tag's hierarchy and synonyms.
+                const relation = optionByValue.get(
+                  String(selected.value).slice(CHOSEN.length),
+                )?.relation;
+
+                return (
+                  <LongPressTooltip
+                    label={relation && <TagRelationLine relation={relation} />}
+                    // False: counts as shown inline, so no tooltip opens.
+                    hideLabel={relation !== undefined}
+                  >
+                    {({ props: tooltip }) => (
+                      <button
+                        type="button"
+                        className={classNames.tag}
+                        {...props}
+                        {...tooltip}
+                      >
+                        <span className={classNames.tagName}>
+                          {selected.label}
+                        </span>
+                      </button>
+                    )}
+                  </LongPressTooltip>
+                );
+              }}
             />
+
+            {chosen.length > 1 && (
+              <FitToggleButtonGroup
+                type="radio"
+                name="filt-tag-mode"
+                className="mt-2"
+                value={tagMode}
+                onChange={(value: 'any' | 'all') => setTagMode(value)}
+              >
+                <ToggleButton
+                  id="filt-tag-any"
+                  value="any"
+                  variant="outline-primary"
+                >
+                  <Text m={gm} k="filterModal.tagModeAny" />
+                </ToggleButton>
+
+                <ToggleButton
+                  id="filt-tag-all"
+                  value="all"
+                  variant="outline-primary"
+                >
+                  <Text m={gm} k="filterModal.tagModeAll" />
+                </ToggleButton>
+              </FitToggleButtonGroup>
+            )}
 
             {wikimediaExcludedHint}
           </Form.Group>
