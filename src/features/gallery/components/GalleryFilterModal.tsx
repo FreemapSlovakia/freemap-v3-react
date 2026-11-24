@@ -34,7 +34,11 @@ import { FaCamera, FaCheck, FaEraser, FaFilter } from 'react-icons/fa';
 import { IoFlower } from 'react-icons/io5';
 import { SiWikimediacommons } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
-import { ReactTags, type Tag } from 'react-tag-autocomplete';
+import {
+  type ListBoxRendererProps,
+  ReactTags,
+  type Tag,
+} from 'react-tag-autocomplete';
 import '@shared/styles/react-tags.scss';
 import { GALLERY_SOURCES, type GallerySource } from '../galleryUtils.js';
 import {
@@ -70,6 +74,44 @@ function shownTagKey(key: string) {
  * photos; a broader tag without them gets no "(0)", which would hide what its
  * narrower tags find.
  */
+/**
+ * ReactTags' list reaching down to the bottom of the modal body, measured as
+ * it renders: any taller, and the body would scroll too.
+ */
+function FittedListBox({
+  children,
+  classNames,
+  ref,
+  ...props
+}: ListBoxRendererProps): ReactElement {
+  return (
+    <div
+      className={classNames.listBox}
+      {...props}
+      ref={(el) => {
+        if (typeof ref === 'function') {
+          ref(el);
+        } else if (ref) {
+          ref.current = el;
+        }
+
+        const body = el?.closest('.modal-body');
+
+        if (el && body) {
+          const bottom =
+            body.getBoundingClientRect().bottom -
+            Number.parseFloat(getComputedStyle(body).paddingBottom);
+
+          // At least the shared style's 12.5rem, short as the room may be.
+          el.style.maxHeight = `${Math.max(200, bottom - el.getBoundingClientRect().top)}px`;
+        }
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 function suggestionLabel(
   { shown, count }: { shown: string; count: number },
   synonym?: string,
@@ -499,53 +541,52 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             </Form.Label>
 
             {/* At most one tag: picking another replaces it. */}
-            <div className="fm-react-tags-tall">
-              <ReactTags
-                id="tag"
-                placeholderText={gm?.filterModal.tagSearch}
-                noOptionsText={m?.general.noOptionsText}
-                activateFirstOption
-                deleteButtonText={m?.general.deleteButtonText}
-                selected={selectedTags}
-                suggestions={suggestions}
-                suggestionsTransform={filterSuggestions}
-                onAdd={handleTagAdd}
-                onDelete={() => setTag('')}
-                collapseOnSelect
-                // Without the library's "remove" title, which would show
-                // beside the hierarchy tooltip.
-                renderTag={({
-                  classNames,
-                  tag: selected,
-                  title: _,
-                  ...props
-                }) => (
-                  // The selected tag's hierarchy and synonyms.
-                  <LongPressTooltip
-                    label={
-                      selectedRelation && (
-                        <TagRelationLine relation={selectedRelation} />
-                      )
-                    }
-                    // False: counts as shown inline, so no tooltip opens.
-                    hideLabel={selectedRelation !== undefined}
-                  >
-                    {({ props: tooltip }) => (
-                      <button
-                        type="button"
-                        className={classNames.tag}
-                        {...props}
-                        {...tooltip}
-                      >
-                        <span className={classNames.tagName}>
-                          {selected.label}
-                        </span>
-                      </button>
-                    )}
-                  </LongPressTooltip>
-                )}
-              />
-            </div>
+            <ReactTags
+              id="tag"
+              renderListBox={FittedListBox}
+              placeholderText={gm?.filterModal.tagSearch}
+              noOptionsText={m?.general.noOptionsText}
+              activateFirstOption
+              deleteButtonText={m?.general.deleteButtonText}
+              selected={selectedTags}
+              suggestions={suggestions}
+              suggestionsTransform={filterSuggestions}
+              onAdd={handleTagAdd}
+              onDelete={() => setTag('')}
+              collapseOnSelect
+              // Without the library's "remove" title, which would show
+              // beside the hierarchy tooltip.
+              renderTag={({
+                classNames,
+                tag: selected,
+                title: _,
+                ...props
+              }) => (
+                // The selected tag's hierarchy and synonyms.
+                <LongPressTooltip
+                  label={
+                    selectedRelation && (
+                      <TagRelationLine relation={selectedRelation} />
+                    )
+                  }
+                  // False: counts as shown inline, so no tooltip opens.
+                  hideLabel={selectedRelation !== undefined}
+                >
+                  {({ props: tooltip }) => (
+                    <button
+                      type="button"
+                      className={classNames.tag}
+                      {...props}
+                      {...tooltip}
+                    >
+                      <span className={classNames.tagName}>
+                        {selected.label}
+                      </span>
+                    </button>
+                  )}
+                </LongPressTooltip>
+              )}
+            />
 
             {wikimediaExcludedHint}
           </Form.Group>
