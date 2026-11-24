@@ -36,6 +36,8 @@ A result you have not kept goes away when you close its panel with × or press <
 
 Clicking into the empty box lists :FaMapPin: **My places**, the [places saved in your account](#show=manual/account); typing finds them by name too. Picking one marks it on the map like a found place, with the same panel.
 
+Under **Objects (POIs)** follow the types of places shown on the map, each ticked; unticking one hides it from the map.
+
 Below them are the **Recent searches**: the last eight places, coordinates, bounding boxes and tiles picked from the list, newest first. Picking one goes to it again; :FaTimes: or <kbd>Delete</kbd> on a row forgets it.
 
 How results are drawn is set in :FaPaintBrush: **Lookup style** at the end of the box's list, followed by :FaBook: **Manual**, which opens this chapter; with the box empty, ▾ beside it opens these two rows, under the recent searches if there are any.

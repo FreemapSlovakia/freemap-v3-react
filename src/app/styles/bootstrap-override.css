@@ -243,6 +243,8 @@ legend {
 .dropdown-caption-divider::after {
   content: "";
   flex: 1;
+  /* Kept visible where the caption is what sizes the menu. */
+  min-width: 1rem;
   border-bottom: 1px solid var(--bs-border-color);
 }
 

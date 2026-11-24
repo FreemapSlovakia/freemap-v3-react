@@ -21,6 +21,7 @@ import { SourceName } from '@features/objects/components/SourceName.js';
 import { objectsSetFilter } from '@features/objects/model/actions.js';
 import type { ObjectCategory } from '@features/objects/objectCategories.js';
 import { sameFilter } from '@features/objects/useMatchedCategories.js';
+import { useObjectCategories } from '@features/objects/useObjectCategories.js';
 import { usePoiMatches } from '@features/objects/usePoiMatches.js';
 import { isLocalSearchQuery } from '@features/search/localQuery.js';
 import { pickShowsDetailsSelector } from '@features/search/model/selectors.js';
@@ -68,6 +69,7 @@ import {
   type ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -120,6 +122,8 @@ type Props = {
 
 // One empty list, so the effects that depend on it don't run every render.
 const NO_PLACES: PlaceMatch[] = [];
+
+const NO_POSITIONS: number[] = [];
 
 /**
  * A saved place as a search result, to preview and to pick. Its id is the
@@ -303,6 +307,50 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const objectsActive = useAppSelector((state) => state.objects.active);
 
+  // The categories listed under an empty box, so they can be switched off from
+  // here. One unticked there stays listed while the list is up.
+  // TODO: rows cleared elsewhere (Clear map) stay listed until the list closes;
+  // offline, ticking one back on starts a fetch that fails.
+  const [poiShelf, setPoiShelf] = useState<string[]>([]);
+
+  const shelfKeys = useMemo(
+    () =>
+      window.fmEmbedded
+        ? []
+        : [
+            ...poiShelf,
+            ...objectsActive.filter(
+              (key) => !poiShelf.some((s) => sameFilter(s, key)),
+            ),
+          ],
+    [poiShelf, objectsActive],
+  );
+
+  const allCategories = useObjectCategories(!value && shelfKeys.length > 0);
+
+  // Held back until the names land, so the rows don't show raw tags first. A
+  // filter no category names (one from an old link) shows as its tags.
+  const shelfCategories = useMemo(
+    () =>
+      value || allCategories.length === 0
+        ? []
+        : shelfKeys.map(
+            (key): ObjectCategory =>
+              allCategories.find((c) => sameFilter(c.key, key)) ?? {
+                key,
+                name: key,
+                tags: key.split(',').map((tag) => {
+                  const at = tag.indexOf('=');
+
+                  return at < 0
+                    ? { key: tag }
+                    : { key: tag.slice(0, at), value: tag.slice(at + 1) };
+                }),
+              },
+          ),
+    [value, shelfKeys, allCategories],
+  );
+
   // The POI categories the query names, which switch what the map shows rather
   // than going somewhere. Offline they are left out: the objects are fetched.
   const poiMatches = usePoiMatches(
@@ -340,11 +388,14 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const recentShown = !value && results.length === 0 && hasRecent;
 
   // What an empty box lists.
-  const emptyListShown = recentShown || (!value && shownPlaces.length > 0);
+  const emptyListShown =
+    recentShown ||
+    (!value && (shownPlaces.length > 0 || shelfCategories.length > 0));
 
   const hasRows =
     results.length > 0 ||
     shownPlaces.length > 0 ||
+    shelfCategories.length > 0 ||
     commands.length > 0 ||
     poiMatches.length > 0 ||
     eventMatches.length > 0 ||
@@ -436,12 +487,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
         // Opened here, by the user emptying the box, rather than by the effect
         // below, which would also open it after a command pick empties it.
-        if (!value && (hasRecent || hasPlaces)) {
+        if (
+          !value &&
+          (hasRecent ||
+            hasPlaces ||
+            (objectsActive.length > 0 && !window.fmEmbedded))
+        ) {
           setOpen(true);
         }
       }
     },
-    [dispatch, query, results.length, hasRecent, hasPlaces],
+    [dispatch, query, results.length, hasRecent, hasPlaces, objectsActive],
   );
 
   // After a pick that goes nowhere in the results: the box is emptied and the
@@ -509,6 +565,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
         trackMatomo(['trackEvent', 'Search', 'poi', key]);
 
         const index = objectsActive.findIndex((item) => sameFilter(item, key));
+
+        if (!value) {
+          setPoiShelf(shelfKeys);
+        }
 
         dispatch(
           objectsSetFilter(
@@ -636,6 +696,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       value,
       recent,
       objectsActive,
+      shelfKeys,
       spendQuery,
       dispatch,
       store,
@@ -786,6 +847,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   useEffect(() => {
     if (!open) {
       dispatch(searchSetHover(null));
+
+      setPoiShelf([]);
     }
   }, [open, dispatch]);
 
@@ -926,6 +989,21 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
           {shownPlaces.map(({ place, positions }) => (
             <PlaceItem key={place.key} place={place} positions={positions} />
+          ))}
+
+          {shelfCategories.length > 0 && (
+            <div className="dropdown-caption-divider">
+              <Text k="tools.objects" />
+            </div>
+          )}
+
+          {shelfCategories.map((category) => (
+            <PoiItem
+              key={category.key}
+              category={category}
+              positions={NO_POSITIONS}
+              active={activeIndexOf(category.key) > -1}
+            />
           ))}
 
           {functionMatches.length > 0 && (
@@ -1227,7 +1305,7 @@ function ResultItem({
   );
 }
 
-/** A POI category the query named: a checkbox that switches it on the map. */
+/** A POI category: a checkbox that switches it on the map. */
 function PoiItem({
   category,
   positions,

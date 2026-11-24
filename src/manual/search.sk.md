@@ -36,6 +36,8 @@ Výsledok, ktorý ste neponechali, zmizne, keď jeho panel zatvoríte tlačidlom
 
 Kliknutím do prázdneho poľa sa zobrazia :FaMapPin: **Moje miesta**, [miesta uložené vo vašom účte](#show=manual/account); nájdete ich aj napísaním názvu. Vybrané miesto sa na mape označí ako nájdené miesto, s rovnakým panelom.
 
+Pod **Objekty (POI)** nasledujú druhy miest zobrazené na mape, každý zaškrtnutý; zrušením zaškrtnutia ho z mapy skryjete.
+
 Pod nimi sú **Nedávne hľadania**: posledných osem miest, súradníc, ohraničení a dlaždíc vybraných zo zoznamu, najnovšie navrchu. Výberom niektorého sa naň znova presuniete; :FaTimes: alebo <kbd>Delete</kbd> na riadku ho zabudne.
 
 Ako sa výsledky vykresľujú, nastavíte v :FaPaintBrush: **Štýl nálezu** na konci zoznamu poľa, za ktorým nasleduje :FaBook: **Príručka** otvárajúca túto kapitolu; pri prázdnom poli ▾ vedľa neho otvorí tieto dva riadky, pod nedávnymi hľadaniami, ak nejaké sú.
