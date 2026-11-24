@@ -180,6 +180,7 @@ const en: GalleryMessages = {
     author: 'Author',
     rating: 'Rating',
     noTags: 'no tags',
+    tagSearch: 'Search tags',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Source',

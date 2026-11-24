@@ -193,6 +193,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     refundPolicy: 'Pravilnik o vračilu denarja',
     infoAndLegal: 'Informacije o zemljevidu in pravni pogoji',
     newOptionText: 'Dodaj %value%',
+    noOptionsText: 'Za %value% ni zadetkov',
     deleteButtonText: 'Odstrani %value% s seznama',
     accept: 'Sprejmi',
     externalService: 'Storitev tretje osebe z omejitvami uporabe',

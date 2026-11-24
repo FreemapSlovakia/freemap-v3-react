@@ -195,6 +195,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     refundPolicy: 'Visszatérítési szabályzat',
     infoAndLegal: 'Térképinformációk és jogi tudnivalók',
     newOptionText: '%value% hozzáadása',
+    noOptionsText: 'Nincs találat: %value%',
     deleteButtonText: '%value% eltávolítása a listáról',
     accept: 'Elfogadás',
     externalService: 'Külső szolgáltatás, használati korlátozásokkal',

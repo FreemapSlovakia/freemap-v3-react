@@ -158,6 +158,7 @@ export type Messages = {
     refundPolicy: string;
     infoAndLegal: string;
     newOptionText: string;
+    noOptionsText: string;
     deleteButtonText: string;
     accept: string;
   };

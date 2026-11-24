@@ -127,6 +127,7 @@ export type GalleryMessages = {
     author: string;
     rating: string;
     noTags: string;
+    tagSearch: string;
     pano: string;
     premium: string;
     source: string;

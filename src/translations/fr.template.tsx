@@ -197,6 +197,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     refundPolicy: 'Politique de remboursement',
     infoAndLegal: 'Informations sur la carte et mentions légales',
     newOptionText: 'Ajouter %value%',
+    noOptionsText: 'Aucun résultat pour %value%',
     deleteButtonText: 'Retirer %value% de la liste',
     accept: 'Accepter',
     externalService: 'Service tiers, soumis à des restrictions d’utilisation',

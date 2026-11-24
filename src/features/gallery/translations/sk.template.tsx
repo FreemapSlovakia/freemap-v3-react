@@ -182,6 +182,7 @@ const sk: DeepPartialWithRequiredObjects<GalleryMessages> = {
     author: 'Autor',
     rating: 'Hodnotenie',
     noTags: 'bez tagov',
+    tagSearch: 'Hľadať tag',
     pano: 'Panoráma',
     premium: 'Prémiové',
     source: 'Zdroj',

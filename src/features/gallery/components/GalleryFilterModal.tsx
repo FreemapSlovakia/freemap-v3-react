@@ -10,10 +10,7 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
-import {
-  LongPressTooltip,
-  type TooltipTargetProps,
-} from '@shared/components/LongPressTooltip.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -37,6 +34,8 @@ import { FaCamera, FaCheck, FaEraser, FaFilter } from 'react-icons/fa';
 import { IoFlower } from 'react-icons/io5';
 import { SiWikimediacommons } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
+import { ReactTags, type Tag } from 'react-tag-autocomplete';
+import '@shared/styles/react-tags.scss';
 import { GALLERY_SOURCES, type GallerySource } from '../galleryUtils.js';
 import {
   type GalleryLicense,
@@ -44,7 +43,13 @@ import {
   PHOTO_LICENSES,
 } from '../licenses.js';
 import { gallerySetFilter } from '../model/actions.js';
-import { parseTagKey, tagKey, tagRelations, tagTree } from '../tagRefs.js';
+import {
+  parseTagKey,
+  tagKey,
+  tagNameKey,
+  tagRelations,
+  tagTree,
+} from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { TagRelationLine } from './TagRelationLine.js';
 
@@ -58,6 +63,18 @@ function shownTagKey(key: string) {
   const parsed = parseTagKey(key);
 
   return parsed && 'id' in parsed ? `#${parsed.id}` : (parsed?.name ?? key);
+}
+
+/**
+ * A suggestion's text: indented, the synonym it was found by, and its own
+ * photos; a broader tag without them gets no "(0)", which would hide what its
+ * narrower tags find.
+ */
+function suggestionLabel(
+  { shown, count }: { shown: string; count: number },
+  synonym?: string,
+) {
+  return `${shown}${synonym ? ` (= ${synonym})` : ''}${count > 0 ? ` (${count})` : ''}`;
 }
 
 export default function GalleryFilterModal({ show }: Props): ReactElement {
@@ -99,20 +116,121 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
     const relations = tagRelations(tags, language);
 
-    return tree.map(({ tag: { id, name, count }, depth, key }) => ({
-      key,
-      value: tagKey({ id, name }),
-      shown: '   '.repeat(depth) + shownOf.get(id),
-      count,
-      relation: relations.get(id),
-    }));
+    return tree.map(
+      ({ tag: { id, name, label, latin, count, synonyms }, depth, key }) => ({
+        key,
+        value: tagKey({ id, name }),
+        shown: '   '.repeat(depth) + shownOf.get(id),
+        count,
+        relation: relations.get(id),
+        // What the search box finds it by; synonyms apart, to tell the hit.
+        own: [label, name, latin].flatMap((s) => (s ? [tagNameKey(s)] : [])),
+        synonyms: synonyms.map((s) => [s, tagNameKey(s)] as const),
+      }),
+    );
   }, [tags, language]);
 
   const [tag, setTag] = useState('');
 
-  const selectedRelation = tagOptions.find(
-    ({ value }) => value === tag,
-  )?.relation;
+  const optionByKey = useMemo(
+    () => new Map(tagOptions.map((option) => [option.key, option])),
+    [tagOptions],
+  );
+
+  const noTagsLabel = `« ${gm?.filterModal.noTags ?? ''} »`;
+
+  // By its place in the tree: a tag under two broader ones is two suggestions.
+  const suggestions = useMemo(
+    () => [
+      { value: NO_TAGS, label: noTagsLabel },
+      ...tagOptions.map((option) => ({
+        value: option.key,
+        label: suggestionLabel(option),
+      })),
+    ],
+    [tagOptions, noTagsLabel],
+  );
+
+  // The matches, each with the broader tags on its path.
+  const filterSuggestions = useCallback(
+    (query: string) => {
+      const q = tagNameKey(query);
+
+      if (!q) {
+        return suggestions;
+      }
+
+      const hits = new Map<string, string | undefined>();
+
+      for (const option of tagOptions) {
+        if (option.own.some((s) => s.includes(q))) {
+          hits.set(option.key, undefined);
+        } else {
+          const synonym = option.synonyms.find(([, k]) => k.includes(q));
+
+          if (synonym) {
+            hits.set(option.key, synonym[0]);
+          }
+        }
+      }
+
+      // A key is its path of ids, "/1/5/9", so its prefixes are its ancestors.
+      const kept = new Set(
+        [...hits.keys()].flatMap((key) =>
+          key
+            .split('/')
+            .slice(1)
+            .map((_, i, ids) => `/${ids.slice(0, i + 1).join('/')}`),
+        ),
+      );
+
+      return [
+        ...(tagNameKey(noTagsLabel).includes(q) ? [suggestions[0]] : []),
+        ...tagOptions.flatMap((option) =>
+          kept.has(option.key)
+            ? [
+                {
+                  value: option.key,
+                  label: suggestionLabel(option, hits.get(option.key)),
+                },
+              ]
+            : [],
+        ),
+      ];
+    },
+    [suggestions, tagOptions, noTagsLabel],
+  );
+
+  const selectedOption = tagOptions.find(({ value }) => value === tag);
+
+  const selectedRelation = selectedOption?.relation;
+
+  // A name from an older link, or an id not in the list (gone, or the list
+  // still loading), shows by itself, so it can be cleared. Its value is no
+  // suggestion's: picking the chosen tag again would remove it.
+  const selectedTags =
+    tag === ''
+      ? []
+      : [
+          {
+            value: `chosen:${tag}`,
+            label:
+              tag === NO_TAGS
+                ? noTagsLabel
+                : (selectedOption?.shown.trimStart() ?? shownTagKey(tag)),
+          },
+        ];
+
+  const handleTagAdd = useCallback(
+    ({ value }: Tag) => {
+      setTag(
+        value === NO_TAGS
+          ? NO_TAGS
+          : (optionByKey.get(value as string)?.value ?? ''),
+      );
+    },
+    [optionByKey],
+  );
 
   const [userId, setUserId] = useState('');
 
@@ -191,10 +309,6 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
     setSources(filter.sources ?? GALLERY_SOURCES);
   }, [filter]);
-
-  const handleTagChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-    setTag(e.currentTarget.value);
-  }, []);
 
   const handleUserIdChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -362,32 +476,6 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     </Form.Text>
   );
 
-  const tagSelect = (props: TooltipTargetProps) => (
-    <Form.Select value={tag} onChange={handleTagChange} {...props}>
-      <option value="" />
-
-      <option value={NO_TAGS}>« {gm?.filterModal.noTags} »</option>
-
-      {/* A name from an older link, or an id not in the list (gone, or the
-          list still loading): shown, so it can be cleared. */}
-      {tag &&
-        tag !== NO_TAGS &&
-        !tagOptions.some(({ value }) => value === tag) && (
-          <option value={tag}>{shownTagKey(tag)}</option>
-        )}
-
-      {/* Own photos only; a broader tag without them gets no "(0)", which
-          would hide what its narrower tags find. */}
-      {/* A tag under two broader ones is two options of one value. */}
-      {tagOptions.map(({ key, value, shown, count }) => (
-        <option key={key} value={value}>
-          {shown}
-          {count > 0 && ` (${count})`}
-        </option>
-      ))}
-    </Form.Select>
-  );
-
   return (
     <Modal
       show={show}
@@ -404,24 +492,60 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
         </Modal.Header>
 
         <Modal.Body>
-          <Form.Group controlId="tag" className="mb-3">
+          {/* ReactTags names its input "<id>-input". */}
+          <Form.Group controlId="tag-input" className="mb-3">
             <Form.Label>
               <Text m={gm} k="filterModal.tag" />
             </Form.Label>
 
-            {/* An open list's options take no tooltip, so the selected one's
-                hangs on the select. */}
-            <LongPressTooltip
-              label={
-                selectedRelation && (
-                  <TagRelationLine relation={selectedRelation} />
-                )
-              }
-              // False: counts as shown inline, so no tooltip opens.
-              hideLabel={selectedRelation !== undefined}
-            >
-              {({ props }) => tagSelect(props)}
-            </LongPressTooltip>
+            {/* At most one tag: picking another replaces it. */}
+            <div className="fm-react-tags-tall">
+              <ReactTags
+                id="tag"
+                placeholderText={gm?.filterModal.tagSearch}
+                noOptionsText={m?.general.noOptionsText}
+                activateFirstOption
+                deleteButtonText={m?.general.deleteButtonText}
+                selected={selectedTags}
+                suggestions={suggestions}
+                suggestionsTransform={filterSuggestions}
+                onAdd={handleTagAdd}
+                onDelete={() => setTag('')}
+                collapseOnSelect
+                // Without the library's "remove" title, which would show
+                // beside the hierarchy tooltip.
+                renderTag={({
+                  classNames,
+                  tag: selected,
+                  title: _,
+                  ...props
+                }) => (
+                  // The selected tag's hierarchy and synonyms.
+                  <LongPressTooltip
+                    label={
+                      selectedRelation && (
+                        <TagRelationLine relation={selectedRelation} />
+                      )
+                    }
+                    // False: counts as shown inline, so no tooltip opens.
+                    hideLabel={selectedRelation !== undefined}
+                  >
+                    {({ props: tooltip }) => (
+                      <button
+                        type="button"
+                        className={classNames.tag}
+                        {...props}
+                        {...tooltip}
+                      >
+                        <span className={classNames.tagName}>
+                          {selected.label}
+                        </span>
+                      </button>
+                    )}
+                  </LongPressTooltip>
+                )}
+              />
+            </div>
 
             {wikimediaExcludedHint}
           </Form.Group>

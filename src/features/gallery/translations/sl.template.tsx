@@ -183,6 +183,7 @@ const sl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     author: 'Avtor',
     rating: 'Ocena',
     noTags: 'brez oznak',
+    tagSearch: 'Iskanje oznak',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Vir',

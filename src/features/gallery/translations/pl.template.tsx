@@ -163,6 +163,7 @@ const pl: DeepPartialWithRequiredObjects<GalleryMessages> = {
     author: 'Autor',
     rating: 'Ocena',
     noTags: 'brak tagów',
+    tagSearch: 'Szukaj tagu',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Źródło',

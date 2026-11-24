@@ -190,6 +190,7 @@ const messages: Messages = {
     refundPolicy: 'Refund policy',
     infoAndLegal: 'Map information and legal',
     newOptionText: 'Add %value%',
+    noOptionsText: 'Nothing found for %value%',
     deleteButtonText: 'Remove %value% from the list',
     accept: 'Accept',
   },

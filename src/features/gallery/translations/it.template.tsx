@@ -198,6 +198,7 @@ const it: DeepPartialWithRequiredObjects<GalleryMessages> = {
     author: 'Autore',
     rating: 'Valutazione',
     noTags: 'no tag',
+    tagSearch: 'Cerca tag',
     pano: 'Panorama',
     premium: 'Premium',
     source: 'Fonte',

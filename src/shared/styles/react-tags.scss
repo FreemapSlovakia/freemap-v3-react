@@ -136,7 +136,8 @@
 
   &__listbox {
     position: absolute;
-    z-index: 1;
+    /* Above controls further down, like a button group's active button (1). */
+    z-index: 5;
     top: calc(100% + 5px);
     /* Negate the border width on the container */
     left: -2px;
@@ -213,4 +214,10 @@
     line-height: 1.5rem;
     color: #00000080;
   }
+}
+
+/* A long list browsed rather than typed into, at the top of a modal: down to
+   the footer, as a taller one would scroll the modal too. */
+.fm-react-tags-tall .react-tags__listbox {
+  max-height: max(12.5rem, calc(100dvh - 24.5rem));
 }

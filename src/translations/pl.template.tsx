@@ -193,6 +193,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     refundPolicy: 'Zasady zwrotu pieniędzy',
     infoAndLegal: 'Informacje o mapie i kwestie prawne',
     newOptionText: 'Dodaj %value%',
+    noOptionsText: 'Brak wyników dla %value%',
     deleteButtonText: 'Usuń %value% z listy',
     accept: 'Zaakceptować',
     externalService: 'Usługa zewnętrzna z ograniczeniami użytkowania',

@@ -198,6 +198,7 @@ const hu: DeepPartialWithRequiredObjects<GalleryMessages> = {
     author: 'Szerző',
     rating: 'Értékelés',
     noTags: 'nincs címke',
+    tagSearch: 'Címke keresése',
     pano: 'Panoráma',
     premium: 'Prémium',
     source: 'Forrás',

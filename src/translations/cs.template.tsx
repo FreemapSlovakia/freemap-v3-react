@@ -195,6 +195,7 @@ const messages: DeepPartialWithRequiredObjects<Messages> = {
     refundPolicy: 'Zásady vrácení peněz',
     infoAndLegal: 'Informace o mapě a právní podmínky',
     newOptionText: 'Přidat %value%',
+    noOptionsText: 'Pro %value% nebylo nic nalezeno',
     deleteButtonText: 'Odebrat %value% ze seznamu',
     accept: 'Přijmout',
     externalService: 'Cizí služba s omezeními použití',
