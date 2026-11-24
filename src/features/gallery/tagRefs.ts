@@ -133,69 +133,120 @@ export function findTag<T extends IndexedTag>(
   );
 }
 
+type TreeTag = { id: number; parentIds: number[] };
+
+/** Its broader tags that are in the list. */
+function parentsIn<T extends TreeTag>(byId: Map<number, T>, tag: T): number[] {
+  return tag.parentIds.filter((p) => p !== tag.id && byId.has(p));
+}
+
 /**
- * The tags in tree order, each after its broader tag and siblings sorted by
- * `compare`; a tag whose broader one is missing, or in a cycle, is a root.
+ * The tags in tree order, under each of their broader tags, siblings sorted by
+ * `compare`. A cycle is cut where a tag recurs on its path; one reachable only
+ * through a cycle is a root.
  */
-export function tagTree<T extends { id: number; parentId: number | null }>(
+export function tagTree<T extends TreeTag>(
   tags: T[],
   compare: (a: T, b: T) => number,
-): { tag: T; depth: number }[] {
+): { tag: T; depth: number; key: string }[] {
   const byId = new Map(tags.map((t) => [t.id, t]));
 
-  // On a loop itself; one hanging below a loop stays under its parent.
-  const inCycle = (t: T) => {
+  const children = new Map<number, T[]>();
+
+  for (const tag of tags) {
+    for (const p of parentsIn(byId, tag)) {
+      children.set(p, [...(children.get(p) ?? []), tag]);
+    }
+  }
+
+  const out: { tag: T; depth: number; key: string }[] = [];
+
+  const placed = new Set<number>();
+
+  const visit = (
+    siblings: T[],
+    depth: number,
+    path: Set<number>,
+    prefix: string,
+  ) => {
+    for (const tag of siblings.toSorted(compare)) {
+      if (path.has(tag.id)) {
+        continue;
+      }
+
+      const key = `${prefix}/${tag.id}`;
+
+      out.push({ tag, depth, key });
+
+      placed.add(tag.id);
+
+      visit(
+        children.get(tag.id) ?? [],
+        depth + 1,
+        new Set(path).add(tag.id),
+        key,
+      );
+    }
+  };
+
+  visit(
+    tags.filter((t) => parentsIn(byId, t).length === 0),
+    0,
+    new Set(),
+    '',
+  );
+
+  // Whether its broader tags lead back to it.
+  const onCycle = (tag: T) => {
     const seen = new Set<number>();
 
-    for (let p = t.parentId; p !== null; p = byId.get(p)?.parentId ?? null) {
-      if (p === t.id) {
+    const stack = parentsIn(byId, tag);
+
+    while (stack.length) {
+      const id = stack.pop()!;
+
+      if (id === tag.id) {
         return true;
       }
 
-      if (seen.has(p)) {
-        return false;
-      }
+      if (!seen.has(id)) {
+        seen.add(id);
 
-      seen.add(p);
+        stack.push(...parentsIn(byId, byId.get(id)!));
+      }
     }
 
     return false;
   };
 
-  const isRoot = (t: T) =>
-    t.parentId === null || !byId.has(t.parentId) || inCycle(t);
-
-  const children = Map.groupBy(
-    tags.filter((t) => !isRoot(t)),
-    (t) => t.parentId!,
-  );
-
-  const out: { tag: T; depth: number }[] = [];
-
-  const visit = (siblings: T[], depth: number) => {
-    for (const tag of siblings.toSorted(compare)) {
-      out.push({ tag, depth });
-
-      visit(children.get(tag.id) ?? [], depth + 1);
+  // A cycle's tags as roots, so one hanging below it stays in its place.
+  for (const pass of [onCycle, () => true]) {
+    for (const tag of tags.toSorted(compare)) {
+      if (!placed.has(tag.id) && pass(tag)) {
+        visit([tag], 0, new Set(), '');
+      }
     }
-  };
-
-  visit(tags.filter(isRoot), 0);
+  }
 
   return out;
 }
 
-type RelatedTag = {
-  id: number;
+type RelatedTag = TreeTag & {
   name: string;
   label?: string | null;
-  parentId: number | null;
   synonyms: string[];
 };
 
-/** A tag's place by the names shown; broader ones broadest first. */
+/** Paths shown in a tooltip; more end in "…". */
+const MAX_PATHS = 4;
+
+/**
+ * A tag's place by the names shown: each path from a root, broadest first,
+ * without the tag itself.
+ */
 export type TagRelation = {
-  broader: string[];
+  paths: string[][];
+  morePaths: boolean;
   shown: string;
   synonyms: string[];
   narrower: string[];
@@ -217,31 +268,83 @@ export function tagRelations(
     return relations;
   }
 
-  const shownOf = new Map(tags.map((t) => [t.id, t.label ?? t.name]));
+  const byId = new Map(tags.map((t) => [t.id, t]));
 
-  // As placed in the tree, so a cycle never loops.
-  const parentOf = new Map(
-    tagTree(tags, () => 0).flatMap(({ tag, depth }) =>
-      depth ? [[tag.id, tag.parentId!] as const] : [],
-    ),
-  );
+  const shownOf = (id: number) => {
+    const t = byId.get(id)!;
 
-  const childrenOf = Map.groupBy(parentOf.keys(), (id) => parentOf.get(id)!);
+    return t.label ?? t.name;
+  };
 
-  relations = new Map(
-    tags.flatMap(({ id, synonyms }) => {
-      const broader: string[] = [];
+  const compare = makeLabelComparator(language);
 
-      for (let p = parentOf.get(id); p !== undefined; p = parentOf.get(p)) {
-        broader.unshift(shownOf.get(p)!);
+  const childrenOf = new Map<number, number[]>();
+
+  for (const tag of tags) {
+    for (const p of parentsIn(byId, tag)) {
+      childrenOf.set(p, [...(childrenOf.get(p) ?? []), tag.id]);
+    }
+  }
+
+  // Up to one past the limit, to know there are more.
+  const pathsOf = (tag: RelatedTag) => {
+    const paths: number[][] = [];
+
+    // Paths cut short by a cycle, shown only when no path reaches a root.
+    const cut: number[][] = [];
+
+    // `above`: the path so far, nearest first.
+    const up = (id: number, above: number[]) => {
+      // Both bounded: a cluster of cycles has paths without end.
+      if (paths.length > MAX_PATHS || cut.length > MAX_PATHS) {
+        return;
       }
 
-      const narrower = (childrenOf.get(id) ?? [])
-        .map((c) => shownOf.get(c)!)
-        .toSorted(makeLabelComparator(language));
+      const all = parentsIn(byId, byId.get(id)!);
 
-      return broader.length || narrower.length || synonyms.length
-        ? [[id, { broader, shown: shownOf.get(id)!, synonyms, narrower }]]
+      const parents = all.filter((p) => p !== tag.id && !above.includes(p));
+
+      if (parents.length === 0) {
+        if (above.length) {
+          (all.length ? cut : paths).push(above.toReversed());
+        }
+
+        return;
+      }
+
+      for (const p of parents) {
+        up(p, [...above, p]);
+      }
+    };
+
+    up(tag.id, []);
+
+    return (paths.length ? paths : cut)
+      .map((path) => path.map(shownOf))
+      .toSorted((a, b) => compare(a.join(' '), b.join(' ')));
+  };
+
+  relations = new Map(
+    tags.flatMap((tag) => {
+      const paths = pathsOf(tag);
+
+      const narrower = (childrenOf.get(tag.id) ?? [])
+        .map(shownOf)
+        .toSorted(compare);
+
+      return paths.length || narrower.length || tag.synonyms.length
+        ? [
+            [
+              tag.id,
+              {
+                paths: paths.slice(0, MAX_PATHS),
+                morePaths: paths.length > MAX_PATHS,
+                shown: shownOf(tag.id),
+                synonyms: tag.synonyms,
+                narrower,
+              },
+            ],
+          ]
         : [];
     }),
   );

@@ -77,7 +77,7 @@ export const GalleryTagSchema = z.object({
   ...PictureTagSchema.shape,
   count: z.number(),
   synonyms: z.array(z.string()).default([]),
-  parentId: z.number().nullable().default(null),
+  parentIds: z.array(z.number()).default([]),
 });
 
 export type GalleryTag = z.infer<typeof GalleryTagSchema>;

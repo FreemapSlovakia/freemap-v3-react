@@ -99,7 +99,8 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
     const relations = tagRelations(tags, language);
 
-    return tree.map(({ tag: { id, name, count }, depth }) => ({
+    return tree.map(({ tag: { id, name, count }, depth, key }) => ({
+      key,
       value: tagKey({ id, name }),
       shown: '   '.repeat(depth) + shownOf.get(id),
       count,
@@ -377,8 +378,9 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
       {/* Own photos only; a broader tag without them gets no "(0)", which
           would hide what its narrower tags find. */}
-      {tagOptions.map(({ value, shown, count }) => (
-        <option key={value} value={value}>
+      {/* A tag under two broader ones is two options of one value. */}
+      {tagOptions.map(({ key, value, shown, count }) => (
+        <option key={key} value={value}>
           {shown}
           {count > 0 && ` (${count})`}
         </option>
