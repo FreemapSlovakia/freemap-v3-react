@@ -1987,7 +1987,6 @@
         "layers": ["Raster"],
         "minZoom": 5,
         "maxNativeZoom": 19,
-        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -6741,27 +6740,6 @@
       }
     },
     {
-      "type": "75OZN",
-      "layer": "base",
-      "name": "Calaveras County Orthoimagery (2022)",
-      "countries": ["us"],
-      "bbox": [-120.9956, 37.8328, -120.0179, 38.5099],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://gisportal.calaverascounty.gov/image/rest/services/CC_Aug2022_Cache/ImageServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 23,
-        "cors": false,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Calaveras County",
-            "url": "https://www.calaverasgov.us/"
-          }
-        ]
-      }
-    },
-    {
       "type": "75ZP3",
       "layer": "base",
       "name": "gis-rijeka: Rijeka 2020 aerial imagery",
@@ -7807,6 +7785,7 @@
         "url": "https://imagery.pasda.psu.edu/arcgis/services/pasda/DVRPC2025/MapServer/WMSServer",
         "layers": ["7"],
         "maxNativeZoom": 19,
+        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -9871,28 +9850,6 @@
       }
     },
     {
-      "type": "AFOQR",
-      "layer": "base",
-      "name": "Loire-Atlantique - Orthophotos 2016 - 10 cm",
-      "countries": ["fr"],
-      "bbox": [-2.6392, 46.8487, -0.9009, 47.8442],
-      "category": "historicphoto",
-      "technology": "wms",
-      "body": {
-        "url": "https://wms-vuduciel2.makina-corpus.net/geoserver/wms",
-        "layers": ["cg44:ortho44-2016"],
-        "maxNativeZoom": 20,
-        "proxy": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© Loire-Atlantique ouverture des données publiques",
-            "url": "http://data2.loire-atlantique.fr/licences/"
-          }
-        ]
-      }
-    },
-    {
       "type": "AFZUF",
       "layer": "base",
       "name": "imagico.de: McMurdo Sound",
@@ -10445,27 +10402,6 @@
             "type": "map",
             "name": "© GeoBasis NRW (2026), dl-de/zero-2-0",
             "url": "https://www.bezreg-koeln.nrw.de/geobasis-nrw"
-          }
-        ]
-      }
-    },
-    {
-      "type": "B3Y50",
-      "layer": "base",
-      "name": "Osceola County Orthoimagery (2025)",
-      "countries": ["us"],
-      "bbox": [-81.6721, 27.6349, -80.8481, 28.3501],
-      "category": "historicphoto",
-      "body": {
-        "url": "https://paags.property-appraiser.org/server/rest/services/AGS_AERIALS_2025_WM/MapServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "cors": false,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Osceola County, FL",
-            "url": "https://www.osceola.org/"
           }
         ]
       }
@@ -13084,27 +13020,6 @@
       }
     },
     {
-      "type": "EG0OA",
-      "layer": "base",
-      "name": "Calaveras County Orthoimagery (2024)",
-      "countries": ["us"],
-      "bbox": [-120.9956, 37.8328, -120.0179, 38.5099],
-      "category": "photo",
-      "body": {
-        "url": "https://gisportal.calaverascounty.gov/image/rest/services/Orthos_2024/ImageServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 23,
-        "cors": false,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Calaveras County",
-            "url": "https://www.calaverasgov.us/"
-          }
-        ]
-      }
-    },
-    {
       "type": "EG61J",
       "layer": "base",
       "name": "City of Parksville Orthoimagery (2025)",
@@ -14274,6 +14189,26 @@
       }
     },
     {
+      "type": "FTWSU",
+      "layer": "base",
+      "name": "Lorain County Orthoimagery (2025)",
+      "countries": ["us"],
+      "bbox": [-82.3504, 41.0625, -81.8684, 41.5527],
+      "category": "photo",
+      "body": {
+        "url": "https://tiles.arcgis.com/tiles/vGBb7WYV10mOJRNM/arcgis/rest/services/2025_Spring_Aerial/MapServer/tile/{z}/{y}/{x}",
+        "maxNativeZoom": 21,
+        "scaleWithDpi": true,
+        "attribution": [
+          {
+            "type": "map",
+            "name": "Lorain County, State of Ohio",
+            "url": "https://www.loraincountyohio.gov/"
+          }
+        ]
+      }
+    },
+    {
       "type": "FTXMF",
       "layer": "base",
       "name": "Tallahassee - Leon County Orthoimagery (2024 RGB)",
@@ -14289,28 +14224,6 @@
             "type": "map",
             "name": "Tallahassee - Leon County GIS, Leon County Property Appraiser’s Office, Leon County Board of County Commissioners",
             "url": "https://cms.leoncountyfl.gov/Home/Departments/MIS-GIS/Tallahassee-Leon-County-GIS"
-          }
-        ]
-      }
-    },
-    {
-      "type": "FWESI",
-      "layer": "overlay",
-      "name": "BFW forest development plan (forest functions)",
-      "countries": ["at"],
-      "bbox": [9.53, 46.37, 17.16, 49.0201],
-      "category": "other",
-      "technology": "wms",
-      "body": {
-        "url": "https://inspire.lfrz.gv.at/000606/wms",
-        "layers": [
-          "Oesterreichischer Waldentwicklungsplan - Waldfunktionsflaechen"
-        ],
-        "attribution": [
-          {
-            "type": "map",
-            "name": "BFW – Bundesforschungszentrum für Wald",
-            "url": "https://www.bfw.gv.at/"
           }
         ]
       }
@@ -20409,7 +20322,6 @@
       "body": {
         "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_2020/MapServer/WMSServer",
         "layers": ["0"],
-        "proxy": true,
         "attribution": []
       }
     },
@@ -20555,27 +20467,6 @@
             "type": "map",
             "name": "NH GRANIT",
             "url": "https://granit.unh.edu/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "NI3IB",
-      "layer": "base",
-      "name": "Osceola County Orthoimagery (2026)",
-      "countries": ["us"],
-      "bbox": [-81.6721, 27.6349, -80.8481, 28.3501],
-      "category": "photo",
-      "body": {
-        "url": "https://paags.property-appraiser.org/server/rest/services/AGS_AERIALS_2026_WM/MapServer/tile/{z}/{y}/{x}",
-        "maxNativeZoom": 20,
-        "cors": false,
-        "scaleWithDpi": true,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "Osceola County, FL",
-            "url": "https://www.osceola.org/"
           }
         ]
       }
@@ -20784,7 +20675,6 @@
       "body": {
         "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_2009_2010/MapServer/WMSServer",
         "layers": ["0"],
-        "proxy": true,
         "attribution": []
       }
     },
@@ -21354,6 +21244,7 @@
         "layers": ["dtk100"],
         "minZoom": 7,
         "maxNativeZoom": 16,
+        "proxy": true,
         "attribution": [
           {
             "type": "map",
@@ -22845,26 +22736,6 @@
             "type": "map",
             "name": "© State of New South Wales (Spatial Services, a business unit of the Department of Customer Service NSW). For current information go to spatial.nsw.gov.au.",
             "url": "https://www.spatial.nsw.gov.au/"
-          }
-        ]
-      }
-    },
-    {
-      "type": "Q6ZHT",
-      "layer": "base",
-      "name": "IGN Plan IGN HD",
-      "countries": ["fr"],
-      "bbox": [-5.2, 41.3, 9.6, 51.1],
-      "category": "map",
-      "body": {
-        "url": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=IGNF_PLAN-IGN-HD&STYLE=normal&TILEMATRIXSET=PM&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg",
-        "minZoom": 6,
-        "maxNativeZoom": 18,
-        "attribution": [
-          {
-            "type": "map",
-            "name": "© IGN",
-            "url": "https://www.ign.fr/"
           }
         ]
       }
@@ -25718,7 +25589,6 @@
       "body": {
         "url": "https://geoservices.wallonie.be/arcgis/services/IMAGERIE/ORTHO_LAST/MapServer/WmsServer",
         "layers": ["0"],
-        "proxy": true,
         "attribution": []
       }
     },
@@ -29194,7 +29064,7 @@
       "name": "Lorain County Orthoimagery (2024)",
       "countries": ["us"],
       "bbox": [-82.3504, 41.0625, -81.8684, 41.5527],
-      "category": "photo",
+      "category": "historicphoto",
       "body": {
         "url": "https://tiles.arcgis.com/tiles/vGBb7WYV10mOJRNM/arcgis/rest/services/2024_Spring_Aerials/MapServer/tile/{z}/{y}/{x}",
         "maxNativeZoom": 21,
