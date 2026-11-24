@@ -10,6 +10,10 @@ import {
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import {
+  LongPressTooltip,
+  type TooltipTargetProps,
+} from '@shared/components/LongPressTooltip.js';
 import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
@@ -40,8 +44,9 @@ import {
   PHOTO_LICENSES,
 } from '../licenses.js';
 import { gallerySetFilter } from '../model/actions.js';
-import { parseTagKey, tagKey } from '../tagRefs.js';
+import { parseTagKey, tagKey, tagRelations, tagTree } from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
+import { TagRelationLine } from './TagRelationLine.js';
 
 type Props = { show: boolean };
 
@@ -78,20 +83,35 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
     const compare = makeLabelComparator(language);
 
-    return tags
-      .map(({ id, name, label, count }) => ({
-        value: tagKey({ id, name }),
-        // Two tags shown alike are told apart by their names.
-        shown:
-          label && (shownCounts.get(label)?.length ?? 0) > 1
-            ? `${label} · ${name}`
-            : (label ?? name),
-        count,
-      }))
-      .toSorted((a, b) => compare(a.shown, b.shown));
+    // Two tags shown alike are told apart by their names.
+    const shownOf = new Map(
+      tags.map(({ id, name, label }) => [
+        id,
+        label && (shownCounts.get(label)?.length ?? 0) > 1
+          ? `${label} · ${name}`
+          : (label ?? name),
+      ]),
+    );
+
+    const tree = tagTree(tags, (a, b) =>
+      compare(shownOf.get(a.id)!, shownOf.get(b.id)!),
+    );
+
+    const relations = tagRelations(tags, language);
+
+    return tree.map(({ tag: { id, name, count }, depth }) => ({
+      value: tagKey({ id, name }),
+      shown: '   '.repeat(depth) + shownOf.get(id),
+      count,
+      relation: relations.get(id),
+    }));
   }, [tags, language]);
 
   const [tag, setTag] = useState('');
+
+  const selectedRelation = tagOptions.find(
+    ({ value }) => value === tag,
+  )?.relation;
 
   const [userId, setUserId] = useState('');
 
@@ -341,6 +361,31 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     </Form.Text>
   );
 
+  const tagSelect = (props: TooltipTargetProps) => (
+    <Form.Select value={tag} onChange={handleTagChange} {...props}>
+      <option value="" />
+
+      <option value={NO_TAGS}>« {gm?.filterModal.noTags} »</option>
+
+      {/* A name from an older link, or an id not in the list (gone, or the
+          list still loading): shown, so it can be cleared. */}
+      {tag &&
+        tag !== NO_TAGS &&
+        !tagOptions.some(({ value }) => value === tag) && (
+          <option value={tag}>{shownTagKey(tag)}</option>
+        )}
+
+      {/* Own photos only; a broader tag without them gets no "(0)", which
+          would hide what its narrower tags find. */}
+      {tagOptions.map(({ value, shown, count }) => (
+        <option key={value} value={value}>
+          {shown}
+          {count > 0 && ` (${count})`}
+        </option>
+      ))}
+    </Form.Select>
+  );
+
   return (
     <Modal
       show={show}
@@ -362,25 +407,19 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
               <Text m={gm} k="filterModal.tag" />
             </Form.Label>
 
-            <Form.Select value={tag} onChange={handleTagChange}>
-              <option value="" />
-
-              <option value={NO_TAGS}>« {gm?.filterModal.noTags} »</option>
-
-              {/* A name from an older link, or an id not in the list (gone,
-                  or the list still loading): shown, so it can be cleared. */}
-              {tag &&
-                tag !== NO_TAGS &&
-                !tagOptions.some(({ value }) => value === tag) && (
-                  <option value={tag}>{shownTagKey(tag)}</option>
-                )}
-
-              {tagOptions.map(({ value, shown, count }) => (
-                <option key={value} value={value}>
-                  {shown} ({count})
-                </option>
-              ))}
-            </Form.Select>
+            {/* An open list's options take no tooltip, so the selected one's
+                hangs on the select. */}
+            <LongPressTooltip
+              label={
+                selectedRelation && (
+                  <TagRelationLine relation={selectedRelation} />
+                )
+              }
+              // False: counts as shown inline, so no tooltip opens.
+              hideLabel={selectedRelation !== undefined}
+            >
+              {({ props }) => tagSelect(props)}
+            </LongPressTooltip>
 
             {wikimediaExcludedHint}
           </Form.Group>

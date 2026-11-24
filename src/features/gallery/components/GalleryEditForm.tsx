@@ -281,7 +281,7 @@ export function GalleryEditForm({
             label: label ?? name,
             value: id,
           }))}
-          // By the label shown, the tag's name or its Latin name.
+          // By the label shown, the tag's name, a synonym or its Latin name.
           suggestionsTransform={(query, suggestions) => {
             const q = tagNameKey(query);
 

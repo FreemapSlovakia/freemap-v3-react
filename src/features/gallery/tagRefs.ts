@@ -1,4 +1,4 @@
-import { removeAccents } from '@shared/stringUtils.js';
+import { makeLabelComparator, removeAccents } from '@shared/stringUtils.js';
 import z from 'zod';
 import type { PictureTag } from './model/actions.js';
 
@@ -56,23 +56,27 @@ export function isSameTag(a: TagRef, b: TagRef): boolean {
     : tagNameKey(a.name) === tagNameKey(b.name);
 }
 
-export interface TagIndex<T extends PictureTag> {
+/** A tag, with its synonyms where the list has them. */
+type IndexedTag = PictureTag & { synonyms?: string[] };
+
+export interface TagIndex<T extends IndexedTag> {
   byId: Map<number, T>;
+  /** By the key of its name or a synonym. */
   byName: Map<string, T>;
   /** By the key of a label or Latin name; several tags may share one. */
   byLabel: Map<string, T[]>;
-  /** By id, the keys of the name and Latin name, to search in. */
+  /** By id, the keys of the name, synonyms and Latin name, to search in. */
   search: Map<number, string>;
 }
 
-const indexes = new WeakMap<PictureTag[], TagIndex<PictureTag>>();
+const indexes = new WeakMap<IndexedTag[], TagIndex<IndexedTag>>();
 
 /** Lookups over a tag list, built once per list. */
-export function tagIndex<T extends PictureTag>(tags: T[]): TagIndex<T> {
+export function tagIndex<T extends IndexedTag>(tags: T[]): TagIndex<T> {
   let index = indexes.get(tags);
 
   if (!index) {
-    const byLabel = new Map<string, PictureTag[]>();
+    const byLabel = new Map<string, IndexedTag[]>();
 
     for (const tag of tags) {
       for (const s of new Set(
@@ -84,12 +88,20 @@ export function tagIndex<T extends PictureTag>(tags: T[]): TagIndex<T> {
 
     index = {
       byId: new Map(tags.map((t) => [t.id, t])),
-      byName: new Map(tags.map((t) => [tagNameKey(t.name), t])),
+      // Names first, so a synonym never shadows a tag's own name.
+      byName: new Map([
+        ...tags.flatMap((t) =>
+          (t.synonyms ?? []).map((s) => [tagNameKey(s), t] as const),
+        ),
+        ...tags.map((t) => [tagNameKey(t.name), t] as const),
+      ]),
       byLabel,
       search: new Map(
         tags.map((t) => [
           t.id,
-          `${tagNameKey(t.name)}\n${t.latin ? tagNameKey(t.latin) : ''}`,
+          [t.name, ...(t.synonyms ?? []), t.latin ?? '']
+            .map(tagNameKey)
+            .join('\n'),
         ]),
       ),
     };
@@ -101,10 +113,10 @@ export function tagIndex<T extends PictureTag>(tags: T[]): TagIndex<T> {
 }
 
 /**
- * The tag a reference or typed text means: by id; else by name; else by the
- * label or Latin name of exactly one tag.
+ * The tag a reference or typed text means: by id; else by name or synonym;
+ * else by the label or Latin name of exactly one tag.
  */
-export function findTag<T extends PictureTag>(
+export function findTag<T extends IndexedTag>(
   tags: T[],
   ref: TagRef,
 ): T | undefined {
@@ -119,6 +131,124 @@ export function findTag<T extends PictureTag>(
     byName.get(key) ??
     (labelled?.length === 1 ? labelled[0] : undefined)
   );
+}
+
+/**
+ * The tags in tree order, each after its broader tag and siblings sorted by
+ * `compare`; a tag whose broader one is missing, or in a cycle, is a root.
+ */
+export function tagTree<T extends { id: number; parentId: number | null }>(
+  tags: T[],
+  compare: (a: T, b: T) => number,
+): { tag: T; depth: number }[] {
+  const byId = new Map(tags.map((t) => [t.id, t]));
+
+  // On a loop itself; one hanging below a loop stays under its parent.
+  const inCycle = (t: T) => {
+    const seen = new Set<number>();
+
+    for (let p = t.parentId; p !== null; p = byId.get(p)?.parentId ?? null) {
+      if (p === t.id) {
+        return true;
+      }
+
+      if (seen.has(p)) {
+        return false;
+      }
+
+      seen.add(p);
+    }
+
+    return false;
+  };
+
+  const isRoot = (t: T) =>
+    t.parentId === null || !byId.has(t.parentId) || inCycle(t);
+
+  const children = Map.groupBy(
+    tags.filter((t) => !isRoot(t)),
+    (t) => t.parentId!,
+  );
+
+  const out: { tag: T; depth: number }[] = [];
+
+  const visit = (siblings: T[], depth: number) => {
+    for (const tag of siblings.toSorted(compare)) {
+      out.push({ tag, depth });
+
+      visit(children.get(tag.id) ?? [], depth + 1);
+    }
+  };
+
+  visit(tags.filter(isRoot), 0);
+
+  return out;
+}
+
+type RelatedTag = {
+  id: number;
+  name: string;
+  label?: string | null;
+  parentId: number | null;
+  synonyms: string[];
+};
+
+/** A tag's place by the names shown; broader ones broadest first. */
+export type TagRelation = {
+  broader: string[];
+  shown: string;
+  synonyms: string[];
+  narrower: string[];
+};
+
+const relationCache = new WeakMap<RelatedTag[], Map<number, TagRelation>>();
+
+/**
+ * By id, the tags with broader or narrower ones or synonyms; built once per
+ * list, which is fetched anew for another `language`.
+ */
+export function tagRelations(
+  tags: RelatedTag[],
+  language: string,
+): Map<number, TagRelation> {
+  let relations = relationCache.get(tags);
+
+  if (relations) {
+    return relations;
+  }
+
+  const shownOf = new Map(tags.map((t) => [t.id, t.label ?? t.name]));
+
+  // As placed in the tree, so a cycle never loops.
+  const parentOf = new Map(
+    tagTree(tags, () => 0).flatMap(({ tag, depth }) =>
+      depth ? [[tag.id, tag.parentId!] as const] : [],
+    ),
+  );
+
+  const childrenOf = Map.groupBy(parentOf.keys(), (id) => parentOf.get(id)!);
+
+  relations = new Map(
+    tags.flatMap(({ id, synonyms }) => {
+      const broader: string[] = [];
+
+      for (let p = parentOf.get(id); p !== undefined; p = parentOf.get(p)) {
+        broader.unshift(shownOf.get(p)!);
+      }
+
+      const narrower = (childrenOf.get(id) ?? [])
+        .map((c) => shownOf.get(c)!)
+        .toSorted(makeLabelComparator(language));
+
+      return broader.length || narrower.length || synonyms.length
+        ? [[id, { broader, shown: shownOf.get(id)!, synonyms, narrower }]]
+        : [];
+    }),
+  );
+
+  relationCache.set(tags, relations);
+
+  return relations;
 }
 
 /**

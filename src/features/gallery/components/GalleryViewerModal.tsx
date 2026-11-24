@@ -21,6 +21,7 @@ import {
   CommentThread,
   commentLoginToast,
 } from '@shared/components/CommentThread.js';
+import { HintTooltip } from '@shared/components/HintTooltip.js';
 import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
@@ -85,12 +86,13 @@ import {
   galleryShowOnTheMap,
   gallerySubmitComment,
   gallerySubmitStars,
+  galleryTagsNeeded,
   type Picture,
 } from '../model/actions.js';
 import { galleryEditChangedSelector } from '../model/selectors.js';
 import { pictureIdToPath } from '../pictureIdPath.js';
 import { rotateBy, rotationTransform } from '../rotation.js';
-import { type TagRef, tagKey, tagRefsOf } from '../tagRefs.js';
+import { type TagRef, tagKey, tagRefsOf, tagRelations } from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import {
   fetchWikimediaMeta,
@@ -100,6 +102,7 @@ import {
 import { Azimuth } from './Azimuth.js';
 import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 import { RecentTags } from './RecentTags.js';
+import { TagRelationLine } from './TagRelationLine.js';
 import './gallery.css';
 import clsx from 'clsx';
 import classes from './GalleryViewerModal.module.css';
@@ -505,16 +508,40 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const tagRefs = image ? tagRefsOf(image) : [];
 
-  // Labeled in the UI language; a taxon's Latin name as the hint.
+  const hasTags = tagRefs.length > 0;
+
+  // For the tags' hierarchy and synonyms.
+  useEffect(() => {
+    if (hasTags) {
+      dispatch(galleryTagsNeeded());
+    }
+  }, [dispatch, hasTags]);
+
+  const relations = tagRelations(allTags, language);
+
+  // Labeled in the UI language; the hint: a taxon's Latin name, the tag's
+  // hierarchy and synonyms.
   const shownTags = (
     image?.tagList ?? tagRefs.map(({ name }) => ({ name, label: null }))
   ).map((tag) => {
     const latin = 'latin' in tag ? tag.latin : null;
 
+    const relation = 'id' in tag ? relations.get(tag.id) : undefined;
+
     return {
       key: tagKey(tag),
       label: tag.label || tag.name,
-      hint: latin ? <i>{latin}</i> : null,
+      hint:
+        latin || relation ? (
+          <>
+            {latin && (
+              <div>
+                <i>{latin}</i>
+              </div>
+            )}
+            {relation && <TagRelationLine relation={relation} />}
+          </>
+        ) : null,
     };
   });
 
@@ -1239,17 +1266,9 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
               {shownTags.map(({ key, label, hint }) => (
                 <Fragment key={key}>
                   {' '}
-                  {hint ? (
-                    <LongPressTooltip label={hint} toggleOnClick>
-                      {({ props }) => (
-                        <Badge bg="secondary" {...props}>
-                          {label}
-                        </Badge>
-                      )}
-                    </LongPressTooltip>
-                  ) : (
-                    <Badge bg="secondary">{label}</Badge>
-                  )}
+                  <Badge bg="secondary">
+                    <HintTooltip hint={hint}>{label}</HintTooltip>
+                  </Badge>
                 </Fragment>
               ))}
 

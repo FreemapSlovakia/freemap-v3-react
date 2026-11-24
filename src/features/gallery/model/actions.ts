@@ -76,6 +76,8 @@ export type PictureTag = z.infer<typeof PictureTagSchema>;
 export const GalleryTagSchema = z.object({
   ...PictureTagSchema.shape,
   count: z.number(),
+  synonyms: z.array(z.string()).default([]),
+  parentId: z.number().nullable().default(null),
 });
 
 export type GalleryTag = z.infer<typeof GalleryTagSchema>;
