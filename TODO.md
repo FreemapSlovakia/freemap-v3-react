@@ -445,6 +445,19 @@ changes and delete whatever the new contract makes unnecessary.
 
 Open items are issues under `area: gps-recorder`.
 
+## Gallery tags by id: drop the name compatibility
+
+Tags travel as ids (`tagIds`, `tagId`); names are still accepted for the mobile
+app. Once it sends ids (expected within weeks of 2026-11-24), remove in
+freemap-v3-api: matching existing tags by `tags` (names) in the POST/PUT bodies
+(`setPictureTags`), the `tag` filter param and its label matching in
+`tagFilterJoin`, and `tags` (names) in the picture responses beside `tagList`.
+Keep names for creating new tags. Old links and stored filters don't need the
+API's names: `galleryTagNameFilterProcessor` turns a `gallery-tag` name into its
+id. Saved maps it leaves alone (they would look changed), so first rewrite the
+`galleryFilter.tag` names in the stored map documents to `tagId`s.
+`TagRefCompatSchema` serves stored recent tags and can stay longer.
+
 ## Photo layer: gallery + Wikimedia Commons merge
 
 Shipped on both sides. The gallery layer (`I`) renders own + Wikimedia Commons

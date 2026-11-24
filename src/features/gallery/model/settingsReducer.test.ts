@@ -62,33 +62,60 @@ describe('gallerySettingsReducer — recent tags (MRU, capped at 8)', () => {
   it('unshifts a new tag to the front', () => {
     const next = gallerySettingsReducer(
       gallerySettingsInitialState,
-      galleryAddTag('forest'),
+      galleryAddTag({ id: 1, name: 'forest' }),
     );
 
-    expect(next.recentTags).toEqual(['forest']);
+    expect(next.recentTags).toEqual([{ id: 1, name: 'forest' }]);
   });
 
   it('moves an existing tag back to the front without duplicating', () => {
     const state = {
       ...gallerySettingsInitialState,
-      recentTags: ['a', 'b', 'c'],
+      recentTags: [
+        { id: 1, name: 'a' },
+        { id: 2, name: 'b' },
+        { id: 3, name: 'c' },
+      ],
     };
 
-    const next = gallerySettingsReducer(state, galleryAddTag('c'));
+    const next = gallerySettingsReducer(
+      state,
+      galleryAddTag({ id: 3, name: 'c' }),
+    );
 
-    expect(next.recentTags).toEqual(['c', 'a', 'b']);
+    expect(next.recentTags.map(({ id }) => id)).toEqual([3, 1, 2]);
+  });
+
+  it('replaces a tag remembered by name with the same tag by id', () => {
+    const state = {
+      ...gallerySettingsInitialState,
+      recentTags: [{ name: 'a' }, { name: 'b' }],
+    };
+
+    const next = gallerySettingsReducer(
+      state,
+      galleryAddTag({ id: 2, name: 'b' }),
+    );
+
+    expect(next.recentTags).toEqual([{ id: 2, name: 'b' }, { name: 'a' }]);
   });
 
   it('caps the list at 8 entries', () => {
     const state = {
       ...gallerySettingsInitialState,
-      recentTags: ['1', '2', '3', '4', '5', '6', '7', '8'],
+      recentTags: [1, 2, 3, 4, 5, 6, 7, 8].map((id) => ({
+        id,
+        name: String(id),
+      })),
     };
 
-    const next = gallerySettingsReducer(state, galleryAddTag('9'));
+    const next = gallerySettingsReducer(
+      state,
+      galleryAddTag({ id: 9, name: '9' }),
+    );
 
     expect(next.recentTags).toHaveLength(8);
-    expect(next.recentTags[0]).toBe('9');
-    expect(next.recentTags).not.toContain('8');
+    expect(next.recentTags[0]?.id).toBe(9);
+    expect(next.recentTags.map(({ id }) => id)).not.toContain(8);
   });
 });

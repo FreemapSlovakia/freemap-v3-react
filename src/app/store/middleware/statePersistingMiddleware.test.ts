@@ -89,7 +89,7 @@ function makeState(): RootState {
     },
     gallerySettings: {
       colorizeBy: null,
-      recentTags: ['x'],
+      recentTags: [{ id: 1, name: 'x' }],
       showDirection: true,
       showLegend: true,
       premium: true,
@@ -254,7 +254,7 @@ describe('statePersistingMiddleware — what gets persisted', () => {
       locationSettings: { headingSource: 'compass', showBearingLine: false },
       gallerySettings: {
         colorizeBy: null,
-        recentTags: ['x'],
+        recentTags: [{ id: 1, name: 'x' }],
         showDirection: true,
         showLegend: true,
         premium: true,
@@ -469,7 +469,7 @@ describe('save → rehydrate round-trip', () => {
     expect(initial.map?.layers).toEqual(['X']);
     expect(initial.map?.zoom).toBe(8);
     expect(initial.map?.zoomSnap).toBe(0.5);
-    expect(initial.gallerySettings?.recentTags).toEqual(['x']);
+    expect(initial.gallerySettings?.recentTags).toEqual([{ id: 1, name: 'x' }]);
     // The filters round-trip, the photo filter's dates as dates.
     expect(initial.gallerySettings?.filter.tag).toBe('x');
     expect(initial.gallerySettings?.filter.takenAtFrom).toEqual(

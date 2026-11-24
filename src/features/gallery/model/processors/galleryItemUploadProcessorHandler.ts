@@ -4,6 +4,7 @@ import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { tagsToWire } from '../../tagRefs.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRemoveItem,
@@ -55,7 +56,7 @@ const handle: ProcessorHandler = async ({ getState, dispatch }) => {
       position: parseCoordinates(item.dirtyPosition),
       azimuth: item.azimuth,
       takenAt: item.takenAt?.toISOString(),
-      tags: item.tags,
+      ...tagsToWire(item.tags, getState().gallery.tags),
       premium: item.premium,
       license: item.license,
       rotation: item.rotation || undefined,

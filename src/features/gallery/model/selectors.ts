@@ -1,5 +1,6 @@
 import type { RootState } from '@app/store/store.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
+import { isSameTag } from '../tagRefs.js';
 import { GALLERY_LAYER, type GalleryFilter } from './actions.js';
 
 const NO_FILTER: GalleryFilter = {};
@@ -23,15 +24,12 @@ export function galleryEditChangedSelector(state: RootState): boolean {
   }
 
   // Field by field: this runs on every action while an edit is open.
-  return (Object.keys(editModel) as (keyof PictureModel)[]).some((key) => {
-    const a = editModel[key];
-
-    const b = editSeed[key];
-
-    return Array.isArray(a) && Array.isArray(b)
-      ? a.length !== b.length || a.some((item, i) => item !== b[i])
-      : a !== b;
-  });
+  return (Object.keys(editModel) as (keyof PictureModel)[]).some((key) =>
+    key === 'tags'
+      ? editModel.tags.length !== editSeed.tags.length ||
+        editModel.tags.some((tag, i) => !isSameTag(tag, editSeed.tags[i]!))
+      : editModel[key] !== editSeed[key],
+  );
 }
 
 /**

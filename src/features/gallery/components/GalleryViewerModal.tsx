@@ -90,6 +90,7 @@ import {
 import { galleryEditChangedSelector } from '../model/selectors.js';
 import { pictureIdToPath } from '../pictureIdPath.js';
 import { rotateBy, rotationTransform } from '../rotation.js';
+import { type TagRef, tagKey, tagRefsOf } from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import {
   fetchWikimediaMeta,
@@ -502,6 +503,24 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
     ? commonsMeta?.description
     : description;
 
+  const tagRefs = image ? tagRefsOf(image) : [];
+
+  // Labeled in the UI language; the hint is a taxon's Latin name, else the
+  // tag's name where its label differs.
+  const shownTags = (
+    image?.tagList ?? tagRefs.map(({ name }) => ({ name, label: null }))
+  ).map((tag) => {
+    const label = tag.label || tag.name;
+
+    const latin = 'latin' in tag ? tag.latin : null;
+
+    return {
+      key: tagKey(tag),
+      label,
+      hint: latin ? <i>{latin}</i> : label === tag.name ? null : tag.name,
+    };
+  });
+
   const placeName = usePlaceName(
     lat !== undefined && lon !== undefined ? { lat, lon } : null,
     true,
@@ -801,7 +820,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
       (hasRole(user, 'galleryModerator') || user?.id === image.user?.id),
   );
 
-  const handleTagAdd = (tag: string) => {
+  const handleTagAdd = (tag: TagRef) => {
     dispatch(galleryQuickAddTag(tag));
   };
 
@@ -1220,10 +1239,20 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
               {tags && tags.length > 0 && divider}
 
-              {tags?.map((tag) => (
-                <Fragment key={tag}>
+              {shownTags.map(({ key, label, hint }) => (
+                <Fragment key={key}>
                   {' '}
-                  <Badge bg="secondary">{tag}</Badge>
+                  {hint ? (
+                    <LongPressTooltip label={hint} toggleOnClick>
+                      {({ props }) => (
+                        <Badge bg="secondary" {...props}>
+                          {label}
+                        </Badge>
+                      )}
+                    </LongPressTooltip>
+                  ) : (
+                    <Badge bg="secondary">{label}</Badge>
+                  )}
                 </Fragment>
               ))}
 
@@ -1418,7 +1447,7 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
                       {editModel === null && tags && canEdit && online && (
                         <RecentTags
-                          existingTags={tags}
+                          existingTags={tagRefs}
                           onAdd={handleTagAdd}
                           prefix={rowDivider}
                         />

@@ -3,6 +3,7 @@ import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
 import { parseCoordinates } from '@shared/coordinatesParser.js';
 import { trackMatomo } from '@shared/trackMatomo.js';
+import { tagsToWire } from '../../tagRefs.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryRequestImage,
@@ -36,6 +37,7 @@ export const gallerySavePictureProcessor: Processor = {
         url: `/gallery/pictures/${id}`,
         data: {
           ...editModel,
+          ...tagsToWire(editModel.tags, getState().gallery.tags),
           title: editModel.title || null,
           description: editModel.description || null,
           position: parseCoordinates(editModel.dirtyPosition),

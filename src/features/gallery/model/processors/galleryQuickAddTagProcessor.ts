@@ -1,6 +1,7 @@
 import { httpRequest } from '@app/httpRequest.js';
 import type { Processor } from '@app/store/middleware/processorMiddleware.js';
 import { toastsAdd } from '@features/toasts/model/actions.js';
+import { tagRefsOf, tagsToWire } from '../../tagRefs.js';
 import { loadGalleryMessages } from '../../translations/loadGalleryMessages.js';
 import {
   galleryQuickAddTag,
@@ -30,10 +31,12 @@ export const galleryQuickAddTagProcessor: Processor<
         data: {
           title: image.title,
           description: image.description,
-          tags:
-            galleryQuickAddTag.type === action.type
-              ? [...image.tags, action.payload]
-              : image.tags,
+          ...tagsToWire(
+            galleryQuickAddTag.match(action)
+              ? [...tagRefsOf(image), action.payload]
+              : tagRefsOf(image),
+            getState().gallery.tags,
+          ),
           premium:
             galleryQuickChangePremium.type === action.type
               ? action.payload

@@ -64,6 +64,10 @@ export function galleryFilterParts(filter: GalleryFilter): QueryPart[] {
     parts.push(['gallery-user-id', filter.userId]);
   }
 
+  if (filter.tagId != null) {
+    parts.push(['gallery-tag-id', filter.tagId]);
+  }
+
   if (filter.tag != null) {
     parts.push(['gallery-tag', filter.tag]);
   }
@@ -170,6 +174,7 @@ export function galleryFilterFromQuery(
 
   const filter: GalleryFilter = {
     userId: num('gallery-user-id'),
+    tagId: num('gallery-tag-id'),
     tag: one('gallery-tag'),
     ratingFrom: num('gallery-rating-from'),
     ratingTo: num('gallery-rating-to'),

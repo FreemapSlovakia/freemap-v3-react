@@ -1,21 +1,17 @@
 import { Text } from '@features/l10n/Text.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import clsx from 'clsx';
-import type { ReactElement, ReactNode } from 'react';
+import { type ReactElement, type ReactNode, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { useTagLabel } from '../hooks/useTagLabel.js';
+import { galleryTagsNeeded } from '../model/actions.js';
+import { isSameTag, type TagRef, tagKey } from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
-export interface PictureModel {
-  title: string;
-  description: string;
-  tags: string[];
-  takenAt: string;
-  dirtyPosition: string;
-}
-
 interface Props {
-  existingTags: string[];
-  onAdd: (tag: string) => void;
+  existingTags: TagRef[];
+  onAdd: (tag: TagRef) => void;
   className?: string;
   prefix?: ReactNode;
 }
@@ -32,7 +28,18 @@ export function RecentTags({
 
   const gm = useGalleryMessages();
 
-  const tags = recentTags.filter((tag) => !existingTags.includes(tag));
+  const { label } = useTagLabel();
+
+  const dispatch = useDispatch();
+
+  // Their labels; the photo viewer has none loaded otherwise.
+  useEffect(() => {
+    dispatch(galleryTagsNeeded());
+  }, [dispatch]);
+
+  const tags = recentTags.filter(
+    (tag) => !existingTags.some((existing) => isSameTag(existing, tag)),
+  );
 
   return tags.length === 0 ? null : (
     <div
@@ -50,13 +57,13 @@ export function RecentTags({
       <div className="d-flex gap-1 overflow-auto">
         {tags.map((tag) => (
           <Button
-            key={tag}
+            key={tagKey(tag)}
             onClick={() => onAdd(tag)}
             variant="secondary"
             size="sm"
             className="py-0"
           >
-            {tag}
+            {label(tag)}
           </Button>
         ))}
       </div>

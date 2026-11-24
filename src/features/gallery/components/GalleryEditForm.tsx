@@ -15,6 +15,7 @@ import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { FaMapMarkerAlt, FaRedo, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
+import { useTagLabel } from '../hooks/useTagLabel.js';
 import type { GalleryLicense } from '../licenses.js';
 import {
   type GalleryItemError,
@@ -23,6 +24,13 @@ import {
   galleryAddTag,
 } from '../model/actions.js';
 import { type Rotation, rotateBy } from '../rotation.js';
+import {
+  findTag,
+  isSameTag,
+  type TagRef,
+  tagIndex,
+  tagNameKey,
+} from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
 import { GalleryLicenseSelect } from './GalleryLicenseSelect.js';
@@ -31,7 +39,7 @@ import { RecentTags } from './RecentTags.js';
 export interface PictureModel {
   title: string;
   description: string;
-  tags: string[];
+  tags: TagRef[];
   takenAt: string;
   dirtyPosition: string;
   azimuth: string;
@@ -107,14 +115,35 @@ export function GalleryEditForm({
 
   const dispatch = useDispatch();
 
-  const handleTagAddition = ({ value }: Tag) => {
-    const fixed = String(value).toLowerCase().trim().replace(/ {2,}/g, ' ');
+  const { label: tagLabel } = useTagLabel();
+
+  const addTag = (ref: TagRef) => {
+    const found = findTag(allTags, ref);
+
+    // Not found, an id stays (the list may not be loaded); a save sends one gone
+    // by its name.
+    const fixed: TagRef = found
+      ? { id: found.id, name: found.name }
+      : {
+          id: ref.id,
+          name: ref.name.toLowerCase().replace(/\s+/g, ' ').trim(),
+        };
 
     dispatch(galleryAddTag(fixed));
 
-    if (!model.tags.includes(fixed)) {
+    if (!model.tags.some((tag) => isSameTag(tag, fixed))) {
       changeModel('tags', [...model.tags, fixed]);
     }
+  };
+
+  // A suggestion's value is its tag's id, a new tag's the text typed.
+  const handleTagAddition = ({ value, label }: Tag) => {
+    // Gone from a list reloaded meanwhile, it goes by the label shown.
+    addTag(
+      typeof value === 'number'
+        ? { id: value, name: label }
+        : { name: String(value) },
+    );
   };
 
   const handleTagDelete = (i: number) => {
@@ -244,22 +273,33 @@ export function GalleryEditForm({
           placeholderText={gm?.editForm.tags}
           newOptionText={m?.general.newOptionText}
           deleteButtonText={m?.general.deleteButtonText}
-          selected={model.tags.map((tag) => ({ label: tag, value: tag }))}
-          suggestions={allTags.map(({ name }) => ({
-            label: name,
-            value: name,
+          selected={model.tags.map((tag) => ({
+            label: tagLabel(tag),
+            value: tag.id ?? tag.name,
           }))}
+          suggestions={allTags.map(({ id, name, label }) => ({
+            label: label ?? name,
+            value: id,
+          }))}
+          // By the label shown, the tag's name or its Latin name.
+          suggestionsTransform={(query, suggestions) => {
+            const q = tagNameKey(query);
+
+            const { search } = tagIndex(allTags);
+
+            return suggestions.filter(
+              ({ label, value }) =>
+                tagNameKey(label).includes(q) ||
+                (typeof value === 'number' && search.get(value)?.includes(q)),
+            );
+          }}
           onAdd={handleTagAddition}
           onDelete={handleTagDelete}
           allowNew
           collapseOnSelect
         />
 
-        <RecentTags
-          className="mt-1"
-          existingTags={model.tags}
-          onAdd={(tag) => handleTagAddition({ label: tag, value: tag })}
-        />
+        <RecentTags className="mt-1" existingTags={model.tags} onAdd={addTag} />
       </Form.Group>
 
       <Form.Group controlId={`license-${id ?? 'x'}`} className="mb-3">

@@ -20,6 +20,7 @@ export const GALLERY_SOURCES: GallerySource[] = ['gallery', 'wikimedia'];
 
 export function createFilter({
   tag,
+  tagId,
   userId,
   ratingFrom,
   ratingTo,
@@ -34,6 +35,7 @@ export function createFilter({
 }: GalleryFilter): z.input<typeof GalleryFilterSchema> {
   return {
     tag,
+    tagId,
     userId,
     ratingFrom,
     ratingTo,

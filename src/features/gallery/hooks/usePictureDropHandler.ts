@@ -150,7 +150,7 @@ export function usePictureDropHandler(
           description: /CAMERA|^DCIM/.test(description) ? '' : description,
           takenAt:
             (takenAtRaw && parseExifDateTime(takenAtRaw.description)) ?? null,
-          tags: keywords,
+          tags: keywords.map((name) => ({ name })),
           premium,
           license,
           rotation: 0,

@@ -100,6 +100,7 @@ import { galleryShowImageGaProcessor } from '@features/gallery/model/processors/
 import { galleryShowOnTheMapProcessor } from '@features/gallery/model/processors/galleryShowOnTheMapProcessor.js';
 import { gallerySubmitCommentProcessor } from '@features/gallery/model/processors/gallerySubmitCommentProcessor.js';
 import { gallerySubmitStarsProcessor } from '@features/gallery/model/processors/gallerySubmitStarsProcessor.js';
+import { galleryTagNameFilterProcessor } from '@features/gallery/model/processors/galleryTagNameFilterProcessor.js';
 import { galleryUploadModalProcessor } from '@features/gallery/model/processors/galleryUploadModalProcessor.js';
 import { geoipProcessor } from '@features/geoip/model/processors/geoIpProcessor.js';
 import {
@@ -346,6 +347,7 @@ export const processors = [
   galleryCommentChangeProcessor,
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
+  galleryTagNameFilterProcessor,
   galleryQuickAddTagProcessor,
   galleryItemUploadProcessor,
   galleryMakeAllPremiumOrFreeProcessor,

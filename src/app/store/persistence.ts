@@ -37,6 +37,7 @@ import { eventsSettingsInitialState } from '@features/events/model/settingsReduc
 import { GalleryLicenseSchema } from '@features/gallery/licenses.js';
 import { GalleryColorizeBySchema } from '@features/gallery/model/actions.js';
 import { gallerySettingsInitialState } from '@features/gallery/model/settingsReducer.js';
+import { TagRefCompatSchema } from '@features/gallery/tagRefs.js';
 import { gpsRecorderSettingsInitialState } from '@features/gpsRecorder/model/settingsReducer.js';
 import { RecorderConfigSchema } from '@features/gpsRecorder/protocol.js';
 import { homeLocationInitialState } from '@features/homeLocation/model/reducer.js';
@@ -528,7 +529,7 @@ export const PersistedLocationSettingsSchema = z
 export const PersistedGallerySettingsSchema = z
   .object({
     colorizeBy: GalleryColorizeBySchema.nullable(),
-    recentTags: z.array(z.string()),
+    recentTags: z.array(TagRefCompatSchema),
     showDirection: z.boolean(),
     showLegend: z.boolean(),
     premium: z.boolean(),

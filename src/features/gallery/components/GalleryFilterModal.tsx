@@ -13,12 +13,14 @@ import {
 import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
 import {
   type ChangeEvent,
   type ReactElement,
   type SubmitEvent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import {
@@ -38,9 +40,20 @@ import {
   PHOTO_LICENSES,
 } from '../licenses.js';
 import { gallerySetFilter } from '../model/actions.js';
+import { parseTagKey, tagKey } from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 
 type Props = { show: boolean };
+
+/** The select's value for photos with no tags; any other is a `tagKey`. */
+const NO_TAGS = '⌘';
+
+/** A tag not in the list: its name, else its id. */
+function shownTagKey(key: string) {
+  const parsed = parseTagKey(key);
+
+  return parsed && 'id' in parsed ? `#${parsed.id}` : (parsed?.name ?? key);
+}
 
 export default function GalleryFilterModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
@@ -56,6 +69,27 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   const users = useAppSelector((state) => state.gallery.users);
 
   const tags = useAppSelector((state) => state.gallery.tags);
+
+  const language = useAppSelector((state) => state.l10n.language);
+
+  // Memoized by hand: the compiler skips this component, and the list is long.
+  const tagOptions = useMemo(() => {
+    const shownCounts = Map.groupBy(tags, (t) => t.label ?? t.name);
+
+    const compare = makeLabelComparator(language);
+
+    return tags
+      .map(({ id, name, label, count }) => ({
+        value: tagKey({ id, name }),
+        // Two tags shown alike are told apart by their names.
+        shown:
+          label && (shownCounts.get(label)?.length ?? 0) > 1
+            ? `${label} · ${name}`
+            : (label ?? name),
+        count,
+      }))
+      .toSorted((a, b) => compare(a.shown, b.shown));
+  }, [tags, language]);
 
   const [tag, setTag] = useState('');
 
@@ -82,7 +116,15 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
   const [sources, setSources] = useState<GallerySource[]>(GALLERY_SOURCES);
 
   useEffect(() => {
-    setTag(filter.tag === '' ? '⌘' : (filter.tag ?? ''));
+    setTag(
+      filter.tagId !== undefined
+        ? tagKey({ id: filter.tagId, name: '' })
+        : filter.tag === ''
+          ? NO_TAGS
+          : filter.tag
+            ? tagKey({ name: filter.tag })
+            : '',
+    );
 
     setUserId(
       typeof filter.userId === 'number' ? filter.userId.toString() : '',
@@ -196,7 +238,16 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
       dispatch(
         gallerySetFilter({
-          tag: tag === '⌘' ? '' : tag || undefined,
+          // An id, or a name from an older link or map, kept as it came.
+          ...(tag === NO_TAGS
+            ? { tag: '' }
+            : (() => {
+                const parsed = parseTagKey(tag);
+
+                return parsed && 'id' in parsed
+                  ? { tagId: parsed.id }
+                  : { tag: parsed?.name };
+              })()),
           userId: nn(userId ? parseInt(userId, 10) : undefined),
           takenAtFrom: nt(takenAtFrom ? new Date(takenAtFrom) : undefined),
           takenAtTo: nt(takenAtTo ? new Date(takenAtTo) : undefined),
@@ -314,10 +365,19 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             <Form.Select value={tag} onChange={handleTagChange}>
               <option value="" />
 
-              <option value="⌘">« {gm?.filterModal.noTags} »</option>
-              {tags.map(({ name, count }) => (
-                <option key={name} value={name}>
-                  {name} ({count})
+              <option value={NO_TAGS}>« {gm?.filterModal.noTags} »</option>
+
+              {/* A name from an older link, or an id not in the list (gone,
+                  or the list still loading): shown, so it can be cleared. */}
+              {tag &&
+                tag !== NO_TAGS &&
+                !tagOptions.some(({ value }) => value === tag) && (
+                  <option value={tag}>{shownTagKey(tag)}</option>
+                )}
+
+              {tagOptions.map(({ value, shown, count }) => (
+                <option key={value} value={value}>
+                  {shown} ({count})
                 </option>
               ))}
             </Form.Select>

@@ -9,6 +9,7 @@ import {
   GalleryLicenseSchema,
 } from '../licenses.js';
 import type { Rotation } from '../rotation.js';
+import type { TagRef } from '../tagRefs.js';
 
 /** Map overlay-layer code for the photos layer. */
 export const GALLERY_LAYER = 'I';
@@ -27,7 +28,7 @@ export interface GalleryItem {
   id: number;
   title: string;
   description: string;
-  tags: string[];
+  tags: TagRef[];
   takenAt: Date | null;
   azimuth: number | null;
   dirtyPosition: string | '';
@@ -61,8 +62,19 @@ export const GalleryColorizeBySchema = z.enum([
 
 export type GalleryColorizeBy = z.infer<typeof GalleryColorizeBySchema>;
 
-export const GalleryTagSchema = z.object({
+export const PictureTagSchema = z.object({
+  id: z.number(),
   name: z.string(),
+  /** The name in the language asked for, where it differs. */
+  label: z.string().nullish(),
+  /** A plant's or animal's Latin name. */
+  latin: z.string().nullish(),
+});
+
+export type PictureTag = z.infer<typeof PictureTagSchema>;
+
+export const GalleryTagSchema = z.object({
+  ...PictureTagSchema.shape,
   count: z.number(),
 });
 
@@ -93,6 +105,8 @@ export const PictureSchema = z.object({
   // Absent for Wikimedia photos (fetched from the Commons API instead).
   description: z.string().nullish(),
   tags: z.array(z.string()),
+  /** `tags` with ids and labels in the language asked for. */
+  tagList: z.array(PictureTagSchema).optional(),
   comments: z.array(CommentSchema),
   rating: z.number(),
   myStars: z.number().nullish(),
@@ -119,6 +133,8 @@ export const PictureSchema = z.object({
 export type Picture = z.infer<typeof PictureSchema>;
 
 export const GalleryFilterSchema = z.object({
+  tagId: z.number().optional(),
+  /** A tag's name, from an older link or saved map; '' for photos with none. */
   tag: z.string().optional(),
   userId: z.number().optional(),
   takenAtFrom: IsoDateSchema.optional(),
@@ -135,7 +151,12 @@ export const GalleryFilterSchema = z.object({
 });
 
 export type GalleryFilter = z.infer<typeof GalleryFilterSchema>;
-export const galleryAddTag = createAction<string>('GALLERY_ADD_TAG');
+export const galleryAddTag = createAction<TagRef>('GALLERY_ADD_TAG');
+
+/** The filter's tag, held by its name, found as this id; turns no layer on. */
+export const galleryFilterTagResolved = createAction<number>(
+  'GALLERY_FILTER_TAG_RESOLVED',
+);
 
 export const galleryRequestImages = createAction<LatLon>(
   'GALLERY_REQUEST_IMAGES',
@@ -196,7 +217,13 @@ export const galleryUpload = createAction('GALLERY_UPLOAD');
 
 export const gallerySetLayerDirty = createAction('GALLERY_SET_LAYER_DIRTY');
 
-export const gallerySetTags = createAction<GalleryTag[]>('GALLERY_SET_TAGS');
+/** Labels of the whole tag list wanted, where not loaded yet. */
+export const galleryTagsNeeded = createAction('GALLERY_TAGS_NEEDED');
+
+export const gallerySetTags = createAction<{
+  tags: GalleryTag[];
+  language: string;
+}>('GALLERY_SET_TAGS');
 
 export const gallerySetUsers = createAction<GalleryUser[]>('GALLERY_SET_USERS');
 
@@ -253,7 +280,7 @@ export const galleryTogglePremium = createAction<boolean>(
   'GALLERY_TOGGLE_PREMIUM',
 );
 
-export const galleryQuickAddTag = createAction<string>('GALLERY_QUICK_ADD_TAG');
+export const galleryQuickAddTag = createAction<TagRef>('GALLERY_QUICK_ADD_TAG');
 
 export const galleryQuickChangePremium = createAction<boolean>(
   'GALLERY_QUICK_CHANGE_PREMIUM',

@@ -15,6 +15,7 @@ describe('the photo filter as URL params', () => {
   it('reads back what it writes', () => {
     const filter = {
       userId: 7,
+      tagId: 12,
       tag: 'hrad',
       ratingFrom: 2,
       takenAtFrom: new Date('2026-01-02T00:00:00.000Z'),

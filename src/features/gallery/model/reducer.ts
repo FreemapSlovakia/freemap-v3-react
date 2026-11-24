@@ -10,6 +10,7 @@ import { latLonToString } from '@shared/geoutils.js';
 import type { LatLon } from '@shared/types/common.js';
 import type { PictureModel } from '../components/GalleryEditForm.js';
 import { DEFAULT_PHOTO_LICENSE } from '../licenses.js';
+import { tagRefsOf } from '../tagRefs.js';
 import {
   type GalleryItem,
   type GalleryItemError,
@@ -60,6 +61,8 @@ export interface GalleryState {
   showPreview: boolean;
   uploadingId: number | null;
   tags: GalleryTag[];
+  /** The language of the `tags`' labels; null until loaded. */
+  tagsLanguage: string | null;
   users: GalleryUser[];
   dirtySeq: number;
   comment: string;
@@ -88,6 +91,7 @@ export const galleryInitialState: GalleryState = {
   uploadingId: null,
 
   tags: [],
+  tagsLanguage: null,
   users: [],
 
   dirtySeq: 0,
@@ -289,7 +293,9 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       state.uploadingId = next ? next.id : null;
     })
     .addCase(gallerySetTags, (state, action) => {
-      state.tags = action.payload;
+      state.tags = action.payload.tags;
+
+      state.tagsLanguage = action.payload.language;
     })
     .addCase(gallerySetUsers, (state, action) => {
       state.users = action.payload;
@@ -336,7 +342,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
               : state.image.takenAt
                 ? toDatetimeLocal(state.image.takenAt)
                 : '',
-            tags: state.image ? [...state.image.tags] : [],
+            tags: state.image ? tagRefsOf(state.image) : [],
             dirtyPosition: position
               ? latLonToString(position, state.language)
               : '',
@@ -352,7 +358,7 @@ export const galleryReducer = createReducer(galleryInitialState, (builder) =>
       // A copy, not the same object: the edit is changed in place.
       state.editSeed = state.editModel && {
         ...state.editModel,
-        tags: [...state.editModel.tags],
+        tags: state.editModel.tags.map((tag) => ({ ...tag })),
       };
     })
     .addCase(gallerySetEditModel, (state, action) => {

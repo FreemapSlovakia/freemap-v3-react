@@ -2,11 +2,13 @@ import { mapGalleryFilter } from '@app/url/mapContentParts.js';
 import { mapsLoaded } from '@features/myMaps/model/actions.js';
 import { createReducer, isAnyOf } from '@reduxjs/toolkit';
 import { DEFAULT_PHOTO_LICENSE, type GalleryLicense } from '../licenses.js';
+import { isSameTag, type TagRef } from '../tagRefs.js';
 import {
   type GalleryColorizeBy,
   type GalleryFilter,
   galleryAddTag,
   galleryColorizeBy,
+  galleryFilterTagResolved,
   galleryQuickAddTag,
   gallerySetFilter,
   gallerySetLicense,
@@ -19,7 +21,7 @@ import {
 // clear.
 export interface GallerySettingsState {
   colorizeBy: GalleryColorizeBy | null;
-  recentTags: string[];
+  recentTags: TagRef[];
   showDirection: boolean;
   showLegend: boolean;
   // Default premium flag for newly added upload items; mirrors the user's last
@@ -64,6 +66,13 @@ export const gallerySettingsReducer = createReducer(
       .addCase(gallerySetFilter, (state, action) => {
         state.filter = action.payload;
       })
+      .addCase(galleryFilterTagResolved, (state, action) => {
+        state.filter = {
+          ...state.filter,
+          tag: undefined,
+          tagId: action.payload,
+        };
+      })
       .addCase(mapsLoaded, (state, action) => {
         // A map without one keeps the remembered filter.
         const filter = mapGalleryFilter(action.payload.data);
@@ -75,7 +84,9 @@ export const gallerySettingsReducer = createReducer(
       .addMatcher(
         isAnyOf(galleryAddTag, galleryQuickAddTag),
         (state, { payload }) => {
-          const i = state.recentTags.indexOf(payload);
+          const i = state.recentTags.findIndex((tag) =>
+            isSameTag(tag, payload),
+          );
 
           if (i > -1) {
             state.recentTags.splice(i, 1);
