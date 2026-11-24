@@ -505,19 +505,16 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
 
   const tagRefs = image ? tagRefsOf(image) : [];
 
-  // Labeled in the UI language; the hint is a taxon's Latin name, else the
-  // tag's name where its label differs.
+  // Labeled in the UI language; a taxon's Latin name as the hint.
   const shownTags = (
     image?.tagList ?? tagRefs.map(({ name }) => ({ name, label: null }))
   ).map((tag) => {
-    const label = tag.label || tag.name;
-
     const latin = 'latin' in tag ? tag.latin : null;
 
     return {
       key: tagKey(tag),
-      label,
-      hint: latin ? <i>{latin}</i> : label === tag.name ? null : tag.name,
+      label: tag.label || tag.name,
+      hint: latin ? <i>{latin}</i> : null,
     };
   });
 
