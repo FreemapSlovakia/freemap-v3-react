@@ -11,6 +11,7 @@ import { PremiumGem } from '@features/premium/components/PremiumGem.js';
 import { useBecomePremium } from '@features/premium/hooks/useBecomePremium.js';
 import { isPremium } from '@features/premium/premium.js';
 import { usePremiumMessages } from '@features/premium/translations/usePremiumMessages.js';
+import { usePlaceName } from '@features/search/hooks/usePlaceName.js';
 import {
   getMinWidthForBreakpoint,
   useBreakpointMatches,
@@ -54,6 +55,7 @@ import {
   FaEye,
   FaGem,
   FaImage,
+  FaMapMarkerAlt,
   FaPencilAlt,
   FaRegDotCircle,
   FaSave,
@@ -499,6 +501,11 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
   const displayDescription = isWikimedia
     ? commonsMeta?.description
     : description;
+
+  const placeName = usePlaceName(
+    lat !== undefined && lon !== undefined ? { lat, lon } : null,
+    true,
+  );
 
   const photoLicense = getPhotoLicense(image?.license);
 
@@ -1276,6 +1283,15 @@ export default function GalleryViewerModal({ show }: Props): ReactElement {
                     )}
                   </>
                 )
+              )}
+
+              {placeName && (
+                <>
+                  {divider}
+                  <span className="text-nowrap">
+                    <FaMapMarkerAlt /> {placeName}
+                  </span>
+                </>
               )}
 
               {displayDescription && (
