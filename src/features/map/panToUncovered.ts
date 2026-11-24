@@ -71,40 +71,52 @@ function findUncoveredRect(container: HTMLElement): Rect | null {
 
   let best = { area: 0, c0: 0, c1: -1, r0: 0, r1: -1 };
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const el = document.elementFromPoint(
-        box.left + ox + (c + 0.5) * cell,
-        box.top + oy + (r + 0.5) * cell,
-      );
+  // Hidden while probing: only what covers the map counts, and each hit test
+  // would otherwise walk every marker. Restored before paint.
+  const pane = container.querySelector<HTMLElement>('.leaflet-map-pane');
 
-      heights[c] = el && container.contains(el) ? heights[c]! + 1 : 0;
-    }
+  const visibility = pane?.style.visibility;
 
-    // Each bar is closed by the first shorter one to its right; what it spans
-    // by then is the widest rectangle of its own height. The zero sentinel past
-    // the last column closes whatever is still open.
-    const stack: { c: number; h: number }[] = [];
+  pane?.style.setProperty('visibility', 'hidden');
 
-    for (let c = 0; c <= cols; c++) {
-      const h = c === cols ? 0 : heights[c]!;
+  try {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const el = document.elementFromPoint(
+          box.left + ox + (c + 0.5) * cell,
+          box.top + oy + (r + 0.5) * cell,
+        );
 
-      let start = c;
-
-      while (stack.length && stack.at(-1)!.h >= h) {
-        const bar = stack.pop()!;
-
-        const area = bar.h * (c - bar.c);
-
-        if (area > best.area) {
-          best = { area, c0: bar.c, c1: c - 1, r0: r - bar.h + 1, r1: r };
-        }
-
-        start = bar.c;
+        heights[c] = el && container.contains(el) ? heights[c]! + 1 : 0;
       }
 
-      stack.push({ c: start, h });
+      // Each bar is closed by the first shorter one to its right; what it spans
+      // by then is the widest rectangle of its own height. The zero sentinel past
+      // the last column closes whatever is still open.
+      const stack: { c: number; h: number }[] = [];
+
+      for (let c = 0; c <= cols; c++) {
+        const h = c === cols ? 0 : heights[c]!;
+
+        let start = c;
+
+        while (stack.length && stack.at(-1)!.h >= h) {
+          const bar = stack.pop()!;
+
+          const area = bar.h * (c - bar.c);
+
+          if (area > best.area) {
+            best = { area, c0: bar.c, c1: c - 1, r0: r - bar.h + 1, r1: r };
+          }
+
+          start = bar.c;
+        }
+
+        stack.push({ c: start, h });
+      }
     }
+  } finally {
+    pane?.style.setProperty('visibility', visibility ?? '');
   }
 
   if (best.area === 0) {

@@ -5,17 +5,16 @@ import { SELECTION_COLOR } from '@shared/halo.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useNow } from '@shared/hooks/useNow.js';
 import eventsBody from '@shared/mapLibrary/defs/events.js';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { memo, type ReactElement, useEffect, useMemo, useState } from 'react';
 import { FaCalendarDay } from 'react-icons/fa';
 import { Pane, Tooltip, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
+import type { EventSummary } from '../model/actions.js';
 import { eventColor, stackOrder } from '../model/colorize.js';
 import { eventsLayerOnSelector, selectedEventId } from '../model/selectors.js';
 import { iconOfKind } from '../model/transports.js';
 
 export function EventsLayer(): ReactElement | null {
-  const dispatch = useDispatch();
-
   const list = useAppSelector((state) => state.events.list);
 
   const selected = useAppSelector((state) => state.events.selected);
@@ -93,30 +92,57 @@ export function EventsLayer(): ReactElement | null {
       style={{ zIndex: 590 }}
     >
       {shown.map(({ event, rank }) => (
-        <RichMarker
+        <EventMarker
           key={event.id}
-          position={{ lat: event.startPoint.lat, lng: event.startPoint.lon }}
+          event={event}
+          rank={rank}
           color={eventColor(event, colorizeBy, userId, now)}
-          // One kind of transport shows as itself; several can't share the glyph.
-          faIcon={
-            (event.transports.length === 1 &&
-              iconOfKind(event.transports[0]!)) || <FaCalendarDay />
-          }
-          halo={event.id === selectedId ? SELECTION_COLOR : undefined}
-          // Leaflet stacks by the marker's y plus this, so a step must outdo
-          // the y apart two overlapping markers can be; the selected is last.
-          zIndexOffset={rank * 100}
-          eventHandlers={{
-            click() {
-              dispatch(selectFeature({ type: 'event', id: event.id }));
-            },
-          }}
-        >
-          <Tooltip direction="top" pane="tooltipPane">
-            {event.title}
-          </Tooltip>
-        </RichMarker>
+          selected={event.id === selectedId}
+        />
       ))}
     </Pane>
   );
 }
+
+type MarkerProps = {
+  event: EventSummary;
+  rank: number;
+  color: string;
+  selected: boolean;
+};
+
+// Memoized: a selection would otherwise re-render a thousand markers.
+const EventMarker = memo(function EventMarker({
+  event,
+  rank,
+  color,
+  selected,
+}: MarkerProps): ReactElement {
+  const dispatch = useDispatch();
+
+  return (
+    <RichMarker
+      position={{ lat: event.startPoint.lat, lng: event.startPoint.lon }}
+      color={color}
+      // One kind of transport shows as itself; several can't share the glyph.
+      faIcon={
+        (event.transports.length === 1 && iconOfKind(event.transports[0]!)) || (
+          <FaCalendarDay />
+        )
+      }
+      halo={selected ? SELECTION_COLOR : undefined}
+      // Leaflet stacks by the marker's y plus this, so a step must outdo
+      // the y apart two overlapping markers can be; the selected is last.
+      zIndexOffset={rank * 100}
+      eventHandlers={{
+        click() {
+          dispatch(selectFeature({ type: 'event', id: event.id }));
+        },
+      }}
+    >
+      <Tooltip direction="top" pane="tooltipPane">
+        {event.title}
+      </Tooltip>
+    </RichMarker>
+  );
+});
