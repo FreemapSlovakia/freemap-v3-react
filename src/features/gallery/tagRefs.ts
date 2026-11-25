@@ -242,17 +242,28 @@ export type TagRelation = {
   narrower: string[];
 };
 
-const relationCache = new WeakMap<RelatedTag[], Map<number, TagRelation>>();
+const relationCache = new WeakMap<
+  RelatedTag[],
+  Map<string, Map<number, TagRelation>>
+>();
 
 /**
  * By id, the tags with broader or narrower ones or synonyms; built once per
- * list, which is fetched anew for another `language`.
+ * list and language, which may differ while a list for another one loads.
  */
 export function tagRelations(
   tags: RelatedTag[],
   language: string,
 ): Map<number, TagRelation> {
-  let relations = relationCache.get(tags);
+  let byLanguage = relationCache.get(tags);
+
+  if (!byLanguage) {
+    byLanguage = new Map();
+
+    relationCache.set(tags, byLanguage);
+  }
+
+  let relations = byLanguage.get(language);
 
   if (relations) {
     return relations;
@@ -322,7 +333,10 @@ export function tagRelations(
         .map(shownOf)
         .toSorted(compare);
 
-      return paths.length || narrower.length || tag.synonyms.length
+      // Synonyms are Slovak words; elsewhere they would read as untranslated.
+      const synonyms = language === 'sk' ? tag.synonyms : [];
+
+      return paths.length || narrower.length || synonyms.length
         ? [
             [
               tag.id,
@@ -330,7 +344,7 @@ export function tagRelations(
                 paths: paths.slice(0, MAX_PATHS),
                 morePaths: paths.length > MAX_PATHS,
                 shown: shownOf(tag.id),
-                synonyms: tag.synonyms,
+                synonyms,
                 narrower,
               },
             ],
@@ -339,7 +353,7 @@ export function tagRelations(
     }),
   );
 
-  relationCache.set(tags, relations);
+  byLanguage.set(language, relations);
 
   return relations;
 }

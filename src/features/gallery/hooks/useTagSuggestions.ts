@@ -59,7 +59,11 @@ function buildTagSuggestions(tags: GalleryTag[], language: string) {
       relation: relations.get(id),
       // What the search box finds it by; synonyms apart, to tell the hit.
       own: [label, name, latin].flatMap((s) => (s ? [tagNameKey(s)] : [])),
-      synonyms: synonyms.map((s) => [s, tagNameKey(s)] as const),
+      // Slovak words: elsewhere a hit by one would show it untranslated.
+      synonyms:
+        language === 'sk'
+          ? synonyms.map((s) => [s, tagNameKey(s)] as const)
+          : [],
     }),
   );
 
