@@ -30,6 +30,8 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Erreur lors du chargement des cartes', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Erreur lors de la suppression de la carte', err),
+  leaveError: ({ err }) =>
+    addError(getMessages()!, 'Erreur lors du retrait de la carte', err),
   saveError: ({ err }) =>
     addError(
       getMessages()!,
@@ -100,7 +102,20 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerOwn: 'Les miennes',
   ownerShared: 'Partagées avec moi',
   ownerSharedByMe: 'Partagées par moi',
-  sharedBadge: 'Partagée',
+  sharedBadge: 'Partagée par moi',
+  sharedWithMeBadge: 'Partagée avec moi',
+  leave: 'Retirer de mes cartes',
+  leaveConfirm: (name) => (
+    <>
+      Retirer la carte <i>{name}</i> de vos cartes ? Vous ne pourrez plus la
+      modifier ; seul son propriétaire peut vous ajouter à nouveau.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      La carte <i>{name}</i> a été retirée de vos cartes.
+    </>
+  ),
   owner: 'Propriétaire',
   savedToOutbox: ({ name }) => (
     <>

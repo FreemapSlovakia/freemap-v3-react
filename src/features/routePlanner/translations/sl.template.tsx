@@ -172,6 +172,8 @@ const sl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Napaka pri pridobivanju trenutnega položaja.',
   routeNotFound:
     'Poti ni bilo mogoče najti. Poskusite spremeniti parametre ali premakniti točke poti.',
+  routeOutOfArea:
+    'Točka poti leži zunaj območja, ki ga pokriva načrtovanje poti.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri iskanju poti', err),
 };

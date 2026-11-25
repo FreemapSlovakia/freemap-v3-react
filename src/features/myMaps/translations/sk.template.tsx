@@ -48,6 +48,8 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Nastala chyba pri načítavaní máp', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri mazaní mapy', err),
+  leaveError: ({ err }) =>
+    addError(getMessages()!, 'Chyba pri odoberaní mapy z vašich máp', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri ukladaní mapy', err),
   loadMergeModal: {
@@ -83,7 +85,20 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerOwn: 'Moje',
   ownerShared: 'Zdieľané so mnou',
   ownerSharedByMe: 'Zdieľané mnou',
-  sharedBadge: 'Zdieľaná',
+  sharedBadge: 'Zdieľaná mnou',
+  sharedWithMeBadge: 'Zdieľaná so mnou',
+  leave: 'Odobrať z mojich máp',
+  leaveConfirm: (name) => (
+    <>
+      Odobrať mapu <i>{name}</i> z vašich máp? Už ju nebudete môcť upravovať;
+      znova vás môže pridať len jej vlastník.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> bola odobratá z vašich máp.
+    </>
+  ),
   owner: 'Vlastník',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri ukladaní mapy pre offline', err),

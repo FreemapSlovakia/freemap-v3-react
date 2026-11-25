@@ -49,6 +49,8 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Napaka pri nalaganju zemljevidov', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri brisanju zemljevida', err),
+  leaveError: ({ err }) =>
+    addError(getMessages()!, 'Napaka pri odstranjevanju zemljevida', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Napaka pri shranjevanju zemljevida', err),
   loadMergeModal: {
@@ -84,7 +86,20 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerOwn: 'Moji',
   ownerShared: 'Deljeni z mano',
   ownerSharedByMe: 'Deljeni z drugimi',
-  sharedBadge: 'Deljen',
+  sharedBadge: 'Deljen z drugimi',
+  sharedWithMeBadge: 'Deljen z mano',
+  leave: 'Odstrani iz mojih zemljevidov',
+  leaveConfirm: (name) => (
+    <>
+      Odstranim zemljevid <i>{name}</i> iz vaših zemljevidov? Ne boste ga več
+      mogli urejati; ponovno vas lahko doda le njegov lastnik.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      Zemljevid <i>{name}</i> je bil odstranjen iz vaših zemljevidov.
+    </>
+  ),
   owner: 'Lastnik',
   offlineError: ({ err }) =>
     addError(

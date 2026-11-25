@@ -50,6 +50,8 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Hiba történt a térképek betöltéskor', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a térkép törlésekor', err),
+  leaveError: ({ err }) =>
+    addError(getMessages()!, 'Hiba történt a térkép eltávolításakor', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt a térkép mentésekor', err),
   loadMergeModal: {
@@ -85,7 +87,20 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerOwn: 'Sajátok',
   ownerShared: 'Velem megosztott',
   ownerSharedByMe: 'Általam megosztott',
-  sharedBadge: 'Megosztott',
+  sharedBadge: 'Általam megosztott',
+  sharedWithMeBadge: 'Velem megosztott',
+  leave: 'Eltávolítás a térképeim közül',
+  leaveConfirm: (name) => (
+    <>
+      Eltávolítja a(z) <i>{name}</i> térképet a térképei közül? Ezután nem
+      szerkesztheti; újra csak a tulajdonosa adhatja hozzá.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      A(z) <i>{name}</i> térkép eltávolítva a térképei közül.
+    </>
+  ),
   owner: 'Tulajdonos',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Hiba a térkép offline tárolásakor', err),

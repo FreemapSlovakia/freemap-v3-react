@@ -111,6 +111,9 @@ export const mapsSave = createAction<
 
 export const mapsDelete = createAction<string>('MAPS_DELETE');
 
+/** Give up write access to another's map, taking it off the list. */
+export const mapsLeave = createAction<string>('MAPS_LEAVE');
+
 export const mapsLoaded = createAction<{
   meta: MapMeta;
   data: MapData;

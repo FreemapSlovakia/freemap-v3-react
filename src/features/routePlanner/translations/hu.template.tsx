@@ -158,6 +158,8 @@ const hu: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Hiba történt jelenlegi pozíciójának meghatározásakor.',
   routeNotFound:
     'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
+  routeOutOfArea:
+    'Egy útvonalpont kívül esik az útvonaltervezés által lefedett területen.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Hiba történt az útvonaltervezésnél', err),
   manualTooltip: 'A következő szakasz összekötése egyenes vonallal',

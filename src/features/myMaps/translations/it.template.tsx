@@ -49,6 +49,8 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Errore caricando le mappe:', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Errore eliminando la mappa:', err),
+  leaveError: ({ err }) =>
+    addError(getMessages()!, 'Errore rimuovendo la mappa dalle Sue mappe', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Errore salvando la mappa:', err),
   loadMergeModal: {
@@ -85,7 +87,20 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerOwn: 'Mie',
   ownerShared: 'Condivise con me',
   ownerSharedByMe: 'Condivise da me',
-  sharedBadge: 'Condivisa',
+  sharedBadge: 'Condivisa da me',
+  sharedWithMeBadge: 'Condivisa con me',
+  leave: 'Rimuovi dalle mie mappe',
+  leaveConfirm: (name) => (
+    <>
+      Rimuovere la mappa <i>{name}</i> dalle Sue mappe? Non potrà più
+      modificarla; solo il proprietario può aggiungerLa di nuovo.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      La mappa <i>{name}</i> è stata rimossa dalle Sue mappe.
+    </>
+  ),
   owner: 'Proprietario',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Errore nel salvataggio offline della mappa', err),

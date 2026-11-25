@@ -654,6 +654,16 @@ const handle: ProcessorHandler = async ({ dispatch, getState, action }) => {
             msg.startsWith('Connection between locations not found')
           ) {
             dispatch(rnfToastAction);
+          } else if (/^Point \d+ is out of bounds/.test(msg)) {
+            dispatch(
+              toastsAdd({
+                id: 'routePlanner',
+                messageKey: 'routeOutOfArea',
+                messageLoader: loadRoutePlannerMessages,
+                style: 'warning',
+                timeout: 5000,
+              }),
+            );
           } else {
             err = msg;
           }

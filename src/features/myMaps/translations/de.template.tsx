@@ -50,6 +50,12 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Fehler beim Laden der Karten', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Löschen der Karte', err),
+  leaveError: ({ err }) =>
+    addError(
+      getMessages()!,
+      'Fehler beim Entfernen der Karte aus Ihren Karten',
+      err,
+    ),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Speichern der Karte', err),
   loadMergeModal: {
@@ -85,7 +91,20 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerOwn: 'Eigene',
   ownerShared: 'Mit mir geteilt',
   ownerSharedByMe: 'Von mir geteilt',
-  sharedBadge: 'Geteilt',
+  sharedBadge: 'Von mir geteilt',
+  sharedWithMeBadge: 'Mit mir geteilt',
+  leave: 'Aus meinen Karten entfernen',
+  leaveConfirm: (name) => (
+    <>
+      Karte <i>{name}</i> aus Ihren Karten entfernen? Sie können sie dann nicht
+      mehr bearbeiten; nur ihr Besitzer kann Sie wieder hinzufügen.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      Karte <i>{name}</i> wurde aus Ihren Karten entfernt.
+    </>
+  ),
   owner: 'Besitzer',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Offline-Speichern der Karte', err),

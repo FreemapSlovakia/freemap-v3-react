@@ -160,6 +160,8 @@ const it: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Errore nel determinare la sua posizione corrente.',
   routeNotFound:
     'Nessun percorso trovato. Provi a cambiare i parametri o sposti i punti della rotta.',
+  routeOutOfArea:
+    'Un punto del percorso si trova fuori dall’area coperta dalla pianificazione.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Error finding the route:', err),
   manualTooltip: 'Collega il segmento successivo con una linea retta',

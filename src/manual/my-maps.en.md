@@ -27,7 +27,7 @@ Unsaved changes survive a page reload in this browser, but only saving puts them
 
 ## The My maps dialog
 
-The dialog lists your maps and the maps others made you an editor of, with the date each was created and last modified; the field at the top filters them by name. A map of someone else's shows its **Owner**, and your map with editors a **Shared** badge. **All**, **Mine**, **Shared with me** and **Shared by me** above the list narrow it accordingly. :FaCog: → **Sort** orders the list **By name**, **Recently created first** or **Recently modified first**.
+The dialog lists your maps and the maps others made you an editor of, with the date each was created and last modified; the field at the top filters them by name. A map of someone else's shows a **Shared with me** badge and its **Owner**, and your map with editors a **Shared by me** badge. **All**, **Mine**, **Shared with me** and **Shared by me** above the list narrow it accordingly. :FaCog: → **Sort** orders the list **By name**, **Recently created first** or **Recently modified first**.
 
 Tags sort out a long list. Add them under **Tags** in :FaEdit: **Modify**; only you see them, on someone else's map too. Each tag appears as a button above the list, with **Untagged** last. Press one to list only its maps, and press it again to list all of them. A double click presses that tag alone, releasing the others, and :FaTimes: after the buttons releases them all. With several pressed, **Any of them** lists the maps with at least one of the tags and **All of them** the maps with every one. **Untagged** adds the maps without tags; with **All of them** it is not offered.
 
@@ -38,6 +38,7 @@ For each map:
 - :FaCloudDownloadAlt: **Load** opens the map with its map layers and position. :FaShapes: **Load without background map and position** in the arrow next to it adds only its contents and keeps your current view. If the map already shows something, you choose whether to **Append** the loaded map or **Replace** what is there.
 - :FaEdit: **Modify** changes the **Name** and the **Editors** of your own map, and the **Tags** and **Available offline in this browser** of any.
 - :FaTrash: **Delete**, on your own maps, removes the map after a confirmation.
+- :FaUserMinus: **Remove from my maps**, on someone else's map, gives up editing it and takes it off your list; only its owner can add you again.
 
 On a narrow screen, some of these are in the :FaEllipsisV: menu of the map's row.
 

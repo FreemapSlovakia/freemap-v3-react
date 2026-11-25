@@ -45,6 +45,8 @@ const en: MyMapsMessages = {
   fetchListError: ({ err }) =>
     addError(getMessages()!, 'Error loading maps', err),
   deleteError: ({ err }) => addError(getMessages()!, 'Error deleting map', err),
+  leaveError: ({ err }) =>
+    addError(getMessages()!, 'Error removing map from your maps', err),
   saveError: ({ err }) => addError(getMessages()!, 'Error saving map', err),
   loadMergeModal: {
     title: 'Map is not empty',
@@ -79,7 +81,20 @@ const en: MyMapsMessages = {
   ownerOwn: 'Mine',
   ownerShared: 'Shared with me',
   ownerSharedByMe: 'Shared by me',
-  sharedBadge: 'Shared',
+  sharedBadge: 'Shared by me',
+  sharedWithMeBadge: 'Shared with me',
+  leave: 'Remove from my maps',
+  leaveConfirm: (name) => (
+    <>
+      Remove map <i>{name}</i> from your maps? You will no longer be able to
+      edit it; only its owner can add you again.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      Map <i>{name}</i> has been removed from your maps.
+    </>
+  ),
   owner: 'Owner',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Error caching map offline', err),

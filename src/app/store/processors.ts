@@ -149,6 +149,7 @@ import { featuresHiddenResetProcessor } from '@features/mapSettings/model/featur
 import { mapLayersPanelToggleProcessor } from '@features/mapSettings/model/mapLayersPanelToggleProcessor.js';
 import { measurementProcessor } from '@features/measurement/model/measurementProcessor.js';
 import { mapsDeleteProcessor } from '@features/myMaps/model/processors/mapsDeleteProcessor.js';
+import { mapsLeaveProcessor } from '@features/myMaps/model/processors/mapsLeaveProcessor.js';
 import { mapsLoadListProcessor } from '@features/myMaps/model/processors/mapsLoadListProcessor.js';
 import { mapsLoadProcessor } from '@features/myMaps/model/processors/mapsLoadProcessor.js';
 import {
@@ -376,6 +377,7 @@ export const processors = [
   mapsLoadListProcessor,
   mapsLoadProcessor,
   mapsDeleteProcessor,
+  mapsLeaveProcessor,
   mapsSaveProcessor,
   mapsSetTagsProcessor,
   mapsWorkingCopyProcessor,

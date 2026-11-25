@@ -159,6 +159,8 @@ const pl: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Błąd podczas pobierania bieżącej lokalizacji.',
   routeNotFound:
     'Nie znaleziono trasy. Spróbuj zmienić parametry lub przesunąć punkty.',
+  routeOutOfArea:
+    'Punkt trasy leży poza obszarem obsługiwanym przez planowanie tras.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas wyszukiwania trasy', err),
   manualTooltip: 'Połącz następny odcinek prostą linią',

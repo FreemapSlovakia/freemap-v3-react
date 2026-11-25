@@ -160,6 +160,8 @@ const de: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Fehler beim Ermitteln Ihrer aktuellen Position.',
   routeNotFound:
     'Keine Route gefunden. Versuchen Sie, die Parameter zu ändern oder die Punkte zu verschieben.',
+  routeOutOfArea:
+    'Ein Routenpunkt liegt außerhalb des Gebiets, das die Routenplanung abdeckt.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Finden der Route', err),
   manualTooltip: 'Folgenden Abschnitt mit einer geraden Linie verbinden',

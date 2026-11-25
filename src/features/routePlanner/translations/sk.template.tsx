@@ -173,6 +173,7 @@ const sk: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
   routeNotFound:
     'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
+  routeOutOfArea: 'Bod trasy leží mimo oblasti, ktorú pokrýva vyhľadávač trás.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba pri hľadaní trasy', err),
 };

@@ -171,6 +171,7 @@ const en: RoutePlannerMessages = {
   gpsError: 'Error getting your current location.',
   routeNotFound:
     'No route found. Try to change parameters or move the route points.',
+  routeOutOfArea: 'A route point lies outside the area route planning covers.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Error finding the route', err),
 };

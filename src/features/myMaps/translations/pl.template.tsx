@@ -49,6 +49,8 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
     addError(getMessages()!, 'Błąd podczas wczytywania map', err),
   deleteError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas usuwania mapy', err),
+  leaveError: ({ err }) =>
+    addError(getMessages()!, 'Błąd podczas usuwania mapy z listy', err),
   saveError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas zapisywania mapy', err),
   loadMergeModal: {
@@ -85,7 +87,20 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerOwn: 'Moje',
   ownerShared: 'Udostępnione mi',
   ownerSharedByMe: 'Udostępnione przeze mnie',
-  sharedBadge: 'Udostępniona',
+  sharedBadge: 'Udostępniona przeze mnie',
+  sharedWithMeBadge: 'Udostępniona mi',
+  leave: 'Usuń z moich map',
+  leaveConfirm: (name) => (
+    <>
+      Usunąć mapę <i>{name}</i> z listy map? Jej edycja nie będzie już możliwa;
+      ponownie dodać może tylko jej właściciel.
+    </>
+  ),
+  mapLeft: ({ name }) => (
+    <>
+      Mapa <i>{name}</i> została usunięta z listy map.
+    </>
+  ),
   owner: 'Właściciel',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Błąd podczas zapisywania mapy offline', err),

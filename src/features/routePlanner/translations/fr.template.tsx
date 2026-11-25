@@ -174,6 +174,8 @@ const fr: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Erreur lors de l’obtention de votre position actuelle.',
   routeNotFound:
     'Aucun itinéraire trouvé. Essayez de modifier les paramètres ou de déplacer les points de l’itinéraire.',
+  routeOutOfArea:
+    'Un point de l’itinéraire se trouve hors de la zone couverte par le calcul d’itinéraires.',
   fetchingError: ({ err }) =>
     addError(
       getMessages()!,

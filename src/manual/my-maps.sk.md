@@ -27,7 +27,7 @@ Neuložené zmeny v tomto prehliadači prežijú aj opätovné načítanie strá
 
 ## Dialóg Moje mapy
 
-Dialóg zobrazuje zoznam vašich máp a máp, pri ktorých vás iní pridali medzi editorov, s dátumom vytvorenia a poslednej zmeny; pole navrchu filtruje mapy podľa názvu. Pri cudzej mape je uvedený **Vlastník**, vaša mapa s editormi má značku **Zdieľaná**. Voľby **Všetky**, **Moje**, **Zdieľané so mnou** a **Zdieľané mnou** nad zoznamom ho podľa toho obmedzia. :FaCog: → **Zoradenie** zoradí zoznam **Podľa názvu**, **Najnovšie vytvorené** alebo **Naposledy zmenené**.
+Dialóg zobrazuje zoznam vašich máp a máp, pri ktorých vás iní pridali medzi editorov, s dátumom vytvorenia a poslednej zmeny; pole navrchu filtruje mapy podľa názvu. Cudzia mapa má značku **Zdieľaná so mnou** a uvedeného **Vlastníka**, vaša mapa s editormi má značku **Zdieľaná mnou**. Voľby **Všetky**, **Moje**, **Zdieľané so mnou** a **Zdieľané mnou** nad zoznamom ho podľa toho obmedzia. :FaCog: → **Zoradenie** zoradí zoznam **Podľa názvu**, **Najnovšie vytvorené** alebo **Naposledy zmenené**.
 
 Dlhý zoznam pomôžu roztriediť tagy. Pridáte ich v položke **Tagy** v okne :FaEdit: **Upraviť**; vidíte ich len vy, aj pri cudzej mape. Každý tag je nad zoznamom ako tlačidlo, posledné je **Bez tagu**. Stlačením tlačidla zostanú v zozname len mapy s týmto tagom, ďalším stlačením sa vrátia všetky. Dvojklik stlačí iba tento tag a ostatné uvoľní, :FaTimes: za tlačidlami uvoľní všetky. Ak je stlačených viac tagov, **Aspoň jeden** zobrazí mapy s niektorým z nich a **Všetky** mapy so všetkými. **Bez tagu** pridá mapy bez tagov; pri voľbe **Všetky** sa neponúka.
 
@@ -38,6 +38,7 @@ Pri každej mape sú:
 - :FaCloudDownloadAlt: **Načítať** otvorí mapu s mapovými vrstvami a pozíciou. :FaShapes: **Načítať bez podkladovej mapy a pozície** v šípke vedľa tlačidla pridá iba obsah mapy a aktuálny pohľad nechá tak. Ak už na mape niečo je, zvolíte, či načítanú mapu **Pripojiť**, alebo existujúci obsah **Nahradiť**.
 - :FaEdit: **Upraviť** – pri vlastnej mape zmena položiek **Názov** a **Editori**, pri každej mape **Tagy** a **Dostupné offline v tomto prehliadači**.
 - :FaTrash: **Zmazať** (len pri vlastných mapách) mapu po potvrdení odstráni.
+- :FaUserMinus: **Odobrať z mojich máp** (len pri cudzích mapách) – vzdáte sa úprav mapy a zmizne z vášho zoznamu; znova vás môže pridať len jej vlastník.
 
 Na úzkej obrazovke sú niektoré z týchto volieb v ponuke :FaEllipsisV: v riadku mapy.
 

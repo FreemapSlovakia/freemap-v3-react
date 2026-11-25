@@ -21,6 +21,7 @@ export type MyMapsMessages = {
   fetchError: (props: { err: unknown }) => string;
   fetchListError: (props: { err: unknown }) => string;
   deleteError: (props: { err: unknown }) => string;
+  leaveError: (props: { err: unknown }) => string;
   saveError: (props: { err: unknown }) => string;
   loadMergeModal: {
     title: string;
@@ -54,6 +55,10 @@ export type MyMapsMessages = {
   ownerShared: string;
   ownerSharedByMe: string;
   sharedBadge: string;
+  sharedWithMeBadge: string;
+  leave: string;
+  leaveConfirm: (name: string) => JSX.Element;
+  mapLeft: (props: { name: string }) => JSX.Element;
   owner: string;
   offlineError: (props: { err: unknown }) => string;
   offlineCachedAll: (props: { count: number; failed: number }) => string;

@@ -123,5 +123,6 @@ export type RoutePlannerMessages = {
   showMidpointHint: string;
   gpsError: string;
   routeNotFound: string;
+  routeOutOfArea: string;
   fetchingError: (props: Err) => string;
 };

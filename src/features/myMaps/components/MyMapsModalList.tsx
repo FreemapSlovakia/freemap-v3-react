@@ -56,6 +56,7 @@ import {
   FaTrash,
   FaUnlink,
   FaUserFriends,
+  FaUserMinus,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAskLoadMerge } from '../hooks/useAskLoadMerge.js';
@@ -68,6 +69,7 @@ import {
   type MyMapsOwnerFilter,
   mapsDelete,
   mapsDisconnect,
+  mapsLeave,
   mapsLoad,
   mapsResolveOutbox,
   mapsSave,
@@ -584,6 +586,12 @@ export function MyMapsModalList({
                   <div className="flex-grow-1 me-2 min-w-0">
                     <div>
                       {map.name}
+                      {!isOwn && (
+                        <Badge bg="success" className="ms-1">
+                          <FaUserFriends />{' '}
+                          <Text m={mm} k="sharedWithMeBadge" />
+                        </Badge>
+                      )}
                       {isSharedByMe(map) && (
                         <LongPressTooltip
                           label={
@@ -760,6 +768,28 @@ export function MyMapsModalList({
                             }
                           }}
                           showFrom="lg"
+                        />
+                      )}
+
+                      {!isOwn && (
+                        <Action
+                          icon={<FaUserMinus />}
+                          label={mm?.leave}
+                          variant="danger"
+                          requiresOnline
+                          onClick={async () => {
+                            if (
+                              await confirm({
+                                title: mm?.leave,
+                                message: mm?.leaveConfirm(map.name),
+                                confirmLabel: mm?.leave,
+                                confirmStyle: 'danger',
+                              })
+                            ) {
+                              dispatch(mapsLeave(map.id));
+                            }
+                          }}
+                          showFrom="never"
                         />
                       )}
                     </ResponsiveActions>

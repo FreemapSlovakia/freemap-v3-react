@@ -159,6 +159,7 @@ const cs: DeepPartialWithRequiredObjects<RoutePlannerMessages> = {
   gpsError: 'Nelze získat aktuální polohu.',
   routeNotFound:
     'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
+  routeOutOfArea: 'Bod trasy leží mimo oblast, kterou pokrývá vyhledávač tras.',
   fetchingError: ({ err }) =>
     addError(getMessages()!, 'Nastala chyba při hledání trasy', err),
   manualTooltip: 'Propojit následující segment přímou čarou',
