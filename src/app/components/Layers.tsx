@@ -596,6 +596,7 @@ export function Layers(): ReactNode {
                   maxNativeZoom={toNativeZoom(layerDef.maxNativeZoom)}
                   subdomains={layerDef.subdomains ?? 'abc'}
                   errorTileUrl={layerDef.errorTileUrl ?? missingTile}
+                  overzoomOnError={layerDef.overzoomOnError}
                   zIndex={0}
                   // the detail's premium placeholders included: the base under
                   // them would mix older imagery into the watermarked view
@@ -620,6 +621,7 @@ export function Layers(): ReactNode {
                   maxNativeZoom={toNativeZoom(detail.maxNativeZoom)}
                   errorTileUrl={transparent1x1}
                   // where the base was skipped, a failed tile shows it instead
+                  // TODO no overzoom here when the base lacks the tile too
                   fallbackUrl={(z, x, y) =>
                     coverage(z, x, y) === 'full' && z <= baseMaxZoom
                       ? buildTileUrl(
@@ -651,6 +653,7 @@ export function Layers(): ReactNode {
           zIndex={zIndex}
           subdomains={layerDef.subdomains ?? 'abc'}
           errorTileUrl={layerDef.errorTileUrl ?? missingTile}
+          overzoomOnError={layerDef.overzoomOnError}
         />
       );
     }

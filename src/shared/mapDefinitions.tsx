@@ -420,6 +420,8 @@ export type IsTileLayerDef = HasUrl &
     tms?: boolean;
     extraScales?: number[];
     errorTileUrl?: string;
+    /** How many zooms up a failed tile is looked for, to show enlarged. */
+    overzoomOnError?: number;
     cors?: boolean;
   };
 

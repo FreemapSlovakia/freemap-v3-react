@@ -7,11 +7,14 @@ import {
   withTileScale,
 } from '@shared/tileUrl.js';
 import {
+  Browser,
   type Coords,
   type DoneCallback,
+  Point,
   type TileEvent,
   TileLayer,
   type TileLayerOptions,
+  Util,
 } from 'leaflet';
 import type { TileLayerProps } from 'react-leaflet';
 
@@ -31,6 +34,11 @@ type Props = TileLayerProps & {
    * with `reportsAttribution`, whose fetch handles its own errors.
    */
   fallbackUrl?: (z: number, x: number, y: number) => string | undefined;
+  /**
+   * How many zooms up a failed tile is looked for, to show enlarged; `<img>`
+   * tiles only, not those loaded by `loadTile`.
+   */
+  overzoomOnError?: number;
   /**
    * Sent as a bearer token with tiles from this URL zoom up, on the fetch path
    * only. Lower zooms go without: the header costs a CORS preflight per tile.
@@ -55,6 +63,44 @@ const loads = new WeakMap<HTMLImageElement, TileLoad>();
 
 /** Per tile, the `fallbackUrl` not tried yet. */
 const fallbacks = new WeakMap<HTMLElement, string>();
+
+/** Per tile, its URL coords and how many zooms up it is now shown from. */
+const overzooms = new WeakMap<
+  HTMLElement,
+  { x: number; y: number; z: number; depth: number }
+>();
+
+/**
+ * When each failed ancestor URL failed, so sibling tiles skip it for a while;
+ * 404s often aren't cached, and an `<img>` error may also be a network blip.
+ */
+const missingAncestors = new Map<string, number>();
+
+const MISSING_TTL = 5 * 60_000;
+
+function cropToAncestor(
+  tile: HTMLElement,
+  size: Point,
+  depth: number,
+  x: number,
+  y: number,
+) {
+  const f = 2 ** depth;
+
+  const left = (x % f) * size.x;
+
+  const top = (y % f) * size.y;
+
+  // Leaflet owns `transform`, so the enlarged ancestor is shifted by margins.
+  // TODO measure GPU memory at depth 4 on mobile; a cropped canvas if heavy
+  Object.assign(tile.style, {
+    width: `${size.x * f}px`,
+    height: `${size.y * f}px`,
+    marginLeft: `${-left}px`,
+    marginTop: `${-top}px`,
+    clipPath: `inset(${top}px ${size.x * (f - 1) - left}px ${size.y * (f - 1) - top}px ${left}px)`,
+  });
+}
 
 function loading(img: HTMLImageElement): boolean {
   const load = loads.get(img);
@@ -93,7 +139,12 @@ class LScaledTileLayer extends TileLayer {
   private onPremiumClick;
   private skipTile;
   private fallbackUrl;
+  private overzoomOnError;
   private tileAuth;
+
+  // Leaflet's, untyped
+  declare _url: string;
+  declare _getSubdomain: (coords: Point) => string;
 
   constructor(
     urlTemplate: string,
@@ -106,6 +157,7 @@ class LScaledTileLayer extends TileLayer {
     onPremiumClick?: () => void,
     skipTile?: (z: number, x: number, y: number) => boolean,
     fallbackUrl?: (z: number, x: number, y: number) => string | undefined,
+    overzoomOnError?: number,
     tileAuth?: { fromZoom: number; token: string },
     options?: TileLayerOptions,
   ) {
@@ -133,6 +185,8 @@ class LScaledTileLayer extends TileLayer {
     this.skipTile = skipTile;
 
     this.fallbackUrl = fallbackUrl;
+
+    this.overzoomOnError = overzoomOnError;
 
     this.tileAuth = tileAuth;
 
@@ -315,6 +369,60 @@ class LScaledTileLayer extends TileLayer {
       return;
     }
 
+    const oz = overzooms.get(tile);
+
+    // a tile Leaflet has dropped is not worth more requests
+    if (oz && tile.isConnected) {
+      if (oz.depth > 0 && tile.dataset['tileUrl']) {
+        if (missingAncestors.size > 10_000) {
+          missingAncestors.clear();
+        }
+
+        missingAncestors.set(tile.dataset['tileUrl'], Date.now());
+      }
+
+      const max = this.overzoomOnError ?? 0;
+
+      while (++oz.depth <= max && oz.z - oz.depth >= 0) {
+        const x = oz.x >> oz.depth;
+
+        const y = oz.y >> oz.depth;
+
+        const url = Util.template(this._url, {
+          ...this.options,
+          r: Browser.retina ? '@2x' : '',
+          s: this._getSubdomain(new Point(x, y)),
+          x,
+          y,
+          z: oz.z - oz.depth,
+        });
+
+        if (Date.now() - (missingAncestors.get(url) ?? 0) < MISSING_TTL) {
+          continue;
+        }
+
+        cropToAncestor(tile, this.getTileSize(), oz.depth, oz.x, oz.y);
+
+        tile.dataset['tileUrl'] = url;
+
+        tile.src = url;
+
+        return;
+      }
+
+      overzooms.delete(tile);
+
+      // the error tile at its own size
+      tile.style.removeProperty('clip-path');
+      tile.style.removeProperty('margin-left');
+      tile.style.removeProperty('margin-top');
+
+      const size = this.getTileSize();
+
+      tile.style.width = `${size.x}px`;
+      tile.style.height = `${size.y}px`;
+    }
+
     super._tileOnError(done, tile, e);
   }
 
@@ -389,6 +497,15 @@ class LScaledTileLayer extends TileLayer {
       fallbacks.set(img, fallback);
     }
 
+    // the ancestor URL is built without Leaflet's inverted y
+    if (
+      this.overzoomOnError &&
+      !this.options.tms &&
+      !this._url.includes('{-y}')
+    ) {
+      overzooms.set(img, { x: coords.x, y: coords.y, z: urlZoom, depth: 0 });
+    }
+
     img.classList.toggle('fm-demo-tile', isOnPremiumZoom);
 
     if (this.cors) {
@@ -436,6 +553,7 @@ export const ScaledTileLayer = createTileLayerComponent<
       onPremiumClick,
       skipTile,
       fallbackUrl,
+      overzoomOnError,
       tileAuth,
       // strict-origin-when-cross-origin (the modern browser default) so tile
       // providers that require a Referer header — e.g. OSM's usage policy —
@@ -456,6 +574,7 @@ export const ScaledTileLayer = createTileLayerComponent<
         onPremiumClick,
         skipTile,
         fallbackUrl,
+        overzoomOnError,
         tileAuth,
         { ...rest, referrerPolicy },
       ),

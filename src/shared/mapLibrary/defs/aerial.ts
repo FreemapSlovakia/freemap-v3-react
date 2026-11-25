@@ -11,8 +11,10 @@ const orthophoto = {
 };
 
 const def: MapBody<'tile'> = {
-  url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  // `blankTile=false`: a 404 rather than "Map data not yet available"
+  url: 'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}?blankTile=false',
   subdomains: ['server', 'services'],
+  overzoomOnError: 4,
   detail: { ...orthophoto, url: `${ORTHOPHOTO_TILES}?alpha` },
   // only the orthophoto is exported and downloaded; Esri's tiles aren't ours
   // to hand out
