@@ -195,6 +195,8 @@
       }
 
       &-highlight {
+        /* Bootstrap's mark padding gaps the word and makes it look lower. */
+        padding: 0;
         background-color: var(--bs-highlight-bg);
         color: var(--bs-highlight-color);
       }
