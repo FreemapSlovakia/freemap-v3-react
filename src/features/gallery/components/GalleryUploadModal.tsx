@@ -11,7 +11,6 @@ import {
 } from '@shared/components/FmModalFooter.js';
 import { Modal } from '@shared/components/Modal.js';
 import { OfflineAlert } from '@shared/components/OfflineAlert.js';
-import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import clsx from 'clsx';
@@ -105,16 +104,21 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const handleModelChange = (id: number, model: PictureModel) => {
-    const azimuth = parseFloat(model.azimuth);
+  // Stable, as are the other item callbacks: a list of hundreds re-renders
+  // only the item changed.
+  const handleModelChange = useCallback(
+    (id: number, model: PictureModel) => {
+      const azimuth = parseFloat(model.azimuth);
 
-    handleItemMerge({
-      id,
-      ...model,
-      azimuth: Number.isNaN(azimuth) ? null : azimuth,
-      takenAt: model.takenAt ? new Date(model.takenAt) : null,
-    });
-  };
+      handleItemMerge({
+        id,
+        ...model,
+        azimuth: Number.isNaN(azimuth) ? null : azimuth,
+        takenAt: model.takenAt ? new Date(model.takenAt) : null,
+      });
+    },
+    [handleItemMerge],
+  );
 
   const handleClose = () => {
     dispatch(setActiveModal(null));
@@ -162,13 +166,19 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
     },
   );
 
-  const handlePositionPick = (id: number) => {
-    dispatch(gallerySetItemForPositionPicking(id));
-  };
+  const handlePositionPick = useCallback(
+    (id: number) => {
+      dispatch(gallerySetItemForPositionPicking(id));
+    },
+    [dispatch],
+  );
 
-  const handleItemRemove = (id: number) => {
-    dispatch(galleryRemoveItem(id));
-  };
+  const handleItemRemove = useCallback(
+    (id: number) => {
+      dispatch(galleryRemoveItem(id));
+    },
+    [dispatch],
+  );
 
   const premiumCheck = useRef<HTMLInputElement | null>(null);
   const [draggingOverDropzone, setDraggingOverDropzone] = useState(false);
@@ -263,50 +273,20 @@ export default function GalleryUploadModal({ show }: Props): ReactElement {
 
         {items.length > 0 && (
           <div className={classes.uploadItems}>
-            {items.map(
-              ({
-                id,
-                file,
-                previewKey,
-                title,
-                description,
-                takenAt,
-                tags,
-                errors,
-                dirtyPosition,
-                azimuth,
-                premium,
-                license,
-                rotation,
-              }) => (
-                <GalleryUploadItem
-                  key={id}
-                  id={id}
-                  m={m}
-                  file={file}
-                  previewKey={previewKey}
-                  model={{
-                    premium,
-                    license,
-                    rotation,
-                    dirtyPosition,
-                    azimuth: typeof azimuth === 'number' ? String(azimuth) : '',
-                    title,
-                    description,
-                    takenAt: takenAt ? toDatetimeLocal(takenAt) : '',
-                    tags,
-                  }}
-                  allTags={allTags}
-                  errors={errors}
-                  onRemove={handleItemRemove}
-                  onPositionPick={handlePositionPick}
-                  onModelChange={handleModelChange}
-                  disabled={uploading}
-                  showPreview={showPreview}
-                  onPreview={handleItemMerge}
-                />
-              ),
-            )}
+            {items.map((item) => (
+              <GalleryUploadItem
+                key={item.id}
+                item={item}
+                m={m}
+                allTags={allTags}
+                onRemove={handleItemRemove}
+                onPositionPick={handlePositionPick}
+                onModelChange={handleModelChange}
+                disabled={uploading}
+                showPreview={showPreview}
+                onPreview={handleItemMerge}
+              />
+            ))}
           </div>
         )}
 

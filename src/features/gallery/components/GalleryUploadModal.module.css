@@ -26,5 +26,17 @@
     }
 
     padding: 1rem;
+
+    /*
+     * With hundreds of photos, a layout of every form took ~100 ms a change.
+     * Off in the item in use: it clips the item's dropdowns, and Safari does
+     * not focus a clicked toggle. The size is an item's without a preview.
+     * TODO: the list returning from a position pick scrolls by estimates, so
+     * the picked item may land off centre.
+     */
+    &:not(:focus-within, :has(:global(.dropdown-menu.show))) {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 500px;
+    }
   }
 }

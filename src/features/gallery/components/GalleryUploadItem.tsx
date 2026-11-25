@@ -1,9 +1,12 @@
 import { Text } from '@features/l10n/Text.js';
+import { toDatetimeLocal } from '@shared/dateUtils.js';
 import { isHeicFile, isHeicSupported } from '@shared/heicSupport.js';
 import {
+  memo,
   type ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -11,18 +14,14 @@ import { Button, Spinner } from 'react-bootstrap';
 import { FaTimes } from 'react-icons/fa';
 import type { Messages } from '@/translations/messagesInterface.js';
 import { getPreview, loadPreview } from '../imagePreview.js';
-import type { GalleryItemError, GalleryTag } from '../model/actions.js';
+import type { GalleryItem, GalleryTag } from '../model/actions.js';
 import { rotationTransform } from '../rotation.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { GalleryEditForm, type PictureModel } from './GalleryEditForm.js';
 
 interface Props {
-  id: number;
-  file: File;
-  previewKey?: object;
-  model: PictureModel;
+  item: GalleryItem;
   allTags: GalleryTag[];
-  errors: GalleryItemError[] | null | undefined;
   onRemove: (id: number) => void;
   onPositionPick: (id: number) => void;
   onModelChange: (id: number, model: PictureModel) => void;
@@ -32,14 +31,11 @@ interface Props {
   onPreview: (data: { id: number; previewKey: object }) => void;
 }
 
-export function GalleryUploadItem({
-  id,
-  file,
-  previewKey,
+// Memoized, and given its store item as is: the upload list may hold hundreds.
+export const GalleryUploadItem = memo(function GalleryUploadItem({
+  item,
   disabled,
-  model,
   allTags,
-  errors,
   m,
   showPreview,
   onRemove,
@@ -47,6 +43,23 @@ export function GalleryUploadItem({
   onModelChange,
   onPreview,
 }: Props): ReactElement {
+  const { id, file, previewKey, errors } = item;
+
+  const model: PictureModel = useMemo(
+    () => ({
+      premium: item.premium,
+      license: item.license,
+      rotation: item.rotation,
+      dirtyPosition: item.dirtyPosition,
+      azimuth: typeof item.azimuth === 'number' ? String(item.azimuth) : '',
+      title: item.title,
+      description: item.description,
+      takenAt: item.takenAt ? toDatetimeLocal(item.takenAt) : '',
+      tags: item.tags,
+    }),
+    [item],
+  );
+
   const gm = useGalleryMessages();
 
   const handleRemove = useCallback(() => {
@@ -165,4 +178,4 @@ export function GalleryUploadItem({
       </fieldset>
     </div>
   );
-}
+});
