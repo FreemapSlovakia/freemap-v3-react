@@ -169,6 +169,16 @@ kbd {
   line-height: 1;
 }
 
+/* A button's key stands further from its label than the space before it. */
+.btn kbd:first-of-type {
+  margin-left: var(--fm-space-1);
+}
+
+/* …and closer to the button's edge than text would be. */
+.btn kbd:last-child {
+  margin-right: calc(var(--bs-btn-padding-x) / -2);
+}
+
 /* A toolbar decides the spacing between the controls it holds, so its children
    carry no margins of their own; a `gap-*` utility overrides this where a
    toolbar wants a wider rhythm. */

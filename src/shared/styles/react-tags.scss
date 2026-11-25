@@ -194,6 +194,20 @@
         color: var(--bs-secondary-color);
       }
 
+      /* The text of a new tag, as its chip will look. */
+      &-new-tag {
+        padding: calc(var(--fm-space-1) / 2) var(--fm-space-2);
+        border-radius: 3px;
+        color: #ffffff;
+        background-color: var(--bs-primary);
+      }
+
+      &:hover &-new-tag,
+      &.is-active &-new-tag {
+        color: var(--bs-primary);
+        background-color: #ffffff;
+      }
+
       &-highlight {
         /* Bootstrap's mark padding gaps the word and makes it look lower. */
         padding: 0;

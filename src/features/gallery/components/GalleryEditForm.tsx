@@ -157,6 +157,9 @@ export function GalleryEditForm({
     changeModel('tags', model.tags.toSpliced(i, 1));
   };
 
+  // What the tag field holds, for its new-tag row.
+  const [tagQuery, setTagQuery] = useState('');
+
   // hack to resize tags properly on modal re-appear
   const [key, setKey] = useState(0);
 
@@ -295,7 +298,10 @@ export function GalleryEditForm({
           })}
           suggestions={suggestions}
           suggestionsTransform={filterSuggestions}
-          renderOption={TagSuggestionOption}
+          renderOption={(props) => (
+            <TagSuggestionOption {...props} query={tagQuery} />
+          )}
+          onInput={setTagQuery}
           noOptionsText={m?.general.noOptionsText}
           onAdd={handleTagAddition}
           onDelete={handleTagDelete}
