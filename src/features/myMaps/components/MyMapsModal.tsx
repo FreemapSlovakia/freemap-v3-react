@@ -7,10 +7,10 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { type ReactElement, useEffect, useState } from 'react';
 import { FaRegMap } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import type { MapMeta } from '../model/actions.js';
+import type { MapListItem } from '../model/actions.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 import { MyMapsModalForm } from './MyMapsModalForm.js';
-import { MyMapsModalList } from './MyMapsModalList.js';
+import { MyMapsModalList, type TagPick } from './MyMapsModalList.js';
 
 type Props = { show: boolean };
 
@@ -32,7 +32,7 @@ export default function MyMapsModal({ show }: Props): ReactElement {
       state.main.activeModal?.type === 'my-maps' && state.main.activeModal.add,
   );
 
-  const [editTarget, setEditTarget] = useState<MapMeta | 'new' | null>(
+  const [editTarget, setEditTarget] = useState<MapListItem | 'new' | null>(
     startInAddForm ? 'new' : null,
   );
 
@@ -43,6 +43,9 @@ export default function MyMapsModal({ show }: Props): ReactElement {
       setEditTarget(startInAddForm ? 'new' : null);
     }
   }, [show, startInAddForm]);
+
+  // Here rather than in the list, so it survives a trip to the form.
+  const [tagPick, setTagPick] = useState<TagPick>({ tags: [], mode: 'any' });
 
   useDocumentTitle(show ? m?.tools.myMaps : undefined);
 
@@ -75,6 +78,8 @@ export default function MyMapsModal({ show }: Props): ReactElement {
         />
       ) : (
         <MyMapsModalList
+          tagPick={tagPick}
+          onTagPickChange={setTagPick}
           onAdd={() => setEditTarget('new')}
           onEdit={(map) => setEditTarget(map)}
         />

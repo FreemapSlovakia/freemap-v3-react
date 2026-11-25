@@ -25,6 +25,16 @@ export const MapMetaSchema = z.object({
 
 export type MapMeta = z.infer<typeof MapMetaSchema>;
 
+/** A row of `GET /maps`. */
+export const MapListItemSchema = z.object({
+  ...MapMetaSchema.shape,
+  /** The user's own. */
+  tags: z.array(z.string()).default([]),
+  ownerName: z.string().optional(),
+});
+
+export type MapListItem = z.infer<typeof MapListItemSchema>;
+
 export interface MapData<LT = Line, PT = DrawingPoint> {
   lines?: LT[];
   points?: PT[];
@@ -72,7 +82,7 @@ export const mapsDisconnect = createAction('MAPS_DISCONNECT');
 
 export const mapsLoadList = createAction('MAPS_LOAD_LIST');
 
-export const mapsSetList = createAction<MapMeta[]>('MAPS_SET_LIST');
+export const mapsSetList = createAction<MapListItem[]>('MAPS_SET_LIST');
 
 export const mapsSave = createAction<
   | {
@@ -84,6 +94,8 @@ export const mapsSave = createAction<
        * id yet, so it can't be flagged before the save answers with one.
        */
       offline?: boolean;
+      /** The new map's tags; an existing one's go by `mapsSetTags`. */
+      tags?: string[];
     }
   | undefined
 >('MAPS_SAVE');
@@ -254,3 +266,27 @@ export const mapsSetMapOffline = createAction<{
 
 /** Flag/unflag every listed map for offline use. */
 export const mapsSetAllOffline = createAction<boolean>('MAPS_SET_ALL_OFFLINE');
+
+export const MyMapsSortSchema = z.enum(['name', 'createdAt', 'modifiedAt']);
+
+export type MyMapsSort = z.infer<typeof MyMapsSortSchema>;
+
+export const MyMapsOwnerFilterSchema = z.enum(['all', 'own', 'shared']);
+
+export type MyMapsOwnerFilter = z.infer<typeof MyMapsOwnerFilterSchema>;
+
+export const mapsSetSort = createAction<MyMapsSort>('MAPS_SET_SORT');
+
+export const mapsSetOwnerFilter = createAction<MyMapsOwnerFilter>(
+  'MAPS_SET_OWNER_FILTER',
+);
+
+/** Hide the maps with a tag from the list, or show them again. */
+export const mapsToggleHiddenTag = createAction<string>(
+  'MAPS_TOGGLE_HIDDEN_TAG',
+);
+
+/** Replace the user's own tags of a listed map. */
+export const mapsSetTags = createAction<{ id: string; tags: string[] }>(
+  'MAPS_SET_TAGS',
+);

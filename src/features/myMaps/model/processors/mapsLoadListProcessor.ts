@@ -9,8 +9,8 @@ import {
 } from '../../offlineStore.js';
 import { loadMyMapsMessages } from '../../translations/loadMyMapsMessages.js';
 import {
-  type MapMeta,
-  MapMetaSchema,
+  type MapListItem,
+  MapListItemSchema,
   mapsLoadList,
   mapsSetList,
 } from '../actions.js';
@@ -42,7 +42,7 @@ export const mapsLoadListProcessor: Processor = {
       return;
     }
 
-    let list: MapMeta[];
+    let list: MapListItem[];
 
     try {
       const res = await httpRequest({
@@ -52,7 +52,7 @@ export const mapsLoadListProcessor: Processor = {
         cancelActions: [mapsLoadList, authSetUser, authLogout, setActiveModal],
       });
 
-      list = z.array(MapMetaSchema).parse(await res.json());
+      list = z.array(MapListItemSchema).parse(await res.json());
     } catch (err) {
       // Only a genuine network failure (we believed we were online) falls back
       // to the cached list; a server or parse error should surface rather than

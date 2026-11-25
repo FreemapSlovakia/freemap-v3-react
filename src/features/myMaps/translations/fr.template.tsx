@@ -83,6 +83,22 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   offline: 'Hors ligne',
   makeAllOffline: 'Rendre tout disponible hors ligne',
   removeAllOffline: 'Tout retirer du mode hors ligne',
+  tags: 'Étiquettes',
+  addTag: 'Ajouter une étiquette',
+  tagsHint: 'Vous seul voyez vos étiquettes. Elles servent à filtrer la liste.',
+  untagged: 'Sans étiquette',
+  tagModeAny: 'Au moins une',
+  tagModeAll: 'Toutes',
+  hiddenTags: 'Étiquettes masquées',
+  hiddenMaps: (count) => `Cartes aux étiquettes masquées : ${count}`,
+  sort: 'Tri',
+  sortName: 'Par nom',
+  sortCreated: 'Créées récemment d’abord',
+  sortModified: 'Modifiées récemment d’abord',
+  ownerAll: 'Toutes',
+  ownerOwn: 'Les miennes',
+  ownerShared: 'Partagées avec moi',
+  owner: 'Propriétaire',
   savedToOutbox: ({ name }) => (
     <>
       La carte <i>{name}</i> a été enregistrée dans ce navigateur et sera

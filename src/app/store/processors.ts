@@ -162,6 +162,7 @@ import {
 } from '@features/myMaps/model/processors/mapsOutboxProcessor.js';
 import { mapsRestoreProcessor } from '@features/myMaps/model/processors/mapsRestoreProcessor.js';
 import { mapsSaveProcessor } from '@features/myMaps/model/processors/mapsSaveProcessor.js';
+import { mapsSetTagsProcessor } from '@features/myMaps/model/processors/mapsSetTagsProcessor.js';
 import { mapsWorkingCopyProcessor } from '@features/myMaps/model/processors/mapsWorkingCopyProcessor.js';
 import {
   objectDetailsProcessor,
@@ -376,6 +377,7 @@ export const processors = [
   mapsLoadProcessor,
   mapsDeleteProcessor,
   mapsSaveProcessor,
+  mapsSetTagsProcessor,
   mapsWorkingCopyProcessor,
   mapsRestoreProcessor,
   mapsSetMapOfflineProcessor,

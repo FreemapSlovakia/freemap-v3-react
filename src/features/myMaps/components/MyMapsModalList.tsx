@@ -1,17 +1,21 @@
 import { clearMapFeatures, setActiveModal } from '@app/store/actions.js';
 import { useMessages } from '@features/l10n/l10nInjector.js';
 import { Text } from '@features/l10n/Text.js';
+import { Checkbox } from '@shared/components/Checkbox.js';
+import { FitToggleButtonGroup } from '@shared/components/FitButtonGroup.js';
 import { FmDropdownMenu } from '@shared/components/FmDropdownMenu.js';
 import {
   FmDismissButton,
   FmFooterButton,
   FmModalFooter,
 } from '@shared/components/FmModalFooter.js';
+import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { MenuLabel } from '@shared/components/MenuLabel.js';
 import { Modal } from '@shared/components/Modal.js';
 import { useConfirm } from '@shared/components/ModalProvider.js';
 import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { OnlineOnlyItem } from '@shared/components/OnlineOnlyItem.js';
+import { Radio } from '@shared/components/Radio.js';
 import {
   Action,
   ActionDivider,
@@ -21,8 +25,18 @@ import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import { makeLabelComparator } from '@shared/stringUtils.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import { type ReactElement, useMemo, useState } from 'react';
-import { Badge, Dropdown, Form, InputGroup, ListGroup } from 'react-bootstrap';
+import {
+  Badge,
+  Button,
+  Dropdown,
+  Form,
+  InputGroup,
+  ListGroup,
+  ToggleButton,
+  ToggleButtonGroup,
+} from 'react-bootstrap';
 import { BiWifiOff } from 'react-icons/bi';
 import {
   FaCalendarDay,
@@ -32,6 +46,7 @@ import {
   FaCopy,
   FaEdit,
   FaEraser,
+  FaEyeSlash,
   FaFilter,
   FaPlus,
   FaSave,
@@ -47,24 +62,42 @@ import {
   canCopy,
   canOverwrite,
   canStandInForMap,
-  type MapMeta,
+  type MapListItem,
+  type MyMapsOwnerFilter,
   mapsDelete,
   mapsDisconnect,
   mapsLoad,
   mapsResolveOutbox,
   mapsSave,
   mapsSetAllOffline,
+  mapsSetOwnerFilter,
+  mapsSetSort,
   mapsSyncOutbox,
+  mapsToggleHiddenTag,
 } from '../model/actions.js';
+import { myMapsTagsSelector } from '../model/selectors.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 import { MapSyncStatus } from './MapSyncStatus.js';
 
+/** Stands for the untagged maps among picked tags; no tag is empty. */
+const UNTAGGED = '';
+
+/** Tags picked to list only their maps. */
+export type TagPick = { tags: string[]; mode: 'any' | 'all' };
+
 type Props = {
+  tagPick: TagPick;
+  onTagPickChange: (pick: TagPick) => void;
   onAdd: () => void;
-  onEdit: (map: MapMeta) => void;
+  onEdit: (map: MapListItem) => void;
 };
 
-export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
+export function MyMapsModalList({
+  tagPick,
+  onTagPickChange,
+  onAdd,
+  onEdit,
+}: Props): ReactElement {
   const dispatch = useDispatch();
 
   const close = () => {
@@ -79,13 +112,61 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
   const language = useAppSelector((state) => state.l10n.language);
 
+  const { sort, ownerFilter, hiddenTags } = useAppSelector(
+    (state) => state.myMapsSettings,
+  );
+
   const sortedMaps = useMemo(() => {
     const byName = makeLabelComparator(language);
 
     return maps.toSorted((a, b) =>
-      byName(a.name || undefined, b.name || undefined),
+      sort === 'name'
+        ? byName(a.name || undefined, b.name || undefined)
+        : b[sort].getTime() - a[sort].getTime(),
     );
-  }, [maps, language]);
+  }, [maps, language, sort]);
+
+  const allTags = useAppSelector(myMapsTagsSelector);
+
+  const hasShared = maps.some((map) => map.userId !== myUserId);
+
+  const shownTags = allTags.filter((tag) => !hiddenTags.includes(tag));
+
+  // A pick of a tag since hidden or gone counts for nothing.
+  const picked = tagPick.tags.filter((tag) =>
+    // Without a tag button row, nothing would show Untagged is pressed.
+    tag === UNTAGGED ? shownTags.length > 0 : shownTags.includes(tag),
+  );
+
+  const pickedTags = picked.filter(Boolean);
+
+  // No map can be untagged and hold every picked tag.
+  const allMode = tagPick.mode === 'all' && pickedTags.length > 1;
+
+  const untaggedPicked = !allMode && picked.includes(UNTAGGED);
+
+  const togglePick = (tag: string) => {
+    if (!picked.includes(tag)) {
+      trackMatomo(['trackEvent', 'MyMaps', 'pickTag']);
+    }
+
+    onTagPickChange({
+      ...tagPick,
+      tags: picked.includes(tag)
+        ? picked.filter((t) => t !== tag)
+        : [...picked, tag],
+    });
+  };
+
+  const isHidden = (map: MapListItem) =>
+    map.tags.some((tag) => hiddenTags.includes(tag));
+
+  const isPicked = (map: MapListItem) =>
+    picked.length === 0 ||
+    (untaggedPicked && map.tags.length === 0) ||
+    (allMode
+      ? pickedTags.every((tag) => map.tags.includes(tag))
+      : pickedTags.some((tag) => map.tags.includes(tag)));
 
   const dateFormat = useDateTimeFormat({
     year: 'numeric',
@@ -96,6 +177,8 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
   });
 
   const [filter, setFilter] = useState('');
+
+  const [menuShown, setMenuShown] = useState(false);
 
   const m = useMessages();
 
@@ -122,10 +205,18 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
     );
   };
 
+  const matchesFilter = (map: MapListItem) =>
+    (!filter || map.name.toLowerCase().includes(filter.toLowerCase().trim())) &&
+    (ownerFilter === 'all' ||
+      (ownerFilter === 'own') === (map.userId === myUserId));
+
   const filteredMaps = sortedMaps.filter(
-    (map) =>
-      !filter || map.name.toLowerCase().includes(filter.toLowerCase().trim()),
+    (map) => matchesFilter(map) && !isHidden(map) && isPicked(map),
   );
+
+  const hiddenCount = maps.filter(
+    (map) => matchesFilter(map) && isHidden(map),
+  ).length;
 
   const online = useOnline();
 
@@ -219,12 +310,74 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             />
           </InputGroup>
 
-          <Dropdown align="end">
+          {/* Open while ticking sort and hidden tags; the actions close it. */}
+          <Dropdown
+            align="end"
+            autoClose="outside"
+            show={menuShown}
+            onToggle={setMenuShown}
+          >
             <Dropdown.Toggle variant="secondary">
               <FaCog />
             </Dropdown.Toggle>
 
             <FmDropdownMenu>
+              <Dropdown.Header>
+                <Text m={mm} k="sort" />
+              </Dropdown.Header>
+
+              {(
+                [
+                  ['name', mm?.sortName],
+                  ['createdAt', mm?.sortCreated],
+                  ['modifiedAt', mm?.sortModified],
+                ] as const
+              ).map(([value, label]) => (
+                <Dropdown.Item
+                  key={value}
+                  as="button"
+                  active={sort === value}
+                  onClick={() => {
+                    trackMatomo(['trackEvent', 'MyMaps', 'sort', value]);
+
+                    dispatch(mapsSetSort(value));
+                  }}
+                >
+                  <Radio value={sort === value} />
+                  <MenuLabel>{label}</MenuLabel>
+                </Dropdown.Item>
+              ))}
+
+              <Dropdown.Divider />
+
+              {allTags.length > 0 && (
+                <>
+                  <Dropdown.Header>
+                    <Text m={mm} k="hiddenTags" />
+                  </Dropdown.Header>
+
+                  {allTags.map((tag) => (
+                    <Dropdown.Item
+                      key={tag}
+                      as="button"
+                      active={hiddenTags.includes(tag)}
+                      onClick={() => {
+                        if (!hiddenTags.includes(tag)) {
+                          trackMatomo(['trackEvent', 'MyMaps', 'hideTag']);
+                        }
+
+                        dispatch(mapsToggleHiddenTag(tag));
+                      }}
+                    >
+                      <Checkbox value={hiddenTags.includes(tag)} />
+                      <MenuLabel>{tag}</MenuLabel>
+                    </Dropdown.Item>
+                  ))}
+
+                  <Dropdown.Divider />
+                </>
+              )}
+
               <Dropdown.Header>
                 <Text m={mm} k="offline" />
               </Dropdown.Header>
@@ -232,7 +385,11 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
               <OnlineOnlyItem
                 as="button"
                 disabled={maps.length === 0}
-                onClick={() => dispatch(mapsSetAllOffline(true))}
+                onClick={() => {
+                  setMenuShown(false);
+
+                  dispatch(mapsSetAllOffline(true));
+                }}
               >
                 <BiWifiOff />
                 <MenuLabel>
@@ -243,7 +400,11 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
               <Dropdown.Item
                 as="button"
                 disabled={offlineIds.length === 0}
-                onClick={() => dispatch(mapsSetAllOffline(false))}
+                onClick={() => {
+                  setMenuShown(false);
+
+                  dispatch(mapsSetAllOffline(false));
+                }}
               >
                 <FaTimes />
                 <MenuLabel>
@@ -256,7 +417,11 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                 // A blocked save is waiting for a decision, not for a push, so
                 // it doesn't count towards there being anything to send.
                 disabled={!outbox.some((entry) => !entry.blocked)}
-                onClick={() => dispatch(mapsSyncOutbox({ manual: true }))}
+                onClick={() => {
+                  setMenuShown(false);
+
+                  dispatch(mapsSyncOutbox({ manual: true }));
+                }}
               >
                 <FaCloudUploadAlt />
                 <MenuLabel>
@@ -266,6 +431,112 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
             </FmDropdownMenu>
           </Dropdown>
         </div>
+
+        {(hasShared || ownerFilter !== 'all') && (
+          <ToggleButtonGroup
+            type="radio"
+            name="myMapsOwner"
+            size="sm"
+            className="mb-3"
+            value={ownerFilter}
+            onChange={(value: MyMapsOwnerFilter) => {
+              trackMatomo(['trackEvent', 'MyMaps', 'ownerFilter', value]);
+
+              dispatch(mapsSetOwnerFilter(value));
+            }}
+          >
+            {(
+              [
+                ['all', mm?.ownerAll],
+                ['own', mm?.ownerOwn],
+                ['shared', mm?.ownerShared],
+              ] as const
+            ).map(([value, label]) => (
+              <ToggleButton
+                key={value}
+                id={`myMapsOwner-${value}`}
+                value={value}
+                variant="outline-primary"
+              >
+                {label}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        )}
+
+        {shownTags.length > 0 && (
+          <div className="d-flex align-items-start gap-2 mb-3">
+            <div className="d-flex flex-wrap gap-1 flex-grow-1">
+              {[...shownTags, ...(allMode ? [] : [UNTAGGED])].map((tag, i) => (
+                <ToggleButton
+                  key={tag}
+                  id={`myMapsTag-${i}`}
+                  type="checkbox"
+                  size="sm"
+                  variant="outline-primary"
+                  value={tag}
+                  checked={picked.includes(tag)}
+                  onChange={() => togglePick(tag)}
+                  // Its two clicks have toggled it back already.
+                  onDoubleClick={() =>
+                    onTagPickChange({
+                      ...tagPick,
+                      tags:
+                        picked.length === 1 && picked[0] === tag ? [] : [tag],
+                    })
+                  }
+                >
+                  {tag || <i>{mm?.untagged}</i>}
+                </ToggleButton>
+              ))}
+
+              {picked.length > 0 && (
+                <LongPressTooltip label={m?.general.clear}>
+                  {({ props }) => (
+                    <Button
+                      size="sm"
+                      variant="link"
+                      className="text-body px-1"
+                      onClick={() => onTagPickChange({ ...tagPick, tags: [] })}
+                      {...props}
+                    >
+                      <FaTimes />
+                    </Button>
+                  )}
+                </LongPressTooltip>
+              )}
+            </div>
+
+            {pickedTags.length > 1 && (
+              <FitToggleButtonGroup
+                type="radio"
+                name="myMapsTagMode"
+                size="sm"
+                className="flex-shrink-0"
+                value={tagPick.mode}
+                onChange={(mode: TagPick['mode']) =>
+                  onTagPickChange({ ...tagPick, mode })
+                }
+              >
+                <ToggleButton
+                  id="myMapsTagMode-any"
+                  value="any"
+                  variant="outline-primary"
+                >
+                  <Text m={mm} k="tagModeAny" />
+                </ToggleButton>
+
+                <ToggleButton
+                  id="myMapsTagMode-all"
+                  value="all"
+                  variant="outline-primary"
+                >
+                  <Text m={mm} k="tagModeAll" />
+                </ToggleButton>
+              </FitToggleButtonGroup>
+            )}
+          </div>
+        )}
 
         {filteredMaps.length === 0 && orphans.length === 0 ? (
           <p className="text-muted mb-0">
@@ -299,9 +570,29 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
                         </Badge>
                       )}
                       <MapSyncStatus mapId={map.id} className="ms-1" />
+                      {map.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          pill
+                          bg="secondary-subtle"
+                          text="secondary-emphasis"
+                          className="ms-1"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
                     </div>
 
                     <small className="text-muted">
+                      {!isOwn && map.ownerName !== undefined && (
+                        <>
+                          <span className="text-nowrap">
+                            <Text m={mm} k="owner" />:{' '}
+                            <strong>{map.ownerName}</strong>
+                          </span>
+                          {' · '}
+                        </>
+                      )}
                       <span className="text-nowrap">
                         <Text k="general.createdAt" />:{' '}
                         <strong>{dateFormat.format(map.createdAt)}</strong>
@@ -382,17 +673,16 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
 
                       {blocked && resolveActions(map.id, map.name, blocked)}
 
-                      {isOwn && <ActionDivider />}
+                      <ActionDivider />
 
-                      {isOwn && (
-                        <Action
-                          icon={<FaEdit />}
-                          label={m?.general.modify}
-                          requiresOnline
-                          onClick={() => onEdit(map)}
-                          showFrom="lg"
-                        />
-                      )}
+                      {/* Another's map too, for its tags. */}
+                      <Action
+                        icon={<FaEdit />}
+                        label={m?.general.modify}
+                        requiresOnline
+                        onClick={() => onEdit(map)}
+                        showFrom="lg"
+                      />
 
                       {isOwn && (
                         <Action
@@ -463,6 +753,12 @@ export function MyMapsModalList({ onAdd, onEdit }: Props): ReactElement {
               </ListGroup.Item>
             ))}
           </ListGroup>
+        )}
+
+        {hiddenCount > 0 && (
+          <p className="text-muted small mt-2 mb-0">
+            <FaEyeSlash /> {mm?.hiddenMaps(hiddenCount)}
+          </p>
         )}
       </Modal.Body>
 

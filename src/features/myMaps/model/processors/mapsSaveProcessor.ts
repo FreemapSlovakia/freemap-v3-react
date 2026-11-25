@@ -188,6 +188,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
             name: metaEdits.name,
             writers: metaEdits.writers,
             data: sent,
+            tags: patchExisting ? undefined : action.payload?.tags,
           },
         });
       } catch (err) {

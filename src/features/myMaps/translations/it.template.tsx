@@ -68,6 +68,23 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   offline: 'Offline',
   makeAllOffline: 'Rendi tutte disponibili offline',
   removeAllOffline: 'Rimuovi tutte dall’offline',
+  tags: 'Etichette',
+  addTag: 'Aggiungi etichetta',
+  tagsHint:
+    'Le etichette sono visibili solo a Lei. Servono a filtrare l’elenco.',
+  untagged: 'Senza etichetta',
+  tagModeAny: 'Almeno una',
+  tagModeAll: 'Tutte',
+  hiddenTags: 'Etichette nascoste',
+  hiddenMaps: (count) => `Mappe con etichette nascoste: ${count}`,
+  sort: 'Ordinamento',
+  sortName: 'Per nome',
+  sortCreated: 'Create di recente prima',
+  sortModified: 'Modificate di recente prima',
+  ownerAll: 'Tutte',
+  ownerOwn: 'Mie',
+  ownerShared: 'Condivise con me',
+  owner: 'Proprietario',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Errore nel salvataggio offline della mappa', err),
   offlineCachedAll: ({ count }) =>

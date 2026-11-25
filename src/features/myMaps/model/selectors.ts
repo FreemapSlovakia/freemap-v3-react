@@ -1,8 +1,20 @@
 import type { RootState } from '@app/store/store.js';
 import { getMapContentParts } from '@app/url/mapContentParts.js';
 import { localTrack } from '@features/dataViewer/model/localTrack.js';
+import { makeLabelComparator } from '@shared/stringUtils.js';
+import { createSelector } from 'reselect';
 import type { BlockedReason } from './actions.js';
 import { fingerprintState } from './mapDocument.js';
+
+/** Every tag on the listed maps, by name. */
+export const myMapsTagsSelector = createSelector(
+  (state: RootState) => state.myMaps.maps,
+  (state: RootState) => state.l10n.language,
+  (maps, language) =>
+    [...new Set(maps.flatMap((map) => map.tags))].toSorted(
+      makeLabelComparator(language),
+    ),
+);
 
 /**
  * Whether the map holds anything that replacing it would take off the screen:

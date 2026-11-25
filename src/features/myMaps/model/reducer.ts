@@ -2,6 +2,7 @@ import { authLogout } from '@features/auth/model/actions.js';
 import { routePlannerSupersedeSavedRoute } from '@features/routePlanner/model/actions.js';
 import { createReducer } from '@reduxjs/toolkit';
 import {
+  type MapListItem,
   type MapLoadMeta,
   type MapMeta,
   type MapRestore,
@@ -47,7 +48,7 @@ function mergeMeta(current: MapMeta | undefined, next: MapMeta): MapMeta {
 
 export interface MapsState {
   loadMeta: MapLoadMeta | undefined;
-  maps: MapMeta[];
+  maps: MapListItem[];
   activeMap: MapMeta | undefined;
   offlineIds: string[];
   /**

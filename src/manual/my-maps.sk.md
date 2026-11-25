@@ -27,10 +27,16 @@ Neuložené zmeny v tomto prehliadači prežijú aj opätovné načítanie strá
 
 ## Dialóg Moje mapy
 
-Dialóg zobrazuje zoznam vašich máp s dátumom vytvorenia a poslednej zmeny; pole navrchu filtruje mapy podľa názvu. Pri každej mape sú:
+Dialóg zobrazuje zoznam vašich máp a máp, pri ktorých vás iní pridali medzi editorov, s dátumom vytvorenia a poslednej zmeny; pole navrchu filtruje mapy podľa názvu. Pri cudzej mape je uvedený **Vlastník** a voľby **Všetky**, **Moje** a **Zdieľané so mnou** nad zoznamom ho obmedzia podľa vlastníka. :FaCog: → **Zoradenie** zoradí zoznam **Podľa názvu**, **Najnovšie vytvorené** alebo **Naposledy zmenené**.
+
+Dlhý zoznam pomôžu roztriediť tagy. Pridáte ich v položke **Tagy** v okne :FaEdit: **Upraviť**; vidíte ich len vy, aj pri cudzej mape. Každý tag je nad zoznamom ako tlačidlo, posledné je **Bez tagu**. Stlačením tlačidla zostanú v zozname len mapy s týmto tagom, ďalším stlačením sa vrátia všetky. Dvojklik stlačí iba tento tag a ostatné uvoľní, :FaTimes: za tlačidlami uvoľní všetky. Ak je stlačených viac tagov, **Aspoň jeden** zobrazí mapy s niektorým z nich a **Všetky** mapy so všetkými. **Bez tagu** pridá mapy bez tagov; pri voľbe **Všetky** sa neponúka.
+
+Mapy, ktoré už nepotrebujete, môžete odložiť: :FaCog: → **Skryté tagy** skryje všetky mapy s označeným tagom bez ohľadu na stlačené tlačidlá a tag stratí svoje tlačidlo. Riadok pod zoznamom uvádza, koľko máp je takto skrytých. Skryté tagy si dialóg pamätá v tomto prehliadači.
+
+Pri každej mape sú:
 
 - :FaCloudDownloadAlt: **Načítať** otvorí mapu s mapovými vrstvami a pozíciou. :FaShapes: **Načítať bez podkladovej mapy a pozície** v šípke vedľa tlačidla pridá iba obsah mapy a aktuálny pohľad nechá tak. Ak už na mape niečo je, zvolíte, či načítanú mapu **Pripojiť**, alebo existujúci obsah **Nahradiť**.
-- :FaEdit: **Upraviť** (len pri vlastných mapách) – zmena položiek **Názov**, **Editori** a **Dostupné offline v tomto prehliadači**.
+- :FaEdit: **Upraviť** – pri vlastnej mape zmena položiek **Názov** a **Editori**, pri každej mape **Tagy** a **Dostupné offline v tomto prehliadači**.
 - :FaTrash: **Zmazať** (len pri vlastných mapách) mapu po potvrdení odstráni.
 
 Na úzkej obrazovke sú niektoré z týchto volieb v ponuke :FaEllipsisV: v riadku mapy.

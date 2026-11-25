@@ -28,6 +28,7 @@ import { mapDetailsReducer } from '@features/mapDetails/model/reducer.js';
 import { mapLibraryReducer } from '@features/mapLibrary/model/reducer.js';
 import { mapPickReducer } from '@features/mapPick/model/reducer.js';
 import { mapsReducer } from '@features/myMaps/model/reducer.js';
+import { myMapsSettingsReducer } from '@features/myMaps/model/settingsReducer.js';
 import { objectsReducer } from '@features/objects/model/reducer.js';
 import { objectsSettingsReducer } from '@features/objects/model/settingsReducer.js';
 import { osmNotesReducer } from '@features/osmNotes/model/reducer.js';
@@ -105,6 +106,7 @@ export const reducers = {
   weatherRadar: weatherRadarReducer,
   weatherRadarSettings: weatherRadarSettingsReducer,
   myMaps: mapsReducer,
+  myMapsSettings: myMapsSettingsReducer,
   wiki: wikiReducer,
   osmNotes: osmNotesReducer,
   osmNotesSettings: osmNotesSettingsReducer,

@@ -19,16 +19,18 @@ import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
 import z from 'zod';
 import {
-  type MapMeta,
+  type MapListItem,
   mapsLoadList,
   mapsSave,
   mapsSetMapOffline,
+  mapsSetTags,
 } from '../model/actions.js';
+import { myMapsTagsSelector } from '../model/selectors.js';
 import { loadMyMapsMessages } from '../translations/loadMyMapsMessages.js';
 import { useMyMapsMessages } from '../translations/useMyMapsMessages.js';
 
 type Props = {
-  target?: MapMeta;
+  target?: MapListItem;
   onDone: () => void;
 };
 
@@ -63,6 +65,14 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   useEffect(() => {
     setWriters(target?.writers ?? []);
   }, [target]);
+
+  const [tags, setTags] = useState<string[]>(target?.tags ?? []);
+
+  const allTags = useAppSelector(myMapsTagsSelector);
+
+  const tagSuggestions = allTags
+    .filter((tag) => !tags.includes(tag))
+    .map((tag) => ({ label: tag, value: tag }));
 
   const wasOffline = useAppSelector((state) =>
     target ? state.myMaps.offlineIds.includes(target.id) : false,
@@ -122,7 +132,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
   };
 
   // Done leaves the form, which takes its guard along.
-  useDirtyForm(useDirtySince([name, writers, offline]));
+  useDirtyForm(useDirtySince([name, writers, offline, tags]));
 
   const save = () => {
     const offlineChanged = target && offline !== wasOffline;
@@ -145,7 +155,26 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
     if (!target) {
       // The save owns the flag here: the map has no id to flag until it exists.
-      dispatch(mapsSave({ name, writers, asCopy: true, offline }));
+      dispatch(mapsSave({ name, writers, asCopy: true, offline, tags }));
+      onDone();
+      return;
+    }
+
+    if (
+      tags.length !== target.tags.length ||
+      tags.some((tag) => !target.tags.includes(tag))
+    ) {
+      dispatch(mapsSetTags({ id: target.id, tags }));
+    }
+
+    // Saving unchanged name and writers would still bump the map's modification
+    // time; another's map has neither to change.
+    if (
+      !isOwnMap ||
+      (name === target.name &&
+        JSON.stringify(writers) === JSON.stringify(target.writers ?? []))
+    ) {
+      flagOfflineOn();
       onDone();
       return;
     }
@@ -264,6 +293,40 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
               />
             </Form.Group>
           )}
+
+          <Form.Group controlId="tags" className="mb-3">
+            <Form.Label>
+              <Text m={mm} k="tags" />
+            </Form.Label>
+
+            <ReactTags
+              placeholderText={mm?.addTag}
+              newOptionText={m?.general.newOptionText}
+              deleteButtonText={m?.general.deleteButtonText}
+              selected={tags.map((tag) => ({ label: tag, value: tag }))}
+              suggestions={tagSuggestions}
+              onAdd={({ value }) => {
+                const typed = String(value).replace(/\s+/g, ' ').trim();
+
+                const same = (t: string) =>
+                  t.localeCompare(typed, undefined, {
+                    sensitivity: 'accent',
+                  }) === 0;
+
+                // An existing tag differing only in case keeps its spelling.
+                const tag = allTags.find(same) ?? typed;
+
+                if (tag && !tags.some(same)) {
+                  setTags([...tags, tag]);
+                }
+              }}
+              onDelete={(i) => setTags(tags.toSpliced(i, 1))}
+              allowNew
+              collapseOnSelect
+            />
+
+            <Form.Text>{mm?.tagsHint}</Form.Text>
+          </Form.Group>
 
           <Form.Group controlId="offline" className="mb-3 d-flex">
             <Form.Check

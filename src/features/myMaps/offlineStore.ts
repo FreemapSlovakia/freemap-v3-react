@@ -1,6 +1,12 @@
 import { clear, createStore, del, get, keys, set } from 'idb-keyval';
 import z from 'zod';
-import { type MapData, type MapMeta, MapMetaSchema } from './model/actions.js';
+import {
+  type MapData,
+  type MapListItem,
+  MapListItemSchema,
+  type MapMeta,
+  MapMetaSchema,
+} from './model/actions.js';
 import { MapsLoadResponseSchema } from './model/mapDocumentSchema.js';
 
 const store = createStore('fm-myMaps-offline', 'kv');
@@ -20,7 +26,7 @@ const StoredMetaSchema = MapMetaSchema;
 
 const StoredDataSchema = MapsLoadResponseSchema.shape.data;
 
-const StoredListSchema = z.array(MapMetaSchema);
+const StoredListSchema = z.array(MapListItemSchema);
 
 export interface OfflineMap {
   meta: MapMeta;
@@ -111,7 +117,7 @@ export async function deleteOfflineMap(id: string): Promise<void> {
 
 /** Last-seen map list, so the My Maps list still renders offline. */
 export async function getOfflineMapListSnapshot(): Promise<
-  MapMeta[] | undefined
+  MapListItem[] | undefined
 > {
   const raw = await get(LIST_KEY, store);
 
@@ -131,7 +137,7 @@ export async function getOfflineMapListSnapshot(): Promise<
 }
 
 export async function saveOfflineMapListSnapshot(
-  maps: MapMeta[],
+  maps: MapListItem[],
 ): Promise<void> {
   await set(LIST_KEY, maps, store);
 }

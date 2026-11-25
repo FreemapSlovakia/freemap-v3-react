@@ -62,6 +62,11 @@ import {
   withoutFeaturesLayerKey,
 } from '@features/map/model/reducer.js';
 import { mapDetailsInitialState } from '@features/mapDetails/model/reducer.js';
+import {
+  MyMapsOwnerFilterSchema,
+  MyMapsSortSchema,
+} from '@features/myMaps/model/actions.js';
+import { myMapsSettingsInitialState } from '@features/myMaps/model/settingsReducer.js';
 import { MarkerTypeSchema } from '@features/objects/model/actions.js';
 import { objectsSettingsInitialState } from '@features/objects/model/settingsReducer.js';
 import {
@@ -574,6 +579,14 @@ export const PersistedEventsSettingsSchema = z
   })
   .partial();
 
+export const PersistedMyMapsSettingsSchema = z
+  .object({
+    sort: MyMapsSortSchema.catch('name'),
+    ownerFilter: MyMapsOwnerFilterSchema.catch('all'),
+    hiddenTags: z.array(z.string()).catch([]),
+  })
+  .partial();
+
 export const PersistedOsmNotesSettingsSchema = z
   .object({ listSort: OsmNotesListSortSchema.catch('newest') })
   .partial();
@@ -931,6 +944,12 @@ const PERSIST: PersistEntry[] = [
     schema: PersistedOsmNotesSettingsSchema,
     initial: osmNotesSettingsInitialState,
     persist: (n) => n,
+  }),
+  defineEntry({
+    key: 'myMapsSettings',
+    schema: PersistedMyMapsSettingsSchema,
+    initial: myMapsSettingsInitialState,
+    persist: (s) => s,
   }),
   defineEntry({
     key: 'viewshedSettings',
