@@ -148,6 +148,8 @@ export function GalleryUploadItem({
       <fieldset disabled={disabled}>
         <GalleryEditForm
           id={id}
+          // With the preview to show what it turns, unless none can load.
+          rotatable={!previewSupported || Boolean(showPreview2 && previewKey)}
           {...{ model, allTags, errors }}
           onPositionPick={disabled ? undefined : handlePositionPick}
           onModelChange={handleModelChange}

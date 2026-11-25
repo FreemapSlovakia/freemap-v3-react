@@ -16,6 +16,7 @@ import { FaMapMarkerAlt, FaRedo, FaUndo } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
 import { useTagLabel } from '../hooks/useTagLabel.js';
+import { useTagSuggestions } from '../hooks/useTagSuggestions.js';
 import type { GalleryLicense } from '../licenses.js';
 import {
   type GalleryItemError,
@@ -24,17 +25,12 @@ import {
   galleryAddTag,
 } from '../model/actions.js';
 import { type Rotation, rotateBy } from '../rotation.js';
-import {
-  findTag,
-  isSameTag,
-  type TagRef,
-  tagIndex,
-  tagNameKey,
-} from '../tagRefs.js';
+import { findTag, isSameTag, type TagRef } from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { Azimuth } from './Azimuth.js';
 import { GalleryLicenseSelect } from './GalleryLicenseSelect.js';
 import { RecentTags } from './RecentTags.js';
+import { TagSuggestionOption } from './TagSuggestionOption.js';
 
 export interface PictureModel {
   title: string;
@@ -136,14 +132,25 @@ export function GalleryEditForm({
     }
   };
 
-  // A suggestion's value is its tag's id, a new tag's the text typed.
+  const { optionByKey, keyOfId, suggestions, filterSuggestions } =
+    useTagSuggestions(allTags);
+
+  // A suggestion's value is its place in the tag tree; a new tag's value and
+  // label are both the text typed.
   const handleTagAddition = ({ value, label }: Tag) => {
-    // Gone from a list reloaded meanwhile, it goes by the label shown.
-    addTag(
-      typeof value === 'number'
-        ? { id: value, name: label }
-        : { name: String(value) },
-    );
+    if (label === value) {
+      addTag({ name: label });
+
+      return;
+    }
+
+    // Gone from a list reloaded meanwhile, nothing is added; the new list
+    // offers it again.
+    const option = optionByKey.get(String(value));
+
+    if (option) {
+      addTag({ id: option.id, name: option.name });
+    }
   };
 
   const handleTagDelete = (i: number) => {
@@ -273,26 +280,23 @@ export function GalleryEditForm({
           placeholderText={gm?.editForm.tags}
           newOptionText={m?.general.newOptionText}
           deleteButtonText={m?.general.deleteButtonText}
-          selected={model.tags.map((tag) => ({
-            label: tagLabel(tag),
-            value: tag.id ?? tag.name,
-          }))}
-          suggestions={allTags.map(({ id, name, label }) => ({
-            label: label ?? name,
-            value: id,
-          }))}
-          // By the label shown, the tag's name, a synonym or its Latin name.
-          suggestionsTransform={(query, suggestions) => {
-            const q = tagNameKey(query);
+          // Valued as its first suggestion, to show chosen in the list; picking
+          // it there again removes it.
+          // TODO: a new tag's value is its name, so typing it again and Enter
+          // removes it.
+          selected={model.tags.map((tag) => {
+            const id = tag.id ?? findTag(allTags, tag)?.id;
 
-            const { search } = tagIndex(allTags);
-
-            return suggestions.filter(
-              ({ label, value }) =>
-                tagNameKey(label).includes(q) ||
-                (typeof value === 'number' && search.get(value)?.includes(q)),
-            );
-          }}
+            return {
+              label: tagLabel(tag),
+              value:
+                (id === undefined ? undefined : keyOfId.get(id)) ?? tag.name,
+            };
+          })}
+          suggestions={suggestions}
+          suggestionsTransform={filterSuggestions}
+          renderOption={TagSuggestionOption}
+          noOptionsText={m?.general.noOptionsText}
           onAdd={handleTagAddition}
           onDelete={handleTagDelete}
           allowNew

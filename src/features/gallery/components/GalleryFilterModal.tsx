@@ -14,7 +14,6 @@ import { LongPressTooltip } from '@shared/components/LongPressTooltip.js';
 import { Modal } from '@shared/components/Modal.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { isInvalidInt } from '@shared/numberValidator.js';
-import { makeLabelComparator } from '@shared/stringUtils.js';
 import {
   type ChangeEvent,
   type ReactElement,
@@ -41,6 +40,7 @@ import {
 } from 'react-tag-autocomplete';
 import '@shared/styles/react-tags.scss';
 import { GALLERY_SOURCES, type GallerySource } from '../galleryUtils.js';
+import { useTagSuggestions } from '../hooks/useTagSuggestions.js';
 import {
   type GalleryLicense,
   LicenseBadge,
@@ -52,15 +52,10 @@ import {
   gallerySetFilter,
   MAX_FILTER_TAGS,
 } from '../model/actions.js';
-import {
-  parseTagKey,
-  tagKey,
-  tagNameKey,
-  tagRelations,
-  tagTree,
-} from '../tagRefs.js';
+import { parseTagKey, tagKey, tagNameKey } from '../tagRefs.js';
 import { useGalleryMessages } from '../translations/useGalleryMessages.js';
 import { TagRelationLine } from './TagRelationLine.js';
+import { TagSuggestionOption } from './TagSuggestionOption.js';
 
 type Props = { show: boolean };
 
@@ -77,11 +72,6 @@ function shownTagKey(key: string) {
   return parsed && 'id' in parsed ? `#${parsed.id}` : (parsed?.name ?? key);
 }
 
-/**
- * A suggestion's text: indented, the synonym it was found by, and its own
- * photos; a broader tag without them gets no "(0)", which would hide what its
- * narrower tags find.
- */
 /**
  * ReactTags' list reaching down to the bottom of the modal body, measured as
  * it renders: any taller, and the body would scroll too.
@@ -120,13 +110,6 @@ function FittedListBox({
   );
 }
 
-function suggestionLabel(
-  { shown, count }: { shown: string; count: number },
-  synonym?: string,
-) {
-  return `${shown}${synonym ? ` (= ${synonym})` : ''}${count > 0 ? ` (${count})` : ''}`;
-}
-
 export default function GalleryFilterModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
@@ -142,117 +125,36 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
 
   const tags = useAppSelector((state) => state.gallery.tags);
 
-  const language = useAppSelector((state) => state.l10n.language);
-
-  // Memoized by hand: the compiler skips this component, and the list is long.
-  const tagOptions = useMemo(() => {
-    const shownCounts = Map.groupBy(tags, (t) => t.label ?? t.name);
-
-    const compare = makeLabelComparator(language);
-
-    // Two tags shown alike are told apart by their names.
-    const shownOf = new Map(
-      tags.map(({ id, name, label }) => [
-        id,
-        label && (shownCounts.get(label)?.length ?? 0) > 1
-          ? `${label} · ${name}`
-          : (label ?? name),
-      ]),
-    );
-
-    const tree = tagTree(tags, (a, b) =>
-      compare(shownOf.get(a.id)!, shownOf.get(b.id)!),
-    );
-
-    const relations = tagRelations(tags, language);
-
-    return tree.map(
-      ({ tag: { id, name, label, latin, count, synonyms }, depth, key }) => ({
-        key,
-        name,
-        value: tagKey({ id, name }),
-        shown: '   '.repeat(depth) + shownOf.get(id),
-        count,
-        relation: relations.get(id),
-        // What the search box finds it by; synonyms apart, to tell the hit.
-        own: [label, name, latin].flatMap((s) => (s ? [tagNameKey(s)] : [])),
-        synonyms: synonyms.map((s) => [s, tagNameKey(s)] as const),
-      }),
-    );
-  }, [tags, language]);
+  const {
+    tagOptions,
+    optionByKey,
+    suggestions: tagSuggestions,
+    filterSuggestions: filterTagSuggestions,
+  } = useTagSuggestions(tags);
 
   // `tagKey`s, or NO_TAGS alone.
   const [chosen, setChosen] = useState<string[]>([]);
 
   const [tagMode, setTagMode] = useState<'any' | 'all'>('any');
 
-  const optionByKey = useMemo(
-    () => new Map(tagOptions.map((option) => [option.key, option])),
-    [tagOptions],
-  );
-
   const noTagsLabel = `« ${gm?.filterModal.noTags ?? ''} »`;
 
-  // By its place in the tree: a tag under two broader ones is two suggestions.
-  const suggestions = useMemo(
-    () => [
-      { value: NO_TAGS, label: noTagsLabel },
-      ...tagOptions.map((option) => ({
-        value: option.key,
-        label: suggestionLabel(option),
-      })),
-    ],
-    [tagOptions, noTagsLabel],
+  const noTags = useMemo(
+    () => ({ value: NO_TAGS, label: noTagsLabel }),
+    [noTagsLabel],
   );
 
-  // The matches, each with the broader tags on its path.
+  const suggestions = useMemo(
+    () => [noTags, ...tagSuggestions],
+    [noTags, tagSuggestions],
+  );
+
   const filterSuggestions = useCallback(
-    (query: string) => {
-      const q = tagNameKey(query);
-
-      if (!q) {
-        return suggestions;
-      }
-
-      const hits = new Map<string, string | undefined>();
-
-      for (const option of tagOptions) {
-        if (option.own.some((s) => s.includes(q))) {
-          hits.set(option.key, undefined);
-        } else {
-          const synonym = option.synonyms.find(([, k]) => k.includes(q));
-
-          if (synonym) {
-            hits.set(option.key, synonym[0]);
-          }
-        }
-      }
-
-      // A key is its path of ids, "/1/5/9", so its prefixes are its ancestors.
-      const kept = new Set(
-        [...hits.keys()].flatMap((key) =>
-          key
-            .split('/')
-            .slice(1)
-            .map((_, i, ids) => `/${ids.slice(0, i + 1).join('/')}`),
-        ),
-      );
-
-      return [
-        ...(tagNameKey(noTagsLabel).includes(q) ? [suggestions[0]] : []),
-        ...tagOptions.flatMap((option) =>
-          kept.has(option.key)
-            ? [
-                {
-                  value: option.key,
-                  label: suggestionLabel(option, hits.get(option.key)),
-                },
-              ]
-            : [],
-        ),
-      ];
-    },
-    [suggestions, tagOptions, noTagsLabel],
+    (query: string) => [
+      ...(tagNameKey(noTagsLabel).includes(tagNameKey(query)) ? [noTags] : []),
+      ...filterTagSuggestions(query),
+    ],
+    [noTags, noTagsLabel, filterTagSuggestions],
   );
 
   // By `tagKey`, its first place in the tree.
@@ -276,7 +178,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
     label:
       t === NO_TAGS
         ? noTagsLabel
-        : (optionByValue.get(t)?.shown.trimStart() ?? shownTagKey(t)),
+        : (optionByValue.get(t)?.shown ?? shownTagKey(t)),
   }));
 
   // « no tags » excludes the others, and the other way round.
@@ -597,6 +499,7 @@ export default function GalleryFilterModal({ show }: Props): ReactElement {
             <ReactTags
               id="tag"
               renderListBox={FittedListBox}
+              renderOption={TagSuggestionOption}
               placeholderText={gm?.filterModal.tagSearch}
               noOptionsText={m?.general.noOptionsText}
               activateFirstOption

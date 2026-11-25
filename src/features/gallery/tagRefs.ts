@@ -65,8 +65,6 @@ export interface TagIndex<T extends IndexedTag> {
   byName: Map<string, T>;
   /** By the key of a label or Latin name; several tags may share one. */
   byLabel: Map<string, T[]>;
-  /** By id, the keys of the name, synonyms and Latin name, to search in. */
-  search: Map<number, string>;
 }
 
 const indexes = new WeakMap<IndexedTag[], TagIndex<IndexedTag>>();
@@ -96,14 +94,6 @@ export function tagIndex<T extends IndexedTag>(tags: T[]): TagIndex<T> {
         ...tags.map((t) => [tagNameKey(t.name), t] as const),
       ]),
       byLabel,
-      search: new Map(
-        tags.map((t) => [
-          t.id,
-          [t.name, ...(t.synonyms ?? []), t.latin ?? '']
-            .map(tagNameKey)
-            .join('\n'),
-        ]),
-      ),
     };
 
     indexes.set(tags, index);
