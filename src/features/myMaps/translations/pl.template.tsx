@@ -70,7 +70,8 @@ const pl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   removeAllOffline: 'Usuń wszystkie z offline',
   tags: 'Tagi',
   addTag: 'Dodaj tag',
-  tagsHint: 'Tagi są prywatne. Według nich można filtrować listę.',
+  tagsHint:
+    'Te tagi są widoczne tylko dla właściciela konta i służą do filtrowania listy.',
   untagged: 'Bez tagu',
   tagModeAny: 'Co najmniej jeden',
   tagModeAll: 'Wszystkie',

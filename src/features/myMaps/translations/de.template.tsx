@@ -71,7 +71,7 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   removeAllOffline: 'Alle aus Offline entfernen',
   tags: 'Tags',
   addTag: 'Tag hinzufügen',
-  tagsHint: 'Ihre Tags sehen nur Sie. Nach ihnen lässt sich die Liste filtern.',
+  tagsHint: 'Diese Tags sehen nur Sie; sie dienen zum Filtern der Liste.',
   untagged: 'Ohne Tag',
   tagModeAny: 'Mindestens einer',
   tagModeAll: 'Alle',

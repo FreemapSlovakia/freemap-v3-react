@@ -70,7 +70,7 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   removeAllOffline: 'Vse odstrani iz načina brez povezave',
   tags: 'Oznake',
   addTag: 'Dodaj oznako',
-  tagsHint: 'Oznake vidite samo vi. Po njih lahko filtrirate seznam.',
+  tagsHint: 'Te oznake vidite samo vi in služijo za filtriranje seznama.',
   untagged: 'Brez oznake',
   tagModeAny: 'Vsaj ena',
   tagModeAll: 'Vse',

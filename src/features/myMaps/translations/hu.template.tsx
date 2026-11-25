@@ -71,7 +71,7 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   removeAllOffline: 'Összes eltávolítása az offline tárolóból',
   tags: 'Címkék',
   addTag: 'Címke hozzáadása',
-  tagsHint: 'A címkéket csak Ön látja. A lista szűrhető szerintük.',
+  tagsHint: 'Ezeket a címkéket csak Ön látja, és a lista szűrésére szolgálnak.',
   untagged: 'Címke nélkül',
   tagModeAny: 'Legalább egy',
   tagModeAll: 'Mindegyik',

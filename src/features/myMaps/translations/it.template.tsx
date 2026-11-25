@@ -71,7 +71,7 @@ const it: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   tags: 'Etichette',
   addTag: 'Aggiungi etichetta',
   tagsHint:
-    'Le etichette sono visibili solo a Lei. Servono a filtrare l’elenco.',
+    'Queste etichette sono visibili solo a Lei e servono a filtrare l’elenco.',
   untagged: 'Senza etichetta',
   tagModeAny: 'Almeno una',
   tagModeAll: 'Tutte',

@@ -69,7 +69,7 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   removeAllOffline: 'Odstrániť všetky z offline',
   tags: 'Tagy',
   addTag: 'Pridať tag',
-  tagsHint: 'Tagy vidíte len vy. Dá sa podľa nich filtrovať zoznam.',
+  tagsHint: 'Tieto tagy vidíte iba vy a slúžia na filtrovanie v zozname.',
   untagged: 'Bez tagu',
   tagModeAny: 'Aspoň jeden',
   tagModeAll: 'Všetky',

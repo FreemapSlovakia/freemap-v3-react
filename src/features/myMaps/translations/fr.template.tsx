@@ -85,7 +85,8 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   removeAllOffline: 'Tout retirer du mode hors ligne',
   tags: 'Étiquettes',
   addTag: 'Ajouter une étiquette',
-  tagsHint: 'Vous seul voyez vos étiquettes. Elles servent à filtrer la liste.',
+  tagsHint:
+    'Vous seul voyez ces étiquettes ; elles servent à filtrer la liste.',
   untagged: 'Sans étiquette',
   tagModeAny: 'Au moins une',
   tagModeAll: 'Toutes',

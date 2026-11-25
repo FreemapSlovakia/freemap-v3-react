@@ -65,7 +65,7 @@ const en: MyMapsMessages = {
   removeAllOffline: 'Remove all from offline',
   tags: 'Tags',
   addTag: 'Add a tag',
-  tagsHint: 'Only you see your tags. Use them to filter the list.',
+  tagsHint: 'Only you see these tags; they serve to filter the list.',
   untagged: 'Untagged',
   tagModeAny: 'Any of them',
   tagModeAll: 'All of them',
