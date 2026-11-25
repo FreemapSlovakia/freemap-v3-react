@@ -76,9 +76,20 @@ export type PictureTag = z.infer<typeof PictureTagSchema>;
 export const GalleryTagSchema = z.object({
   ...PictureTagSchema.shape,
   count: z.number(),
+  /** Photos filtering by it finds, its narrower tags included. */
+  total: z.number(),
   synonyms: z.array(z.string()).default([]),
   parentIds: z.array(z.number()).default([]),
 });
+
+/** An API without `total` gives each tag its own count. */
+export const GalleryTagCompatSchema = z.preprocess(
+  (t) =>
+    t && typeof t === 'object' && !('total' in t) && 'count' in t
+      ? { ...t, total: t.count }
+      : t,
+  GalleryTagSchema,
+);
 
 export type GalleryTag = z.infer<typeof GalleryTagSchema>;
 

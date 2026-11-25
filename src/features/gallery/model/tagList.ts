@@ -3,7 +3,7 @@ import type { ProcessorHandler } from '@app/store/middleware/processorMiddleware
 import { isAbortError } from '@shared/isAbortError.js';
 import z from 'zod';
 import { loadGalleryMessages } from '../translations/loadGalleryMessages.js';
-import { GalleryTagSchema, gallerySetTags } from './actions.js';
+import { GalleryTagCompatSchema, gallerySetTags } from './actions.js';
 
 type Ctx = Pick<
   Parameters<ProcessorHandler>[0],
@@ -50,7 +50,9 @@ export async function ensureTags(
       url: `/gallery/picture-tags?lang=${language}`,
       expectedStatus: 200,
     })
-      .then(async (res) => z.array(GalleryTagSchema).parse(await res.json()))
+      .then(async (res) =>
+        z.array(GalleryTagCompatSchema).parse(await res.json()),
+      )
       .catch(async (err) => {
         if (refresh) {
           await toastError(err, loadGalleryMessages, 'tagsFetchingError');

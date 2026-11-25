@@ -15,7 +15,10 @@ export type TagTreeSuggestion = TagSuggestion & {
   depth?: number;
   /** The synonym it was found by. */
   synonym?: string;
+  /** Its own photos. */
   count?: number;
+  /** All the filter finds by it, its narrower tags included. */
+  total?: number;
 };
 
 function buildTagSuggestions(tags: GalleryTag[], language: string) {
@@ -40,7 +43,11 @@ function buildTagSuggestions(tags: GalleryTag[], language: string) {
   const relations = tagRelations(tags, language);
 
   const tagOptions = tree.map(
-    ({ tag: { id, name, label, latin, count, synonyms }, depth, key }) => ({
+    ({
+      tag: { id, name, label, latin, count, total, synonyms },
+      depth,
+      key,
+    }) => ({
       key,
       id,
       name,
@@ -48,6 +55,7 @@ function buildTagSuggestions(tags: GalleryTag[], language: string) {
       shown: shownOf.get(id)!,
       depth,
       count,
+      total,
       relation: relations.get(id),
       // What the search box finds it by; synonyms apart, to tell the hit.
       own: [label, name, latin].flatMap((s) => (s ? [tagNameKey(s)] : [])),
@@ -69,11 +77,12 @@ function buildTagSuggestions(tags: GalleryTag[], language: string) {
     optionByKey: new Map(tagOptions.map((option) => [option.key, option])),
     keyOfId,
     suggestions: tagOptions.map(
-      ({ key, shown, depth, count }): TagTreeSuggestion => ({
+      ({ key, shown, depth, count, total }): TagTreeSuggestion => ({
         value: key,
         label: shown,
         depth,
         count,
+        total,
       }),
     ),
   };
