@@ -12,9 +12,15 @@ import { useDirtyForm, useDirtySince } from '@shared/hooks/useDirtyForm.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
 import '@shared/styles/react-tags.scss';
 import { Modal } from '@shared/components/Modal.js';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Form } from 'react-bootstrap';
-import { FaSave } from 'react-icons/fa';
+import {
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { Form, Image } from 'react-bootstrap';
+import { FaGem, FaSave } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { ReactTags, type Tag } from 'react-tag-autocomplete';
 import z from 'zod';
@@ -38,6 +44,8 @@ const UsersSchema = z.array(
   z.object({
     id: z.number(),
     name: z.string(),
+    hasPicture: z.boolean().default(false),
+    premium: z.boolean().default(false),
   }),
 );
 
@@ -113,15 +121,21 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
       });
   }, [dispatch]);
 
-  const userMap = useMemo(() => {
-    const userMap = new Map<number, string>();
+  // The map's own editors stand in until (or if never) `/users` answers.
+  const userMap = useMemo(
+    () =>
+      new Map(
+        [...(target?.editors ?? []), ...(users ?? [])].map((user) => [
+          user.id,
+          user,
+        ]),
+      ),
+    [users, target],
+  );
 
-    for (const user of users ?? []) {
-      userMap.set(user.id, user.name);
-    }
-
-    return userMap;
-  }, [users]);
+  // The picker's own "no match" and "new" options have Symbol values.
+  const userOf = (value: unknown) =>
+    typeof value === 'number' ? userMap.get(value) : undefined;
 
   const handleWriterAddition = (tag: Tag) => {
     setWriters((writers) => [...writers, Number(tag.value)]);
@@ -274,7 +288,7 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
                 deleteButtonText={m?.general.deleteButtonText}
                 selected={writers.map((id) => ({
                   value: id,
-                  label: userMap.get(id) ?? '???',
+                  label: userMap.get(id)?.name ?? '???',
                 }))}
                 suggestions={
                   users
@@ -290,6 +304,31 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
                 onAdd={handleWriterAddition}
                 onDelete={handleWriterDelete}
                 collapseOnSelect
+                renderTag={({ classNames, tag, ...props }) => {
+                  const user = userOf(tag.value);
+
+                  return (
+                    <button
+                      type="button"
+                      className={`${classNames.tag} fm-user-tag`}
+                      {...props}
+                    >
+                      <span className={classNames.tagName}>
+                        <UserLabel user={user}>{tag.label}</UserLabel>
+                      </span>
+                    </button>
+                  );
+                }}
+                renderOption={({ children, classNames, option, ...props }) => (
+                  <div
+                    className={`${classNames.option} ${option.active ? classNames.optionIsActive : ''}`}
+                    {...props}
+                  >
+                    <UserLabel user={userOf(option.value)}>
+                      {children}
+                    </UserLabel>
+                  </div>
+                )}
               />
             </Form.Group>
           )}
@@ -353,6 +392,29 @@ export function MyMapsModalForm({ target, onDone }: Props): ReactElement {
 
         <FmDismissButton label={m?.general.cancel} onClick={onDone} />
       </FmModalFooter>
+    </>
+  );
+}
+
+/** A user as `UserChip` shows one, with nothing to click: the picker takes it. */
+function UserLabel({
+  user,
+  children,
+}: {
+  user: z.infer<typeof UsersSchema>[number] | undefined;
+  children: ReactNode;
+}) {
+  return (
+    <>
+      {user?.hasPicture && (
+        <Image
+          className="me-1 w-6"
+          src={`${process.env['API_URL']}/auth/users/${user.id}/picture`}
+          roundedCircle
+        />
+      )}
+      {children}
+      {user?.premium && <FaGem className="ms-1 text-info" />}
     </>
   );
 }

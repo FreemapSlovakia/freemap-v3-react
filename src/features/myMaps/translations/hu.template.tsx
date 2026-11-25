@@ -84,6 +84,8 @@ const hu: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerAll: 'Összes',
   ownerOwn: 'Sajátok',
   ownerShared: 'Velem megosztott',
+  ownerSharedByMe: 'Általam megosztott',
+  sharedBadge: 'Megosztott',
   owner: 'Tulajdonos',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Hiba a térkép offline tárolásakor', err),

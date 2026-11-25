@@ -83,6 +83,8 @@ const sl: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerAll: 'Vsi',
   ownerOwn: 'Moji',
   ownerShared: 'Deljeni z mano',
+  ownerSharedByMe: 'Deljeni z drugimi',
+  sharedBadge: 'Deljen',
   owner: 'Lastnik',
   offlineError: ({ err }) =>
     addError(

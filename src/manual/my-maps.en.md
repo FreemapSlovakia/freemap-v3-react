@@ -27,7 +27,7 @@ Unsaved changes survive a page reload in this browser, but only saving puts them
 
 ## The My maps dialog
 
-The dialog lists your maps and the maps others made you an editor of, with the date each was created and last modified; the field at the top filters them by name. A map of someone else's shows its **Owner**, and **All**, **Mine** and **Shared with me** above the list narrow it by owner. :FaCog: → **Sort** orders the list **By name**, **Recently created first** or **Recently modified first**.
+The dialog lists your maps and the maps others made you an editor of, with the date each was created and last modified; the field at the top filters them by name. A map of someone else's shows its **Owner**, and your map with editors a **Shared** badge. **All**, **Mine**, **Shared with me** and **Shared by me** above the list narrow it accordingly. :FaCog: → **Sort** orders the list **By name**, **Recently created first** or **Recently modified first**.
 
 Tags sort out a long list. Add them under **Tags** in :FaEdit: **Modify**; only you see them, on someone else's map too. Each tag appears as a button above the list, with **Untagged** last. Press one to list only its maps, and press it again to list all of them. A double click presses that tag alone, releasing the others, and :FaTimes: after the buttons releases them all. With several pressed, **Any of them** lists the maps with at least one of the tags and **All of them** the maps with every one. **Untagged** adds the maps without tags; with **All of them** it is not offered.
 

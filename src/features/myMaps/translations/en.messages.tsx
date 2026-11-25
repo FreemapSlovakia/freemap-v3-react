@@ -78,6 +78,8 @@ const en: MyMapsMessages = {
   ownerAll: 'All',
   ownerOwn: 'Mine',
   ownerShared: 'Shared with me',
+  ownerSharedByMe: 'Shared by me',
+  sharedBadge: 'Shared',
   owner: 'Owner',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Error caching map offline', err),

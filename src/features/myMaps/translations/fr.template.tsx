@@ -98,6 +98,8 @@ const fr: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerAll: 'Toutes',
   ownerOwn: 'Les miennes',
   ownerShared: 'Partagées avec moi',
+  ownerSharedByMe: 'Partagées par moi',
+  sharedBadge: 'Partagée',
   owner: 'Propriétaire',
   savedToOutbox: ({ name }) => (
     <>

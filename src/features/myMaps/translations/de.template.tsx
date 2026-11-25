@@ -84,6 +84,8 @@ const de: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerAll: 'Alle',
   ownerOwn: 'Eigene',
   ownerShared: 'Mit mir geteilt',
+  ownerSharedByMe: 'Von mir geteilt',
+  sharedBadge: 'Geteilt',
   owner: 'Besitzer',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Fehler beim Offline-Speichern der Karte', err),

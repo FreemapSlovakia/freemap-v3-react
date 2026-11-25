@@ -21,6 +21,7 @@ import {
   ActionDivider,
   ResponsiveActions,
 } from '@shared/components/ResponsiveActions.js';
+import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useDateTimeFormat } from '@shared/hooks/useDateTimeFormat.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
@@ -54,6 +55,7 @@ import {
   FaTimes,
   FaTrash,
   FaUnlink,
+  FaUserFriends,
 } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { useAskLoadMerge } from '../hooks/useAskLoadMerge.js';
@@ -128,7 +130,12 @@ export function MyMapsModalList({
 
   const allTags = useAppSelector(myMapsTagsSelector);
 
-  const hasShared = maps.some((map) => map.userId !== myUserId);
+  // Only the owner gets `writers`.
+  const isSharedByMe = (map: MapListItem) => Boolean(map.writers?.length);
+
+  const hasShared = maps.some(
+    (map) => map.userId !== myUserId || isSharedByMe(map),
+  );
 
   const shownTags = allTags.filter((tag) => !hiddenTags.includes(tag));
 
@@ -205,10 +212,22 @@ export function MyMapsModalList({
     );
   };
 
+  const matchesOwner = (map: MapListItem) => {
+    switch (ownerFilter) {
+      case 'all':
+        return true;
+      case 'own':
+        return map.userId === myUserId;
+      case 'shared':
+        return map.userId !== myUserId;
+      case 'sharedByMe':
+        return isSharedByMe(map);
+    }
+  };
+
   const matchesFilter = (map: MapListItem) =>
     (!filter || map.name.toLowerCase().includes(filter.toLowerCase().trim())) &&
-    (ownerFilter === 'all' ||
-      (ownerFilter === 'own') === (map.userId === myUserId));
+    matchesOwner(map);
 
   const filteredMaps = sortedMaps.filter(
     (map) => matchesFilter(map) && !isHidden(map) && isPicked(map),
@@ -450,6 +469,7 @@ export function MyMapsModalList({
                 ['all', mm?.ownerAll],
                 ['own', mm?.ownerOwn],
                 ['shared', mm?.ownerShared],
+                ['sharedByMe', mm?.ownerSharedByMe],
               ] as const
             ).map(([value, label]) => (
               <ToggleButton
@@ -564,6 +584,26 @@ export function MyMapsModalList({
                   <div className="flex-grow-1 me-2 min-w-0">
                     <div>
                       {map.name}
+                      {isSharedByMe(map) && (
+                        <LongPressTooltip
+                          label={
+                            map.editors?.length ? (
+                              <>
+                                <Text m={mm} k="writers" />:{' '}
+                                {map.editors
+                                  .map((editor) => editor.name)
+                                  .join(', ')}
+                              </>
+                            ) : undefined
+                          }
+                        >
+                          {({ props }) => (
+                            <Badge bg="info" className="ms-1" {...props}>
+                              <FaUserFriends /> <Text m={mm} k="sharedBadge" />
+                            </Badge>
+                          )}
+                        </LongPressTooltip>
+                      )}
                       {isOffline && (
                         <Badge bg="secondary" className="ms-1">
                           <BiWifiOff /> <Text m={mm} k="offline" />
@@ -584,11 +624,11 @@ export function MyMapsModalList({
                     </div>
 
                     <small className="text-muted">
-                      {!isOwn && map.ownerName !== undefined && (
+                      {!isOwn && map.owner && (
                         <>
                           <span className="text-nowrap">
                             <Text m={mm} k="owner" />:{' '}
-                            <strong>{map.ownerName}</strong>
+                            <UserChip user={map.owner} />
                           </span>
                           {' · '}
                         </>

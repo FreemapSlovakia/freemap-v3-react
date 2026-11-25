@@ -27,7 +27,7 @@ Neuložené zmeny v tomto prehliadači prežijú aj opätovné načítanie strá
 
 ## Dialóg Moje mapy
 
-Dialóg zobrazuje zoznam vašich máp a máp, pri ktorých vás iní pridali medzi editorov, s dátumom vytvorenia a poslednej zmeny; pole navrchu filtruje mapy podľa názvu. Pri cudzej mape je uvedený **Vlastník** a voľby **Všetky**, **Moje** a **Zdieľané so mnou** nad zoznamom ho obmedzia podľa vlastníka. :FaCog: → **Zoradenie** zoradí zoznam **Podľa názvu**, **Najnovšie vytvorené** alebo **Naposledy zmenené**.
+Dialóg zobrazuje zoznam vašich máp a máp, pri ktorých vás iní pridali medzi editorov, s dátumom vytvorenia a poslednej zmeny; pole navrchu filtruje mapy podľa názvu. Pri cudzej mape je uvedený **Vlastník**, vaša mapa s editormi má značku **Zdieľaná**. Voľby **Všetky**, **Moje**, **Zdieľané so mnou** a **Zdieľané mnou** nad zoznamom ho podľa toho obmedzia. :FaCog: → **Zoradenie** zoradí zoznam **Podľa názvu**, **Najnovšie vytvorené** alebo **Naposledy zmenené**.
 
 Dlhý zoznam pomôžu roztriediť tagy. Pridáte ich v položke **Tagy** v okne :FaEdit: **Upraviť**; vidíte ich len vy, aj pri cudzej mape. Každý tag je nad zoznamom ako tlačidlo, posledné je **Bez tagu**. Stlačením tlačidla zostanú v zozname len mapy s týmto tagom, ďalším stlačením sa vrátia všetky. Dvojklik stlačí iba tento tag a ostatné uvoľní, :FaTimes: za tlačidlami uvoľní všetky. Ak je stlačených viac tagov, **Aspoň jeden** zobrazí mapy s niektorým z nich a **Všetky** mapy so všetkými. **Bez tagu** pridá mapy bez tagov; pri voľbe **Všetky** sa neponúka.
 

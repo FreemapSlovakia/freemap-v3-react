@@ -52,6 +52,8 @@ export type MyMapsMessages = {
   ownerAll: string;
   ownerOwn: string;
   ownerShared: string;
+  ownerSharedByMe: string;
+  sharedBadge: string;
   owner: string;
   offlineError: (props: { err: unknown }) => string;
   offlineCachedAll: (props: { count: number; failed: number }) => string;

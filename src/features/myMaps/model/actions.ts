@@ -25,12 +25,21 @@ export const MapMetaSchema = z.object({
 
 export type MapMeta = z.infer<typeof MapMetaSchema>;
 
+const MapUserSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  hasPicture: z.boolean(),
+  premium: z.boolean(),
+});
+
 /** A row of `GET /maps`. */
 export const MapListItemSchema = z.object({
   ...MapMetaSchema.shape,
   /** The user's own. */
   tags: z.array(z.string()).default([]),
-  ownerName: z.string().optional(),
+  owner: MapUserSchema.optional(),
+  /** `writers` as users; to the owner only. */
+  editors: z.array(MapUserSchema).optional(),
 });
 
 export type MapListItem = z.infer<typeof MapListItemSchema>;
@@ -271,7 +280,12 @@ export const MyMapsSortSchema = z.enum(['name', 'createdAt', 'modifiedAt']);
 
 export type MyMapsSort = z.infer<typeof MyMapsSortSchema>;
 
-export const MyMapsOwnerFilterSchema = z.enum(['all', 'own', 'shared']);
+export const MyMapsOwnerFilterSchema = z.enum([
+  'all',
+  'own',
+  'shared',
+  'sharedByMe',
+]);
 
 export type MyMapsOwnerFilter = z.infer<typeof MyMapsOwnerFilterSchema>;
 

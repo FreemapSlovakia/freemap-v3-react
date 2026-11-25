@@ -77,6 +77,20 @@
       background-color: rgb(11.05, 93.5, 215.05);
     }
 
+    /* A user chip's avatar is taller than a name; every user tag takes its
+       height, so those without one match. */
+    &.fm-user-tag {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: top;
+      min-height: calc(1.5rem + 0.75rem);
+
+      > span {
+        display: inline-flex;
+        align-items: center;
+      }
+    }
+
     &::after {
       content: "";
       display: inline-block;

@@ -82,6 +82,8 @@ const sk: DeepPartialWithRequiredObjects<MyMapsMessages> = {
   ownerAll: 'Všetky',
   ownerOwn: 'Moje',
   ownerShared: 'Zdieľané so mnou',
+  ownerSharedByMe: 'Zdieľané mnou',
+  sharedBadge: 'Zdieľaná',
   owner: 'Vlastník',
   offlineError: ({ err }) =>
     addError(getMessages()!, 'Chyba pri ukladaní mapy pre offline', err),
