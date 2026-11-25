@@ -87,6 +87,8 @@ const cs: DeepPartialWithRequiredObjects<AuthMessages> = {
       'events:read': 'Prohlížet akce a to, zda o ně mám zájem nebo přijdu',
       'events:write':
         'Vytvářet, měnit a mazat moje akce a dávat vědět o zájmu a účasti',
+      'events:calendar':
+        'Odběr v kalendáři: moje akce a akce mých uložených filtrů',
       'tracking:read': 'Prohlížet moje sledovaná zařízení',
       'tracking:write': 'Spravovat moje sledovaná zařízení a jejich sdílení',
       'tiles:outdoor':

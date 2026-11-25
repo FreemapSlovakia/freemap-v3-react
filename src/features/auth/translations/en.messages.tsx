@@ -104,6 +104,8 @@ const en: AuthMessages = {
       'events:read': 'View events and whether I am interested or going',
       'events:write':
         'Create, change and delete my events, and say I am interested or going',
+      'events:calendar':
+        'Calendar subscription: my events and my saved filters’ events',
       'tracking:read': 'View my tracked devices',
       'tracking:write': 'Manage my tracked devices and their sharing',
       'tiles:outdoor':

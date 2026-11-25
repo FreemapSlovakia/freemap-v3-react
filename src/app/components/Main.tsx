@@ -550,6 +550,12 @@ const eventsFilterModalFactory = () =>
     '@features/events/components/EventsFilterModal.js'
   );
 
+const eventsCalendarModalFactory = () =>
+  import(
+    /* webpackChunkName: "events-calendar-modal" */
+    '@features/events/components/EventsCalendarModal.js'
+  );
+
 const eventFormModalFactory = () =>
   import(
     /* webpackChunkName: "event-form-modal" */
@@ -1515,6 +1521,11 @@ export function Main(): ReactElement {
       <AsyncModal
         show={activeModal?.type === 'events-filter'}
         factory={eventsFilterModalFactory}
+      />
+
+      <AsyncModal
+        show={activeModal?.type === 'events-calendar'}
+        factory={eventsCalendarModalFactory}
       />
 
       <AsyncModal

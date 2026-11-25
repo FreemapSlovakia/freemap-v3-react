@@ -45,12 +45,17 @@ Click a marker, a row of the list or a search result to open the event's panel �
 ![The panel of an imported event](./images/events-panel.en.webp)
 
 - :FaStar: **Interested** and :FaCheck: **Going** let others know – one or the other; pressing it again withdraws it. You need to be logged in.
+- :FaCalendarPlus: **Add to calendar** puts the event into **Google Calendar**, or gives a **Calendar file** to open in Apple Calendar, Outlook and other calendars.
 - The details: the cover image, dates, organizer, length, duration, ascent and descent, difficulty, whether dogs are welcome and whether it suits children, and the description.
 - For an event in the next 16 days, the [weather forecast](#show=manual/weather-forecast) for its place on its days, and where the event's linked map has a route, the weather along it.
 - Who is going and who is interested; a name opens that person's profile.
 - **Discussion** – comments, oldest first. :FaBell: follows the event by email: you hear of new comments, and of a change of time or place or a cancellation. The organizer and those going or interested follow it on their own.
 
 With a linked map, :FaExternalLinkAlt: **Open in new tab** shows it in a new tab and leaves your map as it is; :FaCloudDownloadAlt: **Load here** loads it into the current map, asking whether to add it or replace what is there. :FaArrowLeft: **Back to events** then clears the map and returns to the markers.
+
+## Calendar subscription
+
+:FaCalendarPlus: **Calendar subscription** in the toolbar's ⋮ menu gives a link for your calendar app, which then shows the events and keeps them up to date – your own and those you are interested in or going to, or those of one of your saved filters. **Create a link**, then **Add to Google Calendar**, **Open in calendar app**, or copy the link into the calendar's subscription. The link holds an access key that only reads these events: keep it to yourself. The same key serves every choice, and you can revoke it under [Account › App tokens](#show=manual/account).
 
 ## Entering an event
 

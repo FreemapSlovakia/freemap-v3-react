@@ -140,6 +140,25 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     deleteTitle: 'Elimina evento',
     deleteMessage: ({ title }) =>
       `Eliminare l’evento «${title}»? La mappa collegata resta.`,
+    addToCalendar: 'Aggiungi al calendario',
+    googleCalendar: 'Google Calendar',
+    icsFile: 'File di calendario (Apple, Outlook…)',
+  },
+  calendar: {
+    title: 'Abbonamento al calendario',
+    intro:
+      'Si abboni nella Sua app di calendario: gli eventi vi compaiono e restano aggiornati.',
+    feed: 'Eventi',
+    myEvents: 'I miei, e quelli che mi interessano o a cui partecipo',
+    myEventsName: 'Freemap: i miei eventi',
+    create: 'Crea un link',
+    tokenNote: 'Abbonamento al calendario',
+    copy: 'Copia',
+    google: 'Aggiungi a Google Calendar',
+    app: 'Apri nell’app di calendario',
+    secret:
+      'Il link contiene una chiave di accesso: non lo condivida. La stessa chiave vale per ogni scelta qui sopra e si può revocare in Account › Token delle app.',
+    loginRequired: 'Un link si può creare dopo l’accesso.',
   },
   picking: {
     startPoint: 'Selezioni il punto di partenza',
@@ -162,6 +181,7 @@ const it: DeepPartialWithRequiredObjects<EventsMessages> = {
     filter: 'Filtro',
     clearFilter: 'Rimuovi filtro',
     newEvent: 'Nuovo evento',
+    calendar: 'Abbonamento al calendario',
   },
   colorize: {
     modes: {

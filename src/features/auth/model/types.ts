@@ -133,6 +133,7 @@ export const AppTokenScopeSchema = z.enum([
   'maps:write',
   'events:read',
   'events:write',
+  'events:calendar',
   'tracking:read',
   'tracking:write',
   'tiles:outdoor',

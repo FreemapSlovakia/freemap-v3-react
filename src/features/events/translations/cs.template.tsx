@@ -158,6 +158,25 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     deleteTitle: 'Smazat akci',
     deleteMessage: ({ title }) =>
       `Smazat akci „${title}“? Propojená mapa zůstane.`,
+    addToCalendar: 'Přidat do kalendáře',
+    googleCalendar: 'Kalendář Google',
+    icsFile: 'Soubor kalendáře (Apple, Outlook…)',
+  },
+  calendar: {
+    title: 'Odběr v kalendáři',
+    intro:
+      'Po přihlášení k odběru v aplikaci kalendáře se v ní akce zobrazí a budou se aktualizovat.',
+    feed: 'Akce',
+    myEvents: 'Moje a ty, o které mám zájem nebo na které přijdu',
+    myEventsName: 'Freemap: moje akce',
+    create: 'Vytvořit odkaz',
+    tokenNote: 'Odběr v kalendáři',
+    copy: 'Kopírovat',
+    google: 'Přidat do Kalendáře Google',
+    app: 'Otevřít v aplikaci kalendáře',
+    secret:
+      'Odkaz obsahuje přístupový klíč, nikomu ho nedávejte. Tentýž klíč platí pro každou volbu výše a zrušit ho lze v části Účet › Aplikační tokeny.',
+    loginRequired: 'Odkaz lze vytvořit po přihlášení.',
   },
   picking: {
     startPoint: 'Vyberte místo začátku',
@@ -180,6 +199,7 @@ const cs: DeepPartialWithRequiredObjects<EventsMessages> = {
     filter: 'Filtr',
     clearFilter: 'Zrušit filtr',
     newEvent: 'Nová akce',
+    calendar: 'Odběr v kalendáři',
   },
   colorize: {
     modes: {

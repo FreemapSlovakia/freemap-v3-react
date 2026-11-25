@@ -135,6 +135,25 @@ export type EventsMessages = {
     loadHere: string;
     deleteTitle: string;
     deleteMessage: (props: { title: string }) => string;
+    addToCalendar: string;
+    googleCalendar: string;
+    icsFile: string;
+  };
+  calendar: {
+    title: string;
+    intro: string;
+    feed: string;
+    myEvents: string;
+    /** The subscribed calendar's name. */
+    myEventsName: string;
+    create: string;
+    /** The app token's note in the account's list. */
+    tokenNote: string;
+    copy: string;
+    google: string;
+    app: string;
+    secret: string;
+    loginRequired: string;
   };
   picking: {
     startPoint: string;
@@ -144,6 +163,7 @@ export type EventsMessages = {
     filter: string;
     clearFilter: string;
     newEvent: string;
+    calendar: string;
   };
   colorize: {
     by: string;

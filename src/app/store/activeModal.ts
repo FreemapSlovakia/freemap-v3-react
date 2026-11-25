@@ -16,6 +16,7 @@ const URL_MODAL_IDS = [
   'elevation-settings',
   'embed',
   'file-import',
+  'events-calendar',
   'events-filter',
   'gallery-filter',
   'gallery-leaderboard',

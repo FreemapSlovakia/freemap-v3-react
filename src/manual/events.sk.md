@@ -45,12 +45,17 @@ Kliknutím na značku, riadok zoznamu alebo výsledok vyhľadávania otvoríte p
 ![Panel prevzatej akcie](./images/events-panel.sk.webp)
 
 - :FaStar: **Mám záujem** a :FaCheck: **Prídem** dajú vedieť ostatným – jedno alebo druhé; ďalším stlačením to vezmete späť. Treba byť prihlásený.
+- :FaCalendarPlus: **Pridať do kalendára** vloží akciu do **Kalendára Google** alebo dá **Súbor kalendára** na otvorenie v Kalendári Apple, Outlooku a iných kalendároch.
 - Podrobnosti: titulný obrázok, dátumy, organizátor, dĺžka, trvanie, stúpanie a klesanie, náročnosť, či sú vítané psy a či je vhodná pre deti, a popis.
 - Pri akcii v najbližších 16 dňoch [predpoveď počasia](#show=manual/weather-forecast) pre miesto akcie na dni akcie a ak pripojená mapa akcie obsahuje trasu, aj počasie pozdĺž trasy.
 - Kto príde a kto má záujem; meno otvorí profil daného človeka.
 - **Diskusia** – komentáre od najstaršieho. :FaBell: sleduje akciu e-mailom: dozviete sa o nových komentároch, o zmene termínu či miesta a o zrušení. Organizátor a tí, čo prídu alebo majú záujem, ju sledujú sami od seba.
 
 S prepojenou mapou ju :FaExternalLinkAlt: **Otvoriť na novej karte** ukáže na novej karte a vašu mapu nechá tak; :FaCloudDownloadAlt: **Načítať sem** ju načíta do aktuálnej mapy a opýta sa, či ju pridať, alebo nahradiť, čo v nej je. :FaArrowLeft: **Späť na akcie** potom mapu vyčistí a vráti sa k značkám.
+
+## Odber v kalendári
+
+:FaCalendarPlus: **Odber v kalendári** v ponuke ⋮ panela nástrojov dá odkaz pre vašu aplikáciu kalendára, ktorá potom akcie zobrazí a udržiava ich aktuálne – vaše a tie, o ktoré máte záujem alebo na ktoré prídete, alebo akcie niektorého z vašich uložených filtrov. **Vytvoriť odkaz**, potom **Pridať do Kalendára Google**, **Otvoriť v aplikácii kalendára** alebo odkaz skopírujte do odberu v kalendári. Odkaz obsahuje prístupový kľúč, ktorý len číta tieto akcie: nikomu ho nedávajte. Ten istý kľúč slúži pre každú voľbu a zrušiť ho môžete v časti [Účet › Aplikačné tokeny](#show=manual/account).
 
 ## Zadanie akcie
 

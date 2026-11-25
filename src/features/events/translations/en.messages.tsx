@@ -167,6 +167,25 @@ const en: EventsMessages = {
     deleteTitle: 'Delete event',
     deleteMessage: ({ title }) =>
       `Delete event “${title}”? Its linked map stays.`,
+    addToCalendar: 'Add to calendar',
+    googleCalendar: 'Google Calendar',
+    icsFile: 'Calendar file (Apple, Outlook…)',
+  },
+  calendar: {
+    title: 'Calendar subscription',
+    intro:
+      'Subscribe in your calendar app, and the events appear there and stay up to date.',
+    feed: 'Events',
+    myEvents: 'Mine, and those I am interested in or going to',
+    myEventsName: 'Freemap: my events',
+    create: 'Create a link',
+    tokenNote: 'Calendar subscription',
+    copy: 'Copy',
+    google: 'Add to Google Calendar',
+    app: 'Open in calendar app',
+    secret:
+      'The link holds an access key: keep it to yourself. The same key serves every choice above, and it can be revoked under Account › App tokens.',
+    loginRequired: 'A link can be created after logging in.',
   },
   picking: {
     startPoint: 'Select start point',
@@ -189,6 +208,7 @@ const en: EventsMessages = {
     filter: 'Filter',
     clearFilter: 'Clear filter',
     newEvent: 'New event',
+    calendar: 'Calendar subscription',
   },
   colorize: {
     by: 'Colorize by',

@@ -169,6 +169,26 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     deleteTitle: 'Veranstaltung löschen',
     deleteMessage: ({ title }) =>
       `Veranstaltung „${title}“ löschen? Die verknüpfte Karte bleibt erhalten.`,
+    addToCalendar: 'Zum Kalender hinzufügen',
+    googleCalendar: 'Google Kalender',
+    icsFile: 'Kalenderdatei (Apple, Outlook…)',
+  },
+  calendar: {
+    title: 'Kalenderabonnement',
+    intro:
+      'Abonnieren Sie es in Ihrer Kalender-App, dann erscheinen die Veranstaltungen dort und bleiben aktuell.',
+    feed: 'Veranstaltungen',
+    myEvents:
+      'Meine und die, für die ich mich interessiere oder zu denen ich komme',
+    myEventsName: 'Freemap: meine Veranstaltungen',
+    create: 'Link erstellen',
+    tokenNote: 'Kalenderabonnement',
+    copy: 'Kopieren',
+    google: 'Zu Google Kalender hinzufügen',
+    app: 'In Kalender-App öffnen',
+    secret:
+      'Der Link enthält einen Zugangsschlüssel: Geben Sie ihn nicht weiter. Derselbe Schlüssel gilt für jede Auswahl oben und lässt sich unter Konto › App-Tokens widerrufen.',
+    loginRequired: 'Ein Link kann nach der Anmeldung erstellt werden.',
   },
   picking: {
     startPoint: 'Startpunkt auswählen',
@@ -191,6 +211,7 @@ const de: DeepPartialWithRequiredObjects<EventsMessages> = {
     filter: 'Filter',
     clearFilter: 'Filter aufheben',
     newEvent: 'Neue Veranstaltung',
+    calendar: 'Kalenderabonnement',
   },
   colorize: {
     by: 'Einfärben nach',

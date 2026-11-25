@@ -138,6 +138,25 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     deleteTitle: 'Esemény törlése',
     deleteMessage: ({ title }) =>
       `Törli a(z) „${title}” eseményt? A kapcsolt térkép megmarad.`,
+    addToCalendar: 'Hozzáadás a naptárhoz',
+    googleCalendar: 'Google Naptár',
+    icsFile: 'Naptárfájl (Apple, Outlook…)',
+  },
+  calendar: {
+    title: 'Naptár-feliratkozás',
+    intro:
+      'Iratkozzon fel a naptáralkalmazásában: az események ott megjelennek, és naprakészek maradnak.',
+    feed: 'Események',
+    myEvents: 'A sajátjaim, és amelyek érdekelnek vagy amelyeken részt veszek',
+    myEventsName: 'Freemap: eseményeim',
+    create: 'Hivatkozás létrehozása',
+    tokenNote: 'Naptár-feliratkozás',
+    copy: 'Másolás',
+    google: 'Hozzáadás a Google Naptárhoz',
+    app: 'Megnyitás naptáralkalmazásban',
+    secret:
+      'A hivatkozás hozzáférési kulcsot tartalmaz: ne adja tovább. Ugyanaz a kulcs a fenti minden választásra érvényes, és a Fiók › Alkalmazástokenek alatt visszavonható.',
+    loginRequired: 'Hivatkozás bejelentkezés után hozható létre.',
   },
   picking: {
     startPoint: 'Válassza ki a kiindulópontot',
@@ -160,6 +179,7 @@ const hu: DeepPartialWithRequiredObjects<EventsMessages> = {
     filter: 'Szűrő',
     clearFilter: 'Szűrés megszüntetése',
     newEvent: 'Új esemény',
+    calendar: 'Naptár-feliratkozás',
   },
   colorize: {
     modes: {

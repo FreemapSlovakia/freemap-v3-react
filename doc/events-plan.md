@@ -316,6 +316,25 @@ from the selection toolbar (**Edit**).
       event selected. The generator reads events from the API or its database.
       `panel=event/<id>` can't be in the page's URL (nginx prerenders no query
       holding a `/`); the older `event=<id>`, still read, opens it.
+- [ ] **Beyond trips**: any activity at a concrete place and time, indoor or
+      static too (a fair, a talk, an ice rink's opening), but not a venue's
+      programme (no theatre). An event category beside the transports (trip,
+      march or race, gathering, culture, course or talk): a column, the form,
+      the filter, a marker icon, harvesters guessing it from the title.
+- [ ] **tristyri.sk**: a Slovak portal of races (~490) and users' group
+      events (~270). Not harvested: an aggregator's own database, and its
+      robots.txt says `ai-train=no, use=reference` and blocks AI crawlers.
+      Ask them (`/kontakt/spolupraca/`) for a partnership or data exchange.
+- [x] **Calendar**: the event panel's **Add to calendar** (a Google
+      Calendar link, or the API's `GET /events/{id}/calendar.ics`), and a
+      feed, `GET /events/calendar.ics` — the user's events (organized, going,
+      interested) or a saved filter's, with a month of ended ones — taking an
+      app token in `authToken` with the `events:calendar` scope, which admits
+      nothing else; the toolbar's **Calendar subscription** creates one.
+- [ ] **Series**: events grouped under one name (KRT+KRTKO, Vrchárska koruna
+      Abova, a club's season), listed and filtered together.
+- [ ] **Ride-sharing** to an event: offered and wanted seats, the
+      participants in touch; needs moderation and privacy care.
 
 New texts go into `src/features/events/translations/`, in English and Slovak;
 the other languages fall back to English until Release 2.

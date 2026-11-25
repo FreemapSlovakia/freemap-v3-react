@@ -139,6 +139,25 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     deleteTitle: 'Usuń wydarzenie',
     deleteMessage: ({ title }) =>
       `Usunąć wydarzenie „${title}”? Powiązana mapa pozostanie.`,
+    addToCalendar: 'Dodaj do kalendarza',
+    googleCalendar: 'Kalendarz Google',
+    icsFile: 'Plik kalendarza (Apple, Outlook…)',
+  },
+  calendar: {
+    title: 'Subskrypcja w kalendarzu',
+    intro:
+      'Po subskrypcji w aplikacji kalendarza wydarzenia pojawią się w niej i będą aktualne.',
+    feed: 'Wydarzenia',
+    myEvents: 'Moje oraz te, którymi się interesuję lub na które idę',
+    myEventsName: 'Freemap: moje wydarzenia',
+    create: 'Utwórz link',
+    tokenNote: 'Subskrypcja w kalendarzu',
+    copy: 'Kopiuj',
+    google: 'Dodaj do Kalendarza Google',
+    app: 'Otwórz w aplikacji kalendarza',
+    secret:
+      'Link zawiera klucz dostępu: nie należy go udostępniać. Ten sam klucz działa dla każdego wyboru powyżej i można go unieważnić w Konto › Tokeny aplikacji.',
+    loginRequired: 'Link można utworzyć po zalogowaniu.',
   },
   picking: {
     startPoint: 'Wybierz miejsce startu',
@@ -161,6 +180,7 @@ const pl: DeepPartialWithRequiredObjects<EventsMessages> = {
     filter: 'Filtr',
     clearFilter: 'Wyczyść filtr',
     newEvent: 'Nowe wydarzenie',
+    calendar: 'Subskrypcja w kalendarzu',
   },
   colorize: {
     modes: {

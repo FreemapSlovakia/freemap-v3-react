@@ -167,6 +167,25 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     deleteTitle: 'Izbriši dogodek',
     deleteMessage: ({ title }) =>
       `Želite izbrisati dogodek »${title}«? Povezan zemljevid ostane.`,
+    addToCalendar: 'Dodaj v koledar',
+    googleCalendar: 'Google Koledar',
+    icsFile: 'Datoteka koledarja (Apple, Outlook…)',
+  },
+  calendar: {
+    title: 'Naročnina v koledarju',
+    intro:
+      'Naročite se v svoji aplikaciji za koledar: dogodki se v njej prikažejo in ostanejo posodobljeni.',
+    feed: 'Dogodki',
+    myEvents: 'Moji ter tisti, ki me zanimajo ali se jih udeležim',
+    myEventsName: 'Freemap: moji dogodki',
+    create: 'Ustvari povezavo',
+    tokenNote: 'Naročnina v koledarju',
+    copy: 'Kopiraj',
+    google: 'Dodaj v Google Koledar',
+    app: 'Odpri v aplikaciji za koledar',
+    secret:
+      'Povezava vsebuje dostopni ključ: ne delite je. Isti ključ velja za vsako izbiro zgoraj in ga lahko prekličete v Račun › Aplikacijski žetoni.',
+    loginRequired: 'Povezavo lahko ustvarite po prijavi.',
   },
   picking: {
     startPoint: 'Izberite mesto začetka',
@@ -189,6 +208,7 @@ const sl: DeepPartialWithRequiredObjects<EventsMessages> = {
     filter: 'Filter',
     clearFilter: 'Počisti filter',
     newEvent: 'Nov dogodek',
+    calendar: 'Naročnina v koledarju',
   },
   colorize: {
     by: 'Obarvaj po',

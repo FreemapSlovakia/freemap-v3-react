@@ -24,6 +24,7 @@ import {
   FaBan,
   FaBell,
   FaCalendarAlt,
+  FaCalendarPlus,
   FaChild,
   FaDog,
   FaEraser,
@@ -319,6 +320,17 @@ export default function EventsMenu(): ReactElement {
 
             {!hidden && (
               <ResponsiveActions toggleLabel={m?.general.actions}>
+                {loggedIn && (
+                  <Action
+                    label={em?.menu.calendar}
+                    icon={<FaCalendarPlus />}
+                    showFrom="never"
+                    onClick={() =>
+                      dispatch(setActiveModal({ type: 'events-calendar' }))
+                    }
+                  />
+                )}
+
                 <Action {...manualAction('events')} />
               </ResponsiveActions>
             )}

@@ -108,6 +108,8 @@ const sk: DeepPartialWithRequiredObjects<AuthMessages> = {
       'events:read': 'Prezerať akcie a to, či o ne mám záujem alebo prídem',
       'events:write':
         'Vytvárať, meniť a mazať moje akcie a dávať vedieť o záujme a účasti',
+      'events:calendar':
+        'Odber v kalendári: moje akcie a akcie mojich uložených filtrov',
       'tracking:read': 'Prezerať moje sledované zariadenia',
       'tracking:write': 'Spravovať moje sledované zariadenia a ich zdieľanie',
       'tiles:outdoor':

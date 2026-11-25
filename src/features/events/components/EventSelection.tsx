@@ -23,6 +23,7 @@ import { useConfirm } from '@shared/components/ModalProvider.js';
 import { UserChip } from '@shared/components/UserChip.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
 import { useOnline } from '@shared/hooks/useOnline.js';
+import { trackMatomo } from '@shared/trackMatomo.js';
 import type { ReactElement } from 'react';
 import {
   Alert,
@@ -34,10 +35,13 @@ import {
 import {
   FaArrowLeft,
   FaCalendarDay,
+  FaCalendarPlus,
   FaCheck,
   FaCloudDownloadAlt,
+  FaDownload,
   FaEdit,
   FaExternalLinkAlt,
+  FaGoogle,
   FaStar,
   FaTrash,
 } from 'react-icons/fa';
@@ -52,6 +56,7 @@ import {
   eventsSetCommentDraft,
   eventsSetParticipation,
 } from '../model/actions.js';
+import { googleCalendarUrl, icsUrl } from '../model/calendarLinks.js';
 import { EventsListTraitSchema } from '../model/listSort.js';
 import { selectedEventId } from '../model/selectors.js';
 import { loadEventsMessages } from '../translations/loadEventsMessages.js';
@@ -358,6 +363,40 @@ function EventActions({ event }: { event: EventItem }): ReactElement {
         >
           <FaCheck /> {em?.selection.going} · {event.goingCount}
         </Button>
+
+        <Dropdown>
+          <LongPressTooltip label={em?.selection.addToCalendar}>
+            {({ props }) => (
+              <Dropdown.Toggle variant="secondary" {...props}>
+                <FaCalendarPlus />
+              </Dropdown.Toggle>
+            )}
+          </LongPressTooltip>
+
+          <FmDropdownMenu>
+            <Dropdown.Item
+              href={googleCalendarUrl(event)}
+              target="_blank"
+              rel="noopener"
+              onClick={() =>
+                trackMatomo(['trackEvent', 'Events', 'addToCalendar', 'google'])
+              }
+            >
+              <FaGoogle />
+              <MenuLabel>{em?.selection.googleCalendar}</MenuLabel>
+            </Dropdown.Item>
+
+            <Dropdown.Item
+              href={icsUrl(event.id)}
+              onClick={() =>
+                trackMatomo(['trackEvent', 'Events', 'addToCalendar', 'ics'])
+              }
+            >
+              <FaDownload />
+              <MenuLabel>{em?.selection.icsFile}</MenuLabel>
+            </Dropdown.Item>
+          </FmDropdownMenu>
+        </Dropdown>
 
         {event.canWrite && (
           <>
