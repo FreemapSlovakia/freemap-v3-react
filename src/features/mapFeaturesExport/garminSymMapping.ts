@@ -53,6 +53,9 @@ const POI_TO_SYM: Record<string, string> = {
   defibrillator: 'Medical Facility',
   // transport
   fuel: 'Gas Station',
+  charging_station_bicycle: 'Gas Station',
+  charging_station_scooter: 'Gas Station',
+  charging_station_other: 'Gas Station',
   charging_station: 'Gas Station',
   parking: 'Parking Area',
   car: 'Car',
@@ -192,6 +195,9 @@ const SYM_TO_SPEC: Map<string, string> = (() => {
       m.set(k, v);
     }
   }
+
+  // Charging stations export as it too, and the last row would claim it.
+  m.set('gas station', poiSpec('fuel'));
 
   return m;
 })();

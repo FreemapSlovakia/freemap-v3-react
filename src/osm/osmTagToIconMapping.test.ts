@@ -165,3 +165,30 @@ describe('peaks and memorials', () => {
     );
   });
 });
+
+// As in the outdoor map: car, else bicycle, else scooter or motorcycle, else
+// the bare bolt on motorcar=no; any value but no admits a vehicle.
+describe('charging stations', () => {
+  const station = (tags: Record<string, string>) =>
+    icon({ amenity: 'charging_station', ...tags });
+
+  it('shows one icon by vehicle precedence', () => {
+    for (const [tags, expected] of [
+      [{}, 'charging_station'],
+      [{ motorcar: 'yes' }, 'charging_station'],
+      [{ motorcar: 'no' }, 'charging_station_other'],
+      [{ bicycle: 'designated' }, 'charging_station_bicycle'],
+      [{ bicycle: 'yes', motorcar: 'yes' }, 'charging_station'],
+      [{ motorcar: 'yes', bicycle: 'yes' }, 'charging_station'],
+      [{ motorcar: 'no', bicycle: 'yes' }, 'charging_station_bicycle'],
+      [{ scooter: 'yes', bicycle: 'yes' }, 'charging_station_bicycle'],
+      [{ bicycle: 'no', scooter: 'yes' }, 'charging_station_scooter'],
+      [{ motorcar: 'no', motorcycle: 'yes' }, 'charging_station_scooter'],
+      [{ scooter: 'yes', bicycle: 'yes', motorcar: 'yes' }, 'charging_station'],
+      [{ bicycle: 'no' }, 'charging_station'],
+      [{ bicycle: 'no', motorcar: 'no' }, 'charging_station_other'],
+    ] as const) {
+      expect(station(tags), JSON.stringify(tags)).toEqual([expected]);
+    }
+  });
+});

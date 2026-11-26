@@ -28,6 +28,41 @@ const mineralSpring: IconNode = {
   resurgence: '',
 };
 
+// As in the outdoor map: car (any value but no), else bicycle, else scooter or
+// motorcycle, else the bare bolt on motorcar=no. Each vehicle node nests those
+// it yields to, so the winner's tags are a superset and the losers drop out.
+const carCharging: IconNode = { '*': 'charging_station', no: '' };
+
+const bicycleCharging: IconNode = {
+  '*': { '*': 'charging_station_bicycle', motorcar: carCharging },
+  no: '',
+};
+
+const scooterCharging: IconNode = {
+  '*': {
+    '*': 'charging_station_scooter',
+    motorcar: carCharging,
+    bicycle: bicycleCharging,
+  },
+  no: '',
+};
+
+const chargingStationMapping: IconNode = {
+  '*': 'charging_station',
+  motorcar: {
+    '*': 'charging_station',
+    no: {
+      '*': 'charging_station_other',
+      bicycle: bicycleCharging,
+      scooter: scooterCharging,
+      motorcycle: scooterCharging,
+    },
+  },
+  bicycle: bicycleCharging,
+  scooter: scooterCharging,
+  motorcycle: scooterCharging,
+};
+
 // hack to have only single icon for churches...
 // Also read under `tourism=zoo`: a zoo carrying a `zoo` sub-tag has to resolve
 // from the pair, or the generic zoo icon wins on tag order alone.
@@ -141,7 +176,7 @@ export const osmTagToIconMapping: IconNode = {
     car_rental: 'car_rental',
     car_wash: 'car_wash',
     casino: 'casino',
-    charging_station: 'charging_station',
+    charging_station: chargingStationMapping,
     cinema: 'cinema',
     clinic: 'doctors',
     college: 'college',

@@ -96,6 +96,9 @@ const POI_TO_OSMAND: Record<string, string> = {
   defibrillator: 'emergency_defibrillator',
   // transport
   fuel: 'amenity_fuel',
+  charging_station_bicycle: 'amenity_charging_station',
+  charging_station_scooter: 'amenity_charging_station',
+  charging_station_other: 'amenity_charging_station',
   charging_station: 'amenity_charging_station',
   parking: 'amenity_parking',
   bicycle_parking: 'amenity_bicycle_parking',
