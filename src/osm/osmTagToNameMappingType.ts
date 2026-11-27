@@ -636,6 +636,58 @@ export type OsmTagToNameMapping = {
     '5': string;
     '6': string;
   };
+  via_ferrata_scale: {
+    '*': string;
+    '0': string;
+    '1': string;
+    '2': string;
+    '3': string;
+    '4': string;
+    '5': string;
+    '6': string;
+  };
+  'piste:type': {
+    '*': string;
+    connection: string;
+    downhill: string;
+    fatbike: string;
+    hike: string;
+    ice_skate: string;
+    nordic: string;
+    playground: string;
+    ski_jump: string;
+    skitour: string;
+    sled: string;
+    sleigh: string;
+    snow_park: string;
+  };
+  'piste:difficulty': {
+    novice: string;
+    easy: string;
+    intermediate: string;
+    advanced: string;
+    expert: string;
+    freeride: string;
+    extreme: string;
+  };
+  golf: {
+    bunker: string;
+    cartpath: string;
+    clubhouse: string;
+    driving_range: string;
+    fairway: string;
+    green: string;
+    hole: string;
+    lateral_water_hazard: string;
+    path: string;
+    pin: string;
+    rough: string;
+    tee: string;
+    water_hazard: string;
+  };
+  'area:highway': { '*': string };
+  'area:aeroway': { '*': string };
+  route: { ferry: string };
   building: {
     '*': {
       '*': string;
@@ -2038,6 +2090,7 @@ export type OsmTagToNameMapping = {
     equestrian: string;
     fencing: string;
     field_hockey: string;
+    fishing: string;
     fistball: string;
     fitness: string;
     fives: string;

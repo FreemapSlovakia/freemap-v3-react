@@ -440,6 +440,9 @@ export const osmTagToIconMapping: IconNode = {
   ford: {
     yes: 'ford',
   },
+  golf: {
+    pin: 'golf_pin',
+  },
   healthcare: {
     // Anything not named below still reads as a doctor's office.
     '*': 'doctors',
