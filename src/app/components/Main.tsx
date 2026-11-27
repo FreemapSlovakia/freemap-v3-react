@@ -50,9 +50,11 @@ import { OfflineBadge } from '@shared/components/OfflineBadge.js';
 import { Toolbar } from '@shared/components/Toolbar.js';
 import { isDropdownOpen } from '@shared/dropdownOpen.js';
 import { useAppSelector } from '@shared/hooks/useAppSelector.js';
+import { useOnline } from '@shared/hooks/useOnline.js';
 import { useOpenOrder } from '@shared/hooks/useOpenOrder.js';
 import { useScrollClasses } from '@shared/hooks/useScrollClasses.js';
 import { useShareFile } from '@shared/hooks/useShareFile.js';
+import clsx from 'clsx';
 import fmLogoEu from '@/images/freemap-logo-eu.svg';
 import fmLogoSk from '@/images/freemap-logo-sk.svg';
 import 'leaflet/dist/leaflet.css';
@@ -826,6 +828,8 @@ export function Main(): ReactElement {
 
   const picking = pickingMode !== null;
 
+  const online = useOnline();
+
   // A mode waiting on a click clears the screen for it — but where a picking
   // mode brings its own menu, an armed one keeps the selection toolbar, which
   // is where it says what it wants and offers the way out.
@@ -1157,7 +1161,14 @@ export function Main(): ReactElement {
             {!askingCookieConsent && !window.fmEmbedded && <InfoBar />}
 
             <div className={classes.menus}>
-              <div className="fm-ib-scroller fm-ib-scroller-top" ref={scLogo}>
+              <div
+                className={clsx(
+                  'fm-ib-scroller fm-ib-scroller-top',
+                  // Offline it stays: it carries the offline badge.
+                  picking && online && 'd-none d-lg-block',
+                )}
+                ref={scLogo}
+              >
                 <div />
 
                 <Toolbar className="mt-2 fm-toolbar-fit">
