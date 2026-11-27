@@ -101,7 +101,7 @@ export const GalleryUploadItem = memo(function GalleryUploadItem({
   }, [previewKey, rotation]);
 
   const handleLoadPreviewClick = useCallback(() => {
-    setShowPreview2(true);
+    setPreviewRequested(true);
 
     loadPreview(file, 618, (err, key) => {
       if (err) {
@@ -112,7 +112,10 @@ export const GalleryUploadItem = memo(function GalleryUploadItem({
     });
   }, [file, id, onPreview]);
 
-  const [showPreview2, setShowPreview2] = useState(showPreview);
+  const [previewRequested, setPreviewRequested] = useState(showPreview);
+
+  // The item remounts after a position is picked on the map; its loaded preview stays.
+  const showPreview2 = previewRequested || Boolean(previewKey);
 
   // The browser may not be able to decode HEIC; if so, previews are unavailable.
   const [previewSupported, setPreviewSupported] = useState(true);
